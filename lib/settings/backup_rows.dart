@@ -1,5 +1,6 @@
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/settings/backup_data.dart';
 
 /// Rows of backed-up tables that have no entity in `database/entities.dart`,
 /// which is why the export used to walk straight past them.
@@ -112,25 +113,6 @@ Future<List<SearchGroupMember>> readSearchGroupMembers() =>
 Future<List<FeedReadPositionRow>> readFeedReadPositions() =>
     _readRows(tableFeedReadPosition, FeedReadPositionRow.fromMap);
 
-/// Followed stocks and Threads accounts live in their own tables, outside the
-/// four `SubscriptionsModel` reads, so the export never saw them. They are read
-/// straight from the database here for the same reason the rows above are.
-Future<List<StockSubscription>> readStockSubscriptions() =>
-    _readRows(tableStockSubscription, StockSubscription.fromMap);
-
-Future<List<ThreadsSubscription>> readThreadsSubscriptions() =>
-    _readRows(tableThreadsSubscription, ThreadsSubscription.fromMap);
-
-Future<List<BlueskySubscription>> readBlueskySubscriptions() =>
-    _readRows(tableBlueskySubscription, BlueskySubscription.fromMap);
-
-Future<List<MastodonSubscription>> readMastodonSubscriptions() =>
-    _readRows(tableMastodonSubscription, MastodonSubscription.fromMap);
-
-Future<List<RedditLocalVote>> readRedditLocalVotes() => _readRows(tableRedditLocalVote, RedditLocalVote.fromMap);
-
-Future<List<ThreadsLocalLike>> readThreadsLocalLikes() =>
-    _readRows(tableThreadsLocalLike, ThreadsLocalLike.fromMap);
 
 /// A Bluesky like that only ever existed on this device.
 ///
@@ -148,8 +130,18 @@ class BlueskyLocalLike with ToMappable {
   Map<String, dynamic> toMap() => {'id': id};
 }
 
-Future<List<BlueskyLocalLike>> readBlueskyLocalLikes() =>
-    _readRows(tableBlueskyLocalLike, BlueskyLocalLike.fromMap);
+/// Every plugin's rows, keyed by the section they belong to in the file.
+///
+/// A plugin's tables sit outside the ones `SubscriptionsModel` reads, so they
+/// are taken from the database directly — but which tables those are comes from
+/// the plugins themselves rather than a list here.
+Future<Map<String, List<ToMappable>>> readPluginRows() async {
+  final rows = <String, List<ToMappable>>{};
+  for (final section in pluginBackupSections()) {
+    rows[section.jsonKey] = await _readRows(section.table, section.fromMap);
+  }
+  return rows;
+}
 
 Future<List<ProfileNote>> readProfileNotes() => _readRows(tableProfileNote, ProfileNote.fromMap);
 

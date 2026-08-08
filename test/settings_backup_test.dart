@@ -30,30 +30,44 @@ SettingsData _full() {
         inFeed: true,
       ),
     ],
-    substackSubscriptions: [
-      SubstackSubscription(
-        id: 'astral',
-        baseUrl: 'https://astral.substack.com',
-        name: 'Astral',
-        logoUrl: null,
-        createdAt: _createdAt,
-        inFeed: true,
-      ),
-    ],
-    redditSubscriptions: [RedditSubscription(id: 'dartlang', name: 'dartlang', createdAt: _createdAt, inFeed: true)],
-    stockSubscriptions: [StockSubscription(id: 'AAPL', symbol: 'AAPL', createdAt: _createdAt, inFeed: true)],
-    threadsSubscriptions: [
-      ThreadsSubscription(id: 'reader', name: 'Reader', avatarUrl: null, createdAt: _createdAt, inFeed: true),
-    ],
-    blueskySubscriptions: [
-      BlueskySubscription(id: 'reader.bsky.social', name: 'Reader', avatarUrl: null, createdAt: _createdAt, inFeed: true),
-    ],
-    mastodonSubscriptions: [
-      MastodonSubscription(id: 'reader@example.social', name: 'Reader', avatarUrl: null, createdAt: _createdAt, inFeed: true),
-    ],
-    redditLocalVotes: [RedditLocalVote(id: 'abc123')],
-    threadsLocalLikes: [ThreadsLocalLike(id: 't_like_1')],
-    blueskyLocalLikes: [BlueskyLocalLike(id: 'at://did:plc:a/app.bsky.feed.post/1')],
+    pluginRows: {
+      'substackSubscriptions': [
+        SubstackSubscription(
+          id: 'astral',
+          baseUrl: 'https://astral.substack.com',
+          name: 'Astral',
+          logoUrl: null,
+          createdAt: _createdAt,
+          inFeed: true,
+        ),
+      ],
+      'redditSubscriptions': [RedditSubscription(id: 'dartlang', name: 'dartlang', createdAt: _createdAt, inFeed: true)],
+      'stockSubscriptions': [StockSubscription(id: 'AAPL', symbol: 'AAPL', createdAt: _createdAt, inFeed: true)],
+      'threadsSubscriptions': [
+        ThreadsSubscription(id: 'reader', name: 'Reader', avatarUrl: null, createdAt: _createdAt, inFeed: true),
+      ],
+      'blueskySubscriptions': [
+        BlueskySubscription(
+          id: 'reader.bsky.social',
+          name: 'Reader',
+          avatarUrl: null,
+          createdAt: _createdAt,
+          inFeed: true,
+        ),
+      ],
+      'mastodonSubscriptions': [
+        MastodonSubscription(
+          id: 'reader@example.social',
+          name: 'Reader',
+          avatarUrl: null,
+          createdAt: _createdAt,
+          inFeed: true,
+        ),
+      ],
+      'redditLocalVotes': [RedditLocalVote(id: 'abc123')],
+      'threadsLocalLikes': [ThreadsLocalLike(id: 't_like_1')],
+      'blueskyLocalLikes': [BlueskyLocalLike(id: 'at://did:plc:a/app.bsky.feed.post/1')],
+    },
     subscriptionGroups: [
       SubscriptionGroup(id: 'g1', name: 'Feeds', icon: _icon, color: null, numberOfMembers: 1, createdAt: _createdAt),
     ],
@@ -101,15 +115,15 @@ void main() {
       expect(data.settings?['theme'], 'dark');
       expect(data.searchSubscriptions?.single.id, 'dart');
       expect(data.userSubscriptions?.single.screenName, 'reader');
-      expect(data.substackSubscriptions?.single.baseUrl, 'https://astral.substack.com');
-      expect(data.redditSubscriptions?.single.name, 'dartlang');
-      expect(data.stockSubscriptions?.single.symbol, 'AAPL');
-      expect(data.threadsSubscriptions?.single.id, 'reader');
-      expect(data.blueskySubscriptions?.single.id, 'reader.bsky.social');
-      expect(data.mastodonSubscriptions?.single.id, 'reader@example.social');
-      expect(data.redditLocalVotes?.single.id, 'abc123');
-      expect(data.threadsLocalLikes?.single.id, 't_like_1');
-      expect(data.blueskyLocalLikes?.single.id, 'at://did:plc:a/app.bsky.feed.post/1');
+      expect((data.pluginRows?['substackSubscriptions']?.single as SubstackSubscription?)?.baseUrl, 'https://astral.substack.com');
+      expect((data.pluginRows?['redditSubscriptions']?.single as RedditSubscription?)?.name, 'dartlang');
+      expect((data.pluginRows?['stockSubscriptions']?.single as StockSubscription?)?.symbol, 'AAPL');
+      expect((data.pluginRows?['threadsSubscriptions']?.single as ThreadsSubscription?)?.id, 'reader');
+      expect((data.pluginRows?['blueskySubscriptions']?.single as BlueskySubscription?)?.id, 'reader.bsky.social');
+      expect((data.pluginRows?['mastodonSubscriptions']?.single as MastodonSubscription?)?.id, 'reader@example.social');
+      expect((data.pluginRows?['redditLocalVotes']?.single as RedditLocalVote?)?.id, 'abc123');
+      expect((data.pluginRows?['threadsLocalLikes']?.single as ThreadsLocalLike?)?.id, 't_like_1');
+      expect((data.pluginRows?['blueskyLocalLikes']?.single as BlueskyLocalLike?)?.id, 'at://did:plc:a/app.bsky.feed.post/1');
       expect(data.subscriptionGroups?.single.name, 'Feeds');
       expect(data.subscriptionGroupMembers?.single.profile, '1');
       expect(data.searchGroupMembers?.single.search, 'dart');
@@ -161,8 +175,8 @@ void main() {
       final data = SettingsData.fromJson(_legacy);
       final tables = backupTables(data, includeReadPositions: true);
 
-      expect(data.substackSubscriptions, isNull);
-      expect(data.redditSubscriptions, isNull);
+      expect(data.pluginRows?['substackSubscriptions'], isNull);
+      expect(data.pluginRows?['redditSubscriptions'], isNull);
       expect(data.retweetFilters, isNull);
       expect(data.feedReadPositions, isNull);
       expect(tables.keys, containsAll([tableSubscription, tableSavedTweet]));

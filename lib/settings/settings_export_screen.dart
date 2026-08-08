@@ -123,8 +123,8 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
         _exportAccounts);
   }
 
-  /// Users, saved searches, publications and subreddits are all subscriptions,
-  /// so one choice covers the four tables they live in.
+  /// Users and saved searches are both subscriptions, so one choice covers the
+  /// two tables they live in.
   List<T>? _subscriptionsOf<T extends Subscription>(List<Subscription> all) {
     return _exportSubscriptions ? all.whereType<T>().toList() : null;
   }
@@ -151,8 +151,10 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
       settings: _exportSettings ? prefsMapWithoutSecrets(prefs.toMap()) : null,
       searchSubscriptions: _subscriptionsOf<SearchSubscription>(subscriptions),
       userSubscriptions: _subscriptionsOf<UserSubscription>(subscriptions),
-      substackSubscriptions: _subscriptionsOf<SubstackSubscription>(subscriptions),
-      redditSubscriptions: _subscriptionsOf<RedditSubscription>(subscriptions),
+      // Every plugin's rows, not the two this screen used to name: followed
+      // stocks, Threads, Bluesky and Fediverse accounts, and device-only
+      // upvotes and likes were all silently left out of a chosen export.
+      pluginRows: _exportSubscriptions ? await readPluginRows() : null,
       subscriptionGroups: _exportSubscriptionGroups ? groupModel.state : null,
       subscriptionGroupMembers: _exportSubscriptionGroupMembers ? await groupModel.listGroupMembers() : null,
       searchGroupMembers: _exportSubscriptionGroupMembers ? await readSearchGroupMembers() : null,

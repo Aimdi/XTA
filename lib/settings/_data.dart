@@ -133,19 +133,10 @@ Future<SettingsData> collectBackup(BuildContext context, {required bool includeA
     settings: prefsMapWithoutSecrets(prefs.toMap()),
     searchSubscriptions: subscriptions.whereType<SearchSubscription>().toList(),
     userSubscriptions: subscriptions.whereType<UserSubscription>().toList(),
-    substackSubscriptions: subscriptions.whereType<SubstackSubscription>().toList(),
-    redditSubscriptions: subscriptions.whereType<RedditSubscription>().toList(),
-    // Not in `subscriptions`: these tables are outside the four that model
-    // reads, so they are taken from the database directly. The coverage test
-    // compares this document against the schema, which is what catches the
-    // next plugin whose table would otherwise be missed here.
-    stockSubscriptions: await readStockSubscriptions(),
-    threadsSubscriptions: await readThreadsSubscriptions(),
-    blueskySubscriptions: await readBlueskySubscriptions(),
-    mastodonSubscriptions: await readMastodonSubscriptions(),
-    redditLocalVotes: await readRedditLocalVotes(),
-    threadsLocalLikes: await readThreadsLocalLikes(),
-    blueskyLocalLikes: await readBlueskyLocalLikes(),
+    // Read from the plugins rather than named here: a plugin's rows are often
+    // the only copy in existence, and a list that has to be extended by hand is
+    // how several of them went unsaved.
+    pluginRows: await readPluginRows(),
     subscriptionGroups: groupModel.state,
     subscriptionGroupMembers: await groupModel.listGroupMembers(),
     searchGroupMembers: await readSearchGroupMembers(),

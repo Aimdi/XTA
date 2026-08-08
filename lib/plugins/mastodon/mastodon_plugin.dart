@@ -8,6 +8,9 @@ import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_settings.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/plugin_backup.dart';
+import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -61,6 +64,16 @@ class MastodonPlugin extends XtaPlugin {
 
   @override
   List<String> get tables => const [tableMastodonSubscription];
+
+  @override
+  List<PluginBackupSection> get backupSections => [
+    PluginBackupSection(
+      jsonKey: 'mastodonSubscriptions',
+      table: tableMastodonSubscription,
+      category: BackupCategory.mastodon,
+      fromMap: MastodonSubscription.fromMap,
+    ),
+  ];
 
   @override
   Future<void> resetPreferences(BasePrefService prefs) async {

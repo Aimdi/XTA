@@ -5,6 +5,10 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/settings/backup_rows.dart';
+import 'package:xta/plugins/plugin_backup.dart';
+import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -72,6 +76,22 @@ class RedditPlugin extends XtaPlugin {
   List<String> get tables => const [
     tableRedditSubscription,
     tableRedditLocalVote,
+  ];
+
+  @override
+  List<PluginBackupSection> get backupSections => [
+    PluginBackupSection(
+      jsonKey: 'redditSubscriptions',
+      table: tableRedditSubscription,
+      category: BackupCategory.subreddits,
+      fromMap: RedditSubscription.fromMap,
+    ),
+    PluginBackupSection(
+      jsonKey: 'redditLocalVotes',
+      table: tableRedditLocalVote,
+      category: BackupCategory.upvotes,
+      fromMap: RedditLocalVote.fromMap,
+    ),
   ];
 
   @override

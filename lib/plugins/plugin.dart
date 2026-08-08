@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/plugin_storage.dart';
 
@@ -57,6 +58,14 @@ abstract class XtaPlugin {
   /// cannot disagree about what the plugin owns.
   List<String> get tables => const [];
   List<String> get caches => const [];
+
+  /// Which of those tables belong in a backup, and under what name.
+  ///
+  /// A plugin's rows are usually the only copy in existence — nothing tells
+  /// Reddit about a device-local upvote — so leaving one out of a backup loses
+  /// it for good. Declaring it here means the backup reads the plugin rather
+  /// than a list somebody has to remember to extend.
+  List<PluginBackupSection> get backupSections => const [];
 
   /// Returns this plugin's own settings to their defaults.
   ///

@@ -1,5 +1,9 @@
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/plugins/plugin_backup.dart';
+import 'package:xta/plugins/plugin_registry.dart';
+export 'package:xta/settings/backup_category.dart';
+import 'package:xta/settings/backup_category.dart';
 import 'package:xta/settings/backup_rows.dart';
 
 /// The backup document: what QuaX carries between devices, and the header that
@@ -16,6 +20,14 @@ import 'package:xta/settings/backup_rows.dart';
 /// upvotes and likes especially, since the networks are never told about them
 /// and this file is their only copy.
 
+/// The sections every installed plugin owns, in registry order.
+///
+/// Read rather than listed: the backup used to name each plugin's tables again
+/// by hand, which is how rows that exist nowhere else went unsaved.
+List<PluginBackupSection> pluginBackupSections() => [
+  for (final plugin in builtInPlugins) ...plugin.backupSections,
+];
+
 /// Raised whenever an older build could misread a newer file. A reader that
 /// meets a higher number refuses the file instead of applying the part of it
 /// it happens to understand.
@@ -27,47 +39,20 @@ const int legacyBackupFormatVersion = 0;
 
 bool isSupportedBackupVersion(int version) => version <= backupFormatVersion;
 
-/// What the preview counts, and the order it lists them in.
-enum BackupCategory {
-  settings,
-  subscriptions,
-  substack,
-  subreddits,
-  stocks,
-  threads,
-  bluesky,
-  mastodon,
-  groups,
-  groupMembers,
-  savedPosts,
-  folders,
-  likedPosts,
-  filters,
-  readPositions,
-  upvotes,
-  threadsLikes,
-  blueskyLikes,
-  accounts,
-  profileNotes,
-  antennas,
-}
 
 class SettingsData {
   final int formatVersion;
   final DateTime? exportedAt;
   final String? appVersion;
   final Map<String, dynamic>? settings;
+  /// Rows belonging to plugins, keyed by the section's `jsonKey`.
+  ///
+  /// Held generically so that adding a plugin cannot forget the backup: the
+  /// sections come from the plugin registry, not from a list in this file.
+  final Map<String, List<ToMappable>>? pluginRows;
+
   final List<SearchSubscription>? searchSubscriptions;
   final List<UserSubscription>? userSubscriptions;
-  final List<SubstackSubscription>? substackSubscriptions;
-  final List<RedditSubscription>? redditSubscriptions;
-  final List<StockSubscription>? stockSubscriptions;
-  final List<ThreadsSubscription>? threadsSubscriptions;
-  final List<BlueskySubscription>? blueskySubscriptions;
-  final List<MastodonSubscription>? mastodonSubscriptions;
-  final List<RedditLocalVote>? redditLocalVotes;
-  final List<ThreadsLocalLike>? threadsLocalLikes;
-  final List<BlueskyLocalLike>? blueskyLocalLikes;
   final List<SubscriptionGroup>? subscriptionGroups;
   final List<SubscriptionGroupMember>? subscriptionGroupMembers;
   final List<SearchGroupMember>? searchGroupMembers;
@@ -86,17 +71,9 @@ class SettingsData {
     this.exportedAt,
     this.appVersion,
     this.settings,
+    this.pluginRows,
     this.searchSubscriptions,
     this.userSubscriptions,
-    this.substackSubscriptions,
-    this.redditSubscriptions,
-    this.stockSubscriptions,
-    this.threadsSubscriptions,
-    this.blueskySubscriptions,
-    this.mastodonSubscriptions,
-    this.redditLocalVotes,
-    this.threadsLocalLikes,
-    this.blueskyLocalLikes,
     this.subscriptionGroups,
     this.subscriptionGroupMembers,
     this.searchGroupMembers,
@@ -117,17 +94,12 @@ class SettingsData {
       exportedAt: DateTime.tryParse((json['exportedAt'] as String?) ?? ''),
       appVersion: json['appVersion'] as String?,
       settings: json['settings'] as Map<String, dynamic>?,
+      pluginRows: {
+        for (final section in pluginBackupSections())
+          if (_rows(json[section.jsonKey], section.fromMap) case final rows?) section.jsonKey: rows,
+      },
       searchSubscriptions: _rows(json['searchSubscriptions'], SearchSubscription.fromMap),
       userSubscriptions: _rows(json['subscriptions'], UserSubscription.fromMap),
-      substackSubscriptions: _rows(json['substackSubscriptions'], SubstackSubscription.fromMap),
-      redditSubscriptions: _rows(json['redditSubscriptions'], RedditSubscription.fromMap),
-      stockSubscriptions: _rows(json['stockSubscriptions'], StockSubscription.fromMap),
-      threadsSubscriptions: _rows(json['threadsSubscriptions'], ThreadsSubscription.fromMap),
-      blueskySubscriptions: _rows(json['blueskySubscriptions'], BlueskySubscription.fromMap),
-      mastodonSubscriptions: _rows(json['mastodonSubscriptions'], MastodonSubscription.fromMap),
-      redditLocalVotes: _rows(json['redditLocalVotes'], RedditLocalVote.fromMap),
-      threadsLocalLikes: _rows(json['threadsLocalLikes'], ThreadsLocalLike.fromMap),
-      blueskyLocalLikes: _rows(json['blueskyLocalLikes'], BlueskyLocalLike.fromMap),
       subscriptionGroups: _rows(json['subscriptionGroups'], SubscriptionGroup.fromMap),
       subscriptionGroupMembers: _rows(json['subscriptionGroupMembers'], SubscriptionGroupMember.fromMap),
       searchGroupMembers: _rows(json['searchGroupMembers'], SearchGroupMember.fromMap),
@@ -149,17 +121,9 @@ class SettingsData {
       'exportedAt': exportedAt?.toIso8601String(),
       'appVersion': appVersion,
       'settings': settings,
+      for (final section in pluginBackupSections()) section.jsonKey: _maps(pluginRows?[section.jsonKey]),
       'searchSubscriptions': _maps(searchSubscriptions),
       'subscriptions': _maps(userSubscriptions),
-      'substackSubscriptions': _maps(substackSubscriptions),
-      'redditSubscriptions': _maps(redditSubscriptions),
-      'stockSubscriptions': _maps(stockSubscriptions),
-      'threadsSubscriptions': _maps(threadsSubscriptions),
-      'blueskySubscriptions': _maps(blueskySubscriptions),
-      'mastodonSubscriptions': _maps(mastodonSubscriptions),
-      'redditLocalVotes': _maps(redditLocalVotes),
-      'threadsLocalLikes': _maps(threadsLocalLikes),
-      'blueskyLocalLikes': _maps(blueskyLocalLikes),
       'subscriptionGroups': _maps(subscriptionGroups),
       'subscriptionGroupMembers': _maps(subscriptionGroupMembers),
       'searchGroupMembers': _maps(searchGroupMembers),
@@ -195,12 +159,6 @@ Map<BackupCategory, int> backupCounts(SettingsData data) {
   final counts = <BackupCategory, int?>{
     BackupCategory.settings: data.settings?.length,
     BackupCategory.subscriptions: _total([data.userSubscriptions, data.searchSubscriptions]),
-    BackupCategory.substack: data.substackSubscriptions?.length,
-    BackupCategory.subreddits: data.redditSubscriptions?.length,
-    BackupCategory.stocks: data.stockSubscriptions?.length,
-    BackupCategory.threads: data.threadsSubscriptions?.length,
-    BackupCategory.bluesky: data.blueskySubscriptions?.length,
-    BackupCategory.mastodon: data.mastodonSubscriptions?.length,
     BackupCategory.groups: data.subscriptionGroups?.length,
     BackupCategory.groupMembers: _total([data.subscriptionGroupMembers, data.searchGroupMembers]),
     BackupCategory.savedPosts: data.tweets?.length,
@@ -208,12 +166,10 @@ Map<BackupCategory, int> backupCounts(SettingsData data) {
     BackupCategory.likedPosts: data.likedTweets?.length,
     BackupCategory.filters: _total([data.retweetFilters, data.replyFilters]),
     BackupCategory.readPositions: data.feedReadPositions?.length,
-    BackupCategory.upvotes: data.redditLocalVotes?.length,
-    BackupCategory.threadsLikes: data.threadsLocalLikes?.length,
-    BackupCategory.blueskyLikes: data.blueskyLocalLikes?.length,
     BackupCategory.accounts: data.accounts?.length,
     BackupCategory.profileNotes: data.profileNotes?.length,
     BackupCategory.antennas: data.antennas?.length,
+    for (final section in pluginBackupSections()) section.category: data.pluginRows?[section.jsonKey]?.length,
   };
 
   return Map.fromEntries(
@@ -238,15 +194,6 @@ Map<String, List<ToMappable>> backupTables(SettingsData data, {required bool inc
   final sections = <String, List<ToMappable>?>{
     tableSearchSubscription: data.searchSubscriptions,
     tableSubscription: data.userSubscriptions,
-    tableSubstackSubscription: data.substackSubscriptions,
-    tableRedditSubscription: data.redditSubscriptions,
-    tableStockSubscription: data.stockSubscriptions,
-    tableThreadsSubscription: data.threadsSubscriptions,
-    tableBlueskySubscription: data.blueskySubscriptions,
-    tableMastodonSubscription: data.mastodonSubscriptions,
-    tableRedditLocalVote: data.redditLocalVotes,
-    tableThreadsLocalLike: data.threadsLocalLikes,
-    tableBlueskyLocalLike: data.blueskyLocalLikes,
     tableSubscriptionGroup: data.subscriptionGroups,
     tableSubscriptionGroupMember: data.subscriptionGroupMembers,
     tableSearchSubscriptionGroupMember: data.searchGroupMembers,
@@ -259,6 +206,7 @@ Map<String, List<ToMappable>> backupTables(SettingsData data, {required bool inc
     tableProfileNote: data.profileNotes,
     tableAntenna: data.antennas,
     if (includeReadPositions) tableFeedReadPosition: data.feedReadPositions,
+    for (final section in pluginBackupSections()) section.table: data.pluginRows?[section.jsonKey],
   };
 
   return Map.fromEntries(

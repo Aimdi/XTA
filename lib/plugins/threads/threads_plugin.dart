@@ -5,6 +5,10 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/settings/backup_rows.dart';
+import 'package:xta/plugins/plugin_backup.dart';
+import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/threads/threads_screen.dart';
@@ -60,6 +64,22 @@ class ThreadsPlugin extends XtaPlugin {
   List<String> get tables => const [
     tableThreadsSubscription,
     tableThreadsLocalLike,
+  ];
+
+  @override
+  List<PluginBackupSection> get backupSections => [
+    PluginBackupSection(
+      jsonKey: 'threadsSubscriptions',
+      table: tableThreadsSubscription,
+      category: BackupCategory.threads,
+      fromMap: ThreadsSubscription.fromMap,
+    ),
+    PluginBackupSection(
+      jsonKey: 'threadsLocalLikes',
+      table: tableThreadsLocalLike,
+      category: BackupCategory.threadsLikes,
+      fromMap: ThreadsLocalLike.fromMap,
+    ),
   ];
 
   @override

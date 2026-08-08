@@ -11,6 +11,10 @@ import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_settings.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/settings/backup_rows.dart';
+import 'package:xta/plugins/plugin_backup.dart';
+import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -69,6 +73,22 @@ class BlueskyPlugin extends XtaPlugin {
         tableBlueskySubscription,
         tableBlueskyLocalLike,
       ];
+
+  @override
+  List<PluginBackupSection> get backupSections => [
+    PluginBackupSection(
+      jsonKey: 'blueskySubscriptions',
+      table: tableBlueskySubscription,
+      category: BackupCategory.bluesky,
+      fromMap: BlueskySubscription.fromMap,
+    ),
+    PluginBackupSection(
+      jsonKey: 'blueskyLocalLikes',
+      table: tableBlueskyLocalLike,
+      category: BackupCategory.blueskyLikes,
+      fromMap: BlueskyLocalLike.fromMap,
+    ),
+  ];
 
   @override
   Future<void> resetPreferences(BasePrefService prefs) async {

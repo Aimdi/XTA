@@ -4,6 +4,9 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/plugin_backup.dart';
+import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/stocks/stocks_screen.dart';
@@ -56,6 +59,16 @@ class StocksPlugin extends XtaPlugin {
 
   @override
   List<String> get tables => const [tableStockSubscription];
+
+  @override
+  List<PluginBackupSection> get backupSections => [
+    PluginBackupSection(
+      jsonKey: 'stockSubscriptions',
+      table: tableStockSubscription,
+      category: BackupCategory.stocks,
+      fromMap: StockSubscription.fromMap,
+    ),
+  ];
 
   @override
   Future<void> forgetLoadedData(BuildContext context) async {

@@ -6,6 +6,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/import_data_model.dart';
 import 'package:xta/settings/backup_data.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/backup_rows.dart';
 
 /// Tables a backup deliberately leaves out, and why.
@@ -40,6 +41,13 @@ Future<Set<String>> _tablesInSchema() async {
   return rows.map((row) => row['name'] as String).where((name) => !_isSqliteInternal(name)).toSet();
 }
 
+/// Plugin tables a backup deliberately skips.
+const _pluginTablesNotBackedUp = {
+  // "This media is already on Immich" — a note about a server the reader still
+  // has, not about anything they made here.
+  tableImmichUpload,
+};
+
 void main() {
   setUpAll(() async {
     sqfliteFfiInit();
@@ -56,15 +64,9 @@ void main() {
       SettingsData(
         searchSubscriptions: const [],
         userSubscriptions: const [],
-        substackSubscriptions: const [],
-        redditSubscriptions: const [],
-        stockSubscriptions: const [],
-        threadsSubscriptions: const [],
-        blueskySubscriptions: const [],
-        mastodonSubscriptions: const [],
-        redditLocalVotes: const [],
-        threadsLocalLikes: const [],
-        blueskyLocalLikes: const [],
+        // Derived from the plugin registry, not listed: that is the point of
+        // the sections — a new plugin's table is covered by declaring it.
+        pluginRows: {for (final section in pluginBackupSections()) section.jsonKey: const []},
         profileNotes: const [],
         antennas: const [],
         subscriptionGroups: const [],
@@ -92,6 +94,37 @@ void main() {
     );
   });
 
+  // The seam that stops the next plugin repeating the history above: a plugin
+  // declares the tables it owns for uninstall and footprint, and the backup now
+  // reads that same declaration. This asks that the two agree.
+  test('every table a plugin owns is either backed up or excused', () {
+    final backedUp = {for (final section in pluginBackupSections()) section.table};
+
+    final missing = <String>{};
+    for (final plugin in builtInPlugins) {
+      for (final table in plugin.tables) {
+        if (!backedUp.contains(table) && !_pluginTablesNotBackedUp.contains(table)) {
+          missing.add('${plugin.id}: $table');
+        }
+      }
+    }
+
+    expect(
+      missing,
+      isEmpty,
+      reason:
+          'These plugin tables have no backup section. Add a PluginBackupSection to the plugin, or '
+          'say why not in _pluginTablesNotBackedUp.',
+    );
+  });
+
+  test('no two sections claim the same key or table', () {
+    final sections = pluginBackupSections();
+
+    expect(sections.map((e) => e.jsonKey).toSet(), hasLength(sections.length));
+    expect(sections.map((e) => e.table).toSet(), hasLength(sections.length));
+  });
+
   // `ImportDataModel` logs a rejected insert and carries on, so a section whose
   // `toMap()` does not match its columns restores nothing and says nothing. A
   // JSON round trip cannot see that — only a real insert can.
@@ -99,13 +132,15 @@ void main() {
     final createdAt = DateTime.utc(2026, 1, 2, 3, 4, 5);
     final rows = backupTables(
       SettingsData(
-        stockSubscriptions: [StockSubscription(id: 'AAPL', symbol: 'AAPL', createdAt: createdAt, inFeed: true)],
-        threadsSubscriptions: [
-          ThreadsSubscription(id: 'reader', name: 'Reader', avatarUrl: null, createdAt: createdAt, inFeed: true),
-        ],
-        redditLocalVotes: [RedditLocalVote(id: 'abc123')],
-        threadsLocalLikes: [ThreadsLocalLike(id: 't_like_1')],
-        blueskyLocalLikes: [BlueskyLocalLike(id: 'at://did:plc:a/app.bsky.feed.post/1')],
+        pluginRows: {
+          'stockSubscriptions': [StockSubscription(id: 'AAPL', symbol: 'AAPL', createdAt: createdAt, inFeed: true)],
+          'threadsSubscriptions': [
+            ThreadsSubscription(id: 'reader', name: 'Reader', avatarUrl: null, createdAt: createdAt, inFeed: true),
+          ],
+          'redditLocalVotes': [RedditLocalVote(id: 'abc123')],
+          'threadsLocalLikes': [ThreadsLocalLike(id: 't_like_1')],
+          'blueskyLocalLikes': [BlueskyLocalLike(id: 'at://did:plc:a/app.bsky.feed.post/1')],
+        },
       ),
       includeReadPositions: false,
     );
