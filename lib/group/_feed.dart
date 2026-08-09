@@ -33,6 +33,7 @@ import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/group/feed_catch_up.dart';
+import 'package:xta/group/feed_first_page_action.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
 
@@ -205,7 +206,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (items == null || items.isEmpty) {
       return;
     }
-    _recordReadPosition(items);
+    _recordNewestOf(items);
   }
 
   CursorPagingController<String, MediaGridItem> get _mediaController =>
@@ -305,7 +306,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         metrics.pixels <= feedReadPositionTopThresholdPx) {
       final items = _feedController.items;
       if (items != null && items.isNotEmpty) {
-        _recordReadPosition(items);
+        _recordNewestOf(items);
       }
     }
     return false;
@@ -328,9 +329,16 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return position == null || position.pixels <= feedReadPositionTopThresholdPx;
   }
 
-  void _recordReadPosition(List<TweetChain> threads) {
-    final newest = newestRecordableChain(threads);
-    if (newest == null || newest.id == _lastRecordedChainId) {
+  /// Records the newest recordable chain of [chains], when there is one.
+  void _recordNewestOf(List<TweetChain> chains) {
+    final newest = newestRecordableChain(chains);
+    if (newest != null) {
+      _recordReadPosition(newest);
+    }
+  }
+
+  void _recordReadPosition(TweetChain newest) {
+    if (newest.id == _lastRecordedChainId) {
       return;
     }
     _lastRecordedChainId = newest.id;
@@ -344,17 +352,22 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   // recording; later ones (soft refreshes) record only while at the top, so
   // an app-bar refresh fired mid-scroll can't mark unseen posts as read.
   void _onFirstPageLoaded(List<TweetChain> threads) {
-    if (!_caughtUpRestoreEvaluated) {
-      _caughtUpRestoreEvaluated = true;
-      final sessionOffset = _usesCache ? _cache!.readOffset(widget.cacheKey!) : null;
-      final boundary = _lastSeen == null ? null : caughtUpBoundaryIndex(threads, _lastSeen!);
-      if (boundary != null && (sessionOffset == null || sessionOffset <= 0)) {
-        _scheduleCaughtUpRestore(boundary, threads.length);
-        return; // The newer posts haven't been seen yet — don't record.
-      }
-    }
-    if (_atTop) {
-      _recordReadPosition(threads);
+    final action = firstPageAction(
+      chains: threads,
+      lastSeen: _lastSeen,
+      caughtUpAlreadyEvaluated: _caughtUpRestoreEvaluated,
+      sessionOffset: _usesCache ? _cache!.readOffset(widget.cacheKey!) : null,
+      atTop: _atTop,
+    );
+    _caughtUpRestoreEvaluated = true;
+
+    switch (action) {
+      case RestoreToBoundary(:final index):
+        _scheduleCaughtUpRestore(index, threads.length);
+      case RecordPosition(:final chain):
+        _recordReadPosition(chain);
+      case DoNothing():
+        break;
     }
   }
 
