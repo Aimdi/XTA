@@ -26,9 +26,15 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
 
   Future<List<SubstackPublication>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(tableSubstackSubscription, orderBy: 'name COLLATE NOCASE');
+    final rows = await database.query(
+      tableSubstackSubscription,
+      orderBy: 'name COLLATE NOCASE',
+    );
 
-    return rows.map(SubstackSubscription.fromMap).map(publicationOf).toList(growable: false);
+    return rows
+        .map(SubstackSubscription.fromMap)
+        .map(publicationOf)
+        .toList(growable: false);
   }
 
   Future<void> _importFromPrefs() async {
@@ -62,9 +68,17 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
   Future<void> remove(String id) async {
     await execute(() async {
       final database = await Repository.writable();
-      await database.delete(tableSubstackSubscription, where: 'id = ?', whereArgs: [id]);
+      await database.delete(
+        tableSubstackSubscription,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
       // A publication that is gone should not linger as a member of a group.
-      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [id]);
+      await database.delete(
+        tableSubscriptionGroupMember,
+        where: 'profile_id = ?',
+        whereArgs: [id],
+      );
       return _read();
     });
   }
@@ -74,7 +88,8 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
 ///
 /// The plugin thinks in publications and the subscription tables think in
 /// subscriptions; these keep the two from having to know each other's shape.
-SubstackSubscription subscriptionOf(SubstackPublication publication) => SubstackSubscription(
+SubstackSubscription subscriptionOf(SubstackPublication publication) =>
+    SubstackSubscription(
       id: publication.id,
       baseUrl: publication.baseUrl,
       name: publication.name,
@@ -83,7 +98,8 @@ SubstackSubscription subscriptionOf(SubstackPublication publication) => Substack
       inFeed: true,
     );
 
-SubstackPublication publicationOf(SubstackSubscription subscription) => SubstackPublication(
+SubstackPublication publicationOf(SubstackSubscription subscription) =>
+    SubstackPublication(
       subdomain: subscription.id,
       baseUrl: subscription.baseUrl,
       name: subscription.name,
@@ -113,7 +129,9 @@ class SubstackReadStore extends Store<Set<String>> {
 
   /// Marks every id in [ids] as read (newest first in the capped list).
   Future<void> markAllRead(Iterable<String> ids) async {
-    final fresh = ids.where((id) => id.isNotEmpty && !state.contains(id)).toList();
+    final fresh = ids
+        .where((id) => id.isNotEmpty && !state.contains(id))
+        .toList();
     if (fresh.isEmpty) return;
     await execute(() async {
       final next = [...fresh, ...state];
@@ -133,7 +151,10 @@ class SubstackLikesStore extends Store<List<SubstackPost>> {
   SubstackLikesStore(this.prefs) : super(const []);
 
   Future<void> load() async {
-    await execute(() async => SubstackPost.listFromPrefs(prefs.get(optionPluginSubstackLikedPosts)));
+    await execute(
+      () async =>
+          SubstackPost.listFromPrefs(prefs.get(optionPluginSubstackLikedPosts)),
+    );
   }
 
   bool isLiked(String id) => state.any((p) => p.id == id);
@@ -145,7 +166,10 @@ class SubstackLikesStore extends Store<List<SubstackPost>> {
           ? state.where((p) => p.id != post.id).toList()
           : [post, ...state.where((p) => p.id != post.id)];
       final capped = next.take(substackLikedPostsCap).toList();
-      await prefs.set(optionPluginSubstackLikedPosts, SubstackPost.listToPrefs(capped));
+      await prefs.set(
+        optionPluginSubstackLikedPosts,
+        SubstackPost.listToPrefs(capped),
+      );
       return capped;
     });
   }
@@ -158,7 +182,10 @@ class SubstackSavedStore extends Store<List<SubstackPost>> {
   SubstackSavedStore(this.prefs) : super(const []);
 
   Future<void> load() async {
-    await execute(() async => SubstackPost.listFromPrefs(prefs.get(optionPluginSubstackSavedPosts)));
+    await execute(
+      () async =>
+          SubstackPost.listFromPrefs(prefs.get(optionPluginSubstackSavedPosts)),
+    );
   }
 
   bool isSaved(String id) => state.any((p) => p.id == id);
@@ -170,7 +197,10 @@ class SubstackSavedStore extends Store<List<SubstackPost>> {
           ? state.where((p) => p.id != post.id).toList()
           : [post, ...state.where((p) => p.id != post.id)];
       final capped = next.take(substackSavedPostsCap).toList();
-      await prefs.set(optionPluginSubstackSavedPosts, SubstackPost.listToPrefs(capped));
+      await prefs.set(
+        optionPluginSubstackSavedPosts,
+        SubstackPost.listToPrefs(capped),
+      );
       return capped;
     });
   }
@@ -185,7 +215,8 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   var _filter = SubstackFeedFilter.all;
   Set<String> _readIds = const {};
 
-  SubstackFeedStore(this.client, this.publications) : super(const SubstackFeedSnapshot());
+  SubstackFeedStore(this.client, this.publications)
+    : super(const SubstackFeedSnapshot());
 
   SubstackFeedFilter get filter => _filter;
 
@@ -206,13 +237,23 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   void setFilter(SubstackFeedFilter filter, Set<String> readIds) {
     _filter = filter;
     _readIds = readIds;
-    update(_snapshotFromCache(canLoadMore: state.canLoadMore, failedCount: state.failedCount));
+    update(
+      _snapshotFromCache(
+        canLoadMore: state.canLoadMore,
+        failedCount: state.failedCount,
+      ),
+    );
   }
 
   void syncReadIds(Set<String> readIds) {
     _readIds = readIds;
     if (_filter == SubstackFeedFilter.unread) {
-      update(_snapshotFromCache(canLoadMore: state.canLoadMore, failedCount: state.failedCount));
+      update(
+        _snapshotFromCache(
+          canLoadMore: state.canLoadMore,
+          failedCount: state.failedCount,
+        ),
+      );
     }
   }
 
@@ -223,18 +264,26 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       return const SubstackFeedSnapshot();
     }
 
-    final results = await Future.wait(pubs.map((p) async {
-      try {
-        final posts = await client.fetchPosts(p, limit: substackFeedPageSize, offset: _offset);
-        return (posts: posts, failed: false);
-      } catch (_) {
-        return (posts: const <SubstackPost>[], failed: true);
-      }
-    }));
+    final results = await Future.wait(
+      pubs.map((p) async {
+        try {
+          final posts = await client.fetchPosts(
+            p,
+            limit: substackFeedPageSize,
+            offset: _offset,
+          );
+          return (posts: posts, failed: false);
+        } catch (_) {
+          return (posts: const <SubstackPost>[], failed: true);
+        }
+      }),
+    );
 
     final pagePosts = results.expand((e) => e.posts).toList();
     final failedCount = results.where((e) => e.failed).length;
-    final canLoadMore = results.any((e) => e.posts.length >= substackFeedPageSize);
+    final canLoadMore = results.any(
+      (e) => e.posts.length >= substackFeedPageSize,
+    );
 
     _offset += substackFeedPageSize;
 
@@ -248,8 +297,13 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     );
   }
 
-  SubstackFeedSnapshot _snapshotFromCache({required bool canLoadMore, required int failedCount}) {
-    final visible = _allPosts.where((p) => postMatchesSubstackFilter(p, _filter, _readIds)).toList();
+  SubstackFeedSnapshot _snapshotFromCache({
+    required bool canLoadMore,
+    required int failedCount,
+  }) {
+    final visible = _allPosts
+        .where((p) => postMatchesSubstackFilter(p, _filter, _readIds))
+        .toList();
     return SubstackFeedSnapshot(
       posts: visible,
       canLoadMore: canLoadMore,
@@ -257,7 +311,10 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     );
   }
 
-  List<SubstackPost> _mergePosts(List<SubstackPost> existing, List<SubstackPost> incoming) {
+  List<SubstackPost> _mergePosts(
+    List<SubstackPost> existing,
+    List<SubstackPost> incoming,
+  ) {
     final seen = existing.map((e) => e.id).toSet();
     return [...existing, ...incoming.where((e) => !seen.contains(e.id))];
   }
@@ -270,8 +327,10 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
 
   var _notes = const <SubstackNote>[];
   String? _cursor;
+  var _hostIndex = 0;
 
-  SubstackNotesStore(this.client, this.publications) : super(const SubstackNotesPage());
+  SubstackNotesStore(this.client, this.publications)
+    : super(const SubstackNotesPage());
 
   Future<void> refresh() async {
     _notes = const [];
@@ -285,16 +344,30 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
   }
 
   Future<SubstackNotesPage> _fetch({required bool replace}) async {
-    final host = publications.state.firstOrNull?.baseUrl;
-    final hostName = host == null ? null : Uri.tryParse(host)?.host;
-    final page = await client.fetchReaderNotes(host: hostName, cursor: replace ? null : _cursor);
+    final hostName = _nextNotesHost();
+    final page = await client.fetchReaderNotes(
+      host: hostName,
+      cursor: replace ? null : _cursor,
+    );
     _cursor = page.nextCursor;
     final merged = replace ? page.notes : _mergeNotes(_notes, page.notes);
     _notes = merged;
     return SubstackNotesPage(notes: merged, nextCursor: page.nextCursor);
   }
 
-  List<SubstackNote> _mergeNotes(List<SubstackNote> existing, List<SubstackNote> incoming) {
+  /// Rotate among followed hosts so Notes discovery is not stuck on one pub.
+  String? _nextNotesHost() {
+    final pubs = publications.state;
+    if (pubs.isEmpty) return null;
+    final host = Uri.tryParse(pubs[_hostIndex % pubs.length].baseUrl)?.host;
+    _hostIndex = (_hostIndex + 1) % pubs.length;
+    return host;
+  }
+
+  List<SubstackNote> _mergeNotes(
+    List<SubstackNote> existing,
+    List<SubstackNote> incoming,
+  ) {
     final seen = existing.map((e) => e.id).toSet();
     return [...existing, ...incoming.where((e) => !seen.contains(e.id))];
   }
@@ -306,7 +379,8 @@ class SubstackArchiveStore extends Store<SubstackFeedSnapshot> {
 
   var _offset = 0;
 
-  SubstackArchiveStore(this.client, this.publication) : super(const SubstackFeedSnapshot());
+  SubstackArchiveStore(this.client, this.publication)
+    : super(const SubstackFeedSnapshot());
 
   Future<void> refresh() async {
     _offset = 0;
@@ -319,11 +393,18 @@ class SubstackArchiveStore extends Store<SubstackFeedSnapshot> {
   }
 
   Future<SubstackFeedSnapshot> _fetchPage({required bool replace}) async {
-    final page = await client.fetchPosts(publication, limit: substackFeedPageSize, offset: _offset);
+    final page = await client.fetchPosts(
+      publication,
+      limit: substackFeedPageSize,
+      offset: _offset,
+    );
     _offset += substackFeedPageSize;
     final posts = replace
         ? page
-        : [...state.posts, ...page.where((e) => !state.posts.any((p) => p.id == e.id))];
+        : [
+            ...state.posts,
+            ...page.where((e) => !state.posts.any((p) => p.id == e.id)),
+          ];
     return SubstackFeedSnapshot(
       posts: posts,
       canLoadMore: page.length >= substackFeedPageSize,

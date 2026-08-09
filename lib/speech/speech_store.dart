@@ -18,7 +18,9 @@ class SpeechPlayback {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SpeechPlayback && other.title == title && other.speaking == speaking;
+      other is SpeechPlayback &&
+          other.title == title &&
+          other.speaking == speaking;
 
   @override
   int get hashCode => Object.hash(title, speaking);
@@ -45,7 +47,9 @@ class SpeechStore extends Store<SpeechPlayback> {
   /// abandoned reading stops rather than talking over its successor.
   int _generation = 0;
 
-  SpeechStore({FlutterTts? tts}) : _tts = tts ?? FlutterTts(), super(SpeechPlayback.idle) {
+  SpeechStore({FlutterTts? tts})
+    : _tts = tts ?? FlutterTts(),
+      super(SpeechPlayback.idle) {
     _tts.awaitSpeakCompletion(true);
     _tts.setCancelHandler(_finished);
     _tts.setErrorHandler((_) => _finished());
@@ -61,12 +65,27 @@ class SpeechStore extends Store<SpeechPlayback> {
   }
 
   /// Reads [text] aloud, replacing whatever was being read.
-  Future<void> speak({required String title, required String text, required TtsChoice choice}) async {
+  ///
+  /// Returns false when there was nothing to say or the engine refused to
+  /// start — callers can nudge the reader toward voice settings.
+  Future<bool> speak({
+    required String title,
+    required String text,
+    required TtsChoice choice,
+  }) async {
     await stop();
 
     final chunks = chunkForSpeech(text);
     if (chunks.isEmpty) {
-      return;
+      return false;
+    }
+
+    try {
+      // Shared instance keeps Android from dropping the utterance when the
+      // activity is paused or another media session briefly takes focus.
+      await _tts.setSharedInstance(true);
+    } catch (_) {
+      // Desktop / older engines may not expose this.
     }
 
     await _applyVoice(choice);
@@ -77,21 +96,41 @@ class SpeechStore extends Store<SpeechPlayback> {
     // utterance, so stop is all it offers.
     audioHandler?.bindSession(
       title: title,
-      binding: (onPlay: null, onPause: null, onStop: () => stop(), onSeek: null),
+      binding: (
+        onPlay: null,
+        onPause: null,
+        onStop: () => stop(),
+        onSeek: null,
+      ),
     );
     audioHandler?.updateSession(playing: true);
     update(SpeechPlayback(title: title, speaking: true));
 
-    for (final chunk in chunks) {
-      if (generation != _generation) {
-        return;
+    try {
+      for (final chunk in chunks) {
+        if (generation != _generation) {
+          return true;
+        }
+        final result = await _tts.speak(chunk);
+        if (result == 0) {
+          // Platform reported failure to queue the utterance.
+          if (generation == _generation) {
+            _finished();
+          }
+          return false;
+        }
       }
-      await _tts.speak(chunk);
+    } catch (_) {
+      if (generation == _generation) {
+        _finished();
+      }
+      return false;
     }
 
     if (generation == _generation) {
       _finished();
     }
+    return true;
   }
 
   Future<void> stop() async {
@@ -127,7 +166,10 @@ String _languageForCurrentLocale() {
     'zh' => 'zh-CN',
     'nb' => 'nb-NO',
     'pt' => 'pt-BR',
-    _ => locale.contains('_') ? locale.replaceAll('_', '-') : '$locale-${locale.toUpperCase()}',
+    _ =>
+      locale.contains('_')
+          ? locale.replaceAll('_', '-')
+          : '$locale-${locale.toUpperCase()}',
   };
 }
 
@@ -154,7 +196,9 @@ List<String> chunkForSpeech(String text, {int maxChars = 3500}) {
         buffer.clear();
       }
       for (var i = 0; i < sentence.length; i += maxChars) {
-        chunks.add(sentence.substring(i, (i + maxChars).clamp(0, sentence.length)));
+        chunks.add(
+          sentence.substring(i, (i + maxChars).clamp(0, sentence.length)),
+        );
       }
       continue;
     }

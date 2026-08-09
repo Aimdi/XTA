@@ -19,12 +19,12 @@ class SubstackPublication {
   String get id => subdomain.toLowerCase();
 
   Map<String, dynamic> toJson() => {
-        'subdomain': subdomain,
-        'baseUrl': baseUrl,
-        'name': name,
-        'description': description,
-        'logoUrl': logoUrl,
-      };
+    'subdomain': subdomain,
+    'baseUrl': baseUrl,
+    'name': name,
+    'description': description,
+    'logoUrl': logoUrl,
+  };
 
   factory SubstackPublication.fromJson(Map<String, dynamic> json) {
     return SubstackPublication(
@@ -43,7 +43,9 @@ class SubstackPublication {
       if (decoded is! List) return const [];
       return decoded
           .whereType<Map>()
-          .map((e) => SubstackPublication.fromJson(Map<String, dynamic>.from(e)))
+          .map(
+            (e) => SubstackPublication.fromJson(Map<String, dynamic>.from(e)),
+          )
           .where((e) => e.subdomain.isNotEmpty && e.baseUrl.isNotEmpty)
           .toList();
     } catch (_) {
@@ -116,11 +118,15 @@ class SubstackPost {
 
   String? get excerpt {
     final subtitleText = subtitle?.trim();
-    if (subtitleText != null && subtitleText.isNotEmpty && subtitleText != '...') {
+    if (subtitleText != null &&
+        subtitleText.isNotEmpty &&
+        subtitleText != '...') {
       return subtitleText;
     }
     final descriptionText = description?.trim();
-    if (descriptionText != null && descriptionText.isNotEmpty && descriptionText != '...') {
+    if (descriptionText != null &&
+        descriptionText.isNotEmpty &&
+        descriptionText != '...') {
       return descriptionText;
     }
     return null;
@@ -160,9 +166,12 @@ class SubstackPost {
       type: json['type'] as String?,
       // Substack has moved this field around, so presence is what is checked
       // rather than any particular shape of it.
-      hasVideoUpload: json['videoUpload'] != null || json['video_upload'] != null,
+      hasVideoUpload:
+          json['videoUpload'] != null || json['video_upload'] != null,
       audioUrl: json['podcast_url'] as String?,
-      reactionCount: _countOf(json['reaction_count']) ?? _sumOfReactions(json['reactions']),
+      reactionCount:
+          _countOf(json['reaction_count']) ??
+          _sumOfReactions(json['reactions']),
       commentCount: _countOf(json['comment_count']),
       publicationBaseUrl: publicationBaseUrl,
       publicationName: publicationName,
@@ -191,31 +200,31 @@ class SubstackPost {
   bool get isVideo => hasVideoUpload || type?.toLowerCase() == 'video';
 
   SubstackPublication get publication => SubstackPublication(
-        subdomain: subdomainOf(Uri.parse(publicationBaseUrl)),
-        baseUrl: publicationBaseUrl,
-        name: publicationName,
-      );
+    subdomain: subdomainOf(Uri.parse(publicationBaseUrl)),
+    baseUrl: publicationBaseUrl,
+    name: publicationName,
+  );
 
   /// Snapshot for local likes/saves. Omits [bodyHtml] — the reader fetches it.
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'subtitle': subtitle,
-        'description': description,
-        'slug': slug,
-        'post_date': postDate,
-        'canonical_url': canonicalUrl,
-        'cover_image': coverImage,
-        'audience': audience,
-        'authorName': authorName,
-        'type': type,
-        'hasVideoUpload': hasVideoUpload,
-        'podcast_url': audioUrl,
-        'reaction_count': reactionCount,
-        'comment_count': commentCount,
-        'publicationBaseUrl': publicationBaseUrl,
-        'publicationName': publicationName,
-      };
+    'id': id,
+    'title': title,
+    'subtitle': subtitle,
+    'description': description,
+    'slug': slug,
+    'post_date': postDate,
+    'canonical_url': canonicalUrl,
+    'cover_image': coverImage,
+    'audience': audience,
+    'authorName': authorName,
+    'type': type,
+    'hasVideoUpload': hasVideoUpload,
+    'podcast_url': audioUrl,
+    'reaction_count': reactionCount,
+    'comment_count': commentCount,
+    'publicationBaseUrl': publicationBaseUrl,
+    'publicationName': publicationName,
+  };
 
   /// Rebuild from a local like/save snapshot (or a prefs list entry).
   factory SubstackPost.fromSnapshot(Map<String, dynamic> json) {
@@ -228,15 +237,21 @@ class SubstackPost {
       description: json['description'] as String?,
       slug: json['slug'] as String? ?? '',
       postDate: json['post_date'] as String? ?? json['postDate'] as String?,
-      canonicalUrl: json['canonical_url'] as String? ?? json['canonicalUrl'] as String?,
-      coverImage: json['cover_image'] as String? ?? json['coverImage'] as String?,
+      canonicalUrl:
+          json['canonical_url'] as String? ?? json['canonicalUrl'] as String?,
+      coverImage:
+          json['cover_image'] as String? ?? json['coverImage'] as String?,
       audience: json['audience'] as String?,
       authorName: json['authorName'] as String?,
       type: json['type'] as String?,
       hasVideoUpload: json['hasVideoUpload'] == true,
       audioUrl: json['podcast_url'] as String? ?? json['audioUrl'] as String?,
-      reactionCount: json['reaction_count'] is num ? (json['reaction_count'] as num).toInt() : null,
-      commentCount: json['comment_count'] is num ? (json['comment_count'] as num).toInt() : null,
+      reactionCount: json['reaction_count'] is num
+          ? (json['reaction_count'] as num).toInt()
+          : null,
+      commentCount: json['comment_count'] is num
+          ? (json['comment_count'] as num).toInt()
+          : null,
       publicationBaseUrl: base,
       publicationName: name,
     );
@@ -286,14 +301,13 @@ class SubstackFeedSnapshot {
 }
 
 /// Local filter on the merged Substack feed (inbox-style, no account needed).
-enum SubstackFeedFilter {
-  all,
-  unread,
-  free,
-  podcast,
-}
+enum SubstackFeedFilter { all, unread, free, podcast }
 
-bool postMatchesSubstackFilter(SubstackPost post, SubstackFeedFilter filter, Set<String> readIds) {
+bool postMatchesSubstackFilter(
+  SubstackPost post,
+  SubstackFeedFilter filter,
+  Set<String> readIds,
+) {
   return switch (filter) {
     SubstackFeedFilter.all => true,
     SubstackFeedFilter.unread => !readIds.contains(post.id),
@@ -330,8 +344,11 @@ class SubstackNote {
 
   factory SubstackNote.fromReaderItem(Map<String, dynamic> item) {
     final comment = item['comment'];
-    final commentMap = comment is Map ? Map<String, dynamic>.from(comment) : const <String, dynamic>{};
-    final pubRaw = item['publication'] ?? commentMap['user_primary_publication'];
+    final commentMap = comment is Map
+        ? Map<String, dynamic>.from(comment)
+        : const <String, dynamic>{};
+    final pubRaw =
+        item['publication'] ?? commentMap['user_primary_publication'];
     final pubMap = pubRaw is Map ? Map<String, dynamic>.from(pubRaw) : null;
     final handle = (commentMap['handle'] as String?)?.trim();
     final id = '${commentMap['id'] ?? item['entity_key'] ?? ''}';
@@ -355,7 +372,9 @@ class SubstackNote {
             ? 'https://$custom'
             : 'https://$subdomain.substack.com';
         publication = SubstackPublication(
-          subdomain: subdomain.isNotEmpty ? subdomain : subdomainOf(Uri.parse(base)),
+          subdomain: subdomain.isNotEmpty
+              ? subdomain
+              : subdomainOf(Uri.parse(base)),
           baseUrl: base,
           name: pubMap['name'] as String? ?? subdomain,
           logoUrl: pubMap['logo_url'] as String?,
@@ -374,7 +393,9 @@ class SubstackNote {
       authorHandle: handle,
       authorPhotoUrl: commentMap['photo_url'] as String?,
       at: DateTime.tryParse(commentMap['date'] as String? ?? '')?.toLocal(),
-      reactionCount: commentMap['reaction_count'] is num ? (commentMap['reaction_count'] as num).toInt() : null,
+      reactionCount: commentMap['reaction_count'] is num
+          ? (commentMap['reaction_count'] as num).toInt()
+          : null,
       imageUrl: imageUrl,
       url: notePath,
       publication: publication,
@@ -387,6 +408,72 @@ class SubstackNotesPage {
   final String? nextCursor;
 
   const SubstackNotesPage({this.notes = const [], this.nextCursor});
+}
+
+/// A Substack leaderboard category (`/api/v1/categories`).
+class SubstackCategory {
+  final int id;
+  final String name;
+  final String slug;
+
+  const SubstackCategory({
+    required this.id,
+    required this.name,
+    required this.slug,
+  });
+
+  factory SubstackCategory.fromJson(Map<String, dynamic> json) {
+    return SubstackCategory(
+      id: json['id'] is num ? (json['id'] as num).toInt() : 0,
+      name: (json['name'] as String?)?.trim() ?? '',
+      slug: (json['slug'] as String?)?.trim() ?? '',
+    );
+  }
+}
+
+/// Map a Substack API publication object (search / category / reader) into our model.
+SubstackPublication? publicationFromDiscoveryJson(Map<String, dynamic> json) {
+  final subdomain = (json['subdomain'] as String?)?.trim() ?? '';
+  final custom = (json['custom_domain'] as String?)?.trim();
+  final baseRaw =
+      (json['base_url'] as String?)?.trim() ??
+      (json['hostname'] as String?)?.trim();
+
+  if (subdomain.isEmpty &&
+      (custom == null || custom.isEmpty) &&
+      (baseRaw == null || baseRaw.isEmpty)) {
+    return null;
+  }
+
+  String baseUrl;
+  if (baseRaw != null && baseRaw.isNotEmpty) {
+    final parsed = Uri.tryParse(
+      baseRaw.contains('://') ? baseRaw : 'https://$baseRaw',
+    );
+    baseUrl = parsed != null && parsed.host.isNotEmpty
+        ? parsed.origin
+        : 'https://$baseRaw';
+  } else if (custom != null && custom.isNotEmpty) {
+    baseUrl = Uri(scheme: 'https', host: custom).origin;
+  } else {
+    baseUrl = 'https://$subdomain.substack.com';
+  }
+
+  final name = (json['name'] as String?)?.trim();
+  return SubstackPublication(
+    subdomain: subdomain.isNotEmpty
+        ? subdomain
+        : subdomainOf(Uri.parse(baseUrl)),
+    baseUrl: baseUrl,
+    name: (name != null && name.isNotEmpty)
+        ? name
+        : (subdomain.isNotEmpty ? subdomain : subdomainOf(Uri.parse(baseUrl))),
+    description:
+        (json['hero_text'] as String?)?.trim() ??
+        (json['copyright'] as String?)?.trim(),
+    logoUrl:
+        (json['logo_url'] as String?) ?? (json['logo_url_wide'] as String?),
+  );
 }
 
 /// Resolve a user-entered Substack handle or URL into a base publication URL.
@@ -468,7 +555,10 @@ class SubstackComment {
 /// The shape is a list of comments each carrying `children`; anything that no
 /// longer fits is skipped rather than thrown, in the same spirit as every
 /// other reverse-engineered payload here.
-List<SubstackComment> flattenSubstackComments(Object? json, {int maxDepth = 8}) {
+List<SubstackComment> flattenSubstackComments(
+  Object? json, {
+  int maxDepth = 8,
+}) {
   final out = <SubstackComment>[];
 
   void walk(Object? nodes, int depth) {
@@ -484,16 +574,21 @@ List<SubstackComment> flattenSubstackComments(Object? json, {int maxDepth = 8}) 
       // A deleted comment arrives with no body; its children survive and are
       // still worth showing where they sat.
       if (id.isNotEmpty && body != null && body.isNotEmpty) {
-        out.add(SubstackComment(
-          id: id,
-          body: body,
-          author: node['name'] as String?,
-          at: DateTime.tryParse(node['date'] as String? ?? '')?.toLocal(),
-          depth: depth,
-        ));
+        out.add(
+          SubstackComment(
+            id: id,
+            body: body,
+            author: node['name'] as String?,
+            at: DateTime.tryParse(node['date'] as String? ?? '')?.toLocal(),
+            depth: depth,
+          ),
+        );
       }
       if (depth < maxDepth) {
-        walk(node['children'], id.isEmpty || body == null || body.isEmpty ? depth : depth + 1);
+        walk(
+          node['children'],
+          id.isEmpty || body == null || body.isEmpty ? depth : depth + 1,
+        );
       }
     }
   }

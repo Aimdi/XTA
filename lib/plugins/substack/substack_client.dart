@@ -12,7 +12,8 @@ class SubstackClient {
 
   final http.Client httpClient;
 
-  SubstackClient({http.Client? httpClient}) : httpClient = httpClient ?? http.Client();
+  SubstackClient({http.Client? httpClient})
+    : httpClient = httpClient ?? http.Client();
 
   static const _ua =
       'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
@@ -21,7 +22,10 @@ class SubstackClient {
     try {
       final result = await _fetchPostMaps(base, limit: 1, offset: 0);
       if (result.posts.isNotEmpty) {
-        return publicationFromPostJson(result.posts.first, fallbackBase: result.base);
+        return publicationFromPostJson(
+          result.posts.first,
+          fallbackBase: result.base,
+        );
       }
     } catch (e) {
       log.info('JSON publication probe failed for $base: $e');
@@ -32,7 +36,9 @@ class SubstackClient {
       return SubstackPublication(
         subdomain: subdomainOf(base),
         baseUrl: base.origin,
-        name: (rss.title?.trim().isNotEmpty == true) ? rss.title!.trim() : subdomainOf(base),
+        name: (rss.title?.trim().isNotEmpty == true)
+            ? rss.title!.trim()
+            : subdomainOf(base),
         description: rss.description,
         logoUrl: rss.imageUrl,
       );
@@ -54,12 +60,14 @@ class SubstackClient {
     try {
       final result = await _fetchPostMaps(base, limit: limit, offset: offset);
       final posts = result.posts
-          .map((e) => SubstackPost.fromJson(
-                e,
-                publicationBaseUrl: publication.baseUrl,
-                publicationName: publication.name,
-                includeBody: false,
-              ))
+          .map(
+            (e) => SubstackPost.fromJson(
+              e,
+              publicationBaseUrl: publication.baseUrl,
+              publicationName: publication.name,
+              includeBody: false,
+            ),
+          )
           .where((e) => e.title.isNotEmpty && e.slug.isNotEmpty)
           .toList();
       if (posts.isNotEmpty || offset > 0) {
@@ -75,7 +83,10 @@ class SubstackClient {
     return (rss?.posts ?? const []).take(limit).toList(growable: false);
   }
 
-  Future<SubstackPost> fetchPost(SubstackPublication publication, String slug) async {
+  Future<SubstackPost> fetchPost(
+    SubstackPublication publication,
+    String slug,
+  ) async {
     final base = Uri.parse(publication.baseUrl);
     final uri = base.replace(path: '/api/v1/posts/$slug');
     try {
@@ -102,28 +113,41 @@ class SubstackClient {
     throw SubstackClientException('Post not found: $slug');
   }
 
-  Future<_PostsResult> _fetchPostMaps(Uri base, {required int limit, required int offset}) async {
-    final uri = base.replace(path: '/api/v1/posts', queryParameters: {
-      'limit': '$limit',
-      'offset': '$offset',
-    });
+  Future<_PostsResult> _fetchPostMaps(
+    Uri base, {
+    required int limit,
+    required int offset,
+  }) async {
+    final uri = base.replace(
+      path: '/api/v1/posts',
+      queryParameters: {'limit': '$limit', 'offset': '$offset'},
+    );
     final response = await _get(uri);
     final effectiveBase = _effectiveBase(response, base);
     final decoded = jsonDecode(response.body);
     if (decoded is! List) {
       return _PostsResult(base: effectiveBase, posts: const []);
     }
-    final posts = decoded.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList();
+    final posts = decoded
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     return _PostsResult(base: effectiveBase, posts: posts);
   }
 
-  Future<SubstackRssChannel?> _fetchRss(Uri base, {SubstackPublication? publication}) async {
+  Future<SubstackRssChannel?> _fetchRss(
+    Uri base, {
+    SubstackPublication? publication,
+  }) async {
     final uri = base.replace(path: '/feed', queryParameters: {});
     try {
-      final response = await httpClient.get(uri, headers: {
-        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
-        'User-Agent': _ua,
-      });
+      final response = await httpClient.get(
+        uri,
+        headers: {
+          'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+          'User-Agent': _ua,
+        },
+      );
       if (response.statusCode != 200) return null;
       final body = utf8.decode(response.bodyBytes);
       if (!body.contains('<rss') && !body.contains('<feed')) return null;
@@ -140,12 +164,15 @@ class SubstackClient {
 
   /// The discussion under a post, in reading order. An unreadable payload is
   /// an empty discussion rather than an error — the article is already shown.
-  Future<List<SubstackComment>> fetchComments(SubstackPublication publication, String postId) async {
+  Future<List<SubstackComment>> fetchComments(
+    SubstackPublication publication,
+    String postId,
+  ) async {
     final base = Uri.parse(publication.baseUrl);
-    final uri = base.replace(path: '/api/v1/post/$postId/comments', queryParameters: {
-      'all_comments': 'true',
-      'sort': 'best_first',
-    });
+    final uri = base.replace(
+      path: '/api/v1/post/$postId/comments',
+      queryParameters: {'all_comments': 'true', 'sort': 'best_first'},
+    );
     try {
       final response = await _get(uri);
       return flattenSubstackComments(jsonDecode(response.body));
@@ -157,14 +184,21 @@ class SubstackClient {
   }
 
   /// Posts matching [query] in the publication's archive, newest first.
-  Future<List<SubstackPost>> searchPosts(SubstackPublication publication, String query, {int limit = 25}) async {
+  Future<List<SubstackPost>> searchPosts(
+    SubstackPublication publication,
+    String query, {
+    int limit = 25,
+  }) async {
     final base = Uri.parse(publication.baseUrl);
-    final uri = base.replace(path: '/api/v1/archive', queryParameters: {
-      'sort': 'new',
-      'search': query,
-      'limit': '$limit',
-      'offset': '0',
-    });
+    final uri = base.replace(
+      path: '/api/v1/archive',
+      queryParameters: {
+        'sort': 'new',
+        'search': query,
+        'limit': '$limit',
+        'offset': '0',
+      },
+    );
     final response = await _get(uri);
     final decoded = jsonDecode(response.body);
     if (decoded is! List) {
@@ -172,8 +206,14 @@ class SubstackClient {
     }
     return decoded
         .whereType<Map>()
-        .map((e) => SubstackPost.fromJson(Map<String, dynamic>.from(e),
-            publicationBaseUrl: publication.baseUrl, publicationName: publication.name, includeBody: false))
+        .map(
+          (e) => SubstackPost.fromJson(
+            Map<String, dynamic>.from(e),
+            publicationBaseUrl: publication.baseUrl,
+            publicationName: publication.name,
+            includeBody: false,
+          ),
+        )
         .where((post) => post.title.isNotEmpty && post.slug.isNotEmpty)
         .toList();
   }
@@ -187,7 +227,7 @@ class SubstackClient {
     String? cursor,
     int limit = 20,
   }) async {
-    final baseHost = (host == null || host.isEmpty) ? 'astralcodexten.substack.com' : host;
+    final baseHost = (host == null || host.isEmpty) ? 'substack.com' : host;
     final uri = Uri.https(baseHost, '/api/v1/reader/feed', {
       'limit': '$limit',
       if (cursor != null && cursor.isNotEmpty) 'cursor': cursor,
@@ -202,7 +242,9 @@ class SubstackClient {
     final notes = <SubstackNote>[];
     if (items is List) {
       for (final item in items.whereType<Map>()) {
-        final note = SubstackNote.fromReaderItem(Map<String, dynamic>.from(item));
+        final note = SubstackNote.fromReaderItem(
+          Map<String, dynamic>.from(item),
+        );
         if (note.id.isNotEmpty && note.body.isNotEmpty) notes.add(note);
       }
     }
@@ -212,11 +254,108 @@ class SubstackClient {
     );
   }
 
-  Future<http.Response> _get(Uri uri) async {
-    final response = await httpClient.get(uri, headers: {
-      'Accept': 'application/json',
-      'User-Agent': _ua,
+  /// Type-ahead publication search on substack.com.
+  ///
+  /// Some networks soft-empty this endpoint; [discoverPublications] pairs it
+  /// with a slug probe so a typed handle still resolves.
+  Future<List<SubstackPublication>> searchPublications(
+    String query, {
+    int page = 0,
+  }) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return const [];
+
+    final uri = Uri.https('substack.com', '/api/v1/publication/search', {
+      'query': trimmed,
+      'page': '$page',
     });
+    final response = await _get(uri);
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map) return const [];
+    final results = decoded['results'];
+    if (results is! List) return const [];
+    return results
+        .whereType<Map>()
+        .map((e) => publicationFromDiscoveryJson(Map<String, dynamic>.from(e)))
+        .whereType<SubstackPublication>()
+        .where((p) => p.subdomain.isNotEmpty && p.baseUrl.isNotEmpty)
+        .toList();
+  }
+
+  /// Search plus handle/URL probe — what the Discover sheet actually calls.
+  Future<List<SubstackPublication>> discoverPublications(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return const [];
+
+    List<SubstackPublication> searched = const [];
+    try {
+      searched = await searchPublications(trimmed);
+    } catch (e) {
+      log.info('Publication search failed: $e');
+    }
+    if (searched.isNotEmpty) return searched;
+
+    final base = resolveSubstackBase(trimmed);
+    if (base == null) return const [];
+
+    // Multi-word queries are unlikely to be a subdomain; skip the probe.
+    if (trimmed.contains(' ') &&
+        !trimmed.contains('.') &&
+        !trimmed.contains('/')) {
+      return const [];
+    }
+
+    try {
+      return [await fetchPublication(base)];
+    } catch (e) {
+      log.info('Slug probe failed for $base: $e');
+      return const [];
+    }
+  }
+
+  Future<List<SubstackCategory>> fetchCategories() async {
+    final uri = Uri.https('substack.com', '/api/v1/categories');
+    final response = await _get(uri);
+    final decoded = jsonDecode(response.body);
+    if (decoded is! List) return const [];
+    return decoded
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .where((e) => e['parent_tag_id'] == null && e['deprecated'] != true)
+        .map(SubstackCategory.fromJson)
+        .where((c) => c.id > 0 && c.name.isNotEmpty)
+        .toList();
+  }
+
+  /// Leaderboard / browse list for a category (`all` ≈ top free+paid mix).
+  Future<List<SubstackPublication>> fetchCategoryPublications(
+    int categoryId, {
+    String tier = 'all',
+    int page = 0,
+  }) async {
+    final uri = Uri.https(
+      'substack.com',
+      '/api/v1/category/public/$categoryId/$tier',
+      {'page': '$page'},
+    );
+    final response = await _get(uri);
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map) return const [];
+    final pubs = decoded['publications'];
+    if (pubs is! List) return const [];
+    return pubs
+        .whereType<Map>()
+        .map((e) => publicationFromDiscoveryJson(Map<String, dynamic>.from(e)))
+        .whereType<SubstackPublication>()
+        .where((p) => p.subdomain.isNotEmpty && p.baseUrl.isNotEmpty)
+        .toList();
+  }
+
+  Future<http.Response> _get(Uri uri) async {
+    final response = await httpClient.get(
+      uri,
+      headers: {'Accept': 'application/json', 'User-Agent': _ua},
+    );
     if (response.statusCode != 200) {
       throw SubstackClientException('HTTP ${response.statusCode} loading $uri');
     }
@@ -237,7 +376,10 @@ class _PostsResult {
   const _PostsResult({required this.base, required this.posts});
 }
 
-SubstackPublication publicationFromPostJson(Map<String, dynamic> post, {required Uri fallbackBase}) {
+SubstackPublication publicationFromPostJson(
+  Map<String, dynamic> post, {
+  required Uri fallbackBase,
+}) {
   final bylines = post['publishedBylines'];
   Map<String, dynamic>? publication;
   if (bylines is List && bylines.isNotEmpty) {
@@ -251,11 +393,14 @@ SubstackPublication publicationFromPostJson(Map<String, dynamic> post, {required
     }
   }
 
-  final subdomain = publication?['subdomain'] as String? ?? subdomainOf(fallbackBase);
+  final subdomain =
+      publication?['subdomain'] as String? ?? subdomainOf(fallbackBase);
   final custom = publication?['custom_domain'] as String?;
   final baseUrl = custom != null && custom.isNotEmpty
       ? Uri(scheme: 'https', host: custom).origin
-      : (publication != null ? 'https://$subdomain.substack.com' : fallbackBase.origin);
+      : (publication != null
+            ? 'https://$subdomain.substack.com'
+            : fallbackBase.origin);
 
   return SubstackPublication(
     subdomain: subdomain,
