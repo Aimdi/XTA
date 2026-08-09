@@ -45,11 +45,14 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
     super.dispose();
   }
 
-  Future<void> _loadHome() async {
+  Future<void> _loadHome({bool force = false}) async {
     final likes = context.read<BlueskyLikesStore>();
     final feed = context.read<BlueskyFeedStore>();
     await likes.load();
-    await feed.refresh();
+    // The pull is the reader asking for new posts, so it has to get past the
+    // ten-minute per-account cache — without this the spinner ran and nothing
+    // was refetched.
+    await feed.refresh(force: force);
   }
 
   Future<void> _searchPeople() async {
@@ -142,7 +145,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
                 children: [
                   _HomePane(
                     scrollController: widget.scrollController,
-                    onRefresh: _loadHome,
+                    onRefresh: () => _loadHome(force: true),
                   ),
                   _LikedPane(
                     scrollController: _likedScrollController,
@@ -261,17 +264,34 @@ class _HomePane extends StatelessWidget {
 
   Widget _feed(BuildContext context, L10n l10n, List<BlueskyPost> posts) {
     if (posts.isEmpty) {
+      // Scrollable and refreshable even when empty: with more follows than one
+      // load's budget, an empty first batch is exactly when the reader needs
+      // the pull — and the note that says more accounts are still to come used
+      // to be hidden in precisely that state.
       return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
         store: context.read<BlueskyAccountsStore>(),
-        onState: (context, accounts) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Text(
-              accounts.isEmpty ? l10n.plugin_bluesky_empty : l10n.plugin_bluesky_no_posts,
-              textAlign: TextAlign.center,
+        onState: (context, accounts) {
+          final pending = context.read<BlueskyFeedStore>().pending(
+            accounts.map((e) => e.actor).toList(growable: false),
+          );
+
+          return RefreshIndicator(
+            onRefresh: onRefresh,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                if (pending > 0) _PendingAccountsNote(pending: pending),
+                Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(
+                    accounts.isEmpty ? l10n.plugin_bluesky_empty : l10n.plugin_bluesky_no_posts,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
+          );
+        },
       );
     }
 

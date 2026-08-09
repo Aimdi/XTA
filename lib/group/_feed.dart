@@ -170,9 +170,11 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
     final items = await source.interleavedPosts(context, ids);
     // Assigned whatever came back, empty included: a member taken out of the
-    // group has to take its posts with it, and keeping the old ones on an empty
-    // result would leave them there for good.
-    if (mounted) {
+    // group has to take its posts with it. But an empty answer replacing an
+    // already-empty slot is not a change, and each source lands on its own
+    // frame — without this guard a group with no plugin members still took one
+    // whole-list rebuild per registered source. Same guard as the For-you feed.
+    if (mounted && (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
       setState(() {
         _pluginItems[source] = items;
         _mergeInterleaved();

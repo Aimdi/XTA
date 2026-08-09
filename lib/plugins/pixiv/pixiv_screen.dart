@@ -349,10 +349,16 @@ class _PixivScreenState extends State<PixivScreen>
       },
       onState: (context, illusts) {
         if (illusts.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Text(empty, textAlign: TextAlign.center),
+          // Refreshable even when empty: re-selecting the tab does not reload,
+          // so a transient empty page used to strand the reader with no
+          // gesture that asks again.
+          return RefreshIndicator(
+            onRefresh: store.refresh,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                Padding(padding: const EdgeInsets.all(32), child: Text(empty, textAlign: TextAlign.center)),
+              ],
             ),
           );
         }

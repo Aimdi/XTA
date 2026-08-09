@@ -147,6 +147,34 @@ void main() {
       expect(asked, 1);
     });
 
+    // Latent data-loss: under forceRefresh the cache read is skipped, so a key
+    // past the fetch budget returned nothing even though the cache held fresh
+    // posts — a pull-to-refresh with more follows than the cap would collapse
+    // the timeline to the first batch.
+    test('a forced refresh past the budget keeps what the cache holds', () async {
+      final cache = _cache();
+      Future<List<_Post>> fetch(String key) async => [(from: key, at: _at(1))];
+
+      await cache.merge(['a', 'b'], fetch);
+      final refreshed = await cache.merge(['a', 'b'], fetch, forceRefresh: true, maxFetches: 1);
+
+      expect(refreshed.map((e) => e.from).toSet(), {'a', 'b'});
+    });
+
+    test('a forced refresh still refetches inside the budget', () async {
+      final cache = _cache();
+      var asked = 0;
+      Future<List<_Post>> fetch(String key) async {
+        asked++;
+        return [(from: key, at: _at(1))];
+      }
+
+      await cache.merge(['a'], fetch);
+      await cache.merge(['a'], fetch, forceRefresh: true, maxFetches: 1);
+
+      expect(asked, 2);
+    });
+
     test('pendingCount is what the cache cannot answer yet', () async {
       final cache = _cache();
       await cache.merge(['a'], (key) async => [(from: key, at: _at(1))]);

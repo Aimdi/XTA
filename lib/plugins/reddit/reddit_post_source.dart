@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -176,6 +177,10 @@ class RedditPostSource {
     ).whenComplete(() => _pendingUserToken = null);
   }
 
+  /// The token mint, reachable by a test without a live listing around it.
+  @visibleForTesting
+  Future<String?> userAccessTokenForTest() => _userAccessToken(preferPublic: false);
+
   Future<String?> _mintUserToken(String refreshToken) async {
     final clientId = prefs.get<String>(optionPluginRedditClientId) ?? '';
 
@@ -189,10 +194,14 @@ class RedditPostSource {
       _userTokenExpiry = _now().add(kRedditUserTokenTtl);
 
       return token;
-    } on RedditException {
-      // A refresh token Reddit no longer accepts means the session is over, so
-      // it is dropped and the read falls back to the public route.
-      await prefs.set(optionPluginRedditRefreshToken, '');
+    } on RedditException catch (e) {
+      // Only Reddit refusing the grant means the session is over. Every other
+      // failure — offline, a 500, a rate limit, a block page — used to land
+      // here too and wipe the stored refresh token, so being offline at the
+      // wrong moment signed the reader out for good, with nothing to say why.
+      if (e.kind == RedditErrorKind.unauthorized) {
+        await prefs.set(optionPluginRedditRefreshToken, '');
+      }
 
       return null;
     }

@@ -272,6 +272,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   @override
   void didChangeDependencies() {
+    _collapseBoosts = null;
     super.didChangeDependencies();
     // Only feeds that support pull-to-refresh expose their refresh to the
     // app-bar button. Outside a GroupFeedShell there is no controller to bind.
@@ -339,10 +340,17 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         isPinned: chain.isPinned);
   }
 
+  /// The collapse-reposts preference, cached for this State's lifetime and
+  /// re-read when dependencies change so a settings flip still lands.
+  bool? _collapseBoosts;
+
   Widget _buildChainAt(BuildContext context, List<TweetChain> loaded, int index) {
     // A reader who wants their reposts as posts should not have to expand every
-    // run of them, one at a time, for the rest of the feed.
-    if (PrefService.of(context, listen: false).get<bool>(optionFeedCollapseBoosts) == false) {
+    // run of them, one at a time, for the rest of the feed. Read once per
+    // build pass, not once per item: this ran for every tile on every frame of
+    // a fling.
+    _collapseBoosts ??= PrefService.of(context, listen: false).get<bool>(optionFeedCollapseBoosts) != false;
+    if (!_collapseBoosts!) {
       return _buildChain(context, loaded[index]);
     }
 
@@ -452,8 +460,23 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   // A group can hold nothing but subreddits or publications, and a catch-up
   // feed with nothing new holds no chains at all. Neither is "no posts", so the
   // empty message is the last resort rather than the first.
+  // The pagination package renders this in a SliverFillRemaining that is
+  // exactly one viewport tall, which cannot scroll — and a RefreshIndicator
+  // that cannot scroll cannot be pulled. The same bug was fixed one aisle over
+  // in _interleavedOnlyList; this is the plain-empty twin.
   Widget _buildEmpty(BuildContext context, Widget? endCard) =>
-      endCard ?? Center(child: Text(widget.emptyMessage));
+      endCard ??
+      LayoutBuilder(
+        builder: (context, constraints) => ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: constraints.hasBoundedHeight ? constraints.maxHeight : 200,
+              child: Center(child: Text(widget.emptyMessage)),
+            ),
+          ],
+        ),
+      );
 
   /// The list a feed shows when every post in it came from a plugin.
   ///

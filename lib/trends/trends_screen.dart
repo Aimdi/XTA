@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/trends/_list.dart';
@@ -20,6 +21,16 @@ class _TrendsScreenState extends State<TrendsScreen> with AutomaticKeepAliveClie
   bool get wantKeepAlive => true;
   final TextEditingController _queryController = TextEditingController();
 
+  /// One meaning for the magnifier and the keyboard's search key. An empty
+  /// query focuses the field instead of opening a search for nothing.
+  void _submit(BuildContext context, String query) {
+    if (query.trim().isEmpty) {
+      widget.focusNode.requestFocus();
+      return;
+    }
+    Navigator.pushNamed(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: false, query: query));
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -28,23 +39,22 @@ class _TrendsScreenState extends State<TrendsScreen> with AutomaticKeepAliveClie
       appBar: AppBar(
         automaticallyImplyLeading: false,
         flexibleSpace: Padding(
-          padding: EdgeInsets.fromLTRB(8, 36, 8, 8),
+          // flexibleSpace is not inset for the status bar; the hardcoded 36 it
+          // had rode under taller ones.
+          padding: EdgeInsets.fromLTRB(8, MediaQuery.paddingOf(context).top + 4, 8, 8),
           child: SearchBar(
             controller: _queryController,
             focusNode: widget.focusNode,
             textInputAction: TextInputAction.search,
-            leading: IconButton(icon: const Icon(Icons.search), onPressed: () => {}),
-            onSubmitted: (query) {
-              Navigator.pushNamed(
-                context,
-                routeSearch,
-                arguments: SearchArguments(
-                  0,
-                  focusInputOnOpen: false,
-                  query: query,
-                ),
-              );
-            },
+            // The magnifier used to be a dead 48dp target (`() => {}` — a no-op
+            // that also ate the tap meant for the field). It now does what the
+            // keyboard's search key does.
+            leading: IconButton(
+              icon: const Icon(Icons.search),
+              tooltip: L10n.of(context).search,
+              onPressed: () => _submit(context, _queryController.text),
+            ),
+            onSubmitted: (query) => _submit(context, query),
           ),
         ),
         bottom: TrendsTabBar(),

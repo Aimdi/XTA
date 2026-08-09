@@ -113,11 +113,30 @@ class RedditAuth {
     if (response.statusCode == 401) {
       throw const RedditException(RedditErrorKind.unauthorized, 'Reddit rejected the client id');
     }
+
+    // A body that is not JSON is a block page, not a verdict on the token; it
+    // used to escape as a raw FormatException that nothing typed could catch.
+    Object? decoded;
+    try {
+      decoded = jsonDecode(response.body);
+    } on FormatException {
+      decoded = null;
+    }
+
+    // Reddit reports a revoked refresh token as invalid_grant — on a 400, and
+    // sometimes a 200, rather than a 401. That, unlike any other status here,
+    // genuinely means the session is over, so it is read before the status is.
+    if (decoded is Map && decoded['error'] == 'invalid_grant') {
+      throw const RedditException(RedditErrorKind.unauthorized, 'Reddit no longer accepts this session');
+    }
+
     if (response.statusCode != 200) {
       throw RedditException(RedditErrorKind.badResponse, 'HTTP ${response.statusCode} from the token endpoint');
     }
+    if (decoded == null) {
+      throw RedditException(RedditErrorKind.badResponse, 'The token endpoint answered with something that is not JSON');
+    }
 
-    final decoded = jsonDecode(response.body);
     final value = decoded is Map ? decoded[want] : null;
     if (value is! String || value.isEmpty) {
       throw RedditException(RedditErrorKind.badResponse, 'No $want in the token response');

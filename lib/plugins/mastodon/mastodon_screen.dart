@@ -104,22 +104,32 @@ class _MastodonScreenState extends State<MastodonScreen> {
 
   Widget _feed(BuildContext context, L10n l10n, List<MastodonPost> posts) {
     if (posts.isEmpty) {
+      // Scrollable and refreshable even when empty: an empty batch from
+      // half-down instances is exactly when the reader reaches for the pull,
+      // and this used to be a static screen with no gesture on it at all.
       return ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
         store: context.read<MastodonAccountsStore>(),
-        onState: (context, accounts) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Text(
-              accounts.isEmpty ? l10n.plugin_mastodon_empty : l10n.plugin_mastodon_no_posts,
-              textAlign: TextAlign.center,
-            ),
+        onState: (context, accounts) => RefreshIndicator(
+          onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(32),
+                child: Text(
+                  accounts.isEmpty ? l10n.plugin_mastodon_empty : l10n.plugin_mastodon_no_posts,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
           ),
         ),
       );
     }
 
     return RefreshIndicator(
-      onRefresh: () => context.read<MastodonFeedStore>().refresh(),
+      // Past the ten-minute per-account cache: the pull is the reader asking.
+      onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
       child: ListView.builder(
         controller: widget.scrollController,
         itemCount: posts.length,

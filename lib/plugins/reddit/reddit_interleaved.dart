@@ -50,9 +50,18 @@ Future<List<InterleavedItem>> loadRedditInterleaved(
   }
 
   final source = context.read<RedditFeedStore>().source;
-  final posts = await source.posts(subreddits, limit: limit, forceRefresh: forceRefresh);
+  // A failure returns nothing rather than throwing, as [SubscriptionSource]
+  // requires: this was the one source whose errors could escape into the
+  // timeline's unawaited plugin load, taking every Reddit post silently with
+  // them. Per-subreddit isolation lives in the source; this catches what sits
+  // outside it, like the sign-in refresh.
+  try {
+    final posts = await source.posts(subreddits, limit: limit, forceRefresh: forceRefresh);
 
-  return redditInterleavedItems(posts);
+    return redditInterleavedItems(posts);
+  } catch (_) {
+    return const [];
+  }
 }
 
 /// Posts as dated items, each wearing the Reddit provenance accent so a mixed

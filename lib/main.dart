@@ -396,8 +396,13 @@ Future<void> main() async {
     yield LicenseEntryWithLineBreaks(const ['Inter'], license);
   });
 
-  MediaKit.ensureInitialized();
-  await initXtaAudio();
+  // Neither belongs in front of the first frame. MediaKit is dlopen'ing
+  // libmpv — it is initialised in the post-frame callback below, and this
+  // eager twin quietly made that deferral a no-op. The audio service is an
+  // Android service bind nothing on the launch path reads: every consumer is
+  // `audioHandler?.`-guarded, so a handler that arrives a moment later is
+  // already a supported state.
+  unawaited(initXtaAudio());
 
   setTimeagoLocales();
 

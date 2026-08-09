@@ -13,26 +13,76 @@ library;
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 
+/// How many posts' answers are kept before the oldest is let go. A session's
+/// worth of scrolling, not the app's lifetime: this map used to grow without
+/// bound.
+const int kRedditGalleryCacheCap = 200;
+
+/// How many times an empty answer is re-asked before it is taken as final.
+///
+/// An empty answer is also what every refusal looks like — fetchGalleryImages
+/// never throws — so taking the first one as final meant one rate-limited
+/// moment hid that gallery for the rest of the app's life. A couple of retries
+/// lets it recover; a bound keeps a genuine non-gallery from being asked again
+/// on every scroll-past.
+const int kRedditGalleryEmptyRetries = 3;
+
 class RedditGalleryLoader {
   final RedditClient client;
 
   RedditGalleryLoader(this.client);
 
-  final Map<String, Future<List<String>>> _byPermalink = {};
+  /// Answers by permalink, insertion-ordered so eviction drops the oldest.
+  final Map<String, List<String>> _known = {};
 
-  /// The gallery's pictures, fetched at most once per post.
-  Future<List<String>> images(String permalink) => _byPermalink[permalink] ??= client.fetchGalleryImages(permalink);
+  /// In-flight fetches, so two cards for the same post share one request.
+  final Map<String, Future<List<String>>> _inFlight = {};
+
+  /// How often a permalink has answered empty, for the retry bound.
+  final Map<String, int> _emptyAnswers = {};
+
+  int get size => _known.length;
+
+  /// The gallery's pictures — from memory, from a fetch already in flight, or
+  /// freshly asked for.
+  Future<List<String>> images(String permalink) {
+    final known = _known[permalink];
+    if (known != null && (known.isNotEmpty || (_emptyAnswers[permalink] ?? 0) >= kRedditGalleryEmptyRetries)) {
+      return Future.value(known);
+    }
+
+    // Cleanup rides on `.then`, not `whenComplete`: a whenComplete future
+    // stored in a map whose callback removes its own key never completes here
+    // (probed empirically — an empty callback, another key, or a field all
+    // behave; the self-remove alone hangs its awaiters).
+    return _inFlight[permalink] ??= _fetch(permalink).then((images) {
+      _inFlight.remove(permalink);
+      return images;
+    });
+  }
+
+  Future<List<String>> _fetch(String permalink) async {
+    final images = await client.fetchGalleryImages(permalink);
+    if (images.isEmpty) {
+      _emptyAnswers[permalink] = (_emptyAnswers[permalink] ?? 0) + 1;
+    } else {
+      _emptyAnswers.remove(permalink);
+    }
+
+    _known.remove(permalink);
+    _known[permalink] = images;
+    while (_known.length > kRedditGalleryCacheCap) {
+      _known.remove(_known.keys.first);
+    }
+
+    return images;
+  }
 
   /// What is already known, without asking for anything.
   ///
   /// Lets a rebuild draw the pictures it already has instead of flashing the
   /// link card again while the same future resolves a second time.
   List<String>? known(String permalink) => _known[permalink];
-
-  final Map<String, List<String>> _known = {};
-
-  /// Remembers a resolved answer so [known] can serve it.
-  void remember(String permalink, List<String> images) => _known[permalink] = images;
 }
 
 /// Draws [whenLoaded] once the gallery's pictures arrive, and [placeholder]
@@ -61,16 +111,32 @@ class _RedditGalleryImagesState extends State<RedditGalleryImages> {
   @override
   void initState() {
     super.initState();
+    _start();
+  }
+
+  /// A list without keys reuses this element for a different post: without
+  /// this, the card kept drawing the previous post's album under the new one.
+  @override
+  void didUpdateWidget(RedditGalleryImages oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.permalink != widget.permalink) {
+      _images = null;
+      _start();
+    }
+  }
+
+  void _start() {
     _images = widget.loader.known(widget.permalink);
-    if (_images == null) {
+    if (_images == null || _images!.isEmpty) {
       _load();
     }
   }
 
   Future<void> _load() async {
-    final images = await widget.loader.images(widget.permalink);
-    widget.loader.remember(widget.permalink, images);
-    if (mounted) {
+    final asked = widget.permalink;
+    final images = await widget.loader.images(asked);
+    // The answer may arrive after the element moved on to another post.
+    if (mounted && widget.permalink == asked) {
       setState(() => _images = images);
     }
   }

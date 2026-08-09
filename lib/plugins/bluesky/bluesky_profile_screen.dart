@@ -104,11 +104,24 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
         _loadingMore = false;
       });
     } catch (_) {
+      // Stop, don't strobe: the cursor stays set on failure, and the scroll
+      // listener refires _loadMore on every notification — so one 429 became a
+      // stream of failing requests against a rate-limited host, invisible to
+      // the reader. Backing off until the next real scroll gesture ends the
+      // loop; the next deliberate scroll tries again.
       if (mounted) {
-        setState(() => _loadingMore = false);
+        setState(() {
+          _loadingMore = false;
+          _loadMoreBackedOff = true;
+        });
       }
     }
   }
+
+  /// Set when the last next-page fetch failed, cleared by a fresh user scroll,
+  /// so a failing endpoint is asked once per gesture rather than once per
+  /// scroll notification.
+  bool _loadMoreBackedOff = false;
 
   Future<void> _toggleFollow(BlueskyProfile profile) async {
     final accounts = context.read<BlueskyAccountsStore>();
@@ -163,8 +176,12 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
+        if (notification is UserScrollNotification) {
+          _loadMoreBackedOff = false;
+        }
         if (showMore &&
             !_loadingMore &&
+            !_loadMoreBackedOff &&
             notification.metrics.pixels >= notification.metrics.maxScrollExtent - 400) {
           _loadMore();
         }

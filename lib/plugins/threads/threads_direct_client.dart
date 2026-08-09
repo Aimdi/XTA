@@ -591,7 +591,10 @@ class ThreadsDirectClient {
       'Accept': 'application/json, text/plain, */*',
       'Accept-Language': 'en-US,en;q=0.9',
       'X-IG-App-ID': _igAppId,
-      'X-CSRFToken': c['csrftoken']!,
+      // Typed, not asserted: `cookies` re-reads prefs on every access, so the
+      // reader clearing the pasted header mid-flight used to turn this into a
+      // raw null-check crash that no ThreadsException handler caught.
+      'X-CSRFToken': c['csrftoken'] ?? (throw ThreadsException(ThreadsErrorKind.unauthorized, 'session cleared')),
       'X-ASBD-ID': '129477',
       'X-IG-WWW-Claim': '0',
       'Referer': '$_threadsWeb/',

@@ -87,9 +87,11 @@ class AccountPostCache<T> {
         }
       }
       // Decremented before the await, so concurrent workers cannot each see the
-      // last slot and all take it.
+      // last slot and all take it. Past the budget, what the cache holds — even
+      // stale — beats nothing: a forced refresh with more accounts than the cap
+      // must not collapse the timeline to the first batch.
       if (remaining <= 0) {
-        return <T>[];
+        return _entries[key]?.posts ?? <T>[];
       }
       remaining--;
 

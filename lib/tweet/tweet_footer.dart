@@ -423,10 +423,12 @@ class TweetFooterBar extends StatelessWidget {
           ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
             store: likedModel,
             // Every footer on screen hears every like; only the one whose own
-            // post changed has anything to redraw.
-            distinct: (liked) => liked.any((e) => e.id == tweet.idStr),
-            onState: (context, liked) {
-              final isLiked = liked.any((e) => e.id == tweet.idStr);
+            // post changed has anything to redraw. Through the model's index —
+            // a map lookup — not a scan of the whole liked list per footer per
+            // emission, which is what this was.
+            distinct: (_) => tweet.idStr != null && likedModel.isLiked(tweet.idStr!),
+            onState: (context, _) {
+              final isLiked = tweet.idStr != null && likedModel.isLiked(tweet.idStr!);
 
               return LikeButton(
                 isLiked: isLiked,
@@ -449,9 +451,9 @@ class TweetFooterBar extends StatelessWidget {
             tweetFooterTextButton(Icons.bar_chart, viewsLabel, tint),
           ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
             store: savedModel,
-            distinct: (saved) => saved.any((e) => e.id == tweet.idStr),
-            onState: (context, saved) {
-              final isSaved = saved.any((e) => e.id == tweet.idStr);
+            distinct: (_) => tweet.idStr != null && savedModel.isSaved(tweet.idStr!),
+            onState: (context, _) {
+              final isSaved = tweet.idStr != null && savedModel.isSaved(tweet.idStr!);
               final button = isSaved
                   ? tweetFooterIconButton(context, Icons.bookmark, Theme.of(context).colorScheme.primary, 1, () async {
                       await savedModel.deleteSavedTweet(tweet.idStr!);

@@ -118,15 +118,28 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   /// per account. Bounded per call: importing somebody's following list used to
   /// mean several hundred requests on every refresh, which the AppView rate
   /// limits into an empty tab — the very thing the import was for.
-  Future<List<BlueskyPost>> postsFor(List<String> actors, {bool forceRefresh = false}) => _posts.merge(
+  Future<List<BlueskyPost>> postsFor(List<String> actors, {bool forceRefresh = false}) {
+    // A different AppView is a different Bluesky answering, so what was cached
+    // under the old one is not an answer to the new question — Threads and
+    // Mastodon already forget on a credential change; this one did not.
+    final appView = client.baseUrl;
+    if (_cachedFrom != appView) {
+      _cachedFrom = appView;
+      _posts.clear();
+    }
+
+    return _posts.merge(
     actors,
     (actor) async {
       final page = await client.getAuthorFeed(actor, limit: blueskyPostsPerAccount);
       return page.posts;
     },
-    forceRefresh: forceRefresh,
-    maxFetches: blueskyMaxAccountsPerLoad,
-  );
+      forceRefresh: forceRefresh,
+      maxFetches: blueskyMaxAccountsPerLoad,
+    );
+  }
+
+  String? _cachedFrom;
 
   /// How many followed accounts have still to be read, so the tab can say that
   /// a big import is filling in rather than looking finished and short.
