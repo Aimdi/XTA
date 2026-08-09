@@ -19,17 +19,23 @@ class RedditListingState {
   final String? after;
   final bool loadingMore;
 
-  const RedditListingState({this.posts, this.after, this.loadingMore = false});
+  /// Why the last load-more failed, so the button can say so — a rate-limited
+  /// page two used to look exactly like a button that does nothing.
+  final Object? loadMoreError;
+
+  const RedditListingState({this.posts, this.after, this.loadingMore = false, this.loadMoreError});
 
   RedditListingState copyWith({
     List<RedditPost>? posts,
     String? after,
     bool? loadingMore,
+    Object? loadMoreError,
     bool clearAfter = false,
   }) => RedditListingState(
     posts: posts ?? this.posts,
     after: clearAfter ? null : after ?? this.after,
     loadingMore: loadingMore ?? this.loadingMore,
+    loadMoreError: loadMoreError,
   );
 }
 
@@ -54,10 +60,7 @@ class RedditListingStore extends Store<RedditListingState> {
   Future<void> refresh() async {
     await execute(() async {
       final listing = await _read();
-      return RedditListingState(
-        posts: _visiblePosts(listing.posts),
-        after: listing.after,
-      );
+      return RedditListingState(posts: _visiblePosts(listing.posts), after: listing.after);
     });
   }
 
@@ -71,14 +74,9 @@ class RedditListingStore extends Store<RedditListingState> {
     update(state.copyWith(loadingMore: true));
     try {
       final listing = await _read(after: after);
-      update(
-        RedditListingState(
-          posts: appendRedditPosts(posts, _visiblePosts(listing.posts)),
-          after: listing.after,
-        ),
-      );
-    } catch (_) {
-      update(state.copyWith(loadingMore: false));
+      update(RedditListingState(posts: appendRedditPosts(posts, _visiblePosts(listing.posts)), after: listing.after));
+    } catch (e) {
+      update(state.copyWith(loadingMore: false, loadMoreError: e));
     }
   }
 
@@ -109,28 +107,19 @@ class RedditListingBody extends StatefulWidget {
   final ScrollController? scrollController;
   final bool showSourceBadge;
 
-  const RedditListingBody.subreddit(
-    String name, {
-    super.key,
-    this.scrollController,
-    this.showSourceBadge = false,
-  }) : subreddit = name,
-       user = null;
+  const RedditListingBody.subreddit(String name, {super.key, this.scrollController, this.showSourceBadge = false})
+    : subreddit = name,
+      user = null;
 
-  const RedditListingBody.user(
-    String name, {
-    super.key,
-    this.scrollController,
-    this.showSourceBadge = false,
-  }) : subreddit = null,
-       user = name;
+  const RedditListingBody.user(String name, {super.key, this.scrollController, this.showSourceBadge = false})
+    : subreddit = null,
+      user = name;
 
   @override
   State<RedditListingBody> createState() => RedditListingBodyState();
 }
 
-class RedditListingBodyState extends State<RedditListingBody>
-    with AutomaticKeepAliveClientMixin {
+class RedditListingBodyState extends State<RedditListingBody> with AutomaticKeepAliveClientMixin {
   RedditListingStore? _store;
 
   @override
@@ -180,12 +169,7 @@ class RedditListingBodyState extends State<RedditListingBody>
     );
   }
 
-  Widget _error(
-    BuildContext context,
-    L10n l10n,
-    RedditListingStore store,
-    Object error,
-  ) {
+  Widget _error(BuildContext context, L10n l10n, RedditListingStore store, Object error) {
     return ListView(
       children: [
         Padding(
@@ -201,12 +185,7 @@ class RedditListingBodyState extends State<RedditListingBody>
     );
   }
 
-  Widget _body(
-    BuildContext context,
-    L10n l10n,
-    RedditListingStore store,
-    RedditListingState state,
-  ) {
+  Widget _body(BuildContext context, L10n l10n, RedditListingStore store, RedditListingState state) {
     final posts = state.posts;
     if (posts == null) {
       return const Center(child: CircularProgressIndicator());
@@ -222,44 +201,70 @@ class RedditListingBodyState extends State<RedditListingBody>
       );
     }
 
-    return ListView.builder(
+    final list = ListView.builder(
       controller: widget.scrollController,
       padding: const EdgeInsets.only(bottom: 24),
-      itemCount: posts.length + (store.canLoadMore ? 1 : 0),
-      itemBuilder: (context, index) => index >= posts.length
-          ? _LoadMoreButton(
-              loading: state.loadingMore,
-              onPressed: store.loadMore,
-            )
-          : RedditPostCard(
-              post: posts[index],
-              showSourceBadge: widget.showSourceBadge,
-            ),
+      itemCount: posts.length + 1,
+      itemBuilder: (context, index) {
+        if (index >= posts.length) {
+          if (!store.canLoadMore) {
+            return const RedditEndOfList();
+          }
+          return _LoadMoreButton(
+            loading: state.loadingMore,
+            error: state.loadMoreError == null ? null : redditErrorMessage(l10n, state.loadMoreError!),
+            onPressed: store.loadMore,
+          );
+        }
+        return RedditPostCard(post: posts[index], showSourceBadge: widget.showSourceBadge);
+      },
+    );
+
+    // RedReader-style: the next page starts loading as the reader approaches
+    // the bottom; the button stays as the fallback (and the error surface).
+    return NotificationListener<ScrollNotification>(
+      onNotification: (n) {
+        final nearEnd = n.metrics.pixels > n.metrics.maxScrollExtent - 1200;
+        if (nearEnd && store.canLoadMore && !state.loadingMore && state.loadMoreError == null) {
+          store.loadMore();
+        }
+        return false;
+      },
+      child: list,
     );
   }
 }
 
 class _LoadMoreButton extends StatelessWidget {
   final bool loading;
+  final String? error;
   final VoidCallback onPressed;
 
-  const _LoadMoreButton({required this.loading, required this.onPressed});
+  const _LoadMoreButton({required this.loading, this.error, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Center(
-        child: OutlinedButton(
-          onPressed: loading ? null : onPressed,
-          child: loading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(L10n.of(context).plugin_reddit_load_more),
-        ),
+      child: Column(
+        children: [
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                error!,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.error),
+              ),
+            ),
+          OutlinedButton(
+            onPressed: loading ? null : onPressed,
+            child: loading
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                : Text(error == null ? L10n.of(context).plugin_reddit_load_more : L10n.of(context).retry),
+          ),
+        ],
       ),
     );
   }

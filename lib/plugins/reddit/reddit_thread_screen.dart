@@ -10,10 +10,12 @@ import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_post_media.dart';
+import 'package:xta/plugins/reddit/reddit_post_sheet.dart' show redditPostUrl;
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/ui/dates.dart';
+import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/errors.dart';
 
 /// How far each level of replies is indented, and how deep that goes.
@@ -57,11 +59,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       final client = context.read<RedditClient>();
       final prefs = PrefService.of(context, listen: false);
       final session = await RedditReadSession.resolve(prefs: prefs);
-      final result = await session.fetchComments(
-        client,
-        _post.permalink,
-        sort: _sort,
-      );
+      final result = await session.fetchComments(client, _post.permalink, sort: _sort);
       if (!mounted) return;
       setState(() {
         _comments = flattenComments(result.comments);
@@ -105,11 +103,33 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     );
   }
 
+  static String _trimSlash(String path) => path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+
   bool _isOwnPermalink(String url) {
     final uri = Uri.tryParse(url);
-    return uri != null &&
-        uri.host.endsWith('reddit.com') &&
-        uri.path.contains('/comments/');
+    return uri != null && uri.host.endsWith('reddit.com') && uri.path.contains('/comments/');
+  }
+
+  /// Folding every top-level argument turns a thousand-comment page into the
+  /// list of discussions it is made of; unfolding restores the reading flow.
+  bool get _allFolded {
+    final comments = _comments;
+    if (comments == null) return false;
+    final foldable = foldableTopLevelIds(comments);
+    return foldable.isNotEmpty && _collapsed.containsAll(foldable);
+  }
+
+  void _toggleFoldAll() {
+    final comments = _comments;
+    if (comments == null) return;
+    final foldable = foldableTopLevelIds(comments);
+    setState(() {
+      if (_collapsed.containsAll(foldable)) {
+        _collapsed.removeAll(foldable);
+      } else {
+        _collapsed.addAll(foldable);
+      }
+    });
   }
 
   @override
@@ -121,6 +141,12 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       appBar: AppBar(
         title: Text('r/${widget.post.subreddit}'),
         actions: [
+          if (comments != null && foldableTopLevelIds(comments).isNotEmpty)
+            IconButton(
+              icon: Icon(_allFolded ? Icons.unfold_more : Icons.unfold_less),
+              tooltip: _allFolded ? l10n.plugin_reddit_expand_all : l10n.plugin_reddit_collapse_all,
+              onPressed: _toggleFoldAll,
+            ),
           _ThreadSaveButton(post: _post),
           PopupMenuButton<String>(
             tooltip: l10n.plugin_reddit_sort,
@@ -135,52 +161,42 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
               _load();
             },
             itemBuilder: (context) => [
-              PopupMenuItem(
-                value: '',
-                child: Text(l10n.plugin_reddit_sort_best),
-              ),
-              PopupMenuItem(
-                value: 'top',
-                child: Text(l10n.plugin_reddit_sort_top),
-              ),
-              PopupMenuItem(
-                value: 'new',
-                child: Text(l10n.plugin_reddit_sort_new),
-              ),
-              PopupMenuItem(
-                value: 'controversial',
-                child: Text(l10n.plugin_reddit_sort_controversial),
-              ),
-              PopupMenuItem(
-                value: 'old',
-                child: Text(l10n.plugin_reddit_sort_old),
-              ),
+              PopupMenuItem(value: '', child: Text(l10n.plugin_reddit_sort_best)),
+              PopupMenuItem(value: 'top', child: Text(l10n.plugin_reddit_sort_top)),
+              PopupMenuItem(value: 'new', child: Text(l10n.plugin_reddit_sort_new)),
+              PopupMenuItem(value: 'controversial', child: Text(l10n.plugin_reddit_sort_controversial)),
+              PopupMenuItem(value: 'old', child: Text(l10n.plugin_reddit_sort_old)),
+              PopupMenuItem(value: 'qa', child: Text(l10n.plugin_reddit_sort_qa)),
             ],
           ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _load,
-        child: ListView.builder(
-          // One header plus the flattened tree: nesting the widgets instead
-          // would build every reply of every collapsed branch up front.
-          itemCount:
-              1 +
-              (comments == null
-                  ? 1
-                  : visibleComments(comments, _collapsed).length),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return _header(context);
-            }
-            if (comments == null) {
-              return _pending(context, l10n);
-            }
-            final visible = visibleComments(comments, _collapsed)[index - 1];
-            if (visible.entry.comment.isStub) {
-              return _stubRow(context, visible.entry);
-            }
-            return _commentRow(context, visible.entry, hidden: visible.hidden);
+        child: Builder(
+          builder: (context) {
+            // Walked once per build pass — inside itemBuilder this O(n) walk
+            // ran again for every row, ~n² work on a long thread's frame.
+            final rows = comments == null ? const <VisibleComment>[] : visibleComments(comments, _collapsed);
+            return ListView.builder(
+              // One header plus the flattened tree: nesting the widgets
+              // instead would build every reply of every collapsed branch
+              // up front.
+              itemCount: 1 + (comments == null ? 1 : rows.length),
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _header(context);
+                }
+                if (comments == null) {
+                  return _pending(context, l10n);
+                }
+                final visible = rows[index - 1];
+                if (visible.entry.comment.isStub) {
+                  return _stubRow(context, visible.entry);
+                }
+                return _commentRow(context, visible.entry, hidden: visible.hidden);
+              },
+            );
           },
         ),
       ),
@@ -217,26 +233,16 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            post.title,
-            style: theme.textTheme.titleLarge!.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          Text(post.title, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           DefaultTextStyle.merge(
-            style: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
             child: Row(
               children: [
                 RedditSubredditAvatar(subreddit: post.subreddit, size: 22),
                 const SizedBox(width: 6),
                 if (post.author != null) Text('u/${post.author}'),
-                if (date != null) ...[
-                  const SizedBox(width: 8),
-                  Text(createRelativeDate(date)),
-                ],
+                if (date != null) ...[const SizedBox(width: 8), Text(createRelativeDate(date))],
                 const Spacer(),
                 Text('${post.score} · ${post.commentCount}'),
               ],
@@ -245,10 +251,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           // The same block the feed card uses, so a picture post opens on its
           // picture rather than on a link to one.
           RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
-          if (_selfText != null) ...[
-            const SizedBox(height: 10),
-            Text(_selfText!, style: theme.textTheme.bodyMedium),
-          ],
+          if (_selfText != null) ...[const SizedBox(height: 10), Text(_selfText!, style: theme.textTheme.bodyMedium)],
           const Divider(height: 24),
         ],
       ),
@@ -257,24 +260,24 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
 
   /// A row that folds on tap. [hidden] is how many replies its fold is
   /// holding, shown as a chip so a collapsed argument says how big it was.
-  Widget _commentRow(
-    BuildContext context,
-    FlatComment entry, {
-    int hidden = 0,
-  }) {
+  /// One rail colour per depth, cycling — a deep argument stays traceable to
+  /// its level, the way Infinity and Sync colour theirs. Muted toward the
+  /// surface so the rails mark structure without shouting over the text.
+  static Color _railColor(ThemeData theme, int depth) {
+    final scheme = theme.colorScheme;
+    final cycle = [scheme.primary, scheme.tertiary, scheme.secondary, scheme.error];
+    return Color.lerp(cycle[(depth - 1) % cycle.length], scheme.outlineVariant, 0.35)!;
+  }
+
+  Widget _commentRow(BuildContext context, FlatComment entry, {int hidden = 0}) {
     final theme = Theme.of(context);
     final comment = entry.comment;
     final depth = entry.depth;
     final folded = _collapsed.contains(comment.id);
-    final indent =
-        kRedditIndentPerLevel *
-        (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
+    final indent = kRedditIndentPerLevel * (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
 
     return InkWell(
-      onTap: () => setState(
-        () =>
-            folded ? _collapsed.remove(comment.id) : _collapsed.add(comment.id),
-      ),
+      onTap: () => setState(() => folded ? _collapsed.remove(comment.id) : _collapsed.add(comment.id)),
       child: Padding(
         padding: EdgeInsets.fromLTRB(12 + indent, 6, 12, 6),
         child: Container(
@@ -282,20 +285,13 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           decoration: depth == 0
               ? null
               : BoxDecoration(
-                  border: Border(
-                    left: BorderSide(
-                      color: theme.colorScheme.outlineVariant,
-                      width: 2,
-                    ),
-                  ),
+                  border: Border(left: BorderSide(color: _railColor(theme, depth), width: 2)),
                 ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DefaultTextStyle.merge(
-                style: theme.textTheme.bodySmall!.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 child: Row(
                   children: [
                     RedditAvatar(name: comment.author, size: 20),
@@ -308,27 +304,19 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                             ? null
                             : () => Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      RedditListingScreen.user(comment.author!),
-                                ),
+                                MaterialPageRoute(builder: (_) => RedditListingScreen.user(comment.author!)),
                               ),
                         child: Text(
                           comment.author == null ? '' : 'u/${comment.author}',
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: comment.isSubmitter
-                                ? theme.colorScheme.primary
-                                : null,
+                            color: comment.isSubmitter ? theme.colorScheme.primary : null,
                           ),
                         ),
                       ),
                     ),
-                    if (comment.score != null) ...[
-                      const SizedBox(width: 8),
-                      Text('${comment.score}'),
-                    ],
+                    if (comment.score != null) ...[const SizedBox(width: 8), Text('${comment.score}')],
                     if (comment.createdAt != null) ...[
                       const SizedBox(width: 8),
                       Text(createRelativeDate(comment.createdAt!)),
@@ -340,22 +328,15 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
               if (folded)
                 Container(
                   margin: const EdgeInsets.only(top: 2),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    '+${hidden + 1}',
-                    style: theme.textTheme.labelSmall,
-                  ),
+                  child: Text('+${hidden + 1}', style: theme.textTheme.labelSmall),
                 )
               else ...[
-                if (comment.body.isNotEmpty)
-                  Text(comment.body, style: theme.textTheme.bodyMedium),
+                if (comment.body.isNotEmpty) Text(comment.body, style: theme.textTheme.bodyMedium),
                 RedditCommentImages(urls: comment.mediaUrls),
               ],
             ],
@@ -372,40 +353,33 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     final theme = Theme.of(context);
     final comment = entry.comment;
     final depth = entry.depth;
-    final indent =
-        kRedditIndentPerLevel *
-        (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
-    final count = (comment.moreCount ?? -1) > 0
-        ? ' · ${comment.moreCount}'
-        : '';
+    final indent = kRedditIndentPerLevel * (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
+    final count = (comment.moreCount ?? -1) > 0 ? ' · ${comment.moreCount}' : '';
 
+    // The subtree's page has the held-back replies; the post's own page is
+    // this one, so a root-level stub can only continue on Reddit itself.
+    final permalink = comment.permalink;
+    final opensSamePage = permalink != null && _trimSlash(permalink) == _trimSlash(_post.permalink);
     return InkWell(
-      onTap: comment.permalink == null
+      onTap: permalink == null
           ? null
+          : opensSamePage
+          ? () => openUri(context, redditPostUrl(_post))
           : () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => RedditThreadScreen(
-                  post: _post.copyWith(permalink: comment.permalink),
-                ),
+                builder: (_) => RedditThreadScreen(post: _post.copyWith(permalink: permalink)),
               ),
             ),
       child: Padding(
         padding: EdgeInsets.fromLTRB(12.0 + indent, 10, 12, 10),
         child: Row(
           children: [
-            Icon(
-              Icons.subdirectory_arrow_right,
-              size: 16,
-              color: theme.colorScheme.primary,
-            ),
+            Icon(Icons.subdirectory_arrow_right, size: 16, color: theme.colorScheme.primary),
             const SizedBox(width: 6),
             Text(
               '${L10n.of(context).plugin_reddit_more_replies}$count',
-              style: theme.textTheme.bodySmall!.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.w600),
             ),
           ],
         ),

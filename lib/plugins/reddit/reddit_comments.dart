@@ -271,11 +271,13 @@ List<RedditComment> _commentsIn(Element listing, {String? parentPermalink}) {
 ///
 /// An unreadable page yields no comments rather than throwing — the post itself
 /// is still worth showing.
-List<RedditComment> parseComments(String body) {
+List<RedditComment> parseComments(String body, {String? postPermalink}) {
   final document = html.parse(body);
 
   final area = document.querySelector('.commentarea .sitetable') ?? document.querySelector('.nestedlisting');
-  return area == null ? const [] : _commentsIn(area);
+  // The post's own permalink stands in as the root's parent, so a bottom-of-
+  // page "load more comments (500)" keeps its row instead of vanishing.
+  return area == null ? const [] : _commentsIn(area, parentPermalink: postPermalink);
 }
 
 /// What the post itself points at, read off its own page.

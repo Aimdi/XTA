@@ -11,19 +11,19 @@ import 'package:xta/utils/json.dart';
 
 /// Comments from a Reddit JSON Listing (`kind` / `data.children`), or empty
 /// when the shape is wrong.
-List<RedditComment> commentsFromListing(Json listing) {
+List<RedditComment> commentsFromListing(Json listing, {String? parentPermalink}) {
   return [
     for (final child in listing['data']['children'].list)
-      ...?_pickComment(commentFromChild(child)),
+      ...?_pickComment(commentFromChild(child, parentPermalink: parentPermalink)),
   ];
 }
 
 /// One `t1` comment or `more` stub from a Listing child. Null when the kind is
 /// neither, or a `t1` has neither text nor media.
-RedditComment? commentFromChild(Json child) {
+RedditComment? commentFromChild(Json child, {String? parentPermalink}) {
   final kind = child['kind'].string;
   if (kind == 'more') {
-    return _moreStub(child['data']);
+    return _moreStub(child['data'], parentPermalink: parentPermalink);
   }
   if (kind != 't1') {
     return null;
@@ -52,27 +52,25 @@ RedditComment? commentFromChild(Json child) {
         : DateTime.fromMillisecondsSinceEpoch((created * 1000).round(), isUtc: true).toLocal(),
     isSubmitter: data['is_submitter'].boolean ?? false,
     mediaUrls: media.urls,
-    replies: _repliesFromJson(data['replies']),
+    replies: _repliesFromJson(data['replies'], parentPermalink: data['permalink'].string),
     permalink: data['permalink'].string,
   );
 }
 
-RedditComment _moreStub(Json data) {
+/// The held-back replies live on their parent's own page — without that
+/// permalink the row rendered un-tappable, "more replies · 47" doing nothing.
+RedditComment _moreStub(Json data, {String? parentPermalink}) {
   final children = data['children'].list;
   final id = data['id'].string ?? children.firstOrNull?.string ?? 'more';
-  return RedditComment(
-    id: id,
-    body: '',
-    moreCount: data['count'].integer ?? -1,
-  );
+  return RedditComment(id: id, body: '', permalink: parentPermalink, moreCount: data['count'].integer ?? -1);
 }
 
-List<RedditComment> _repliesFromJson(Json replies) {
+List<RedditComment> _repliesFromJson(Json replies, {String? parentPermalink}) {
   // Leaf comments send `replies: ""` rather than an empty Listing.
   if (replies.raw is String || !replies.exists) {
     return const [];
   }
-  return commentsFromListing(replies);
+  return commentsFromListing(replies, parentPermalink: parentPermalink);
 }
 
 /// Pictures linked or tokenised in a markdown comment body, plus the words
