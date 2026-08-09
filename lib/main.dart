@@ -88,6 +88,7 @@ import 'package:xta/plugins/deepmarks/deepmarks_client.dart';
 import 'package:xta/plugins/immich/immich_client.dart';
 import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_gallery_loader.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_votes_store.dart';
@@ -635,6 +636,7 @@ Future<void> main() async {
     final karakeepClient = KarakeepClient();
     final redditClient = RedditClient();
     final redditIcons = RedditIcons(redditClient);
+    final redditGalleries = RedditGalleryLoader(redditClient);
     final redditAuth = RedditAuth();
     final redditSubreddits = RedditSubredditsStore(prefService);
     final redditVotes = RedditVotesStore();
@@ -754,6 +756,7 @@ Future<void> main() async {
             Provider(create: (_) => karakeepClient),
             Provider(create: (_) => redditClient),
             Provider(create: (_) => redditIcons),
+            Provider(create: (_) => redditGalleries),
             Provider(create: (_) => redditVotes),
             Provider(create: (_) => redditSaved),
             Provider(create: (_) => redditAuth),

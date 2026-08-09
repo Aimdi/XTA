@@ -201,3 +201,22 @@ bool _preferRedditImage(String candidate, String current) {
   final currentWidth = int.tryParse(currentUri.queryParameters['width'] ?? '') ?? -1;
   return candidateWidth > currentWidth;
 }
+
+/// Whether [url] is a Reddit gallery the listing did not carry the pictures for.
+///
+/// Scraped from old.reddit, a gallery arrives as this link and a 70px
+/// thumbnail — its pictures live in `media_metadata`, which that HTML does not
+/// contain. Recognising the link is what lets the card go and fetch them.
+bool isRedditGalleryUrl(String? url) {
+  if (url == null || url.isEmpty) {
+    return false;
+  }
+
+  final uri = Uri.tryParse(url);
+  if (uri == null || !(uri.host == 'reddit.com' || uri.host.endsWith('.reddit.com'))) {
+    return false;
+  }
+
+  final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList(growable: false);
+  return segments.length >= 2 && segments.first == 'gallery';
+}

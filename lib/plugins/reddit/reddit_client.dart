@@ -1158,6 +1158,33 @@ class RedditClient {
     }
   }
 
+  /// The pictures of a gallery post, read from the post's own public JSON.
+  ///
+  /// old.reddit's listing HTML carries a gallery as a link and a 70px
+  /// thumbnail — `media_metadata` is simply not in that page — so a reader with
+  /// no client id saw a link card where the pictures should be. This is the
+  /// same public route the thread already reads, needing no account and no
+  /// knowledge of Reddit's markup.
+  ///
+  /// Never throws: this runs for one card in a feed, and a refusal there must
+  /// cost that card its pictures, not the whole feed its posts.
+  Future<List<String>> fetchGalleryImages(String permalink) async {
+    try {
+      final uri = Uri.parse(
+        '$_publicBase${_commentsJsonPath(permalink)}',
+      ).replace(queryParameters: {'raw_json': '1'});
+
+      final response = await _read(uri);
+      if (response.statusCode != 200) {
+        return const [];
+      }
+
+      return _threadFromJson(_decodeList(response)).postImages;
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<
     ({
       List<RedditComment> comments,

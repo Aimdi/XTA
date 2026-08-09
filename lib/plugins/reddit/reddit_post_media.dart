@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/plugins/reddit/reddit_gallery_loader.dart';
 import 'package:xta/plugins/reddit/reddit_gallery.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_media_frame.dart';
@@ -73,7 +75,24 @@ class RedditPostMedia extends StatelessWidget {
 
     final link = post.url;
     if (link != null && !post.isSelf) {
-      return _RedditLinkCard(post: post, url: link);
+      final card = _RedditLinkCard(post: post, url: link);
+      // A gallery scraped off old.reddit arrives as this link and nothing else:
+      // its pictures are in the post's own JSON, not in that page. Fetch them
+      // and show the album; keep the link until they arrive, or for good when
+      // Reddit will not say.
+      if (isRedditGalleryUrl(link)) {
+        return RedditGalleryImages(
+          loader: context.read<RedditGalleryLoader>(),
+          permalink: post.permalink,
+          placeholder: card,
+          whenLoaded: (images) => _gate(
+            context,
+            aspectRatio: kRedditGalleryAspectRatio,
+            child: RedditGallery(images: collapseRedditImageUrls(images)),
+          ),
+        );
+      }
+      return card;
     }
 
     return null;
