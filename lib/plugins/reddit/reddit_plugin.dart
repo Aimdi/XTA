@@ -95,6 +95,12 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
   @override
   String subtitleFor(Subscription subscription) => 'r/${subscription.name}';
 
+  /// A subreddit's picture is not a URL this app holds — it is fetched and
+  /// cached separately, and drawn from the name.
+  @override
+  GroupMemberPreview previewOf(Subscription subscription) =>
+      GroupMemberPreview(id: subscription.id, name: subscription.name, subreddit: subscription.name);
+
   @override
   Widget avatarFor(Subscription subscription, {double size = 40}) =>
       RedditAvatar(name: 'r/${subscription.name}', size: size);

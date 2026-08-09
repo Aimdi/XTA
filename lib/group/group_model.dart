@@ -328,17 +328,21 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
       );
     }
 
-    // Subreddits are members too, and a group made only of them used to have no
-    // cover at all. They come second so a mixed group still leads with faces.
-    final subreddits = await database.rawQuery(
-      'SELECT gm.group_id, s.id, s.name FROM $tableSubscriptionGroupMember gm '
-      'JOIN $tableRedditSubscription s ON s.id = gm.profile_id '
-      'ORDER BY gm.group_id, s.name COLLATE NOCASE',
-    );
+    // Plugin members are members too, and a group made only of them used to have
+    // no cover at all — the join named the Reddit table and nothing else, so a
+    // group of Threads, Bluesky or Fediverse accounts came up blank despite
+    // every one of them storing an avatar. They come after the X accounts so a
+    // mixed group still leads with faces.
+    for (final source in subscriptionSources) {
+      final rows = await database.rawQuery(
+        'SELECT gm.group_id, s.* FROM $tableSubscriptionGroupMember gm '
+        'JOIN ${source.subscriptionTable} s ON s.id = gm.profile_id '
+        'ORDER BY gm.group_id, s.name COLLATE NOCASE',
+      );
 
-    for (final row in subreddits) {
-      final name = row['name'] as String;
-      add(row['group_id'] as String, GroupMemberPreview(id: row['id'] as String, name: name, subreddit: name));
+      for (final row in rows) {
+        add(row['group_id'] as String, source.previewOf(source.subscriptionFromMap(row)));
+      }
     }
 
     return previews;

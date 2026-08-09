@@ -52,6 +52,16 @@ mixin SubscriptionSource {
   /// would go on listing what was just unfollowed.
   Future<void> unfollow(BuildContext context, Subscription subscription);
 
+  /// The face a group's cover shows for one of this source's members.
+  ///
+  /// Defaults to the stored avatar, which is what every account-based source
+  /// keeps. Overridden where the picture is not a URL this app holds.
+  GroupMemberPreview previewOf(Subscription subscription) => GroupMemberPreview(
+    id: subscription.id,
+    name: subscription.name,
+    avatarUrl: subscription.profileImageUrlHttps,
+  );
+
   /// Re-reads this source's followed accounts from the database.
   ///
   /// Its store outlives the screens, so after an import that replaced the table
