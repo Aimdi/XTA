@@ -18,6 +18,7 @@ import 'package:xta/tweet/_card.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
 import 'package:xta/tweet/article_screen.dart';
@@ -293,9 +294,13 @@ class TweetTileState extends State<TweetTile> with SingleTickerProviderStateMixi
   }
 
   void onClickOpenTweet(TweetWithCard tweet) {
+    final target = openablePost(tweet);
+    if (target == null) {
+      return;
+    }
     Navigator.pushNamed(context, routeStatus,
         arguments: StatusScreenArguments(
-            id: tweet.idStr!, username: tweet.user!.screenName!, tweetOpened: true, initialTweet: tweet));
+            id: target.id, username: target.username, tweetOpened: true, initialTweet: tweet));
   }
   bool _canSubscribeTo(User? user) =>
       user != null && user.idStr != null && user.screenName != null && user.name != null;
@@ -678,12 +683,14 @@ class TweetTileState extends State<TweetTile> with SingleTickerProviderStateMixi
           );
 
     void onTapProfile() {
-      // If the tweet is by the currently-viewed profile, don't allow clicks as it doesn't make sense
-      if (currentUsername != null && tweet.user!.screenName!.endsWith(currentUsername!)) {
+      // Null when there is no author to open, or when it is the profile already
+      // on screen — tapping that would push the same profile onto itself.
+      final target = openableProfile(tweet.user, currentUsername: currentUsername);
+      if (target == null) {
         return;
       }
       Navigator.pushNamed(context, routeProfile,
-          arguments: ProfileScreenArguments(tweet.user!.idStr, tweet.user!.screenName, null));
+          arguments: ProfileScreenArguments(target.id, target.screenName, null));
     }
 
     final titleRow = Row(children: [

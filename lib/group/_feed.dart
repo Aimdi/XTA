@@ -34,6 +34,7 @@ import 'package:xta/utils/urls.dart';
 import 'package:xta/group/feed_catch_up.dart';
 import 'package:xta/group/feed_first_page_action.dart';
 import 'package:xta/group/feed_source_reload.dart';
+import 'package:xta/group/held_refresh.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
@@ -306,6 +307,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // Catch-up mode does not take that bet — being at the top says nothing
     // about what was read, and there the position is written only on reaching
     // the end of the new posts.
+    if (metrics.hasPixels && metrics.pixels <= feedReadPositionTopThresholdPx && _heldRefresh.returnedToTop()) {
+      _applyChunkRefresh();
+    }
     if (_tracksReadPosition &&
         !_catchUpEnabled &&
         metrics.hasPixels &&
@@ -478,10 +482,21 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       if (!mounted) {
         return;
       }
-      _feedController.controller.refresh();
-      _mediaPaging?.pagingController.refresh();
+      // Held while the reader is scrolled down: refetching empties the list and
+      // returns it to the top, which is not what adding somebody to a group
+      // should cost you. It runs when they next come back up.
+      if (_heldRefresh.request(atTop: _atTop)) {
+        _applyChunkRefresh();
+      }
     });
   }
+
+  void _applyChunkRefresh() {
+    _feedController.controller.refresh();
+    _mediaPaging?.pagingController.refresh();
+  }
+
+  final _heldRefresh = HeldRefresh();
 
   bool _chunksMatch(List<SubscriptionGroupFeedChunk> a, List<SubscriptionGroupFeedChunk> b) {
     if (a.length != b.length) return false;
