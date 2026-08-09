@@ -469,6 +469,11 @@ const optionThreadedReplies = 'tweets.threaded_replies';
 /// the timeline as an ordinary post, so the row need not be expanded run after
 /// run for a reader who never wanted it grouped.
 const optionFeedCollapseBoosts = 'feed.collapse_boosts';
+
+/// One-shot: readers who inherited the old "collapse on" default get full
+/// timeline reposts once, then the Posts setting owns the choice.
+const optionFeedCollapseBoostsDefaultOffMigrated =
+    'feed.collapse_boosts_default_off_v1';
 const optionMediaGridLayout = 'media.grid_layout';
 
 const mediaGridLayoutMasonry = 'masonry';

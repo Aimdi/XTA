@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "البحث في الاشتراكات",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "مصطلح البحث",
   "@search_term": {},
   "select": "اختيار",

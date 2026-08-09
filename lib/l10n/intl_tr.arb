@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Aboneliklerde ara",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Arama terimi",
   "@search_term": {},
   "select": "Seç",

@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Serĉi abonojn",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Termino de serĉo",
   "@search_term": {},
   "select": "Elekti",

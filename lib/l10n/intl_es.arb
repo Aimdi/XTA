@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Buscar suscripciones",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Término de búsqueda",
   "@search_term": {},
   "select": "Seleccionar",

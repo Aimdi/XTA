@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "搜尋訂閱",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "搜尋字詞",
   "@search_term": {},
   "select": "選取",

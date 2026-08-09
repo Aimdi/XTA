@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "購読を検索",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Search term",
   "@search_term": {},
   "select": "選択",

@@ -11,7 +11,9 @@ import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
+import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
@@ -186,6 +188,20 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     }
   }
 
+  Future<void> _addToGroup(ThreadsProfile profile) async {
+    final accounts = context.read<ThreadsAccountsStore>();
+    final groupsModel = context.read<GroupsModel>();
+    if (!accounts.state.any((a) => a.handle == profile.username)) {
+      await accounts.add(profile.toAccount());
+    }
+    if (!mounted) return;
+    final user = subscriptionOf(profile.toAccount());
+    final groups = await groupsModel.listGroupsForUser(user.id);
+    if (!mounted) return;
+    await pickUserGroups(context, user: user, followed: true, groupsForUser: groups);
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -228,6 +244,7 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
             child: ThreadsProfileCard(
               profile: profile,
               onFollow: alreadyFollows ? null : () => _follow(profile),
+              onAddToGroup: () => _addToGroup(profile),
             ),
           ),
           if (_posts.isEmpty)
@@ -249,8 +266,9 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
 class ThreadsProfileCard extends StatelessWidget {
   final ThreadsProfile profile;
   final VoidCallback? onFollow;
+  final VoidCallback? onAddToGroup;
 
-  const ThreadsProfileCard({super.key, required this.profile, this.onFollow});
+  const ThreadsProfileCard({super.key, required this.profile, this.onFollow, this.onAddToGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -347,15 +365,25 @@ class ThreadsProfileCard extends StatelessWidget {
             _count(context, numbers.format(profile.mediaCount), l10n.tweets),
           ],
         ),
-        if (onFollow != null) ...[
+        if (onFollow != null || onAddToGroup != null) ...[
           const SizedBox(height: 18),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FilledButton.tonalIcon(
-              onPressed: onFollow,
-              icon: const Icon(Icons.person_add_alt),
-              label: Text(l10n.plugin_threads_add_account),
-            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (onFollow != null)
+                FilledButton.tonalIcon(
+                  onPressed: onFollow,
+                  icon: const Icon(Icons.person_add_alt),
+                  label: Text(l10n.plugin_threads_add_account),
+                ),
+              if (onAddToGroup != null)
+                OutlinedButton.icon(
+                  onPressed: onAddToGroup,
+                  icon: const Icon(Icons.group_add, size: 18),
+                  label: Text(l10n.add_to_group),
+                ),
+            ],
           ),
         ],
         if (profile.isPrivate) ...[

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
@@ -11,6 +12,7 @@ import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/user.dart';
 
 /// What a failed Bluesky read should say.
 String blueskyErrorMessage(L10n l10n, Object error) {
@@ -59,7 +61,9 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     final client = context.read<BlueskyClient>();
     try {
       final profile = await client.getProfile(widget.actor);
-      final feed = await client.getAuthorFeed(profile.did.isNotEmpty ? profile.did : profile.handle);
+      final feed = await client.getAuthorFeed(
+        profile.did.isNotEmpty ? profile.did : profile.handle,
+      );
       if (mounted) {
         setState(() {
           _profile = profile;
@@ -140,6 +144,35 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     }
   }
 
+  Future<void> _addToGroup(BlueskyProfile profile) async {
+    final accounts = context.read<BlueskyAccountsStore>();
+    final subscriptions = context.read<SubscriptionsModel>();
+    final groupsModel = context.read<GroupsModel>();
+
+    if (!accounts.follows(profile.handle)) {
+      await accounts.add(profile.toAccount());
+      await subscriptions.reloadSubscriptions();
+    }
+    if (!mounted) {
+      return;
+    }
+
+    final user = subscriptionOf(profile.toAccount());
+    final groups = await groupsModel.listGroupsForUser(user.id);
+    if (!mounted) {
+      return;
+    }
+    await pickUserGroups(
+      context,
+      user: user,
+      followed: true,
+      groupsForUser: groups,
+    );
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = _profile?.handle ?? widget.actor;
@@ -171,7 +204,9 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     }
 
     final profile = _profile!;
-    final following = context.read<BlueskyAccountsStore>().follows(profile.handle);
+    final following = context.read<BlueskyAccountsStore>().follows(
+      profile.handle,
+    );
     final showMore = _cursor != null;
 
     return NotificationListener<ScrollNotification>(
@@ -182,7 +217,8 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
         if (showMore &&
             !_loadingMore &&
             !_loadMoreBackedOff &&
-            notification.metrics.pixels >= notification.metrics.maxScrollExtent - 400) {
+            notification.metrics.pixels >=
+                notification.metrics.maxScrollExtent - 400) {
           _loadMore();
         }
         return false;
@@ -196,9 +232,15 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
               profile: profile,
               following: following,
               onFollowToggle: () => _toggleFollow(profile),
+              onAddToGroup: () => _addToGroup(profile),
             ),
           ),
-          for (final post in _posts) BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false),
+          for (final post in _posts)
+            BlueskyPostCard(
+              key: ValueKey(post.uri),
+              post: post,
+              showSourceBadge: false,
+            ),
           if (_loadingMore)
             const Padding(
               padding: EdgeInsets.all(16),
@@ -215,12 +257,14 @@ class BlueskyProfileCard extends StatelessWidget {
   final BlueskyProfile profile;
   final bool following;
   final VoidCallback? onFollowToggle;
+  final VoidCallback? onAddToGroup;
 
   const BlueskyProfileCard({
     super.key,
     required this.profile,
     required this.following,
     this.onFollowToggle,
+    this.onAddToGroup,
   });
 
   @override
@@ -241,24 +285,36 @@ class BlueskyProfileCard extends StatelessWidget {
                       seed: profile.handle,
                       displayName: profile.displayName,
                       size: 64,
-                      accent: theme.colorScheme.primary)
-                  : ExtendedImage.network(avatar,
+                      accent: theme.colorScheme.primary,
+                    )
+                  : ExtendedImage.network(
+                      avatar,
                       width: 64,
                       height: 64,
                       fit: BoxFit.cover,
-                      cacheWidth: (64 * MediaQuery.devicePixelRatioOf(context)).ceil()),
+                      cacheWidth: (64 * MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
+                    ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(profile.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700)),
-                  Text('@${profile.handle}',
-                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    profile.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge!.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    '@${profile.handle}',
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -288,22 +344,41 @@ class BlueskyProfileCard extends StatelessWidget {
             _count(context, numbers.format(profile.postsCount), l10n.tweets),
           ],
         ),
-        if (onFollowToggle != null) ...[
+        if (onFollowToggle != null || onAddToGroup != null) ...[
           const SizedBox(height: 18),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FilledButton.tonalIcon(
-              onPressed: onFollowToggle,
-              icon: Icon(following ? Icons.person_remove_alt_1 : Icons.person_add_alt),
-              label: Text(following ? l10n.plugin_bluesky_unfollow : l10n.plugin_bluesky_follow),
-            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (onFollowToggle != null)
+                FilledButton.tonalIcon(
+                  onPressed: onFollowToggle,
+                  icon: Icon(
+                    following ? Icons.person_remove_alt_1 : Icons.person_add_alt,
+                  ),
+                  label: Text(
+                    following
+                        ? l10n.plugin_bluesky_unfollow
+                        : l10n.plugin_bluesky_follow,
+                  ),
+                ),
+              if (onAddToGroup != null)
+                OutlinedButton.icon(
+                  onPressed: onAddToGroup,
+                  icon: const Icon(Icons.group_add, size: 18),
+                  label: Text(l10n.add_to_group),
+                ),
+            ],
           ),
         ],
       ],
     );
   }
 
-  Future<void> _openFollows(BuildContext context, BlueskyFollowsKind kind) async {
+  Future<void> _openFollows(
+    BuildContext context,
+    BlueskyFollowsKind kind,
+  ) async {
     final actor = profile.did.isNotEmpty ? profile.did : profile.handle;
     if (actor.isEmpty) {
       return;
@@ -316,13 +391,26 @@ class BlueskyProfileCard extends StatelessWidget {
     );
   }
 
-  Widget _count(BuildContext context, String value, String label, {VoidCallback? onTap}) {
+  Widget _count(
+    BuildContext context,
+    String value,
+    String label, {
+    VoidCallback? onTap,
+  }) {
     final theme = Theme.of(context);
     final text = Text.rich(
-      TextSpan(children: [
-        TextSpan(text: value, style: const TextStyle(fontWeight: FontWeight.w700)),
-        TextSpan(text: ' $label', style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
-      ]),
+      TextSpan(
+        children: [
+          TextSpan(
+            text: value,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          TextSpan(
+            text: ' $label',
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
       style: theme.textTheme.bodyMedium,
     );
 

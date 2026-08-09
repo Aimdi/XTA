@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Caută abonamente",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Termen de căutare",
   "@search_term": {},
   "select": "Selectați",

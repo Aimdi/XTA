@@ -307,6 +307,16 @@ Future<void> _migrateMediaQualityPrefs(BasePrefService prefs) async {
   await prefs.set(optionMediaQualitySplitMigrated, true);
 }
 
+/// Flip the old default so consecutive reposts fill the timeline as full posts.
+/// Readers who already chose the Posts setting after this ship keep that choice.
+Future<void> _migrateCollapseBoostsDefaultOff(BasePrefService prefs) async {
+  if (prefs.get<bool>(optionFeedCollapseBoostsDefaultOffMigrated) ?? false) {
+    return;
+  }
+  await prefs.set(optionFeedCollapseBoosts, false);
+  await prefs.set(optionFeedCollapseBoostsDefaultOffMigrated, true);
+}
+
 /// The database migration, run once however many callers ask for it.
 ///
 /// It ends by purging week-old rows from the largest tables, so letting both
@@ -448,7 +458,8 @@ Future<void> main() async {
       optionGlobalIncludeReplies: true,
       optionGlobalIncludeRetweets: true,
       optionThreadedReplies: true,
-      optionFeedCollapseBoosts: true,
+      optionFeedCollapseBoosts: false,
+      optionFeedCollapseBoostsDefaultOffMigrated: false,
       optionMediaGridLayout: mediaGridLayoutMasonry,
       // Off by default in this fork. It checks this repository, not upstream,
       // and this repository publishes a build whenever something is fixed — so
@@ -581,6 +592,7 @@ Future<void> main() async {
   );
 
   await _migrateMediaQualityPrefs(prefService);
+  await _migrateCollapseBoostsDefaultOff(prefService);
 
   CrashReporter.install(prefService);
 
@@ -672,7 +684,9 @@ Future<void> main() async {
       threadsAccounts,
     );
     final blueskyClient = BlueskyClient(
-      resolveBaseUrl: () => prefService.get<String>(optionPluginBlueskyInstance) ?? kBlueskyDefaultAppView,
+      resolveBaseUrl: () =>
+          prefService.get<String>(optionPluginBlueskyInstance) ??
+          kBlueskyDefaultAppView,
     );
     final blueskyAccounts = BlueskyAccountsStore();
     final blueskyLikes = BlueskyLikesStore(prefService);

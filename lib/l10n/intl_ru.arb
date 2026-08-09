@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Поиск подписок",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Поисковый запрос",
   "@search_term": {},
   "select": "Выбрать",

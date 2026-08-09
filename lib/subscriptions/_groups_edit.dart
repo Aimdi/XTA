@@ -10,6 +10,8 @@ import 'package:xta/group/deck_groups.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/group/subscription_pack.dart';
+import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/subscription_source.dart';
 import 'package:xta/subscriptions/_group_add_member.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/subscription_look.dart';
@@ -18,21 +20,29 @@ import 'package:xta/subscriptions/group_mark_style.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:provider/provider.dart';
 
-Future openSubscriptionGroupDialog(BuildContext context, String? id, String name, String icon) {
+Future openSubscriptionGroupDialog(
+  BuildContext context,
+  String? id,
+  String name,
+  String icon,
+) {
   return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: FractionallySizedBox(
-            heightFactor: 0.85,
-            child: SubscriptionGroupEditDialog(id: id, name: name, icon: icon),
-          ),
-        );
-      });
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    builder: (context) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: FractionallySizedBox(
+          heightFactor: 0.85,
+          child: SubscriptionGroupEditDialog(id: id, name: name, icon: icon),
+        ),
+      );
+    },
+  );
 }
 
 class SubscriptionGroupEditDialog extends StatefulWidget {
@@ -40,20 +50,27 @@ class SubscriptionGroupEditDialog extends StatefulWidget {
   final String name;
   final String icon;
 
-  const SubscriptionGroupEditDialog({super.key, required this.id, required this.name, required this.icon});
+  const SubscriptionGroupEditDialog({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.icon,
+  });
 
   @override
-  State<SubscriptionGroupEditDialog> createState() => _SubscriptionGroupEditDialogState();
+  State<SubscriptionGroupEditDialog> createState() =>
+      _SubscriptionGroupEditDialogState();
 }
 
 /// Small, low-contrast styling for the secondary actions in the edit sheet.
 ButtonStyle _discreetActionStyle(BuildContext context) => TextButton.styleFrom(
-      foregroundColor: Theme.of(context).textTheme.bodySmall?.color,
-      textStyle: Theme.of(context).textTheme.bodySmall,
-      visualDensity: VisualDensity.compact,
-    );
+  foregroundColor: Theme.of(context).textTheme.bodySmall?.color,
+  textStyle: Theme.of(context).textTheme.bodySmall,
+  visualDensity: VisualDensity.compact,
+);
 
-class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialog> {
+class _SubscriptionGroupEditDialogState
+    extends State<SubscriptionGroupEditDialog> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
   SubscriptionGroupEdit? _group;
@@ -66,6 +83,40 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
   int markStyle = GroupMarkStyle.auto;
   Set<String> members = <String>{};
   List<Subscription> orderedSubscriptions = [];
+  final _memberSearch = TextEditingController();
+
+  /// `null` = all networks; `x` = X only; otherwise a plugin id.
+  String? _sourceFilter;
+
+  @override
+  void dispose() {
+    _memberSearch.dispose();
+    super.dispose();
+  }
+
+  List<Subscription> get _visibleSubscriptions {
+    final query = _memberSearch.text.trim().toLowerCase();
+    return orderedSubscriptions
+        .where((subscription) {
+          if (query.isNotEmpty) {
+            final hay = '${subscription.name} ${subscription.screenName}'
+                .toLowerCase();
+            if (!hay.contains(query)) {
+              return false;
+            }
+          }
+          final source = sourceOf(subscription);
+          if (_sourceFilter == null) {
+            return true;
+          }
+          if (_sourceFilter == 'x') {
+            return source == null;
+          }
+          final selected = pluginById(_sourceFilter!);
+          return selected is SubscriptionSource && identical(selected, source);
+        })
+        .toList(growable: false);
+  }
 
   @override
   void initState() {
@@ -77,21 +128,26 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
 
     final subscriptions = context.read<SubscriptionsModel>().state;
 
-    context.read<GroupsModel>().loadGroupEdit(widget.id).then((group) => setState(() {
-          _group = group;
+    context
+        .read<GroupsModel>()
+        .loadGroupEdit(widget.id)
+        .then(
+          (group) => setState(() {
+            _group = group;
 
-          id = group.id;
-          name = group.name;
-          icon = group.icon;
-          color = group.color;
-          emoji = group.emoji;
-          markStyle = group.markStyle;
-          members = group.members;
-          orderedSubscriptions = [
-            ...subscriptions.where((s) => group.members.contains(s.id)),
-            ...subscriptions.where((s) => !group.members.contains(s.id)),
-          ];
-        }));
+            id = group.id;
+            name = group.name;
+            icon = group.icon;
+            color = group.color;
+            emoji = group.emoji;
+            markStyle = group.markStyle;
+            members = group.members;
+            orderedSubscriptions = [
+              ...subscriptions.where((s) => group.members.contains(s.id)),
+              ...subscriptions.where((s) => !group.members.contains(s.id)),
+            ];
+          }),
+        );
   }
 
   /// Follows something new and ticks it, so a group can be filled from inside
@@ -114,42 +170,57 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
   }
 
   Future<void> _exportPack() async {
-    final subscriptions = context.read<SubscriptionsModel>().state.where((s) => members.contains(s.id));
+    final subscriptions = context.read<SubscriptionsModel>().state.where(
+      (s) => members.contains(s.id),
+    );
     final pack = packFromSubscriptions(name ?? '', subscriptions);
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/xta-pack-${DateTime.now().millisecondsSinceEpoch}.json');
+    final file = File(
+      '${dir.path}/xta-pack-${DateTime.now().millisecondsSinceEpoch}.json',
+    );
     await file.writeAsString(encodeSubscriptionPack(pack));
     await Share.shareXFiles([XFile(file.path, mimeType: 'application/json')]);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).subscription_pack_exported)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(L10n.of(context).subscription_pack_exported)),
+      );
     }
   }
 
   Future<void> _openMergeSheet(BuildContext context) async {
     final groupsModel = context.read<GroupsModel>();
-    final others = groupsModel.state.where((g) => g.id != widget.id).toList(growable: false);
+    final others = groupsModel.state
+        .where((g) => g.id != widget.id)
+        .toList(growable: false);
 
     // An empty sheet is indistinguishable from a broken button.
     if (others.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).no_other_groups)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(L10n.of(context).no_other_groups)));
       return;
     }
 
     final target = await showModalBottomSheet<SubscriptionGroup>(
-        context: context,
-        builder: (sheetContext) => SafeArea(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  for (final g in others)
-                    ListTile(
-                      leading: GroupMark.forGroup(g, size: 32),
-                      title: Text(g.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      onTap: () => Navigator.pop(sheetContext, g),
-                    ),
-                ],
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            for (final g in others)
+              ListTile(
+                leading: GroupMark.forGroup(g, size: 32),
+                title: Text(
+                  g.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => Navigator.pop(sheetContext, g),
               ),
-            ));
+          ],
+        ),
+      ),
+    );
 
     if (target == null || !context.mounted) return;
     await groupsModel.mergeGroups(widget.id!, target.id);
@@ -170,7 +241,9 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
     final current = parents[widget.id!];
 
     if (candidates.isEmpty && current == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).no_other_groups)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(L10n.of(context).no_other_groups)));
       return;
     }
 
@@ -189,7 +262,11 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
             for (final g in candidates)
               ListTile(
                 leading: GroupMark.forGroup(g, size: 32),
-                title: Text(g.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+                title: Text(
+                  g.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 selected: current == g.id,
                 onTap: () => Navigator.pop(sheetContext, g.id),
               ),
@@ -199,10 +276,15 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
     );
 
     if (choice == null || !context.mounted) return;
-    final applied = await groupsModel.setGroupParent(widget.id!, choice.isEmpty ? null : choice);
+    final applied = await groupsModel.setGroupParent(
+      widget.id!,
+      choice.isEmpty ? null : choice,
+    );
     if (!context.mounted) return;
     if (!applied) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).no_other_groups)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(L10n.of(context).no_other_groups)));
       return;
     }
     Navigator.pop(context);
@@ -210,31 +292,36 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
 
   void openDeleteSubscriptionGroupDialog(String id, String name) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(L10n.of(context).no),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final navigator = Navigator.of(context);
-                  await context.read<GroupsModel>().deleteGroup(id);
-
-                  navigator.pop();
-                  navigator.pop();
-                },
-                child: Text(L10n.of(context).yes),
-              ),
-            ],
-            title: Text(L10n.of(context).are_you_sure),
-            content: Text(
-              L10n.of(context).are_you_sure_you_want_to_delete_the_subscription_group_name_of_group(name),
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(L10n.of(context).no),
             ),
-          );
-        });
+            TextButton(
+              onPressed: () async {
+                final navigator = Navigator.of(context);
+                await context.read<GroupsModel>().deleteGroup(id);
+
+                navigator.pop();
+                navigator.pop();
+              },
+              child: Text(L10n.of(context).yes),
+            ),
+          ],
+          title: Text(L10n.of(context).are_you_sure),
+          content: Text(
+            L10n.of(
+              context,
+            ).are_you_sure_you_want_to_delete_the_subscription_group_name_of_group(
+              name,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _pickEmoji() async {
@@ -356,8 +443,11 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
     }
 
     final l10n = L10n.of(context);
-    final isPinned = widget.id != null &&
-        context.read<GroupsModel>().state.any((g) => g.id == widget.id && g.pinned);
+    final isPinned =
+        widget.id != null &&
+        context.read<GroupsModel>().state.any(
+          (g) => g.id == widget.id && g.pinned,
+        );
     final prefs = PrefService.of(context, listen: false);
     final deckPinned = widget.id != null && isDeckPinned(prefs, widget.id!);
 
@@ -369,7 +459,10 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
       if (widget.id != null)
         TextButton.icon(
           style: _discreetActionStyle(context),
-          icon: Icon(isPinned ? Icons.push_pin : Icons.push_pin_outlined, size: 18),
+          icon: Icon(
+            isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+            size: 18,
+          ),
           label: Text(isPinned ? l10n.unpin : l10n.pin),
           onPressed: () async {
             final groupsModel = context.read<GroupsModel>();
@@ -380,7 +473,10 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
       if (widget.id != null)
         TextButton.icon(
           style: _discreetActionStyle(context),
-          icon: Icon(deckPinned ? Icons.view_column : Icons.view_column_outlined, size: 18),
+          icon: Icon(
+            deckPinned ? Icons.view_column : Icons.view_column_outlined,
+            size: 18,
+          ),
           label: Text(deckPinned ? l10n.deck_unpin_group : l10n.deck_pin_group),
           onPressed: () async {
             await toggleDeckPin(prefs, widget.id!);
@@ -412,7 +508,9 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
 
     List<Widget> buttonsLst1 = [
       TextButton(
-        onPressed: id == null ? null : () => openDeleteSubscriptionGroupDialog(id!, name!),
+        onPressed: id == null
+            ? null
+            : () => openDeleteSubscriptionGroupDialog(id!, name!),
         child: Text(l10n.delete),
       ),
     ];
@@ -421,29 +519,28 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
         onPressed: () => Navigator.pop(context),
         child: Text(l10n.cancel),
       ),
-      Builder(builder: (context) {
-        onPressed() async {
-          if (_formKey.currentState!.validate()) {
-            final navigator = Navigator.of(context);
-            await context.read<GroupsModel>().saveGroup(
-                  id,
-                  name!,
-                  icon,
-                  color,
-                  members,
-                  emoji: emoji,
-                  markStyle: markStyle,
-                );
+      Builder(
+        builder: (context) {
+          onPressed() async {
+            if (_formKey.currentState!.validate()) {
+              final navigator = Navigator.of(context);
+              await context.read<GroupsModel>().saveGroup(
+                id,
+                name!,
+                icon,
+                color,
+                members,
+                emoji: emoji,
+                markStyle: markStyle,
+              );
 
-            navigator.pop();
+              navigator.pop();
+            }
           }
-        }
 
-        return TextButton(
-          onPressed: onPressed,
-          child: Text(l10n.ok),
-        );
-      }),
+          return TextButton(onPressed: onPressed, child: Text(l10n.ok));
+        },
+      ),
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -477,10 +574,17 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.palette, color: color ?? groupFallbackColor(name ?? '')),
+                    icon: Icon(
+                      Icons.palette,
+                      color: color ?? groupFallbackColor(name ?? ''),
+                    ),
                     tooltip: l10n.pick_a_color,
                     onPressed: () async {
-                      final chosen = await openGroupColorPicker(context, current: color, name: name ?? '');
+                      final chosen = await openGroupColorPicker(
+                        context,
+                        current: color,
+                        name: name ?? '',
+                      );
                       // A dismissed dialog answers nothing; "no colour of its
                       // own" is an answer and clears the stored one.
                       if (chosen != null && mounted) {
@@ -493,21 +597,33 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
               const SizedBox(height: 12),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text(l10n.group_mark_style_label, style: Theme.of(context).textTheme.labelLarge),
+                child: Text(
+                  l10n.group_mark_style_label,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
               ),
               const SizedBox(height: 8),
               SegmentedButton<int>(
                 segments: [
-                  ButtonSegment(value: GroupMarkStyle.auto, label: Text(l10n.group_mark_style_auto)),
-                  ButtonSegment(value: GroupMarkStyle.emoji, label: Text(l10n.group_mark_style_emoji)),
-                  ButtonSegment(value: GroupMarkStyle.symbol, label: Text(l10n.group_mark_style_icon)),
+                  ButtonSegment(
+                    value: GroupMarkStyle.auto,
+                    label: Text(l10n.group_mark_style_auto),
+                  ),
+                  ButtonSegment(
+                    value: GroupMarkStyle.emoji,
+                    label: Text(l10n.group_mark_style_emoji),
+                  ),
+                  ButtonSegment(
+                    value: GroupMarkStyle.symbol,
+                    label: Text(l10n.group_mark_style_icon),
+                  ),
                 ],
                 selected: {
                   markStyle == GroupMarkStyle.emoji
                       ? GroupMarkStyle.emoji
                       : markStyle == GroupMarkStyle.symbol
-                          ? GroupMarkStyle.symbol
-                          : GroupMarkStyle.auto,
+                      ? GroupMarkStyle.symbol
+                      : GroupMarkStyle.auto,
                 },
                 onSelectionChanged: _onMarkStyleSelected,
               ),
@@ -521,7 +637,11 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
                 children: [
                   FilledButton.tonalIcon(
                     icon: const Icon(Icons.person_add_alt, size: 18),
-                    label: Text(l10n.add_to_group, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    label: Text(
+                      l10n.add_to_group,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     onPressed: _addMembers,
                   ),
                   TextButton.icon(
@@ -531,7 +651,9 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
                     onPressed: () {
                       setState(() {
                         if (members.isEmpty) {
-                          members = subscriptionsModel.state.map((e) => e.id).toSet();
+                          members = subscriptionsModel.state
+                              .map((e) => e.id)
+                              .toSet();
                         } else {
                           members.clear();
                         }
@@ -541,12 +663,61 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
                   ...groupActions,
                 ],
               ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _memberSearch,
+                decoration: InputDecoration(
+                  isDense: true,
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  hintText: l10n.search_subscriptions,
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: FilterChip(
+                        label: Text(l10n.all),
+                        selected: _sourceFilter == null,
+                        onSelected: (_) => setState(() => _sourceFilter = null),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: FilterChip(
+                        label: Text(l10n.source_x),
+                        selected: _sourceFilter == 'x',
+                        onSelected: (_) => setState(() => _sourceFilter = 'x'),
+                      ),
+                    ),
+                    for (final plugin in builtInPlugins)
+                      if (plugin is SubscriptionSource &&
+                          orderedSubscriptions.any(
+                            (s) => (plugin as SubscriptionSource).owns(s),
+                          ))
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: FilterChip(
+                            label: Text(plugin.title(context)),
+                            selected: _sourceFilter == plugin.id,
+                            onSelected: (_) =>
+                                setState(() => _sourceFilter = plugin.id),
+                          ),
+                        ),
+                  ],
+                ),
+              ),
               Expanded(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  itemCount: orderedSubscriptions.length,
+                  itemCount: _visibleSubscriptions.length,
                   itemBuilder: (context, index) {
-                    var subscription = orderedSubscriptions[index];
+                    var subscription = _visibleSubscriptions[index];
 
                     return CheckboxListTile(
                       dense: true,
@@ -569,10 +740,7 @@ class _SubscriptionGroupEditDialogState extends State<SubscriptionGroupEditDialo
               OverflowBar(
                 alignment: MainAxisAlignment.end,
                 overflowAlignment: OverflowBarAlignment.end,
-                children: [
-                  ...buttonsLst1,
-                  ...buttonsLst2,
-                ],
+                children: [...buttonsLst1, ...buttonsLst2],
               ),
             ],
           ),
