@@ -485,6 +485,8 @@ Future<void> main() async {
       optionPluginRedditClientId: '',
       optionPluginRedditInHomeFeed: false,
       optionPluginThreadsInHomeFeed: false,
+      optionPluginBlueskyInHomeFeed: false,
+      optionPluginMastodonInHomeFeed: false,
       optionPluginRedditShowTab: false,
       optionPluginRedditSort: redditSortHot,
       optionPluginRedditTimeFilter: redditTimeFilterDay,

@@ -235,6 +235,7 @@ const optionPluginThreadsUserIds = 'plugin.threads.user_ids';
 /// Bluesky, read through the public AppView — local follows, no Bluesky account.
 const pluginIdBluesky = 'bluesky';
 const optionPluginBlueskyEnabled = 'plugin.bluesky.enabled';
+const optionPluginBlueskyInHomeFeed = 'plugin.bluesky.in_home_feed';
 const optionPluginBlueskyShowTab = 'plugin.bluesky.show_tab';
 
 /// Bluesky AppView base URL. Empty falls back to [kBlueskyDefaultAppView].
@@ -262,6 +263,7 @@ const blueskyMaxAccountsPerLoad = 30;
 /// required because Mastodon account ids are local to each server.
 const pluginIdMastodon = 'mastodon';
 const optionPluginMastodonEnabled = 'plugin.mastodon.enabled';
+const optionPluginMastodonInHomeFeed = 'plugin.mastodon.in_home_feed';
 const optionPluginMastodonShowTab = 'plugin.mastodon.show_tab';
 const optionPluginMastodonInstance = 'plugin.mastodon.instance';
 

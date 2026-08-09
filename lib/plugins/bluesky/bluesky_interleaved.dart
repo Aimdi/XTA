@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
@@ -9,6 +10,21 @@ import 'package:xta/ui/provenance_accent.dart';
 
 /// How many posts each Bluesky account contributes to a shared timeline.
 const int kBlueskyInterleavedPageSize = 10;
+
+/// Whether followed Bluesky accounts belong in the home timeline. Off unless
+/// asked for: a reader who turned the plugin on wanted its tab, not a different
+/// Following feed.
+bool blueskyInHomeFeed(BasePrefService prefs) =>
+    prefs.get<bool>(optionPluginBlueskyEnabled) == true && prefs.get<bool>(optionPluginBlueskyInHomeFeed) == true;
+
+/// The accounts the home timeline should mix in — none unless the option is on.
+List<String> blueskyHomeIds(BuildContext context) {
+  if (!blueskyInHomeFeed(PrefService.of(context, listen: false))) {
+    return const [];
+  }
+
+  return context.read<BlueskyAccountsStore>().state.map((e) => e.actor).toList(growable: false);
+}
 
 /// One page of each account, as dated items a tweet list can slot between its
 /// chains.

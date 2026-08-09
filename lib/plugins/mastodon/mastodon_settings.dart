@@ -119,6 +119,16 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          SwitchListTile(
+            secondary: const Icon(Icons.dynamic_feed_outlined),
+            title: Text(l10n.plugin_mastodon_in_home_feed),
+            subtitle: Text(l10n.plugin_mastodon_in_home_feed_description),
+            value: PrefService.of(context).get<bool>(optionPluginMastodonInHomeFeed) == true,
+            onChanged: (value) async {
+              await PrefService.of(context, listen: false).set(optionPluginMastodonInHomeFeed, value);
+              if (mounted) setState(() {});
+            },
+          ),
           Text(l10n.plugin_mastodon_settings_intro, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 16),
           Text(l10n.plugin_mastodon_instance, style: theme.textTheme.titleSmall),

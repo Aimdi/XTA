@@ -96,6 +96,16 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          SwitchListTile(
+            secondary: const Icon(Icons.dynamic_feed_outlined),
+            title: Text(l10n.plugin_bluesky_in_home_feed),
+            subtitle: Text(l10n.plugin_bluesky_in_home_feed_description),
+            value: PrefService.of(context).get<bool>(optionPluginBlueskyInHomeFeed) == true,
+            onChanged: (value) async {
+              await PrefService.of(context, listen: false).set(optionPluginBlueskyInHomeFeed, value);
+              if (mounted) setState(() {});
+            },
+          ),
           Text(l10n.plugin_bluesky_settings_intro, style: theme.textTheme.bodyMedium),
           const SizedBox(height: 16),
           Text(l10n.plugin_bluesky_instance, style: theme.textTheme.titleSmall),

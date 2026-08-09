@@ -90,6 +90,12 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
       context.read<MastodonAccountsStore>().remove(subscription.id);
 
   @override
+  bool inHomeFeed(BuildContext context) => fediverseInHomeFeed(PrefService.of(context, listen: false));
+
+  @override
+  List<String> homeFeedIds(BuildContext context) => fediverseHomeIds(context);
+
+  @override
   Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
       loadMastodonInterleaved(context, ids);
 

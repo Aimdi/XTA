@@ -106,6 +106,12 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
       context.read<BlueskyAccountsStore>().remove(subscription.id);
 
   @override
+  bool inHomeFeed(BuildContext context) => blueskyInHomeFeed(PrefService.of(context, listen: false));
+
+  @override
+  List<String> homeFeedIds(BuildContext context) => blueskyHomeIds(context);
+
+  @override
   Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
       loadBlueskyInterleaved(context, ids);
 
