@@ -11,10 +11,7 @@ String pixivCaptionToText(String? caption) {
 }
 
 /// Headers Pixiv CDN requires before it will serve an image.
-const pixivImageHeaders = <String, String>{
-  'Referer': 'https://www.pixiv.net/',
-  'User-Agent': 'Mozilla/5.0',
-};
+const pixivImageHeaders = <String, String>{'Referer': 'https://www.pixiv.net/', 'User-Agent': 'Mozilla/5.0'};
 
 /// A tag on an illust — translated name when Pixiv sent one.
 class PixivTag {
@@ -188,10 +185,7 @@ String? _pageImageUrl(Json page) {
 List<String> _pageUrlsOf(Json illust) {
   final pages = illust['meta_pages'].list;
   if (pages.isNotEmpty) {
-    return [
-      for (final page in pages)
-        ?_pageImageUrl(page),
-    ];
+    return [for (final page in pages) ?_pageImageUrl(page)];
   }
 
   final single = _largeImageUrl(illust) ?? illust['meta_single_page']['original_image_url'].string;
@@ -239,6 +233,16 @@ PixivIllust? pixivIllustFromJson(Object? json) {
     totalViews: data['total_view'].integer ?? 0,
     isR18: pixivIsR18(data),
   );
+}
+
+/// A trending tag with the illust Pixiv picked to represent it — every OSS
+/// client renders these as a tappable image grid for the search landing page.
+class PixivTrendTag {
+  final String name;
+  final String? translatedName;
+  final PixivIllust? illust;
+
+  const PixivTrendTag({required this.name, this.translatedName, this.illust});
 }
 
 /// Pure parse of a following / ranking / bookmarks / search list payload.

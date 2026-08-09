@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +27,7 @@ class PixivSearchScreen extends StatefulWidget {
   State<PixivSearchScreen> createState() => _PixivSearchScreenState();
 }
 
-class _PixivSearchScreenState extends State<PixivSearchScreen>
-    with SingleTickerProviderStateMixin {
+class _PixivSearchScreenState extends State<PixivSearchScreen> with SingleTickerProviderStateMixin {
   late final TextEditingController _query;
   late final TabController _tabs;
   late final PixivIllustListStore _illusts;
@@ -37,12 +38,12 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
   var _searched = false;
   var _searchTarget = 'partial_match_for_tags';
   var _sort = 'date_desc';
+  List<PixivTrendTag> _trending = const [];
+  List<PixivIllust> _popular = const [];
+  List<PixivTrendTag> _suggestions = const [];
+  Timer? _suggestDebounce;
 
-  static const _searchTargets = [
-    'partial_match_for_tags',
-    'exact_match_for_tags',
-    'title_and_caption',
-  ];
+  static const _searchTargets = ['partial_match_for_tags', 'exact_match_for_tags', 'title_and_caption'];
   static const _sorts = ['date_desc', 'popular_desc'];
 
   @override
@@ -64,12 +65,15 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
       if (!mounted) return;
       if ((widget.initialQuery ?? '').trim().isNotEmpty) {
         _search();
+      } else {
+        _loadTrending();
       }
     });
   }
 
   @override
   void dispose() {
+    _suggestDebounce?.cancel();
     _query.dispose();
     _tabs.dispose();
     _illusts.destroy();
@@ -89,8 +93,11 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
 
     final client = context.read<PixivClient>();
     FocusScope.of(context).unfocus();
+    _suggestDebounce?.cancel();
     setState(() {
       _searched = true;
+      _suggestions = const [];
+      _popular = const [];
       _usersError = null;
       _usersLoading = true;
       _users = const [];
@@ -101,6 +108,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     // Start users while illusts refresh; always clear the users spinner (a soft
     // refresh throw used to leave `_usersLoading` stuck forever).
     final usersFuture = client.searchUsers(word);
+    _loadPopularPreview(client, word);
     try {
       await _illusts.refresh();
       if (!mounted) return;
@@ -120,12 +128,70 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     }
   }
 
+  Future<void> _loadTrending() async {
+    if (_trending.isNotEmpty) return;
+    try {
+      final tags = await context.read<PixivClient>().trendingTags();
+      if (!mounted) return;
+      final mute = context.read<PixivMuteStore>().state;
+      setState(() {
+        _trending = [
+          for (final tag in tags)
+            if (!mute.tags.contains(tag.name.toLowerCase()))
+              switch (tag.illust) {
+                final illust? when mute.isMuted(illust) => PixivTrendTag(
+                  name: tag.name,
+                  translatedName: tag.translatedName,
+                ),
+                _ => tag,
+              },
+        ];
+      });
+    } catch (_) {
+      // The landing page works without a trending grid; history still shows.
+    }
+  }
+
+  /// The community's free stand-in for Premium `popular_desc`: one page of the
+  /// most popular results, drawn as a strip above the date-sorted grid.
+  Future<void> _loadPopularPreview(PixivClient client, String word) async {
+    if (_sort == 'popular_desc') return;
+    try {
+      final page = await client.popularPreview(word, searchTarget: _searchTarget);
+      if (!mounted || _query.text.trim() != word) return;
+      setState(() => _popular = context.read<PixivMuteStore>().filter(page.illusts));
+    } catch (_) {
+      // Best-effort — the main grid is the answer, this is garnish.
+    }
+  }
+
+  void _onQueryChanged(String text) {
+    _suggestDebounce?.cancel();
+    final word = text.trim();
+    if (word.isEmpty || parsePixivLink(word) != null) {
+      if (_suggestions.isNotEmpty) setState(() => _suggestions = const []);
+      return;
+    }
+    _suggestDebounce = Timer(const Duration(milliseconds: 300), () async {
+      try {
+        final tags = await context.read<PixivClient>().autocomplete(word);
+        if (!mounted || _query.text.trim() != word) return;
+        setState(() => _suggestions = tags);
+      } catch (_) {
+        // Typing goes on; suggestions are a convenience, not a gate.
+      }
+    });
+  }
+
+  void _searchFor(String word) {
+    _query.text = word;
+    _search();
+  }
+
   Future<void> _openLink(PixivLinkRef link) async {
     final navigator = Navigator.of(context);
     if (link case PixivUserLinkRef(:final id)) {
-      await navigator.push(
-        MaterialPageRoute(builder: (_) => PixivUserScreen(userId: id)),
-      );
+      await navigator.push(MaterialPageRoute(builder: (_) => PixivUserScreen(userId: id)));
       return;
     }
 
@@ -135,9 +201,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     try {
       final illust = await client.illustDetail(link.id);
       if (!mounted) return;
-      await navigator.push(
-        MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust)),
-      );
+      await navigator.push(MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust)));
     } catch (_) {
       if (mounted) {
         messenger.showSnackBar(SnackBar(content: Text(message)));
@@ -151,10 +215,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     }
     setState(() => _usersLoading = true);
     try {
-      final page = await context.read<PixivClient>().searchUsers(
-        _query.text,
-        nextUrl: _usersNext,
-      );
+      final page = await context.read<PixivClient>().searchUsers(_query.text, nextUrl: _usersNext);
       if (!mounted) return;
       setState(() {
         _users = [..._users, ...page.users];
@@ -176,19 +237,11 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
           controller: _query,
           textInputAction: TextInputAction.search,
           autofocus: (widget.initialQuery ?? '').isEmpty,
-          decoration: InputDecoration(
-            hintText: l10n.plugin_pixiv_search_hint,
-            border: InputBorder.none,
-          ),
+          decoration: InputDecoration(hintText: l10n.plugin_pixiv_search_hint, border: InputBorder.none),
+          onChanged: _onQueryChanged,
           onSubmitted: (_) => _search(),
         ),
-        actions: [
-          IconButton(
-            tooltip: l10n.search,
-            onPressed: _search,
-            icon: const Icon(Icons.search),
-          ),
-        ],
+        actions: [IconButton(tooltip: l10n.search, onPressed: _search, icon: const Icon(Icons.search))],
         bottom: TabBar(
           controller: _tabs,
           tabs: [
@@ -197,10 +250,9 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabs,
-        children: [_illustTab(l10n), _usersTab(l10n)],
-      ),
+      body: _suggestions.isEmpty
+          ? TabBarView(controller: _tabs, children: [_illustTab(l10n), _usersTab(l10n)])
+          : _suggestionList(),
     );
   }
 
@@ -212,112 +264,205 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
     return Column(
       children: [
         _searchControls(l10n),
+        if (_popular.isNotEmpty) _popularStrip(l10n),
         Expanded(
-          child:
-              ScopedBuilder<PixivIllustListStore, List<PixivIllust>>(
-                store: _illusts,
-                onLoading: (_) {
-                  if (_illusts.state.isNotEmpty) {
-                    return PixivIllustGrid(
-                      illusts: _illusts.state,
-                      onRefresh: _illusts.refresh,
-                      loadingMore: _illusts.loadingMore,
-                    );
-                  }
-                  return const Center(child: CircularProgressIndicator());
-                },
-                onError: (context, error) => Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: FullPageErrorWidget(
-                    error: error,
-                    stackTrace: null,
-                    prefix: pixivErrorMessage(l10n, error ?? Exception()),
-                    onRetry: _search,
-                  ),
-                ),
-                onState: (context, illusts) {
-                  if (illusts.isEmpty) {
-                    return Center(
-                      child: Text(
-                        l10n.plugin_pixiv_search_empty,
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }
-                  return NotificationListener<ScrollNotification>(
-                    onNotification: (n) {
-                      if (n.metrics.pixels > n.metrics.maxScrollExtent - 1400) {
-                        _illusts.loadMore();
-                      }
-                      return false;
-                    },
-                    child: PixivIllustGrid(
-                      illusts: illusts,
-                      onRefresh: _illusts.refresh,
-                      loadingMore: _illusts.loadingMore,
-                    ),
-                  );
-                },
+          child: ScopedBuilder<PixivIllustListStore, List<PixivIllust>>(
+            store: _illusts,
+            onLoading: (_) {
+              if (_illusts.state.isNotEmpty) {
+                return PixivIllustGrid(
+                  illusts: _illusts.state,
+                  onRefresh: _illusts.refresh,
+                  loadingMore: _illusts.loadingMore,
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+            onError: (context, error) => Padding(
+              padding: const EdgeInsets.all(24),
+              child: FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: pixivErrorMessage(l10n, error ?? Exception()),
+                onRetry: _search,
               ),
+            ),
+            onState: (context, illusts) {
+              if (illusts.isEmpty) {
+                return Center(child: Text(l10n.plugin_pixiv_search_empty, textAlign: TextAlign.center));
+              }
+              return NotificationListener<ScrollNotification>(
+                onNotification: (n) {
+                  if (n.metrics.pixels > n.metrics.maxScrollExtent - 1400) {
+                    _illusts.loadMore();
+                  }
+                  return false;
+                },
+                child: PixivIllustGrid(
+                  illusts: illusts,
+                  onRefresh: _illusts.refresh,
+                  loadingMore: _illusts.loadingMore,
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
   }
 
   Widget _searchHome(L10n l10n) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: ScopedBuilder<PixivSearchHistoryStore, List<String>>.transition(
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        ScopedBuilder<PixivSearchHistoryStore, List<String>>.transition(
           store: context.read<PixivSearchHistoryStore>(),
           onState: (context, history) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                l10n.plugin_pixiv_search_prompt,
-                textAlign: TextAlign.center,
-              ),
+              Text(l10n.plugin_pixiv_search_prompt, textAlign: TextAlign.center),
               const SizedBox(height: 24),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  l10n.plugin_pixiv_search_history,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ),
+              Text(l10n.plugin_pixiv_search_history, style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 8),
               if (history.isEmpty)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(l10n.plugin_pixiv_search_history_empty),
-                )
+                Text(l10n.plugin_pixiv_search_history_empty)
               else
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      for (final query in history)
-                        GestureDetector(
-                          onLongPress: () => context
-                              .read<PixivSearchHistoryStore>()
-                              .remove(query),
-                          child: ActionChip(
-                            label: Text(query),
-                            onPressed: () {
-                              _query.text = query;
-                              _search();
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final query in history)
+                      GestureDetector(
+                        onLongPress: () => context.read<PixivSearchHistoryStore>().remove(query),
+                        child: ActionChip(label: Text(query), onPressed: () => _searchFor(query)),
+                      ),
+                  ],
                 ),
             ],
           ),
         ),
+        if (_trending.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text(l10n.plugin_pixiv_trending_title, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
+          _trendingGrid(),
+        ],
+      ],
+    );
+  }
+
+  /// The tappable image grid every Pixiv client opens search with — each
+  /// trending tag drawn over the illust Pixiv picked to represent it.
+  Widget _trendingGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
       ),
+      itemCount: _trending.length,
+      itemBuilder: (context, index) {
+        final tag = _trending[index];
+        final illust = tag.illust;
+        return InkWell(
+          onTap: () => _searchFor(tag.name),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (illust != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: PixivNetworkImage(
+                    url: illust.thumbnailUrl,
+                    fit: BoxFit.cover,
+                    cacheWidth: (140 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                  ),
+                )
+              else
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
+                    color: Colors.black.withValues(alpha: 0.55),
+                  ),
+                  child: Text(
+                    '#${tag.name}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _popularStrip(L10n l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+          child: Text(l10n.plugin_pixiv_popular_title, style: Theme.of(context).textTheme.titleSmall),
+        ),
+        SizedBox(
+          height: 110,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: _popular.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 6),
+            itemBuilder: (context, index) {
+              final illust = _popular[index];
+              return InkWell(
+                onTap: () =>
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust))),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    width: 110,
+                    child: PixivNetworkImage(
+                      url: illust.thumbnailUrl,
+                      fit: BoxFit.cover,
+                      cacheWidth: (110 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _suggestionList() {
+    return ListView.builder(
+      itemCount: _suggestions.length,
+      itemBuilder: (context, index) {
+        final tag = _suggestions[index];
+        return ListTile(
+          leading: const Icon(Icons.tag),
+          title: Text(tag.name),
+          subtitle: tag.translatedName == null ? null : Text(tag.translatedName!),
+          onTap: () => _searchFor(tag.name),
+        );
+      },
     );
   }
 
@@ -393,12 +538,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
       );
     }
     if (_users.isEmpty) {
-      return Center(
-        child: Text(
-          l10n.plugin_pixiv_search_empty,
-          textAlign: TextAlign.center,
-        ),
-      );
+      return Center(child: Text(l10n.plugin_pixiv_search_empty, textAlign: TextAlign.center));
     }
 
     final theme = Theme.of(context);
@@ -436,21 +576,14 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
                       child: PixivNetworkImage(
                         url: avatar,
                         fit: BoxFit.cover,
-                        cacheWidth:
-                            (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
-                        cacheHeight:
-                            (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                        cacheWidth: (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                        cacheHeight: (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
                       ),
                     ),
             ),
             title: Text(user.name),
             subtitle: Text('@${user.account}'),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PixivUserScreen(userId: user.id),
-              ),
-            ),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PixivUserScreen(userId: user.id))),
           );
         },
       ),

@@ -2,10 +2,8 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 
-typedef PixivIllustPageLoader =
-    Future<PixivIllustPage> Function({String? nextUrl});
-typedef PixivIllustListFilter =
-    List<PixivIllust> Function(List<PixivIllust> illusts);
+typedef PixivIllustPageLoader = Future<PixivIllustPage> Function({String? nextUrl});
+typedef PixivIllustListFilter = List<PixivIllust> Function(List<PixivIllust> illusts);
 
 /// How many consecutive fully-filtered pages to skip before giving up.
 ///
@@ -27,9 +25,13 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
   bool get loadingMore => _loadingMore;
 
   /// Swap the source (e.g. ranking mode) and clear the list.
+  ///
+  /// The clear is the point: leaving the old grid in state let a failed
+  /// refresh on the new mode show the old mode's illusts under the new label.
   void useLoader(PixivIllustPageLoader loader) {
     _loader = loader;
     _nextUrl = null;
+    update(const []);
   }
 
   /// First load shows the store loading state; later pulls keep the grid up
@@ -83,9 +85,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
   Future<PixivIllustPage> _loadVisiblePage({String? nextUrl}) async {
     var cursor = nextUrl;
     for (var attempt = 0; attempt < pixivEmptyPageAdvanceLimit; attempt++) {
-      final page = cursor == null || cursor.isEmpty
-          ? await _loader()
-          : await _loader(nextUrl: cursor);
+      final page = cursor == null || cursor.isEmpty ? await _loader() : await _loader(nextUrl: cursor);
       final visible = _applyFilter(page.illusts);
       final exhausted = page.nextUrl == null || page.nextUrl!.isEmpty;
       if (visible.isNotEmpty || exhausted) {
@@ -95,10 +95,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
     }
 
     final page = await _loader(nextUrl: cursor);
-    return PixivIllustPage(
-      illusts: _applyFilter(page.illusts),
-      nextUrl: page.nextUrl,
-    );
+    return PixivIllustPage(illusts: _applyFilter(page.illusts), nextUrl: page.nextUrl);
   }
 
   List<PixivIllust> _applyFilter(List<PixivIllust> illusts) {
@@ -107,10 +104,7 @@ class PixivIllustListStore extends Store<List<PixivIllust>> {
 }
 
 /// Append [incoming] skipping ids already in [existing].
-List<PixivIllust> mergePixivIllusts(
-  List<PixivIllust> existing,
-  List<PixivIllust> incoming,
-) {
+List<PixivIllust> mergePixivIllusts(List<PixivIllust> existing, List<PixivIllust> incoming) {
   if (incoming.isEmpty) {
     return existing;
   }
