@@ -4,42 +4,58 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Reddit galleries are albums again
+### Reddit reads like a Reddit app now
 
-**A post with several pictures showed a link back to Reddit** instead of the
-pictures. The swipeable album was already there — it just never got any images,
-because without a Reddit client ID the app reads old.reddit's HTML, and that
-page does not contain them. The post's own public feed does, needs no account,
-and is where they come from now. The link stays if Reddit will not answer.
+**Long threads stop ending mid-air.** The app now asks Reddit for a much
+deeper page of comments, and where Reddit still holds replies back, the
+"load more comments" row survives everywhere — including at the bottom of the
+page, where it used to vanish — and actually opens the replies it names.
 
-### Posts you could tap and nothing happened
+**Threads got the tools long threads need.** One button folds every top-level
+argument so a thousand-comment page becomes the list of discussions it is made
+of; the Q&A sort joins the menu, which is the difference between an AMA being
+readable and not; and the indent rails now change colour by depth, so a deep
+argument stays traceable to its level.
 
-**Some posts simply would not open.** A post whose author arrived without a
-handle — a quoted post, or any post with author names hidden — threw the moment
-you tapped it, and the app quietly swallowed it. Tapping again did nothing
-again. They open now.
+**Every subreddit screen answers "what is this place".** An info button opens
+the community's own description with its reader counts — signed in or not —
+and a search button searches inside that community, with Reddit's own orders:
+relevance, top, new, most commented.
 
-**Adding somebody to a group no longer throws you back to the top.** The feed
-still refreshes to take in the change; it now waits until you are back at the
-top, where that costs you nothing.
+**Feeds behave at the edges.** The next page starts loading as you approach
+the bottom; a failed "load more" now says what went wrong and offers Retry
+instead of looking like a button that does nothing; and a finished feed says
+it is finished.
 
-### Bluesky and the Fediverse in your home timeline
+### Pixiv learned discovery
 
-**They have the switch Reddit and Threads already had.** Until now their posts
-could only be read on their own tab or inside a group, which is the one place
-you would least look for them. Off by default, in each plugin's settings —
-turning a plugin on should get you its tab, not a different Following feed.
+**The ranking tab has a calendar now** — pick any day back to 2007 and read
+that day's board, the way Pixiv-Shaft does it.
 
-Turning it on mixes the posts of the accounts you follow there into Following
-and For you, alongside your X posts, in date order.
+**Search opens with Pixiv's trending tags** as a tappable image grid, suggests
+tags with translated names while you type, and puts a "most popular" strip
+above date-sorted results — the community's answer to popularity sorting being
+a paid feature.
+
+**Switching ranking modes no longer lies.** A failed refresh on the new mode
+used to quietly leave the previous mode's drawings on screen under the new
+label. It clears now.
+
+### Small but launch-critical
+
+**A blank screen on launch was one release away.** The podcast player was
+being built before the app's first frame, on an assumption another fix had
+just removed. It is now created only when something actually plays.
+
+**The repost-collapse switch works without a restart** — flipping it in
+Settings › Posts now takes effect immediately.
 
 ---
 
-Everything from [aimdi89](https://github.com/Aimdi/XTA/releases/tag/aimdi89) is
-in here too: backups that stop dropping your stocks, Threads, Bluesky and
-Fediverse accounts and your device-only upvotes and likes; covers for groups
-made of non-X accounts; and a group that lets go of a subreddit's posts when
-you remove it.
+Everything from [aimdi91](https://github.com/Aimdi/XTA/releases/tag/aimdi91) is
+in here too: Reddit galleries that show their pictures without an account,
+posts that refused to open, and the home-timeline switch for Bluesky and the
+Fediverse.
 
 ---
 
