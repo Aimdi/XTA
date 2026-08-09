@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 
@@ -34,6 +33,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/group/feed_catch_up.dart';
 import 'package:xta/group/feed_first_page_action.dart';
+import 'package:xta/group/feed_source_reload.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
 
@@ -147,19 +148,24 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// they read and which ids they passed, and keeping five copies in step is
   /// what made adding a source an eight-line edit in this file alone — and what
   /// left the Fediverse out of two of those five places.
-  Future<void> _loadPluginPosts() => Future.wait(widget.pluginMembers.keys.map(_loadPostsFrom));
+  /// Every registered source, not only the ones this group has members for: a
+  /// source whose last member was just removed still has to be asked, or its
+  /// posts stay in the feed after the account that brought them is gone.
+  Future<void> _loadPluginPosts() => Future.wait(subscriptionSources.map(_loadPostsFrom));
 
   Future<void> _loadPostsFrom(SubscriptionSource source) async {
     if (widget.mediaOnly) {
       return;
     }
 
-    // The group's own members, plus every followed one when this is the
-    // combined feed and the reader asked for that source in it.
-    final ids = {
-      ...?widget.pluginMembers[source]?.map((e) => e.id),
-      if (widget.group.id == '-1' && source.inHomeFeed(context)) ...source.homeFeedIds(context),
-    }.toList(growable: false);
+    final isCombined = widget.group.id == legacyFeedKeyFollowing;
+    final inHomeFeed = isCombined && source.inHomeFeed(context);
+    final ids = sourceIdsFor(
+      memberIds: widget.pluginMembers[source]?.map((e) => e.id).toList(growable: false) ?? const [],
+      isCombinedFeed: isCombined,
+      inHomeFeed: inHomeFeed,
+      homeFeedIds: inHomeFeed ? source.homeFeedIds(context) : const [],
+    );
 
     final items = await source.interleavedPosts(context, ids);
     // Assigned whatever came back, empty included: a member taken out of the
@@ -449,10 +455,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // again afterwards. Fetching them only in initState therefore asked for the
     // posts of an empty list and never asked again — which is why a group with
     // a subreddit in it stayed empty of Reddit posts however long you waited.
-    for (final source in widget.pluginMembers.keys) {
-      if (!listEquals(oldWidget.pluginMembers[source], widget.pluginMembers[source])) {
-        _loadPostsFrom(source);
-      }
+    for (final source in sourcesNeedingReload(before: oldWidget.pluginMembers, after: widget.pluginMembers)) {
+      _loadPostsFrom(source);
     }
 
     if (oldWidget.includeReplies != widget.includeReplies ||
