@@ -11,13 +11,17 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/settings/backup_category.dart';
+import 'package:xta/plugins/mastodon/mastodon_interleaved.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/tweet/interleaved_items.dart';
+import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
 /// Account-free Fediverse reading through a home Mastodon-compatible instance.
 ///
 /// See docs/specs/mastodon-plugin.md.
-class MastodonPlugin extends XtaPlugin {
+class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   MastodonPlugin();
 
   @override
@@ -64,6 +68,30 @@ class MastodonPlugin extends XtaPlugin {
 
   @override
   List<String> get tables => const [tableMastodonSubscription];
+
+  @override
+  String get subscriptionTable => tableMastodonSubscription;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) => MastodonSubscription.fromMap(row);
+
+  @override
+  bool owns(Subscription subscription) => subscription is MastodonSubscription;
+
+  @override
+  Widget Function()? destinationFor(Subscription subscription) =>
+      () => MastodonProfileScreen(acct: subscription.id);
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<MastodonAccountsStore>().load();
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) =>
+      context.read<MastodonAccountsStore>().remove(subscription.id);
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadMastodonInterleaved(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [

@@ -6,6 +6,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/group/custom_feed_rules.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/group_mark_style.dart';
@@ -112,38 +113,27 @@ class GroupModel extends Store<SubscriptionGroupGet> {
       String membership(String table) =>
           'SELECT DISTINCT s.* FROM $table s LEFT JOIN $tableSubscriptionGroupMember sgm ON sgm.profile_id = s.id WHERE sgm.group_id IN ($placeholders) ORDER BY s.id';
 
+      // The X tables, then every plugin that says its followed accounts are
+      // subscriptions — read from the registry rather than named here.
+      final sources = subscriptionSources;
       final rows = await Future.wait([
         database.rawQuery(membership(tableSearchSubscription), ids),
         database.rawQuery(membership(tableSubscription), ids),
-        database.rawQuery(membership(tableSubstackSubscription), ids),
-        database.rawQuery(membership(tableRedditSubscription), ids),
-        database.rawQuery(membership(tableThreadsSubscription), ids),
-        database.rawQuery(membership(tableBlueskySubscription), ids),
-        database.rawQuery(membership(tableMastodonSubscription), ids),
+        for (final source in sources) database.rawQuery(membership(source.subscriptionTable), ids),
       ]);
 
-      var searchSubscriptions = rows[0].map((e) => SearchSubscription.fromMap(e)).toList(growable: false);
-      var userSubscriptions = rows[1].map((e) => UserSubscription.fromMap(e)).toList(growable: false);
-      var substackSubscriptions = rows[2].map((e) => SubstackSubscription.fromMap(e)).toList(growable: false);
-      var redditSubscriptions = rows[3].map((e) => RedditSubscription.fromMap(e)).toList(growable: false);
-      var threadsSubscriptions = rows[4].map((e) => ThreadsSubscription.fromMap(e)).toList(growable: false);
-      var blueskySubscriptions = rows[5].map((e) => BlueskySubscription.fromMap(e)).toList(growable: false);
-      var mastodonSubscriptions = rows[6].map((e) => MastodonSubscription.fromMap(e)).toList(growable: false);
+      final members = <Subscription>[
+        ...rows[1].map(UserSubscription.fromMap),
+        ...rows[0].map(SearchSubscription.fromMap),
+        for (final (index, source) in sources.indexed) ...rows[index + 2].map(source.subscriptionFromMap),
+      ];
 
       // TODO: Factory
       return SubscriptionGroupGet(
         id: group['id'] as String,
         name: group['name'] as String,
         icon: group['icon'] as String,
-        subscriptions: [
-          ...userSubscriptions,
-          ...searchSubscriptions,
-          ...substackSubscriptions,
-          ...redditSubscriptions,
-          ...threadsSubscriptions,
-          ...blueskySubscriptions,
-          ...mastodonSubscriptions,
-        ],
+        subscriptions: members,
         includeReplies: _includeOverride(group['include_replies']),
         includeRetweets: _includeOverride(group['include_retweets']),
         popular: group['popular'] == 1,

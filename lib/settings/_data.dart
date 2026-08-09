@@ -16,8 +16,7 @@ import 'package:xta/settings/sync_screen.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/crash_reporter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:xta/plugins/reddit/reddit_store.dart';
-import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/backup_data.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/settings/import_preview.dart';
@@ -98,14 +97,18 @@ Future<void> _reloadAfterImport(BuildContext context) async {
   var subscriptions = context.read<SubscriptionsModel>();
   var folders = context.read<SavedTweetFolderModel>();
   var likedTweets = context.read<LikedTweetModel>();
-  var subreddits = context.read<RedditSubredditsStore>();
-  var publications = context.read<SubstackPublicationsStore>();
+  // Every source, not the two this used to name: a restored list of followed
+  // Threads, Bluesky, Fediverse or stock accounts stayed invisible until the
+  // app was restarted.
+  final sources = subscriptionSources;
 
   await subscriptions.reloadSubscriptions();
   await folders.listFolders();
   await likedTweets.listLikedTweets();
-  await subreddits.load();
-  await publications.load();
+  for (final source in sources) {
+    if (!context.mounted) return;
+    await source.reloadFromDatabase(context);
+  }
 }
 
 /// The whole backup payload as JSON, for callers that write it somewhere other

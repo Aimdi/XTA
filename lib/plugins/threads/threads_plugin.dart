@@ -9,13 +9,17 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/settings/backup_category.dart';
+import 'package:xta/plugins/threads/threads_interleaved.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/tweet/interleaved_items.dart';
+import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/threads/threads_screen.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 
-class ThreadsPlugin extends XtaPlugin {
+class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
   ThreadsPlugin();
 
   @override
@@ -65,6 +69,36 @@ class ThreadsPlugin extends XtaPlugin {
     tableThreadsSubscription,
     tableThreadsLocalLike,
   ];
+
+  @override
+  String get subscriptionTable => tableThreadsSubscription;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) => ThreadsSubscription.fromMap(row);
+
+  @override
+  bool owns(Subscription subscription) => subscription is ThreadsSubscription;
+
+  @override
+  Widget Function()? destinationFor(Subscription subscription) =>
+      () => ThreadsProfileScreen(username: subscription.id);
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<ThreadsAccountsStore>().load();
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) =>
+      context.read<ThreadsAccountsStore>().remove(subscription.id);
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadThreadsInterleaved(context, ids);
+
+  @override
+  bool inHomeFeed(BuildContext context) => threadsInHomeFeed(PrefService.of(context, listen: false));
+
+  @override
+  List<String> homeFeedIds(BuildContext context) => threadsHomeHandles(context);
 
   @override
   List<PluginBackupSection> get backupSections => [

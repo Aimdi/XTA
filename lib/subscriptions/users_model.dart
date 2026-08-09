@@ -5,6 +5,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:logging/logging.dart';
@@ -41,35 +42,22 @@ class SubscriptionsModel extends Store<List<Subscription>> {
       bool orderByAscending = prefs.get(optionSubscriptionOrderByAscending);
       String orderByField = prefs.get(optionSubscriptionOrderByField);
 
-      // Independent tables, read together. Followed Substack publications,
-      // subreddits, Threads, Bluesky and Fediverse accounts are subscriptions too, so they
-      // appear in this list and can be picked as group members like anyone else
-      // — which is the whole reason they live in tables rather than in a preference.
+      // The X tables, then every plugin that says its followed accounts are
+      // subscriptions. Read from the registry rather than listed here: a
+      // followed publication, subreddit, Threads, Bluesky or Fediverse account
+      // is a subscription like any other, and naming them one at a time is what
+      // made adding a network a five-file edit.
+      final sources = subscriptionSources;
       final rows = await Future.wait([
         database.query(tableSubscription),
         database.query(tableSearchSubscription),
-        database.query(tableSubstackSubscription),
-        database.query(tableRedditSubscription),
-        database.query(tableThreadsSubscription),
-        database.query(tableBlueskySubscription),
-        database.query(tableMastodonSubscription),
+        for (final source in sources) database.query(source.subscriptionTable),
       ]);
-      List<Subscription> users = rows[0].map((e) => UserSubscription.fromMap(e)).toList();
-      List<Subscription> searches = rows[1].map((e) => SearchSubscription.fromMap(e)).toList();
-      List<Subscription> publications = rows[2].map((e) => SubstackSubscription.fromMap(e)).toList();
-      List<Subscription> subreddits = rows[3].map((e) => RedditSubscription.fromMap(e)).toList();
-      List<Subscription> threads = rows[4].map((e) => ThreadsSubscription.fromMap(e)).toList();
-      List<Subscription> bluesky = rows[5].map((e) => BlueskySubscription.fromMap(e)).toList();
-      List<Subscription> mastodon = rows[6].map((e) => MastodonSubscription.fromMap(e)).toList();
 
       List<Subscription> lst = [
-        ...users,
-        ...searches,
-        ...publications,
-        ...subreddits,
-        ...threads,
-        ...bluesky,
-        ...mastodon,
+        ...rows[0].map(UserSubscription.fromMap),
+        ...rows[1].map(SearchSubscription.fromMap),
+        for (final (index, source) in sources.indexed) ...rows[index + 2].map(source.subscriptionFromMap),
       ];
       if (orderCustom.isEmpty) {
         return lst.sorted((a, b) {

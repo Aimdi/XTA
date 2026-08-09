@@ -11,6 +11,7 @@ import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/group/group_switcher.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
@@ -162,14 +163,16 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
         final filteredUsers = group.id == '-1' ? group.subscriptions.where((elm) => elm.inFeed) : group.subscriptions;
         final members = filteredUsers.sorted((a, b) => a.createdAt.compareTo(b.createdAt)).toList();
 
-        // Publications, subreddits and accounts on other networks are members of
-        // the group but they are not searched on X: each has its own source, and
-        // leaving one in a search query puts a dangling `OR` in it.
-        final publications = members.whereType<SubstackSubscription>().toList(growable: false);
-        final subreddits = members.whereType<RedditSubscription>().toList(growable: false);
-        final threadsAccounts = members.whereType<ThreadsSubscription>().toList(growable: false);
-        final blueskyAccounts = members.whereType<BlueskySubscription>().toList(growable: false);
-        final mastodonAccounts = members.whereType<MastodonSubscription>().toList(growable: false);
+        // Members belonging to a plugin are not searched on X: each source has
+        // its own pagination, and leaving one in a search query puts a dangling
+        // `OR` in it. Grouped by the source that will fetch them, so nothing
+        // downstream has to know a network by name.
+        final pluginMembers = {
+          for (final source in subscriptionSources)
+            if (members.where(source.owns).toList(growable: false) case final owned when owned.isNotEmpty)
+              source: owned,
+        };
+
         // Named rather than subtracted: what X can search for is a closed set,
         // so the next plugin whose members join a group cannot silently end up
         // in a search query by not being on a list of exclusions.
@@ -183,11 +186,7 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
         return SubscriptionGroupFeed(
           group: group,
           chunks: chunks,
-          publications: publications,
-          subreddits: subreddits,
-          threadsAccounts: threadsAccounts,
-          blueskyAccounts: blueskyAccounts,
-          mastodonAccounts: mastodonAccounts,
+          pluginMembers: pluginMembers,
           includeReplies: includeReplies,
           includeRetweets: includeRetweets,
           mediaOnly: widget.mediaOnly,

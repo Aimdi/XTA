@@ -15,6 +15,11 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/settings/backup_category.dart';
+import 'package:xta/plugins/bluesky/bluesky_interleaved.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/tweet/interleaved_items.dart';
+import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
+import 'package:xta/user.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
@@ -22,7 +27,7 @@ import 'package:xta/plugins/plugin_category.dart';
 ///
 /// Skylib (AGPL) inspired the approach — not the code. See
 /// docs/specs/bluesky-plugin.md.
-class BlueskyPlugin extends XtaPlugin {
+class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
   BlueskyPlugin();
 
   @override
@@ -73,6 +78,36 @@ class BlueskyPlugin extends XtaPlugin {
         tableBlueskySubscription,
         tableBlueskyLocalLike,
       ];
+
+  @override
+  String get subscriptionTable => tableBlueskySubscription;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) => BlueskySubscription.fromMap(row);
+
+  @override
+  bool owns(Subscription subscription) => subscription is BlueskySubscription;
+
+  @override
+  Widget avatarFor(Subscription subscription, {double size = 40}) => Stack(
+    alignment: Alignment.bottomRight,
+    children: [UserAvatar(uri: subscription.profileImageUrlHttps), const BlueskyButterflyIcon(size: 12)],
+  );
+
+  @override
+  Widget Function()? destinationFor(Subscription subscription) =>
+      () => BlueskyProfileScreen(actor: subscription.id);
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<BlueskyAccountsStore>().load();
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) =>
+      context.read<BlueskyAccountsStore>().remove(subscription.id);
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadBlueskyInterleaved(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [

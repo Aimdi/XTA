@@ -21,16 +21,8 @@ import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/language_filter.dart';
 import 'package:xta/profile/media_grid/media_grid.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
-import 'package:logging/logging.dart';
-import 'package:xta/plugins/bluesky/bluesky_interleaved.dart';
-import 'package:xta/plugins/mastodon/mastodon_interleaved.dart';
-import 'package:xta/plugins/reddit/reddit_interleaved.dart';
-import 'package:xta/plugins/threads/threads_interleaved.dart';
-import 'package:xta/plugins/substack/substack_client.dart';
-import 'package:xta/ui/provenance_accent.dart';
-import 'package:xta/plugins/substack/substack_post_card.dart';
-import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/profile/profile_feed_settings.dart';
+import 'package:xta/plugins/subscription_source.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
@@ -76,23 +68,11 @@ class SubscriptionGroupFeed extends StatefulWidget {
   // posts it falls back on are.
   final DateTime? initialPreviewCachedAt;
 
-  /// Substack publications in this group. They are members like any other, but
-  /// they have their own source and their own pagination, so they are fetched
-  /// beside the X search rather than inside it.
-  final List<SubstackSubscription> publications;
-
-  /// Subreddits in this group, fetched beside the X search for the same reason
-  /// as the publications: their own source, their own pagination.
-  final List<RedditSubscription> subreddits;
-
-  /// Threads accounts in this group, for the same reason again.
-  final List<ThreadsSubscription> threadsAccounts;
-
-  /// Bluesky accounts in this group — fetched beside X, never inside an X search.
-  final List<BlueskySubscription> blueskyAccounts;
-
-  /// Fediverse accounts in this group, for the same reason again.
-  final List<MastodonSubscription> mastodonAccounts;
+  /// This group's members that belong to a plugin, keyed by the source that
+  /// fetches them. They are members like any other, but each has its own source
+  /// and its own pagination, so they are fetched beside the X search rather
+  /// than inside it.
+  final Map<SubscriptionSource, List<Subscription>> pluginMembers;
 
   const SubscriptionGroupFeed({
     super.key,
@@ -104,11 +84,7 @@ class SubscriptionGroupFeed extends StatefulWidget {
     this.cacheKey,
     this.initialPreview,
     this.initialPreviewCachedAt,
-    this.publications = const [],
-    this.subreddits = const [],
-    this.threadsAccounts = const [],
-    this.blueskyAccounts = const [],
-    this.mastodonAccounts = const [],
+    this.pluginMembers = const {},
   });
 
   @override
@@ -148,165 +124,49 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   final GlobalKey _caughtUpKey = GlobalKey();
   Timer? _chunkRefreshDebounce;
 
-  static final _log = Logger('SubscriptionGroupFeed');
-
   bool get _usesCache => widget.cacheKey != null;
 
-  /// Substack posts loaded for this group's publications, newest first.
+  /// Posts loaded for each plugin source in this group, newest first.
   ///
-  /// Substack pages by offset and X by cursor, so the two cannot share one
-  /// paginator. These are fetched once per mount and slotted among the chains
-  /// by date; scrolling further into X's history does not need more of them,
-  /// because a newsletter publishes a handful of posts a week, not a page.
-  List<InterleavedItem> _substackItems = const [];
-
-  /// Reddit posts for this group's subreddits, newest first.
-  List<InterleavedItem> _redditItems = const [];
-
-  /// Threads posts for this group's Threads accounts, newest first.
-  List<InterleavedItem> _threadsItems = const [];
-
-  /// Bluesky posts for this group's Bluesky accounts, newest first.
-  List<InterleavedItem> _blueskyItems = const [];
-
-  /// The same, for this group's Fediverse accounts.
-  List<InterleavedItem> _mastodonItems = const [];
+  /// A source pages on its own terms — Substack by offset, X by cursor — so
+  /// these cannot share one paginator with the X side. They are fetched once per
+  /// mount and slotted among the chains by date.
+  final Map<SubscriptionSource, List<InterleavedItem>> _pluginItems = {};
 
   /// The sources merged, rebuilt only when one of them arrives. Built in
   /// `build` it was a fresh list every frame, so nothing downstream could tell
   /// by identity that the interleave had not changed.
   List<InterleavedItem> _interleaved = const [];
 
-  void _mergeInterleaved() =>
-      _interleaved = [..._substackItems, ..._redditItems, ..._threadsItems, ..._blueskyItems, ..._mastodonItems];
+  void _mergeInterleaved() => _interleaved = [for (final items in _pluginItems.values) ...items];
 
-  Future<void> _loadThreadsPosts() async {
+  /// Asks every plugin in this group for its posts, at once.
+  ///
+  /// One loader rather than one per network: they differed only in which store
+  /// they read and which ids they passed, and keeping five copies in step is
+  /// what made adding a source an eight-line edit in this file alone — and what
+  /// left the Fediverse out of two of those five places.
+  Future<void> _loadPluginPosts() => Future.wait(widget.pluginMembers.keys.map(_loadPostsFrom));
+
+  Future<void> _loadPostsFrom(SubscriptionSource source) async {
     if (widget.mediaOnly) {
       return;
     }
 
-    // The group's own Threads accounts, plus every followed one when this is
-    // the combined feed and the reader asked for Threads in it.
-    final handles = {
-      ...widget.threadsAccounts.map((e) => e.id),
-      if (widget.group.id == '-1') ...threadsHomeHandles(context),
+    // The group's own members, plus every followed one when this is the
+    // combined feed and the reader asked for that source in it.
+    final ids = {
+      ...?widget.pluginMembers[source]?.map((e) => e.id),
+      if (widget.group.id == '-1' && source.inHomeFeed(context)) ...source.homeFeedIds(context),
     }.toList(growable: false);
 
-    final items = await loadThreadsInterleaved(context, handles);
-    // Assigned whatever came back, empty included: an account taken out of the
-    // group has to take its posts with it.
-    if (mounted) {
-      setState(() {
-        _threadsItems = items;
-        _mergeInterleaved();
-      });
-    }
-  }
-
-  Future<void> _loadBlueskyPosts() async {
-    if (widget.mediaOnly) {
-      return;
-    }
-
-    final actors = widget.blueskyAccounts.map((e) => e.id).toList(growable: false);
-    final items = await loadBlueskyInterleaved(context, actors);
-    if (mounted) {
-      setState(() {
-        _blueskyItems = items;
-        _mergeInterleaved();
-      });
-    }
-  }
-
-  Future<void> _loadMastodonPosts() async {
-    if (widget.mediaOnly) {
-      return;
-    }
-
-    final accts = widget.mastodonAccounts.map((e) => e.id).toList(growable: false);
-    final items = await loadMastodonInterleaved(context, accts);
-    if (mounted) {
-      setState(() {
-        _mastodonItems = items;
-        _mergeInterleaved();
-      });
-    }
-  }
-
-  Future<void> _loadRedditPosts({bool force = false}) async {
-    if (widget.mediaOnly) {
-      return;
-    }
-
-    // The group's own subreddits, plus every followed one when this is the
-    // combined feed and the reader asked for Reddit in it.
-    final names = {
-      ...widget.subreddits.map((e) => e.name),
-      if (widget.group.id == '-1') ...redditHomeSubreddits(context),
-    }.toList(growable: false);
-
-    // Subreddits are read through the shared source, so the ones this group has
-    // in common with the Reddit tab or For you are not fetched twice; [force]
-    // is the reader pulling to refresh, which has to reach Reddit itself.
-    final items = await loadRedditInterleaved(context, names, forceRefresh: force);
-    // Assigned whatever came back, empty included: a subreddit taken out of the
+    final items = await source.interleavedPosts(context, ids);
+    // Assigned whatever came back, empty included: a member taken out of the
     // group has to take its posts with it, and keeping the old ones on an empty
     // result would leave them there for good.
     if (mounted) {
       setState(() {
-        _redditItems = items;
-        _mergeInterleaved();
-      });
-    }
-  }
-
-  Future<void> _loadSubstackPosts() async {
-    if (widget.mediaOnly) {
-      return;
-    }
-
-    // A reader who switched the plugin off still had every publication fetched
-    // on each mount of this feed.
-    if (PrefService.of(context, listen: false).get<bool>(optionPluginSubstackEnabled) != true) {
-      return;
-    }
-
-    final client = context.read<SubstackClient>();
-
-    // All publications at once; the feed used to wait on the sum of the round
-    // trips. One unreachable publication must not empty the whole feed of the
-    // others, nor replace a working timeline with an error screen.
-    final fetched = await Future.wait(
-      widget.publications.map((publication) async {
-        try {
-          return (publication, await client.fetchPosts(publicationOf(publication), limit: substackFeedPageSize));
-        } catch (e) {
-          _log.warning('Unable to load Substack posts for ${publication.id}: $e');
-          return null;
-        }
-      }),
-    );
-
-    final items = <InterleavedItem>[];
-    for (final (publication, posts) in fetched.nonNulls) {
-      for (final post in posts) {
-        final date = post.publishedAt;
-        if (date == null) {
-          continue;
-        }
-        items.add(
-          provenanceInterleavedItem(
-            date: date,
-            pluginId: pluginIdSubstack,
-            build: (_) => SubstackPostCard(post: post, logoUrl: publication.logoUrl),
-          ),
-        );
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        _substackItems = items;
+        _pluginItems[source] = items;
         _mergeInterleaved();
       });
     }
@@ -372,11 +232,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (!_feedController.hasItems && (widget.initialPreview?.isEmpty ?? true)) {
       _loadPreview();
     }
-    _loadSubstackPosts();
-    _loadRedditPosts();
-    _loadThreadsPosts();
-    _loadBlueskyPosts();
-    _loadMastodonPosts();
+    _loadPluginPosts();
   }
 
   Future<void> _loadPreview() async {
@@ -580,18 +436,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // again afterwards. Fetching them only in initState therefore asked for the
     // posts of an empty list and never asked again — which is why a group with
     // a subreddit in it stayed empty of Reddit posts however long you waited.
-    if (!listEquals(oldWidget.subreddits, widget.subreddits)) {
-      _loadRedditPosts();
-    }
-    if (!listEquals(oldWidget.publications, widget.publications)) {
-      _loadSubstackPosts();
-    }
-    if (!listEquals(oldWidget.threadsAccounts, widget.threadsAccounts)) {
-      _loadThreadsPosts();
-    }
-    if (!listEquals(oldWidget.blueskyAccounts, widget.blueskyAccounts)) {
-      _loadBlueskyPosts();
-    _loadMastodonPosts();
+    for (final source in widget.pluginMembers.keys) {
+      if (!listEquals(oldWidget.pluginMembers[source], widget.pluginMembers[source])) {
+        _loadPostsFrom(source);
+      }
     }
 
     if (oldWidget.includeReplies != widget.includeReplies ||
@@ -976,11 +824,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // X chunks meant a group of nothing but subreddits reported itself empty
     // before its posts were ever asked for — the list below knows how to show
     // interleaved items with no chains, but never got the chance.
-    if (widget.chunks.isEmpty &&
-        widget.publications.isEmpty &&
-        widget.subreddits.isEmpty &&
-        widget.threadsAccounts.isEmpty &&
-        widget.blueskyAccounts.isEmpty) {
+    if (widget.chunks.isEmpty && widget.pluginMembers.isEmpty) {
       return Scaffold(body: Center(child: Text(L10n.of(context).this_group_contains_no_subscriptions)));
     }
 
@@ -1004,10 +848,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             onRefresh: () async {
               // Not awaited: the reader is waiting on X's first page, and
               // the plugins are beside it rather than in front of it.
-              unawaited(_loadRedditPosts(force: true));
-              unawaited(_loadThreadsPosts());
-              unawaited(_loadBlueskyPosts());
-              unawaited(_loadMastodonPosts());
+              unawaited(_loadPluginPosts());
               // Only this group's rows. The wipe used to take the whole table
               // with it, so pulling to refresh one feed made every other feed
               // refetch its first page from the network next time it opened.

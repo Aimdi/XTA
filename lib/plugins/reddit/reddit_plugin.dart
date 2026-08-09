@@ -9,6 +9,11 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/settings/backup_category.dart';
+import 'package:xta/plugins/reddit/reddit_interleaved.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/tweet/interleaved_items.dart';
+import 'package:xta/plugins/reddit/reddit_avatar.dart';
+import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -26,7 +31,7 @@ import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 ///
 /// A reimplementation against Reddit's documented API rather than a port of
 /// Stealth itself, which is GPLv3 Kotlin — see docs/specs/reddit-plugin.md.
-class RedditPlugin extends XtaPlugin {
+class RedditPlugin extends XtaPlugin with SubscriptionSource {
   RedditPlugin();
 
   @override
@@ -77,6 +82,43 @@ class RedditPlugin extends XtaPlugin {
     tableRedditSubscription,
     tableRedditLocalVote,
   ];
+
+  @override
+  String get subscriptionTable => tableRedditSubscription;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) => RedditSubscription.fromMap(row);
+
+  @override
+  bool owns(Subscription subscription) => subscription is RedditSubscription;
+
+  @override
+  String subtitleFor(Subscription subscription) => 'r/${subscription.name}';
+
+  @override
+  Widget avatarFor(Subscription subscription, {double size = 40}) =>
+      RedditAvatar(name: 'r/${subscription.name}', size: size);
+
+  @override
+  Widget Function()? destinationFor(Subscription subscription) =>
+      () => RedditListingScreen.subreddit(subscription.name);
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<RedditSubredditsStore>().load();
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) =>
+      context.read<RedditSubredditsStore>().remove(subscription.name);
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadRedditInterleaved(context, ids);
+
+  @override
+  bool inHomeFeed(BuildContext context) => redditInHomeFeed(PrefService.of(context, listen: false));
+
+  @override
+  List<String> homeFeedIds(BuildContext context) => redditHomeSubreddits(context);
 
   @override
   List<PluginBackupSection> get backupSections => [
