@@ -96,17 +96,19 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
       return;
     }
 
-    await execute(() => _loadPosts(force: force));
+    // Each account answered paints immediately — behind the anti-ban pacing,
+    // waiting for all of them meant a spinner for the sum of every wait.
+    await execute(() => _loadPosts(force: force, onPartial: update));
   }
 
-  Future<List<ThreadsPost>> _loadPosts({required bool force}) async {
+  Future<List<ThreadsPost>> _loadPosts({required bool force, void Function(List<ThreadsPost>)? onPartial}) async {
     final handles = accounts.state.map((e) => e.handle).toList(growable: false);
 
     // Local Accounts (cookies → guest GraphQL fallback). A pasted Bearer no
     // longer hides this list — that was the empty-feed bug for readers who
     // signed in and also followed people in the plugin.
     if (handles.isNotEmpty) {
-      return postsFor(handles, forceRefresh: force);
+      return postsFor(handles, forceRefresh: force, onPartial: onPartial);
     }
 
     // No local Accounts: Bearer shows the Meta home/For You timeline.
@@ -128,13 +130,17 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
   /// have to agree about which source a session, an RSSHub instance or neither
   /// implies. Deciding that in one place is what stops the tab working while a
   /// group shows nothing.
-  Future<List<ThreadsPost>> postsFor(List<String> handles, {bool forceRefresh = false}) async {
+  Future<List<ThreadsPost>> postsFor(
+    List<String> handles, {
+    bool forceRefresh = false,
+    void Function(List<ThreadsPost>)? onPartial,
+  }) async {
     if (handles.isEmpty) {
       return const [];
     }
 
     _forgetOnCredentialChange();
-    return _posts.merge(handles, _fetcher(), forceRefresh: forceRefresh);
+    return _posts.merge(handles, _fetcher(), forceRefresh: forceRefresh, onPartial: onPartial);
   }
 
   /// Which route answers, given what the reader has configured.
@@ -190,5 +196,4 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
       _posts.clear();
     }
   }
-
 }

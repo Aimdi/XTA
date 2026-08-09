@@ -68,11 +68,16 @@ class AccountPostCache<T> {
   /// imported eight hundred follows gets a timeline that fills in over the next
   /// few refreshes instead of eight hundred requests at once — and no account
   /// is permanently left out, which a plain "first N accounts" cap would do.
+  ///
+  /// [onPartial] hears the merged timeline grow as each account answers, so a
+  /// screen can paint the first account's posts while the rest are still
+  /// behind the pacing — instead of a spinner for the sum of every wait.
   Future<List<T>> merge(
     List<String> keys,
     Future<List<T>> Function(String key) fetch, {
     bool forceRefresh = false,
     int? maxFetches,
+    void Function(List<T> postsSoFar)? onPartial,
   }) async {
     if (keys.isEmpty) {
       return const [];
@@ -80,9 +85,11 @@ class AccountPostCache<T> {
 
     var remaining = maxFetches ?? keys.length;
     Object? lastError;
+    final done = <List<T>>[];
     final batches = await mapWithConcurrency(keys, concurrency, (key) async {
       if (!forceRefresh) {
         if (_fresh(key) case final cached?) {
+          _deliver(done, cached, onPartial);
           return cached;
         }
       }
@@ -91,13 +98,16 @@ class AccountPostCache<T> {
       // stale — beats nothing: a forced refresh with more accounts than the cap
       // must not collapse the timeline to the first batch.
       if (remaining <= 0) {
-        return _entries[key]?.posts ?? <T>[];
+        final held = _entries[key]?.posts ?? <T>[];
+        _deliver(done, held, onPartial);
+        return held;
       }
       remaining--;
 
       try {
         final posts = await fetch(key);
         _entries[key] = (at: DateTime.now(), posts: posts);
+        _deliver(done, posts, onPartial);
         return posts;
       } catch (e) {
         lastError = e;
@@ -105,11 +115,26 @@ class AccountPostCache<T> {
       }
     });
 
-    final posts = batches.expand((e) => e.take(perAccount)).toList();
+    final posts = _merged(batches);
     if (posts.isEmpty && lastError != null) {
       throw lastError!;
     }
 
+    return posts;
+  }
+
+  void _deliver(List<List<T>> done, List<T> posts, void Function(List<T>)? onPartial) {
+    if (onPartial == null) {
+      return;
+    }
+    done.add(posts);
+    if (posts.isNotEmpty) {
+      onPartial(_merged(done));
+    }
+  }
+
+  List<T> _merged(List<List<T>> batches) {
+    final posts = batches.expand((e) => e.take(perAccount)).toList();
     posts.sort((a, b) => (dateOf(b) ?? DateTime(0)).compareTo(dateOf(a) ?? DateTime(0)));
     return posts;
   }

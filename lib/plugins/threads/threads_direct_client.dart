@@ -92,9 +92,7 @@ String? extractThreadsUserIdFromHtml(String html, String handle) {
   // Logged-out profile pages currently embed the owner on
   // BarcelonaProfileThreadsRoot as `props.user_id` — before any pk/username
   // blob. Without this, guest GraphQL never starts.
-  final propsId = RegExp(
-    r'"user_id"\s*:\s*"(\d+)"',
-  ).firstMatch(html)?.group(1);
+  final propsId = RegExp(r'"user_id"\s*:\s*"(\d+)"').firstMatch(html)?.group(1);
   if (propsId != null && propsId != '0') {
     return propsId;
   }
@@ -115,11 +113,9 @@ String? extractThreadsUserIdFromHtml(String html, String handle) {
   if (nearPk != null) return nearPk.group(1);
 
   // Modal `userID` — ignore the logged-out stub `0`.
-  final userIds = RegExp(r'"userID"\s*:\s*"(\d+)"')
-      .allMatches(html)
-      .map((m) => m.group(1)!)
-      .where((id) => id != '0')
-      .toList();
+  final userIds = RegExp(
+    r'"userID"\s*:\s*"(\d+)"',
+  ).allMatches(html).map((m) => m.group(1)!).where((id) => id != '0').toList();
   if (userIds.isEmpty) return null;
   final counts = <String, int>{};
   for (final id in userIds) {
@@ -262,7 +258,9 @@ ThreadsPost? _threadsRepostFromApi({required Json outer, required Json inner}) {
     avatarUrl: original.avatarUrl,
     text: original.text,
     images: original.images,
-    publishedAt: taken == null ? original.publishedAt : DateTime.fromMillisecondsSinceEpoch(taken * 1000, isUtc: true).toLocal(),
+    publishedAt: taken == null
+        ? original.publishedAt
+        : DateTime.fromMillisecondsSinceEpoch(taken * 1000, isUtc: true).toLocal(),
     url: original.url,
     likeCount: original.likeCount,
     replyCount: original.replyCount,
@@ -384,13 +382,7 @@ List<ThreadsPost> parseThreadsSsrThread(String body) {
   return posts;
 }
 
-void _collectSsrPosts(
-  Object? node,
-  String handle,
-  List<ThreadsPost> out,
-  Set<String> seen, {
-  required bool rootsOnly,
-}) {
+void _collectSsrPosts(Object? node, String handle, List<ThreadsPost> out, Set<String> seen, {required bool rootsOnly}) {
   if (node is Map) {
     final items = node['thread_items'];
     if (items is List && items.isNotEmpty) {
@@ -399,9 +391,7 @@ void _collectSsrPosts(
         final post = threadsPostFromApi(Json(item is Map ? item['post'] : null));
         // Reposts keep the original author on [ThreadsPost.handle]; the profile
         // owner is [repostedByHandle]. Match either so SSR profile scrapes keep them.
-        final matches = handle.isEmpty ||
-            post?.handle == handle ||
-            post?.repostedByHandle == handle;
+        final matches = handle.isEmpty || post?.handle == handle || post?.repostedByHandle == handle;
         if (post != null && matches && seen.add(post.id)) {
           out.add(post);
         }
@@ -430,6 +420,33 @@ class ThreadsDirectClient {
   /// twice (two paced round-trips). Share one in-flight HTML body instead —
   /// fewer requests to Meta, not more.
   final Map<String, Future<String>> _profileHtmlInFlight = {};
+
+  /// The guest LSD token off the last profile page, reused across accounts.
+  ///
+  /// The token is page-scoped, not profile-scoped: one page's token serves
+  /// every account's GraphQL call for a while. Without this, each account
+  /// cost the profile HTML *and* the GraphQL call — two paced round-trips
+  /// where one is enough, which doubled how long the tab took to fill.
+  String? _guestLsd;
+  DateTime? _guestLsdAt;
+
+  static const _guestLsdTtl = Duration(minutes: 10);
+
+  String? get _freshGuestLsd {
+    final at = _guestLsdAt;
+    if (_guestLsd == null || at == null || DateTime.now().difference(at) > _guestLsdTtl) {
+      return null;
+    }
+    return _guestLsd;
+  }
+
+  void _rememberGuestLsd(String? lsd) {
+    if (lsd == null || lsd.isEmpty) {
+      return;
+    }
+    _guestLsd = lsd;
+    _guestLsdAt = DateTime.now();
+  }
 
   ThreadsDirectClient(this.prefs, {http.Client? httpClient, this.minGap = const Duration(seconds: 2)})
     : httpClient = httpClient ?? http.Client();
@@ -466,20 +483,23 @@ class ThreadsDirectClient {
 
   final Random _jitter = Random();
 
-  /// Serialises [run] behind every request already waiting, and keeps the gap.
+  /// Serialises departures behind every request already waiting, keeping the
+  /// gap between them — but releases the queue the moment a request has left.
+  ///
+  /// The gap is between *departures*: holding the slot until the response
+  /// came back meant one slow account stalled every request behind it, and
+  /// the whole tab paid that account's timeout. Responses may overlap; only
+  /// the starts are paced, which is what the defence actually needs.
   ///
   /// Guest GraphQL/SSR must not honour the cookie/Bearer cooldown: a dead
   /// session parking the plugin for 30 minutes was also blocking the public
   /// path that still returns posts for followed Accounts.
   Future<T> _enqueue<T>(Future<T> Function() run, {bool respectCooldown = true}) {
-    final result = _queue.then((_) async {
-      await _pace(respectCooldown: respectCooldown);
-      return run();
-    });
-    // A failure must not poison the queue for everything behind it.
-    _queue = result.then((_) {}, onError: (Object _) {});
+    final departed = _queue.then((_) => _pace(respectCooldown: respectCooldown));
+    // A refused departure (cooldown) must not poison the queue behind it.
+    _queue = departed.then((_) {}, onError: (Object _) {});
 
-    return result;
+    return departed.then((_) => run());
   }
 
   Future<void> _pace({bool respectCooldown = true}) async {
@@ -731,9 +751,9 @@ class ThreadsDirectClient {
     if (hasCookies) {
       try {
         final id = await resolveUserId(handle);
-        final uri = Uri.parse('$_threadsWeb/api/v1/text_feed/$id/profile/').replace(queryParameters: {
-          'count': '$count',
-        });
+        final uri = Uri.parse(
+          '$_threadsWeb/api/v1/text_feed/$id/profile/',
+        ).replace(queryParameters: {'count': '$count'});
         final response = await _get(uri, _cookieHeaders());
         _throwForStatus(response, uri);
         final posts = parseThreadsApiFeed(_decodeJson(response, uri));
@@ -754,13 +774,15 @@ class ThreadsDirectClient {
     // Params aligned with threads-go HomeTimeline — the old
     // `pagination_source=text_post_feed_following` alone now 404s as HTML.
     final deviceId = await _deviceId();
-    final uri = Uri.parse('$_instagramApi/api/v1/feed/text_post_app_timeline/').replace(queryParameters: {
-      'feed_type': 'for_you',
-      'feed_view_info': '[]',
-      'reason': 'cold_start_fetch',
-      'client_session_id': deviceId,
-      'pagination_source_module': 'feed_unit',
-    });
+    final uri = Uri.parse('$_instagramApi/api/v1/feed/text_post_app_timeline/').replace(
+      queryParameters: {
+        'feed_type': 'for_you',
+        'feed_view_info': '[]',
+        'reason': 'cold_start_fetch',
+        'client_session_id': deviceId,
+        'pagination_source_module': 'feed_unit',
+      },
+    );
     final response = await _get(uri, await _bearerHeaders());
     _throwForStatus(response, uri);
     final posts = parseThreadsApiFeed(_decodeJson(response, uri));
@@ -774,10 +796,28 @@ class ThreadsDirectClient {
   /// for the LSD token + user id, and used as a fallback scrape.
   Future<List<ThreadsPost>> fetchGuestAccount(String handle) async {
     final key = handle.trim().toLowerCase();
+
+    // A known id plus a fresh LSD skips the profile page — one paced request
+    // instead of two. Anything wrong with the shortcut falls through to the
+    // full path below, which fetches the page and tries again properly.
+    final knownId = _storedUserIds()[key];
+    if (knownId != null && knownId.isNotEmpty) {
+      if (_freshGuestLsd case final lsd?) {
+        try {
+          final posts = await _fetchGuestGraphqlThreads(handle: key, userId: knownId, lsd: lsd);
+          if (posts.isNotEmpty) {
+            return posts;
+          }
+        } on ThreadsException {
+          // The token may have aged out server-side; the full path refreshes it.
+        }
+      }
+    }
+
     final htmlBody = await _fetchProfileHtml(key);
     final lsd = extractThreadsLsd(htmlBody);
-    final cachedId = _storedUserIds()[key];
-    final userId = (cachedId != null && cachedId.isNotEmpty) ? cachedId : extractThreadsUserIdFromHtml(htmlBody, key);
+    _rememberGuestLsd(lsd);
+    final userId = (knownId != null && knownId.isNotEmpty) ? knownId : extractThreadsUserIdFromHtml(htmlBody, key);
 
     if (lsd != null && userId != null && userId.isNotEmpty) {
       await _rememberUserId(key, userId);
@@ -808,15 +848,11 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.unreachable, 'not a threads url: $postUrl');
     }
 
-    final response = await _get(
-      uri,
-      {
-        'User-Agent': _safariUa,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-      respectCooldown: false,
-    );
+    final response = await _get(uri, {
+      'User-Agent': _safariUa,
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9',
+    }, respectCooldown: false);
     if (response.statusCode == 404) {
       throw ThreadsException(ThreadsErrorKind.noSuchFeed, '$uri: 404');
     }
@@ -843,15 +879,11 @@ class ThreadsDirectClient {
 
   Future<String> _downloadProfileHtml(String handle) async {
     final uri = Uri.parse('$_threadsWeb/@$handle');
-    final response = await _get(
-      uri,
-      {
-        'User-Agent': _safariUa,
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-      },
-      respectCooldown: false,
-    );
+    final response = await _get(uri, {
+      'User-Agent': _safariUa,
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9',
+    }, respectCooldown: false);
     if (response.statusCode == 404) {
       throw ThreadsException(ThreadsErrorKind.noSuchFeed, '$uri: 404');
     }
