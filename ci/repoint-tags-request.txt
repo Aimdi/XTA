@@ -1,0 +1,5 @@
+Repoint the release tags that were created with no target.
+
+aimdi81, aimdi82, aimdi88, aimdi89, aimdi90 and aimdi91 all point at the
+default branch head instead of the commit their APKs were built from. The
+branch of the same name records the right commit in each case.
