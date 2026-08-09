@@ -272,7 +272,6 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   @override
   void didChangeDependencies() {
-    _collapseBoosts = null;
     super.didChangeDependencies();
     // Only feeds that support pull-to-refresh expose their refresh to the
     // app-bar button. Outside a GroupFeedShell there is no controller to bind.
@@ -333,24 +332,21 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return FoldedChain(key: ValueKey('fold-${chain.id}'), chain: chain, reason: reason, username: widget.username);
     }
     return TweetConversation(
-        key: ValueKey(chain.id),
-        id: chain.id,
-        tweets: chain.tweets,
-        username: widget.username,
-        isPinned: chain.isPinned);
+      key: ValueKey(chain.id),
+      id: chain.id,
+      tweets: chain.tweets,
+      username: widget.username,
+      isPinned: chain.isPinned,
+    );
   }
 
-  /// The collapse-reposts preference, cached for this State's lifetime and
-  /// re-read when dependencies change so a settings flip still lands.
-  bool? _collapseBoosts;
-
-  Widget _buildChainAt(BuildContext context, List<TweetChain> loaded, int index) {
+  Widget _buildChainAt(BuildContext context, List<TweetChain> loaded, int index, {required bool collapseBoosts}) {
     // A reader who wants their reposts as posts should not have to expand every
-    // run of them, one at a time, for the rest of the feed. Read once per
-    // build pass, not once per item: this ran for every tile on every frame of
-    // a fling.
-    _collapseBoosts ??= PrefService.of(context, listen: false).get<bool>(optionFeedCollapseBoosts) != false;
-    if (!_collapseBoosts!) {
+    // run of them, one at a time, for the rest of the feed. The preference is
+    // read once per list build pass and passed in — not once per tile, which is
+    // what this cost on every frame of a fling, and not cached on the State,
+    // which is how a settings flip stopped landing until an app restart.
+    if (!collapseBoosts) {
       return _buildChain(context, loaded[index]);
     }
 
@@ -554,6 +550,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         // Recomputed per build from the loaded items, so the boundary shows
         // up even when the first seen chain only arrives on a later page.
         final loaded = state.items ?? const <TweetChain>[];
+        final collapseBoosts = PrefService.of(context, listen: false).get<bool>(optionFeedCollapseBoosts) != false;
         final (boundary, buckets) = _placementFor(loaded);
         final endCard = _buildEndCard(loaded);
         if (onlyInterleavedToShow(chains: state.items, items: widget.interleaved)) {
@@ -572,7 +569,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           cacheExtent: 600,
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, chain, index) {
-              final conversation = _buildChainAt(context, loaded, index);
+              final conversation = _buildChainAt(context, loaded, index, collapseBoosts: collapseBoosts);
               final above = index < buckets.length ? buckets[index] : const <InterleavedItem>[];
               // Anything older than every chain loaded so far rides along with
               // the last one, so it is on screen rather than waiting for a page

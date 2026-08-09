@@ -20,6 +20,18 @@ class _ScriptedClient extends RedditClient {
 
 const _two = ['https://i.redd.it/1.jpg', 'https://i.redd.it/2.jpg'];
 
+/// Throws on the first ask, answers on the second — fetchGalleryImages never
+/// throws today, but the loader must not rely on that staying true.
+class _ThrowingOnceClient extends RedditClient {
+  var _asked = 0;
+
+  @override
+  Future<List<String>> fetchGalleryImages(String permalink) async {
+    if (++_asked == 1) throw StateError('boom');
+    return _two;
+  }
+}
+
 void main() {
   group('remembering a gallery answer', () {
     test('a successful answer is fetched once and reused', () async {
@@ -75,6 +87,18 @@ void main() {
       }
 
       expect(loader.size, lessThanOrEqualTo(kRedditGalleryCacheCap));
+      // Oldest first out, not newest: the recent answers are the ones a reader
+      // scrolling near them still needs.
+      expect(loader.known('/p/299'), isNotNull);
+      expect(loader.known('/p/0'), isNull);
+    });
+
+    test('a fetch that throws does not pin an errored future forever', () async {
+      final client = _ThrowingOnceClient();
+      final loader = RedditGalleryLoader(client);
+
+      await expectLater(loader.images('/p/a'), throwsStateError);
+      expect(await loader.images('/p/a'), _two);
     });
   });
 

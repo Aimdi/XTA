@@ -51,20 +51,30 @@ class RedditGalleryLoader {
       return Future.value(known);
     }
 
-    // Cleanup rides on `.then`, not `whenComplete`: a whenComplete future
-    // stored in a map whose callback removes its own key never completes here
-    // (probed empirically — an empty callback, another key, or a field all
-    // behave; the self-remove alone hangs its awaiters).
-    return _inFlight[permalink] ??= _fetch(permalink).then((images) {
-      _inFlight.remove(permalink);
-      return images;
-    });
+    // Cleanup rides on `.then` with an onError twin: both arms drop the key,
+    // so neither a settled nor an errored future stays pinned in the map.
+    return _inFlight[permalink] ??= _fetch(permalink).then(
+      (images) {
+        _inFlight.remove(permalink);
+        return images;
+      },
+      onError: (Object e, StackTrace st) {
+        // fetchGalleryImages answers [] rather than throwing today, but an
+        // errored future pinned in the map would refuse this permalink forever.
+        _inFlight.remove(permalink);
+        Error.throwWithStackTrace(e, st);
+      },
+    );
   }
 
   Future<List<String>> _fetch(String permalink) async {
     final images = await client.fetchGalleryImages(permalink);
     if (images.isEmpty) {
-      _emptyAnswers[permalink] = (_emptyAnswers[permalink] ?? 0) + 1;
+      final asked = (_emptyAnswers.remove(permalink) ?? 0) + 1;
+      _emptyAnswers[permalink] = asked;
+      while (_emptyAnswers.length > kRedditGalleryCacheCap) {
+        _emptyAnswers.remove(_emptyAnswers.keys.first);
+      }
     } else {
       _emptyAnswers.remove(permalink);
     }
