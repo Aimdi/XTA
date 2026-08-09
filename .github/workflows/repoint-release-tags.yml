@@ -1,0 +1,88 @@
+name: Repoint release tags
+
+# A release tag created with no target lands on the default branch's head, not
+# on the commit its APKs were built from. That is how aimdi81, aimdi82 and
+# aimdi88..91 came to point at an unrelated commit: the downloads were correct,
+# but cloning the repository at one of those tags gave you the wrong source.
+#
+# Every release is also pushed as a branch of the same name, at the commit it
+# was actually built from, so the branch is the record of what the tag should
+# have said. This moves each tag onto its branch.
+#
+# Same pull_request trigger as attach-release-apks.yml, and for the same reason:
+# it is the event that starts a workflow for this token. Open a PR from
+# cursor/repoint-tags-* titled "[repoint-tags] …".
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+
+jobs:
+  repoint:
+    if: startsWith(github.head_ref, 'cursor/repoint-tags') && contains(github.event.pull_request.title, '[repoint-tags]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Move every release tag onto the commit its branch records
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+
+          moved=0
+          unchanged=0
+
+          # Release branches only: aimdi<number>, nothing else.
+          for ref in $(git ls-remote --heads origin 'refs/heads/aimdi*' | awk '{print $2}'); do
+            tag="${ref#refs/heads/}"
+            case "$tag" in
+              aimdi[0-9]*) ;;
+              *) continue ;;
+            esac
+
+            branch_sha=$(git rev-parse "refs/remotes/origin/$tag" 2>/dev/null || echo '')
+            if [ -z "$branch_sha" ]; then
+              echo "::warning::$tag: branch could not be resolved, skipped"
+              continue
+            fi
+
+            if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "$tag: no such tag, skipped"
+              continue
+            fi
+
+            tag_sha=$(git rev-parse "refs/tags/$tag^{commit}")
+            if [ "$tag_sha" = "$branch_sha" ]; then
+              echo "$tag: already correct ($(git rev-parse --short "$branch_sha"))"
+              unchanged=$((unchanged + 1))
+              continue
+            fi
+
+            echo "$tag: $(git rev-parse --short "$tag_sha") -> $(git rev-parse --short "$branch_sha")"
+            git tag -f "$tag" "$branch_sha"
+            git push --force origin "refs/tags/$tag"
+            moved=$((moved + 1))
+          done
+
+          echo "Moved $moved tag(s); $unchanged already correct."
+
+      - name: Confirm every tag now matches its branch
+        run: |
+          set -euo pipefail
+          git fetch --tags --force origin
+          wrong=0
+          for ref in $(git ls-remote --heads origin 'refs/heads/aimdi*' | awk '{print $2}'); do
+            tag="${ref#refs/heads/}"
+            case "$tag" in aimdi[0-9]*) ;; *) continue ;; esac
+            git rev-parse -q --verify "refs/tags/$tag" >/dev/null || continue
+            if [ "$(git rev-parse "refs/tags/$tag^{commit}")" != "$(git rev-parse "refs/remotes/origin/$tag")" ]; then
+              echo "::error::$tag still does not match its branch"
+              wrong=$((wrong + 1))
+            fi
+          done
+          [ "$wrong" -eq 0 ] && echo "Every release tag matches the commit its branch records."
+          exit "$wrong"

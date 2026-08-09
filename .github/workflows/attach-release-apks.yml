@@ -35,6 +35,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ steps.tag.outputs.tag }}
 
+      # What the tag must point at. Without this the release action creates the
+      # tag with no target, and GitHub puts an untargeted tag on the default
+      # branch's head — which is how aimdi81, 82 and 88..91 all ended up
+      # pointing at an unrelated commit while their APKs were built from the
+      # right one. Cloning at a tag gave you somebody else's source.
+      - name: Resolve the commit being built
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Install and set up Java
         uses: actions/setup-java@v2
         with:
@@ -107,6 +116,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ steps.commit.outputs.sha }}
           name: ${{ steps.tag.outputs.tag }}
           body_path: release-notes.md
           files: build/app/outputs/release/*.apk
