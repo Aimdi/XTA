@@ -23,7 +23,12 @@ class RedditListingState {
   /// page two used to look exactly like a button that does nothing.
   final Object? loadMoreError;
 
-  const RedditListingState({this.posts, this.after, this.loadingMore = false, this.loadMoreError});
+  const RedditListingState({
+    this.posts,
+    this.after,
+    this.loadingMore = false,
+    this.loadMoreError,
+  });
 
   RedditListingState copyWith({
     List<RedditPost>? posts,
@@ -60,7 +65,10 @@ class RedditListingStore extends Store<RedditListingState> {
   Future<void> refresh() async {
     await execute(() async {
       final listing = await _read();
-      return RedditListingState(posts: _visiblePosts(listing.posts), after: listing.after);
+      return RedditListingState(
+        posts: _visiblePosts(listing.posts),
+        after: listing.after,
+      );
     });
   }
 
@@ -74,7 +82,12 @@ class RedditListingStore extends Store<RedditListingState> {
     update(state.copyWith(loadingMore: true));
     try {
       final listing = await _read(after: after);
-      update(RedditListingState(posts: appendRedditPosts(posts, _visiblePosts(listing.posts)), after: listing.after));
+      update(
+        RedditListingState(
+          posts: appendRedditPosts(posts, _visiblePosts(listing.posts)),
+          after: listing.after,
+        ),
+      );
     } catch (e) {
       update(state.copyWith(loadingMore: false, loadMoreError: e));
     }
@@ -83,7 +96,11 @@ class RedditListingStore extends Store<RedditListingState> {
   Future<RedditListing> _read({String? after}) async {
     final name = subreddit;
     if (name == null) {
-      return client.fetchUserPosts(user!, after: after);
+      return client.fetchUserPosts(
+        user!,
+        after: after,
+        limit: kRedditListingPageSize,
+      );
     }
 
     final session = await RedditReadSession.resolve(prefs: prefs, auth: auth);
@@ -92,6 +109,7 @@ class RedditListingStore extends Store<RedditListingState> {
       name,
       sort: storedRedditSort(prefs),
       timeFilter: storedRedditTimeFilter(prefs),
+      limit: kRedditListingPageSize,
       after: after,
     );
   }
@@ -107,19 +125,28 @@ class RedditListingBody extends StatefulWidget {
   final ScrollController? scrollController;
   final bool showSourceBadge;
 
-  const RedditListingBody.subreddit(String name, {super.key, this.scrollController, this.showSourceBadge = false})
-    : subreddit = name,
-      user = null;
+  const RedditListingBody.subreddit(
+    String name, {
+    super.key,
+    this.scrollController,
+    this.showSourceBadge = false,
+  }) : subreddit = name,
+       user = null;
 
-  const RedditListingBody.user(String name, {super.key, this.scrollController, this.showSourceBadge = false})
-    : subreddit = null,
-      user = name;
+  const RedditListingBody.user(
+    String name, {
+    super.key,
+    this.scrollController,
+    this.showSourceBadge = false,
+  }) : subreddit = null,
+       user = name;
 
   @override
   State<RedditListingBody> createState() => RedditListingBodyState();
 }
 
-class RedditListingBodyState extends State<RedditListingBody> with AutomaticKeepAliveClientMixin {
+class RedditListingBodyState extends State<RedditListingBody>
+    with AutomaticKeepAliveClientMixin {
   RedditListingStore? _store;
 
   @override
@@ -169,7 +196,12 @@ class RedditListingBodyState extends State<RedditListingBody> with AutomaticKeep
     );
   }
 
-  Widget _error(BuildContext context, L10n l10n, RedditListingStore store, Object error) {
+  Widget _error(
+    BuildContext context,
+    L10n l10n,
+    RedditListingStore store,
+    Object error,
+  ) {
     return ListView(
       children: [
         Padding(
@@ -185,7 +217,12 @@ class RedditListingBodyState extends State<RedditListingBody> with AutomaticKeep
     );
   }
 
-  Widget _body(BuildContext context, L10n l10n, RedditListingStore store, RedditListingState state) {
+  Widget _body(
+    BuildContext context,
+    L10n l10n,
+    RedditListingStore store,
+    RedditListingState state,
+  ) {
     final posts = state.posts;
     if (posts == null) {
       return const Center(child: CircularProgressIndicator());
@@ -212,11 +249,16 @@ class RedditListingBodyState extends State<RedditListingBody> with AutomaticKeep
           }
           return _LoadMoreButton(
             loading: state.loadingMore,
-            error: state.loadMoreError == null ? null : redditErrorMessage(l10n, state.loadMoreError!),
+            error: state.loadMoreError == null
+                ? null
+                : redditErrorMessage(l10n, state.loadMoreError!),
             onPressed: store.loadMore,
           );
         }
-        return RedditPostCard(post: posts[index], showSourceBadge: widget.showSourceBadge);
+        return RedditPostCard(
+          post: posts[index],
+          showSourceBadge: widget.showSourceBadge,
+        );
       },
     );
 
@@ -224,8 +266,11 @@ class RedditListingBodyState extends State<RedditListingBody> with AutomaticKeep
     // the bottom; the button stays as the fallback (and the error surface).
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
-        final nearEnd = n.metrics.pixels > n.metrics.maxScrollExtent - 1200;
-        if (nearEnd && store.canLoadMore && !state.loadingMore && state.loadMoreError == null) {
+        final nearEnd = n.metrics.pixels > n.metrics.maxScrollExtent - 2400;
+        if (nearEnd &&
+            store.canLoadMore &&
+            !state.loadingMore &&
+            state.loadMoreError == null) {
           store.loadMore();
         }
         return false;
@@ -240,7 +285,11 @@ class _LoadMoreButton extends StatelessWidget {
   final String? error;
   final VoidCallback onPressed;
 
-  const _LoadMoreButton({required this.loading, this.error, required this.onPressed});
+  const _LoadMoreButton({
+    required this.loading,
+    this.error,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,14 +304,24 @@ class _LoadMoreButton extends StatelessWidget {
               child: Text(
                 error!,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.error),
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: theme.colorScheme.error,
+                ),
               ),
             ),
           OutlinedButton(
             onPressed: loading ? null : onPressed,
             child: loading
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                : Text(error == null ? L10n.of(context).plugin_reddit_load_more : L10n.of(context).retry),
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(
+                    error == null
+                        ? L10n.of(context).plugin_reddit_load_more
+                        : L10n.of(context).retry,
+                  ),
           ),
         ],
       ),

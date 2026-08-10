@@ -8,6 +8,14 @@ import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
 import 'package:xta/utils/json.dart';
 
+/// How many posts one subreddit listing page asks Reddit for.
+///
+/// One number for every surface, because a page fetched for one of them is the
+/// page handed to the next; each shows as much of it as it has room for.
+/// Reddit accepts up to 100; 50 fills a phone timeline without starving the
+/// account-free rate budget when several followed subs load at once.
+const int kRedditListingPageSize = 50;
+
 /// How a Reddit request failed, in terms the user can act on.
 enum RedditErrorKind {
   /// No client id stored yet.
@@ -209,7 +217,11 @@ class RedditPost {
       thumbnail: map['thumbnail'] as String?,
       flair: map['flair'] as String?,
       domain: map['domain'] as String?,
-      galleryImages: (map['galleryImages'] as List?)?.whereType<String>().toList(growable: false) ?? const [],
+      galleryImages:
+          (map['galleryImages'] as List?)?.whereType<String>().toList(
+            growable: false,
+          ) ??
+          const [],
       previewImage: map['previewImage'] as String?,
       videoDashUrl: map['videoDashUrl'] as String?,
       videoFallbackUrl: map['videoFallbackUrl'] as String?,
@@ -223,7 +235,9 @@ class RedditPost {
     }
     try {
       final decoded = jsonDecode(raw);
-      return decoded is List ? decoded.map(fromSnapshot).nonNulls.toList(growable: false) : const [];
+      return decoded is List
+          ? decoded.map(fromSnapshot).nonNulls.toList(growable: false)
+          : const [];
     } catch (_) {
       return const [];
     }
@@ -245,9 +259,13 @@ class RedditPost {
   /// Deliberately not [thumbnailUrl]: Reddit's listing thumbnails are 70px
   /// wide, and stretching one across a phone gives a smear where a photo should
   /// be.
-  String? get imageUrl => redditImageUrl(url) ?? (galleryImages.isEmpty ? null : galleryImages.first);
+  String? get imageUrl =>
+      redditImageUrl(url) ??
+      (galleryImages.isEmpty ? null : galleryImages.first);
 
-  bool get isVideo => isRedditVideoHost(domain ?? (url == null ? null : Uri.tryParse(url!)?.host));
+  bool get isVideo => isRedditVideoHost(
+    domain ?? (url == null ? null : Uri.tryParse(url!)?.host),
+  );
 
   static RedditPost? fromChild(Map<String, dynamic> child) {
     if (child['kind'] != 't3') {
@@ -275,7 +293,10 @@ class RedditPost {
       score: (map['score'] as num?)?.toInt() ?? 0,
       commentCount: (map['num_comments'] as num?)?.toInt() ?? 0,
       createdAt: created is num
-          ? DateTime.fromMillisecondsSinceEpoch((created * 1000).round(), isUtc: true).toLocal()
+          ? DateTime.fromMillisecondsSinceEpoch(
+              (created * 1000).round(),
+              isUtc: true,
+            ).toLocal()
           : null,
       url: map['url'] as String?,
       isSelf: map['is_self'] == true,
@@ -288,8 +309,12 @@ class RedditPost {
       domain: map['domain'] as String?,
       galleryImages: _galleryImagesOf(Json(map)),
       previewImage: _previewImageOf(Json(map)),
-      videoDashUrl: _unescapeRedditUrl(_redditVideo(Json(map))['dash_url'].string),
-      videoFallbackUrl: _unescapeRedditUrl(_redditVideo(Json(map))['fallback_url'].string),
+      videoDashUrl: _unescapeRedditUrl(
+        _redditVideo(Json(map))['dash_url'].string,
+      ),
+      videoFallbackUrl: _unescapeRedditUrl(
+        _redditVideo(Json(map))['fallback_url'].string,
+      ),
       videoAspectRatio: _videoAspectOf(_redditVideo(Json(map))),
     );
   }
@@ -327,9 +352,14 @@ class RedditPost {
       return const [];
     }
 
-    final ordered = [for (final item in data['gallery_data']['items'].list) item['media_id'].string];
+    final ordered = [
+      for (final item in data['gallery_data']['items'].list)
+        item['media_id'].string,
+    ];
     final raw = metadata.raw;
-    final ids = ordered.nonNulls.isEmpty && raw is Map ? raw.keys.map((k) => '$k').toList() : ordered.nonNulls.toList();
+    final ids = ordered.nonNulls.isEmpty && raw is Map
+        ? raw.keys.map((k) => '$k').toList()
+        : ordered.nonNulls.toList();
 
     return [for (final id in ids) ...?_pick(_galleryFileOf(metadata[id]))];
   }
@@ -347,7 +377,9 @@ class RedditPost {
       return _unescapeRedditUrl(gif ?? item['s']['u'].string);
     }
 
-    return _unescapeRedditUrl(_scaledVariant(item['p']) ?? item['s']['u'].string);
+    return _unescapeRedditUrl(
+      _scaledVariant(item['p']) ?? item['s']['u'].string,
+    );
   }
 
   /// Reddit's full-size preview, or the scaled copy nearest the screen.
@@ -358,7 +390,9 @@ class RedditPost {
   static String? _previewImageOf(Json data) {
     final image = data['preview']['images'][0];
 
-    return _unescapeRedditUrl(_scaledVariant(image['resolutions']) ?? image['source']['url'].string);
+    return _unescapeRedditUrl(
+      _scaledVariant(image['resolutions']) ?? image['source']['url'].string,
+    );
   }
 
   /// The widest of [variants] that still fits [kRedditDisplayWidth], or null
@@ -373,7 +407,10 @@ class RedditPost {
     for (final variant in variants.list) {
       final candidate = variant['width'].integer ?? variant['x'].integer;
       final url = variant['url'].string ?? variant['u'].string;
-      if (candidate == null || url == null || candidate > kRedditDisplayWidth || candidate <= width) {
+      if (candidate == null ||
+          url == null ||
+          candidate > kRedditDisplayWidth ||
+          candidate <= width) {
         continue;
       }
       best = url;
@@ -387,7 +424,8 @@ class RedditPost {
 
   /// Reddit serves media URLs HTML-escaped inside its own JSON (`&amp;`), and
   /// the CDN rejects them in that form.
-  static String? _unescapeRedditUrl(String? url) => url?.replaceAll('&amp;', '&');
+  static String? _unescapeRedditUrl(String? url) =>
+      url?.replaceAll('&amp;', '&');
 }
 
 /// The widest a picture is ever drawn: full bleed on the largest phone screen
@@ -421,14 +459,20 @@ enum _PublicRoute { html, wwwJson, oldJson }
 
 /// What one route made of the request: a listing, a verdict no other route will
 /// contradict ([terminal]), or a failure worth trying the next route after.
-typedef _RouteAttempt = ({RedditListing? listing, RedditException? failure, bool terminal});
+typedef _RouteAttempt = ({
+  RedditListing? listing,
+  RedditException? failure,
+  bool terminal,
+});
 
-_RouteAttempt _hit(RedditListing listing) => (listing: listing, failure: null, terminal: false);
+_RouteAttempt _hit(RedditListing listing) =>
+    (listing: listing, failure: null, terminal: false);
 
 _RouteAttempt _terminal(RedditErrorKind kind, String detail) =>
     (listing: null, failure: RedditException(kind, detail), terminal: true);
 
-_RouteAttempt _miss(RedditException failure) => (listing: null, failure: failure, terminal: false);
+_RouteAttempt _miss(RedditException failure) =>
+    (listing: null, failure: failure, terminal: false);
 
 /// Sort orders a subreddit listing supports.
 enum RedditSort { hot, newest, top, rising, controversial }
@@ -442,8 +486,10 @@ String redditSortPath(RedditSort sort) => switch (sort) {
 };
 
 /// The stored sort, or hot when nothing is stored or the name is unknown.
-RedditSort redditSortFromName(String? name) =>
-    RedditSort.values.firstWhere((e) => e.name == name, orElse: () => RedditSort.hot);
+RedditSort redditSortFromName(String? name) => RedditSort.values.firstWhere(
+  (e) => e.name == name,
+  orElse: () => RedditSort.hot,
+);
 
 /// The time window Reddit applies to top and controversial listings.
 enum RedditTimeFilter {
@@ -459,28 +505,36 @@ enum RedditTimeFilter {
   const RedditTimeFilter(this.queryValue);
 }
 
-bool redditSortUsesTimeFilter(RedditSort sort) => sort == RedditSort.top || sort == RedditSort.controversial;
+bool redditSortUsesTimeFilter(RedditSort sort) =>
+    sort == RedditSort.top || sort == RedditSort.controversial;
 
-RedditTimeFilter redditTimeFilterFromName(String? name) =>
-    RedditTimeFilter.values.firstWhere((e) => e.name == name, orElse: () => RedditTimeFilter.day);
+RedditTimeFilter redditTimeFilterFromName(String? name) => RedditTimeFilter
+    .values
+    .firstWhere((e) => e.name == name, orElse: () => RedditTimeFilter.day);
 
-RedditTimeFilter? redditTimeFilterForSort(RedditSort sort, RedditTimeFilter timeFilter) =>
-    redditSortUsesTimeFilter(sort) ? timeFilter : null;
+RedditTimeFilter? redditTimeFilterForSort(
+  RedditSort sort,
+  RedditTimeFilter timeFilter,
+) => redditSortUsesTimeFilter(sort) ? timeFilter : null;
 
 /// Which Reddit feeds should do with posts marked over-18.
 enum RedditNsfwMode { hide, tap, show }
 
-RedditNsfwMode redditNsfwModeFromName(String? name) =>
-    RedditNsfwMode.values.firstWhere((e) => e.name == name, orElse: () => RedditNsfwMode.tap);
+RedditNsfwMode redditNsfwModeFromName(String? name) => RedditNsfwMode.values
+    .firstWhere((e) => e.name == name, orElse: () => RedditNsfwMode.tap);
 
-List<RedditPost> filterRedditPosts(Iterable<RedditPost> posts, {required RedditNsfwMode nsfwMode}) =>
-    nsfwMode == RedditNsfwMode.hide ? posts.where((post) => !post.over18).toList(growable: false) : posts.toList();
+List<RedditPost> filterRedditPosts(
+  Iterable<RedditPost> posts, {
+  required RedditNsfwMode nsfwMode,
+}) => nsfwMode == RedditNsfwMode.hide
+    ? posts.where((post) => !post.over18).toList(growable: false)
+    : posts.toList();
 
 /// Which discovery rail is open in the Reddit tab.
 enum RedditFeedMode { following, popular, all }
 
-RedditFeedMode redditFeedModeFromName(String? name) =>
-    RedditFeedMode.values.firstWhere((e) => e.name == name, orElse: () => RedditFeedMode.following);
+RedditFeedMode redditFeedModeFromName(String? name) => RedditFeedMode.values
+    .firstWhere((e) => e.name == name, orElse: () => RedditFeedMode.following);
 
 /// The sidebar's answer to "what is this community" — read-only facts only.
 class RedditSubredditAbout {
@@ -536,7 +590,8 @@ class RedditClient {
 
   /// For [_apiBase] and the token endpoint. Reddit's API rules ask for exactly
   /// this shape and throttle generic agents harder.
-  static const userAgent = 'android:com.aimdi.xta:1.0 (read-only, account-free)';
+  static const userAgent =
+      'android:com.aimdi.xta:1.0 (read-only, account-free)';
 
   /// For [_publicBase] and [_publicFallbackBase], which are the *website*
   /// rather than the API.
@@ -599,13 +654,16 @@ class RedditClient {
       final pair = piece.split(';').first.trim();
       final equals = pair.indexOf('=');
       if (equals > 0) {
-        _cookies[pair.substring(0, equals).trim()] = pair.substring(equals + 1).trim();
+        _cookies[pair.substring(0, equals).trim()] = pair
+            .substring(equals + 1)
+            .trim();
       }
     }
   }
 
   /// Whether a usable token is already cached.
-  bool get hasToken => _token != null && (_tokenExpiry?.isAfter(_now()) ?? false);
+  bool get hasToken =>
+      _token != null && (_tokenExpiry?.isAfter(_now()) ?? false);
 
   void forgetToken() {
     _token = null;
@@ -618,18 +676,23 @@ class RedditClient {
       return _token!;
     }
     if (clientId.trim().isEmpty) {
-      throw const RedditException(RedditErrorKind.notConfigured, 'Missing client id');
+      throw const RedditException(
+        RedditErrorKind.notConfigured,
+        'Missing client id',
+      );
     }
 
     final response = await _send(
       () => httpClient.post(
         Uri.parse(_tokenEndpoint),
         headers: {
-          'Authorization': 'Basic ${base64Encode(utf8.encode('${clientId.trim()}:'))}',
+          'Authorization':
+              'Basic ${base64Encode(utf8.encode('${clientId.trim()}:'))}',
           'User-Agent': userAgent,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'grant_type=https://oauth.reddit.com/grants/installed_client&device_id=$deviceId',
+        body:
+            'grant_type=https://oauth.reddit.com/grants/installed_client&device_id=$deviceId',
       ),
     );
 
@@ -640,7 +703,10 @@ class RedditClient {
     final decoded = _decode(response);
     final token = decoded['access_token'] as String?;
     if (token == null || token.isEmpty) {
-      throw const RedditException(RedditErrorKind.badResponse, 'No access_token in the token response');
+      throw const RedditException(
+        RedditErrorKind.badResponse,
+        'No access_token in the token response',
+      );
     }
 
     final expiresIn = (decoded['expires_in'] as num?)?.toInt() ?? 3600;
@@ -656,14 +722,17 @@ class RedditClient {
     required String clientId,
     RedditSort sort = RedditSort.hot,
     RedditTimeFilter timeFilter = RedditTimeFilter.day,
-    int limit = 25,
+    int limit = kRedditListingPageSize,
     String? after,
     String? userToken,
     bool preferPublic = false,
   }) async {
     final name = normaliseSubreddit(subreddit);
     if (name == null) {
-      throw RedditException(RedditErrorKind.notFound, 'Not a subreddit name: $subreddit');
+      throw RedditException(
+        RedditErrorKind.notFound,
+        'Not a subreddit name: $subreddit',
+      );
     }
 
     // A signed-in reader gets their own account's rate limits, which is the
@@ -672,19 +741,23 @@ class RedditClient {
     //
     // [preferPublic] overrides all of that: a reader who asked for the
     // account-free route gets it even when a credential is sitting there.
-    final anonymous = preferPublic || (userToken == null && clientId.trim().isEmpty);
+    final anonymous =
+        preferPublic || (userToken == null && clientId.trim().isEmpty);
     final token = userToken ?? (anonymous ? null : await _authorize(clientId));
 
     final query = {
       'limit': '$limit',
       // Gives real characters instead of HTML entities in titles and text.
       'raw_json': '1',
-      if (redditTimeFilterForSort(sort, timeFilter) case final filter?) 't': filter.queryValue,
+      if (redditTimeFilterForSort(sort, timeFilter) case final filter?)
+        't': filter.queryValue,
       if (after != null && after.isNotEmpty) 'after': after,
     };
 
     if (!anonymous) {
-      final uri = Uri.parse('$_apiBase/r/$name/${redditSortPath(sort)}').replace(queryParameters: query);
+      final uri = Uri.parse(
+        '$_apiBase/r/$name/${redditSortPath(sort)}',
+      ).replace(queryParameters: query);
       return _listingFrom(_decode(await _read(uri, token)));
     }
 
@@ -698,7 +771,11 @@ class RedditClient {
   /// verdict — private, banned, quarantined, missing, behind a login — ends it
   /// too: no second host is going to disagree, and asking anyway was most of
   /// what the anonymous path used to spend.
-  Future<RedditListing> _fetchPublicListing(String name, RedditSort sort, Map<String, String> query) async {
+  Future<RedditListing> _fetchPublicListing(
+    String name,
+    RedditSort sort,
+    Map<String, String> query,
+  ) async {
     RedditException? worst;
 
     for (final route in _publicRoutes()) {
@@ -726,19 +803,28 @@ class RedditClient {
   /// once per subreddit, is how one refresh turns into forty refusals.
   List<_PublicRoute> _publicRoutes() {
     final good = _lastGoodRoute;
-    final ordered = [?good, ..._PublicRoute.values.where((route) => route != good)];
+    final ordered = [
+      ?good,
+      ..._PublicRoute.values.where((route) => route != good),
+    ];
 
     final fresh = ordered.where((route) => !_isRefused(route)).toList();
     if (fresh.isEmpty) {
-      return [ordered.reduce((a, b) => _refusedUntil[b]!.isBefore(_refusedUntil[a]!) ? b : a)];
+      return [
+        ordered.reduce(
+          (a, b) => _refusedUntil[b]!.isBefore(_refusedUntil[a]!) ? b : a,
+        ),
+      ];
     }
 
     return [...fresh, ...ordered.where(_isRefused)];
   }
 
-  bool _isRefused(_PublicRoute route) => _refusedUntil[route]?.isAfter(_now()) ?? false;
+  bool _isRefused(_PublicRoute route) =>
+      _refusedUntil[route]?.isAfter(_now()) ?? false;
 
-  void _refuseRoute(_PublicRoute route) => _refusedUntil[route] = _now().add(kRedditRouteCooldown);
+  void _refuseRoute(_PublicRoute route) =>
+      _refusedUntil[route] = _now().add(kRedditRouteCooldown);
 
   void _rememberRoute(_PublicRoute route) {
     _lastGoodRoute = route;
@@ -747,7 +833,12 @@ class RedditClient {
 
   /// One route's turn. Only the network can throw out of here; everything a
   /// response can say is an [_RouteAttempt].
-  Future<_RouteAttempt> _attempt(_PublicRoute route, String name, RedditSort sort, Map<String, String> query) async {
+  Future<_RouteAttempt> _attempt(
+    _PublicRoute route,
+    String name,
+    RedditSort sort,
+    Map<String, String> query,
+  ) async {
     try {
       return route == _PublicRoute.html
           ? await _scrapeListing(name, sort, query)
@@ -764,7 +855,11 @@ class RedditClient {
   /// wants consent recorded, not an account, and `over18=1` is what its own
   /// form sets. The cookie is kept, so the gate costs one extra request per
   /// session rather than one per subreddit.
-  Future<_RouteAttempt> _scrapeListing(String name, RedditSort sort, Map<String, String> query) async {
+  Future<_RouteAttempt> _scrapeListing(
+    String name,
+    RedditSort sort,
+    Map<String, String> query,
+  ) async {
     final uri = Uri.parse(
       '$_publicFallbackBase/r/$name/${redditSortPath(sort)}',
     ).replace(queryParameters: {...query}..remove('raw_json'));
@@ -802,8 +897,12 @@ class RedditClient {
     RedditSort sort,
     Map<String, String> query,
   ) async {
-    final base = route == _PublicRoute.wwwJson ? _publicBase : _publicFallbackBase;
-    final uri = Uri.parse(_publicJsonPath(base, name, sort)).replace(queryParameters: query);
+    final base = route == _PublicRoute.wwwJson
+        ? _publicBase
+        : _publicFallbackBase;
+    final uri = Uri.parse(
+      _publicJsonPath(base, name, sort),
+    ).replace(queryParameters: query);
 
     final response = await _read(uri);
     final early = _statusVerdict(response, name, uri);
@@ -830,27 +929,50 @@ class RedditClient {
   /// is instead of as an empty feed.
   _RouteAttempt? _statusVerdict(http.Response response, String name, Uri uri) {
     if (response.statusCode == 404) {
-      return _terminal(RedditErrorKind.notFound, 'HTTP 404 from ${uri.host}: no r/$name');
+      return _terminal(
+        RedditErrorKind.notFound,
+        'HTTP 404 from ${uri.host}: no r/$name',
+      );
     }
 
     final location = _loginRedirectOf(response);
     if (location != null) {
-      return _terminal(RedditErrorKind.blocked, 'HTTP ${response.statusCode} to a login page ($location)');
+      return _terminal(
+        RedditErrorKind.blocked,
+        'HTTP ${response.statusCode} to a login page ($location)',
+      );
     }
 
     // 403 carries the private and quarantined interstitials, so its body is
     // worth reading; every other refusal is taken at face value.
-    return const [200, 403].contains(response.statusCode) ? null : _miss(_errorFor(response, uri));
+    return const [200, 403].contains(response.statusCode)
+        ? null
+        : _miss(_errorFor(response, uri));
   }
 
   /// The verdict a page carries, or null when it is a listing to be used.
-  _RouteAttempt? _pageVerdict(RedditPageKind kind, String name) => switch (kind) {
-    RedditPageKind.private => _terminal(RedditErrorKind.notFound, 'r/$name is private'),
-    RedditPageKind.banned => _terminal(RedditErrorKind.notFound, 'r/$name has been banned'),
-    RedditPageKind.quarantined => _terminal(RedditErrorKind.blocked, 'r/$name is quarantined'),
-    RedditPageKind.loginWall => _terminal(RedditErrorKind.blocked, 'Reddit answered with a login page'),
-    RedditPageKind.listing || RedditPageKind.over18Gate || RedditPageKind.unreadable => null,
-  };
+  _RouteAttempt? _pageVerdict(RedditPageKind kind, String name) =>
+      switch (kind) {
+        RedditPageKind.private => _terminal(
+          RedditErrorKind.notFound,
+          'r/$name is private',
+        ),
+        RedditPageKind.banned => _terminal(
+          RedditErrorKind.notFound,
+          'r/$name has been banned',
+        ),
+        RedditPageKind.quarantined => _terminal(
+          RedditErrorKind.blocked,
+          'r/$name is quarantined',
+        ),
+        RedditPageKind.loginWall => _terminal(
+          RedditErrorKind.blocked,
+          'Reddit answered with a login page',
+        ),
+        RedditPageKind.listing ||
+        RedditPageKind.over18Gate ||
+        RedditPageKind.unreadable => null,
+      };
 
   /// Where a redirect to Reddit's login page points, or null for anything else.
   ///
@@ -889,7 +1011,10 @@ class RedditClient {
   /// real way around a persistent one.
   static RedditException _publicFailure(RedditException? worst, String name) {
     if (worst == null) {
-      return RedditException(RedditErrorKind.badResponse, 'No public route served r/$name');
+      return RedditException(
+        RedditErrorKind.badResponse,
+        'No public route served r/$name',
+      );
     }
 
     final status = switch (worst.kind) {
@@ -914,13 +1039,19 @@ class RedditClient {
   }) async {
     final name = normaliseSubreddit(subreddit);
     if (name == null) {
-      throw RedditException(RedditErrorKind.notFound, 'Not a subreddit name: $subreddit');
+      throw RedditException(
+        RedditErrorKind.notFound,
+        'Not a subreddit name: $subreddit',
+      );
     }
 
-    final anonymous = preferPublic || (userToken == null && clientId.trim().isEmpty);
+    final anonymous =
+        preferPublic || (userToken == null && clientId.trim().isEmpty);
     if (!anonymous) {
       final token = userToken ?? await _authorize(clientId);
-      final uri = Uri.parse('$_apiBase/r/$name/about.json').replace(queryParameters: {'raw_json': '1'});
+      final uri = Uri.parse(
+        '$_apiBase/r/$name/about.json',
+      ).replace(queryParameters: {'raw_json': '1'});
       final data = Json(_decode(await _read(uri, token)))['data'];
       final publicDescription = data['public_description'].string?.trim();
       return RedditSubredditAbout(
@@ -935,9 +1066,16 @@ class RedditClient {
       );
     }
 
-    final body = await _scrape(Uri.parse('$_publicFallbackBase/r/$name/').replace(queryParameters: {'limit': '1'}));
+    final body = await _scrape(
+      Uri.parse(
+        '$_publicFallbackBase/r/$name/',
+      ).replace(queryParameters: {'limit': '1'}),
+    );
     if (body == null) {
-      throw RedditException(RedditErrorKind.badResponse, 'No sidebar for r/$name');
+      throw RedditException(
+        RedditErrorKind.badResponse,
+        'No sidebar for r/$name',
+      );
     }
     final side = parseSubredditSidebar(body);
     return RedditSubredditAbout(
@@ -951,14 +1089,23 @@ class RedditClient {
 
   /// [searchSort] is Reddit's search order — `relevance`, `new`, `top` or
   /// `comments` — its own axis, not the listing sort.
-  Future<List<RedditPost>> searchPosts(String query, {String? subreddit, String searchSort = 'relevance'}) async {
+  Future<List<RedditPost>> searchPosts(
+    String query, {
+    String? subreddit,
+    String searchSort = 'relevance',
+  }) async {
     final name = subreddit == null ? null : normaliseSubreddit(subreddit);
     final path = name == null ? '/search' : '/r/$name/search';
 
     final body = await _scrape(
-      Uri.parse(
-        '$_publicFallbackBase$path',
-      ).replace(queryParameters: {'q': query, 'sort': searchSort, 't': 'all', if (name != null) 'restrict_sr': 'on'}),
+      Uri.parse('$_publicFallbackBase$path').replace(
+        queryParameters: {
+          'q': query,
+          'sort': searchSort,
+          't': 'all',
+          if (name != null) 'restrict_sr': 'on',
+        },
+      ),
     );
 
     return body == null ? const [] : parseSearchPosts(body);
@@ -966,7 +1113,9 @@ class RedditClient {
 
   Future<List<RedditSubredditResult>> searchSubreddits(String query) async {
     final body = await _scrape(
-      Uri.parse('$_publicFallbackBase/subreddits/search').replace(queryParameters: {'q': query}),
+      Uri.parse(
+        '$_publicFallbackBase/subreddits/search',
+      ).replace(queryParameters: {'q': query}),
     );
 
     return body == null ? const [] : parseSubredditResults(body);
@@ -974,7 +1123,9 @@ class RedditClient {
 
   Future<List<RedditUserResult>> searchUsers(String query) async {
     final body = await _scrape(
-      Uri.parse('$_publicFallbackBase/search').replace(queryParameters: {'q': query, 'type': 'user'}),
+      Uri.parse(
+        '$_publicFallbackBase/search',
+      ).replace(queryParameters: {'q': query, 'type': 'user'}),
     );
 
     return body == null ? const [] : parseUserResults(body);
@@ -982,16 +1133,25 @@ class RedditClient {
 
   /// One account's posts. Comments on the same page have no title and are
   /// skipped by the listing parser, which is the behaviour we want here.
-  Future<RedditListing> fetchUserPosts(String user, {String? after}) async {
-    final name = user.replaceFirst(RegExp(r'^/?u(?:ser)?/', caseSensitive: false), '').trim();
+  Future<RedditListing> fetchUserPosts(
+    String user, {
+    String? after,
+    int limit = kRedditListingPageSize,
+  }) async {
+    final name = user
+        .replaceFirst(RegExp(r'^/?u(?:ser)?/', caseSensitive: false), '')
+        .trim();
     if (name.isEmpty) {
       throw RedditException(RedditErrorKind.notFound, 'Not a username: $user');
     }
 
     final body = await _scrape(
-      Uri.parse(
-        '$_publicFallbackBase/user/$name/submitted',
-      ).replace(queryParameters: {'limit': '25', if (after != null && after.isNotEmpty) 'after': after}),
+      Uri.parse('$_publicFallbackBase/user/$name/submitted').replace(
+        queryParameters: {
+          'limit': '$limit',
+          if (after != null && after.isNotEmpty) 'after': after,
+        },
+      ),
     );
 
     if (body == null) {
@@ -1023,7 +1183,11 @@ class RedditClient {
     }
 
     try {
-      final body = await _scrape(Uri.parse('$_publicFallbackBase/r/$name/').replace(queryParameters: {'limit': '1'}));
+      final body = await _scrape(
+        Uri.parse(
+          '$_publicFallbackBase/r/$name/',
+        ).replace(queryParameters: {'limit': '1'}),
+      );
       final icon = body == null ? null : parseSubredditIcon(body);
       _rememberIcon(name, icon);
 
@@ -1055,14 +1219,23 @@ class RedditClient {
   /// or client id is available, old-site HTML scrape when the reader is
   /// anonymous. Returns the post's own text and media alongside, because a self
   /// post's body is not always in the listing that led here.
-  Future<({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages})> fetchComments(
+  Future<
+    ({
+      List<RedditComment> comments,
+      String? selfText,
+      String? postUrl,
+      List<String> postImages,
+    })
+  >
+  fetchComments(
     String permalink, {
     String? sort,
     required String clientId,
     String? userToken,
     bool preferPublic = false,
   }) async {
-    final anonymous = preferPublic || (userToken == null && clientId.trim().isEmpty);
+    final anonymous =
+        preferPublic || (userToken == null && clientId.trim().isEmpty);
     if (anonymous) {
       return _commentsFromScrape(permalink, sort: sort);
     }
@@ -1088,7 +1261,9 @@ class RedditClient {
   /// cost that card its pictures, not the whole feed its posts.
   Future<List<String>> fetchGalleryImages(String permalink) async {
     try {
-      final uri = Uri.parse('$_publicBase${_commentsJsonPath(permalink)}').replace(queryParameters: {'raw_json': '1'});
+      final uri = Uri.parse(
+        '$_publicBase${_commentsJsonPath(permalink)}',
+      ).replace(queryParameters: {'raw_json': '1'});
 
       final response = await _read(uri);
       if (response.statusCode != 200) {
@@ -1101,8 +1276,19 @@ class RedditClient {
     }
   }
 
-  Future<({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages})>
-  _commentsFromOauth(String permalink, {String? sort, required String token}) async {
+  Future<
+    ({
+      List<RedditComment> comments,
+      String? selfText,
+      String? postUrl,
+      List<String> postImages,
+    })
+  >
+  _commentsFromOauth(
+    String permalink, {
+    String? sort,
+    required String token,
+  }) async {
     final query = {
       'raw_json': '1',
       // One page is all a thread gets; ask for a deep one so truncation is
@@ -1110,17 +1296,29 @@ class RedditClient {
       'limit': '500',
       if (sort != null && sort.isNotEmpty) 'sort': sort,
     };
-    final uri = Uri.parse('$_apiBase${_commentsJsonPath(permalink)}').replace(queryParameters: query);
+    final uri = Uri.parse(
+      '$_apiBase${_commentsJsonPath(permalink)}',
+    ).replace(queryParameters: query);
     final decoded = _decodeList(await _read(uri, token));
     return _threadFromJson(decoded, postPermalink: permalink);
   }
 
-  Future<({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages})>
+  Future<
+    ({
+      List<RedditComment> comments,
+      String? selfText,
+      String? postUrl,
+      List<String> postImages,
+    })
+  >
   _commentsFromScrape(String permalink, {String? sort}) async {
     final path = permalink.startsWith('/') ? permalink : '/$permalink';
-    var uri = Uri.parse(
-      '$_publicFallbackBase$path',
-    ).replace(queryParameters: {'limit': '500', if (sort != null && sort.isNotEmpty) 'sort': sort});
+    var uri = Uri.parse('$_publicFallbackBase$path').replace(
+      queryParameters: {
+        'limit': '500',
+        if (sort != null && sort.isNotEmpty) 'sort': sort,
+      },
+    );
 
     var response = await _read(uri);
 
@@ -1129,7 +1327,10 @@ class RedditClient {
     }
 
     if (response.statusCode == 404) {
-      throw RedditException(RedditErrorKind.notFound, 'No such post: $permalink');
+      throw RedditException(
+        RedditErrorKind.notFound,
+        'No such post: $permalink',
+      );
     }
     if (response.statusCode != 200) {
       throw _errorFor(response, uri);
@@ -1145,16 +1346,24 @@ class RedditClient {
   }
 
   /// Reddit's comments endpoint is `[postListing, commentsListing]`.
-  ({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages}) _threadFromJson(
-    List<dynamic> decoded, {
-    String? postPermalink,
-  }) {
+  ({
+    List<RedditComment> comments,
+    String? selfText,
+    String? postUrl,
+    List<String> postImages,
+  })
+  _threadFromJson(List<dynamic> decoded, {String? postPermalink}) {
     final root = Json(decoded);
     final postRaw = root[0]['data']['children'][0].raw;
-    final post = postRaw is Map ? RedditPost.fromChild(Map<String, dynamic>.from(postRaw)) : null;
+    final post = postRaw is Map
+        ? RedditPost.fromChild(Map<String, dynamic>.from(postRaw))
+        : null;
 
     return (
-      comments: commentsFromListing(root[1], parentPermalink: postPermalink ?? post?.permalink),
+      comments: commentsFromListing(
+        root[1],
+        parentPermalink: postPermalink ?? post?.permalink,
+      ),
       selfText: post?.selfText,
       postUrl: post?.url,
       postImages: post?.galleryImages ?? const [],
@@ -1181,7 +1390,11 @@ class RedditClient {
 
   /// One GET, with the token when there is one. A 401 drops the cached token so
   /// the next attempt re-authorises.
-  Future<http.Response> _read(Uri uri, [String? token, Map<String, String>? cookies]) async {
+  Future<http.Response> _read(
+    Uri uri, [
+    String? token,
+    Map<String, String>? cookies,
+  ]) async {
     final public = isPublicHost(uri);
     final jar = {..._cookies, ...?cookies};
 
@@ -1192,9 +1405,12 @@ class RedditClient {
           if (token != null) 'Authorization': 'Bearer $token',
           'User-Agent': public ? publicUserAgent : userAgent,
           // The website weighs these too; their absence is another bot tell.
-          if (public) 'Accept': 'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
+          if (public)
+            'Accept':
+                'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
           if (public) 'Accept-Language': 'en-US,en;q=0.9',
-          if (public && jar.isNotEmpty) 'Cookie': jar.entries.map((e) => '${e.key}=${e.value}').join('; '),
+          if (public && jar.isNotEmpty)
+            'Cookie': jar.entries.map((e) => '${e.key}=${e.value}').join('; '),
         },
       ),
     );
@@ -1221,7 +1437,10 @@ class RedditClient {
   RedditListing _listingFrom(Map<String, dynamic> decoded) {
     final data = decoded['data'];
     if (data is! Map) {
-      throw const RedditException(RedditErrorKind.badResponse, 'Listing has no data');
+      throw const RedditException(
+        RedditErrorKind.badResponse,
+        'Listing has no data',
+      );
     }
 
     final children = data['children'];
@@ -1238,7 +1457,10 @@ class RedditClient {
     }
 
     final after = data['after'];
-    return RedditListing(posts: posts, after: after is String && after.isNotEmpty ? after : null);
+    return RedditListing(
+      posts: posts,
+      after: after is String && after.isNotEmpty ? after : null,
+    );
   }
 
   Future<http.Response> _send(Future<http.Response> Function() request) async {
@@ -1260,7 +1482,10 @@ class RedditClient {
     } catch (_) {
       // Fall through to the shared error below.
     }
-    throw const RedditException(RedditErrorKind.badResponse, 'Response was not a JSON object');
+    throw const RedditException(
+      RedditErrorKind.badResponse,
+      'Response was not a JSON object',
+    );
   }
 
   List<dynamic> _decodeList(http.Response response) {
@@ -1272,13 +1497,18 @@ class RedditClient {
     } catch (_) {
       // Fall through to the shared error below.
     }
-    throw const RedditException(RedditErrorKind.badResponse, 'Response was not a JSON array');
+    throw const RedditException(
+      RedditErrorKind.badResponse,
+      'Response was not a JSON array',
+    );
   }
 
   RedditException _errorFor(http.Response response, [Uri? uri]) {
     // The host tells the anonymous read apart from the authenticated one, which
     // is the first thing worth knowing when a reader reports a failure.
-    final detail = uri == null ? 'HTTP ${response.statusCode}' : 'HTTP ${response.statusCode} from ${uri.host}';
+    final detail = uri == null
+        ? 'HTTP ${response.statusCode}'
+        : 'HTTP ${response.statusCode} from ${uri.host}';
     return switch (response.statusCode) {
       401 => RedditException(RedditErrorKind.unauthorized, detail),
       403 => RedditException(RedditErrorKind.blocked, detail),

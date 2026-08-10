@@ -14,25 +14,41 @@ class RedditReadSession {
   final bool preferPublic;
   final String? userToken;
 
-  const RedditReadSession({required this.clientId, required this.preferPublic, this.userToken});
+  const RedditReadSession({
+    required this.clientId,
+    required this.preferPublic,
+    this.userToken,
+  });
 
   /// Builds a session from prefs: public when asked, else a user access token
   /// when a refresh token exists, else app-only / scrape via [clientId].
-  static Future<RedditReadSession> resolve({required BasePrefService prefs, RedditAuth? auth}) async {
+  static Future<RedditReadSession> resolve({
+    required BasePrefService prefs,
+    RedditAuth? auth,
+  }) async {
     final clientId = prefs.get<String>(optionPluginRedditClientId) ?? '';
-    final preferPublic = prefs.get<String>(optionPluginRedditSource) == redditSourcePublic;
+    final preferPublic =
+        prefs.get<String>(optionPluginRedditSource) == redditSourcePublic;
     if (preferPublic) {
       return RedditReadSession(clientId: clientId, preferPublic: true);
     }
 
-    final refreshToken = prefs.get<String>(optionPluginRedditRefreshToken) ?? '';
+    final refreshToken =
+        prefs.get<String>(optionPluginRedditRefreshToken) ?? '';
     if (refreshToken.isEmpty) {
       return RedditReadSession(clientId: clientId, preferPublic: false);
     }
 
     try {
-      final token = await (auth ?? RedditAuth()).accessToken(clientId: clientId, refreshToken: refreshToken);
-      return RedditReadSession(clientId: clientId, preferPublic: false, userToken: token);
+      final token = await (auth ?? RedditAuth()).accessToken(
+        clientId: clientId,
+        refreshToken: refreshToken,
+      );
+      return RedditReadSession(
+        clientId: clientId,
+        preferPublic: false,
+        userToken: token,
+      );
     } on RedditException {
       // Reddit no longer accepts this refresh token — drop it so every path
       // falls back the same way instead of retrying a dead session.
@@ -46,7 +62,7 @@ class RedditReadSession {
     String name, {
     RedditSort sort = RedditSort.hot,
     RedditTimeFilter timeFilter = RedditTimeFilter.day,
-    int limit = 25,
+    int limit = kRedditListingPageSize,
     String? after,
   }) => client.fetchSubreddit(
     name,
@@ -59,13 +75,30 @@ class RedditReadSession {
     preferPublic: preferPublic,
   );
 
-  Future<RedditSubredditAbout> fetchSubredditAbout(RedditClient client, String name) =>
-      client.fetchSubredditAbout(name, clientId: clientId, userToken: userToken, preferPublic: preferPublic);
-
-  Future<({List<RedditComment> comments, String? selfText, String? postUrl, List<String> postImages})> fetchComments(
+  Future<RedditSubredditAbout> fetchSubredditAbout(
     RedditClient client,
-    String permalink, {
-    String? sort,
-  }) =>
-      client.fetchComments(permalink, sort: sort, clientId: clientId, userToken: userToken, preferPublic: preferPublic);
+    String name,
+  ) => client.fetchSubredditAbout(
+    name,
+    clientId: clientId,
+    userToken: userToken,
+    preferPublic: preferPublic,
+  );
+
+  Future<
+    ({
+      List<RedditComment> comments,
+      String? selfText,
+      String? postUrl,
+      List<String> postImages,
+    })
+  >
+  fetchComments(RedditClient client, String permalink, {String? sort}) =>
+      client.fetchComments(
+        permalink,
+        sort: sort,
+        clientId: clientId,
+        userToken: userToken,
+        preferPublic: preferPublic,
+      );
 }

@@ -688,6 +688,24 @@ void main() {
       },
     );
 
+    test('default page size asks Reddit for fifty posts', () async {
+      Uri? listingUrl;
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          if (request.url.path.contains('access_token')) {
+            return _json(_tokenBody(), 200);
+          }
+          listingUrl = request.url;
+          return _json(_listingBody(), 200);
+        }),
+      );
+
+      await client.fetchSubreddit('dartlang', clientId: 'id');
+
+      expect(kRedditListingPageSize, 50);
+      expect(listingUrl!.queryParameters['limit'], '50');
+    });
+
     test(
       'adds t= for authenticated top and controversial listings only',
       () async {
