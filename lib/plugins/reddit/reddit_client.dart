@@ -249,6 +249,15 @@ class RedditPost {
 
   bool get isVideo => isRedditVideoHost(domain ?? (url == null ? null : Uri.tryParse(url!)?.host));
 
+  /// DASH URL for inline playback — JSON `secure_media`, or derived from a
+  /// bare `v.redd.it` link when the listing was scraped as HTML.
+  String? get resolvedVideoDashUrl =>
+      videoDashUrl ?? videoFallbackUrl ?? redditVRedditDashUrl(url);
+
+  /// Banner for a link/video card: Reddit's preview when present, else the
+  /// listing thumbnail so article and video posts are not reduced to an 88px chip.
+  String? get cardPreviewImage => previewImage ?? thumbnailUrl;
+
   static RedditPost? fromChild(Map<String, dynamic> child) {
     if (child['kind'] != 't3') {
       return null;
