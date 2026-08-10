@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Erakutsi argitalpen zaharragoak",
   "@catch_up_show_older": {},
+  "censored": "Zentsuratua",
   "checking_bookmarks": "Gordetako argitalpenak egiaztatzen…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Harpidetzak egiaztatzen…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Kudeatu karpetak",
   "@manage_folders": {},
+  "mark_group_nsfw": "NSFW gisa markatu",
   "media": "Multimedia",
   "@media": {},
   "media_grid_columns": "Multimedia saretako zutabeak",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Ezezaguna erabiltzaile-izena",
   "@unknown_username": {},
+  "unmark_group_nsfw": "NSFW marka kendu",
   "unpin": "Desfinkatu",
   "@unpin": {},
   "unsubscribe": "Kendu harpidetza",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

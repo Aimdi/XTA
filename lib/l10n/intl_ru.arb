@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Показать старые посты",
   "@catch_up_show_older": {},
+  "censored": "Скрытое",
   "checking_bookmarks": "Проверка сохранённых постов…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Проверка подписок…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Управление папками",
   "@manage_folders": {},
+  "mark_group_nsfw": "Пометить как NSFW",
   "media": "Медиа",
   "@media": {},
   "media_grid_columns": "Столбцы сетки медиа",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Неизвестное имя пользователя",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Снять метку NSFW",
   "unpin": "Открепить",
   "@unpin": {},
   "unsubscribe": "Перестать читать",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

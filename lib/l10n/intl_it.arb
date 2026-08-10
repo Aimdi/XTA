@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Mostra post più vecchi",
   "@catch_up_show_older": {},
+  "censored": "Censurato",
   "checking_bookmarks": "Controllo dei post salvati…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Controllo delle iscrizioni…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Gestisci cartelle",
   "@manage_folders": {},
+  "mark_group_nsfw": "Segna come NSFW",
   "media": "Contenuti",
   "@media": {},
   "media_grid_columns": "Colonne della griglia multimediale",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Nome utente sconosciuto",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Rimuovi NSFW",
   "unpin": "Non fissare",
   "@unpin": {},
   "unsubscribe": "Annulla iscrizione",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

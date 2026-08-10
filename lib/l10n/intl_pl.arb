@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Pokaż starsze posty",
   "@catch_up_show_older": {},
+  "censored": "Ocenzurowane",
   "checking_bookmarks": "Sprawdzanie zapisanych wpisów…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Sprawdzanie subskrypcji…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Zarządzaj folderami",
   "@manage_folders": {},
+  "mark_group_nsfw": "Oznacz jako NSFW",
   "media": "Multimedia",
   "@media": {},
   "media_grid_columns": "Kolumny siatki multimediów",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Nieznana nazwa użytkownika",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Usuń oznaczenie NSFW",
   "unpin": "Odepnij",
   "@unpin": {},
   "unsubscribe": "Odsubskrybuj",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

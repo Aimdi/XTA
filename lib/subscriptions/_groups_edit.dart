@@ -448,6 +448,11 @@ class _SubscriptionGroupEditDialogState
         context.read<GroupsModel>().state.any(
           (g) => g.id == widget.id && g.pinned,
         );
+    final isNsfw =
+        widget.id != null &&
+        context.read<GroupsModel>().state.any(
+          (g) => g.id == widget.id && g.nsfw,
+        );
     final prefs = PrefService.of(context, listen: false);
     final deckPinned = widget.id != null && isDeckPinned(prefs, widget.id!);
 
@@ -467,6 +472,20 @@ class _SubscriptionGroupEditDialogState
           onPressed: () async {
             final groupsModel = context.read<GroupsModel>();
             await groupsModel.toggleGroupPinned(widget.id!, !isPinned);
+            if (mounted) setState(() {});
+          },
+        ),
+      if (widget.id != null)
+        TextButton.icon(
+          style: _discreetActionStyle(context),
+          icon: Icon(
+            isNsfw ? Icons.visibility_off : Icons.visibility_off_outlined,
+            size: 18,
+          ),
+          label: Text(isNsfw ? l10n.unmark_group_nsfw : l10n.mark_group_nsfw),
+          onPressed: () async {
+            final groupsModel = context.read<GroupsModel>();
+            await groupsModel.toggleGroupNsfw(widget.id!, !isNsfw);
             if (mounted) setState(() {});
           },
         ),

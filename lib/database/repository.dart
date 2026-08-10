@@ -30,7 +30,8 @@ const String tableRedditLocalVote = 'reddit_local_vote';
 const String tableThreadsLocalLike = 'threads_local_like';
 const String tableBlueskyLocalLike = 'bluesky_local_like';
 const String tableStockSubscription = 'stock_subscription';
-const String tableSearchSubscriptionGroupMember = 'search_subscription_group_member';
+const String tableSearchSubscriptionGroupMember =
+    'search_subscription_group_member';
 const String tableSubscription = 'subscription';
 const String tableSubscriptionGroup = 'subscription_group';
 const String tableSubscriptionGroupMember = 'subscription_group_member';
@@ -43,7 +44,7 @@ const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 
-const int databaseVersion = 51;
+const int databaseVersion = 52;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -58,7 +59,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     SqlMigration(
       'CREATE TABLE IF NOT EXISTS following_group (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, icon VARCHAR NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
     ),
-    SqlMigration('CREATE TABLE IF NOT EXISTS following_group_profile (group_id INTEGER, profile_id INTEGER)'),
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS following_group_profile (group_id INTEGER, profile_id INTEGER)',
+    ),
   ],
   4: [
     // Change the following table's "id" field to be a VARCHAR
@@ -73,8 +76,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   5: [
     // Change the following_group_profile table's "profile_id" field to be a VARCHAR to match the referenced table
-    SqlMigration('ALTER TABLE following_group_profile RENAME TO following_group_profile_old'),
-    SqlMigration('CREATE TABLE following_group_profile (group_id INTEGER, profile_id VARCHAR)'),
+    SqlMigration(
+      'ALTER TABLE following_group_profile RENAME TO following_group_profile_old',
+    ),
+    SqlMigration(
+      'CREATE TABLE following_group_profile (group_id INTEGER, profile_id VARCHAR)',
+    ),
     SqlMigration(
       'INSERT INTO following_group_profile (group_id, profile_id) SELECT group_id, profile_id FROM following_group_profile_old',
     ),
@@ -83,8 +90,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   6: [
     // Rename the old following tables to match the names in the UI
     SqlMigration('ALTER TABLE following RENAME TO $tableSubscription'),
-    SqlMigration('ALTER TABLE following_group RENAME TO $tableSubscriptionGroup'),
-    SqlMigration('ALTER TABLE following_group_profile RENAME TO $tableSubscriptionGroupMember'),
+    SqlMigration(
+      'ALTER TABLE following_group RENAME TO $tableSubscriptionGroup',
+    ),
+    SqlMigration(
+      'ALTER TABLE following_group_profile RENAME TO $tableSubscriptionGroupMember',
+    ),
   ],
   7: [
     // Add the table for saved tweets
@@ -95,7 +106,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   8: [
     // Add a primary key to the $TABLE_SUBSCRIPTION_GROUP_MEMBER table to prevent duplicates
-    SqlMigration('ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscriptionGroupMember (group_id INTEGER, profile_id VARCHAR, CONSTRAINT pk_$tableSubscriptionGroupMember PRIMARY KEY (group_id, profile_id))',
     ),
@@ -106,8 +119,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   9: [
     // Add a new ID field for subscription groups for a UUID to determine uniqueness across devices
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup ADD COLUMN uuid VARCHAR NULL'),
-    SqlMigration('ALTER TABLE $tableSubscriptionGroupMember ADD COLUMN group_uuid VARCHAR NULL'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN uuid VARCHAR NULL',
+    ),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroupMember ADD COLUMN group_uuid VARCHAR NULL',
+    ),
 
     // Generate a UUID for each existing subscription group
     Migration(
@@ -120,15 +137,27 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
           var oldId = group['id'];
           var newId = uuid.v4();
 
-          db.update(tableSubscriptionGroup, {'uuid': newId}, where: 'id = ?', whereArgs: [oldId]);
+          db.update(
+            tableSubscriptionGroup,
+            {'uuid': newId},
+            where: 'id = ?',
+            whereArgs: [oldId],
+          );
 
-          db.update(tableSubscriptionGroupMember, {'group_uuid': newId}, where: 'group_id = ?', whereArgs: [oldId]);
+          db.update(
+            tableSubscriptionGroupMember,
+            {'group_uuid': newId},
+            where: 'group_id = ?',
+            whereArgs: [oldId],
+          );
         }
       }),
     ),
 
     // Replace the old ID fields with the new ones
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup RENAME TO ${tableSubscriptionGroup}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup RENAME TO ${tableSubscriptionGroup}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscriptionGroup (id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, icon VARCHAR NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
     ),
@@ -136,7 +165,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       'INSERT INTO $tableSubscriptionGroup (id, name, icon, created_at) SELECT uuid, name, icon, created_at FROM ${tableSubscriptionGroup}_old',
     ),
 
-    SqlMigration('ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscriptionGroupMember (group_id VARCHAR, profile_id VARCHAR, CONSTRAINT pk_$tableSubscriptionGroupMember PRIMARY KEY (group_id, profile_id))',
     ),
@@ -151,8 +182,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   11: [
     // Add columns for the subscription group settings
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_replies BOOLEAN DEFAULT true'),
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_retweets BOOLEAN DEFAULT true'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_replies BOOLEAN DEFAULT true',
+    ),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_retweets BOOLEAN DEFAULT true',
+    ),
   ],
   12: [
     // Insert a dummy record for the "All" subscription group
@@ -165,7 +200,11 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
         }, conflictAlgorithm: ConflictAlgorithm.replace);
       }),
       reverse: Operation((db) async {
-        await db.delete(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+        await db.delete(
+          tableSubscriptionGroup,
+          where: 'id = ?',
+          whereArgs: ['-1'],
+        );
       }),
     ),
   ],
@@ -180,7 +219,11 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
         }, conflictAlgorithm: ConflictAlgorithm.replace);
       }),
       reverse: Operation((db) async {
-        await db.delete(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+        await db.delete(
+          tableSubscriptionGroup,
+          where: 'id = ?',
+          whereArgs: ['-1'],
+        );
       }),
     ),
   ],
@@ -193,7 +236,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   15: [
     // Re-apply migration 14 in a different way, as it looks like it didn't apply for some people
-    SqlMigration('ALTER TABLE $tableSubscription RENAME TO ${tableSubscription}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscription RENAME TO ${tableSubscription}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscription (id VARCHAR PRIMARY KEY, screen_name VARCHAR, name VARCHAR, profile_image_url_https VARCHAR, verified BOOLEAN DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
     ),
@@ -250,7 +295,10 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     ),
     Migration(
       Operation((db) async {
-        var tweets = await db.query(tableSavedTweet, columns: ['id', 'content']);
+        var tweets = await db.query(
+          tableSavedTweet,
+          columns: ['id', 'content'],
+        );
         var batch = db.batch();
 
         for (var tweet in tweets) {
@@ -266,7 +314,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
 
           var userId = decodedTweet['user']?['id_str'] as String?;
           if (userId != null) {
-            batch.update(tableSavedTweet, {'user_id': userId}, where: 'id = ?', whereArgs: [tweet['id']]);
+            batch.update(
+              tableSavedTweet,
+              {'user_id': userId},
+              where: 'id = ?',
+              whereArgs: [tweet['id']],
+            );
           }
         }
 
@@ -298,15 +351,25 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     SqlMigration(
       'CREATE TABLE $tableAccounts (id TEXT PRIMARY KEY, auth_header VARCHAR, screen_name VARCHAR DEFAULT NULL)',
     ),
-    SqlMigration('INSERT INTO $tableAccounts (id, auth_header) SELECT id, auth_header FROM ${tableAccounts}_old'),
+    SqlMigration(
+      'INSERT INTO $tableAccounts (id, auth_header) SELECT id, auth_header FROM ${tableAccounts}_old',
+    ),
     SqlMigration('DROP TABLE ${tableAccounts}_old'),
   ],
-  23: [SqlMigration('ALTER TABLE $tableSubscription ADD COLUMN in_feed BOOLEAN DEFAULT 1')],
+  23: [
+    SqlMigration(
+      'ALTER TABLE $tableSubscription ADD COLUMN in_feed BOOLEAN DEFAULT 1',
+    ),
+  ],
   24: [
     // Account not-found health columns for the selection strategy (timestamp as ISO-8601 TEXT).
     // Rate-limit (429) state is tracked in memory per endpoint, not persisted.
-    SqlMigration('ALTER TABLE $tableAccounts ADD COLUMN last_not_found_at TEXT DEFAULT NULL'),
-    SqlMigration('ALTER TABLE $tableAccounts ADD COLUMN consecutive_not_found INTEGER DEFAULT 0'),
+    SqlMigration(
+      'ALTER TABLE $tableAccounts ADD COLUMN last_not_found_at TEXT DEFAULT NULL',
+    ),
+    SqlMigration(
+      'ALTER TABLE $tableAccounts ADD COLUMN consecutive_not_found INTEGER DEFAULT 0',
+    ),
   ],
   25: [
     // Folders for saved posts: a folder table plus a nullable folder_id on saved tweets.
@@ -361,7 +424,8 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     ),
     SqlMigration(
       "ALTER TABLE $tableSubscriptionGroup ADD COLUMN content_filter VARCHAR DEFAULT 'default'",
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN content_filter',
+      reverseSql:
+          'ALTER TABLE $tableSubscriptionGroup DROP COLUMN content_filter',
     ),
   ],
   32: [
@@ -376,7 +440,8 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // Per-folder toggle: download a post's images when it's filed here.
     SqlMigration(
       'ALTER TABLE $tableSavedTweetFolder ADD COLUMN auto_download BOOLEAN DEFAULT 0',
-      reverseSql: 'ALTER TABLE $tableSavedTweetFolder DROP COLUMN auto_download',
+      reverseSql:
+          'ALTER TABLE $tableSavedTweetFolder DROP COLUMN auto_download',
     ),
   ],
   34: [
@@ -400,7 +465,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
         );
         var batch = db.batch();
         for (var (i, group) in groups.indexed) {
-          batch.update(tableSubscriptionGroup, {'position': i}, where: 'id = ?', whereArgs: [group['id']]);
+          batch.update(
+            tableSubscriptionGroup,
+            {'position': i},
+            where: 'id = ?',
+            whereArgs: [group['id']],
+          );
         }
         await batch.commit(noResult: true);
       }),
@@ -420,14 +490,26 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     Migration(
       Operation((db) async {
         const defaultIcon = '{"pack":"custom","key":"rss_feed"}';
-        final groups = await db.query(tableSubscriptionGroup, columns: ['id', 'icon']);
+        final groups = await db.query(
+          tableSubscriptionGroup,
+          columns: ['id', 'icon'],
+        );
         final batch = db.batch();
         for (final group in groups) {
           final icon = group['icon'] as String?;
           final isCustom =
-              icon != null && icon.isNotEmpty && icon != 'rss' && icon != 'rss_feed' && icon != defaultIcon;
+              icon != null &&
+              icon.isNotEmpty &&
+              icon != 'rss' &&
+              icon != 'rss_feed' &&
+              icon != defaultIcon;
           if (isCustom) {
-            batch.update(tableSubscriptionGroup, {'mark_style': 2}, where: 'id = ?', whereArgs: [group['id']]);
+            batch.update(
+              tableSubscriptionGroup,
+              {'mark_style': 2},
+              where: 'id = ?',
+              whereArgs: [group['id']],
+            );
           }
         }
         await batch.commit(noResult: true);
@@ -444,11 +526,13 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     ),
     SqlMigration(
       'ALTER TABLE $tableSubscriptionGroup ADD COLUMN min_retweets INTEGER NOT NULL DEFAULT 0',
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN min_retweets',
+      reverseSql:
+          'ALTER TABLE $tableSubscriptionGroup DROP COLUMN min_retweets',
     ),
     SqlMigration(
       'ALTER TABLE $tableSubscriptionGroup ADD COLUMN muted_keywords TEXT',
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN muted_keywords',
+      reverseSql:
+          'ALTER TABLE $tableSubscriptionGroup DROP COLUMN muted_keywords',
     ),
   ],
   // The reply filter was written as 36 on its own branch, before the
@@ -510,7 +594,10 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // indexes above: a database that lost a table to a partially restored
     // backup must still be able to finish upgrading. A bare ALTER TABLE would
     // fail on the missing table and block every later migration with it.
-    Migration(Operation(_addGroupParentColumn), reverse: Operation(_dropGroupParentColumn)),
+    Migration(
+      Operation(_addGroupParentColumn),
+      reverse: Operation(_dropGroupParentColumn),
+    ),
   ],
   42: [
     // Subreddits, for the same reason publications got a table in 40: group
@@ -643,6 +730,14 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       reverseSql: 'DROP TABLE $tableBlueskyLocalLike',
     ),
   ],
+  52: [
+    // Reader-marked adult groups: board sinks them under a Censored section.
+    // Distinct from content_filter, which filters posts inside a custom feed.
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
+      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN nsfw',
+    ),
+  ],
 });
 
 /// Indexes added in migration 39, applied so that a failure cannot block the
@@ -657,7 +752,8 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
 const Map<String, String> _indexes = {
   'idx_feed_group_chunk_hash': '$tableFeedGroupChunk (hash, created_at)',
   'idx_feed_group_chunk_cursor': '$tableFeedGroupChunk (cursor_id, hash)',
-  'idx_subscription_group_member_profile': '$tableSubscriptionGroupMember (profile_id)',
+  'idx_subscription_group_member_profile':
+      '$tableSubscriptionGroupMember (profile_id)',
   // The cache preview reads newest-first with no WHERE, and the weekly cleanup
   // deletes by age; without this both walk the largest table in the schema.
   'idx_feed_group_chunk_created': '$tableFeedGroupChunk (created_at)',
@@ -675,9 +771,13 @@ const Map<String, String> _indexes = {
 /// own path touches. Without the column, folders simply cannot auto-upload.
 Future<void> _addFolderAutoUploadColumn(Database db) async {
   try {
-    await db.execute('ALTER TABLE $tableSavedTweetFolder ADD COLUMN auto_upload BOOLEAN DEFAULT 0');
+    await db.execute(
+      'ALTER TABLE $tableSavedTweetFolder ADD COLUMN auto_upload BOOLEAN DEFAULT 0',
+    );
   } catch (e) {
-    Repository.log.warning('Could not add auto_upload to $tableSavedTweetFolder: $e');
+    Repository.log.warning(
+      'Could not add auto_upload to $tableSavedTweetFolder: $e',
+    );
   }
 }
 
@@ -691,37 +791,53 @@ Future<void> _addSavedTweetNoteColumn(Database db) async {
 
 Future<void> _addSubscriptionMaxPostsColumn(Database db) async {
   try {
-    await db.execute('ALTER TABLE $tableSubscription ADD COLUMN max_posts_per_load INTEGER');
+    await db.execute(
+      'ALTER TABLE $tableSubscription ADD COLUMN max_posts_per_load INTEGER',
+    );
   } catch (e) {
-    Repository.log.warning('Could not add max_posts_per_load to $tableSubscription: $e');
+    Repository.log.warning(
+      'Could not add max_posts_per_load to $tableSubscription: $e',
+    );
   }
 }
 
 /// Adds the nesting column, tolerating a database whose group table is gone.
 Future<void> _addGroupParentColumn(Database db) async {
   try {
-    await db.execute('ALTER TABLE $tableSubscriptionGroup ADD COLUMN parent_id VARCHAR');
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN parent_id VARCHAR',
+    );
   } catch (e) {
     // Already present, or the table is missing entirely. Neither is worth
     // stopping the upgrade for: without the column groups simply do not nest.
-    Repository.log.warning('Could not add parent_id to $tableSubscriptionGroup: $e');
+    Repository.log.warning(
+      'Could not add parent_id to $tableSubscriptionGroup: $e',
+    );
   }
 }
 
 Future<void> _dropGroupParentColumn(Database db) async {
   try {
-    await db.execute('ALTER TABLE $tableSubscriptionGroup DROP COLUMN parent_id');
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup DROP COLUMN parent_id',
+    );
   } catch (e) {
-    Repository.log.warning('Could not drop parent_id from $tableSubscriptionGroup: $e');
+    Repository.log.warning(
+      'Could not drop parent_id from $tableSubscriptionGroup: $e',
+    );
   }
 }
 
 Future<void> _createIndexes(Database db) async {
   for (final entry in _indexes.entries) {
     try {
-      await db.execute('CREATE INDEX IF NOT EXISTS ${entry.key} ON ${entry.value}');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS ${entry.key} ON ${entry.value}',
+      );
     } catch (e) {
-      Repository.log.warning('Could not create index ${entry.key}; queries still work, just slower: $e');
+      Repository.log.warning(
+        'Could not create index ${entry.key}; queries still work, just slower: $e',
+      );
     }
   }
 }
@@ -759,7 +875,11 @@ class Repository {
       return cached;
     }
 
-    final opening = openDatabase(databaseName, readOnly: true, singleInstance: false);
+    final opening = openDatabase(
+      databaseName,
+      readOnly: true,
+      singleInstance: false,
+    );
     _readOnly = opening;
 
     // A failure must not latch: the first read can land before the file exists.
@@ -788,9 +908,18 @@ class Repository {
   Future<void> _cleanUpOldCaches() async {
     try {
       final repository = await writable();
-      await repository.delete(tableFeedGroupChunk, where: "created_at <= date('now', '-7 day')");
-      await repository.delete(tableFeedGroupCursor, where: "created_at <= date('now', '-7 day')");
-      await repository.delete(tableTimelineCache, where: "created_at <= date('now', '-7 day')");
+      await repository.delete(
+        tableFeedGroupChunk,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await repository.delete(
+        tableFeedGroupCursor,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await repository.delete(
+        tableTimelineCache,
+        where: "created_at <= date('now', '-7 day')",
+      );
       await trimTimelineCache(repository);
     } catch (e) {
       log.warning('Could not clean up old cached feeds: $e');
@@ -803,7 +932,10 @@ class Repository {
   /// opened and every profile visited — and the rows the reader has moved past
   /// are never read again. Done here rather than on write so no read pays for
   /// it: this already runs once per process, in the background.
-  static Future<void> trimTimelineCache(Database database, {int keep = maxTimelineCacheRows}) async {
+  static Future<void> trimTimelineCache(
+    Database database, {
+    int keep = maxTimelineCacheRows,
+  }) async {
     await database.rawDelete(
       'DELETE FROM $tableTimelineCache WHERE key NOT IN '
       '(SELECT key FROM $tableTimelineCache ORDER BY created_at DESC LIMIT ?)',

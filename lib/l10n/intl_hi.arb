@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "पुरानी पोस्ट दिखाएँ",
   "@catch_up_show_older": {},
+  "censored": "सेंसर किया गया",
   "checking_bookmarks": "सहेजी गई पोस्ट जाँची जा रही हैं…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "सदस्यताएँ जाँची जा रही हैं…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "फ़ोल्डर प्रबंधित करें",
   "@manage_folders": {},
+  "mark_group_nsfw": "NSFW के रूप में चिह्नित करें",
   "media": "मीडिया",
   "@media": {},
   "media_grid_columns": "मीडिया ग्रिड कॉलम",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "अज्ञात उपयोगकर्ता नाम",
   "@unknown_username": {},
+  "unmark_group_nsfw": "NSFW चिह्न हटाएँ",
   "unpin": "अनपिन करें",
   "@unpin": {},
   "unsubscribe": "सदस्यता समाप्त करें",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

@@ -17,7 +17,12 @@ const _parents = <String, String?>{
 void main() {
   group('what a group\'s feed is made of', () {
     test('a parent takes everything nested inside it, however deep', () {
-      expect(groupAndDescendants('news', _parents), {'news', 'tech', 'ai', 'sport'});
+      expect(groupAndDescendants('news', _parents), {
+        'news',
+        'tech',
+        'ai',
+        'sport',
+      });
     });
 
     test('a middle group takes only its own branch', () {
@@ -41,7 +46,10 @@ void main() {
 
   group('children', () {
     test('are the groups directly inside', () {
-      expect(childrenOf('news', _parents), containsAll(<String>['tech', 'sport']));
+      expect(
+        childrenOf('news', _parents),
+        containsAll(<String>['tech', 'sport']),
+      );
       expect(childrenOf('news', _parents), isNot(contains('ai')));
     });
 
@@ -55,11 +63,14 @@ void main() {
       expect(topLevelGroups(_parents.keys, _parents), ['news', 'friends']);
     });
 
-    test('a group whose parent was deleted comes back to the top rather than vanishing', () {
-      final orphaned = {'orphan': 'deleted-group', 'kept': null};
+    test(
+      'a group whose parent was deleted comes back to the top rather than vanishing',
+      () {
+        final orphaned = {'orphan': 'deleted-group', 'kept': null};
 
-      expect(topLevelGroups(orphaned.keys, orphaned), ['orphan', 'kept']);
-    });
+        expect(topLevelGroups(orphaned.keys, orphaned), ['orphan', 'kept']);
+      },
+    );
 
     test('a group that somehow parents itself is treated as top level', () {
       expect(topLevelGroups(['self'], {'self': 'self'}), ['self']);
@@ -72,8 +83,11 @@ void main() {
     });
 
     test('a group cannot go inside its own descendant', () {
-      expect(wouldNestInsideItself('news', 'ai', _parents), isTrue,
-          reason: 'ai already sits under news');
+      expect(
+        wouldNestInsideItself('news', 'ai', _parents),
+        isTrue,
+        reason: 'ai already sits under news',
+      );
     });
 
     test('an unrelated pair is fine', () {
@@ -107,7 +121,12 @@ void main() {
     test('depth follows depth, not the order the ids arrived in', () {
       const parents = {'a': null, 'b': 'a', 'c': 'b', 'd': null};
 
-      expect(groupsInTreeOrder(['d', 'c', 'b', 'a'], parents), ['d', 'a', 'b', 'c']);
+      expect(groupsInTreeOrder(['d', 'c', 'b', 'a'], parents), [
+        'd',
+        'a',
+        'b',
+        'c',
+      ]);
     });
 
     test('every group appears exactly once, cycle or no cycle', () {
@@ -122,6 +141,27 @@ void main() {
       const parents = {'a': null, 'b': 'a'};
 
       expect(groupsInTreeOrder(['b'], parents), ['b']);
+    });
+  });
+
+  group('partitionNsfwGroups', () {
+    test('keeps relative order and sinks NSFW to the second list', () {
+      final parts = partitionNsfwGroups([
+        'a',
+        'nsfw1',
+        'b',
+        'nsfw2',
+        'c',
+      ], (id) => id.startsWith('nsfw'));
+
+      expect(parts.safe, ['a', 'b', 'c']);
+      expect(parts.nsfw, ['nsfw1', 'nsfw2']);
+    });
+
+    test('an all-safe list has an empty NSFW section', () {
+      final parts = partitionNsfwGroups(['a', 'b'], (_) => false);
+      expect(parts.safe, ['a', 'b']);
+      expect(parts.nsfw, isEmpty);
     });
   });
 }

@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Паказаць старэйшыя допісы",
   "@catch_up_show_older": {},
+  "censored": "Схаванае",
   "checking_bookmarks": "Праверка захаваных пастоў…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Праверка падпісак…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Кіраванне тэчкамі",
   "@manage_folders": {},
+  "mark_group_nsfw": "Пазначыць як NSFW",
   "media": "Медыя",
   "@media": {},
   "media_grid_columns": "Слупкі сеткі медыя",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Невядомае імя карыстальніка",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Зняць пазнаку NSFW",
   "unpin": "Адмацаваць",
   "@unpin": {},
   "unsubscribe": "Перастаць чытаць",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

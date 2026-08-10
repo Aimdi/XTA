@@ -49,7 +49,11 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
       controller: widget.scrollController,
       padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
       children: [
-        Icon(Icons.workspaces_outlined, size: 48, color: Theme.of(context).colorScheme.outline),
+        Icon(
+          Icons.workspaces_outlined,
+          size: 48,
+          color: Theme.of(context).colorScheme.outline,
+        ),
         const SizedBox(height: 16),
         Text(
           L10n.of(context).no_subscription_groups_yet,
@@ -65,7 +69,12 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         Center(
           child: FilledButton.icon(
             style: xPrimaryPillStyle(context),
-            onPressed: () => openSubscriptionGroupDialog(context, null, '', defaultGroupIcon),
+            onPressed: () => openSubscriptionGroupDialog(
+              context,
+              null,
+              '',
+              defaultGroupIcon,
+            ),
             icon: const Icon(Icons.add),
             label: Text(L10n.of(context).create_subscription_group),
           ),
@@ -86,16 +95,66 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
   }
 
   /// The board: a compact grid of member-faced tiles.
-  Widget _buildBoard(BuildContext context, List<SubscriptionGroup> groups,
-      {required List<Widget> header, required bool animate}) {
+  Widget _buildBoard(
+    BuildContext context,
+    List<SubscriptionGroup> groups, {
+    required List<Widget> header,
+    required bool animate,
+  }) {
     final prefs = PrefService.of(context);
-    final columns = (prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2).clamp(2, 3);
+    final columns = (prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2)
+        .clamp(2, 3);
 
     // Large text needs taller tiles, or the title and count would squeeze the
     // avatar mosaic out of the tile entirely.
-    final textScale = MediaQuery.textScalerOf(context).scale(1.0).clamp(1.0, 2.0);
+    final textScale = MediaQuery.textScalerOf(
+      context,
+    ).scale(1.0).clamp(1.0, 2.0);
     final baseRatio = columns == 2 ? 168 / 132 : 1.0;
     final aspectRatio = baseRatio / (1 + (textScale - 1) * 0.55);
+    final parts = partitionNsfwGroups(groups, (g) => g.nsfw);
+
+    SliverGrid gridFor(
+      List<SubscriptionGroup> items, {
+      required int staggerBase,
+    }) {
+      return SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          mainAxisSpacing: 10,
+          crossAxisSpacing: 10,
+          childAspectRatio: aspectRatio,
+        ),
+        delegate: SliverChildBuilderDelegate((context, index) {
+          final group = items[index];
+          final staggerIndex = staggerBase + index;
+          final tile = GroupTile(
+            key: ValueKey(group.id),
+            group: group,
+            animate: animate,
+            onTap: () => Navigator.pushNamed(
+              context,
+              routeGroup,
+              arguments: GroupScreenArguments(id: group.id, name: group.name),
+            ),
+            onLongPress: () => openSubscriptionGroupDialog(
+              context,
+              group.id,
+              group.name,
+              group.icon,
+            ),
+          );
+
+          if (!animate || staggerIndex >= _staggerLimit) {
+            return tile;
+          }
+          return _StaggeredEntrance(
+            delay: Duration(milliseconds: 20 * staggerIndex),
+            child: tile,
+          );
+        }, childCount: items.length),
+      );
+    }
 
     return CustomScrollView(
       controller: widget.scrollController,
@@ -103,65 +162,99 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
       scrollCacheExtent: const ScrollCacheExtent.pixels(300),
       slivers: [
         SliverToBoxAdapter(child: Column(children: header)),
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
-          sliver: SliverGrid.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: aspectRatio,
+        if (parts.safe.isNotEmpty)
+          SliverPadding(
+            padding: EdgeInsets.fromLTRB(
+              12,
+              10,
+              12,
+              parts.nsfw.isEmpty ? 24 : 8,
             ),
-            itemCount: groups.length,
-            itemBuilder: (context, index) {
-              final group = groups[index];
-              final tile = GroupTile(
-                key: ValueKey(group.id),
-                group: group,
-                animate: animate,
-                onTap: () => Navigator.pushNamed(context, routeGroup,
-                    arguments: GroupScreenArguments(id: group.id, name: group.name)),
-                onLongPress: () => openSubscriptionGroupDialog(context, group.id, group.name, group.icon),
-              );
-
-              // Only the first screenful is staggered; tiles scrolled into view
-              // later appear immediately rather than animating under the thumb.
-              if (!animate || index >= _staggerLimit) {
-                return tile;
-              }
-              return _StaggeredEntrance(delay: Duration(milliseconds: 20 * index), child: tile);
-            },
+            sliver: gridFor(parts.safe, staggerBase: 0),
           ),
-        ),
+        if (parts.nsfw.isNotEmpty) ...[
+          SliverToBoxAdapter(child: _CensoredSectionHeader()),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+            sliver: gridFor(parts.nsfw, staggerBase: parts.safe.length),
+          ),
+        ],
       ],
     );
   }
 
-  Widget _buildReorderableList(BuildContext context, List<SubscriptionGroup> groups,
-      {required List<Widget> header, required bool canReorder, Map<String, int> depths = const {}}) {
+  Widget _buildReorderableList(
+    BuildContext context,
+    List<SubscriptionGroup> groups, {
+    required List<Widget> header,
+    required bool canReorder,
+    Map<String, int> depths = const {},
+  }) {
+    final parts = partitionNsfwGroups(groups, (g) => g.nsfw);
+    // One flat list so drag still works: safe groups, then a non-draggable
+    // Censored header, then NSFW. Positions persist for groups only.
+    final rows = <_ListRow>[
+      for (final g in parts.safe) _ListRow.group(g),
+      if (parts.nsfw.isNotEmpty) const _ListRow.header(),
+      for (final g in parts.nsfw) _ListRow.group(g),
+    ];
+
     return ReorderableListView.builder(
       scrollController: widget.scrollController,
-      // ReorderableListView carries its header inside the list, so it scrolls
-      // with the rows and stays out of the reorder.
       header: header.isEmpty ? null : Column(children: header),
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
       buildDefaultDragHandles: false,
-      itemCount: groups.length,
+      itemCount: rows.length,
       itemBuilder: (context, index) {
-        final group = groups[index];
+        final row = rows[index];
+        if (row.isHeader) {
+          return const _CensoredSectionHeader(key: ValueKey('censored-header'));
+        }
+        final group = row.group!;
         return GroupListItem(
           key: ValueKey(group.id),
           group: group,
           depth: depths[group.id] ?? 0,
-          // No handle means no drag: rearranging a name-sorted or filtered list
-          // would write an order the reader cannot see.
+          // Drag only within the same NSFW bucket so a pull cannot lift a
+          // censored group above the section header.
           reorderIndex: canReorder ? index : null,
-          onLongPress: () => openSubscriptionGroupDialog(context, group.id, group.name, group.icon),
+          onLongPress: () => openSubscriptionGroupDialog(
+            context,
+            group.id,
+            group.name,
+            group.icon,
+          ),
         );
       },
       onReorderItem: (oldIndex, newIndex) {
-        final ids = groups.map((g) => g.id).toList();
-        ids.insert(newIndex, ids.removeAt(oldIndex));
+        final headerAt = parts.nsfw.isEmpty ? -1 : parts.safe.length;
+        if (oldIndex == headerAt) {
+          return;
+        }
+
+        // onReorderItem already adjusts newIndex for the removed item. Keep
+        // the drag inside its NSFW bucket so nothing crosses Censored.
+        var to = newIndex;
+        if (headerAt >= 0) {
+          if (oldIndex < headerAt) {
+            if (to > headerAt - 1) {
+              to = headerAt - 1;
+            }
+          } else if (to <= headerAt) {
+            to = headerAt + 1;
+          }
+        }
+
+        final next = List<_ListRow>.from(rows);
+        final moved = next.removeAt(oldIndex);
+        if (moved.isHeader) {
+          return;
+        }
+        next.insert(to.clamp(0, next.length), moved);
+        final ids = next
+            .where((r) => !r.isHeader)
+            .map((r) => r.group!.id)
+            .toList();
         context.read<GroupsModel>().saveGroupPositions(ids);
       },
     );
@@ -175,14 +268,18 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
 
     return [
       for (final plugin in builtInPlugins)
-        if (plugin.isEnabled(prefs) && !plugin.showsHomeTab(prefs) && plugin.homeTabPrefKey != null)
+        if (plugin.isEnabled(prefs) &&
+            !plugin.showsHomeTab(prefs) &&
+            plugin.homeTabPrefKey != null)
           ListTile(
             leading: Icon(plugin.icon),
             title: Text(plugin.title(context)),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => _PluginFeedRoute(plugin: plugin)),
+              MaterialPageRoute(
+                builder: (_) => _PluginFeedRoute(plugin: plugin),
+              ),
             ),
           ),
     ];
@@ -206,7 +303,9 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         final query = _searchController.text.toLowerCase();
         var groups = query.isEmpty
             ? state
-            : state.where((g) => g.name.toLowerCase().contains(query)).toList(growable: false);
+            : state
+                  .where((g) => g.name.toLowerCase().contains(query))
+                  .toList(growable: false);
 
         // A nested group sits under its parent rather than beside it — but it
         // is still shown. Hiding it made "put inside group" look like a delete.
@@ -215,15 +314,22 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         final parents = {for (final g in state) g.id: g.parentId};
         if (query.isEmpty) {
           final byId = {for (final g in groups) g.id: g};
-          groups = groupsInTreeOrder(byId.keys, parents).map((id) => byId[id]!).toList(growable: false);
+          groups = groupsInTreeOrder(
+            byId.keys,
+            parents,
+          ).map((id) => byId[id]!).toList(growable: false);
         }
         final prefs = PrefService.of(context);
         final animate = prefs.get<bool>(optionDisableAnimations) != true;
-        final asList = prefs.get<String>(optionSubscriptionGroupsLayout) == subscriptionGroupsLayoutList;
+        final asList =
+            prefs.get<String>(optionSubscriptionGroupsLayout) ==
+            subscriptionGroupsLayoutList;
         // Dragging tiles around a grid is far fiddlier than dragging rows, so
         // only the list carries drag handles — and only when the order it would
         // rearrange is the one being shown.
-        final canReorder = context.read<GroupsModel>().orderGroupsBy == 'position' && query.isEmpty;
+        final canReorder =
+            context.read<GroupsModel>().orderGroupsBy == 'position' &&
+            query.isEmpty;
         // How far each group is indented, so a nested one reads as nested.
         final depths = {for (final g in groups) g.id: depthOf(g.id, parents)};
 
@@ -237,9 +343,55 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         ];
 
         return asList
-            ? _buildReorderableList(context, groups, header: header, canReorder: canReorder, depths: depths)
+            ? _buildReorderableList(
+                context,
+                groups,
+                header: header,
+                canReorder: canReorder,
+                depths: depths,
+              )
             : _buildBoard(context, groups, header: header, animate: animate);
       },
+    );
+  }
+}
+
+/// One row in the groups list: a real group, or the Censored section divider.
+class _ListRow {
+  final SubscriptionGroup? group;
+  final bool isHeader;
+
+  const _ListRow.group(this.group) : isHeader = false;
+  const _ListRow.header() : group = null, isHeader = true;
+}
+
+/// Label above the NSFW group tiles / rows.
+class _CensoredSectionHeader extends StatelessWidget {
+  const _CensoredSectionHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      child: Row(
+        children: [
+          Icon(
+            Icons.visibility_off_outlined,
+            size: 18,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            L10n.of(context).censored,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: theme.colorScheme.outline,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -323,6 +475,7 @@ class _PluginFeedRouteState extends State<_PluginFeedRoute> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.plugin.homeScreen(scrollController: _scrollController) ?? const SizedBox.shrink();
+    return widget.plugin.homeScreen(scrollController: _scrollController) ??
+        const SizedBox.shrink();
   }
 }

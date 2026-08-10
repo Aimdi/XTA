@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Afișează postări mai vechi",
   "@catch_up_show_older": {},
+  "censored": "Cenzurat",
   "checking_bookmarks": "Se verifică postările salvate…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Se verifică abonamentele…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Gestionează dosarele",
   "@manage_folders": {},
+  "mark_group_nsfw": "Marchează ca NSFW",
   "media": "Media",
   "@media": {},
   "media_grid_columns": "Coloane în grila media",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Nume de utilizator necunoscut",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Elimină marcajul NSFW",
   "unpin": "Anulează fixarea",
   "@unpin": {},
   "unsubscribe": "Dezabonează-te",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

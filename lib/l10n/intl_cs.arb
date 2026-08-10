@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Zobrazit starší příspěvky",
   "@catch_up_show_older": {},
+  "censored": "Cenzurováno",
   "checking_bookmarks": "Kontrolují se uložené příspěvky…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Kontrolují se odběry…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Správa složek",
   "@manage_folders": {},
+  "mark_group_nsfw": "Označit jako NSFW",
   "media": "Média",
   "@media": {},
   "media_grid_columns": "Sloupce mřížky médií",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Neznámé uživatelské jméno",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Zrušit označení NSFW",
   "unpin": "Odepnout",
   "@unpin": {},
   "unsubscribe": "Zrušit odběr",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

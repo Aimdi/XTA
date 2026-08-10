@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "이전 게시물 보기",
   "@catch_up_show_older": {},
+  "censored": "검열됨",
   "checking_bookmarks": "저장된 게시물 확인 중…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "구독 확인 중…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "폴더 관리",
   "@manage_folders": {},
+  "mark_group_nsfw": "NSFW로 표시",
   "media": "미디어",
   "@media": {},
   "media_grid_columns": "미디어 그리드 열 수",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "알 수 없는 사용자 이름",
   "@unknown_username": {},
+  "unmark_group_nsfw": "NSFW 표시 해제",
   "unpin": "고정 해제",
   "@unpin": {},
   "unsubscribe": "구독 해제",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

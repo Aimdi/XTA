@@ -20,15 +20,22 @@ class SavedTweet with ToMappable {
   final String? folderId;
   final String? note;
 
-  SavedTweet({required this.id, required this.user, required this.content, this.folderId, this.note});
+  SavedTweet({
+    required this.id,
+    required this.user,
+    required this.content,
+    this.folderId,
+    this.note,
+  });
 
   factory SavedTweet.fromMap(Map<String, Object?> map) {
     return SavedTweet(
-        id: map['id'] as String,
-        user: map['user_id'] as String?,
-        content: map['content'] as String?,
-        folderId: map['folder_id'] as String?,
-        note: map['note'] as String?);
+      id: map['id'] as String,
+      user: map['user_id'] as String?,
+      content: map['content'] as String?,
+      folderId: map['folder_id'] as String?,
+      note: map['note'] as String?,
+    );
   }
 
   // `folderId` is nullable and null is meaningful ("unfiled"), so the sentinel lets
@@ -43,16 +50,25 @@ class SavedTweet with ToMappable {
     Object? note = _unset,
   }) {
     return SavedTweet(
-        id: id ?? this.id,
-        user: user ?? this.user,
-        content: content ?? this.content,
-        folderId: identical(folderId, _unset) ? this.folderId : folderId as String?,
-        note: identical(note, _unset) ? this.note : note as String?);
+      id: id ?? this.id,
+      user: user ?? this.user,
+      content: content ?? this.content,
+      folderId: identical(folderId, _unset)
+          ? this.folderId
+          : folderId as String?,
+      note: identical(note, _unset) ? this.note : note as String?,
+    );
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'id': id, 'content': content, 'user_id': user, 'folder_id': folderId, 'note': note};
+    return {
+      'id': id,
+      'content': content,
+      'user_id': user,
+      'folder_id': folderId,
+      'note': note,
+    };
   }
 }
 
@@ -68,7 +84,9 @@ class ProfileNote with ToMappable {
     return ProfileNote(
       id: map['id'] as String,
       note: map['note'] as String? ?? '',
-      updatedAt: DateTime.tryParse((map['updated_at'] as String?) ?? '') ?? DateTime.now(),
+      updatedAt:
+          DateTime.tryParse((map['updated_at'] as String?) ?? '') ??
+          DateTime.now(),
     );
   }
 
@@ -105,7 +123,9 @@ class Antenna with ToMappable {
       includeTerms: parseMutedKeywordTerms(map['include_terms'] as String?),
       excludeTerms: parseMutedKeywordTerms(map['exclude_terms'] as String?),
       scope: (map['scope'] as String?) == 'following' ? 'following' : 'search',
-      createdAt: DateTime.tryParse((map['created_at'] as String?) ?? '') ?? DateTime.now(),
+      createdAt:
+          DateTime.tryParse((map['created_at'] as String?) ?? '') ??
+          DateTime.now(),
     );
   }
 
@@ -131,7 +151,10 @@ class LikedTweet with ToMappable {
 
   factory LikedTweet.fromMap(Map<String, Object?> map) {
     return LikedTweet(
-        id: map['id'] as String, user: map['user_id'] as String?, content: map['content'] as String?);
+      id: map['id'] as String,
+      user: map['user_id'] as String?,
+      content: map['content'] as String?,
+    );
   }
 
   @override
@@ -149,32 +172,40 @@ class SavedTweetFolder with ToMappable {
   final bool autoDownload;
   final bool autoUpload;
 
-  SavedTweetFolder(
-      {required this.id,
-      required this.name,
-      this.position = 0,
-      required this.createdAt,
-      this.autoDownload = false,
-      this.autoUpload = false});
+  SavedTweetFolder({
+    required this.id,
+    required this.name,
+    this.position = 0,
+    required this.createdAt,
+    this.autoDownload = false,
+    this.autoUpload = false,
+  });
 
   factory SavedTweetFolder.fromMap(Map<String, Object?> map) {
     return SavedTweetFolder(
-        id: map['id'] as String,
-        name: map['name'] as String,
-        position: (map['position'] as int?) ?? 0,
-        createdAt: DateTime.parse(map['created_at'] as String),
-        autoDownload: (map['auto_download'] as int?) == 1,
-        autoUpload: (map['auto_upload'] as int?) == 1);
+      id: map['id'] as String,
+      name: map['name'] as String,
+      position: (map['position'] as int?) ?? 0,
+      createdAt: DateTime.parse(map['created_at'] as String),
+      autoDownload: (map['auto_download'] as int?) == 1,
+      autoUpload: (map['auto_upload'] as int?) == 1,
+    );
   }
 
-  SavedTweetFolder copyWith({String? name, int? position, bool? autoDownload, bool? autoUpload}) {
+  SavedTweetFolder copyWith({
+    String? name,
+    int? position,
+    bool? autoDownload,
+    bool? autoUpload,
+  }) {
     return SavedTweetFolder(
-        id: id,
-        name: name ?? this.name,
-        position: position ?? this.position,
-        createdAt: createdAt,
-        autoDownload: autoDownload ?? this.autoDownload,
-        autoUpload: autoUpload ?? this.autoUpload);
+      id: id,
+      name: name ?? this.name,
+      position: position ?? this.position,
+      createdAt: createdAt,
+      autoDownload: autoDownload ?? this.autoDownload,
+      autoUpload: autoUpload ?? this.autoUpload,
+    );
   }
 
   @override
@@ -199,28 +230,40 @@ abstract class Subscription with ToMappable {
   final DateTime createdAt;
   final bool inFeed;
 
-  Subscription(
-      {required this.id,
-      required this.screenName,
-      required this.name,
-      required this.profileImageUrlHttps,
-      required this.verified,
-      required this.createdAt,
-      required this.inFeed,
-      });
+  Subscription({
+    required this.id,
+    required this.screenName,
+    required this.name,
+    required this.profileImageUrlHttps,
+    required this.verified,
+    required this.createdAt,
+    required this.inFeed,
+  });
 }
 
 class SearchSubscription extends Subscription {
   SearchSubscription({required super.id, required super.createdAt})
-      : super(name: id, screenName: id, verified: false, profileImageUrlHttps: null, inFeed: true);
+    : super(
+        name: id,
+        screenName: id,
+        verified: false,
+        profileImageUrlHttps: null,
+        inFeed: true,
+      );
 
   factory SearchSubscription.fromMap(Map<String, Object?> map) {
-    return SearchSubscription(id: map['id'] as String, createdAt: DateTime.parse(map['created_at'] as String));
+    return SearchSubscription(
+      id: map['id'] as String,
+      createdAt: DateTime.parse(map['created_at'] as String),
+    );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is SearchSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is SearchSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -236,45 +279,52 @@ class UserSubscription extends Subscription {
   /// Max posts from this account kept per feed load; null/0 = uncapped.
   final int? maxPostsPerLoad;
 
-  UserSubscription(
-      {required super.id,
-      required super.screenName,
-      required super.name,
-      required super.profileImageUrlHttps,
-      required super.verified,
-      required super.createdAt,
-      required super.inFeed,
-      this.maxPostsPerLoad});
+  UserSubscription({
+    required super.id,
+    required super.screenName,
+    required super.name,
+    required super.profileImageUrlHttps,
+    required super.verified,
+    required super.createdAt,
+    required super.inFeed,
+    this.maxPostsPerLoad,
+  });
 
   factory UserSubscription.fromMap(Map<String, Object?> map) {
     var verified = map['verified'] is int;
-    var createdAt = map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String);
+    var createdAt = map['created_at'] == null
+        ? DateTime.now()
+        : DateTime.parse(map['created_at'] as String);
     var inFeed = map['in_feed'] is int;
 
     return UserSubscription(
-        id: map['id'] as String,
-        screenName: map['screen_name'] as String,
-        name: map['name'] as String,
-        profileImageUrlHttps: map['profile_image_url_https'] as String?,
-        verified: verified ? map['verified'] == 1 : false,
-        createdAt: createdAt,
-        inFeed: inFeed ? map['in_feed'] == 1 : false,
-        maxPostsPerLoad: map['max_posts_per_load'] as int?);
+      id: map['id'] as String,
+      screenName: map['screen_name'] as String,
+      name: map['name'] as String,
+      profileImageUrlHttps: map['profile_image_url_https'] as String?,
+      verified: verified ? map['verified'] == 1 : false,
+      createdAt: createdAt,
+      inFeed: inFeed ? map['in_feed'] == 1 : false,
+      maxPostsPerLoad: map['max_posts_per_load'] as int?,
+    );
   }
 
   factory UserSubscription.fromUser(UserWithExtra user) {
     return UserSubscription(
-        id: user.idStr!,
-        screenName: user.screenName!,
-        name: user.name!,
-        profileImageUrlHttps: user.profileImageUrlHttps,
-        verified: user.verified!,
-        createdAt: user.createdAt!,
-        inFeed: true
+      id: user.idStr!,
+      screenName: user.screenName!,
+      name: user.name!,
+      profileImageUrlHttps: user.profileImageUrlHttps,
+      verified: user.verified!,
+      createdAt: user.createdAt!,
+      inFeed: true,
     );
   }
 
-  UserSubscription copyWith({int? maxPostsPerLoad, bool clearMaxPosts = false}) {
+  UserSubscription copyWith({
+    int? maxPostsPerLoad,
+    bool clearMaxPosts = false,
+  }) {
     return UserSubscription(
       id: id,
       screenName: screenName,
@@ -283,13 +333,18 @@ class UserSubscription extends Subscription {
       verified: verified,
       createdAt: createdAt,
       inFeed: inFeed,
-      maxPostsPerLoad: clearMaxPosts ? null : (maxPostsPerLoad ?? this.maxPostsPerLoad),
+      maxPostsPerLoad: clearMaxPosts
+          ? null
+          : (maxPostsPerLoad ?? this.maxPostsPerLoad),
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is UserSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is UserSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -314,7 +369,7 @@ class UserSubscription extends Subscription {
       'screen_name': screenName,
       'name': name,
       'profile_image_url_https': profileImageUrlHttps,
-      'verified': verified
+      'verified': verified,
     });
   }
 }
@@ -339,14 +394,19 @@ class ThreadsSubscription extends Subscription {
       id: map['id'] as String,
       name: map['name'] as String,
       avatarUrl: map['avatar_url'] as String?,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is ThreadsSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is ThreadsSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -383,14 +443,19 @@ class BlueskySubscription extends Subscription {
       id: map['id'] as String,
       name: map['name'] as String,
       avatarUrl: map['avatar_url'] as String?,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is BlueskySubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is BlueskySubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -427,14 +492,19 @@ class MastodonSubscription extends Subscription {
       id: map['id'] as String,
       name: map['name'] as String,
       avatarUrl: map['avatar_url'] as String?,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is MastodonSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is MastodonSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -478,14 +548,19 @@ class SubstackSubscription extends Subscription {
       baseUrl: map['base_url'] as String,
       name: map['name'] as String,
       logoUrl: map['logo_url'] as String?,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is SubstackSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is SubstackSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -520,14 +595,19 @@ class RedditSubscription extends Subscription {
     return RedditSubscription(
       id: map['id'] as String,
       name: map['name'] as String,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is RedditSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is RedditSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -553,7 +633,12 @@ class StockSubscription extends Subscription {
     required String symbol,
     required super.createdAt,
     required super.inFeed,
-  }) : super(name: symbol, screenName: id, verified: false, profileImageUrlHttps: null);
+  }) : super(
+         name: symbol,
+         screenName: id,
+         verified: false,
+         profileImageUrlHttps: null,
+       );
 
   String get symbol => name;
 
@@ -561,14 +646,19 @@ class StockSubscription extends Subscription {
     return StockSubscription(
       id: map['id'] as String,
       symbol: map['symbol'] as String,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is StockSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is StockSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -597,7 +687,12 @@ class GroupMemberPreview {
   /// holds — it is fetched and cached separately, and drawn from the name.
   final String? subreddit;
 
-  const GroupMemberPreview({required this.id, required this.name, this.avatarUrl, this.subreddit});
+  const GroupMemberPreview({
+    required this.id,
+    required this.name,
+    this.avatarUrl,
+    this.subreddit,
+  });
 }
 
 class SubscriptionGroup with ToMappable {
@@ -608,6 +703,10 @@ class SubscriptionGroup with ToMappable {
   final int numberOfMembers;
   final DateTime createdAt;
   final bool pinned;
+
+  /// Reader-marked adult group: board sinks it under Censored. Not the same as
+  /// [SubscriptionGroupGet.contentFilter], which filters posts in a custom feed.
+  final bool nsfw;
   final String? emoji;
   final int markStyle;
 
@@ -620,31 +719,36 @@ class SubscriptionGroup with ToMappable {
 
   IconData get iconData => deserializeIconData(icon);
 
-  SubscriptionGroup(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.color,
-      required this.numberOfMembers,
-      required this.createdAt,
-      this.pinned = false,
-      this.emoji,
-      this.markStyle = 0,
-      this.parentId,
-      this.memberPreviews = const []});
+  SubscriptionGroup({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.numberOfMembers,
+    required this.createdAt,
+    this.pinned = false,
+    this.nsfw = false,
+    this.emoji,
+    this.markStyle = 0,
+    this.parentId,
+    this.memberPreviews = const [],
+  });
 
-  SubscriptionGroup withMemberPreviews(List<GroupMemberPreview> previews) => SubscriptionGroup(
-      id: id,
-      name: name,
-      icon: icon,
-      color: color,
-      numberOfMembers: numberOfMembers,
-      createdAt: createdAt,
-      pinned: pinned,
-      emoji: emoji,
-      markStyle: markStyle,
-      parentId: parentId,
-      memberPreviews: previews);
+  SubscriptionGroup withMemberPreviews(List<GroupMemberPreview> previews) =>
+      SubscriptionGroup(
+        id: id,
+        name: name,
+        icon: icon,
+        color: color,
+        numberOfMembers: numberOfMembers,
+        createdAt: createdAt,
+        pinned: pinned,
+        nsfw: nsfw,
+        emoji: emoji,
+        markStyle: markStyle,
+        parentId: parentId,
+        memberPreviews: previews,
+      );
 
   factory SubscriptionGroup.fromMap(Map<String, Object?> json) {
     // This is here to handle imports of data from before v2.15.0
@@ -654,16 +758,20 @@ class SubscriptionGroup with ToMappable {
     }
 
     return SubscriptionGroup(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        icon: icon,
-        color: json['color'] == null ? null : Color(json['color'] as int),
-        numberOfMembers: json['number_of_members'] == null ? 0 : json['number_of_members'] as int,
-        createdAt: DateTime.parse(json['created_at'] as String),
-        pinned: json['pinned'] == 1,
-        emoji: json['emoji'] as String?,
-        markStyle: GroupMarkStyle.coerce(json['mark_style']),
-        parentId: json['parent_id'] as String?);
+      id: json['id'] as String,
+      name: json['name'] as String,
+      icon: icon,
+      color: json['color'] == null ? null : Color(json['color'] as int),
+      numberOfMembers: json['number_of_members'] == null
+          ? 0
+          : json['number_of_members'] as int,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      pinned: json['pinned'] == 1,
+      nsfw: json['nsfw'] == 1,
+      emoji: json['emoji'] as String?,
+      markStyle: GroupMarkStyle.coerce(json['mark_style']),
+      parentId: json['parent_id'] as String?,
+    );
   }
 
   @override
@@ -675,6 +783,7 @@ class SubscriptionGroup with ToMappable {
       'color': color?.toARGB32(),
       'created_at': createdAt.toIso8601String(),
       'pinned': pinned ? 1 : 0,
+      'nsfw': nsfw ? 1 : 0,
       'emoji': emoji,
       'mark_style': markStyle,
       'parent_id': parentId,
@@ -707,19 +816,20 @@ class SubscriptionGroupGet {
   /// Terms whose posts this feed hides or folds.
   List<MutedKeyword> mutedKeywords;
 
-  SubscriptionGroupGet(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.subscriptions,
-      required this.includeReplies,
-      required this.includeRetweets,
-      required this.popular,
-      this.custom = false,
-      this.contentFilter = contentFilterDefault,
-      this.minLikes = 0,
-      this.minRetweets = 0,
-      this.mutedKeywords = const []});
+  SubscriptionGroupGet({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.subscriptions,
+    required this.includeReplies,
+    required this.includeRetweets,
+    required this.popular,
+    this.custom = false,
+    this.contentFilter = contentFilterDefault,
+    this.minLikes = 0,
+    this.minRetweets = 0,
+    this.mutedKeywords = const [],
+  });
 
   CustomFeedRules get customRules => custom
       ? CustomFeedRules(
@@ -732,28 +842,34 @@ class SubscriptionGroupGet {
 
   // Store updates must emit a new instance, otherwise listeners never see the
   // change (the store skips identical states) and dependent widgets go stale.
-  SubscriptionGroupGet copyWith(
-      {Object? includeReplies = _unset,
-      Object? includeRetweets = _unset,
-      bool? popular,
-      bool? custom,
-      String? contentFilter,
-      int? minLikes,
-      int? minRetweets,
-      List<MutedKeyword>? mutedKeywords}) {
+  SubscriptionGroupGet copyWith({
+    Object? includeReplies = _unset,
+    Object? includeRetweets = _unset,
+    bool? popular,
+    bool? custom,
+    String? contentFilter,
+    int? minLikes,
+    int? minRetweets,
+    List<MutedKeyword>? mutedKeywords,
+  }) {
     return SubscriptionGroupGet(
-        id: id,
-        name: name,
-        icon: icon,
-        subscriptions: subscriptions,
-        includeReplies: identical(includeReplies, _unset) ? this.includeReplies : includeReplies as bool?,
-        includeRetweets: identical(includeRetweets, _unset) ? this.includeRetweets : includeRetweets as bool?,
-        popular: popular ?? this.popular,
-        custom: custom ?? this.custom,
-        contentFilter: contentFilter ?? this.contentFilter,
-        minLikes: minLikes ?? this.minLikes,
-        minRetweets: minRetweets ?? this.minRetweets,
-        mutedKeywords: mutedKeywords ?? this.mutedKeywords);
+      id: id,
+      name: name,
+      icon: icon,
+      subscriptions: subscriptions,
+      includeReplies: identical(includeReplies, _unset)
+          ? this.includeReplies
+          : includeReplies as bool?,
+      includeRetweets: identical(includeRetweets, _unset)
+          ? this.includeRetweets
+          : includeRetweets as bool?,
+      popular: popular ?? this.popular,
+      custom: custom ?? this.custom,
+      contentFilter: contentFilter ?? this.contentFilter,
+      minLikes: minLikes ?? this.minLikes,
+      minRetweets: minRetweets ?? this.minRetweets,
+      mutedKeywords: mutedKeywords ?? this.mutedKeywords,
+    );
   }
 }
 
@@ -766,14 +882,15 @@ class SubscriptionGroupEdit {
   String? emoji;
   int markStyle;
 
-  SubscriptionGroupEdit(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.color,
-      required this.members,
-      this.emoji,
-      this.markStyle = GroupMarkStyle.auto});
+  SubscriptionGroupEdit({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.members,
+    this.emoji,
+    this.markStyle = GroupMarkStyle.auto,
+  });
 }
 
 class SubscriptionGroupMember with ToMappable {
@@ -783,7 +900,10 @@ class SubscriptionGroupMember with ToMappable {
   SubscriptionGroupMember({required this.group, required this.profile});
 
   factory SubscriptionGroupMember.fromMap(Map<String, Object?> json) {
-    return SubscriptionGroupMember(group: json['group_id'] as String, profile: json['profile_id'] as String);
+    return SubscriptionGroupMember(
+      group: json['group_id'] as String,
+      profile: json['profile_id'] as String,
+    );
   }
 
   @override
@@ -799,30 +919,34 @@ class Account with ToMappable {
   final DateTime? lastNotFoundAt;
   final int consecutiveNotFound;
 
-  Account(
-      {required this.id,
-      required this.authHeader,
-      required this.screenName,
-      this.lastNotFoundAt,
-      this.consecutiveNotFound = 0});
+  Account({
+    required this.id,
+    required this.authHeader,
+    required this.screenName,
+    this.lastNotFoundAt,
+    this.consecutiveNotFound = 0,
+  });
 
-  static DateTime? _date(Object? value) => value == null ? null : DateTime.parse(value as String);
+  static DateTime? _date(Object? value) =>
+      value == null ? null : DateTime.parse(value as String);
 
   /// No flag set, so a successful response needs no database write (hot-path guard).
   bool get isClean => consecutiveNotFound == 0 && lastNotFoundAt == null;
 
   factory Account.fromMap(Map<String, Object?> map) {
     return Account(
-        id: map['id'] as String,
-        authHeader: map['auth_header'],
-        screenName: map['screen_name'] as String?,
-        lastNotFoundAt: _date(map['last_not_found_at']),
-        consecutiveNotFound: (map['consecutive_not_found'] as int?) ?? 0);
+      id: map['id'] as String,
+      authHeader: map['auth_header'],
+      screenName: map['screen_name'] as String?,
+      lastNotFoundAt: _date(map['last_not_found_at']),
+      consecutiveNotFound: (map['consecutive_not_found'] as int?) ?? 0,
+    );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is Account && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is Account && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -834,7 +958,7 @@ class Account with ToMappable {
       'auth_header': authHeader,
       'screen_name': screenName,
       'last_not_found_at': lastNotFoundAt?.toIso8601String(),
-      'consecutive_not_found': consecutiveNotFound
+      'consecutive_not_found': consecutiveNotFound,
     };
   }
 }

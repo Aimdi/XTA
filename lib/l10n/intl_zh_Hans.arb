@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "显示更早的帖子",
   "@catch_up_show_older": {},
+  "censored": "已审查",
   "checking_bookmarks": "正在检查已保存的帖子…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "正在检查订阅…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "管理文件夹",
   "@manage_folders": {},
+  "mark_group_nsfw": "标记为 NSFW",
   "media": "媒体",
   "@media": {},
   "media_grid_columns": "媒体网格列数",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "未知用户名",
   "@unknown_username": {},
+  "unmark_group_nsfw": "取消 NSFW 标记",
   "unpin": "取消置顶",
   "@unpin": {},
   "unsubscribe": "取消订阅",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

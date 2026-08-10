@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "عرض منشورات أقدم",
   "@catch_up_show_older": {},
+  "censored": "خاضع للرقابة",
   "checking_bookmarks": "جارٍ التحقق من المنشورات المحفوظة…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "جارٍ التحقق من الاشتراكات…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "إدارة المجلدات",
   "@manage_folders": {},
+  "mark_group_nsfw": "وضع علامة NSFW",
   "media": "الوسائط",
   "@media": {},
   "media_grid_columns": "أعمدة شبكة الوسائط",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "اسم مستخدم غير معروف",
   "@unknown_username": {},
+  "unmark_group_nsfw": "إزالة علامة NSFW",
   "unpin": "إلغاء التثبيت",
   "@unpin": {},
   "unsubscribe": "إلغاء الاشتراك",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

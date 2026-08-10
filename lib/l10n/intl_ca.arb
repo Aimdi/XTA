@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Mostra publicacions més antigues",
   "@catch_up_show_older": {},
+  "censored": "Censurat",
   "checking_bookmarks": "S'estan comprovant les publicacions desades…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "S'estan comprovant les subscripcions…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Gestiona les carpetes",
   "@manage_folders": {},
+  "mark_group_nsfw": "Marca com a NSFW",
   "media": "Mèdia",
   "@media": {},
   "media_grid_columns": "Columnes de la graella multimèdia",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Nom d'usuari desconegut",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Treu la marca NSFW",
   "unpin": "Desfixa",
   "@unpin": {},
   "unsubscribe": "Anul·lar subscripció",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

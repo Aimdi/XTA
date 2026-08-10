@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Pakazać starejšyja dopisy",
   "@catch_up_show_older": {},
+  "censored": "Schavanaje",
   "checking_bookmarks": "Pravierka zachavanych pastoŭ…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Pravierka padpisak…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Kiravańnie tečkami",
   "@manage_folders": {},
+  "mark_group_nsfw": "Paznačyć jak NSFW",
   "media": "Medyja",
   "@media": {},
   "media_grid_columns": "Slupki sietki miedyja",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Nieviadvomaje imia karystal'nika",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Zniać paznaku NSFW",
   "unpin": "Admacavać",
   "@unpin": {},
   "unsubscribe": "Adpisacca",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

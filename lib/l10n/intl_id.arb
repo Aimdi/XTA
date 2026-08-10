@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Tampilkan postingan lama",
   "@catch_up_show_older": {},
+  "censored": "Disensor",
   "checking_bookmarks": "Memeriksa postingan tersimpan…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Memeriksa langganan…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Kelola folder",
   "@manage_folders": {},
+  "mark_group_nsfw": "Tandai sebagai NSFW",
   "media": "Media",
   "@media": {},
   "media_grid_columns": "Kolom kisi media",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Nama pengguna tidak dikenal",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Hapus tanda NSFW",
   "unpin": "Lepas sematan",
   "@unpin": {},
   "unsubscribe": "Batal langganan",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

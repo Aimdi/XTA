@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Показати старіші дописи",
   "@catch_up_show_older": {},
+  "censored": "Приховане",
   "checking_bookmarks": "Перевірка збережених дописів…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Перевірка підписок…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Керування теками",
   "@manage_folders": {},
+  "mark_group_nsfw": "Позначити як NSFW",
   "media": "Медіа",
   "@media": {},
   "media_grid_columns": "Стовпці сітки медіа",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Невідоме ім'я користувача",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Зняти мітку NSFW",
   "unpin": "Відкріпити",
   "@unpin": {},
   "unsubscribe": "Відписатися",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }

@@ -133,6 +133,7 @@
   "@catch_up_nothing_new": {},
   "catch_up_show_older": "Hiển thị bài đăng cũ hơn",
   "@catch_up_show_older": {},
+  "censored": "Đã kiểm duyệt",
   "checking_bookmarks": "Đang kiểm tra các bài đăng đã lưu…",
   "@checking_bookmarks": {},
   "checking_subscriptions": "Đang kiểm tra các lượt theo dõi…",
@@ -633,6 +634,7 @@
   "@loop_videos_description": {},
   "manage_folders": "Quản lý thư mục",
   "@manage_folders": {},
+  "mark_group_nsfw": "Đánh dấu NSFW",
   "media": "Đa phương tiện",
   "@media": {},
   "media_grid_columns": "Số cột lưới phương tiện",
@@ -2003,6 +2005,7 @@
   "@unknown": {},
   "unknown_username": "Tên người dùng không xác định",
   "@unknown_username": {},
+  "unmark_group_nsfw": "Bỏ đánh dấu NSFW",
   "unpin": "Bỏ ghim",
   "@unpin": {},
   "unsubscribe": "Hủy đăng kí",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@censored": {},
+  "@mark_group_nsfw": {},
+  "@unmark_group_nsfw": {}
 }
