@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -36,12 +37,30 @@ class NavigationPage {
 }
 
 final List<NavigationPage> defaultHomePages = [
-  NavigationPage('feed', (c) => L10n.of(c).home, const Icon(Icons.home_outlined), const Icon(Icons.home)),
-  NavigationPage('subscriptions', (c) => L10n.of(c).subscriptions, const Icon(Icons.people_outlined),
-      const Icon(Icons.people)),
-  NavigationPage('trending', (c) => L10n.of(c).search, const Icon(Icons.search_outlined), const Icon(Icons.search)),
   NavigationPage(
-      'saved', (c) => L10n.of(c).saved, const Icon(Icons.bookmark_border_outlined), const Icon(Icons.bookmark)),
+    'feed',
+    (c) => L10n.of(c).home,
+    const Icon(Icons.home_outlined),
+    const Icon(Icons.home),
+  ),
+  NavigationPage(
+    'subscriptions',
+    (c) => L10n.of(c).subscriptions,
+    const Icon(Icons.people_outlined),
+    const Icon(Icons.people),
+  ),
+  NavigationPage(
+    'trending',
+    (c) => L10n.of(c).search,
+    const Icon(Icons.search_outlined),
+    const Icon(Icons.search),
+  ),
+  NavigationPage(
+    'saved',
+    (c) => L10n.of(c).saved,
+    const Icon(Icons.bookmark_border_outlined),
+    const Icon(Icons.bookmark),
+  ),
 ];
 
 class HomeScreen extends StatelessWidget {
@@ -79,10 +98,18 @@ class _HomeScreenState extends State<_HomeScreen> {
   }
 
   void _buildPages(List<HomePage> state) {
-    var pages = state.where((element) => element.selected).map((e) => e.page).toList();
+    var pages = state
+        .where((element) => element.selected)
+        .map((e) => e.page)
+        .toList();
 
     if (widget.prefs.getKeys().contains(optionHomeInitialTab)) {
-      _initialPage = max(0, pages.indexWhere((element) => element.id == widget.prefs.get(optionHomeInitialTab)));
+      _initialPage = max(
+        0,
+        pages.indexWhere(
+          (element) => element.id == widget.prefs.get(optionHomeInitialTab),
+        ),
+      );
     }
 
     setState(() {
@@ -139,7 +166,9 @@ class _HomeScreenState extends State<_HomeScreen> {
                   );
                 default:
                   final plugin = pluginById(page.id);
-                  final screen = plugin?.homeScreen(scrollController: scrollControllers[index]!);
+                  final screen = plugin?.homeScreen(
+                    scrollController: scrollControllers[index]!,
+                  );
                   return screen ?? const MissingScreen();
               }
             });
@@ -154,13 +183,23 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   final List<NavigationPage> pages;
   final BasePrefService prefs;
   final int initialPage;
-  final List<Widget> Function(Map<int, ScrollController> scrollControllers, Map<int, FocusNode> focusNodes) builder; // changed here
+  final List<Widget> Function(
+    Map<int, ScrollController> scrollControllers,
+    Map<int, FocusNode> focusNodes,
+  )
+  builder; // changed here
 
-  const ScaffoldWithBottomNavigation(
-      {super.key, required this.pages, required this.prefs, required this.initialPage, required this.builder});
+  const ScaffoldWithBottomNavigation({
+    super.key,
+    required this.pages,
+    required this.prefs,
+    required this.initialPage,
+    required this.builder,
+  });
 
   @override
-  State<ScaffoldWithBottomNavigation> createState() => _ScaffoldWithBottomNavigationState();
+  State<ScaffoldWithBottomNavigation> createState() =>
+      _ScaffoldWithBottomNavigationState();
 }
 
 /// Which page a swipe on the navigation bar should land on.
@@ -203,7 +242,8 @@ int pageAfterNavigationSwipe({
   return next;
 }
 
-class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation> {
+class _ScaffoldWithBottomNavigationState
+    extends State<ScaffoldWithBottomNavigation> {
   late PageController _pageController;
   late int _currentPage;
   final Map<int, ScrollController> _scrollControllers = {};
@@ -240,11 +280,16 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     super.didUpdateWidget(oldWidget);
     if (widget.pages.length != oldWidget.pages.length) {
       // Dispose controllers that are no longer needed.
-      _scrollControllers.keys.where((k) => k >= widget.pages.length).toList().forEach((k) {
-        _scrollControllers[k]?.dispose();
-        _scrollControllers.remove(k);
-      });
-      _focusNodes.keys.where((k) => k >= widget.pages.length).toList().forEach((k) {
+      _scrollControllers.keys
+          .where((k) => k >= widget.pages.length)
+          .toList()
+          .forEach((k) {
+            _scrollControllers[k]?.dispose();
+            _scrollControllers.remove(k);
+          });
+      _focusNodes.keys.where((k) => k >= widget.pages.length).toList().forEach((
+        k,
+      ) {
         _focusNodes[k]?.dispose();
         _focusNodes.remove(k);
       });
@@ -285,8 +330,11 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
               ListTile(
                 leading: const Icon(Icons.search),
                 title: Text(l10n.search),
-                onTap: () => _goFromDrawer(context, routeSearch,
-                    arguments: SearchArguments(0, focusInputOnOpen: true)),
+                onTap: () => _goFromDrawer(
+                  context,
+                  routeSearch,
+                  arguments: SearchArguments(0, focusInputOnOpen: true),
+                ),
               ),
               ListTile(
                 leading: const Icon(Icons.settings),
@@ -297,9 +345,13 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                 const Divider(),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: Text(l10n.groups, style: Theme.of(context).textTheme.bodySmall),
+                  child: Text(
+                    l10n.groups,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ),
-                for (final group in groups) _drawerGroupTile(context, l10n, group),
+                for (final group in groups)
+                  _drawerGroupTile(context, l10n, group),
               ],
             ],
           ),
@@ -329,8 +381,12 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                 const SizedBox(height: 10),
                 Text(l10n.fritter, style: theme.textTheme.titleLarge),
                 if (account?.screenName != null)
-                  Text('@${account!.screenName}',
-                      style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    '@${account!.screenName}',
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
               ],
             ),
           ),
@@ -341,21 +397,46 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
 
   /// One group shortcut: its colour disc, its name, a muted member count, and a
   /// pin when it is pinned (the pinned ones already float to the top).
-  Widget _drawerGroupTile(BuildContext context, L10n l10n, SubscriptionGroup group) {
+  Widget _drawerGroupTile(
+    BuildContext context,
+    L10n l10n,
+    SubscriptionGroup group,
+  ) {
     final theme = Theme.of(context);
     return ListTile(
       leading: GroupMark.forGroup(group, size: 36),
       title: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(l10n.subscription_group_member_count(group.numberOfMembers),
-          maxLines: 1, overflow: TextOverflow.ellipsis),
-      trailing: group.pinned ? Icon(Icons.push_pin, size: 16, color: theme.colorScheme.primary) : null,
-      onTap: () =>
-          _goFromDrawer(context, routeGroup, arguments: GroupScreenArguments(id: group.id, name: group.name)),
+      subtitle: Text(
+        l10n.subscription_group_member_count(group.numberOfMembers),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: group.pinned
+          ? Icon(Icons.push_pin, size: 16, color: theme.colorScheme.primary)
+          : null,
+      onTap: () => _goFromDrawer(
+        context,
+        routeGroup,
+        arguments: GroupScreenArguments(id: group.id, name: group.name),
+      ),
     );
   }
 
   Widget _buildScaffold(BuildContext context, L10n l10n) {
+    final theme = Theme.of(context);
+    final tokens = XLookTokens.maybeOf(context);
+    final pillFill = tokens == null
+        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.88)
+        : (tokens.card == tokens.background
+              ? Color.alphaBlend(tokens.onBackground.withValues(alpha: 0.12), tokens.background)
+                    .withValues(alpha: 0.88)
+              : tokens.card.withValues(alpha: 0.88));
+    final pillBorder = (tokens?.border ?? theme.colorScheme.outlineVariant).withValues(alpha: 0.7);
+    final indicator = (tokens?.accent ?? theme.colorScheme.primary).withValues(alpha: 0.18);
+    final showLabels = widget.prefs.get(optionShowNavigationLabels) == true;
+
     return Scaffold(
+      extendBody: true,
       drawer: _buildDrawer(context, l10n),
       body: PageView(
         controller: _pageController,
@@ -371,71 +452,86 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
         },
         children: widget.builder(_scrollControllers, _focusNodes),
       ),
-      // Swiping the bar itself always changes tab, which swiping the page
-      // cannot promise: the Subscriptions tab holds its own Groups/People tab
-      // view, and a nested horizontal scroll keeps the gesture rather than
-      // passing it out at its edge.
-      bottomNavigationBar: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        // DragEndDetails carries velocity but not how far the finger went, so
-        // the distance has to be accumulated as the drag happens.
-        onHorizontalDragStart: (_) => _dragDistance = 0,
-        onHorizontalDragUpdate: (details) => _dragDistance += details.primaryDelta ?? 0,
-        onHorizontalDragEnd: (details) => _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
-        child: NavigationBar(
-        selectedIndex: _currentPage,
-        labelBehavior: widget.prefs.get(optionShowNavigationLabels)
-            ? NavigationDestinationLabelBehavior.alwaysShow
-            : NavigationDestinationLabelBehavior.alwaysHide,
-        shadowColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        indicatorColor: Colors.transparent,
-        height: 64,
-        destinations: widget.pages.asMap().entries
-            .map(
-              (e) {
-                final index = e.key;
-                final page = e.value;
-                final isSelected = _currentPage == index;
-                final scale = widget.prefs.get(optionShowNavigationLabels) ? 1.0 : (isSelected ? 1.2 : 1.2);
-                return NavigationDestination(
-                  icon: AnimatedScale(
-                    scale: scale,
-                    duration: Duration(
-                        milliseconds: XLookTokens.maybeOf(context) != null ? 250 : 0),
-                    curve: Curves.easeOut,
-                    child: page.icon,
+      // Floating capsule: swipe still changes tab; the page itself never does.
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onHorizontalDragStart: (_) => _dragDistance = 0,
+          onHorizontalDragUpdate: (details) => _dragDistance += details.primaryDelta ?? 0,
+          onHorizontalDragEnd: (details) => _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: theme.brightness == Brightness.dark ? 0.4 : 0.1),
+                  blurRadius: 28,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(28),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: pillFill,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: pillBorder),
                   ),
-                  selectedIcon: AnimatedScale(
-                    scale: scale,
-                    duration: Duration(
-                        milliseconds: XLookTokens.maybeOf(context) != null ? 250 : 0),
-                    curve: Curves.easeOut,
-                    child: page.selectedIcon,
+                  child: NavigationBar(
+                    selectedIndex: _currentPage,
+                    labelBehavior: showLabels
+                        ? NavigationDestinationLabelBehavior.alwaysShow
+                        : NavigationDestinationLabelBehavior.alwaysHide,
+                    shadowColor: Colors.transparent,
+                    backgroundColor: Colors.transparent,
+                    surfaceTintColor: Colors.transparent,
+                    indicatorColor: indicator,
+                    height: showLabels ? 68 : 60,
+                    destinations: widget.pages.asMap().entries.map((e) {
+                      final index = e.key;
+                      final page = e.value;
+                      final isSelected = _currentPage == index;
+                      final scale = showLabels ? 1.0 : (isSelected ? 1.12 : 1.0);
+                      return NavigationDestination(
+                        icon: AnimatedScale(
+                          scale: scale,
+                          duration: Duration(milliseconds: tokens != null ? 220 : 0),
+                          curve: Curves.easeOutCubic,
+                          child: page.icon,
+                        ),
+                        selectedIcon: AnimatedScale(
+                          scale: scale,
+                          duration: Duration(milliseconds: tokens != null ? 220 : 0),
+                          curve: Curves.easeOutCubic,
+                          child: page.selectedIcon,
+                        ),
+                        label: page.titleBuilder(context),
+                      );
+                    }).toList(),
+                    onDestinationSelected: (index) async {
+                      if (index == _currentPage) {
+                        final controller = _scrollControllers[_currentPage];
+                        final atTop =
+                            controller == null || !controller.hasClients || controller.offset <= 0;
+                        if (!atTop) {
+                          await scrollToTop(context, controller);
+                        } else if (widget.pages[index].id == 'trending') {
+                          _focusNodes[_currentPage]?.requestFocus();
+                        }
+                        return;
+                      }
+                      unfocusPages();
+                      _pageController.jumpToPage(index);
+                    },
                   ),
-                  label: page.titleBuilder(context),
-                );
-              })
-            .toList(),
-        // Tapping the tab you are already on goes back to the top, whichever
-        // tab it is. The Search tab grabbed its field instead, which put a
-        // keyboard where a scroll was asked for; it now only takes focus once
-        // the list is already at the top, so reaching the search bar is a
-        // deliberate second tap rather than a surprise.
-        onDestinationSelected: (index) async {
-          if (index == _currentPage) {
-            final controller = _scrollControllers[_currentPage];
-            final atTop = controller == null || !controller.hasClients || controller.offset <= 0;
-            if (!atTop) {
-              await scrollToTop(context, controller);
-            } else if (widget.pages[index].id == 'trending') {
-              _focusNodes[_currentPage]?.requestFocus();
-            }
-            return;
-          }
-          unfocusPages();
-          _pageController.jumpToPage(index);
-        },
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -456,7 +552,11 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     if (widget.prefs.get<bool>(optionDisableAnimations) == true) {
       _pageController.jumpToPage(target);
     } else {
-      _pageController.animateToPage(target, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+      _pageController.animateToPage(
+        target,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     }
   }
 

@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "구독 검색",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "검색어",
   "@search_term": {},
   "select": "선택",

@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "搜索订阅",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "搜索词",
   "@search_term": {},
   "select": "选择",

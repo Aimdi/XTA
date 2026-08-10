@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Pesquisar assinaturas",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Buscar termo",
   "@search_term": {},
   "select": "Selecionar",

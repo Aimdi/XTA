@@ -7,7 +7,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -90,6 +92,20 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     }
   }
 
+  Future<void> _addToGroup(MastodonProfile profile) async {
+    final accounts = context.read<MastodonAccountsStore>();
+    final groupsModel = context.read<GroupsModel>();
+    if (!accounts.follows(profile.acct)) {
+      await accounts.add(profile.toAccount());
+    }
+    if (!mounted) return;
+    final user = subscriptionOf(profile.toAccount());
+    final groups = await groupsModel.listGroupsForUser(user.id);
+    if (!mounted) return;
+    await pickUserGroups(context, user: user, followed: true, groupsForUser: groups);
+    if (mounted) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = _profile?.acct ?? widget.acct;
@@ -132,6 +148,7 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
             profile: profile,
             following: following,
             onFollowToggle: () => _toggleFollow(profile),
+            onAddToGroup: () => _addToGroup(profile),
           ),
         ),
         for (final post in _posts) MastodonPostCard(key: ValueKey(post.id), post: post, showSourceBadge: false),
@@ -144,8 +161,9 @@ class MastodonProfileCard extends StatelessWidget {
   final MastodonProfile profile;
   final bool following;
   final VoidCallback? onFollowToggle;
+  final VoidCallback? onAddToGroup;
 
-  const MastodonProfileCard({super.key, required this.profile, required this.following, this.onFollowToggle});
+  const MastodonProfileCard({super.key, required this.profile, required this.following, this.onFollowToggle, this.onAddToGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -209,15 +227,25 @@ class MastodonProfileCard extends StatelessWidget {
             _count(context, numbers.format(profile.statusesCount), l10n.tweets),
           ],
         ),
-        if (onFollowToggle != null) ...[
+        if (onFollowToggle != null || onAddToGroup != null) ...[
           const SizedBox(height: 18),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FilledButton.tonalIcon(
-              onPressed: onFollowToggle,
-              icon: Icon(following ? Icons.person_remove_alt_1 : Icons.person_add_alt),
-              label: Text(following ? l10n.plugin_mastodon_unfollow : l10n.plugin_mastodon_follow),
-            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (onFollowToggle != null)
+                FilledButton.tonalIcon(
+                  onPressed: onFollowToggle,
+                  icon: Icon(following ? Icons.person_remove_alt_1 : Icons.person_add_alt),
+                  label: Text(following ? l10n.plugin_mastodon_unfollow : l10n.plugin_mastodon_follow),
+                ),
+              if (onAddToGroup != null)
+                OutlinedButton.icon(
+                  onPressed: onAddToGroup,
+                  icon: const Icon(Icons.group_add, size: 18),
+                  label: Text(l10n.add_to_group),
+                ),
+            ],
           ),
         ],
       ],

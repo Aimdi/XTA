@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Tìm đăng ký",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Lọc tìm kiếm",
   "@search_term": {},
   "select": "Chọn",

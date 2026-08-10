@@ -1706,6 +1706,8 @@
   "@search_settings": {},
   "search_subscriptions": "Пошук підписок",
   "@search_subscriptions": {},
+  "source_x": "X",
+  "@source_x": {},
   "search_term": "Пошуковий запит",
   "@search_term": {},
   "select": "Вибрати",
