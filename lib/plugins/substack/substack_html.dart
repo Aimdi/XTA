@@ -5,10 +5,22 @@ import 'package:html/parser.dart' as html_parser;
 ///
 /// `javascript:` is the obvious one; `data:` can carry a whole HTML document,
 /// which is the same thing wearing a different hat.
-final _executableUrl = RegExp(r'^\s*(javascript|vbscript|data)\s*:', caseSensitive: false);
+final _executableUrl = RegExp(
+  r'^\s*(javascript|vbscript|data)\s*:',
+  caseSensitive: false,
+);
 
 /// Attributes that hold a URL, and so can smuggle one of the above.
-const _urlAttributes = {'href', 'src', 'srcset', 'action', 'formaction', 'poster', 'background', 'data'};
+const _urlAttributes = {
+  'href',
+  'src',
+  'srcset',
+  'action',
+  'formaction',
+  'poster',
+  'background',
+  'data',
+};
 
 /// Removes the parts of a post that are code rather than writing.
 ///
@@ -29,7 +41,8 @@ void _stripExecutable(Element element) {
     final name = '$key'.toLowerCase();
 
     if (name.startsWith('on') ||
-        (_urlAttributes.contains(name) && _executableUrl.hasMatch(element.attributes[key] ?? ''))) {
+        (_urlAttributes.contains(name) &&
+            _executableUrl.hasMatch(element.attributes[key] ?? ''))) {
       element.attributes.remove(key);
     }
   }
@@ -60,8 +73,11 @@ String sanitizeSubstackBodyHtml(String raw) {
     node.remove();
   }
 
-  for (final node in List<Element>.from(fragment.querySelectorAll('div, span'))) {
-    if (node.text.trim().isEmpty && node.querySelector('img, iframe, video, picture, table') == null) {
+  for (final node in List<Element>.from(
+    fragment.querySelectorAll('div, span'),
+  )) {
+    if (node.text.trim().isEmpty &&
+        node.querySelector('img, iframe, video, picture, table') == null) {
       node.remove();
     }
   }
@@ -70,7 +86,9 @@ String sanitizeSubstackBodyHtml(String raw) {
     _stripExecutable(node);
   }
 
-  return fragment.nodes.map((node) => node is Element ? node.outerHtml : node.text).join();
+  return fragment.nodes
+      .map((node) => node is Element ? node.outerHtml : node.text)
+      .join();
 }
 
 /// Plain text suitable for device TTS, with paragraph breaks preserved.
@@ -89,7 +107,9 @@ String substackHtmlToPlainText(String raw) {
     if (node is! Element) return;
 
     final tag = node.localName?.toLowerCase();
-    if (tag == 'script' || tag == 'style' || tag == 'svg' || tag == 'button') return;
+    if (tag == 'script' || tag == 'style' || tag == 'svg' || tag == 'button') {
+      return;
+    }
     if (tag == 'br') {
       buffer.write('\n');
       return;
@@ -125,7 +145,11 @@ String substackHtmlToPlainText(String raw) {
   }
 
   walk(body);
-  return buffer.toString().replaceAll(RegExp(r'[ \t]+\n'), '\n').replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
+  return buffer
+      .toString()
+      .replaceAll(RegExp(r'[ \t]+\n'), '\n')
+      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+      .trim();
 }
 
 String buildSubstackSpeakText({
@@ -133,14 +157,21 @@ String buildSubstackSpeakText({
   String? subtitle,
   String? authorName,
   String? publicationName,
-  required String bodyHtml,
+  String? bodyHtml,
+  String? bodyPlain,
 }) {
+  final body = (bodyPlain != null && bodyPlain.trim().isNotEmpty)
+      ? bodyPlain.trim()
+      : (bodyHtml != null && bodyHtml.trim().isNotEmpty)
+      ? substackHtmlToPlainText(bodyHtml)
+      : '';
   final parts = <String>[
     title.trim(),
-    if (publicationName != null && publicationName.trim().isNotEmpty) publicationName.trim(),
+    if (publicationName != null && publicationName.trim().isNotEmpty)
+      publicationName.trim(),
     if (authorName != null && authorName.trim().isNotEmpty) authorName.trim(),
     if (subtitle != null && subtitle.trim().isNotEmpty) subtitle.trim(),
-    substackHtmlToPlainText(bodyHtml),
+    body,
   ].where((e) => e.isNotEmpty);
   return parts.join('\n\n');
 }
@@ -164,7 +195,8 @@ String wrapSubstackHtml({
 }) {
   final cleanBody = sanitizeSubstackBodyHtml(body);
   final meta = [
-    if (publicationName != null && publicationName.isNotEmpty) _escape(publicationName),
+    if (publicationName != null && publicationName.isNotEmpty)
+      _escape(publicationName),
     if (authorName != null && authorName.isNotEmpty) _escape(authorName),
   ].join(' · ');
 
@@ -325,12 +357,19 @@ String _footerHtml(String? text, String? link, String? linkLabel) {
     return '';
   }
 
-  final action = (link != null && link.isNotEmpty && linkLabel != null && linkLabel.isNotEmpty)
+  final action =
+      (link != null &&
+          link.isNotEmpty &&
+          linkLabel != null &&
+          linkLabel.isNotEmpty)
       ? '<p><a href="${_escape(link)}">${_escape(linkLabel)}</a></p>'
       : '';
 
   return '<div class="preview-end"><p>${_escape(text)}</p>$action</div>';
 }
 
-String _escape(String value) =>
-    value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+String _escape(String value) => value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');

@@ -29,6 +29,16 @@ in browser.
 4. Article body cache after successful fetch
 5. In-reader interception of Substack post links → in-app reader
 
+## Discover + TTS (follow-up)
+
+1. Discover sheet: category leaderboards (`/api/v1/categories` +
+   `/api/v1/category/public/{id}/all`) and type-ahead search
+   (`/api/v1/publication/search` + handle/URL slug probe)
+2. Notes host rotation across followed publications (fallback `substack.com`)
+3. TTS always has title/excerpt fallback; live-site pages extract article text
+   via the web view; Listen stays available for paid teasers; engine failures
+   open Voice settings
+
 ## Explicitly out of scope
 
 - Pasting `connect.sid` / paid unlock
