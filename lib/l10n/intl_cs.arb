@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Účty",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Zbývá načíst ještě 1 účet — přetažením obnovíš} few{Zbývá načíst ještě {count} účty — přetažením obnovíš} many{Zbývá načíst ještě {count} účtu — přetažením obnovíš} other{Zbývá načíst ještě {count} účtů — přetažením obnovíš}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Přidat účet",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adresa serveru Xy",

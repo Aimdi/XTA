@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "الحسابات",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{بقي حساب واحد للقراءة — اسحب للتحديث} two{بقي حسابان للقراءة — اسحب للتحديث} few{بقيت {count} حسابات للقراءة — اسحب للتحديث} many{بقي {count} حسابًا للقراءة — اسحب للتحديث} other{بقي {count} حساب للقراءة — اسحب للتحديث}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "أضف حساباً",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "عنوان خادم Xy",

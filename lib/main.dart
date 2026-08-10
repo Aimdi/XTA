@@ -546,6 +546,8 @@ Future<void> main() async {
       optionPluginThreadsDirectCookies: '',
       optionPluginThreadsDirectBearer: '',
       optionPluginThreadsDirectDeviceId: '',
+      optionPluginThreadsGuestLsd: '',
+      optionPluginThreadsGuestLsdAt: '',
       optionPluginThreadsLikedPosts: '[]',
       optionPluginStoreShowPrivate: false,
       optionSubscriptionGroupsOrderByAscending: true,

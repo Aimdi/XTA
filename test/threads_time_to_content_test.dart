@@ -145,4 +145,41 @@ void main() {
     expect(forB, hasLength(1), reason: 'the LSD from a\'s page serves b\'s GraphQL call: $forB');
     expect(forB.single, startsWith('POST'));
   });
+  // Guest requests used the same 2s session floor as cookie traffic — with no
+  // account to ban. The public path may leave sooner; session traffic stays
+  // strict.
+  test('guest departures leave sooner than the session floor', () async {
+    final departures = <DateTime>[];
+    final prefs = _prefs(userIds: '{"a":"1","b":"2"}');
+    final direct = ThreadsDirectClient(
+      prefs,
+      minGap: const Duration(seconds: 2),
+      httpClient: MockClient((request) async {
+        departures.add(DateTime.now());
+        if (request.method == 'GET') {
+          final handle = request.url.path.substring(2);
+          return http.Response(_profileHtml(handle, handle == 'a' ? '1' : '2'), 200);
+        }
+        final id =
+            RegExp(r'%22userID%22%3A%22(\d+)%22').firstMatch(request.body)?.group(1) ??
+            RegExp(r'"userID":"(\d+)"').firstMatch(request.body)?.group(1);
+        return http.Response(_graphqlBody(id == '1' ? 'a' : 'b', 'post'), 200);
+      }),
+    );
+
+    // Seed LSD via account a (HTML + GraphQL), then b should be GraphQL only.
+    await direct.fetchGuestAccount('a');
+    final before = departures.length;
+    final started = DateTime.now();
+    await direct.fetchGuestAccount('b');
+    final elapsed = DateTime.now().difference(started);
+    final forB = departures.length - before;
+
+    expect(forB, 1, reason: 'known id + LSD → one request');
+    expect(
+      elapsed,
+      lessThan(const Duration(milliseconds: 1500)),
+      reason: 'guest gap is ~550ms+jitter, not the 2s session floor: $elapsed',
+    );
+  });
 }

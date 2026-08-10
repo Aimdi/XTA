@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Kontoj",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Ankoraŭ 1 konto legenda — tiru por refreŝigi} other{Ankoraŭ {count} kontoj legendaj — tiru por refreŝigi}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Aldoni konton",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adreso de la Xy-servilo",

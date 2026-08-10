@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Conturi",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{A mai rămas 1 cont de citit — trage pentru a reîmprospăta} few{Au mai rămas {count} conturi de citit — trage pentru a reîmprospăta} other{Au mai rămas {count} de conturi de citit — trage pentru a reîmprospăta}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Adaugă cont",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adresa serverului Xy",

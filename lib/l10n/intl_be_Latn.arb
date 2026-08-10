@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Ulikovyja zapisy",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Zastałosia pračytać jašče 1 rachunak — paciahni, kab abnavić} few{Zastałosia pračytać jašče {count} rachunki — paciahni, kab abnavić} many{Zastałosia pračytać jašče {count} rachunkaŭ — paciahni, kab abnavić} other{Zastałosia pračytać jašče {count} rachunku — paciahni, kab abnavić}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Dadać ulikovy zapis",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adras servera Xy",

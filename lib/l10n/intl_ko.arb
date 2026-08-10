@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "계정",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{아직 읽지 않은 계정 {count}개 — 당겨서 새로 고침}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "계정 추가",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy 서버 주소",

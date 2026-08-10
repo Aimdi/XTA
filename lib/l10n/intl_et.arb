@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Kontod",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Veel 1 konto lugemata — tõmba värskendamiseks} other{Veel {count} kontot lugemata — tõmba värskendamiseks}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Lisa konto",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy serveri aadress",

@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Акаунти",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Лишився ще 1 обліковий запис — потягни, щоб оновити} few{Лишилося ще {count} облікові записи — потягни, щоб оновити} many{Лишилося ще {count} облікових записів — потягни, щоб оновити} other{Лишилося ще {count} облікового запису — потягни, щоб оновити}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Додати акаунт",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Адреса сервера Xy",

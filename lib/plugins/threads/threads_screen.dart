@@ -65,8 +65,9 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     final accounts = context.read<ThreadsAccountsStore>();
     final likes = context.read<ThreadsLikesStore>();
     final feed = context.read<ThreadsFeedStore>();
-    await accounts.load();
-    await likes.load();
+    // Accounts and likes are independent; waiting on likes before the feed
+    // only delayed the first paint.
+    await Future.wait([accounts.load(), likes.load()]);
     await feed.refresh(force: force);
   }
 
@@ -266,8 +267,15 @@ class _HomePane extends StatelessWidget {
   });
 
   Widget _feed(BuildContext context, L10n l10n, List<ThreadsPost> posts) {
+    final handles = context
+        .read<ThreadsAccountsStore>()
+        .state
+        .map((e) => e.handle)
+        .toList(growable: false);
+    final pending = context.read<ThreadsFeedStore>().pending(handles);
+
     if (posts.isEmpty) {
-      return _empty(context);
+      return _empty(context, pending: pending);
     }
 
     return RefreshIndicator(
@@ -275,12 +283,17 @@ class _HomePane extends StatelessWidget {
       onRefresh: onRefresh,
       child: ListView.builder(
         controller: scrollController,
-        itemCount: posts.length,
-        itemBuilder: (context, index) => ThreadsPostCard(
-          key: ValueKey(posts[index].id),
-          post: posts[index],
-          showSourceBadge: false,
-        ),
+        itemCount: posts.length + (pending > 0 ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= posts.length) {
+            return _PendingAccountsNote(pending: pending);
+          }
+          return ThreadsPostCard(
+            key: ValueKey(posts[index].id),
+            post: posts[index],
+            showSourceBadge: false,
+          );
+        },
       ),
     );
   }
@@ -330,7 +343,7 @@ class _HomePane extends StatelessWidget {
     );
   }
 
-  Widget _empty(BuildContext context) {
+  Widget _empty(BuildContext context, {int pending = 0}) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
     final accounts = context.read<ThreadsAccountsStore>().state;
@@ -339,8 +352,10 @@ class _HomePane extends StatelessWidget {
       onRefresh: onRefresh,
       child: ListView(
         controller: scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
         children: [
+          if (pending > 0) _PendingAccountsNote(pending: pending),
           Icon(
             Icons.alternate_email,
             size: 52,
@@ -654,4 +669,24 @@ Future<String?> showThreadsAddAccountDialog(
       );
     },
   );
+}
+
+class _PendingAccountsNote extends StatelessWidget {
+  final int pending;
+
+  const _PendingAccountsNote({required this.pending});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      child: Text(
+        L10n.of(context).plugin_threads_accounts_pending(pending),
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
 }

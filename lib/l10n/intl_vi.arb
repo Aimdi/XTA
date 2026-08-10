@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Tài khoản",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{Còn {count} tài khoản chưa đọc — kéo để làm mới}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Thêm tài khoản",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Địa chỉ máy chủ Xy",

@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Konten",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Noch 1 Konto ungelesen — zum Aktualisieren ziehen} other{Noch {count} Konten ungelesen — zum Aktualisieren ziehen}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Konto hinzufügen",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adresse des Xy-Servers",

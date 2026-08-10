@@ -92,6 +92,15 @@ class AccountPostCache<T> {
           _deliver(done, cached, onPartial);
           return cached;
         }
+      } else if (onPartial != null) {
+        // Stale-while-revalidate: paint what we already have while Meta is asked
+        // again, so a pull-to-refresh does not blank the feed into a wait.
+        // Do not record into `done` — the network result replaces this paint,
+        // and recording both would duplicate the account in the merge.
+        final stale = _entries[key]?.posts;
+        if (stale != null && stale.isNotEmpty) {
+          onPartial(_merged([...done, stale]));
+        }
       }
       // Decremented before the await, so concurrent workers cannot each see the
       // last slot and all take it. Past the budget, what the cache holds — even

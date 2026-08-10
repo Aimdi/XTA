@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Akun",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{Masih ada {count} akun yang belum dibaca — tarik untuk menyegarkan}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Tambah akun",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Alamat server Xy",

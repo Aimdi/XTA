@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Accounts",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Nog 1 account te lezen — trek om te vernieuwen} other{Nog {count} accounts te lezen — trek om te vernieuwen}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Account toevoegen",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adres van de Xy-server",

@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "アカウント",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{未読のアカウントがあと {count} 件 — 引っ張って更新}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "アカウントを追加",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy サーバーのアドレス",

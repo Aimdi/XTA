@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Konta",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Został jeszcze 1 profil do wczytania — pociągnij, aby odświeżyć} few{Zostały jeszcze {count} profile do wczytania — pociągnij, aby odświeżyć} many{Zostało jeszcze {count} profili do wczytania — pociągnij, aby odświeżyć} other{Zostało jeszcze {count} profilu do wczytania — pociągnij, aby odświeżyć}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Dodaj konto",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adres serwera Xy",

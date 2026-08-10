@@ -1531,6 +1531,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Hesaplar",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{Okunacak {count} hesap daha var — yenilemek için çek}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Hesap ekle",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy sunucu adresi",

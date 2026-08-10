@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/account_posts.dart';
 
@@ -182,6 +183,33 @@ void main() {
       expect(cache.pendingCount(['a', 'b', 'c']), 2);
     });
 
+
+    test('forceRefresh with onPartial paints stale posts first', () async {
+      final cache = _cache();
+      await cache.merge(['a'], (_) async => [(from: 'old', at: _at(1))]);
+
+      final seen = <List<_Post>>[];
+      final slow = Completer<void>();
+      final future = cache.merge(
+        ['a'],
+        (_) async {
+          await slow.future;
+          return [(from: 'new', at: _at(2))];
+        },
+        forceRefresh: true,
+        onPartial: seen.add,
+      );
+
+      for (var i = 0; i < 40 && seen.isEmpty; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(seen, isNotEmpty, reason: 'stale must paint before the network returns');
+      expect(seen.first.single.from, 'old');
+
+      slow.complete();
+      final posts = await future;
+      expect(posts.single.from, 'new');
+    });
     test('a post with no date sorts last rather than being dropped', () async {
       final posts = await _cache().merge([
         'a',
