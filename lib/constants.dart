@@ -183,6 +183,7 @@ const optionPluginSubstackPublications = 'plugin.substack.publications';
 const optionPluginSubstackReadIds = 'plugin.substack.read_ids';
 const optionPluginSubstackLikedPosts = 'plugin.substack.liked_posts';
 const optionPluginSubstackSavedPosts = 'plugin.substack.saved_posts';
+const optionPluginSubstackPinnedPublications = 'plugin.substack.pinned_publications';
 const substackFeedPageSize = 8;
 const substackReadIdsCap = 400;
 const substackLikedPostsCap = 400;

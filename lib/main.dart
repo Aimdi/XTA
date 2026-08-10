@@ -525,6 +525,7 @@ Future<void> main() async {
       optionPluginSubstackReadIds: '[]',
       optionPluginSubstackLikedPosts: '[]',
       optionPluginSubstackSavedPosts: '[]',
+      optionPluginSubstackPinnedPublications: '',
       optionPluginBlueskyEnabled: false,
       optionPluginBlueskyShowTab: true,
       optionPluginBlueskyInstance: kBlueskyDefaultAppView,
