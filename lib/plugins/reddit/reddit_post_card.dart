@@ -58,7 +58,7 @@ class RedditPostCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _RedditPostHeader(post: post, showSourceBadge: showSourceBadge),
-                _title(context),
+                if (post.showsTitle) _title(context),
                 if (post.flair != null) _RedditFlair(label: post.flair!),
                 // On a discussion subreddit the body is most of the post; a
                 // card that showed only the title said almost nothing.

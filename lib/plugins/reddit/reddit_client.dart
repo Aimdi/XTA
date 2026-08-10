@@ -249,6 +249,15 @@ class RedditPost {
 
   bool get isVideo => isRedditVideoHost(domain ?? (url == null ? null : Uri.tryParse(url!)?.host));
 
+  /// Picture, gallery or playable video the UI already renders — so a title
+  /// that only says `<image>` can stay hidden.
+  bool get hasVisualMedia =>
+      hasPlayableVideo || imageUrl != null || galleryImages.length > 1;
+
+  /// Whether the title is worth showing above the card.
+  bool get showsTitle =>
+      !(hasVisualMedia && isRedditMediaPlaceholderTitle(title));
+
   static RedditPost? fromChild(Map<String, dynamic> child) {
     if (child['kind'] != 't3') {
       return null;

@@ -110,4 +110,34 @@ void main() {
       );
     });
   });
+
+  group('media placeholder titles', () {
+    test('common image placeholders match', () {
+      for (final title in [
+        '<image>',
+        '[image]',
+        '(image)',
+        'image',
+        '<Image>',
+        'IMAGE',
+        '<img>',
+        '[pic]',
+        'picture',
+      ]) {
+        expect(isRedditMediaPlaceholderTitle(title), isTrue, reason: title);
+      }
+    });
+
+    test('real titles do not match', () {
+      for (final title in [
+        'Look at this image',
+        'image of a cat',
+        '<imaginary>',
+        'my picture day',
+        '',
+      ]) {
+        expect(isRedditMediaPlaceholderTitle(title), isFalse, reason: title);
+      }
+    });
+  });
 }

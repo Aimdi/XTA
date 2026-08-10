@@ -233,8 +233,10 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(post.title, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 6),
+          if (post.showsTitle) ...[
+            Text(post.title, style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 6),
+          ],
           DefaultTextStyle.merge(
             style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
             child: Row(
