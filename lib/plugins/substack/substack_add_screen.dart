@@ -4,6 +4,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
+import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_reader_screen.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
@@ -19,6 +20,7 @@ class SubstackAddScreen extends StatefulWidget {
 class _SubstackAddScreenState extends State<SubstackAddScreen> {
   final _controller = TextEditingController();
   SubstackPost? _pendingPost;
+  SubstackPublication? _followed;
 
   @override
   void dispose() {
@@ -52,11 +54,10 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
       await pubs.add(publication);
       if (!mounted) return;
 
-      if (pendingPost != null) {
-        setState(() => _pendingPost = pendingPost);
-        return;
-      }
-      Navigator.pop(context, true);
+      setState(() {
+        _followed = publication;
+        _pendingPost = pendingPost;
+      });
     } catch (_) {
       // ScopedBuilder shows the error state.
     }
@@ -91,53 +92,86 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ScopedBuilder<SubstackAddPublicationStore, SubstackPublication?>(
-                store: addStore,
-                onError: (_, error) => FullPageErrorWidget(
-                  error: error,
-                  stackTrace: null,
-                  prefix: L10n.of(context).plugin_substack_add_error,
-                  onRetry: _submit,
-                ),
-                onLoading: (_) => const Center(child: CircularProgressIndicator()),
-                onState: (_, pub) {
-                  if (pub == null) return const SizedBox.shrink();
-                  return ListView(
-                    children: [
-                      ListTile(
-                        leading: pub.logoUrl == null
-                            ? const CircleAvatar(child: Icon(Icons.newspaper_outlined))
-                            : ClipOval(
-                                child: ExtendedImage.network(pub.logoUrl!, width: 40, height: 40, fit: BoxFit.cover),
+              child:
+                  ScopedBuilder<
+                    SubstackAddPublicationStore,
+                    SubstackPublication?
+                  >(
+                    store: addStore,
+                    onError: (_, error) => FullPageErrorWidget(
+                      error: error,
+                      stackTrace: null,
+                      prefix: L10n.of(context).plugin_substack_add_error,
+                      onRetry: _submit,
+                    ),
+                    onLoading: (_) =>
+                        const Center(child: CircularProgressIndicator()),
+                    onState: (_, pub) {
+                      final shown = _followed ?? pub;
+                      if (shown == null) return const SizedBox.shrink();
+                      return ListView(
+                        children: [
+                          ListTile(
+                            leading: shown.logoUrl == null
+                                ? const CircleAvatar(
+                                    child: Icon(Icons.newspaper_outlined),
+                                  )
+                                : ClipOval(
+                                    child: ExtendedImage.network(
+                                      shown.logoUrl!,
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                            title: Text(shown.name),
+                            subtitle: Text(
+                              shown.description?.trim().isNotEmpty == true
+                                  ? shown.description!
+                                  : shown.baseUrl,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          FilledButton.tonalIcon(
+                            onPressed: () =>
+                                addSubstackPublicationToGroup(context, shown),
+                            icon: const Icon(Icons.group_add_outlined),
+                            label: Text(L10n.of(context).add_to_group),
+                          ),
+                          if (_pendingPost != null) ...[
+                            const Divider(),
+                            ListTile(
+                              leading: const Icon(Icons.article_outlined),
+                              title: Text(_pendingPost!.title),
+                              subtitle: Text(
+                                L10n.of(
+                                  context,
+                                ).plugin_substack_open_pasted_post,
                               ),
-                        title: Text(pub.name),
-                        subtitle: Text(pub.description?.trim().isNotEmpty == true ? pub.description! : pub.baseUrl),
-                      ),
-                      if (_pendingPost != null) ...[
-                        const Divider(),
-                        ListTile(
-                          leading: const Icon(Icons.article_outlined),
-                          title: Text(_pendingPost!.title),
-                          subtitle: Text(L10n.of(context).plugin_substack_open_pasted_post),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () async {
-                            final post = _pendingPost!;
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)),
-                            );
-                            if (context.mounted) Navigator.pop(context, true);
-                          },
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: Text(L10n.of(context).plugin_substack_done),
-                        ),
-                      ],
-                    ],
-                  );
-                },
-              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () async {
+                                final post = _pendingPost!;
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        SubstackReaderScreen(post: post),
+                                  ),
+                                );
+                                if (context.mounted) {
+                                  Navigator.pop(context, true);
+                                }
+                              },
+                            ),
+                          ],
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text(L10n.of(context).plugin_substack_done),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
             ),
           ],
         ),

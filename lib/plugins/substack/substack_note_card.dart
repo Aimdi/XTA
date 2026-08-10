@@ -6,6 +6,7 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_note_screen.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/dates.dart';
@@ -47,12 +48,19 @@ class SubstackNoteCard extends StatelessWidget {
                     children: [
                       if (note.authorPhotoUrl != null)
                         ClipOval(
-                          child: ExtendedImage.network(note.authorPhotoUrl!, width: 28, height: 28, fit: BoxFit.cover),
+                          child: ExtendedImage.network(
+                            note.authorPhotoUrl!,
+                            width: 28,
+                            height: 28,
+                            fit: BoxFit.cover,
+                          ),
                         )
                       else
                         CircleAvatar(
                           radius: 14,
-                          child: Text(_initial(note.authorName ?? note.authorHandle)),
+                          child: Text(
+                            _initial(note.authorName ?? note.authorHandle),
+                          ),
                         ),
                       const SizedBox(width: 8),
                       Expanded(
@@ -64,7 +72,10 @@ class SubstackNoteCard extends StatelessWidget {
                         ),
                       ),
                       if (note.at != null)
-                        Text(createCompactDate(note.at!), style: theme.textTheme.bodySmall),
+                        Text(
+                          createCompactDate(note.at!),
+                          style: theme.textTheme.bodySmall,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -73,16 +84,26 @@ class SubstackNoteCard extends StatelessWidget {
                     const SizedBox(height: 12),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: ExtendedImage.network(note.imageUrl!, fit: BoxFit.cover),
+                      child: ExtendedImage.network(
+                        note.imageUrl!,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ],
                   if ((note.reactionCount ?? 0) > 0) ...[
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.favorite_border, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                        Icon(
+                          Icons.favorite_border,
+                          size: 14,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 4),
-                        Text('${note.reactionCount}', style: theme.textTheme.bodySmall),
+                        Text(
+                          '${note.reactionCount}',
+                          style: theme.textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ],
@@ -95,22 +116,37 @@ class SubstackNoteCard extends StatelessWidget {
                           label: Text(pub.name),
                           onPressed: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: pub)),
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  SubstackArchiveScreen(publication: pub),
+                            ),
                           ),
                         ),
                         ActionChip(
                           avatar: const Icon(Icons.add, size: 16),
                           label: Text(l10n.plugin_substack_follow),
                           onPressed: () async {
-                            final pubs = context.read<SubstackPublicationsStore>();
-                            final subscriptions = context.read<SubscriptionsModel>();
+                            final pubs = context
+                                .read<SubstackPublicationsStore>();
+                            final subscriptions = context
+                                .read<SubscriptionsModel>();
                             final messenger = ScaffoldMessenger.of(context);
                             await pubs.add(pub);
                             await subscriptions.reloadSubscriptions();
                             messenger.showSnackBar(
-                              SnackBar(content: Text(l10n.plugin_substack_followed(pub.name))),
+                              SnackBar(
+                                content: Text(
+                                  l10n.plugin_substack_followed(pub.name),
+                                ),
+                              ),
                             );
                           },
+                        ),
+                        ActionChip(
+                          avatar: const Icon(Icons.group_add, size: 16),
+                          label: Text(l10n.add_to_group),
+                          onPressed: () =>
+                              addSubstackPublicationToGroup(context, pub),
                         ),
                       ],
                     ),

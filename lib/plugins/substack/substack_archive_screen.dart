@@ -8,6 +8,7 @@ import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -43,7 +44,10 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
       return;
     }
     try {
-      final results = await context.read<SubstackClient>().searchPosts(_publication, trimmed);
+      final results = await context.read<SubstackClient>().searchPosts(
+        _publication,
+        trimmed,
+      );
       if (mounted && _query == trimmed) setState(() => _results = results);
     } catch (e) {
       if (mounted && _query == trimmed) setState(() => _searchError = e);
@@ -54,11 +58,14 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
 
   Future<void> _enrichHeader() async {
     final current = widget.publication;
-    if ((current.description?.trim().isNotEmpty ?? false) && (current.logoUrl?.isNotEmpty ?? false)) {
+    if ((current.description?.trim().isNotEmpty ?? false) &&
+        (current.logoUrl?.isNotEmpty ?? false)) {
       return;
     }
     try {
-      final fresh = await context.read<SubstackClient>().fetchPublication(Uri.parse(current.baseUrl));
+      final fresh = await context.read<SubstackClient>().fetchPublication(
+        Uri.parse(current.baseUrl),
+      );
       if (!mounted) return;
       setState(() {
         _enriched = SubstackPublication(
@@ -121,14 +128,20 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                         width: 72,
                         height: 72,
                         color: theme.colorScheme.surfaceContainerHighest,
-                        child: Icon(Icons.newspaper, size: 32, color: theme.colorScheme.onSurfaceVariant),
+                        child: Icon(
+                          Icons.newspaper,
+                          size: 32,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       )
                     : ExtendedImage.network(
                         pub.logoUrl!,
                         width: 72,
                         height: 72,
                         fit: BoxFit.cover,
-                        cacheWidth: (72 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                        cacheWidth:
+                            (72 * MediaQuery.devicePixelRatioOf(context))
+                                .ceil(),
                       ),
               ),
               const SizedBox(width: 14),
@@ -136,14 +149,33 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(pub.name, style: theme.textTheme.headlineSmall!.copyWith(fontWeight: FontWeight.w800)),
+                    Text(
+                      pub.name,
+                      style: theme.textTheme.headlineSmall!.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       Uri.tryParse(pub.baseUrl)?.host ?? pub.baseUrl,
-                      style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.bodySmall!.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    SubstackFollowButton(publication: pub),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        SubstackFollowButton(publication: pub),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              addSubstackPublicationToGroup(context, pub),
+                          icon: const Icon(Icons.group_add, size: 18),
+                          label: Text(L10n.of(context).add_to_group),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -215,16 +247,23 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                       prefix: L10n.of(context).plugin_substack_load_error,
                       onRetry: store.refresh,
                     ),
-                    onLoading: (_) => const Center(child: CircularProgressIndicator()),
+                    onLoading: (_) =>
+                        const Center(child: CircularProgressIndicator()),
                     onState: (context, snapshot) {
                       if (snapshot.posts.isEmpty) {
-                        return Center(child: Text(L10n.of(context).plugin_substack_feed_empty));
+                        return Center(
+                          child: Text(
+                            L10n.of(context).plugin_substack_feed_empty,
+                          ),
+                        );
                       }
                       return RefreshIndicator(
                         onRefresh: store.refresh,
                         child: ListView.builder(
                           padding: const EdgeInsets.only(bottom: 24),
-                          itemCount: snapshot.posts.length + (snapshot.canLoadMore ? 1 : 0),
+                          itemCount:
+                              snapshot.posts.length +
+                              (snapshot.canLoadMore ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index >= snapshot.posts.length) {
                               return Padding(
@@ -232,7 +271,11 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                                 child: Center(
                                   child: OutlinedButton(
                                     onPressed: store.loadMore,
-                                    child: Text(L10n.of(context).plugin_substack_load_more),
+                                    child: Text(
+                                      L10n.of(
+                                        context,
+                                      ).plugin_substack_load_more,
+                                    ),
                                   ),
                                 ),
                               );
@@ -272,10 +315,16 @@ class SubstackFollowButton extends StatelessWidget {
 
         return FilledButton.tonalIcon(
           icon: Icon(isFollowed ? Icons.check : Icons.add, size: 18),
-          label: Text(isFollowed ? l10n.plugin_substack_unfollow : l10n.plugin_substack_follow),
+          label: Text(
+            isFollowed
+                ? l10n.plugin_substack_unfollow
+                : l10n.plugin_substack_follow,
+          ),
           onPressed: () async {
             final subscriptions = context.read<SubscriptionsModel>();
-            isFollowed ? await store.remove(publication.id) : await store.add(publication);
+            isFollowed
+                ? await store.remove(publication.id)
+                : await store.add(publication);
             await subscriptions.reloadSubscriptions();
           },
         );
