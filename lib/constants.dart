@@ -10,6 +10,13 @@ const optionHomePages = 'home.pages';
 const optionHomeInitialTab = 'home.initial_tab';
 const optionHomeDefaultFeedTab = 'home.default_feed_tab';
 
+/// Plugin ids pinned next to Following / For you on the home feed strip.
+///
+/// Null means “never configured” — then Reddit still appears when its plugin
+/// is on, matching the old hard-coded tab. An empty list means the reader
+/// cleared every plugin tab on purpose.
+const optionHomeFeedStripPlugins = 'home.feed_strip_plugins';
+
 /// Login accounts excluded from the merged For you timeline (JSON string list).
 /// Empty means every saved account participates. New accounts stay included
 /// until the reader turns them off.

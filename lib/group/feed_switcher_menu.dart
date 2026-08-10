@@ -5,6 +5,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/_feed.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 
 /// What was picked out of the feed switcher.
@@ -37,11 +38,11 @@ class AllGroupsChoice extends FeedSwitcherChoice {
 /// a single tap; the rest are one row further, behind Groups.
 const int kFeedSwitcherPinnedLimit = 5;
 
-IconData _feedIcon(FeedTab tab) => switch (tab) {
-  FeedTab.following => Icons.people_outline,
-  FeedTab.foryou => Icons.auto_awesome_outlined,
-  FeedTab.reddit => Icons.forum_outlined,
-};
+IconData _feedIcon(FeedTab tab) {
+  if (tab == FeedTab.following) return Icons.people_outline;
+  if (tab == FeedTab.foryou) return Icons.auto_awesome_outlined;
+  return pluginById(tab.id)?.icon ?? Icons.extension_outlined;
+}
 
 /// The rect of [context]'s own box, in the overlay's coordinates — where the
 /// menu should hang from.
@@ -55,7 +56,10 @@ RelativeRect? _anchorOf(BuildContext context) {
   return RelativeRect.fromRect(
     Rect.fromPoints(
       button.localToGlobal(Offset.zero, ancestor: overlay),
-      button.localToGlobal(button.size.bottomRight(Offset.zero), ancestor: overlay),
+      button.localToGlobal(
+        button.size.bottomRight(Offset.zero),
+        ancestor: overlay,
+      ),
     ),
     Offset.zero & overlay.size,
   );
@@ -73,7 +77,9 @@ PopupMenuItem<FeedSwitcherChoice> _row({
       children: [
         leading,
         const SizedBox(width: 12),
-        Expanded(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis)),
+        Expanded(
+          child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
         if (trailing != null) trailing,
       ],
     ),
@@ -85,7 +91,11 @@ PopupMenuItem<FeedSwitcherChoice> _row({
 /// far edge of the screen.
 ///
 /// Short by design: the feeds, the pinned groups, and a way into the rest.
-Future<FeedSwitcherChoice?> showFeedSwitcherMenu(BuildContext context, {FeedTab? currentTab, String? currentGroupId}) {
+Future<FeedSwitcherChoice?> showFeedSwitcherMenu(
+  BuildContext context, {
+  FeedTab? currentTab,
+  String? currentGroupId,
+}) {
   final position = _anchorOf(context);
   if (position == null) {
     return Future.value(null);
@@ -107,21 +117,39 @@ Future<FeedSwitcherChoice?> showFeedSwitcherMenu(BuildContext context, {FeedTab?
     items: [
       for (final feed in available)
         _row(
-          leading: Icon(_feedIcon(feed.id), size: 20, color: theme.colorScheme.onSurfaceVariant),
+          leading: Icon(
+            _feedIcon(feed.id),
+            size: 20,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           label: feed.titleBuilder(context),
           value: FeedTabChoice(feed.id),
-          trailing: feed.id == currentTab ? const Icon(Icons.check, size: 18) : null,
+          trailing: feed.id == currentTab
+              ? const Icon(Icons.check, size: 18)
+              : null,
         ),
       const PopupMenuDivider(),
       for (final group in pinned)
-        _row(leading: GroupMark.forGroup(group, size: 24), label: group.name, value: GroupJumpChoice(group)),
+        _row(
+          leading: GroupMark.forGroup(group, size: 24),
+          label: group.name,
+          value: GroupJumpChoice(group),
+        ),
       // The full list is a sheet: it holds every group, and holding a row there
       // reads it alongside — neither of which fits in a menu.
       _row(
-        leading: Icon(Icons.folder_outlined, size: 20, color: theme.colorScheme.onSurfaceVariant),
+        leading: Icon(
+          Icons.folder_outlined,
+          size: 20,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
         label: l10n.groups,
         value: const AllGroupsChoice(),
-        trailing: Icon(Icons.chevron_right, size: 18, color: theme.colorScheme.onSurfaceVariant),
+        trailing: Icon(
+          Icons.chevron_right,
+          size: 18,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
       ),
     ],
   );

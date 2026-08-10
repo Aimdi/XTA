@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/home/_for_you.dart';
 import 'package:xta/home/chrome_avatar.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
@@ -14,13 +15,39 @@ import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
+import 'package:xta/home/feed_strip_add_sheet.dart';
+import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
-import 'package:xta/plugins/reddit/reddit_feed_list.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
 
-enum FeedTab { following, foryou, reddit }
+/// One entry on the home feed strip (Following, For you, or a pinned plugin).
+///
+/// A value type rather than an enum so plugin pins are not a code change every
+/// time a new network ships.
+class FeedTab {
+  final String id;
+
+  const FeedTab(this.id);
+
+  static const following = FeedTab('following');
+  static const foryou = FeedTab('foryou');
+
+  /// Same id as [pluginIdReddit] — kept so Reddit-specific chrome still matches.
+  static const reddit = FeedTab(pluginIdReddit);
+
+  /// Prefs and settings historically stored the enum `.name`; keep that shape.
+  String get name => id;
+
+  bool get isPlugin => id != following.id && id != foryou.id;
+
+  @override
+  bool operator ==(Object other) => other is FeedTab && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
 
 class FeedTabOption {
   final FeedTab id;
@@ -29,23 +56,41 @@ class FeedTabOption {
   FeedTabOption(this.id, this.titleBuilder);
 }
 
+/// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
   FeedTabOption(FeedTab.following, (c) => L10n.of(c).following),
   FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou),
-  FeedTabOption(FeedTab.reddit, (c) => L10n.of(c).plugin_reddit_title),
 ];
 
-/// The feeds the switcher currently offers.
-///
-/// Reddit is one of them only while its plugin is on — an entry that led to an
-/// empty screen would be worse than no entry, and the choice is stored by name
-/// so turning the plugin off simply stops offering it.
-List<FeedTabOption> availableFeedTabs(BasePrefService prefs) => feedTabs
-    .where((e) => e.id != FeedTab.reddit || prefs.get<bool>(optionPluginRedditEnabled) == true)
-    .toList(growable: false);
+/// The feeds the switcher and home strip currently offer.
+List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
+    availableFeedTabsFromIds(feedStripPluginIds(prefs), prefs);
 
-FeedTab feedTabFromId(String? id) =>
-    FeedTab.values.firstWhere((e) => e.name == id, orElse: () => FeedTab.following);
+/// Same shape as [availableFeedTabs], but from an explicit id list (the store).
+List<FeedTabOption> availableFeedTabsFromIds(
+  List<String> pluginIds,
+  BasePrefService prefs,
+) {
+  final options = <FeedTabOption>[
+    FeedTabOption(FeedTab.following, (c) => L10n.of(c).following),
+    FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou),
+  ];
+  for (final pluginId in pluginIds) {
+    final plugin = pluginById(pluginId);
+    if (plugin == null ||
+        !plugin.isEnabled(prefs) ||
+        !plugin.supportsFeedStrip) {
+      continue;
+    }
+    options.add(FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c)));
+  }
+  return List.unmodifiable(options);
+}
+
+FeedTab feedTabFromId(String? id) {
+  if (id == null || id.isEmpty) return FeedTab.following;
+  return FeedTab(id);
+}
 
 /// Which feed the home screen is showing.
 ///
@@ -63,7 +108,12 @@ class FeedScreen extends StatefulWidget {
   final String id;
   final String name;
 
-  const FeedScreen({super.key, required this.scrollController, required this.id, required this.name});
+  const FeedScreen({
+    super.key,
+    required this.scrollController,
+    required this.id,
+    required this.name,
+  });
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -82,8 +132,10 @@ class _FeedScreenState extends State<FeedScreen> {
   /// alone: the controller survives and the indicator slides, as it should.
   int _externalTabEpoch = 0;
   FeedTabStore? _tabStore;
+  FeedStripStore? _stripStore;
   HomeAccountFilterStore? _accountFilter;
   Set<String> _lastDisabledAccountIds = const {};
+  List<String> _lastStripPlugins = const [];
 
   @override
   void didChangeDependencies() {
@@ -93,6 +145,13 @@ class _FeedScreenState extends State<FeedScreen> {
       _tabStore = store;
       _tab ??= store.state;
       store.observer(onState: _onFeedChosenElsewhere);
+    }
+
+    final strip = context.read<FeedStripStore>();
+    if (!identical(strip, _stripStore)) {
+      _stripStore = strip;
+      _lastStripPlugins = List<String>.from(strip.state);
+      strip.observer(onState: _onStripChanged);
     }
 
     final filter = context.read<HomeAccountFilterStore>();
@@ -116,11 +175,25 @@ class _FeedScreenState extends State<FeedScreen> {
     });
   }
 
+  void _onStripChanged(List<String> plugins) {
+    if (!mounted) return;
+    final same =
+        plugins.length == _lastStripPlugins.length &&
+        List.generate(
+          plugins.length,
+          (i) => plugins[i] == _lastStripPlugins[i],
+        ).every((e) => e);
+    if (same) return;
+    _lastStripPlugins = List<String>.from(plugins);
+    setState(() => _externalTabEpoch++);
+  }
+
   void _onHomeAccountFilterChanged(Set<String> disabled) {
     if (!mounted) {
       return;
     }
-    final same = disabled.length == _lastDisabledAccountIds.length &&
+    final same =
+        disabled.length == _lastDisabledAccountIds.length &&
         disabled.every(_lastDisabledAccountIds.contains);
     if (same) {
       return;
@@ -167,21 +240,34 @@ class _FeedScreenState extends State<FeedScreen> {
     await context.read<FeedRefreshController>().refresh();
   }
 
+  Widget _pluginBody(FeedTab tab) {
+    final plugin = pluginById(tab.id);
+    final screen = plugin?.feedStripScreen(
+      scrollController: widget.scrollController,
+    );
+    if (screen != null) return screen;
+    return Center(child: Text(L10n.of(context).feed_strip_unavailable));
+  }
+
   @override
   Widget build(BuildContext context) {
     final BasePrefService prefs = PrefService.of(context);
-    final available = availableFeedTabs(prefs);
-    var tab = _tab ??= feedTabFromId(prefs.get<String>(optionHomeDefaultFeedTab));
+    final strip = context.read<FeedStripStore>();
+    // Store list is the source of truth once edited; prefs alone lag a frame.
+    final available = availableFeedTabsFromIds(strip.state, prefs);
+    var tab = _tab ??= feedTabFromId(
+      prefs.get<String>(optionHomeDefaultFeedTab),
+    );
     // The plugin can be turned off while its feed is the one being shown.
     if (!available.any((e) => e.id == tab)) {
       tab = _tab = FeedTab.following;
     }
 
-    // The feeds are X-style tabs under the title, not a form-field dropdown in
-    // it. Keyed by how many there are so toggling the Reddit plugin rebuilds
-    // the controller instead of leaving it one tab short.
+    // Keyed by strip contents so adding/removing a plugin remounts the controller.
     return DefaultTabController(
-      key: ValueKey('${available.length}:$_externalTabEpoch'),
+      key: ValueKey(
+        '${available.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
+      ),
       length: available.length,
       initialIndex: max(0, available.indexWhere((e) => e.id == tab)),
       child: GroupFeedShell(
@@ -190,18 +276,36 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: true,
         leading: const DrawerAvatarButton(),
         titleBuilder: (context) => Text(L10n.of(context).fritter),
-        bottomBuilder: (context) => TabBar(
-          // The shell draws the bar's hairline; the TabBar's own divider on top
-          // of it would double the line.
-          dividerHeight: 0,
-          tabs: available.map((e) => Tab(text: e.titleBuilder(context))).toList(),
-          onTap: (index) => setState(() {
-            _tab = available[index].id;
-            // Kept in step so a switcher opened elsewhere marks the right feed.
-            // The observer sees the value it already holds and does nothing, so
-            // this does not bump the epoch and the indicator keeps sliding.
-            _tabStore?.select(_tab!);
-          }),
+        bottomBuilder: (context) => PreferredSize(
+          preferredSize: const Size.fromHeight(46),
+          child: Row(
+            children: [
+              Expanded(
+                child: TabBar(
+                  // The shell draws the bar's hairline; the TabBar's own divider on top
+                  // of it would double the line.
+                  dividerHeight: 0,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  tabs: available
+                      .map((e) => Tab(text: e.titleBuilder(context)))
+                      .toList(),
+                  onTap: (index) => setState(() {
+                    _tab = available[index].id;
+                    // Kept in step so a switcher opened elsewhere marks the right feed.
+                    // The observer sees the value it already holds and does nothing, so
+                    // this does not bump the epoch and the indicator keeps sliding.
+                    _tabStore?.select(_tab!);
+                  }),
+                ),
+              ),
+              IconButton(
+                tooltip: L10n.of(context).feed_strip_add,
+                icon: const Icon(Icons.add),
+                onPressed: () => showFeedStripAddSheet(context),
+              ),
+            ],
+          ),
         ),
         actionsBuilder: (context) {
           // Reddit brings its own bar: sorting, search and adding a subreddit
@@ -230,7 +334,9 @@ class _FeedScreenState extends State<FeedScreen> {
                   isLabelVisible: disabledCount > 0,
                   smallSize: 8,
                   child: Icon(
-                    disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined,
+                    disabledCount > 0
+                        ? Icons.manage_accounts
+                        : Icons.manage_accounts_outlined,
                   ),
                 ),
                 tooltip: L10n.of(context).home_feed_accounts,
@@ -240,21 +346,28 @@ class _FeedScreenState extends State<FeedScreen> {
             ],
           );
         },
-        bodyBuilder: (context) => switch (tab) {
-          // With a cache key this feed survives a trip to another tab, the
-          // way a pushed group route already does. Without one, every
-          // Following -> For you -> Following swipe rebuilt the whole
-          // per-chunk fan-out. Namespaced so it never shares state with the
-          // pushed route for the same group.
-          FeedTab.following => SubscriptionGroupScreenContent(id: widget.id, cacheKey: 'home-${widget.id}'),
-          FeedTab.reddit => RedditFeedList(scrollController: widget.scrollController),
-          FeedTab.foryou => ForYouTweets(
-                _forYouFeed,
-                key: ValueKey(_forYouEpoch),
-                type: 'profile',
-                includeReplies: false,
-                pref: prefs,
-              ),
+        bodyBuilder: (context) {
+          if (tab == FeedTab.following) {
+            // With a cache key this feed survives a trip to another tab, the
+            // way a pushed group route already does. Without one, every
+            // Following -> For you -> Following swipe rebuilt the whole
+            // per-chunk fan-out. Namespaced so it never shares state with the
+            // pushed route for the same group.
+            return SubscriptionGroupScreenContent(
+              id: widget.id,
+              cacheKey: 'home-${widget.id}',
+            );
+          }
+          if (tab == FeedTab.foryou) {
+            return ForYouTweets(
+              _forYouFeed,
+              key: ValueKey(_forYouEpoch),
+              type: 'profile',
+              includeReplies: false,
+              pref: prefs,
+            );
+          }
+          return _pluginBody(tab);
         },
       ),
     );

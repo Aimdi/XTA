@@ -17,6 +17,7 @@ import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_feed_list.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/reddit/reddit_settings_screen.dart';
@@ -75,6 +76,13 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
   }
 
   @override
+  Widget feedStripScreen({required ScrollController scrollController}) {
+    // Compact listing with Reddit-specific app-bar actions — not the full
+    // bottom-tab shell that would nest another nav strip under Home.
+    return RedditFeedList(scrollController: scrollController);
+  }
+
+  @override
   Widget? settingsScreen(BuildContext context) => const RedditSettingsScreen();
 
   @override
@@ -87,7 +95,8 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
   String get subscriptionTable => tableRedditSubscription;
 
   @override
-  Subscription subscriptionFromMap(Map<String, Object?> row) => RedditSubscription.fromMap(row);
+  Subscription subscriptionFromMap(Map<String, Object?> row) =>
+      RedditSubscription.fromMap(row);
 
   @override
   bool owns(Subscription subscription) => subscription is RedditSubscription;
@@ -98,8 +107,11 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
   /// A subreddit's picture is not a URL this app holds — it is fetched and
   /// cached separately, and drawn from the name.
   @override
-  GroupMemberPreview previewOf(Subscription subscription) =>
-      GroupMemberPreview(id: subscription.id, name: subscription.name, subreddit: subscription.name);
+  GroupMemberPreview previewOf(Subscription subscription) => GroupMemberPreview(
+    id: subscription.id,
+    name: subscription.name,
+    subreddit: subscription.name,
+  );
 
   @override
   Widget avatarFor(Subscription subscription, {double size = 40}) =>
@@ -110,21 +122,26 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
       () => RedditListingScreen.subreddit(subscription.name);
 
   @override
-  Future<void> reloadFromDatabase(BuildContext context) => context.read<RedditSubredditsStore>().load();
+  Future<void> reloadFromDatabase(BuildContext context) =>
+      context.read<RedditSubredditsStore>().load();
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
       context.read<RedditSubredditsStore>().remove(subscription.name);
 
   @override
-  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
-      loadRedditInterleaved(context, ids);
+  Future<List<InterleavedItem>> interleavedPosts(
+    BuildContext context,
+    List<String> ids,
+  ) => loadRedditInterleaved(context, ids);
 
   @override
-  bool inHomeFeed(BuildContext context) => redditInHomeFeed(PrefService.of(context, listen: false));
+  bool inHomeFeed(BuildContext context) =>
+      redditInHomeFeed(PrefService.of(context, listen: false));
 
   @override
-  List<String> homeFeedIds(BuildContext context) => redditHomeSubreddits(context);
+  List<String> homeFeedIds(BuildContext context) =>
+      redditHomeSubreddits(context);
 
   @override
   List<PluginBackupSection> get backupSections => [

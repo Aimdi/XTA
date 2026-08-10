@@ -49,6 +49,16 @@ abstract class XtaPlugin {
   /// Root screen for the home tab (used by [HomeScreen]).
   Widget? homeScreen({required ScrollController scrollController}) => null;
 
+  /// Whether this plugin can be pinned next to Following / For you.
+  ///
+  /// Defaults to plugins that already expose a home tab — helpers without a
+  /// timeline (Karakeep, Immich, …) leave [homeTabPrefKey] null and stay out.
+  bool get supportsFeedStrip => homeTabPrefKey != null;
+
+  /// Body for a feed-strip pin. Defaults to the bottom-nav [homeScreen].
+  Widget? feedStripScreen({required ScrollController scrollController}) =>
+      homeScreen(scrollController: scrollController);
+
   /// Optional configuration screen, reached from the plugin store row.
   Widget? settingsScreen(BuildContext context) => null;
 
@@ -75,7 +85,8 @@ abstract class XtaPlugin {
   Future<void> resetPreferences(BasePrefService prefs) async {}
 
   /// What the plugin is currently keeping on the device.
-  Future<PluginFootprint> footprint() => pluginFootprint(tables: tables, caches: caches);
+  Future<PluginFootprint> footprint() =>
+      pluginFootprint(tables: tables, caches: caches);
 
   /// Switches the plugin off and deletes everything it saved.
   ///
