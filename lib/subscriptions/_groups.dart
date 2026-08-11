@@ -16,6 +16,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 
 export 'package:xta/subscriptions/_groups_edit.dart'
@@ -265,23 +266,27 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
   /// otherwise the same feed would have two entry points.
   List<Widget> _pluginFeedRows(BuildContext context) {
     final prefs = PrefService.of(context);
-
-    return [
+    final plugins = [
       for (final plugin in builtInPlugins)
         if (plugin.isEnabled(prefs) &&
             !plugin.showsHomeTab(prefs) &&
             plugin.homeTabPrefKey != null)
-          ListTile(
-            leading: Icon(plugin.icon),
-            title: Text(plugin.title(context)),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => _PluginFeedRoute(plugin: plugin),
-              ),
-            ),
+          plugin,
+    ];
+    if (plugins.isEmpty) {
+      return const [];
+    }
+
+    return [
+      for (final plugin in plugins)
+        _PluginFeedTile(
+          plugin: plugin,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => _PluginFeedRoute(plugin: plugin)),
           ),
+        ),
+      const Divider(height: 1),
     ];
   }
 
@@ -450,6 +455,48 @@ class SubscriptionGroups extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubscriptionGroupsPage(scrollController: scrollController);
+  }
+}
+
+/// Compact X-style drill-in row for a plugin feed on the Groups tab.
+///
+/// Default [ListTile] height left a tall stack of plugin names above the board;
+/// this matches Settings title weight with tighter padding and a small brand
+/// chip so six feeds fit without dominating the viewport.
+class _PluginFeedTile extends StatelessWidget {
+  final XtaPlugin plugin;
+  final VoidCallback onTap;
+
+  const _PluginFeedTile({required this.plugin, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final secondary = theme.colorScheme.onSurfaceVariant;
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            pluginBrandIcon(context, plugin, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                plugin.title(context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 18, color: secondary),
+          ],
+        ),
+      ),
+    );
   }
 }
 
