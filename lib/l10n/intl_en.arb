@@ -440,13 +440,21 @@
   "feed_issue_detected": "Feed issue detected",
   "@feed_issue_detected": {},
   "feed_strip_add": "Add timeline",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "No installed plugins to pin yet. Open the plugin store to install Reddit, Pixiv, Mastodon and more.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Pin installed plugins next to For you. Install more from the plugin store.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Plugin timelines",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Available to add",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "On this strip",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Remove from strip",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "This timeline is no longer available",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1560,6 +1568,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Accounts",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{1 more account still to read — pull to refresh} other{{count} more accounts still to read — pull to refresh}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Add account",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy server address",
@@ -2126,13 +2142,5 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

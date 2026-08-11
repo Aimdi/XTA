@@ -440,13 +440,21 @@
   "feed_issue_detected": "Problemă detectată în flux",
   "@feed_issue_detected": {},
   "feed_strip_add": "Adaugă timeline",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Niciun plugin de fixat. Deschide magazinul pentru Reddit, Pixiv, Mastodon etc.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Fixează pluginurile instalate lângă „Pentru tine”. Instalează altele din magazin.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Timeline-uri plugin",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Disponibile",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Pe această bară",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Elimină de pe bară",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Această timeline nu mai este disponibilă",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Conturi",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{A mai rămas 1 cont de citit — trage pentru a reîmprospăta} few{Au mai rămas {count} conturi de citit — trage pentru a reîmprospăta} other{Au mai rămas {count} de conturi de citit — trage pentru a reîmprospăta}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Adaugă cont",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adresa serverului Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

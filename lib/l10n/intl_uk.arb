@@ -440,13 +440,21 @@
   "feed_issue_detected": "Виявлено проблему з стрічкою",
   "@feed_issue_detected": {},
   "feed_strip_add": "Додати стрічку",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Поки немає що закріпити. Відкрийте крамницю: Reddit, Pixiv, Mastodon тощо.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Закріпіть установлені плагіни поруч із «Для вас». Інші — в крамниці плагінів.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Стрічки плагінів",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Можна додати",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "На цій смужці",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Прибрати зі смужки",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Ця стрічка більше недоступна",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Акаунти",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Лишився ще 1 обліковий запис — потягни, щоб оновити} few{Лишилося ще {count} облікові записи — потягни, щоб оновити} many{Лишилося ще {count} облікових записів — потягни, щоб оновити} other{Лишилося ще {count} облікового запису — потягни, щоб оновити}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Додати акаунт",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Адреса сервера Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

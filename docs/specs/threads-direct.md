@@ -90,3 +90,12 @@ RSSHub route as the feed) — a header-only screen was reading as empty.
 - In-app login WebView
 - Write actions to Meta (boost / remote like / follow)
 - Video carousel playback beyond image URLs already on cards
+
+## Time-to-content (guest)
+
+Guest GraphQL has no session to ban, so departures use a shorter floor
+(`threadsGuestMinGap`, ~550ms + jitter) than cookie/Bearer traffic (`minGap`,
+2s). The LSD token is reused across accounts and persisted briefly so a cold
+open does not re-fetch profile HTML for every handle. Soft refresh and
+pull-to-refresh paint each account as it answers (stale-while-revalidate when
+cached), with a pending-accounts note while more are still loading.

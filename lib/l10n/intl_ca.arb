@@ -440,13 +440,21 @@
   "feed_issue_detected": "S'ha detectat un problema al canal",
   "@feed_issue_detected": {},
   "feed_strip_add": "Afegeix una cronologia",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Encara no hi ha connectors per fixar. Obre la botiga per instal·lar Reddit, Pixiv, Mastodon…",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Fixa connectors instal·lats al costat de «Per a tu». Instal·la’n més a la botiga.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Cronologies de connectors",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Disponibles",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "En aquesta barra",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Treu de la barra",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Aquesta cronologia ja no està disponible",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Comptes",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Encara queda 1 compte per llegir — estira per actualitzar} other{Encara queden {count} comptes per llegir — estira per actualitzar}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Afegeix un compte",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adreça del servidor Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

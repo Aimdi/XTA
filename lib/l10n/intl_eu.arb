@@ -440,13 +440,21 @@
   "feed_issue_detected": "Jarioko arazoa hauteman da",
   "@feed_issue_detected": {},
   "feed_strip_add": "Gehitu denbora-lerroa",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Ez dago ainguratzeko pluginik. Ireki denda Reddit, Pixiv, Mastodon… instalatzeko.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Ainguratu instalatutako pluginak «Zuretzat» ondoan. Gehiago plugin dendatik.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Plugin denbora-lerroak",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Gehigarriak",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Barratxo honetan",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Kendu barratxotik",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Denbora-lerro hau ez dago erabilgarri",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Kontuak",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Kontu 1 irakurtzeke — tira eguneratzeko} other{{count} kontu irakurtzeke — tira eguneratzeko}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Gehitu kontua",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy zerbitzariaren helbidea",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

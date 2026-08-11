@@ -440,13 +440,21 @@
   "feed_issue_detected": "检测到信息流问题",
   "@feed_issue_detected": {},
   "feed_strip_add": "添加时间线",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "还没有可固定的插件。打开插件商店安装 Reddit、Pixiv、Mastodon 等。",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "将已安装的插件固定在「推荐」旁边。更多可在插件商店安装。",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "插件时间线",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "可添加",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "已固定在此栏",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "从此栏移除",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "此时间线已不可用",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "折叠",
   "@filter_action_fold": {},
   "filter_action_hide": "隐藏",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "账号",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{还有 {count} 个账号未读 — 下拉刷新}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "添加账号",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy 服务器地址",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

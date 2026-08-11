@@ -440,13 +440,21 @@
   "feed_issue_detected": "Problema no feed detectado",
   "@feed_issue_detected": {},
   "feed_strip_add": "Adicionar timeline",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Ainda sem plugins para fixar. Abra a loja para instalar Reddit, Pixiv, Mastodon e mais.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Fixe plugins instalados ao lado de «Para você». Instale mais na loja de plugins.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Timelines de plugins",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Disponíveis",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Nesta barra",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Remover da barra",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Esta timeline não está mais disponível",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Contas",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Falta ler 1 conta — puxe para atualizar} other{Faltam ler {count} contas — puxe para atualizar}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Adicionar conta",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Endereço do servidor Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Comprimento do feed no modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantas páginas o feed carrega no modo zen antes de fazer uma pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

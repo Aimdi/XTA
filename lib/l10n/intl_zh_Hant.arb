@@ -440,13 +440,21 @@
   "feed_issue_detected": "偵測到動態消息問題",
   "@feed_issue_detected": {},
   "feed_strip_add": "新增時間軸",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "尚無可釘選的外掛。開啟外掛商店安裝 Reddit、Pixiv、Mastodon 等。",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "將已安裝的外掛釘選在「為你推薦」旁。更多可在外掛商店安裝。",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "外掛時間軸",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "可新增",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "已釘選在此列",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "從此列移除",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "此時間軸已無法使用",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "帳號",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{還有 {count} 個帳號未讀 — 下拉重新整理}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "新增帳號",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy 伺服器位址",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "禪模式時間軸長度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

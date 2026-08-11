@@ -433,11 +433,28 @@ class ThreadsDirectClient {
   static const _guestLsdTtl = Duration(minutes: 10);
 
   String? get _freshGuestLsd {
-    final at = _guestLsdAt;
-    if (_guestLsd == null || at == null || DateTime.now().difference(at) > _guestLsdTtl) {
+    final memory = _guestLsdFrom(_guestLsd, _guestLsdAt);
+    if (memory != null) {
+      return memory;
+    }
+    final stored = prefs.get<String>(optionPluginThreadsGuestLsd);
+    final at = DateTime.tryParse(prefs.get<String>(optionPluginThreadsGuestLsdAt) ?? '');
+    final fromPrefs = _guestLsdFrom(stored, at);
+    if (fromPrefs != null) {
+      _guestLsd = fromPrefs;
+      _guestLsdAt = at;
+    }
+    return fromPrefs;
+  }
+
+  String? _guestLsdFrom(String? lsd, DateTime? at) {
+    if (lsd == null || lsd.isEmpty || at == null) {
       return null;
     }
-    return _guestLsd;
+    if (DateTime.now().difference(at) > _guestLsdTtl) {
+      return null;
+    }
+    return lsd;
   }
 
   void _rememberGuestLsd(String? lsd) {
@@ -446,6 +463,12 @@ class ThreadsDirectClient {
     }
     _guestLsd = lsd;
     _guestLsdAt = DateTime.now();
+    unawaited(
+      Future<void>.sync(() async {
+        await prefs.set(optionPluginThreadsGuestLsd, lsd);
+        await prefs.set(optionPluginThreadsGuestLsdAt, _guestLsdAt!.toIso8601String());
+      }),
+    );
   }
 
   ThreadsDirectClient(this.prefs, {http.Client? httpClient, this.minGap = const Duration(seconds: 2)})
@@ -511,9 +534,12 @@ class ThreadsDirectClient {
 
     final last = _lastRequestAt;
     if (last != null) {
-      // A gap that is exactly the same every time is its own signature, so the
-      // wait is the floor plus a little noise.
-      final gap = minGap + Duration(milliseconds: _jitter.nextInt(750));
+      // Session traffic keeps the strict floor — Meta bans accounts that look
+      // scripted. Guest GraphQL has no session to lose, so it may leave sooner;
+      // the queue still serialises departures, just with a shorter gap.
+      final floor = respectCooldown ? minGap : threadsGuestMinGap;
+      final jitterMs = respectCooldown ? 750 : 350;
+      final gap = floor + Duration(milliseconds: _jitter.nextInt(jitterMs));
       final wait = gap - DateTime.now().difference(last);
       if (wait > Duration.zero) {
         await Future<void>.delayed(wait);

@@ -440,13 +440,21 @@
   "feed_issue_detected": "Problemo en fluo detektita",
   "@feed_issue_detected": {},
   "feed_strip_add": "Aldoni tempolinion",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Ankoraŭ neniu kromaĵo por alpingli. Malfermu la vendejon por Reddit, Pixiv, Mastodon ktp.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Alpinglu instalitajn kromaĵojn apud «Por vi». Instalu pli el la kromaĵa vendejo.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Kromaĵaj tempolinioj",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Haveblaj",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Sur ĉi tiu rubando",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Forigi de la rubando",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Tiu tempolinio ne plu disponeblas",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Kontoj",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Ankoraŭ 1 konto legenda — tiru por refreŝigi} other{Ankoraŭ {count} kontoj legendaj — tiru por refreŝigi}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Aldoni konton",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adreso de la Xy-servilo",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

@@ -440,13 +440,21 @@
   "feed_issue_detected": "Voo probleem tuvastatud",
   "@feed_issue_detected": {},
   "feed_strip_add": "Lisa ajajoon",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Pole veel kinnitatavaid pluginaid. Ava pood Reddit’i, Pixivi, Mastodoni jms jaoks.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Kinnita installitud pluginad «Sulle» kõrvale. Rohkem pluginapoest.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Pluginate ajajooned",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Saadaval",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Sellel ribal",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Eemalda ribalt",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "See ajajoon pole enam saadaval",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Kontod",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Veel 1 konto lugemata — tõmba värskendamiseks} other{Veel {count} kontot lugemata — tõmba värskendamiseks}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Lisa konto",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy serveri aadress",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

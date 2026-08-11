@@ -440,13 +440,21 @@
   "feed_issue_detected": "Zjištěn problém s kanálem",
   "@feed_issue_detected": {},
   "feed_strip_add": "Přidat timeline",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Zatím není co připnout. Otevřete obchod pluginů pro Reddit, Pixiv, Mastodon a další.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Připněte nainstalované pluginy vedle „Pro vás“. Další najdete v obchodě pluginů.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Timeline pluginů",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "K dispozici",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Na tomto pruhu",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Odebrat z pruhu",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Tato timeline už není dostupná",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Účty",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Zbývá načíst ještě 1 účet — přetažením obnovíš} few{Zbývá načíst ještě {count} účty — přetažením obnovíš} many{Zbývá načíst ještě {count} účtu — přetažením obnovíš} other{Zbývá načíst ještě {count} účtů — přetažením obnovíš}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Přidat účet",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adresa serveru Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

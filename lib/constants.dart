@@ -240,6 +240,15 @@ const optionPluginThreadsDirectCooldownUntil =
 /// rather than searched for again on every read.
 const optionPluginThreadsUserIds = 'plugin.threads.user_ids';
 
+/// Guest GraphQL LSD token + when it was captured. Survives process death so a
+/// cold open does not pay an extra profile HTML round-trip for every account.
+const optionPluginThreadsGuestLsd = 'plugin.threads.guest_lsd';
+const optionPluginThreadsGuestLsdAt = 'plugin.threads.guest_lsd_at';
+
+/// Floor between guest (public) request departures. Session traffic still uses
+/// the stricter [ThreadsDirectClient.minGap] — guest has no account to ban.
+const threadsGuestMinGap = Duration(milliseconds: 550);
+
 /// Bluesky, read through the public AppView — local follows, no Bluesky account.
 const pluginIdBluesky = 'bluesky';
 const optionPluginBlueskyEnabled = 'plugin.bluesky.enabled';

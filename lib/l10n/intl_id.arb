@@ -440,13 +440,21 @@
   "feed_issue_detected": "Masalah feed terdeteksi",
   "@feed_issue_detected": {},
   "feed_strip_add": "Tambah timeline",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Belum ada plugin untuk disematkan. Buka toko untuk memasang Reddit, Pixiv, Mastodon, dll.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Sematkan plugin terpasang di samping Untuk Anda. Instal lainnya dari toko plugin.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Timeline plugin",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Tersedia",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Di bilah ini",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Hapus dari bilah",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Timeline ini tidak lagi tersedia",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Akun",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{Masih ada {count} akun yang belum dibaca — tarik untuk menyegarkan}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Tambah akun",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Alamat server Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

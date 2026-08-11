@@ -87,19 +87,24 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
   /// failure (same idea as Pixiv). Never blank the tab into a spinner that
   /// looks like Meta is hanging — and never ask harder just to paint loading.
   Future<void> refresh({bool force = false}) async {
+    // Each account answered paints immediately — behind the anti-ban pacing,
+    // waiting for all of them meant a spinner for the sum of every wait. Soft
+    // refresh (list already on screen) must do the same, or pull-to-refresh
+    // feels frozen until the slowest account answers.
     if (state.isNotEmpty) {
       try {
-        update(await _loadPosts(force: force));
+        update(await _loadPosts(force: force, onPartial: update));
       } catch (_) {
         update(state);
       }
       return;
     }
 
-    // Each account answered paints immediately — behind the anti-ban pacing,
-    // waiting for all of them meant a spinner for the sum of every wait.
     await execute(() => _loadPosts(force: force, onPartial: update));
   }
+
+  /// How many followed handles still need a network read.
+  int pending(List<String> handles) => _posts.pendingCount(handles);
 
   Future<List<ThreadsPost>> _loadPosts({required bool force, void Function(List<ThreadsPost>)? onPartial}) async {
     final handles = accounts.state.map((e) => e.handle).toList(growable: false);

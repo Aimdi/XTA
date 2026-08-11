@@ -440,13 +440,21 @@
   "feed_issue_detected": "Wykryto problem z kanałem",
   "@feed_issue_detected": {},
   "feed_strip_add": "Dodaj oś czasu",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Brak wtyczek do przypięcia. Otwórz sklep, by zainstalować Reddit, Pixiv, Mastodon i inne.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Przypnij zainstalowane wtyczki obok „Dla ciebie”. Więcej w sklepie wtyczek.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Osie czasu wtyczek",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Do dodania",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Na tym pasku",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Usuń z paska",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Ta oś czasu jest już niedostępna",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Konta",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Został jeszcze 1 profil do wczytania — pociągnij, aby odświeżyć} few{Zostały jeszcze {count} profile do wczytania — pociągnij, aby odświeżyć} many{Zostało jeszcze {count} profili do wczytania — pociągnij, aby odświeżyć} other{Zostało jeszcze {count} profilu do wczytania — pociągnij, aby odświeżyć}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Dodaj konto",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adres serwera Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

@@ -440,13 +440,21 @@
   "feed_issue_detected": "Problème détecté avec votre fil",
   "@feed_issue_detected": {},
   "feed_strip_add": "Ajouter un fil",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Aucun plugin à épingler. Ouvrez le magasin pour installer Reddit, Pixiv, Mastodon, etc.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Épinglez des plugins installés à côté de « Pour vous ». Installez-en d’autres depuis le magasin.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Fils des plugins",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Disponibles",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Sur cette barre",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Retirer de la barre",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Ce fil n’est plus disponible",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Replier",
   "@filter_action_fold": {},
   "filter_action_hide": "Masquer",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Comptes",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Encore 1 compte à lire — tirez pour actualiser} other{Encore {count} comptes à lire — tirez pour actualiser}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Ajouter un compte",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adresse du serveur Xy",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

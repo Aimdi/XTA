@@ -125,6 +125,8 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginThreadsDirectBearer, '');
     await prefs.set(optionPluginThreadsDirectDeviceId, '');
     await prefs.set(optionPluginThreadsLikedPosts, '[]');
+    await prefs.set(optionPluginThreadsGuestLsd, '');
+    await prefs.set(optionPluginThreadsGuestLsdAt, '');
   }
 
   @override

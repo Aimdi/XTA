@@ -440,13 +440,21 @@
   "feed_issue_detected": "Feed-probleem gedetecteerd",
   "@feed_issue_detected": {},
   "feed_strip_add": "Tijdlijn toevoegen",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "Nog geen plugins om te pinnen. Open de winkel voor Reddit, Pixiv, Mastodon en meer.",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "Pin geïnstalleerde plugins naast Voor jou. Installeer meer via de pluginwinkel.",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "Plugin-tijdlijnen",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "Beschikbaar",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "Op deze balk",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "Van balk verwijderen",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "Deze tijdlijn is niet meer beschikbaar",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "Fold",
   "@filter_action_fold": {},
   "filter_action_hide": "Hide",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "Accounts",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, one{Nog 1 account te lezen — trek om te vernieuwen} other{Nog {count} accounts te lezen — trek om te vernieuwen}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "Account toevoegen",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Adres van de Xy-server",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }

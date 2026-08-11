@@ -440,13 +440,21 @@
   "feed_issue_detected": "Feed issue detected",
   "@feed_issue_detected": {},
   "feed_strip_add": "タイムラインを追加",
+  "@feed_strip_add": {},
   "feed_strip_add_empty": "まだ固定できるプラグインがありません。ストアで Reddit、Pixiv、Mastodon などをインストールしてください。",
+  "@feed_strip_add_empty": {},
   "feed_strip_add_intro": "インストール済みのプラグインを「おすすめ」の横に固定できます。ほかはプラグインストアから。",
+  "@feed_strip_add_intro": {},
   "feed_strip_add_title": "プラグインのタイムライン",
+  "@feed_strip_add_title": {},
   "feed_strip_available": "追加できます",
+  "@feed_strip_available": {},
   "feed_strip_pinned": "このバーに表示中",
+  "@feed_strip_pinned": {},
   "feed_strip_remove": "バーから外す",
+  "@feed_strip_remove": {},
   "feed_strip_unavailable": "このタイムラインはもう使えません",
+  "@feed_strip_unavailable": {},
   "filter_action_fold": "折りたたむ",
   "@filter_action_fold": {},
   "filter_action_hide": "非表示",
@@ -1539,6 +1547,14 @@
   "@plugin_threads_account_hint": {},
   "plugin_threads_accounts": "アカウント",
   "@plugin_threads_accounts": {},
+  "plugin_threads_accounts_pending": "{count, plural, other{未読のアカウントがあと {count} 件 — 引っ張って更新}}",
+  "@plugin_threads_accounts_pending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "plugin_threads_add_account": "アカウントを追加",
   "@plugin_threads_add_account": {},
   "plugin_threads_api_base": "Xy サーバーのアドレス",
@@ -2084,13 +2100,5 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {},
-  "@feed_strip_add": {},
-  "@feed_strip_add_empty": {},
-  "@feed_strip_add_intro": {},
-  "@feed_strip_add_title": {},
-  "@feed_strip_available": {},
-  "@feed_strip_pinned": {},
-  "@feed_strip_remove": {},
-  "@feed_strip_unavailable": {}
+  "@zen_mode_page_cap_description": {}
 }
