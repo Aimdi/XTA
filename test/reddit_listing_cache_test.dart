@@ -51,7 +51,7 @@ class _FakeRedditClient extends RedditClient {
     required String clientId,
     RedditSort sort = RedditSort.hot,
     RedditTimeFilter timeFilter = RedditTimeFilter.day,
-    int limit = 25,
+    int limit = kRedditListingPageSize,
     String? after,
     String? userToken,
     bool preferPublic = false,

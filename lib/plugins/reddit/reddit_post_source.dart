@@ -9,12 +9,6 @@ import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_cache.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
 
-/// How much of a subreddit one read asks for.
-///
-/// One number for every surface, because a page fetched for one of them is the
-/// page handed to the next; each shows as much of it as it has room for.
-const int kRedditListingPageSize = 15;
-
 /// Reddit's access tokens live an hour. Minting one is a request of its own, so
 /// it is kept for slightly less than that rather than paid for on every read.
 const Duration kRedditUserTokenTtl = Duration(minutes: 50);
@@ -179,7 +173,8 @@ class RedditPostSource {
 
   /// The token mint, reachable by a test without a live listing around it.
   @visibleForTesting
-  Future<String?> userAccessTokenForTest() => _userAccessToken(preferPublic: false);
+  Future<String?> userAccessTokenForTest() =>
+      _userAccessToken(preferPublic: false);
 
   Future<String?> _mintUserToken(String refreshToken) async {
     final clientId = prefs.get<String>(optionPluginRedditClientId) ?? '';

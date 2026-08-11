@@ -5,9 +5,9 @@ import 'package:xta/plugins/reddit/reddit_client.dart';
 /// What one cached listing is: a subreddit read in one sort order.
 ///
 /// The page size is deliberately not part of the key. Every surface asks for
-/// the same page and shows as much of it as it has room for, which is what lets
-/// the timeline's ten posts and the tab's fifteen be one request rather than
-/// two.
+/// the same page ([kRedditListingPageSize]) and shows as much of it as it has
+/// room for, which is what lets the home interleave and the Reddit tab share
+/// one request rather than two.
 typedef RedditListingKey = ({
   String subreddit,
   RedditSort sort,

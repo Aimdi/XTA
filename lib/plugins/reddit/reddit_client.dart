@@ -8,6 +8,14 @@ import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
 import 'package:xta/utils/json.dart';
 
+/// How many posts one subreddit listing page asks Reddit for.
+///
+/// One number for every surface, because a page fetched for one of them is the
+/// page handed to the next; each shows as much of it as it has room for.
+/// Reddit accepts up to 100; 50 fills a phone timeline without starving the
+/// account-free rate budget when several followed subs load at once.
+const int kRedditListingPageSize = 50;
+
 /// How a Reddit request failed, in terms the user can act on.
 enum RedditErrorKind {
   /// No client id stored yet.
@@ -732,7 +740,7 @@ class RedditClient {
     required String clientId,
     RedditSort sort = RedditSort.hot,
     RedditTimeFilter timeFilter = RedditTimeFilter.day,
-    int limit = 25,
+    int limit = kRedditListingPageSize,
     String? after,
     String? userToken,
     bool preferPublic = false,
@@ -1143,7 +1151,11 @@ class RedditClient {
 
   /// One account's posts. Comments on the same page have no title and are
   /// skipped by the listing parser, which is the behaviour we want here.
-  Future<RedditListing> fetchUserPosts(String user, {String? after}) async {
+  Future<RedditListing> fetchUserPosts(
+    String user, {
+    String? after,
+    int limit = kRedditListingPageSize,
+  }) async {
     final name = user
         .replaceFirst(RegExp(r'^/?u(?:ser)?/', caseSensitive: false), '')
         .trim();
@@ -1154,7 +1166,7 @@ class RedditClient {
     final body = await _scrape(
       Uri.parse('$_publicFallbackBase/user/$name/submitted').replace(
         queryParameters: {
-          'limit': '25',
+          'limit': '$limit',
           if (after != null && after.isNotEmpty) 'after': after,
         },
       ),
