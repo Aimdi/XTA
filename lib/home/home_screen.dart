@@ -425,15 +425,31 @@ class _ScaffoldWithBottomNavigationState
   Widget _buildScaffold(BuildContext context, L10n l10n) {
     final theme = Theme.of(context);
     final tokens = XLookTokens.maybeOf(context);
-    final pillFill = tokens == null
-        ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.88)
-        : (tokens.card == tokens.background
-              ? Color.alphaBlend(tokens.onBackground.withValues(alpha: 0.12), tokens.background)
-                    .withValues(alpha: 0.88)
-              : tokens.card.withValues(alpha: 0.88));
-    final pillBorder = (tokens?.border ?? theme.colorScheme.outlineVariant).withValues(alpha: 0.7);
-    final indicator = (tokens?.accent ?? theme.colorScheme.primary).withValues(alpha: 0.18);
     final showLabels = widget.prefs.get(optionShowNavigationLabels) == true;
+    final isDark = theme.brightness == Brightness.dark;
+
+    // X chrome: tight capsule, hairline edge, accent on the glyph — not a
+    // frosted iOS glass blob. Theme tokens drive the fill so Dim / Lights Out
+    // stay consistent with menus and sheets.
+    final Color pillFill;
+    final Color pillBorder;
+    final Color accent;
+    if (tokens != null) {
+      pillFill = xLookFloatingSurface(
+        tokens,
+      ).withValues(alpha: isDark ? 0.92 : 0.94);
+      pillBorder = tokens.border.withValues(alpha: isDark ? 0.55 : 0.9);
+      accent = tokens.accent;
+    } else {
+      pillFill = theme.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.94,
+      );
+      pillBorder = theme.colorScheme.outlineVariant.withValues(alpha: 0.7);
+      accent = theme.colorScheme.primary;
+    }
+
+    const radius = 24.0;
+    final barHeight = showLabels ? 60.0 : 56.0;
 
     return Scaffold(
       extendBody: true,
@@ -454,32 +470,34 @@ class _ScaffoldWithBottomNavigationState
       ),
       // Floating capsule: swipe still changes tab; the page itself never does.
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+        minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onHorizontalDragStart: (_) => _dragDistance = 0,
-          onHorizontalDragUpdate: (details) => _dragDistance += details.primaryDelta ?? 0,
-          onHorizontalDragEnd: (details) => _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
+          onHorizontalDragUpdate: (details) =>
+              _dragDistance += details.primaryDelta ?? 0,
+          onHorizontalDragEnd: (details) =>
+              _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(radius),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: theme.brightness == Brightness.dark ? 0.4 : 0.1),
-                  blurRadius: 28,
-                  offset: const Offset(0, 10),
+                  color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(radius),
               child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     color: pillFill,
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: pillBorder),
+                    borderRadius: BorderRadius.circular(radius),
+                    border: Border.all(color: pillBorder, width: 0.5),
                   ),
                   child: NavigationBar(
                     selectedIndex: _currentPage,
@@ -489,23 +507,43 @@ class _ScaffoldWithBottomNavigationState
                     shadowColor: Colors.transparent,
                     backgroundColor: Colors.transparent,
                     surfaceTintColor: Colors.transparent,
-                    indicatorColor: indicator,
-                    height: showLabels ? 68 : 60,
+                    // Accent lives on the icon / label (theme), not a tinted stadium.
+                    indicatorColor: Colors.transparent,
+                    overlayColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.pressed) ||
+                          states.contains(WidgetState.focused)) {
+                        return accent.withValues(alpha: 0.08);
+                      }
+                      if (states.contains(WidgetState.hovered)) {
+                        return accent.withValues(alpha: 0.04);
+                      }
+                      return Colors.transparent;
+                    }),
+                    height: barHeight,
                     destinations: widget.pages.asMap().entries.map((e) {
                       final index = e.key;
                       final page = e.value;
                       final isSelected = _currentPage == index;
-                      final scale = showLabels ? 1.0 : (isSelected ? 1.12 : 1.0);
+                      // Subtle lift only when labels are off — with labels the
+                      // bold weight + accent colour already mark the tab.
+                      final scale =
+                          (!showLabels && isSelected && tokens != null)
+                          ? 1.05
+                          : 1.0;
                       return NavigationDestination(
                         icon: AnimatedScale(
                           scale: scale,
-                          duration: Duration(milliseconds: tokens != null ? 220 : 0),
+                          duration: Duration(
+                            milliseconds: tokens != null ? 200 : 0,
+                          ),
                           curve: Curves.easeOutCubic,
                           child: page.icon,
                         ),
                         selectedIcon: AnimatedScale(
                           scale: scale,
-                          duration: Duration(milliseconds: tokens != null ? 220 : 0),
+                          duration: Duration(
+                            milliseconds: tokens != null ? 200 : 0,
+                          ),
                           curve: Curves.easeOutCubic,
                           child: page.selectedIcon,
                         ),
@@ -516,7 +554,9 @@ class _ScaffoldWithBottomNavigationState
                       if (index == _currentPage) {
                         final controller = _scrollControllers[_currentPage];
                         final atTop =
-                            controller == null || !controller.hasClients || controller.offset <= 0;
+                            controller == null ||
+                            !controller.hasClients ||
+                            controller.offset <= 0;
                         if (!atTop) {
                           await scrollToTop(context, controller);
                         } else if (widget.pages[index].id == 'trending') {

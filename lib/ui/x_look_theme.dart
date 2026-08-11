@@ -131,12 +131,12 @@ TextTheme _xLookTextTheme(Brightness brightness, Color onBg, Color secondary) {
 }
 
 /// The fill for a surface that floats above the page — a menu, a dialog, a
-/// sheet, a snackbar.
+/// sheet, a snackbar, the home nav pill.
 ///
 /// Lights Out makes card and background both pure black, so anything drawn on
 /// either would dissolve into the screen behind it. Lifting it a little keeps
 /// the edge readable without introducing Material's tonal wash.
-Color _floatingSurface(XLookTokens tokens) => tokens.card == tokens.background
+Color xLookFloatingSurface(XLookTokens tokens) => tokens.card == tokens.background
     ? Color.alphaBlend(tokens.onBackground.withValues(alpha: 0.10), tokens.background)
     : tokens.card;
 
@@ -209,7 +209,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     snackBarTheme: SnackBarThemeData(
       // Lights Out makes card and background both pure black, so a snackbar
       // drawn on either would be invisible against the screen behind it.
-      backgroundColor: _floatingSurface(tokens),
+      backgroundColor: xLookFloatingSurface(tokens),
       contentTextStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
       actionTextColor: tokens.accent,
       shape: RoundedRectangleBorder(
@@ -222,7 +222,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     // Left unset they were tinted like X but never shaped like it, which is
     // what made the menus and the settings panel read as a different app.
     popupMenuTheme: PopupMenuThemeData(
-      color: _floatingSurface(tokens),
+      color: xLookFloatingSurface(tokens),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -232,7 +232,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     ),
     menuTheme: MenuThemeData(
       style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(_floatingSurface(tokens)),
+        backgroundColor: WidgetStatePropertyAll(xLookFloatingSurface(tokens)),
         elevation: const WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -243,7 +243,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     dropdownMenuTheme: DropdownMenuThemeData(
       textStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
       menuStyle: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(_floatingSurface(tokens)),
+        backgroundColor: WidgetStatePropertyAll(xLookFloatingSurface(tokens)),
         elevation: const WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -252,7 +252,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
       ),
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: _floatingSurface(tokens),
+      backgroundColor: xLookFloatingSurface(tokens),
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -268,9 +268,9 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
       contentTextStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: _floatingSurface(tokens),
+      backgroundColor: xLookFloatingSurface(tokens),
       surfaceTintColor: Colors.transparent,
-      modalBackgroundColor: _floatingSurface(tokens),
+      modalBackgroundColor: xLookFloatingSurface(tokens),
       elevation: 0,
       modalElevation: 0,
       showDragHandle: true,
@@ -303,7 +303,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
-        color: _floatingSurface(tokens),
+        color: xLookFloatingSurface(tokens),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: tokens.border),
       ),
@@ -311,7 +311,7 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     ),
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
-      fillColor: tokens.card == tokens.background ? _floatingSurface(tokens) : tokens.card,
+      fillColor: tokens.card == tokens.background ? xLookFloatingSurface(tokens) : tokens.card,
       hintStyle: TextStyle(fontFamily: 'Inter', color: tokens.secondary),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24),
