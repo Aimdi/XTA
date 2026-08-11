@@ -204,7 +204,7 @@ bool pixivIsLimitPlaceholderUrl(String? url) {
 
 /// Whether the listing entry is a real, viewable work for this account.
 bool pixivIllustIsAccessible(Json illust) {
-  if (illust['visible'].raw == false) {
+  if (illust['visible'].boolean == false) {
     return false;
   }
   return !pixivIsLimitPlaceholderUrl(_firstImageUrl(illust));
