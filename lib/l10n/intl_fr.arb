@@ -891,6 +891,140 @@
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Impossible de récupérer la liste des extensions",
   "@plugin_catalogue_unavailable": {},
+  "plugin_booru_api_key": "Clé API",
+  "@plugin_booru_api_key": {},
+  "plugin_booru_api_key_help": "Facultatif — certains hôtes (Gelbooru, Danbooru) exigent une clé pour un accès fiable.",
+  "@plugin_booru_api_key_help": {},
+  "plugin_booru_card_title": "Booru n°{id}",
+  "@plugin_booru_card_title": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_description": "Parcourir les sites type Danbooru et Gelbooru — suivez des tags dans les groupes",
+  "@plugin_booru_description": {},
+  "plugin_booru_empty_following": "Suivez des tags depuis la recherche ou une publication pour remplir cet onglet",
+  "@plugin_booru_empty_following": {},
+  "plugin_booru_empty_following_posts": "Aucune publication récente pour vos tags suivis",
+  "@plugin_booru_empty_following_posts": {},
+  "plugin_booru_empty_latest": "Aucune publication — vérifiez l’hôte dans les réglages",
+  "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_search": "Aucune publication ne correspond à ces tags",
+  "@plugin_booru_empty_search": {},
+  "plugin_booru_engine": "Moteur d’API",
+  "@plugin_booru_engine": {},
+  "plugin_booru_engine_danbooru": "Danbooru",
+  "@plugin_booru_engine_danbooru": {},
+  "plugin_booru_engine_gelbooru": "Gelbooru v2",
+  "@plugin_booru_engine_gelbooru": {},
+  "plugin_booru_engine_moebooru": "Moebooru",
+  "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_follow_tag": "Suivre le tag",
+  "@plugin_booru_follow_tag": {},
+  "plugin_booru_followed": "Suivi de {tag}",
+  "@plugin_booru_followed": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_followed_tags": "Tags Booru",
+  "@plugin_booru_followed_tags": {},
+  "plugin_booru_host": "URL de l’hôte",
+  "@plugin_booru_host": {},
+  "plugin_booru_in_home_feed": "Afficher dans le fil d’accueil",
+  "@plugin_booru_in_home_feed": {},
+  "plugin_booru_in_home_feed_description": "Mélange les publications des tags suivis dans Abonnements et Pour vous",
+  "@plugin_booru_in_home_feed_description": {},
+  "plugin_booru_load_error": "Impossible de charger les publications Booru",
+  "@plugin_booru_load_error": {},
+  "plugin_booru_login": "Identifiant / id utilisateur",
+  "@plugin_booru_login": {},
+  "plugin_booru_login_help": "Facultatif — identifiant ou id numérique selon l’hôte.",
+  "@plugin_booru_login_help": {},
+  "plugin_booru_max_rating": "Classification maximale",
+  "@plugin_booru_max_rating": {},
+  "plugin_booru_open_file": "Ouvrir le fichier complet",
+  "@plugin_booru_open_file": {},
+  "plugin_booru_open_source": "Ouvrir la source",
+  "@plugin_booru_open_source": {},
+  "plugin_booru_rating_explicit": "Explicite",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "Général",
+  "@plugin_booru_rating_general": {},
+  "plugin_booru_rating_label": "Classification : {code}",
+  "@plugin_booru_rating_label": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_rating_questionable": "Douteux",
+  "@plugin_booru_rating_questionable": {},
+  "plugin_booru_rating_sensitive": "Sensible",
+  "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_score": "Score {score}",
+  "@plugin_booru_score": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_search_hint": "Tags, séparés par des espaces",
+  "@plugin_booru_search_hint": {},
+  "plugin_booru_section_content": "Contenu",
+  "@plugin_booru_section_content": {},
+  "plugin_booru_section_credentials": "Identifiants",
+  "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_host": "Hôte",
+  "@plugin_booru_section_host": {},
+  "plugin_booru_settings_title": "Réglages Booru",
+  "@plugin_booru_settings_title": {},
+  "plugin_booru_show_tab": "Afficher l’onglet Booru",
+  "@plugin_booru_show_tab": {},
+  "plugin_booru_show_tab_description": "Ajoute Booru à la navigation du bas lorsque le module est activé",
+  "@plugin_booru_show_tab_description": {},
+  "plugin_booru_source": "Source",
+  "@plugin_booru_source": {},
+  "plugin_booru_tab_following": "Suivis",
+  "@plugin_booru_tab_following": {},
+  "plugin_booru_tab_latest": "Récents",
+  "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_subtitle": "tag:{name}",
+  "@plugin_booru_tag_subtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_test_connection": "Tester la connexion",
+  "@plugin_booru_test_connection": {},
+  "plugin_booru_test_failed": "Échec du test Booru : {detail}",
+  "@plugin_booru_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_test_ok": "L’hôte a répondu ({count} échantillon)",
+  "@plugin_booru_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_title": "Booru",
+  "@plugin_booru_title": {},
+  "plugin_booru_video": "Vidéo",
+  "@plugin_booru_video": {},
   "plugin_category_art": "Art",
   "@plugin_category_art": {},
   "plugin_category_bookmarks": "Signets",

@@ -190,7 +190,8 @@ const optionPluginSubstackPublications = 'plugin.substack.publications';
 const optionPluginSubstackReadIds = 'plugin.substack.read_ids';
 const optionPluginSubstackLikedPosts = 'plugin.substack.liked_posts';
 const optionPluginSubstackSavedPosts = 'plugin.substack.saved_posts';
-const optionPluginSubstackPinnedPublications = 'plugin.substack.pinned_publications';
+const optionPluginSubstackPinnedPublications =
+    'plugin.substack.pinned_publications';
 const substackFeedPageSize = 8;
 const substackReadIdsCap = 400;
 const substackLikedPostsCap = 400;
@@ -307,6 +308,18 @@ const optionPluginPixivMutedAuthors = 'plugin.pixiv.muted_authors';
 const optionPluginPixivMutedTags = 'plugin.pixiv.muted_tags';
 const optionPluginPixivMutedIllusts = 'plugin.pixiv.muted_illusts';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
+
+const pluginIdBooru = 'booru';
+const optionPluginBooruEnabled = 'plugin.booru.enabled';
+const optionPluginBooruShowTab = 'plugin.booru.show_tab';
+const optionPluginBooruEngine = 'plugin.booru.engine';
+const optionPluginBooruHost = 'plugin.booru.host';
+const optionPluginBooruPreset = 'plugin.booru.preset';
+const optionPluginBooruLogin = 'plugin.booru.login';
+const optionPluginBooruApiKey = 'plugin.booru.api_key';
+const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
+const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
+const optionPluginBooruSearchHistory = 'plugin.booru.search_history';
 
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.

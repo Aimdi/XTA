@@ -891,6 +891,140 @@
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "无法获取插件列表",
   "@plugin_catalogue_unavailable": {},
+  "plugin_booru_api_key": "API 密钥",
+  "@plugin_booru_api_key": {},
+  "plugin_booru_api_key_help": "可选。部分站点（Gelbooru、Danbooru）需要密钥才能稳定访问。",
+  "@plugin_booru_api_key_help": {},
+  "plugin_booru_card_title": "Booru #{id}",
+  "@plugin_booru_card_title": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_description": "浏览 Danbooru / Gelbooru 类站点，将标签加入分组",
+  "@plugin_booru_description": {},
+  "plugin_booru_empty_following": "从搜索或帖子关注标签以填充此页",
+  "@plugin_booru_empty_following": {},
+  "plugin_booru_empty_following_posts": "关注的标签暂无近期帖子",
+  "@plugin_booru_empty_following_posts": {},
+  "plugin_booru_empty_latest": "暂无帖子——请在设置中检查站点",
+  "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_search": "没有匹配这些标签的帖子",
+  "@plugin_booru_empty_search": {},
+  "plugin_booru_engine": "API 引擎",
+  "@plugin_booru_engine": {},
+  "plugin_booru_engine_danbooru": "Danbooru",
+  "@plugin_booru_engine_danbooru": {},
+  "plugin_booru_engine_gelbooru": "Gelbooru v2",
+  "@plugin_booru_engine_gelbooru": {},
+  "plugin_booru_engine_moebooru": "Moebooru",
+  "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_follow_tag": "关注标签",
+  "@plugin_booru_follow_tag": {},
+  "plugin_booru_followed": "已关注 {tag}",
+  "@plugin_booru_followed": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_followed_tags": "Booru 标签",
+  "@plugin_booru_followed_tags": {},
+  "plugin_booru_host": "站点 URL",
+  "@plugin_booru_host": {},
+  "plugin_booru_in_home_feed": "显示在主页时间线",
+  "@plugin_booru_in_home_feed": {},
+  "plugin_booru_in_home_feed_description": "将已关注标签的帖子混入「正在关注」和「为你推荐」",
+  "@plugin_booru_in_home_feed_description": {},
+  "plugin_booru_load_error": "无法加载 Booru 帖子",
+  "@plugin_booru_load_error": {},
+  "plugin_booru_login": "登录名 / 用户 ID",
+  "@plugin_booru_login": {},
+  "plugin_booru_login_help": "可选。视站点而定，可能是登录名或数字 ID。",
+  "@plugin_booru_login_help": {},
+  "plugin_booru_max_rating": "最高分级",
+  "@plugin_booru_max_rating": {},
+  "plugin_booru_open_file": "打开原文件",
+  "@plugin_booru_open_file": {},
+  "plugin_booru_open_source": "打开来源",
+  "@plugin_booru_open_source": {},
+  "plugin_booru_rating_explicit": "限制级",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "一般",
+  "@plugin_booru_rating_general": {},
+  "plugin_booru_rating_label": "分级：{code}",
+  "@plugin_booru_rating_label": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_rating_questionable": "可疑",
+  "@plugin_booru_rating_questionable": {},
+  "plugin_booru_rating_sensitive": "敏感",
+  "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_score": "分数 {score}",
+  "@plugin_booru_score": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_search_hint": "标签，以空格分隔",
+  "@plugin_booru_search_hint": {},
+  "plugin_booru_section_content": "内容",
+  "@plugin_booru_section_content": {},
+  "plugin_booru_section_credentials": "凭据",
+  "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_host": "站点",
+  "@plugin_booru_section_host": {},
+  "plugin_booru_settings_title": "Booru 设置",
+  "@plugin_booru_settings_title": {},
+  "plugin_booru_show_tab": "显示 Booru 标签页",
+  "@plugin_booru_show_tab": {},
+  "plugin_booru_show_tab_description": "启用插件后，在底部导航加入 Booru",
+  "@plugin_booru_show_tab_description": {},
+  "plugin_booru_source": "来源",
+  "@plugin_booru_source": {},
+  "plugin_booru_tab_following": "关注",
+  "@plugin_booru_tab_following": {},
+  "plugin_booru_tab_latest": "最新",
+  "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_subtitle": "tag:{name}",
+  "@plugin_booru_tag_subtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_test_connection": "测试连接",
+  "@plugin_booru_test_connection": {},
+  "plugin_booru_test_failed": "Booru 测试失败：{detail}",
+  "@plugin_booru_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_test_ok": "站点已响应（样例 {count}）",
+  "@plugin_booru_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_title": "Booru",
+  "@plugin_booru_title": {},
+  "plugin_booru_video": "视频",
+  "@plugin_booru_video": {},
   "plugin_category_art": "艺术",
   "@plugin_category_art": {},
   "plugin_category_bookmarks": "书签",

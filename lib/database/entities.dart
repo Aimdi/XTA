@@ -623,6 +623,47 @@ class RedditSubscription extends Subscription {
   }
 }
 
+/// A followed booru tag.
+class BooruSubscription extends Subscription {
+  BooruSubscription({
+    required super.id,
+    required super.name,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: null);
+
+  factory BooruSubscription.fromMap(Map<String, Object?> map) {
+    return BooruSubscription(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BooruSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
 /// A watched ticker.
 ///
 /// The symbol carries the display name, so a watchlist entry can be a group

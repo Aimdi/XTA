@@ -48,6 +48,8 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
@@ -545,6 +547,16 @@ Future<void> main() async {
       optionPluginPixivMutedTags: '[]',
       optionPluginPixivMutedIllusts: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginBooruEnabled: false,
+      optionPluginBooruShowTab: true,
+      optionPluginBooruEngine: 'danbooru',
+      optionPluginBooruHost: 'https://danbooru.donmai.us',
+      optionPluginBooruPreset: 'danbooru',
+      optionPluginBooruLogin: '',
+      optionPluginBooruApiKey: '',
+      optionPluginBooruMaxRating: 'g',
+      optionPluginBooruInHomeFeed: false,
+      optionPluginBooruSearchHistory: '[]',
       optionPluginThreadsDirectCookies: '',
       optionPluginThreadsDirectBearer: '',
       optionPluginThreadsDirectDeviceId: '',
@@ -706,6 +718,8 @@ Future<void> main() async {
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistoryStore(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
+    final booruClient = BooruClient(prefService);
+    final booruTags = BooruTagsStore();
 
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
@@ -750,6 +764,8 @@ Future<void> main() async {
         pixivMute.load(),
         pixivSearchHistory.load(),
       ],
+      if (prefService.get<bool>(optionPluginBooruEnabled) == true)
+        booruTags.load(),
     ]);
 
     runApp(
@@ -836,6 +852,8 @@ Future<void> main() async {
             Provider(create: (_) => pixivMute),
             Provider(create: (_) => pixivSearchHistory),
             Provider(create: (_) => pixivFeed),
+            Provider(create: (_) => booruClient),
+            Provider(create: (_) => booruTags),
             ChangeNotifierProvider(
               create: (_) =>
                   VideoContextState(prefService.get(optionMediaDefaultMute)),

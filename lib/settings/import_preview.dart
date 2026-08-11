@@ -12,7 +12,10 @@ class ImportChoice {
 
 /// Shows what a backup would restore and where it came from. Returns null when
 /// the reader backs out, so nothing is written until they say yes.
-Future<ImportChoice?> showImportPreview(BuildContext context, SettingsData data) {
+Future<ImportChoice?> showImportPreview(
+  BuildContext context,
+  SettingsData data,
+) {
   return showDialog<ImportChoice>(
     context: context,
     builder: (context) => _ImportPreview(data: data),
@@ -47,15 +50,27 @@ class _ImportPreviewState extends State<_ImportPreview> {
               Text(origin, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 12),
             ],
-            ...counts.entries.map((entry) => _CountRow(label: _label(context, entry.key), count: entry.value)),
-            if (counts.containsKey(BackupCategory.readPositions)) _readPositions(context),
+            ...counts.entries.map(
+              (entry) => _CountRow(
+                label: _label(context, entry.key),
+                count: entry.value,
+              ),
+            ),
+            if (counts.containsKey(BackupCategory.readPositions))
+              _readPositions(context),
           ],
         ),
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(L10n.of(context).cancel)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(L10n.of(context).cancel),
+        ),
         FilledButton(
-          onPressed: () => Navigator.pop(context, ImportChoice(includeReadPositions: _includeReadPositions)),
+          onPressed: () => Navigator.pop(
+            context,
+            ImportChoice(includeReadPositions: _includeReadPositions),
+          ),
           child: Text(L10n.of(context).import),
         ),
       ],
@@ -68,7 +83,8 @@ class _ImportPreviewState extends State<_ImportPreview> {
       value: _includeReadPositions,
       title: Text(L10n.of(context).import_read_positions),
       subtitle: Text(L10n.of(context).import_read_positions_description),
-      onChanged: (value) => setState(() => _includeReadPositions = value == true),
+      onChanged: (value) =>
+          setState(() => _includeReadPositions = value == true),
     );
   }
 }
@@ -105,29 +121,36 @@ String? _origin(BuildContext context, SettingsData data) {
 
   final locale = Localizations.localeOf(context).toString();
 
-  return L10n.of(context).import_preview_from(version, DateFormat.yMd(locale).add_Hm().format(exportedAt));
+  return L10n.of(context).import_preview_from(
+    version,
+    DateFormat.yMd(locale).add_Hm().format(exportedAt),
+  );
 }
 
-String _label(BuildContext context, BackupCategory category) => switch (category) {
-  BackupCategory.settings => L10n.of(context).settings,
-  BackupCategory.subscriptions => L10n.of(context).subscriptions,
-  BackupCategory.substack => L10n.of(context).plugin_substack_title,
-  BackupCategory.subreddits => L10n.of(context).plugin_reddit_search_subreddits,
-  BackupCategory.stocks => L10n.of(context).plugin_stocks_title,
-  BackupCategory.threads => L10n.of(context).plugin_threads_title,
-  BackupCategory.bluesky => L10n.of(context).plugin_bluesky_title,
-  BackupCategory.mastodon => L10n.of(context).plugin_mastodon_title,
-  BackupCategory.groups => L10n.of(context).groups,
-  BackupCategory.groupMembers => L10n.of(context).group_members,
-  BackupCategory.savedPosts => L10n.of(context).saved,
-  BackupCategory.folders => L10n.of(context).folders,
-  BackupCategory.likedPosts => L10n.of(context).favorites,
-  BackupCategory.filters => L10n.of(context).filters,
-  BackupCategory.readPositions => L10n.of(context).reading_positions,
-  BackupCategory.upvotes => L10n.of(context).plugin_reddit_upvotes,
-  BackupCategory.threadsLikes => L10n.of(context).plugin_threads_liked,
-  BackupCategory.blueskyLikes => L10n.of(context).plugin_bluesky_liked,
-  BackupCategory.accounts => L10n.of(context).account,
-  BackupCategory.profileNotes => L10n.of(context).profile_note_title,
-  BackupCategory.antennas => L10n.of(context).antenna_title,
-};
+String _label(BuildContext context, BackupCategory category) =>
+    switch (category) {
+      BackupCategory.settings => L10n.of(context).settings,
+      BackupCategory.subscriptions => L10n.of(context).subscriptions,
+      BackupCategory.substack => L10n.of(context).plugin_substack_title,
+      BackupCategory.subreddits => L10n.of(
+        context,
+      ).plugin_reddit_search_subreddits,
+      BackupCategory.stocks => L10n.of(context).plugin_stocks_title,
+      BackupCategory.threads => L10n.of(context).plugin_threads_title,
+      BackupCategory.bluesky => L10n.of(context).plugin_bluesky_title,
+      BackupCategory.mastodon => L10n.of(context).plugin_mastodon_title,
+      BackupCategory.booruTags => L10n.of(context).plugin_booru_followed_tags,
+      BackupCategory.groups => L10n.of(context).groups,
+      BackupCategory.groupMembers => L10n.of(context).group_members,
+      BackupCategory.savedPosts => L10n.of(context).saved,
+      BackupCategory.folders => L10n.of(context).folders,
+      BackupCategory.likedPosts => L10n.of(context).favorites,
+      BackupCategory.filters => L10n.of(context).filters,
+      BackupCategory.readPositions => L10n.of(context).reading_positions,
+      BackupCategory.upvotes => L10n.of(context).plugin_reddit_upvotes,
+      BackupCategory.threadsLikes => L10n.of(context).plugin_threads_liked,
+      BackupCategory.blueskyLikes => L10n.of(context).plugin_bluesky_liked,
+      BackupCategory.accounts => L10n.of(context).account,
+      BackupCategory.profileNotes => L10n.of(context).profile_note_title,
+      BackupCategory.antennas => L10n.of(context).antenna_title,
+    };

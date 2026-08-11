@@ -891,6 +891,140 @@
   "@plugin_catalogue_cached": {},
   "plugin_catalogue_unavailable": "Seznam pluginů se nepodařilo načíst",
   "@plugin_catalogue_unavailable": {},
+  "plugin_booru_api_key": "API key",
+  "@plugin_booru_api_key": {},
+  "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
+  "@plugin_booru_api_key_help": {},
+  "plugin_booru_card_title": "Booru #{id}",
+  "@plugin_booru_card_title": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
+  "@plugin_booru_description": {},
+  "plugin_booru_empty_following": "Follow tags from search or a post to fill this tab",
+  "@plugin_booru_empty_following": {},
+  "plugin_booru_empty_following_posts": "No recent posts for your followed tags",
+  "@plugin_booru_empty_following_posts": {},
+  "plugin_booru_empty_latest": "No posts yet — check the host in settings",
+  "@plugin_booru_empty_latest": {},
+  "plugin_booru_empty_search": "No posts matched those tags",
+  "@plugin_booru_empty_search": {},
+  "plugin_booru_engine": "API engine",
+  "@plugin_booru_engine": {},
+  "plugin_booru_engine_danbooru": "Danbooru",
+  "@plugin_booru_engine_danbooru": {},
+  "plugin_booru_engine_gelbooru": "Gelbooru v2",
+  "@plugin_booru_engine_gelbooru": {},
+  "plugin_booru_engine_moebooru": "Moebooru",
+  "@plugin_booru_engine_moebooru": {},
+  "plugin_booru_follow_tag": "Follow tag",
+  "@plugin_booru_follow_tag": {},
+  "plugin_booru_followed": "Following {tag}",
+  "@plugin_booru_followed": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_followed_tags": "Booru tags",
+  "@plugin_booru_followed_tags": {},
+  "plugin_booru_host": "Host URL",
+  "@plugin_booru_host": {},
+  "plugin_booru_in_home_feed": "Show in the home timeline",
+  "@plugin_booru_in_home_feed": {},
+  "plugin_booru_in_home_feed_description": "Mixes posts from followed tags into Following and For you",
+  "@plugin_booru_in_home_feed_description": {},
+  "plugin_booru_load_error": "Unable to load Booru posts",
+  "@plugin_booru_load_error": {},
+  "plugin_booru_login": "Login / user id",
+  "@plugin_booru_login": {},
+  "plugin_booru_login_help": "Optional account login or numeric user id, depending on the host.",
+  "@plugin_booru_login_help": {},
+  "plugin_booru_max_rating": "Maximum rating",
+  "@plugin_booru_max_rating": {},
+  "plugin_booru_open_file": "Open full file",
+  "@plugin_booru_open_file": {},
+  "plugin_booru_open_source": "Open source",
+  "@plugin_booru_open_source": {},
+  "plugin_booru_rating_explicit": "Explicit",
+  "@plugin_booru_rating_explicit": {},
+  "plugin_booru_rating_general": "General",
+  "@plugin_booru_rating_general": {},
+  "plugin_booru_rating_label": "Rating: {code}",
+  "@plugin_booru_rating_label": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_rating_questionable": "Questionable",
+  "@plugin_booru_rating_questionable": {},
+  "plugin_booru_rating_sensitive": "Sensitive",
+  "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_score": "Score {score}",
+  "@plugin_booru_score": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_search_hint": "Tags, separated by spaces",
+  "@plugin_booru_search_hint": {},
+  "plugin_booru_section_content": "Content",
+  "@plugin_booru_section_content": {},
+  "plugin_booru_section_credentials": "Credentials",
+  "@plugin_booru_section_credentials": {},
+  "plugin_booru_section_host": "Host",
+  "@plugin_booru_section_host": {},
+  "plugin_booru_settings_title": "Booru settings",
+  "@plugin_booru_settings_title": {},
+  "plugin_booru_show_tab": "Show Booru tab",
+  "@plugin_booru_show_tab": {},
+  "plugin_booru_show_tab_description": "Adds Booru to the bottom navigation when the plugin is enabled",
+  "@plugin_booru_show_tab_description": {},
+  "plugin_booru_source": "Source",
+  "@plugin_booru_source": {},
+  "plugin_booru_tab_following": "Following",
+  "@plugin_booru_tab_following": {},
+  "plugin_booru_tab_latest": "Latest",
+  "@plugin_booru_tab_latest": {},
+  "plugin_booru_tag_subtitle": "tag:{name}",
+  "@plugin_booru_tag_subtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_test_connection": "Test connection",
+  "@plugin_booru_test_connection": {},
+  "plugin_booru_test_failed": "Booru test failed: {detail}",
+  "@plugin_booru_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_booru_test_ok": "Host answered ({count} sample)",
+  "@plugin_booru_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_booru_title": "Booru",
+  "@plugin_booru_title": {},
+  "plugin_booru_video": "Video",
+  "@plugin_booru_video": {},
   "plugin_category_art": "Umění",
   "@plugin_category_art": {},
   "plugin_category_bookmarks": "Záložky",
