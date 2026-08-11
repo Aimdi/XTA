@@ -637,10 +637,11 @@ Future<void> main() async {
 
     var feedSessionCache = FeedSessionCache();
     // Registration order matters: invalidateAll must run before any
-    // GroupFeedShell reload listener, so by the time the shell remounts the
-    // body via KeyedSubtree, the inner feed reads fresh controllers from the
-    // cache. LinkedHashMap iterates in insertion order, and registering here
-    // (before any shell exists) guarantees we win.
+    // GroupFeedShell reload listener. Open feeds no longer remount on
+    // membership change (they soft-update in place), but clearing the cache
+    // first still keeps a later remount or revisit from reusing a controller
+    // built for the old member set. LinkedHashMap iterates in insertion order,
+    // and registering here (before any shell exists) guarantees we win.
     groupsModel.addReloadListener(
       'FeedSessionCache',
       feedSessionCache.invalidateAll,

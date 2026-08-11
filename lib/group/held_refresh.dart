@@ -7,6 +7,8 @@
 /// moment the reader is back where the jump costs them nothing.
 library;
 
+import 'package:xta/constants.dart';
+
 class HeldRefresh {
   bool _pending = false;
 
@@ -37,4 +39,22 @@ class HeldRefresh {
     _pending = false;
     return true;
   }
+}
+
+/// Whether a membership-driven refresh should run immediately.
+///
+/// [pixels] null means the scroll position is temporarily unavailable
+/// (NestedScrollView attach churn when a sheet closes). Prefer
+/// [lastKnownAtTop] over treating null as the top — that mis-read is why
+/// adding a member while scrolled mid-timeline wiped the list as soon as the
+/// membership sheet closed.
+bool feedRefreshAtTop({
+  required double? pixels,
+  required bool lastKnownAtTop,
+  double threshold = feedReadPositionTopThresholdPx,
+}) {
+  if (pixels == null) {
+    return lastKnownAtTop;
+  }
+  return pixels <= threshold;
 }

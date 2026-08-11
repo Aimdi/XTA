@@ -74,80 +74,36 @@ class GroupModel extends Store<SubscriptionGroupGet> {
         ),
       );
 
-  Future<void> loadGroup() async {
-    await execute(() async {
-      var database = await Repository.readOnly();
+  Future<void> loadGroup({bool showLoading = true}) async {
+    // Soft reloads (membership change while the feed is open) must not flip
+    // Triple into loading — ScopedBuilder.transition would swap the timeline
+    // for a skeleton and wipe scroll. First open still uses execute().
+    if (!showLoading) {
+      update(await _readGroup());
+      return;
+    }
+    await execute(_readGroup);
+  }
 
-      var group = (await database.query(
-        tableSubscriptionGroup,
-        where: 'id = ?',
-        whereArgs: [id],
-      )).first;
+  Future<SubscriptionGroupGet> _readGroup() async {
+    var database = await Repository.readOnly();
 
-      if (id == '-1') {
-        var subscriptions = (await database.query(
-          tableSubscription,
-        )).map((e) => UserSubscription.fromMap(e)).toList(growable: false);
+    var group = (await database.query(
+      tableSubscriptionGroup,
+      where: 'id = ?',
+      whereArgs: [id],
+    )).first;
 
-        return SubscriptionGroupGet(
-          id: '-1',
-          name: 'All',
-          icon: group['icon'] as String,
-          subscriptions: subscriptions,
-          includeReplies: _includeOverride(group['include_replies']),
-          includeRetweets: _includeOverride(group['include_retweets']),
-          popular: group['popular'] == 1,
-          custom: group['custom'] == 1,
-          contentFilter:
-              group['content_filter'] as String? ?? contentFilterDefault,
-          minLikes: (group['min_likes'] as int?) ?? 0,
-          minRetweets: (group['min_retweets'] as int?) ?? 0,
-          mutedKeywords: parseMutedKeywordsStored(
-            group['muted_keywords'] as String?,
-          ),
-        );
-      }
+    if (id == '-1') {
+      var subscriptions = (await database.query(
+        tableSubscription,
+      )).map((e) => UserSubscription.fromMap(e)).toList(growable: false);
 
-      // A group's feed is its own members plus everything nested inside it, so
-      // the membership queries ask for a set of group ids rather than one — and
-      // reading several groups together is the same question asked of more
-      // roots, which is why it costs nothing here.
-      final parents = await readGroupParents(database);
-      final ids = {
-        ...groupAndDescendants(id, parents),
-        for (final other in alsoRead) ...groupAndDescendants(other, parents),
-      }.toList(growable: false);
-      final placeholders = List.filled(ids.length, '?').join(', ');
-
-      // The membership queries are independent of each other; issued together
-      // instead of one after another, since this runs on every shell mount and
-      // every debounced reload.
-      String membership(String table) =>
-          'SELECT DISTINCT s.* FROM $table s LEFT JOIN $tableSubscriptionGroupMember sgm ON sgm.profile_id = s.id WHERE sgm.group_id IN ($placeholders) ORDER BY s.id';
-
-      // The X tables, then every plugin that says its followed accounts are
-      // subscriptions — read from the registry rather than named here.
-      final sources = subscriptionSources;
-      final rows = await Future.wait([
-        database.rawQuery(membership(tableSearchSubscription), ids),
-        database.rawQuery(membership(tableSubscription), ids),
-        for (final source in sources)
-          database.rawQuery(membership(source.subscriptionTable), ids),
-      ]);
-
-      final members = <Subscription>[
-        ...rows[1].map(UserSubscription.fromMap),
-        ...rows[0].map(SearchSubscription.fromMap),
-        for (final (index, source) in sources.indexed)
-          ...rows[index + 2].map(source.subscriptionFromMap),
-      ];
-
-      // TODO: Factory
       return SubscriptionGroupGet(
-        id: group['id'] as String,
-        name: group['name'] as String,
+        id: '-1',
+        name: 'All',
         icon: group['icon'] as String,
-        subscriptions: members,
+        subscriptions: subscriptions,
         includeReplies: _includeOverride(group['include_replies']),
         includeRetweets: _includeOverride(group['include_retweets']),
         popular: group['popular'] == 1,
@@ -160,7 +116,59 @@ class GroupModel extends Store<SubscriptionGroupGet> {
           group['muted_keywords'] as String?,
         ),
       );
-    });
+    }
+
+    // A group's feed is its own members plus everything nested inside it, so
+    // the membership queries ask for a set of group ids rather than one — and
+    // reading several groups together is the same question asked of more
+    // roots, which is why it costs nothing here.
+    final parents = await readGroupParents(database);
+    final ids = {
+      ...groupAndDescendants(id, parents),
+      for (final other in alsoRead) ...groupAndDescendants(other, parents),
+    }.toList(growable: false);
+    final placeholders = List.filled(ids.length, '?').join(', ');
+
+    // The membership queries are independent of each other; issued together
+    // instead of one after another, since this runs on every shell mount and
+    // every debounced reload.
+    String membership(String table) =>
+        'SELECT DISTINCT s.* FROM $table s LEFT JOIN $tableSubscriptionGroupMember sgm ON sgm.profile_id = s.id WHERE sgm.group_id IN ($placeholders) ORDER BY s.id';
+
+    // The X tables, then every plugin that says its followed accounts are
+    // subscriptions — read from the registry rather than named here.
+    final sources = subscriptionSources;
+    final rows = await Future.wait([
+      database.rawQuery(membership(tableSearchSubscription), ids),
+      database.rawQuery(membership(tableSubscription), ids),
+      for (final source in sources)
+        database.rawQuery(membership(source.subscriptionTable), ids),
+    ]);
+
+    final members = <Subscription>[
+      ...rows[1].map(UserSubscription.fromMap),
+      ...rows[0].map(SearchSubscription.fromMap),
+      for (final (index, source) in sources.indexed)
+        ...rows[index + 2].map(source.subscriptionFromMap),
+    ];
+
+    // TODO: Factory
+    return SubscriptionGroupGet(
+      id: group['id'] as String,
+      name: group['name'] as String,
+      icon: group['icon'] as String,
+      subscriptions: members,
+      includeReplies: _includeOverride(group['include_replies']),
+      includeRetweets: _includeOverride(group['include_retweets']),
+      popular: group['popular'] == 1,
+      custom: group['custom'] == 1,
+      contentFilter: group['content_filter'] as String? ?? contentFilterDefault,
+      minLikes: (group['min_likes'] as int?) ?? 0,
+      minRetweets: (group['min_retweets'] as int?) ?? 0,
+      mutedKeywords: parseMutedKeywordsStored(
+        group['muted_keywords'] as String?,
+      ),
+    );
   }
 
   // Reads the stored per-group override: null (unset) means "follow the global

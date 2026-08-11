@@ -15,7 +15,6 @@ import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
-import 'package:xta/group/feed_rules.dart';
 
 class GroupFeedShell extends StatefulWidget {
   final ScrollController scrollController;
@@ -37,9 +36,9 @@ class GroupFeedShell extends StatefulWidget {
   /// default back button.
   final Widget? leading;
   // Whether the body's feed keeps its PagingController in the FeedSessionCache.
-  // Only then does a subscription change require remounting the body (to drop
-  // the just-invalidated cached controller); other feeds refresh on their own
-  // when their group state actually changes.
+  // Kept for callers that pass a cache key; membership reloads no longer remount
+  // the body (that handed the remounted feed an empty controller after
+  // invalidateAll). SubscriptionGroupFeed + HeldRefresh update in place.
   final bool usesFeedCache;
 
   const GroupFeedShell({
@@ -59,7 +58,8 @@ class GroupFeedShell extends StatefulWidget {
   State<GroupFeedShell> createState() => _GroupFeedShellState();
 }
 
-class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAliveClientMixin<GroupFeedShell> {
+class _GroupFeedShellState extends State<GroupFeedShell>
+    with AutomaticKeepAliveClientMixin<GroupFeedShell> {
   late GroupModel _groupModel;
   final FeedRefreshController _feedRefreshController = FeedRefreshController();
   int _refreshCounter = 0;
@@ -69,7 +69,8 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
   SubscriptionsModel? _subscriptionsModel;
   GroupsModel? _groupsModel;
 
-  late final String _callbackKey = 'GroupFeedShell-${widget.groupId}-${identityHashCode(this)}';
+  late final String _callbackKey =
+      'GroupFeedShell-${widget.groupId}-${identityHashCode(this)}';
 
   @override
   bool get wantKeepAlive => true;
@@ -111,7 +112,8 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
     super.didChangeDependencies();
     final newSubs = context.read<SubscriptionsModel>();
     final newGroups = context.read<GroupsModel>();
-    if (!identical(newSubs, _subscriptionsModel) || !identical(newGroups, _groupsModel)) {
+    if (!identical(newSubs, _subscriptionsModel) ||
+        !identical(newGroups, _groupsModel)) {
       _subscriptionsModel?.removeReloadListener(_callbackKey);
       _groupsModel?.removeReloadListener(_callbackKey);
       _subscriptionsModel = newSubs;
@@ -130,37 +132,18 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
     }
   }
 
-  // What the feed actually shows; a reload only warrants remounting the body
-  // when this changes, otherwise following someone unrelated would needlessly
-  // reload the open timeline.
-  String _fingerprint(SubscriptionGroupGet group) {
-    // Sorted, because what the feed shows is the *set* of members and not the
-    // order a query happened to return them in. Hashing them unsorted is why
-    // adding someone to a group made the timeline reset over and over: the
-    // membership queries have no ORDER BY, so SQLite is free to hand back the
-    // same members in a different order once the table has changed under it,
-    // and every later reload then looked like a different group.
-    final members = (group.subscriptions.map((s) => '${s.id}:${s.inFeed}').toList()..sort()).join(',');
-    return '$members|${group.includeReplies}|${group.includeRetweets}|${group.popular}|${group.custom}|${feedRulesOf(group).cacheKey}';
-  }
-
   // Triggered when subscriptions or group memberships change. A single user
   // action can fire this several times in a row (subscriptions and groups both
-  // reload), so the reaction is debounced into one refresh. The body is only
-  // remounted for cache-backed feeds whose content actually changed; everything
-  // else just reloads its group state and the feed decides on its own.
+  // reload), so the reaction is debounced into one soft reload. The feed body
+  // stays mounted: remounting it after FeedSessionCache.invalidateAll used to
+  // hand the new body an empty controller, which is why adding someone to a
+  // group reset a scrolled timeline. SubscriptionGroupFeed.didUpdateWidget +
+  // HeldRefresh already incorporate membership changes without that jump.
   void _onReload() {
     _reloadDebounce?.cancel();
     _reloadDebounce = Timer(const Duration(milliseconds: 150), () async {
       if (!mounted) return;
-      final before = _fingerprint(_groupModel.state);
-      await _groupModel.loadGroup();
-      if (!mounted) return;
-      setState(() {
-        if (widget.usesFeedCache && _fingerprint(_groupModel.state) != before) {
-          _refreshCounter++;
-        }
-      });
+      await _groupModel.loadGroup(showLoading: false);
     });
   }
 
@@ -182,7 +165,7 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
         mainAxisSize: MainAxisSize.min,
         children: [
           _GroupIdentityRow(model: _groupModel, groupId: widget.groupId),
-          if (inner != null) inner,
+          ?inner,
           tweetHairlineDivider(context),
         ],
       ),
@@ -225,7 +208,10 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
                 ),
               ];
             },
-            body: KeyedSubtree(key: ValueKey(_refreshCounter), child: widget.bodyBuilder(context)),
+            body: KeyedSubtree(
+              key: ValueKey(_refreshCounter),
+              child: widget.bodyBuilder(context),
+            ),
           ),
         );
       },
@@ -248,8 +234,14 @@ class _GroupIdentityRow extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final meta = context.read<GroupsModel>().state.where((g) => g.id == groupId).firstOrNull;
-        final seed = meta != null ? groupSeedColor(meta) : groupFallbackColor(group.name);
+        final meta = context
+            .read<GroupsModel>()
+            .state
+            .where((g) => g.id == groupId)
+            .firstOrNull;
+        final seed = meta != null
+            ? groupSeedColor(meta)
+            : groupFallbackColor(group.name);
         final memberCount = group.subscriptions.length;
         final theme = Theme.of(context);
 
@@ -271,7 +263,9 @@ class _GroupIdentityRow extends StatelessWidget {
                   L10n.of(context).subscription_group_member_count(memberCount),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
@@ -296,19 +290,29 @@ List<Widget> defaultGroupActions(
   List<Widget> extra = const [],
 }) {
   return [
-    if (showMore) IconButton(icon: const Icon(Icons.build_outlined), onPressed: () => showFeedSettings(context, model)),
+    if (showMore)
+      IconButton(
+        icon: const Icon(Icons.build_outlined),
+        onPressed: () => showFeedSettings(context, model),
+      ),
     if (scrollToTopController != null)
       IconButton(
         icon: const Icon(Icons.arrow_upward),
-        onPressed: () async => await scrollToTop(context, scrollToTopController),
+        onPressed: () async =>
+            await scrollToTop(context, scrollToTopController),
       ),
     if (showRefresh)
       IconButton(
         icon: const Icon(Icons.refresh),
-        onPressed: onRefresh ?? () async => await context.read<FeedRefreshController>().refresh(),
+        onPressed:
+            onRefresh ??
+            () async => await context.read<FeedRefreshController>().refresh(),
       ),
     if (showSettings)
-      IconButton(icon: const Icon(Icons.settings), onPressed: () => Navigator.pushNamed(context, routeSettings)),
+      IconButton(
+        icon: const Icon(Icons.settings),
+        onPressed: () => Navigator.pushNamed(context, routeSettings),
+      ),
     ...extra,
   ];
 }
