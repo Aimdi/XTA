@@ -200,6 +200,11 @@ class _FeedScreenState extends State<FeedScreen> {
     }
     _lastDisabledAccountIds = Set<String>.from(disabled);
     _remountForYou(scrollToTopFirst: _tab == FeedTab.foryou);
+    // Following reuses cached chunks; bump refresh so new pages skip disabled
+    // accounts instead of keeping spare-account pages on screen.
+    if (_tab == FeedTab.following) {
+      context.read<FeedRefreshController>().refresh();
+    }
   }
 
   @override

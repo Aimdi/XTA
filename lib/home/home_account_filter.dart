@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/client/account_fetch_gate.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
@@ -173,21 +174,30 @@ Future<TweetPageResult> loadMergedForYouPage({
   return (chains: chains, nextCursor: encodeHomeTimelineCursors(next));
 }
 
-/// Which login accounts are excluded from the merged For you HomeTimeline.
+/// Which login accounts are excluded from home-feed content.
 ///
-/// Disabled accounts stay in [QuackerTwitterClient.fetch]'s rotation pool so
-/// they still raise rate limits for profiles, search, comments/quotes, and
-/// Following subscription chunks. Following's *content* still comes from local
-/// subscriptions (`inFeed`); only For you content sources are filtered here.
+/// For you merges HomeTimeline only from accounts left on. Following still
+/// builds from local subscriptions, but [AccountFetchGate] also skips disabled
+/// accounts when fetching those chunks — so a spare rate-limit account is not
+/// spent on the home feeds. If every account is disabled, fetch falls back to
+/// the full pool so comments / quotes / profiles still have a credential.
 class HomeAccountFilterStore extends Store<Set<String>> {
   final BasePrefService prefs;
 
   HomeAccountFilterStore(this.prefs)
-      : super(homeFeedDisabledIdsFromPrefs(prefs.get(optionHomeFeedDisabledAccountIds)).toSet());
+      : super(homeFeedDisabledIdsFromPrefs(prefs.get(optionHomeFeedDisabledAccountIds)).toSet()) {
+    _publish(state);
+  }
+
+  void _publish(Set<String> disabled) {
+    AccountFetchGate.disabledIds = Set<String>.from(disabled);
+  }
 
   Future<void> reload() async {
     await execute(() async {
-      return homeFeedDisabledIdsFromPrefs(prefs.get(optionHomeFeedDisabledAccountIds)).toSet();
+      final next = homeFeedDisabledIdsFromPrefs(prefs.get(optionHomeFeedDisabledAccountIds)).toSet();
+      _publish(next);
+      return next;
     });
   }
 
@@ -207,6 +217,7 @@ class HomeAccountFilterStore extends Store<Set<String>> {
         next.add(accountId);
       }
       await prefs.set(optionHomeFeedDisabledAccountIds, homeFeedDisabledIdsToPrefs(next));
+      _publish(next);
       return next;
     });
   }

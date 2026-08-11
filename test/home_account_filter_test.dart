@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/client/tweet_models.dart';
 import 'package:xta/database/entities.dart';
+import 'package:xta/client/account_fetch_gate.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/user.dart';
 
@@ -50,5 +51,20 @@ void main() {
     expect(encoded, isNotNull);
     expect(decodeHomeTimelineCursors(encoded), {'1': 'c1', '2': 'c2'});
     expect(encodeHomeTimelineCursors({}), isNull);
+  });
+
+  test('enabled accounts are the ones fetch should prefer', () {
+    final accounts = [
+      Account(id: '1', authHeader: '{}', screenName: 'spare'),
+      Account(id: '2', authHeader: '{}', screenName: 'main'),
+    ];
+    final disabled = {'1'};
+    final preferred = enabledHomeAccounts(accounts, disabled);
+    expect(preferred.map((a) => a.id), ['2']);
+
+    // Gate mirrors that set for Following chunk rotation.
+    AccountFetchGate.disabledIds = disabled;
+    expect(AccountFetchGate.disabledIds, {'1'});
+    AccountFetchGate.disabledIds = {};
   });
 }

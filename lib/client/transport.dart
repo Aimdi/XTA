@@ -12,6 +12,7 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:xta/catcher/exceptions.dart';
+import 'package:xta/client/account_fetch_gate.dart';
 import 'package:xta/client/account_selector.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client_regular_account.dart';
@@ -86,10 +87,18 @@ class QuackerTwitterClient extends TwitterClient {
   static Future<http.Response> fetch(Uri uri, {Map<String, String>? headers}) async {
     final endpoint = uri.path;
     final now = DateTime.now();
-    // Home-feed account toggles must not shrink this pool: TweetDetail (comments)
-    // and SearchTimeline (quotes / Following chunks) share fetch(), and excluding
-    // a login account here would break those screens for no feed-related gain.
-    final accounts = await getAccounts();
+    // Prefer accounts still on for home feeds. TweetDetail / quotes share this
+    // path: if every account is toggled off we fall back to the full pool so
+    // those screens keep a credential. Following search chunks skip spare
+    // accounts the reader turned off.
+    var accounts = await getAccounts();
+    final disabled = AccountFetchGate.disabledIds;
+    if (disabled.isNotEmpty) {
+      final preferred = accounts.where((a) => !disabled.contains(a.id)).toList(growable: false);
+      if (preferred.isNotEmpty) {
+        accounts = preferred;
+      }
+    }
     final selector = AccountSelector(
       accounts,
       now,
