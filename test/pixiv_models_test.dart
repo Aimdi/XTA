@@ -11,7 +11,8 @@ void main() {
           'caption': 'meow',
           'type': 'illust',
           'image_urls': {
-            'square_medium': 'https://i.pximg.net/c/360x360_70/img-master/cat.jpg',
+            'square_medium':
+                'https://i.pximg.net/c/360x360_70/img-master/cat.jpg',
             'medium': 'https://i.pximg.net/c/540x540_70/img-master/cat.jpg',
             'large': 'https://i.pximg.net/c/600x1200_90/img-master/cat.jpg',
           },
@@ -33,10 +34,13 @@ void main() {
           'title': 'R18',
           'caption': '',
           'type': 'illust',
-          'image_urls': {
-            'square_medium': 'https://i.pximg.net/r18.jpg',
+          'image_urls': {'square_medium': 'https://i.pximg.net/r18.jpg'},
+          'user': {
+            'id': 1,
+            'name': 'X',
+            'account': 'x',
+            'profile_image_urls': {},
           },
-          'user': {'id': 1, 'name': 'X', 'account': 'x', 'profile_image_urls': {}},
           'page_count': 1,
           'x_restrict': 1,
           'sanity_level': 6,
@@ -74,7 +78,10 @@ void main() {
             },
             'meta_pages': [
               {
-                'image_urls': {'original': 'https://i.pximg.net/p0.jpg', 'large': 'https://i.pximg.net/l0.jpg'},
+                'image_urls': {
+                  'original': 'https://i.pximg.net/p0.jpg',
+                  'large': 'https://i.pximg.net/l0.jpg',
+                },
               },
               {
                 'image_urls': {'original': 'https://i.pximg.net/p1.jpg'},
@@ -84,7 +91,12 @@ void main() {
               {'name': '猫', 'translated_name': 'cat'},
               {'name': 'オリジナル'},
             ],
-            'user': {'id': 2, 'name': 'A', 'account': 'a', 'profile_image_urls': {}},
+            'user': {
+              'id': 2,
+              'name': 'A',
+              'account': 'a',
+              'profile_image_urls': {},
+            },
             'page_count': 2,
             'x_restrict': 0,
             'sanity_level': 2,
@@ -99,7 +111,10 @@ void main() {
       expect(illust.height, 1200);
       expect(illust.aspectRatio, closeTo(800 / 1200, 0.001));
       // Prefer large over original so the viewer stays light (Pixez-style).
-      expect(illust.pageUrls, ['https://i.pximg.net/l0.jpg', 'https://i.pximg.net/p1.jpg']);
+      expect(illust.pageUrls, [
+        'https://i.pximg.net/l0.jpg',
+        'https://i.pximg.net/p1.jpg',
+      ]);
       expect(illust.viewerUrls, hasLength(2));
       expect(illust.tags.map((t) => t.displayName), ['cat', 'オリジナル']);
       expect(illust.isManga, isTrue);
@@ -107,6 +122,47 @@ void main() {
 
     test('keeps R-18 when asked', () {
       expect(parsePixivIllustList(sample, includeR18: true), hasLength(2));
+    });
+
+    test('drops deleted-or-private placeholder stubs', () {
+      final posts = parsePixivIllustList({
+        'illusts': [
+          {
+            'id': 1,
+            'title': 'Gone',
+            'visible': false,
+            'image_urls': {
+              'medium':
+                  'https://s.pximg.net/common/images/limit_unknown_360.png',
+            },
+            'user': {
+              'id': 1,
+              'name': 'X',
+              'account': 'x',
+              'profile_image_urls': {},
+            },
+            'x_restrict': 0,
+            'total_bookmarks': 0,
+          },
+          {
+            'id': 2,
+            'title': 'Ok',
+            'visible': true,
+            'image_urls': {
+              'medium': 'https://i.pximg.net/c/540x540_70/img-master/ok.jpg',
+            },
+            'user': {
+              'id': 1,
+              'name': 'X',
+              'account': 'x',
+              'profile_image_urls': {},
+            },
+            'x_restrict': 0,
+          },
+        ],
+      }, includeR18: true);
+
+      expect(posts.map((p) => p.id), [2]);
     });
 
     test('a reshaped payload yields nothing rather than throwing', () {
@@ -123,18 +179,17 @@ void main() {
           'name': 'Name',
           'account': 'acct',
           'comment': 'hi',
+          'is_followed': true,
           'profile_image_urls': {'medium': 'https://i.pximg.net/a.jpg'},
         },
-        'profile': {
-          'total_illusts': 5,
-          'total_follower': 9,
-        },
+        'profile': {'total_illusts': 5, 'total_follower': 9},
       });
 
       expect(user.id, 11);
       expect(user.name, 'Name');
       expect(user.illustsCount, 5);
       expect(user.followersCount, 9);
+      expect(user.isFollowed, isTrue);
     });
   });
 }

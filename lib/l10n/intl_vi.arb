@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Riêng tư",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Tài khoản này chưa có dấu trang riêng tư",
   "plugin_pixiv_bookmarks_public": "Công khai",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Trình đọc Pixiv riêng — đang theo dõi, xếp hạng, dấu trang và tìm kiếm. Không đăng bài",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Refresh token Pixiv bị từ chối",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Theo dõi",
   "plugin_pixiv_mute_author": "Ẩn tác giả",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Ẩn tác phẩm này",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Bỏ theo dõi",
   "plugin_pixiv_unmute": "Bỏ ẩn",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "Về cộng đồng này",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

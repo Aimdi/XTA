@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Pribatuak",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Kontu honetan oraindik ez dago laster-marka pribaturik",
   "plugin_pixiv_bookmarks_public": "Publikoak",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Pixiv irakurle pribatua — jarraipena, sailkapena, laster-markak eta bilaketa. Argitaratu gabe",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Zure Pixiv freskatze-tokena baztertu da",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Jarraitu",
   "plugin_pixiv_mute_author": "Isilarazi egilea",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Isilarazi lan hau",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Jarraitzeari utzi",
   "plugin_pixiv_unmute": "Kendu isilaraztea",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "Komunitate honi buruz",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privés",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Aucun favori privé sur ce compte pour l’instant",
   "plugin_pixiv_bookmarks_public": "Publics",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Lecteur Pixiv privé — suivi, classements, favoris et recherche. Sans publication",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Votre jeton d’actualisation Pixiv a été refusé",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Suivre",
   "plugin_pixiv_mute_author": "Masquer l’auteur",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Masquer cette œuvre",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Ne plus suivre",
   "plugin_pixiv_unmute": "Ne plus masquer",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "À propos de cette communauté",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

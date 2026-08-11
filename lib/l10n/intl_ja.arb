@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "非公開",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "このアカウントにはまだ非公開ブックマークがありません",
   "plugin_pixiv_bookmarks_public": "公開",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "プライベートなPixivリーダー — フォロー・ランキング・ブックマーク・検索。投稿なし",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Pixiv のリフレッシュトークンが拒否されました",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "フォローする",
   "plugin_pixiv_mute_author": "作者をミュート",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "この作品をミュート",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "うごイラ",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "フォロー解除",
   "plugin_pixiv_unmute": "ミュート解除",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "このコミュニティについて",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

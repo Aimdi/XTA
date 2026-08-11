@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Prywatne",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Brak prywatnych zakładek na tym koncie",
   "plugin_pixiv_bookmarks_public": "Publiczne",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Prywatny czytnik Pixiv — obserwowani, rankingi, zakładki i wyszukiwanie. Bez publikowania",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Twój refresh token Pixiv został odrzucony",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Obserwuj",
   "plugin_pixiv_mute_author": "Wycisz autora",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Wycisz tę pracę",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Przestań obserwować",
   "plugin_pixiv_unmute": "Cofnij wyciszenie",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "O tej społeczności",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

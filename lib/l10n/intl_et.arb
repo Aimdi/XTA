@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privaatsed",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Sellel kontol pole veel privaatseid järjehoidjaid",
   "plugin_pixiv_bookmarks_public": "Avalikud",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Privaatne Pixivi lugeja — jälgimine, edetabel, järjehoidjad ja otsing. Ilma postitamiseta",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Sinu Pixivi värskendustoken lükati tagasi",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Jälgi",
   "plugin_pixiv_mute_author": "Vaigista autor",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Vaigista see teos",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Lõpeta jälgimine",
   "plugin_pixiv_unmute": "Tühista vaigistus",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "Sellest kogukonnast",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

@@ -11,7 +11,10 @@ String pixivCaptionToText(String? caption) {
 }
 
 /// Headers Pixiv CDN requires before it will serve an image.
-const pixivImageHeaders = <String, String>{'Referer': 'https://www.pixiv.net/', 'User-Agent': 'Mozilla/5.0'};
+const pixivImageHeaders = <String, String>{
+  'Referer': 'https://www.pixiv.net/',
+  'User-Agent': 'Mozilla/5.0',
+};
 
 /// A tag on an illust — translated name when Pixiv sent one.
 class PixivTag {
@@ -106,7 +109,11 @@ class PixivAuthUser {
   final String name;
   final String account;
 
-  const PixivAuthUser({required this.id, required this.name, required this.account});
+  const PixivAuthUser({
+    required this.id,
+    required this.name,
+    required this.account,
+  });
 
   String get displayName => name.isEmpty ? account : name;
 }
@@ -121,6 +128,9 @@ class PixivUser {
   final int illustsCount;
   final int followersCount;
 
+  /// Whether the signed-in account already follows this user.
+  final bool isFollowed;
+
   const PixivUser({
     required this.id,
     required this.name,
@@ -129,7 +139,19 @@ class PixivUser {
     this.avatarUrl,
     this.illustsCount = 0,
     this.followersCount = 0,
+    this.isFollowed = false,
   });
+
+  PixivUser copyWith({bool? isFollowed, int? followersCount}) => PixivUser(
+    id: id,
+    name: name,
+    account: account,
+    comment: comment,
+    avatarUrl: avatarUrl,
+    illustsCount: illustsCount,
+    followersCount: followersCount ?? this.followersCount,
+    isFollowed: isFollowed ?? this.isFollowed,
+  );
 
   factory PixivUser.fromDetailJson(Object? json) {
     final root = Json(json);
@@ -149,8 +171,12 @@ PixivUser _userFromJson(Json user, {Json? profile}) {
     account: user['account'].string?.trim() ?? '',
     avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
     comment: user['comment'].string?.trim() ?? '',
-    illustsCount: profile?['total_illusts'].integer ?? profile?['total_illust_series'].integer ?? 0,
+    illustsCount:
+        profile?['total_illusts'].integer ??
+        profile?['total_illust_series'].integer ??
+        0,
     followersCount: profile?['total_follower'].integer ?? 0,
+    isFollowed: user['is_followed'].raw == true,
   );
 }
 
@@ -158,6 +184,30 @@ bool pixivIsR18(Json illust) {
   final xRestrict = illust['x_restrict'].integer ?? 0;
   final sanity = illust['sanity_level'].integer ?? 0;
   return xRestrict > 0 || sanity >= 6;
+}
+
+/// Whether [url] is Pixiv's stand-in for a deleted / restricted work.
+///
+/// Those PNGs load fine (so the grid does not show a broken-image icon) and
+/// carry Japanese copy like "削除済み もしくは 非公開" — treating them as
+/// real thumbnails filled bookmarks with blank placeholders.
+bool pixivIsLimitPlaceholderUrl(String? url) {
+  if (url == null || url.isEmpty) {
+    return false;
+  }
+  final lower = url.toLowerCase();
+  return lower.contains('limit_unknown') ||
+      lower.contains('limit_r18') ||
+      lower.contains('limit_sanity') ||
+      lower.contains('/common/images/limit');
+}
+
+/// Whether the listing entry is a real, viewable work for this account.
+bool pixivIllustIsAccessible(Json illust) {
+  if (illust['visible'].raw == false) {
+    return false;
+  }
+  return !pixivIsLimitPlaceholderUrl(_firstImageUrl(illust));
 }
 
 /// Waterfall thumb — prefer aspect-preserving `medium` (Pixez-style), not the
@@ -179,7 +229,10 @@ String? _largeImageUrl(Json illust) {
 /// Viewer page — prefer `large` over multi‑MB `original` for browse speed.
 String? _pageImageUrl(Json page) {
   final urls = page['image_urls'];
-  return urls['large'].string ?? urls['medium'].string ?? urls['original'].string ?? urls['square_medium'].string;
+  return urls['large'].string ??
+      urls['medium'].string ??
+      urls['original'].string ??
+      urls['square_medium'].string;
 }
 
 List<String> _pageUrlsOf(Json illust) {
@@ -188,15 +241,21 @@ List<String> _pageUrlsOf(Json illust) {
     return [for (final page in pages) ?_pageImageUrl(page)];
   }
 
-  final single = _largeImageUrl(illust) ?? illust['meta_single_page']['original_image_url'].string;
+  final single =
+      _largeImageUrl(illust) ??
+      illust['meta_single_page']['original_image_url'].string;
   return single == null || single.isEmpty ? const [] : [single];
 }
 
 List<PixivTag> _tagsOf(Json illust) {
   return [
     for (final tag in illust['tags'].list)
-      if ((tag['name'].string ?? '').trim() case final name when name.isNotEmpty)
-        PixivTag(name: name, translatedName: tag['translated_name'].string?.trim()),
+      if ((tag['name'].string ?? '').trim() case final name
+          when name.isNotEmpty)
+        PixivTag(
+          name: name,
+          translatedName: tag['translated_name'].string?.trim(),
+        ),
   ];
 }
 
@@ -205,7 +264,10 @@ PixivIllust? pixivIllustFromJson(Object? json) {
   final data = Json(json);
   final id = data['id'].integer;
   final thumb = _firstImageUrl(data);
-  if (id == null || thumb == null || thumb.isEmpty) {
+  if (id == null ||
+      thumb == null ||
+      thumb.isEmpty ||
+      !pixivIllustIsAccessible(data)) {
     return null;
   }
 
@@ -246,7 +308,10 @@ class PixivTrendTag {
 }
 
 /// Pure parse of a following / ranking / bookmarks / search list payload.
-List<PixivIllust> parsePixivIllustList(Object? json, {bool includeR18 = false}) {
+List<PixivIllust> parsePixivIllustList(
+  Object? json, {
+  bool includeR18 = false,
+}) {
   final root = Json(json);
   final list = root['illusts'].list;
   return [
@@ -259,7 +324,9 @@ List<PixivIllust> parsePixivIllustList(Object? json, {bool includeR18 = false}) 
 /// Pure parse of `/v1/search/user` → user list.
 List<PixivUser> parsePixivUserList(Object? json) {
   final root = Json(json);
-  final list = root['user_previews'].list.isNotEmpty ? root['user_previews'].list : root['users'].list;
+  final list = root['user_previews'].list.isNotEmpty
+      ? root['user_previews'].list
+      : root['users'].list;
   return [
     for (final item in list)
       if (_previewUser(item) case final user? when user.id != 0) user,

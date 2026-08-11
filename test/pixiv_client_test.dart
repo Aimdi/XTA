@@ -276,6 +276,39 @@ void main() {
       },
     );
 
+    test('followUser posts to the follow-add endpoint', () async {
+      http.Request? follow;
+      final client = PixivClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          if (request.url.host == 'oauth.secure.pixiv.net') {
+            return http.Response(
+              jsonEncode({
+                'access_token': 'access-1',
+                'refresh_token': 'refresh-2',
+                'expires_in': 3600,
+                'user': {'id': '123', 'name': 'Reader', 'account': 'reader'},
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          follow = request;
+          return http.Response(
+            '{}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await client.followUser(42);
+      expect(follow!.method, 'POST');
+      expect(follow!.url.path, '/v1/user/follow/add');
+      expect(follow!.body, contains('user_id=42'));
+      expect(follow!.body, contains('restrict=public'));
+    });
+
     test('a refused token surfaces what Pixiv actually said', () async {
       final client = PixivClient(
         prefs,
@@ -303,58 +336,64 @@ void main() {
       );
     });
 
-    test('concurrent refreshAccessToken calls share one network round-trip', () async {
-      var tokenHits = 0;
-      final client = PixivClient(
-        prefs,
-        httpClient: MockClient((request) async {
-          if (request.url.host.contains('oauth')) {
-            tokenHits++;
-            await Future<void>.delayed(const Duration(milliseconds: 40));
-            return _json({
-              'access_token': 'access-shared',
-              'refresh_token': 'refresh-2',
-              'expires_in': 3600,
-              'user': {'id': '7', 'name': 'A', 'account': 'a'},
-            }, 200);
-          }
-          return _json({'illusts': []}, 200);
-        }),
-      );
+    test(
+      'concurrent refreshAccessToken calls share one network round-trip',
+      () async {
+        var tokenHits = 0;
+        final client = PixivClient(
+          prefs,
+          httpClient: MockClient((request) async {
+            if (request.url.host.contains('oauth')) {
+              tokenHits++;
+              await Future<void>.delayed(const Duration(milliseconds: 40));
+              return _json({
+                'access_token': 'access-shared',
+                'refresh_token': 'refresh-2',
+                'expires_in': 3600,
+                'user': {'id': '7', 'name': 'A', 'account': 'a'},
+              }, 200);
+            }
+            return _json({'illusts': []}, 200);
+          }),
+        );
 
-      final results = await Future.wait([
-        client.refreshAccessToken(),
-        client.refreshAccessToken(),
-        client.ensureUserId(),
-      ]);
+        final results = await Future.wait([
+          client.refreshAccessToken(),
+          client.refreshAccessToken(),
+          client.ensureUserId(),
+        ]);
 
-      expect(tokenHits, 1);
-      expect(results[0], isA<PixivAuthUser>());
-      expect(results[2], 7);
-      expect(client.storedUserId, 7);
-    });
+        expect(tokenHits, 1);
+        expect(results[0], isA<PixivAuthUser>());
+        expect(results[2], 7);
+        expect(client.storedUserId, 7);
+      },
+    );
 
-    test('ensureUserId reuses a stored id without forcing another refresh', () async {
-      await prefs.set(optionPluginPixivAccessToken, 'access-1');
-      await prefs.set(
-        optionPluginPixivAccessExpiresAt,
-        DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
-      );
-      await prefs.set(optionPluginPixivUserId, 42);
-      var tokenHits = 0;
-      final client = PixivClient(
-        prefs,
-        httpClient: MockClient((request) async {
-          if (request.url.host.contains('oauth')) {
-            tokenHits++;
-          }
-          return _json({'illusts': []}, 200);
-        }),
-      );
+    test(
+      'ensureUserId reuses a stored id without forcing another refresh',
+      () async {
+        await prefs.set(optionPluginPixivAccessToken, 'access-1');
+        await prefs.set(
+          optionPluginPixivAccessExpiresAt,
+          DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
+        );
+        await prefs.set(optionPluginPixivUserId, 42);
+        var tokenHits = 0;
+        final client = PixivClient(
+          prefs,
+          httpClient: MockClient((request) async {
+            if (request.url.host.contains('oauth')) {
+              tokenHits++;
+            }
+            return _json({'illusts': []}, 200);
+          }),
+        );
 
-      expect(await client.ensureUserId(), 42);
-      expect(tokenHits, 0);
-    });
+        expect(await client.ensureUserId(), 42);
+        expect(tokenHits, 0);
+      },
+    );
   });
 }
 

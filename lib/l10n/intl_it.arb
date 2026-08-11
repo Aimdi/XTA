@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Privati",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Nessun segnalibro privato su questo account",
   "plugin_pixiv_bookmarks_public": "Pubblici",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Lettore Pixiv privato — seguiti, classifiche, segnalibri e ricerca. Senza pubblicare",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Il refresh token di Pixiv è stato rifiutato",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Segui",
   "plugin_pixiv_mute_author": "Silenzia autore",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Silenzia quest’opera",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Smetti di seguire",
   "plugin_pixiv_unmute": "Riattiva",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "Informazioni su questa community",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

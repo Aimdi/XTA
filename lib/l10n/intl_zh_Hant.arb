@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "私密",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "此帳號尚無私人收藏",
   "plugin_pixiv_bookmarks_public": "公開",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "私有 Pixiv 閱讀器 — 追蹤、排行榜、收藏與搜尋。不發文",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "你的 Pixiv 重新整理權杖被拒絕",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "追蹤",
   "plugin_pixiv_mute_author": "封鎖作者",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "封鎖此作品",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "動圖",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "取消追蹤",
   "plugin_pixiv_unmute": "取消封鎖",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "關於此社群",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "禪模式時間軸長度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

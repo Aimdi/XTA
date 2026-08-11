@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "비공개",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "이 계정에 비공개 북마크가 아직 없습니다",
   "plugin_pixiv_bookmarks_public": "공개",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "비공개 Pixiv 리더 — 팔로잉, 랭킹, 북마크, 검색. 게시 없음",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Pixiv 리프레시 토큰이 거부되었습니다",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "팔로우",
   "plugin_pixiv_mute_author": "작가 뮤트",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "이 작품 뮤트",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "우고이라",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "팔로우 취소",
   "plugin_pixiv_unmute": "뮤트 해제",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "이 커뮤니티 정보",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }

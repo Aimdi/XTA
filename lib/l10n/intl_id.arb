@@ -1079,6 +1079,7 @@
   "@plugin_pixiv_bookmarks_empty": {},
   "plugin_pixiv_bookmarks_private": "Pribadi",
   "@plugin_pixiv_bookmarks_private": {},
+  "plugin_pixiv_bookmarks_private_empty": "Belum ada markah pribadi di akun ini",
   "plugin_pixiv_bookmarks_public": "Publik",
   "@plugin_pixiv_bookmarks_public": {},
   "plugin_pixiv_description": "Pembaca Pixiv pribadi — mengikuti, peringkat, penanda, dan pencarian. Tanpa posting",
@@ -1095,6 +1096,7 @@
   "@plugin_pixiv_error_response": {},
   "plugin_pixiv_error_unauthorized": "Refresh token Pixiv Anda ditolak",
   "@plugin_pixiv_error_unauthorized": {},
+  "plugin_pixiv_follow": "Ikuti",
   "plugin_pixiv_mute_author": "Bisukan kreator",
   "@plugin_pixiv_mute_author": {},
   "plugin_pixiv_mute_illust": "Bisukan karya ini",
@@ -1215,6 +1217,7 @@
   "@plugin_pixiv_trending_title": {},
   "plugin_pixiv_ugoira": "Ugoira",
   "@plugin_pixiv_ugoira": {},
+  "plugin_pixiv_unfollow": "Berhenti mengikuti",
   "plugin_pixiv_unmute": "Batal bisukan",
   "@plugin_pixiv_unmute": {},
   "plugin_reddit_about_community": "Tentang komunitas ini",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_pixiv_bookmarks_private_empty": {},
+  "@plugin_pixiv_follow": {},
+  "@plugin_pixiv_unfollow": {}
 }
