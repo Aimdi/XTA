@@ -1,6 +1,7 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/group/deck_groups.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
@@ -31,10 +32,37 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
       orderBy: 'name COLLATE NOCASE',
     );
 
-    return rows
+    final publications = rows
         .map(SubstackSubscription.fromMap)
         .map(publicationOf)
         .toList(growable: false);
+    return _withPins(publications);
+  }
+
+  List<String> get _pinnedIds =>
+      parseDeckGroupIds(prefs.get(optionPluginSubstackPinnedPublications) as String?);
+
+  bool isPinned(String id) => _pinnedIds.contains(id);
+
+  /// Pinned publications first (pin order), then the rest A–Z.
+  List<SubstackPublication> _withPins(List<SubstackPublication> publications) =>
+      sortSubstackPublicationsWithPins(publications, _pinnedIds);
+
+  Future<void> togglePinned(String id) async {
+    if (id.isEmpty) return;
+    await execute(() async {
+      final ids = _pinnedIds.toList();
+      if (ids.contains(id)) {
+        ids.remove(id);
+      } else {
+        ids.add(id);
+      }
+      await prefs.set(
+        optionPluginSubstackPinnedPublications,
+        joinDeckGroupIds(ids),
+      );
+      return _withPins(state);
+    });
   }
 
   Future<void> _importFromPrefs() async {
@@ -79,6 +107,11 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
         where: 'profile_id = ?',
         whereArgs: [id],
       );
+      final ids = _pinnedIds.toList()..remove(id);
+      await prefs.set(
+        optionPluginSubstackPinnedPublications,
+        joinDeckGroupIds(ids),
+      );
       return _read();
     });
   }
@@ -105,6 +138,26 @@ SubstackPublication publicationOf(SubstackSubscription subscription) =>
       name: subscription.name,
       logoUrl: subscription.logoUrl,
     );
+
+/// Pinned ids first (in pin order), then the remaining publications unchanged.
+List<SubstackPublication> sortSubstackPublicationsWithPins(
+  List<SubstackPublication> publications,
+  List<String> pinnedIds,
+) {
+  if (pinnedIds.isEmpty) return publications;
+
+  final byId = {for (final pub in publications) pub.id: pub};
+  final pinned = [
+    for (final id in pinnedIds)
+      if (byId.containsKey(id)) byId[id]!,
+  ];
+  final pinnedSet = {for (final pub in pinned) pub.id};
+  final rest = [
+    for (final pub in publications)
+      if (!pinnedSet.contains(pub.id)) pub,
+  ];
+  return [...pinned, ...rest];
+}
 
 class SubstackReadStore extends Store<Set<String>> {
   final BasePrefService prefs;

@@ -750,6 +750,7 @@ class _LibraryPaneState extends State<_LibraryPane> {
                       separatorBuilder: (_, _) => const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final pub = visible[index];
+                        final pinned = widget.pubs.isPinned(pub.id);
                         return ListTile(
                           leading: CircleAvatar(
                             backgroundImage: pub.logoUrl == null
@@ -763,51 +764,71 @@ class _LibraryPaneState extends State<_LibraryPane> {
                           subtitle: Text(
                             Uri.tryParse(pub.baseUrl)?.host ?? pub.baseUrl,
                           ),
-                          trailing: PopupMenuButton<String>(
-                            onSelected: (value) async {
-                              if (value == 'group') {
-                                await addSubstackPublicationToGroup(
-                                  context,
-                                  pub,
-                                );
-                                return;
-                              }
-                              if (value != 'unfollow') return;
-                              final subscriptions = context
-                                  .read<SubscriptionsModel>();
-                              final ok = await showDialog<bool>(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: Text(l10n.plugin_substack_unfollow),
-                                  content: Text(pub.name),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(context, false),
-                                      child: Text(l10n.cancel),
-                                    ),
-                                    FilledButton(
-                                      onPressed: () =>
-                                          Navigator.pop(context, true),
-                                      child: Text(
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                tooltip: pinned ? l10n.unpin : l10n.pin,
+                                onPressed: () =>
+                                    widget.pubs.togglePinned(pub.id),
+                                icon: Icon(
+                                  pinned
+                                      ? Icons.push_pin
+                                      : Icons.push_pin_outlined,
+                                  color: pinned
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).hintColor,
+                                ),
+                              ),
+                              PopupMenuButton<String>(
+                                onSelected: (value) async {
+                                  if (value == 'group') {
+                                    await addSubstackPublicationToGroup(
+                                      context,
+                                      pub,
+                                    );
+                                    return;
+                                  }
+                                  if (value != 'unfollow') return;
+                                  final subscriptions = context
+                                      .read<SubscriptionsModel>();
+                                  final ok = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
                                         l10n.plugin_substack_unfollow,
                                       ),
+                                      content: Text(pub.name),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: Text(l10n.cancel),
+                                        ),
+                                        FilledButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: Text(
+                                            l10n.plugin_substack_unfollow,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                              if (ok != true) return;
-                              await widget.pubs.remove(pub.id);
-                              await subscriptions.reloadSubscriptions();
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'group',
-                                child: Text(l10n.add_to_group),
-                              ),
-                              PopupMenuItem(
-                                value: 'unfollow',
-                                child: Text(l10n.plugin_substack_unfollow),
+                                  );
+                                  if (ok != true) return;
+                                  await widget.pubs.remove(pub.id);
+                                  await subscriptions.reloadSubscriptions();
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 'group',
+                                    child: Text(l10n.add_to_group),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'unfollow',
+                                    child: Text(l10n.plugin_substack_unfollow),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -1026,6 +1047,9 @@ class _PublicationStrip extends StatelessWidget {
         itemBuilder: (context, index) {
           final pub = publications[index];
           final unread = _hasUnread(pub);
+          final pinned = context.read<SubstackPublicationsStore>().isPinned(
+            pub.id,
+          );
           return InkWell(
             onTap: () => onOpen(pub),
             onLongPress: () => _confirmUnfollow(context, pub),
@@ -1086,6 +1110,23 @@ class _PublicationStrip extends StatelessWidget {
                                 color: theme.colorScheme.surface,
                                 width: 2,
                               ),
+                            ),
+                          ),
+                        ),
+                      if (pinned)
+                        Positioned(
+                          left: 0,
+                          bottom: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.push_pin,
+                              size: 12,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ),
