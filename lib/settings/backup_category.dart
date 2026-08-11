@@ -14,6 +14,7 @@ enum BackupCategory {
   threads,
   bluesky,
   mastodon,
+  ehFavorites,
   groups,
   groupMembers,
   savedPosts,

@@ -957,6 +957,121 @@
   "@plugin_deepmarks_test_ok_unverified": {},
   "plugin_deepmarks_title": "Deepmarks",
   "@plugin_deepmarks_title": {},
+  "plugin_eh_clear_cookies": "Cookieを消去",
+  "@plugin_eh_clear_cookies": {},
+  "plugin_eh_cookies": "Cookie",
+  "@plugin_eh_cookies": {},
+  "plugin_eh_cookies_help": "ブラウザから ipb_member_id と ipb_pass_hash（ExHentaiは igneous も）を貼り付け。端末外には送られません。",
+  "@plugin_eh_cookies_help": {},
+  "plugin_eh_description": "E-Hentaiギャラリーを閲覧 — 非公開・読み取り専用、EhViewerに着想",
+  "@plugin_eh_description": {},
+  "plugin_eh_empty_favorites": "ローカルのお気に入りはまだありません",
+  "@plugin_eh_empty_favorites": {},
+  "plugin_eh_empty_list": "ギャラリーがありません。再試行するか接続を確認してください",
+  "@plugin_eh_empty_list": {},
+  "plugin_eh_empty_search": "該当するギャラリーがありません",
+  "@plugin_eh_empty_search": {},
+  "plugin_eh_error_ban": "このIPは一時的にBANされています",
+  "@plugin_eh_error_ban": {},
+  "plugin_eh_error_network": "E-Hentaiに接続できません",
+  "@plugin_eh_error_network": {},
+  "plugin_eh_error_not_configured": "EHの準備ができていません。設定を確認してください",
+  "@plugin_eh_error_not_configured": {},
+  "plugin_eh_error_not_found": "ギャラリーが見つかりません",
+  "@plugin_eh_error_not_found": {},
+  "plugin_eh_error_rate_limited": "サイトがレート制限中です。しばらくしてから再試行してください",
+  "@plugin_eh_error_rate_limited": {},
+  "plugin_eh_error_response": "サイトから予期しない応答がありました",
+  "@plugin_eh_error_response": {},
+  "plugin_eh_error_unauthorized": "アクセス拒否 — Cookie / ExHentai設定を確認",
+  "@plugin_eh_error_unauthorized": {},
+  "plugin_eh_favorite": "お気に入りに追加",
+  "@plugin_eh_favorite": {},
+  "plugin_eh_open_on_site": "サイトで開く",
+  "@plugin_eh_open_on_site": {},
+  "plugin_eh_page_of": "{page} / {total} ページ",
+  "@plugin_eh_page_of": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_pages": "{count}ページ",
+  "@plugin_eh_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_rating": "評価 {rating}",
+  "@plugin_eh_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_read": "読む",
+  "@plugin_eh_read": {},
+  "plugin_eh_search_hint": "タイトル、タグ、投稿者で検索…",
+  "@plugin_eh_search_hint": {},
+  "plugin_eh_section_account": "アカウント",
+  "@plugin_eh_section_account": {},
+  "plugin_eh_section_categories": "既定のカテゴリ",
+  "@plugin_eh_section_categories": {},
+  "plugin_eh_settings_title": "EHの設定",
+  "@plugin_eh_settings_title": {},
+  "plugin_eh_show_tab": "EHタブを表示",
+  "@plugin_eh_show_tab": {},
+  "plugin_eh_show_tab_description": "プラグイン有効時、下部ナビにEHを追加します",
+  "@plugin_eh_show_tab_description": {},
+  "plugin_eh_tab_favorites": "お気に入り",
+  "@plugin_eh_tab_favorites": {},
+  "plugin_eh_tab_front": "フロント",
+  "@plugin_eh_tab_front": {},
+  "plugin_eh_tab_popular": "人気",
+  "@plugin_eh_tab_popular": {},
+  "plugin_eh_tags": "タグ",
+  "@plugin_eh_tags": {},
+  "plugin_eh_test_connection": "接続をテスト",
+  "@plugin_eh_test_connection": {},
+  "plugin_eh_test_failed": "EHのテストに失敗: {detail}",
+  "@plugin_eh_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_test_ok": "サイトが応答しました（{count}件）",
+  "@plugin_eh_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_title": "EH",
+  "@plugin_eh_title": {},
+  "plugin_eh_unfavorite": "お気に入りから削除",
+  "@plugin_eh_unfavorite": {},
+  "plugin_eh_uploader": "投稿者 {name}",
+  "@plugin_eh_uploader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_use_exhentai": "ExHentaiを使う",
+  "@plugin_eh_use_exhentai": {},
+  "plugin_eh_use_exhentai_description": "有効なCookieが必要。空のときはE-Hentaiに戻ります",
+  "@plugin_eh_use_exhentai_description": {},
   "plugin_immich_album_per_folder": "フォルダーごとにアルバム",
   "@plugin_immich_album_per_folder": {},
   "plugin_immich_album_per_folder_description": "アップロードしたものは、ブックマークフォルダーと同じ名前の Immich アルバムに入ります。なければ作成されます",

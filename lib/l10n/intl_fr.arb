@@ -957,6 +957,121 @@
   "@plugin_deepmarks_test_ok_unverified": {},
   "plugin_deepmarks_title": "Deepmarks",
   "@plugin_deepmarks_title": {},
+  "plugin_eh_clear_cookies": "Effacer les cookies",
+  "@plugin_eh_clear_cookies": {},
+  "plugin_eh_cookies": "Cookies",
+  "@plugin_eh_cookies": {},
+  "plugin_eh_cookies_help": "Collez ipb_member_id et ipb_pass_hash (et igneous pour ExHentai). Jamais partagés hors de l’appareil.",
+  "@plugin_eh_cookies_help": {},
+  "plugin_eh_description": "Parcourir les galeries E-Hentai — privé, lecture seule, inspiré d’EhViewer",
+  "@plugin_eh_description": {},
+  "plugin_eh_empty_favorites": "Aucun favori local pour l’instant",
+  "@plugin_eh_empty_favorites": {},
+  "plugin_eh_empty_list": "Aucune galerie — réessayez ou vérifiez la connexion",
+  "@plugin_eh_empty_list": {},
+  "plugin_eh_empty_search": "Aucune galerie ne correspond",
+  "@plugin_eh_empty_search": {},
+  "plugin_eh_error_ban": "Cette IP est temporairement bannie par le site",
+  "@plugin_eh_error_ban": {},
+  "plugin_eh_error_network": "Impossible de joindre E-Hentai",
+  "@plugin_eh_error_network": {},
+  "plugin_eh_error_not_configured": "EH n’est pas prêt — vérifiez les réglages",
+  "@plugin_eh_error_not_configured": {},
+  "plugin_eh_error_not_found": "Galerie introuvable",
+  "@plugin_eh_error_not_found": {},
+  "plugin_eh_error_rate_limited": "Le site limite le débit — réessayez plus tard",
+  "@plugin_eh_error_rate_limited": {},
+  "plugin_eh_error_response": "Le site a renvoyé une réponse inattendue",
+  "@plugin_eh_error_response": {},
+  "plugin_eh_error_unauthorized": "Accès refusé — vérifiez les cookies / ExHentai",
+  "@plugin_eh_error_unauthorized": {},
+  "plugin_eh_favorite": "Ajouter aux favoris",
+  "@plugin_eh_favorite": {},
+  "plugin_eh_open_on_site": "Ouvrir sur le site",
+  "@plugin_eh_open_on_site": {},
+  "plugin_eh_page_of": "Page {page} sur {total}",
+  "@plugin_eh_page_of": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_pages": "{count} pages",
+  "@plugin_eh_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_rating": "Note {rating}",
+  "@plugin_eh_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_read": "Lire",
+  "@plugin_eh_read": {},
+  "plugin_eh_search_hint": "Rechercher titre, tags, uploader…",
+  "@plugin_eh_search_hint": {},
+  "plugin_eh_section_account": "Compte",
+  "@plugin_eh_section_account": {},
+  "plugin_eh_section_categories": "Catégories par défaut",
+  "@plugin_eh_section_categories": {},
+  "plugin_eh_settings_title": "Réglages EH",
+  "@plugin_eh_settings_title": {},
+  "plugin_eh_show_tab": "Afficher l’onglet EH",
+  "@plugin_eh_show_tab": {},
+  "plugin_eh_show_tab_description": "Ajoute EH à la navigation du bas lorsque le module est activé",
+  "@plugin_eh_show_tab_description": {},
+  "plugin_eh_tab_favorites": "Favoris",
+  "@plugin_eh_tab_favorites": {},
+  "plugin_eh_tab_front": "Accueil",
+  "@plugin_eh_tab_front": {},
+  "plugin_eh_tab_popular": "Populaires",
+  "@plugin_eh_tab_popular": {},
+  "plugin_eh_tags": "Tags",
+  "@plugin_eh_tags": {},
+  "plugin_eh_test_connection": "Tester la connexion",
+  "@plugin_eh_test_connection": {},
+  "plugin_eh_test_failed": "Échec du test EH : {detail}",
+  "@plugin_eh_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_test_ok": "Le site a répondu ({count} galeries)",
+  "@plugin_eh_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_title": "EH",
+  "@plugin_eh_title": {},
+  "plugin_eh_unfavorite": "Retirer des favoris",
+  "@plugin_eh_unfavorite": {},
+  "plugin_eh_uploader": "Uploader {name}",
+  "@plugin_eh_uploader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_use_exhentai": "Utiliser ExHentai",
+  "@plugin_eh_use_exhentai": {},
+  "plugin_eh_use_exhentai_description": "Nécessite des cookies valides ; revient à E-Hentai s’ils sont vides",
+  "@plugin_eh_use_exhentai_description": {},
   "plugin_immich_album_per_folder": "Un album par dossier",
   "@plugin_immich_album_per_folder": {},
   "plugin_immich_album_per_folder_description": "Les envois arrivent dans un album Immich portant le nom du dossier de favoris, créé s'il n'existe pas encore",

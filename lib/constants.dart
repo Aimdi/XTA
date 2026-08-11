@@ -190,7 +190,8 @@ const optionPluginSubstackPublications = 'plugin.substack.publications';
 const optionPluginSubstackReadIds = 'plugin.substack.read_ids';
 const optionPluginSubstackLikedPosts = 'plugin.substack.liked_posts';
 const optionPluginSubstackSavedPosts = 'plugin.substack.saved_posts';
-const optionPluginSubstackPinnedPublications = 'plugin.substack.pinned_publications';
+const optionPluginSubstackPinnedPublications =
+    'plugin.substack.pinned_publications';
 const substackFeedPageSize = 8;
 const substackReadIdsCap = 400;
 const substackLikedPostsCap = 400;
@@ -307,6 +308,14 @@ const optionPluginPixivMutedAuthors = 'plugin.pixiv.muted_authors';
 const optionPluginPixivMutedTags = 'plugin.pixiv.muted_tags';
 const optionPluginPixivMutedIllusts = 'plugin.pixiv.muted_illusts';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
+
+const pluginIdEhViewer = 'ehviewer';
+const optionPluginEhEnabled = 'plugin.ehviewer.enabled';
+const optionPluginEhShowTab = 'plugin.ehviewer.show_tab';
+const optionPluginEhCookies = 'plugin.ehviewer.cookies';
+const optionPluginEhUseExhentai = 'plugin.ehviewer.use_exhentai';
+const optionPluginEhCategories = 'plugin.ehviewer.categories';
+const optionPluginEhSearchHistory = 'plugin.ehviewer.search_history';
 
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.
@@ -622,6 +631,7 @@ const secretPrefKeys = {
   optionPluginThreadsDirectBearer,
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
+  optionPluginEhCookies,
 };
 
 /// The declared keys, plus anything shaped like a credential.

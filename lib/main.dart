@@ -48,6 +48,8 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
+import 'package:xta/plugins/ehviewer/eh_client.dart';
+import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
@@ -545,6 +547,12 @@ Future<void> main() async {
       optionPluginPixivMutedTags: '[]',
       optionPluginPixivMutedIllusts: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginEhEnabled: false,
+      optionPluginEhShowTab: true,
+      optionPluginEhCookies: '',
+      optionPluginEhUseExhentai: false,
+      optionPluginEhCategories: '',
+      optionPluginEhSearchHistory: '[]',
       optionPluginThreadsDirectCookies: '',
       optionPluginThreadsDirectBearer: '',
       optionPluginThreadsDirectDeviceId: '',
@@ -706,6 +714,8 @@ Future<void> main() async {
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistoryStore(prefService);
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
+    final ehClient = EhClient(prefService);
+    final ehFavorites = EhFavoritesStore();
 
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
@@ -750,6 +760,8 @@ Future<void> main() async {
         pixivMute.load(),
         pixivSearchHistory.load(),
       ],
+      if (prefService.get<bool>(optionPluginEhEnabled) == true)
+        ehFavorites.load(),
     ]);
 
     runApp(
@@ -836,6 +848,8 @@ Future<void> main() async {
             Provider(create: (_) => pixivMute),
             Provider(create: (_) => pixivSearchHistory),
             Provider(create: (_) => pixivFeed),
+            Provider(create: (_) => ehClient),
+            Provider(create: (_) => ehFavorites),
             ChangeNotifierProvider(
               create: (_) =>
                   VideoContextState(prefService.get(optionMediaDefaultMute)),

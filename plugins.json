@@ -7,6 +7,7 @@
     { "id": "bluesky" },
     { "id": "mastodon" },
     { "id": "pixiv", "available": false },
+    { "id": "ehviewer", "available": false },
     { "id": "stocks" },
     { "id": "karakeep" },
     { "id": "deepmarks" },

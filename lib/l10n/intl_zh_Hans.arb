@@ -957,6 +957,121 @@
   "@plugin_deepmarks_test_ok_unverified": {},
   "plugin_deepmarks_title": "Deepmarks",
   "@plugin_deepmarks_title": {},
+  "plugin_eh_clear_cookies": "清除 Cookies",
+  "@plugin_eh_clear_cookies": {},
+  "plugin_eh_cookies": "Cookies",
+  "@plugin_eh_cookies": {},
+  "plugin_eh_cookies_help": "粘贴浏览器中的 ipb_member_id 与 ipb_pass_hash（ExHentai 还需 igneous）。不会离开本机。",
+  "@plugin_eh_cookies_help": {},
+  "plugin_eh_description": "浏览 E-Hentai 图库 — 私有、只读，灵感来自 EhViewer",
+  "@plugin_eh_description": {},
+  "plugin_eh_empty_favorites": "尚无本地收藏",
+  "@plugin_eh_empty_favorites": {},
+  "plugin_eh_empty_list": "没有图库 — 请重试或检查网络",
+  "@plugin_eh_empty_list": {},
+  "plugin_eh_empty_search": "没有匹配的图库",
+  "@plugin_eh_empty_search": {},
+  "plugin_eh_error_ban": "此 IP 被站点暂时封禁",
+  "@plugin_eh_error_ban": {},
+  "plugin_eh_error_network": "无法连接 E-Hentai",
+  "@plugin_eh_error_network": {},
+  "plugin_eh_error_not_configured": "EH 尚未就绪 — 请检查设置",
+  "@plugin_eh_error_not_configured": {},
+  "plugin_eh_error_not_found": "找不到该图库",
+  "@plugin_eh_error_not_found": {},
+  "plugin_eh_error_rate_limited": "站点正在限流，请稍后再试",
+  "@plugin_eh_error_rate_limited": {},
+  "plugin_eh_error_response": "站点返回了意外响应",
+  "@plugin_eh_error_response": {},
+  "plugin_eh_error_unauthorized": "访问被拒绝 — 请检查 Cookies / ExHentai",
+  "@plugin_eh_error_unauthorized": {},
+  "plugin_eh_favorite": "加入收藏",
+  "@plugin_eh_favorite": {},
+  "plugin_eh_open_on_site": "在网站打开",
+  "@plugin_eh_open_on_site": {},
+  "plugin_eh_page_of": "第 {page} / {total} 页",
+  "@plugin_eh_page_of": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_pages": "{count} 页",
+  "@plugin_eh_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_rating": "评分 {rating}",
+  "@plugin_eh_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_read": "阅读",
+  "@plugin_eh_read": {},
+  "plugin_eh_search_hint": "搜索标题、标签、上传者…",
+  "@plugin_eh_search_hint": {},
+  "plugin_eh_section_account": "账户",
+  "@plugin_eh_section_account": {},
+  "plugin_eh_section_categories": "默认分类",
+  "@plugin_eh_section_categories": {},
+  "plugin_eh_settings_title": "EH 设置",
+  "@plugin_eh_settings_title": {},
+  "plugin_eh_show_tab": "显示 EH 标签页",
+  "@plugin_eh_show_tab": {},
+  "plugin_eh_show_tab_description": "启用插件后，在底部导航加入 EH",
+  "@plugin_eh_show_tab_description": {},
+  "plugin_eh_tab_favorites": "收藏",
+  "@plugin_eh_tab_favorites": {},
+  "plugin_eh_tab_front": "首页",
+  "@plugin_eh_tab_front": {},
+  "plugin_eh_tab_popular": "热门",
+  "@plugin_eh_tab_popular": {},
+  "plugin_eh_tags": "标签",
+  "@plugin_eh_tags": {},
+  "plugin_eh_test_connection": "测试连接",
+  "@plugin_eh_test_connection": {},
+  "plugin_eh_test_failed": "EH 测试失败：{detail}",
+  "@plugin_eh_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_test_ok": "站点已响应（{count} 个图库）",
+  "@plugin_eh_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_title": "EH",
+  "@plugin_eh_title": {},
+  "plugin_eh_unfavorite": "取消收藏",
+  "@plugin_eh_unfavorite": {},
+  "plugin_eh_uploader": "上传者 {name}",
+  "@plugin_eh_uploader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_use_exhentai": "使用 ExHentai",
+  "@plugin_eh_use_exhentai": {},
+  "plugin_eh_use_exhentai_description": "需要有效 Cookies；为空时回退到 E-Hentai",
+  "@plugin_eh_use_exhentai_description": {},
   "plugin_immich_album_per_folder": "每个文件夹一个相册",
   "@plugin_immich_album_per_folder": {},
   "plugin_immich_album_per_folder_description": "上传的内容会放进与书签文件夹同名的 Immich 相册；相册不存在时会自动创建",

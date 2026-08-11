@@ -1,5 +1,6 @@
 import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/deepmarks/deepmarks_plugin.dart';
+import 'package:xta/plugins/ehviewer/eh_plugin.dart';
 import 'package:xta/plugins/immich/immich_plugin.dart';
 import 'package:xta/plugins/karakeep/karakeep_plugin.dart';
 import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
@@ -19,6 +20,7 @@ final List<XtaPlugin> builtInPlugins = [
   RedditPlugin(),
   SubstackPlugin(),
   PixivPlugin(),
+  EhViewerPlugin(),
   StocksPlugin(),
   KarakeepPlugin(),
   DeepmarksPlugin(),
@@ -35,4 +37,5 @@ XtaPlugin? pluginById(String id) {
 /// The plugins whose followed accounts are subscriptions and whose posts join a
 /// timeline. Everything that used to name Reddit, Substack, Threads, Bluesky and
 /// the Fediverse one at a time reads this instead.
-List<SubscriptionSource> get subscriptionSources => builtInPlugins.whereType<SubscriptionSource>().toList(growable: false);
+List<SubscriptionSource> get subscriptionSources =>
+    builtInPlugins.whereType<SubscriptionSource>().toList(growable: false);

@@ -183,4 +183,23 @@ void main() {
     expect(rows.every((r) => r['nsfw'] == 0), isTrue);
     await db.close();
   });
+
+  test('migration 53 creates eh_favorite', () async {
+    await databaseFactory.deleteDatabase(databaseName);
+    await _createV34Fixture();
+
+    await Repository().migrate();
+
+    final db = await databaseFactory.openDatabase(databaseName);
+    await db.insert(tableEhFavorite, {
+      'gid': 1,
+      'token': 'abc',
+      'title': 'Sample',
+      'favorited_at': DateTime.now().toIso8601String(),
+    });
+    final rows = await db.query(tableEhFavorite);
+    expect(rows, hasLength(1));
+    expect(rows.single['token'], 'abc');
+    await db.close();
+  });
 }
