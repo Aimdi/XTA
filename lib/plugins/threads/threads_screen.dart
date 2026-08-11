@@ -9,6 +9,7 @@ import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
+import 'package:xta/plugins/threads/threads_search_sheet.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
@@ -71,18 +72,12 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     await feed.refresh(force: force);
   }
 
-  /// Looks a handle up on the Xy server and shows whoever it finds, so an
-  /// account can be seen before it is followed.
+  /// Opens Discover / people search (cookie multi-result, else exact handle).
   Future<void> _lookUpProfile() async {
-    final handle = await showThreadsAddAccountDialog(context, lookup: true);
-    if (handle == null || !mounted) {
-      return;
+    await showThreadsSearchSheet(context);
+    if (mounted) {
+      await context.read<ThreadsFeedStore>().refresh();
     }
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)),
-    );
   }
 
   Future<void> _addAccount() async {
@@ -114,7 +109,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
-            tooltip: l10n.plugin_threads_lookup,
+            tooltip: l10n.plugin_threads_search,
             onPressed: _lookUpProfile,
           ),
           IconButton(
@@ -391,7 +386,7 @@ class _HomePane extends StatelessWidget {
             child: TextButton.icon(
               onPressed: onLookUpProfile,
               icon: const Icon(Icons.search),
-              label: Text(l10n.plugin_threads_lookup),
+              label: Text(l10n.plugin_threads_discover),
             ),
           ),
         ],
@@ -531,9 +526,14 @@ class ThreadsFollowingStrip extends StatelessWidget {
                             height: 40,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: theme.colorScheme.outline),
+                              border: Border.all(
+                                color: theme.colorScheme.outline,
+                              ),
                             ),
-                            child: Icon(Icons.add, color: theme.colorScheme.primary),
+                            child: Icon(
+                              Icons.add,
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
                           // Match the handle line under avatars so the chip sits level.
                           const SizedBox(height: 4 + 14),

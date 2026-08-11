@@ -95,7 +95,8 @@ class MastodonProfile {
     final rawAcct = data['acct'].string?.trim() ?? username;
     final acct = canonicalMastodonAcct(rawAcct, homeDomain: homeDomain);
     final name = data['display_name'].string?.trim();
-    final avatar = data['avatar'].string?.trim() ?? data['avatar_static'].string?.trim();
+    final avatar =
+        data['avatar'].string?.trim() ?? data['avatar_static'].string?.trim();
     final noteHtml = data['note'].string;
 
     return MastodonProfile(
@@ -113,7 +114,8 @@ class MastodonProfile {
     );
   }
 
-  MastodonAccount toAccount() => MastodonAccount(acct: acct, name: displayName, avatarUrl: avatarUrl);
+  MastodonAccount toAccount() =>
+      MastodonAccount(acct: acct, name: displayName, avatarUrl: avatarUrl);
 }
 
 /// An account the reader follows locally — not a Mastodon follow-graph edge.
@@ -123,10 +125,18 @@ class MastodonAccount {
   final String name;
   final String? avatarUrl;
 
-  const MastodonAccount({required this.acct, required this.name, this.avatarUrl});
+  const MastodonAccount({
+    required this.acct,
+    required this.name,
+    this.avatarUrl,
+  });
 
   MastodonAccount copyWith({String? name, String? avatarUrl}) =>
-      MastodonAccount(acct: acct, name: name ?? this.name, avatarUrl: avatarUrl ?? this.avatarUrl);
+      MastodonAccount(
+        acct: acct,
+        name: name ?? this.name,
+        avatarUrl: avatarUrl ?? this.avatarUrl,
+      );
 }
 
 /// Instances the plugin can read through with nothing configured.
@@ -160,17 +170,28 @@ const kMastodonDefaultInstances = [
 /// order they gave them, then the built-in defaults. Duplicates collapse to
 /// their first appearance, so a reader whose home is an origin or a default
 /// never asks it twice.
-List<String> mastodonInstanceCandidates(String acct, {List<String> configured = const []}) {
+List<String> mastodonInstanceCandidates(
+  String acct, {
+  List<String> configured = const [],
+}) {
   final normalisedAcct = normaliseMastodonAcct(acct) ?? acct.trim();
   final at = normalisedAcct.indexOf('@');
-  final origin = at > 0 ? normalisedAcct.substring(at + 1).trim().toLowerCase() : '';
+  final origin = at > 0
+      ? normalisedAcct.substring(at + 1).trim().toLowerCase()
+      : '';
 
-  final ordered = [if (origin.isNotEmpty) 'https://$origin', ...configured, ...kMastodonDefaultInstances];
+  final ordered = [
+    if (origin.isNotEmpty) 'https://$origin',
+    ...configured,
+    ...kMastodonDefaultInstances,
+  ];
 
   final seen = <String>{};
   return [
     for (final candidate in ordered)
-      if (normaliseMastodonInstance(candidate) case final instance? when seen.add(instance)) instance,
+      if (normaliseMastodonInstance(candidate) case final instance?
+          when seen.add(instance))
+        instance,
   ];
 }
 
@@ -188,7 +209,9 @@ String? normaliseMastodonInstance(String input) {
     return null;
   }
   // Reject spaces / percent-encoded junk; hostnames are DNS-like for our purposes.
-  if (uri.host.isEmpty || uri.host.contains('%') || RegExp(r'\s').hasMatch(uri.host)) {
+  if (uri.host.isEmpty ||
+      uri.host.contains('%') ||
+      RegExp(r'\s').hasMatch(uri.host)) {
     return null;
   }
   final port = uri.hasPort ? ':${uri.port}' : '';
@@ -214,12 +237,16 @@ String? mastodonStatusIdFromUrl(String url) {
     return null;
   }
   final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
-  if (segments.length >= 4 && segments[0].toLowerCase() == 'users' && segments[2].toLowerCase() == 'statuses') {
+  if (segments.length >= 4 &&
+      segments[0].toLowerCase() == 'users' &&
+      segments[2].toLowerCase() == 'statuses') {
     final id = segments[3];
     return RegExp(r'^\d+$').hasMatch(id) ? id : null;
   }
   if (segments.length >= 2) {
-    final user = segments[0].startsWith('@') ? segments[0].substring(1) : segments[0];
+    final user = segments[0].startsWith('@')
+        ? segments[0].substring(1)
+        : segments[0];
     final id = segments[1];
     if (user.isNotEmpty && RegExp(r'^\d+$').hasMatch(id)) {
       return id;
@@ -283,7 +310,10 @@ String? normaliseMastodonAcct(String input) {
   final lower = value.toLowerCase();
   if (lower.contains('@')) {
     final parts = lower.split('@');
-    if (parts.length != 2 || parts[0].isEmpty || parts[1].isEmpty || !parts[1].contains('.')) {
+    if (parts.length != 2 ||
+        parts[0].isEmpty ||
+        parts[1].isEmpty ||
+        !parts[1].contains('.')) {
       return null;
     }
     if (!RegExp(r'^[a-z0-9_]+([a-z0-9_.-]*[a-z0-9_])?$').hasMatch(parts[0])) {
@@ -316,7 +346,9 @@ String mastodonHtmlToText(String? contentHtml) {
   if (contentHtml == null || contentHtml.trim().isEmpty) {
     return '';
   }
-  final document = html.parse(contentHtml.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n'));
+  final document = html.parse(
+    contentHtml.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n'),
+  );
   for (final block in document.querySelectorAll('p, div')) {
     block.append(html.parseFragment('\n').nodes.first);
   }
@@ -361,7 +393,9 @@ MastodonLinkCard? mastodonLinkCardOf(Json status) {
   return MastodonLinkCard(
     url: url,
     title: title == null || title.isEmpty ? null : title,
-    description: description == null || description.isEmpty ? null : description,
+    description: description == null || description.isEmpty
+        ? null
+        : description,
     imageUrl: image == null || image.isEmpty ? null : image,
     providerName: provider == null || provider.isEmpty ? null : provider,
     type: type == null || type.isEmpty ? null : type,
@@ -380,17 +414,24 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     return null;
   }
 
-  final author = MastodonProfile.fromJson(status['account'].raw, homeDomain: homeDomain);
+  final author = MastodonProfile.fromJson(
+    status['account'].raw,
+    homeDomain: homeDomain,
+  );
   final spoiler = status['spoiler_text'].string?.trim() ?? '';
   final body = mastodonHtmlToText(status['content'].string);
-  final text = [if (spoiler.isNotEmpty) spoiler, if (body.isNotEmpty) body].join('\n\n');
+  final text = [
+    if (spoiler.isNotEmpty) spoiler,
+    if (body.isNotEmpty) body,
+  ].join('\n\n');
   final images = mastodonImagesOf(status);
   final linkCard = mastodonLinkCardOf(status);
   if (text.isEmpty && images.isEmpty && linkCard == null) {
     return null;
   }
 
-  final url = status['url'].string?.trim() ?? status['uri'].string?.trim() ?? '';
+  final url =
+      status['url'].string?.trim() ?? status['uri'].string?.trim() ?? '';
   if (url.isEmpty) {
     return null;
   }
@@ -402,7 +443,9 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     avatarUrl: author.avatarUrl,
     text: text,
     images: images,
-    publishedAt: DateTime.tryParse(status['created_at'].string ?? '')?.toLocal(),
+    publishedAt: DateTime.tryParse(
+      status['created_at'].string ?? '',
+    )?.toLocal(),
     url: url,
     boosted: boosted,
     repliesCount: status['replies_count'].integer ?? 0,
@@ -416,7 +459,10 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
 List<MastodonPost> parseMastodonStatuses(Object? json, {String? homeDomain}) {
   final root = Json(json);
   final items = root.raw is List ? root.list : const <Json>[];
-  return [for (final item in items) ?mastodonPostFromStatus(item.raw, homeDomain: homeDomain)];
+  return [
+    for (final item in items)
+      ?mastodonPostFromStatus(item.raw, homeDomain: homeDomain),
+  ];
 }
 
 /// A status plus the public conversation around it.
@@ -432,4 +478,33 @@ class MastodonThread {
     this.descendants = const [],
     this.homeDomain,
   });
+}
+
+/// A trending hashtag from `GET /api/v1/trends/tags`.
+class MastodonTrendingTag {
+  final String name;
+  final String? url;
+  final int uses;
+
+  const MastodonTrendingTag({required this.name, this.url, this.uses = 0});
+}
+
+/// Pure parse of a trends/tags JSON array.
+List<MastodonTrendingTag> parseMastodonTrendingTags(Object? json) {
+  final root = Json(json);
+  final items = root.raw is List ? root.list : const <Json>[];
+  final tags = <MastodonTrendingTag>[];
+  for (final item in items) {
+    final name = (item['name'].string ?? '').trim();
+    if (name.isEmpty) continue;
+    var uses = 0;
+    for (final day in item['history'].list) {
+      uses +=
+          int.tryParse(day['uses'].string ?? '') ?? day['uses'].integer ?? 0;
+    }
+    tags.add(
+      MastodonTrendingTag(name: name, url: item['url'].string, uses: uses),
+    );
+  }
+  return tags;
 }

@@ -237,4 +237,22 @@ void main() {
       expect(profile.toAccount().acct, 'gargron@mastodon.social');
     });
   });
+  group('parseMastodonTrendingTags', () {
+    test('sums uses across history days', () {
+      final tags = parseMastodonTrendingTags([
+        {
+          'name': 'flutter',
+          'url': 'https://mastodon.social/tags/flutter',
+          'history': [
+            {'day': '1', 'uses': '3', 'accounts': '2'},
+            {'day': '2', 'uses': '5', 'accounts': '4'},
+          ],
+        },
+        {'name': '', 'history': []},
+      ]);
+      expect(tags, hasLength(1));
+      expect(tags.first.name, 'flutter');
+      expect(tags.first.uses, 8);
+    });
+  });
 }

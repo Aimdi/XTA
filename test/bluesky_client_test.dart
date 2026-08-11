@@ -368,5 +368,30 @@ void main() {
         await custom.verify();
       },
     );
+
+    test('getSuggestions parses actors', () async {
+      final client = BlueskyClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/xrpc/app.bsky.actor.getSuggestions');
+          return http.Response(
+            jsonEncode({
+              'actors': [
+                {
+                  'did': 'did:plc:sugg',
+                  'handle': 'suggested.bsky.social',
+                  'displayName': 'Suggested',
+                },
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final actors = await client.getSuggestions(limit: 5);
+      expect(actors, hasLength(1));
+      expect(actors.first.handle, 'suggested.bsky.social');
+    });
   });
 }

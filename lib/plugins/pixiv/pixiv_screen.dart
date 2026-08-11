@@ -16,7 +16,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/ui/errors.dart';
 
-/// Pixez-style Pixiv home: Following / Ranking / Bookmarks + search.
+/// Flare-style Pixiv home: Following / Recommended / Ranking / Bookmarks + search.
 class PixivScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -29,6 +29,7 @@ class PixivScreen extends StatefulWidget {
 class _PixivScreenState extends State<PixivScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabs;
+  late final PixivIllustListStore _recommended;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
   var _signingIn = false;
@@ -36,6 +37,7 @@ class _PixivScreenState extends State<PixivScreen>
   DateTime? _rankingDate;
   var _bookmarksRestrict = 'public';
 
+  /// Ranking modes Flare pins as first-class feeds, plus XTA's existing set.
   static const _rankingModes = [
     'day',
     'week',
@@ -43,17 +45,23 @@ class _PixivScreenState extends State<PixivScreen>
     'day_male',
     'day_female',
     'week_rookie',
+    'week_original',
+    'day_manga',
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 3, vsync: this);
+    _tabs = TabController(length: 4, vsync: this);
     _tabs.addListener(() {
       if (_tabs.indexIsChanging) return;
       _ensureTabLoaded(_tabs.index);
     });
     final mute = context.read<PixivMuteStore>();
+    _recommended = PixivIllustListStore(
+      ({nextUrl}) => context.read<PixivClient>().recommended(nextUrl: nextUrl),
+      filter: mute.filter,
+    );
     _ranking = PixivIllustListStore(
       ({nextUrl}) => context.read<PixivClient>().ranking(
         mode: _rankingMode,
@@ -100,6 +108,7 @@ class _PixivScreenState extends State<PixivScreen>
   @override
   void dispose() {
     _tabs.dispose();
+    _recommended.destroy();
     _ranking.destroy();
     _bookmarks.destroy();
     super.dispose();
@@ -118,10 +127,14 @@ class _PixivScreenState extends State<PixivScreen>
           context.read<PixivFeedStore>().refresh();
         }
       case 1:
+        if (_recommended.state.isEmpty) {
+          _recommended.refresh();
+        }
+      case 2:
         if (_ranking.state.isEmpty) {
           _ranking.refresh();
         }
-      case 2:
+      case 3:
         if (_bookmarks.state.isEmpty) {
           _bookmarks.refresh();
         }
@@ -187,6 +200,8 @@ class _PixivScreenState extends State<PixivScreen>
     'day_male' => l10n.plugin_pixiv_ranking_day_male,
     'day_female' => l10n.plugin_pixiv_ranking_day_female,
     'week_rookie' => l10n.plugin_pixiv_ranking_rookie,
+    'week_original' => l10n.plugin_pixiv_ranking_week_original,
+    'day_manga' => l10n.plugin_pixiv_ranking_day_manga,
     _ => l10n.plugin_pixiv_ranking_day,
   };
 
@@ -230,8 +245,10 @@ class _PixivScreenState extends State<PixivScreen>
         bottom: hasToken
             ? TabBar(
                 controller: _tabs,
+                isScrollable: true,
                 tabs: [
                   Tab(text: l10n.plugin_pixiv_tab_following),
+                  Tab(text: l10n.plugin_pixiv_tab_recommended),
                   Tab(text: l10n.plugin_pixiv_tab_ranking),
                   Tab(text: l10n.plugin_pixiv_tab_bookmarks),
                 ],
@@ -247,6 +264,12 @@ class _PixivScreenState extends State<PixivScreen>
                   child: _feedTab(
                     store: context.read<PixivFeedStore>(),
                     empty: l10n.plugin_pixiv_empty,
+                  ),
+                ),
+                _KeepAlive(
+                  child: _feedTab(
+                    store: _recommended,
+                    empty: l10n.plugin_pixiv_recommended_empty,
                   ),
                 ),
                 _KeepAlive(child: _rankingTab(l10n)),

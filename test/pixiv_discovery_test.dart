@@ -127,4 +127,47 @@ void main() {
       expect(await client.autocomplete(''), isEmpty);
     });
   });
+
+  group('recommended (Flare Discover)', () {
+    test('recommended illusts hit /v1/illust/recommended', () async {
+      final client = clientAnswering((request) {
+        expect(request.url.path, '/v1/illust/recommended');
+        expect(request.url.queryParameters['include_ranking_illusts'], 'true');
+        return {
+          'illusts': [_illustJson(11), _illustJson(12)],
+          'next_url': 'https://app-api.pixiv.net/v1/illust/recommended?offset=30',
+        };
+      });
+
+      final page = await client.recommended();
+      expect(page.illusts.map((e) => e.id), [11, 12]);
+      expect(page.nextUrl, contains('recommended'));
+    });
+
+    test('recommended users parse user_previews', () async {
+      final client = clientAnswering((request) {
+        expect(request.url.path, '/v1/user/recommended');
+        return {
+          'user_previews': [
+            {
+              'user': {
+                'id': 42,
+                'name': 'Creator',
+                'account': 'creator',
+                'profile_image_urls': {'medium': 'https://example.com/a.jpg'},
+              },
+              'illusts': [],
+            },
+          ],
+          'next_url': null,
+        };
+      });
+
+      final page = await client.recommendedUsers();
+      expect(page.users, hasLength(1));
+      expect(page.users.first.id, 42);
+      expect(page.users.first.name, 'Creator');
+    });
+  });
+
 }

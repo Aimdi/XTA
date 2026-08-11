@@ -7,6 +7,7 @@ import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -32,12 +33,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
   }
 
   Future<void> _lookUpProfile() async {
-    final acct = await showMastodonAddAccountDialog(context, lookup: true);
-    if (acct == null || !mounted) {
-      return;
-    }
-
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: acct)));
+    await showMastodonSearchSheet(context);
     if (mounted) {
       await context.read<MastodonFeedStore>().refresh();
     }
@@ -58,12 +54,17 @@ class _MastodonScreenState extends State<MastodonScreen> {
     try {
       // No instance required any more: the acct's own instance is asked first,
       // then the reader's, then the built-in defaults.
-      final candidates = mastodonInstanceCandidates(acct, configured: mastodonConfiguredInstances(prefs));
+      final candidates = mastodonInstanceCandidates(
+        acct,
+        configured: mastodonConfiguredInstances(prefs),
+      );
       final profile = await client.lookupAnywhere(candidates, acct);
       await accounts.add(profile.toAccount());
     } catch (e) {
       if (mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(mastodonErrorMessage(l10n, e))));
+        messenger.showSnackBar(
+          SnackBar(content: Text(mastodonErrorMessage(l10n, e))),
+        );
       }
       return;
     }
@@ -81,8 +82,16 @@ class _MastodonScreenState extends State<MastodonScreen> {
       appBar: AppBar(
         title: Text(l10n.plugin_mastodon_title),
         actions: [
-          IconButton(icon: const Icon(Icons.search), tooltip: l10n.plugin_mastodon_lookup, onPressed: _lookUpProfile),
-          IconButton(icon: const Icon(Icons.person_add_alt), tooltip: l10n.plugin_mastodon_add, onPressed: _addAccount),
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: l10n.plugin_mastodon_search,
+            onPressed: _lookUpProfile,
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_add_alt),
+            tooltip: l10n.plugin_mastodon_add,
+            onPressed: _addAccount,
+          ),
         ],
       ),
       body: ScopedBuilder<MastodonFeedStore, List<MastodonPost>>.transition(
@@ -110,15 +119,30 @@ class _MastodonScreenState extends State<MastodonScreen> {
       return ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
         store: context.read<MastodonAccountsStore>(),
         onState: (context, accounts) => RefreshIndicator(
-          onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
+          onRefresh: () =>
+              context.read<MastodonFeedStore>().refresh(force: true),
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
             children: [
               Padding(
                 padding: const EdgeInsets.all(32),
-                child: Text(
-                  accounts.isEmpty ? l10n.plugin_mastodon_empty : l10n.plugin_mastodon_no_posts,
-                  textAlign: TextAlign.center,
+                child: Column(
+                  children: [
+                    Text(
+                      accounts.isEmpty
+                          ? l10n.plugin_mastodon_empty
+                          : l10n.plugin_mastodon_no_posts,
+                      textAlign: TextAlign.center,
+                    ),
+                    if (accounts.isEmpty) ...[
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: () => showMastodonSearchSheet(context),
+                        icon: const Icon(Icons.explore_outlined),
+                        label: Text(l10n.plugin_mastodon_discover),
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
@@ -133,14 +157,20 @@ class _MastodonScreenState extends State<MastodonScreen> {
       child: ListView.builder(
         controller: widget.scrollController,
         itemCount: posts.length,
-        itemBuilder: (context, index) =>
-            MastodonPostCard(key: ValueKey(posts[index].id), post: posts[index], showSourceBadge: false),
+        itemBuilder: (context, index) => MastodonPostCard(
+          key: ValueKey(posts[index].id),
+          post: posts[index],
+          showSourceBadge: false,
+        ),
       ),
     );
   }
 }
 
-Future<String?> showMastodonAddAccountDialog(BuildContext context, {bool lookup = false}) {
+Future<String?> showMastodonAddAccountDialog(
+  BuildContext context, {
+  bool lookup = false,
+}) {
   final controller = TextEditingController();
 
   return showDialog<String>(
@@ -151,11 +181,16 @@ Future<String?> showMastodonAddAccountDialog(BuildContext context, {bool lookup 
 
       return StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add),
+          title: Text(
+            lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
+          ),
           content: TextField(
             controller: controller,
             autofocus: true,
-            decoration: InputDecoration(hintText: l10n.plugin_mastodon_handle_hint, errorText: error),
+            decoration: InputDecoration(
+              hintText: l10n.plugin_mastodon_handle_hint,
+              errorText: error,
+            ),
             onSubmitted: (_) {
               final acct = normaliseMastodonAcct(controller.text);
               if (acct == null) {
@@ -166,7 +201,10 @@ Future<String?> showMastodonAddAccountDialog(BuildContext context, {bool lookup 
             },
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel),
+            ),
             TextButton(
               onPressed: () {
                 final acct = normaliseMastodonAcct(controller.text);

@@ -82,7 +82,9 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
       await subscriptions.reloadSubscriptions();
     } catch (e) {
       if (mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(blueskyErrorMessage(l10n, e))));
+        messenger.showSnackBar(
+          SnackBar(content: Text(blueskyErrorMessage(l10n, e))),
+        );
       }
       return;
     }
@@ -118,7 +120,10 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
                 _ => null,
               };
               if (page != null) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => page),
+                );
               }
             },
             itemBuilder: (context) => [
@@ -215,7 +220,9 @@ class _ShellTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = selected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant;
+    final color = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
 
     return Expanded(
       child: InkWell(
@@ -227,7 +234,10 @@ class _ShellTab extends StatelessWidget {
             children: [
               Icon(icon, size: 20, color: color),
               const SizedBox(height: 2),
-              Text(label, style: theme.textTheme.labelMedium!.copyWith(color: color)),
+              Text(
+                label,
+                style: theme.textTheme.labelMedium!.copyWith(color: color),
+              ),
             ],
           ),
         ),
@@ -283,9 +293,23 @@ class _HomePane extends StatelessWidget {
                 if (pending > 0) _PendingAccountsNote(pending: pending),
                 Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Text(
-                    accounts.isEmpty ? l10n.plugin_bluesky_empty : l10n.plugin_bluesky_no_posts,
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    children: [
+                      Text(
+                        accounts.isEmpty
+                            ? l10n.plugin_bluesky_empty
+                            : l10n.plugin_bluesky_no_posts,
+                        textAlign: TextAlign.center,
+                      ),
+                      if (accounts.isEmpty) ...[
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          onPressed: () => showBlueskySearchSheet(context),
+                          icon: const Icon(Icons.explore_outlined),
+                          label: Text(l10n.plugin_bluesky_discover),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ],
@@ -315,7 +339,11 @@ class _HomePane extends StatelessWidget {
                 return _PendingAccountsNote(pending: pending);
               }
               final post = posts[index - (pending > 0 ? 1 : 0)];
-              return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
+              return BlueskyPostCard(
+                key: ValueKey(post.uri),
+                post: post,
+                showSourceBadge: false,
+              );
             },
           );
         },
@@ -344,7 +372,9 @@ class _PendingAccountsNote extends StatelessWidget {
           Expanded(
             child: Text(
               L10n.of(context).plugin_bluesky_accounts_pending(pending),
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.hintColor,
+              ),
             ),
           ),
         ],
@@ -403,7 +433,10 @@ class _LikedPane extends StatelessWidget {
 }
 
 /// Asks for a handle or DID, and hands back the normalised one.
-Future<String?> showBlueskyAddAccountDialog(BuildContext context, {bool lookup = false}) {
+Future<String?> showBlueskyAddAccountDialog(
+  BuildContext context, {
+  bool lookup = false,
+}) {
   final controller = TextEditingController();
 
   return showDialog<String>(
@@ -414,7 +447,9 @@ Future<String?> showBlueskyAddAccountDialog(BuildContext context, {bool lookup =
 
       return StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text(lookup ? l10n.plugin_bluesky_lookup : l10n.plugin_bluesky_add),
+          title: Text(
+            lookup ? l10n.plugin_bluesky_lookup : l10n.plugin_bluesky_add,
+          ),
           content: TextField(
             controller: controller,
             autofocus: true,
@@ -432,7 +467,10 @@ Future<String?> showBlueskyAddAccountDialog(BuildContext context, {bool lookup =
             },
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel),
+            ),
             TextButton(
               onPressed: () {
                 final handle = normaliseBlueskyHandle(controller.text);
