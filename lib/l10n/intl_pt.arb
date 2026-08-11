@@ -987,6 +987,11 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "Ir",
+  "plugin_eh_jump_hint": "1–{total}",
+  "plugin_eh_jump_invalid": "Introduza uma página entre 1 e {total}",
+  "plugin_eh_jump_to_page": "Ir para a página",
+  "plugin_eh_load_more_previews": "Carregar mais pré-visualizações",
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1008,6 +1013,7 @@
       }
     }
   },
+  "plugin_eh_previews": "Pré-visualizações",
   "plugin_eh_rating": "Rating {rating}",
   "@plugin_eh_rating": {
     "placeholders": {
@@ -2233,5 +2239,11 @@
   "zen_mode_page_cap": "Comprimento do feed no modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantas páginas o feed carrega no modo zen antes de fazer uma pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_eh_jump_go": {},
+  "@plugin_eh_jump_hint": {},
+  "@plugin_eh_jump_invalid": {},
+  "@plugin_eh_jump_to_page": {},
+  "@plugin_eh_load_more_previews": {},
+  "@plugin_eh_previews": {}
 }

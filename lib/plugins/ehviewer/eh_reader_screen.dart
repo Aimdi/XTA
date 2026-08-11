@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
@@ -30,6 +34,7 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
   EhImagePage? _page;
   Object? _error;
   var _loading = true;
+  var _jumping = false;
 
   @override
   void initState() {
@@ -55,6 +60,7 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         _page = page;
         _loading = false;
       });
+      _prefetchNext(page);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -62,6 +68,26 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         _loading = false;
       });
     }
+  }
+
+  void _prefetchNext(EhImagePage page) {
+    final link = parseEhPageLink(page.nextPageUrl);
+    if (link == null) return;
+    final client = context.read<EhClient>();
+    unawaited(() async {
+      try {
+        final next = await client.imagePage(
+          gid: widget.gallery.gid,
+          pageToken: link.pageToken,
+          page: link.page,
+        );
+        if (!mounted) return;
+        await precacheImage(
+          ExtendedNetworkImageProvider(next.imageUrl, cache: true),
+          context,
+        );
+      } catch (_) {}
+    }());
   }
 
   Future<void> _go(EhPreview preview) async {
@@ -116,6 +142,86 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
     await _go(EhPreview(pageToken: link.pageToken, page: link.page));
   }
 
+  Future<void> _jumpDialog() async {
+    final l10n = L10n.of(context);
+    final total = widget.gallery.pageCount ?? _previews.length;
+    final controller = TextEditingController(text: '${_current.page}');
+    final page = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.plugin_eh_jump_to_page),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: InputDecoration(
+            hintText: l10n.plugin_eh_jump_hint(total),
+          ),
+          onSubmitted: (value) {
+            final n = int.tryParse(value);
+            Navigator.pop(context, n);
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () =>
+                Navigator.pop(context, int.tryParse(controller.text)),
+            child: Text(l10n.plugin_eh_jump_go),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (page == null || !mounted) return;
+    await _jumpTo(page);
+  }
+
+  Future<void> _jumpTo(int page) async {
+    final l10n = L10n.of(context);
+    final total = widget.gallery.pageCount ?? _previews.length;
+    if (page < 1 || page > total) {
+      showSnackBar(
+        context,
+        icon: '⚠️',
+        message: l10n.plugin_eh_jump_invalid(total),
+      );
+      return;
+    }
+    final existing = _previews.where((p) => p.page == page).firstOrNull;
+    if (existing != null) {
+      await _go(existing);
+      return;
+    }
+    setState(() => _jumping = true);
+    try {
+      final preview = await context.read<EhClient>().previewForPage(
+        gid: widget.gallery.gid,
+        token: widget.gallery.token,
+        page: page,
+      );
+      if (!mounted) return;
+      if (preview == null) {
+        showSnackBar(
+          context,
+          icon: '⚠️',
+          message: l10n.plugin_eh_jump_invalid(total),
+        );
+        return;
+      }
+      await _go(preview);
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(context, icon: '⚠️', message: ehErrorMessage(l10n, e));
+    } finally {
+      if (mounted) setState(() => _jumping = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -127,6 +233,19 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         title: Text(l10n.plugin_eh_page_of(_current.page, total)),
+        actions: [
+          IconButton(
+            tooltip: l10n.plugin_eh_jump_to_page,
+            onPressed: _loading || _jumping ? null : _jumpDialog,
+            icon: _jumping
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.shortcut),
+          ),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -164,9 +283,12 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
               onPressed: !_canPrev || _loading ? null : _goPrev,
               icon: const Icon(Icons.chevron_left),
             ),
-            Text(
-              l10n.plugin_eh_page_of(_current.page, total),
-              style: const TextStyle(color: Colors.white),
+            TextButton(
+              onPressed: _loading || _jumping ? null : _jumpDialog,
+              child: Text(
+                l10n.plugin_eh_page_of(_current.page, total),
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
             IconButton(
               color: Colors.white,

@@ -987,6 +987,11 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "お気に入りに追加",
   "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "移動",
+  "plugin_eh_jump_hint": "1–{total}",
+  "plugin_eh_jump_invalid": "1〜{total} のページ番号を入力してください",
+  "plugin_eh_jump_to_page": "ページへ移動",
+  "plugin_eh_load_more_previews": "プレビューをさらに読み込む",
   "plugin_eh_open_on_site": "サイトで開く",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "{page} / {total} ページ",
@@ -1008,6 +1013,7 @@
       }
     }
   },
+  "plugin_eh_previews": "プレビュー",
   "plugin_eh_rating": "評価 {rating}",
   "@plugin_eh_rating": {
     "placeholders": {
@@ -2233,5 +2239,11 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_eh_jump_go": {},
+  "@plugin_eh_jump_hint": {},
+  "@plugin_eh_jump_invalid": {},
+  "@plugin_eh_jump_to_page": {},
+  "@plugin_eh_load_more_previews": {},
+  "@plugin_eh_previews": {}
 }

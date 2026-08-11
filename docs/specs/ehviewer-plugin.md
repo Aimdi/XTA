@@ -29,7 +29,8 @@ the public HTML shapes and the documented `api.e-hentai.org` `gdata` method
 | Home tabs | Popular · Front · Favorites |
 | Search | Query + category chips (Doujinshi, Manga, …) |
 | Detail | Cover, titles, uploader, tags, open on site, favorite toggle |
-| Reader | Sequential page viewer (next / previous) |
+| Previews | Paginated preview grid (`?p=N` sheets), tap to open reader |
+| Reader | Sequential viewer, jump-to-page, next-page image prefetch |
 | Settings | Site base, cookies, test connection, clear cookies |
 | Storage | `eh_favorite` table (migration 53) |
 | Catalogue | Private / unavailable |
@@ -41,8 +42,8 @@ the public HTML shapes and the documented `api.e-hentai.org` `gdata` method
 - Downloads / archives / torrents
 - Comments
 - Advanced search (min rating, file size, disable filters)
-- Multi-page preview grid pagination beyond first sheet
-- Jump-to-page / preloading cache policy like EhViewer
+- Full sprite-perfect preview cropping across all display modes
+- Offline archive reader / download manager like EhViewer
 
 ## Hard rules
 

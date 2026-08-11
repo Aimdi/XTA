@@ -102,6 +102,8 @@ class EhGalleryPage {
 class EhGalleryDetail extends EhGallery {
   final List<EhPreview> previews;
   final int? fileSizeBytes;
+  final int previewSheetIndex;
+  final int previewSheetCount;
 
   const EhGalleryDetail({
     required super.gid,
@@ -117,6 +119,8 @@ class EhGalleryDetail extends EhGallery {
     super.tags = const [],
     this.previews = const [],
     this.fileSizeBytes,
+    this.previewSheetIndex = 0,
+    this.previewSheetCount = 1,
   });
 }
 
@@ -124,8 +128,14 @@ class EhPreview {
   final String pageToken;
   final int page;
   final String? thumbUrl;
+  final double? thumbOffsetX;
 
-  const EhPreview({required this.pageToken, required this.page, this.thumbUrl});
+  const EhPreview({
+    required this.pageToken,
+    required this.page,
+    this.thumbUrl,
+    this.thumbOffsetX,
+  });
 }
 
 class EhImagePage {

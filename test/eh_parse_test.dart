@@ -54,8 +54,15 @@ void main() {
 <div id="gd1" style="background:url(https://ehgt.org/c.webp)"></div>
 <div id="td_artist:bob"></div>
 <div id="td_female:solo"></div>
-<a href="https://e-hentai.org/s/aaa111/9-1"><img/></a>
-<a href="https://e-hentai.org/s/bbb222/9-2"><img/></a>
+<table class="ptt"><tr>
+<td class="ptds"><a>1</a></td>
+<td><a href="https://e-hentai.org/g/9/tok/?p=1">2</a></td>
+<td><a href="https://e-hentai.org/g/9/tok/?p=2">3</a></td>
+</tr></table>
+<div id="gdt">
+<a href="https://e-hentai.org/s/aaa111/9-1"><div style="background:url(https://ehgt.org/s.webp) -0px 0"></div></a>
+<a href="https://e-hentai.org/s/bbb222/9-2"><div style="background:url(https://ehgt.org/s.webp) -200px 0"></div></a>
+</div>
 ''';
       final detail = parseEhGalleryDetail(html, gid: 9, token: 'tok');
       expect(detail, isNotNull);
@@ -67,6 +74,10 @@ void main() {
       expect(detail.rating, 4.5);
       expect(detail.tags, containsAll(['artist:bob', 'female:solo']));
       expect(detail.previews.map((p) => p.page), [1, 2]);
+      expect(detail.previews.first.thumbUrl, 'https://ehgt.org/s.webp');
+      expect(detail.previews[1].thumbOffsetX, -200);
+      expect(detail.previewSheetIndex, 0);
+      expect(detail.previewSheetCount, 3);
     });
   });
 

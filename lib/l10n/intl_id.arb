@@ -987,6 +987,11 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "Buka",
+  "plugin_eh_jump_hint": "1–{total}",
+  "plugin_eh_jump_invalid": "Masukkan halaman antara 1 dan {total}",
+  "plugin_eh_jump_to_page": "Lompat ke halaman",
+  "plugin_eh_load_more_previews": "Muat pratinjau lainnya",
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1008,6 +1013,7 @@
       }
     }
   },
+  "plugin_eh_previews": "Pratinjau",
   "plugin_eh_rating": "Rating {rating}",
   "@plugin_eh_rating": {
     "placeholders": {
@@ -2233,5 +2239,11 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_eh_jump_go": {},
+  "@plugin_eh_jump_hint": {},
+  "@plugin_eh_jump_invalid": {},
+  "@plugin_eh_jump_to_page": {},
+  "@plugin_eh_load_more_previews": {},
+  "@plugin_eh_previews": {}
 }

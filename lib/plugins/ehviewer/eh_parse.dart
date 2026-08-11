@@ -28,6 +28,13 @@ final _uploader = RegExp(
 final _nextPage = RegExp(
   r'id="unext"[^>]*href="([^"]+)"|href="([^"]+)"[^>]*>\s*&gt;\s*<',
 );
+final _previewAnchor = RegExp(
+  r'<a[^>]+href="[^"]*?/s/([0-9a-zA-Z]+)/(\d+)-(\d+)[^"]*"[^>]*>'
+  r'(.*?)</a>',
+  dotAll: true,
+);
+final _previewThumb = RegExp(r'url\(([^)]+)\)\s*(-?\d+)px');
+final _previewSheetLink = RegExp(r'[?&]p=(\d+)');
 
 EhGalleryPage parseEhGalleryList(String html) {
   final rows = html.split(RegExp(r'<tr[^>]*>'));
@@ -119,14 +126,8 @@ EhGalleryDetail? parseEhGalleryDetail(
       _decode(m.group(1)!.replaceAll('+', ' ')),
   ];
 
-  final previews = <EhPreview>[];
-  final seenPages = <int>{};
-  for (final m in _pageHref.allMatches(html)) {
-    final page = int.tryParse(m.group(3) ?? '');
-    if (page == null || !seenPages.add(page)) continue;
-    previews.add(EhPreview(pageToken: m.group(1)!, page: page));
-  }
-  previews.sort((a, b) => a.page.compareTo(b.page));
+  final previews = parseEhPreviewSheet(html);
+  final sheetMeta = parseEhPreviewSheetMeta(html);
 
   return EhGalleryDetail(
     gid: gid,
@@ -141,7 +142,48 @@ EhGalleryDetail? parseEhGalleryDetail(
     rating: rating,
     tags: tags,
     previews: previews,
+    previewSheetIndex: sheetMeta.index,
+    previewSheetCount: sheetMeta.count,
   );
+}
+
+/// Preview tiles from one gallery HTML sheet (`?p=N`).
+List<EhPreview> parseEhPreviewSheet(String html) {
+  final previews = <EhPreview>[];
+  final seenPages = <int>{};
+  for (final m in _previewAnchor.allMatches(html)) {
+    final page = int.tryParse(m.group(3) ?? '');
+    if (page == null || !seenPages.add(page)) continue;
+    final thumb = _previewThumb.firstMatch(m.group(4) ?? '');
+    previews.add(
+      EhPreview(
+        pageToken: m.group(1)!,
+        page: page,
+        thumbUrl: _decodeAttr(thumb?.group(1)),
+        thumbOffsetX: double.tryParse(thumb?.group(2) ?? ''),
+      ),
+    );
+  }
+  previews.sort((a, b) => a.page.compareTo(b.page));
+  return previews;
+}
+
+({int index, int count}) parseEhPreviewSheetMeta(String html) {
+  var maxP = 0;
+  for (final m in _previewSheetLink.allMatches(html)) {
+    final p = int.tryParse(m.group(1) ?? '') ?? 0;
+    if (p > maxP) maxP = p;
+  }
+  final label =
+      int.tryParse(
+        RegExp(
+              r'class="ptds"[^>]*>\s*<a[^>]*>(\d+)<',
+            ).firstMatch(html)?.group(1) ??
+            '1',
+      ) ??
+      1;
+  final index = (label - 1).clamp(0, maxP);
+  return (index: index, count: maxP + 1);
 }
 
 /// Parses `/s/{pageToken}/{gid}-{page}` from a next/prev (or absolute) URL.

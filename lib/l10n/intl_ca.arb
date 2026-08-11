@@ -987,6 +987,11 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "Anar-hi",
+  "plugin_eh_jump_hint": "1–{total}",
+  "plugin_eh_jump_invalid": "Introdueix una pàgina entre 1 i {total}",
+  "plugin_eh_jump_to_page": "Anar a la pàgina",
+  "plugin_eh_load_more_previews": "Carrega més previsualitzacions",
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1008,6 +1013,7 @@
       }
     }
   },
+  "plugin_eh_previews": "Previsualitzacions",
   "plugin_eh_rating": "Rating {rating}",
   "@plugin_eh_rating": {
     "placeholders": {
@@ -2233,5 +2239,11 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_eh_jump_go": {},
+  "@plugin_eh_jump_hint": {},
+  "@plugin_eh_jump_invalid": {},
+  "@plugin_eh_jump_to_page": {},
+  "@plugin_eh_load_more_previews": {},
+  "@plugin_eh_previews": {}
 }

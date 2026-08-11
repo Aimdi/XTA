@@ -21,10 +21,13 @@ void main() {
       PluginCategory.bookmarks,
       PluginCategory.media,
     ]);
-    expect(groups[0].plugins.map((p) => p.id), containsAll(['threads', 'bluesky', 'mastodon']));
+    expect(
+      groups[0].plugins.map((p) => p.id),
+      containsAll(['threads', 'bluesky', 'mastodon']),
+    );
     expect(groups[1].plugins.single.id, 'reddit');
     expect(groups[2].plugins.single.id, 'substack');
-    expect(groups[3].plugins.single.id, 'pixiv');
+    expect(groups[3].plugins.map((p) => p.id), ['pixiv', 'ehviewer']);
     expect(groups[4].plugins.single.id, 'stocks');
   });
 }

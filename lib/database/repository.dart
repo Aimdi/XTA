@@ -734,10 +734,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   52: [
     // Reader-marked adult groups: board sinks them under a Censored section.
     // Distinct from content_filter, which filters posts inside a custom feed.
-    SqlMigration(
-      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN nsfw',
-    ),
+    // Tolerant: partial fixtures (and the indexes upgrade test) may omit the
+    // groups table — a bare ALTER would brick later migrations.
+    Migration(Operation(_addSubscriptionGroupNsfwColumn)),
   ],
   53: [
     SqlMigration(
@@ -816,6 +815,16 @@ Future<void> _addSubscriptionMaxPostsColumn(Database db) async {
     Repository.log.warning(
       'Could not add max_posts_per_load to $tableSubscription: $e',
     );
+  }
+}
+
+Future<void> _addSubscriptionGroupNsfwColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not add nsfw to $tableSubscriptionGroup: $e');
   }
 }
 

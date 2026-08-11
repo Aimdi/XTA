@@ -987,6 +987,11 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "Add to favorites",
   "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "이동",
+  "plugin_eh_jump_hint": "1–{total}",
+  "plugin_eh_jump_invalid": "1에서 {total} 사이의 페이지를 입력하세요",
+  "plugin_eh_jump_to_page": "페이지로 이동",
+  "plugin_eh_load_more_previews": "미리보기 더 불러오기",
   "plugin_eh_open_on_site": "Open on site",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "Page {page} of {total}",
@@ -1008,6 +1013,7 @@
       }
     }
   },
+  "plugin_eh_previews": "미리보기",
   "plugin_eh_rating": "Rating {rating}",
   "@plugin_eh_rating": {
     "placeholders": {
@@ -2233,5 +2239,11 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_eh_jump_go": {},
+  "@plugin_eh_jump_hint": {},
+  "@plugin_eh_jump_invalid": {},
+  "@plugin_eh_jump_to_page": {},
+  "@plugin_eh_load_more_previews": {},
+  "@plugin_eh_previews": {}
 }

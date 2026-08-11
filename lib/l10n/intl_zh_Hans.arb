@@ -987,6 +987,11 @@
   "@plugin_eh_error_unauthorized": {},
   "plugin_eh_favorite": "加入收藏",
   "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "前往",
+  "plugin_eh_jump_hint": "1–{total}",
+  "plugin_eh_jump_invalid": "请输入 1 到 {total} 之间的页码",
+  "plugin_eh_jump_to_page": "跳转到页",
+  "plugin_eh_load_more_previews": "加载更多预览",
   "plugin_eh_open_on_site": "在网站打开",
   "@plugin_eh_open_on_site": {},
   "plugin_eh_page_of": "第 {page} / {total} 页",
@@ -1008,6 +1013,7 @@
       }
     }
   },
+  "plugin_eh_previews": "预览",
   "plugin_eh_rating": "评分 {rating}",
   "@plugin_eh_rating": {
     "placeholders": {
@@ -2233,5 +2239,11 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_eh_jump_go": {},
+  "@plugin_eh_jump_hint": {},
+  "@plugin_eh_jump_invalid": {},
+  "@plugin_eh_jump_to_page": {},
+  "@plugin_eh_load_more_previews": {},
+  "@plugin_eh_previews": {}
 }

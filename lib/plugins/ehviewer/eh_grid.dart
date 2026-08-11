@@ -184,3 +184,54 @@ class EhGalleryTile extends StatelessWidget {
     );
   }
 }
+
+/// Crops one tile out of EH's horizontal preview sprite sheet.
+class EhSpriteThumb extends StatelessWidget {
+  final String url;
+  final double offsetX;
+  final double tileWidth;
+
+  const EhSpriteThumb({
+    super.key,
+    required this.url,
+    required this.offsetX,
+    this.tileWidth = 200,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scale = constraints.maxWidth / tileWidth;
+        return ClipRect(
+          child: Transform.translate(
+            offset: Offset(-offsetX.abs() * scale, 0),
+            child: OverflowBox(
+              alignment: Alignment.topLeft,
+              maxWidth: double.infinity,
+              maxHeight: constraints.maxHeight,
+              child: ExtendedImage.network(
+                url,
+                height: constraints.maxHeight,
+                fit: BoxFit.fitHeight,
+                cache: true,
+                timeLimit: ehImageTimeLimit,
+                retries: 1,
+                loadStateChanged: (state) {
+                  if (state.extendedImageLoadState == LoadState.failed) {
+                    return ColoredBox(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
+                    );
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

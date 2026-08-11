@@ -34,12 +34,16 @@ const _keys = {
   'accounts',
   'profileNotes',
   'antennas',
+  'ehFavorites',
 };
 
 void main() {
   group('the backup file format', () {
     test('writes exactly the keys older builds read', () {
-      final json = SettingsData(exportedAt: DateTime.utc(2026), appVersion: 'test').toJson();
+      final json = SettingsData(
+        exportedAt: DateTime.utc(2026),
+        appVersion: 'test',
+      ).toJson();
 
       expect(json.keys.toSet(), _keys);
     });
@@ -52,7 +56,10 @@ void main() {
     });
 
     test('a header-less file is read as the legacy version', () {
-      expect(SettingsData.fromJson({}).formatVersion, legacyBackupFormatVersion);
+      expect(
+        SettingsData.fromJson({}).formatVersion,
+        legacyBackupFormatVersion,
+      );
     });
 
     test('an empty section is not the same as a missing one', () {

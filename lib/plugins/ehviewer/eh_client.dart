@@ -103,8 +103,13 @@ class EhClient {
   Future<EhGalleryDetail> galleryDetail({
     required int gid,
     required String token,
+    int previewSheet = 0,
   }) async {
-    final uri = Uri.parse('$host/g/$gid/$token/');
+    final uri = Uri.parse(
+      previewSheet <= 0
+          ? '$host/g/$gid/$token/'
+          : '$host/g/$gid/$token/?p=$previewSheet',
+    );
     final response = await _get(uri);
     _throwIfBanned(response.body, uri.toString());
     final detail = parseEhGalleryDetail(response.body, gid: gid, token: token);
@@ -112,6 +117,40 @@ class EhClient {
       throw EhException(EhErrorKind.badResponse, 'Could not parse gallery');
     }
     return detail;
+  }
+
+  /// Loads one preview sheet (`?p=`) and returns its tiles.
+  Future<List<EhPreview>> galleryPreviewSheet({
+    required int gid,
+    required String token,
+    required int previewSheet,
+  }) async {
+    final detail = await galleryDetail(
+      gid: gid,
+      token: token,
+      previewSheet: previewSheet,
+    );
+    return detail.previews;
+  }
+
+  /// Resolves the page token for [page] by fetching the matching preview sheet.
+  Future<EhPreview?> previewForPage({
+    required int gid,
+    required String token,
+    required int page,
+    int pagesPerSheet = 20,
+  }) async {
+    if (page < 1) return null;
+    final sheet = (page - 1) ~/ pagesPerSheet;
+    final previews = await galleryPreviewSheet(
+      gid: gid,
+      token: token,
+      previewSheet: sheet,
+    );
+    for (final preview in previews) {
+      if (preview.page == page) return preview;
+    }
+    return null;
   }
 
   Future<EhGallery?> galleryMeta({

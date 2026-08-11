@@ -23,8 +23,12 @@ class EhGalleryScreen extends StatefulWidget {
 
 class _EhGalleryScreenState extends State<EhGalleryScreen> {
   EhGalleryDetail? _detail;
+  final _previews = <EhPreview>[];
   Object? _error;
   var _loading = true;
+  var _loadingMorePreviews = false;
+  var _nextPreviewSheet = 1;
+  var _previewSheetCount = 1;
 
   @override
   void initState() {
@@ -36,6 +40,8 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _previews.clear();
+      _nextPreviewSheet = 1;
     });
     try {
       final detail = await context.read<EhClient>().galleryDetail(
@@ -45,6 +51,11 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
       if (!mounted) return;
       setState(() {
         _detail = detail;
+        _previews
+          ..clear()
+          ..addAll(detail.previews);
+        _previewSheetCount = detail.previewSheetCount;
+        _nextPreviewSheet = 1;
         _loading = false;
       });
     } catch (e) {
@@ -54,6 +65,46 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
         _loading = false;
       });
     }
+  }
+
+  bool get _hasMorePreviews => _nextPreviewSheet < _previewSheetCount;
+
+  Future<void> _loadMorePreviews() async {
+    if (_loadingMorePreviews || !_hasMorePreviews) return;
+    setState(() => _loadingMorePreviews = true);
+    try {
+      final sheet = await context.read<EhClient>().galleryPreviewSheet(
+        gid: widget.gallery.gid,
+        token: widget.gallery.token,
+        previewSheet: _nextPreviewSheet,
+      );
+      if (!mounted) return;
+      final seen = {for (final p in _previews) p.page};
+      setState(() {
+        for (final preview in sheet) {
+          if (seen.add(preview.page)) _previews.add(preview);
+        }
+        _previews.sort((a, b) => a.page.compareTo(b.page));
+        _nextPreviewSheet++;
+        _loadingMorePreviews = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loadingMorePreviews = false);
+    }
+  }
+
+  void _openReader(EhPreview preview) {
+    final gallery = _detail ?? widget.gallery;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EhReaderScreen(
+          gallery: gallery,
+          initialPreview: preview,
+          previews: List.of(_previews),
+        ),
+      ),
+    );
   }
 
   @override
@@ -150,20 +201,11 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
                     ],
                   ),
                 ),
-                if (_detail?.previews.isNotEmpty == true)
+                if (_previews.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: FilledButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EhReaderScreen(
-                            gallery: gallery,
-                            initialPreview: _detail!.previews.first,
-                            previews: _detail!.previews,
-                          ),
-                        ),
-                      ),
+                      onPressed: () => _openReader(_previews.first),
                       icon: const Icon(Icons.menu_book_outlined),
                       label: Text(l10n.plugin_eh_read),
                     ),
@@ -193,6 +235,92 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
                       ],
                     ),
                   ),
+                ],
+                if (_previews.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      l10n.plugin_eh_previews,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 6,
+                            crossAxisSpacing: 6,
+                            childAspectRatio: 0.7,
+                          ),
+                      itemCount: _previews.length,
+                      itemBuilder: (context, index) {
+                        final preview = _previews[index];
+                        return Material(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(6),
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: () => _openReader(preview),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                if (preview.thumbUrl != null)
+                                  EhSpriteThumb(
+                                    url: preview.thumbUrl!,
+                                    offsetX: preview.thumbOffsetX ?? 0,
+                                  )
+                                else
+                                  const ColoredBox(color: Colors.black12),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: ColoredBox(
+                                    color: Colors.black54,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 2,
+                                        horizontal: 4,
+                                      ),
+                                      child: Text(
+                                        '${preview.page}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  if (_hasMorePreviews)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                      child: OutlinedButton(
+                        onPressed: _loadingMorePreviews
+                            ? null
+                            : _loadMorePreviews,
+                        child: _loadingMorePreviews
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(l10n.plugin_eh_load_more_previews),
+                      ),
+                    ),
                 ],
               ],
             ),
