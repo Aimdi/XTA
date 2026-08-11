@@ -10,6 +10,7 @@ import 'package:xta/plugins/substack/substack_note_card.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -762,7 +763,54 @@ class _LibraryPaneState extends State<_LibraryPane> {
                           subtitle: Text(
                             Uri.tryParse(pub.baseUrl)?.host ?? pub.baseUrl,
                           ),
-                          trailing: const Icon(Icons.chevron_right),
+                          trailing: PopupMenuButton<String>(
+                            onSelected: (value) async {
+                              if (value == 'group') {
+                                await addSubstackPublicationToGroup(
+                                  context,
+                                  pub,
+                                );
+                                return;
+                              }
+                              if (value != 'unfollow') return;
+                              final subscriptions = context
+                                  .read<SubscriptionsModel>();
+                              final ok = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(l10n.plugin_substack_unfollow),
+                                  content: Text(pub.name),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: Text(l10n.cancel),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: Text(
+                                        l10n.plugin_substack_unfollow,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (ok != true) return;
+                              await widget.pubs.remove(pub.id);
+                              await subscriptions.reloadSubscriptions();
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'group',
+                                child: Text(l10n.add_to_group),
+                              ),
+                              PopupMenuItem(
+                                value: 'unfollow',
+                                child: Text(l10n.plugin_substack_unfollow),
+                              ),
+                            ],
+                          ),
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -770,32 +818,6 @@ class _LibraryPaneState extends State<_LibraryPane> {
                                   SubstackArchiveScreen(publication: pub),
                             ),
                           ),
-                          onLongPress: () async {
-                            final subscriptions = context
-                                .read<SubscriptionsModel>();
-                            final ok = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text(l10n.plugin_substack_unfollow),
-                                content: Text(pub.name),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, false),
-                                    child: Text(l10n.cancel),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () =>
-                                        Navigator.pop(context, true),
-                                    child: Text(l10n.plugin_substack_unfollow),
-                                  ),
-                                ],
-                              ),
-                            );
-                            if (ok != true) return;
-                            await widget.pubs.remove(pub.id);
-                            await subscriptions.reloadSubscriptions();
-                          },
                         );
                       },
                     );

@@ -6,6 +6,7 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
@@ -303,16 +304,28 @@ class _SubstackSearchSheetState extends State<_SubstackSearchSheet> {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          trailing: following
-              ? Icon(
-                  Icons.check_circle_outline,
-                  color: Theme.of(context).colorScheme.primary,
-                )
-              : IconButton(
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!following)
+                IconButton(
                   tooltip: l10n.plugin_substack_follow,
                   icon: const Icon(Icons.add_circle_outline),
                   onPressed: () => _follow(publication),
+                )
+              else
+                Icon(
+                  Icons.check_circle_outline,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
+              IconButton(
+                tooltip: l10n.add_to_group,
+                icon: const Icon(Icons.group_add_outlined),
+                onPressed: () =>
+                    addSubstackPublicationToGroup(context, publication),
+              ),
+            ],
+          ),
           onTap: () => _open(publication),
         );
       },

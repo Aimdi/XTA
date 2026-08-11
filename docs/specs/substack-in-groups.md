@@ -17,10 +17,17 @@ add-publication screens are untouched.
 Only one entry point exists at a time: the Groups row appears exactly when the
 plugin is enabled and its tab is off.
 
-## 2. Newsletters inside a normal group — not shipped, and here is why
+## 2. Newsletters inside a normal group — shipped (interleaving)
 
-Substack posts cannot be dropped into a group feed as things stand. The feed
-pipeline is typed on `TweetChain` from end to end:
+Group feeds load Substack members via `SubscriptionSource` / interleaved
+items. What was still missing was an **Add to group** control on Substack’s
+own screens (archive, Notes, Discover, Library) — Follow alone left
+publications out of groups unless you dug through People or the group edit
+sheet. That control now mirrors Bluesky / Threads / Mastodon profiles.
+
+## 3. Historical options (kept for context)
+
+So a newsletter post in a group feed needed one of:
 
 | Layer | Type |
 |---|---|
