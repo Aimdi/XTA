@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "名稱、帳號或個人頁網址",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "使用者",
+  "plugin_bluesky_search_posts": "貼文",
+  "plugin_bluesky_search_posts_hint": "搜尋貼文或 #標籤",
   "plugin_bluesky_settings_intro": "無需設定即可閱讀 — 公共 AppView 已填好。只有自建時才改。不需要登入 Bluesky。",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "測試 AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "禪模式時間軸長度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

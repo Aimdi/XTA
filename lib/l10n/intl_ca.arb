@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Nom, identificador o URL del perfil",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Persones",
+  "plugin_bluesky_search_posts": "Publicacions",
+  "plugin_bluesky_search_posts_hint": "Cerca publicacions o #etiquetes",
   "plugin_bluesky_settings_intro": "La lectura funciona sense configuració: l’AppView públic ja està omplert. Canvieu-lo només si en teniu un de propi. No cal cap compte de Bluesky.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Prova l’AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

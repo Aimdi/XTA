@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Nume, handle sau URL de profil",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Persoane",
+  "plugin_bluesky_search_posts": "Postări",
+  "plugin_bluesky_search_posts_hint": "Caută postări sau #taguri",
   "plugin_bluesky_settings_intro": "Citirea funcționează fără configurare — AppView-ul public e deja completat. Schimbă-l doar dacă ai unul propriu. Nu e nevoie de cont Bluesky.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Testează AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

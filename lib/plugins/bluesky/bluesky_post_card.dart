@@ -7,9 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
+import 'package:xta/plugins/bluesky/bluesky_facets.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_like_button.dart';
@@ -47,7 +49,10 @@ class BlueskyPostCard extends StatelessWidget {
       onOpen!();
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post)),
+    );
   }
 
   void _openAuthor(BuildContext context) {
@@ -56,7 +61,10 @@ class BlueskyPostCard extends StatelessWidget {
       return;
     }
     final actor = post.did.isNotEmpty ? post.did : post.handle;
-    Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)),
+    );
   }
 
   void _openBrowser(BuildContext context) {
@@ -65,6 +73,26 @@ class BlueskyPostCard extends StatelessWidget {
       return;
     }
     openUri(context, post.url);
+  }
+
+  void _onFacet(BuildContext context, BlueskyFacet facet) {
+    switch (facet.kind) {
+      case BlueskyFacetKind.link:
+        openUri(context, facet.value);
+      case BlueskyFacetKind.mention:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlueskyProfileScreen(actor: facet.value),
+          ),
+        );
+      case BlueskyFacetKind.tag:
+        showBlueskySearchSheet(
+          context,
+          initialQuery: '#${facet.value}',
+          initialTab: BlueskySearchTab.posts,
+        );
+    }
   }
 
   @override
@@ -103,9 +131,13 @@ class BlueskyPostCard extends StatelessWidget {
                             ),
                             if (post.text.isNotEmpty) ...[
                               const SizedBox(height: 6),
-                              Text(
-                                post.text,
-                                style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+                              BlueskyRichText(
+                                text: post.text,
+                                facets: post.facets,
+                                style: theme.textTheme.bodyLarge!.copyWith(
+                                  height: 1.35,
+                                ),
+                                onFacetTap: (facet) => _onFacet(context, facet),
                               ),
                             ],
                             if (post.hasMedia) ...[
@@ -181,7 +213,8 @@ class BlueskyPostCard extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
+              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context))
+                  .ceil(),
             ),
     );
   }
@@ -201,12 +234,17 @@ class BlueskyPostCard extends StatelessWidget {
               child: Text(
                 post.authorName,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
+                style: theme.textTheme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             if (date != null) ...[
               const SizedBox(width: 6),
-              Text('· ${createRelativeDate(date)}', style: theme.textTheme.bodySmall),
+              Text(
+                '· ${createRelativeDate(date)}',
+                style: theme.textTheme.bodySmall,
+              ),
             ],
           ],
         ),
@@ -300,17 +338,46 @@ class _QuotedPost extends StatelessWidget {
                 quote.authorName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
+                style: theme.textTheme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
               Text(
                 '@${quote.handle}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
               if (quote.text.isNotEmpty) ...[
                 const SizedBox(height: 6),
-                Text(quote.text, maxLines: 6, overflow: TextOverflow.ellipsis),
+                BlueskyRichText(
+                  text: quote.text,
+                  facets: quote.facets,
+                  maxLines: 6,
+                  overflow: TextOverflow.ellipsis,
+                  onFacetTap: (facet) {
+                    switch (facet.kind) {
+                      case BlueskyFacetKind.link:
+                        openUri(context, facet.value);
+                      case BlueskyFacetKind.mention:
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                BlueskyProfileScreen(actor: facet.value),
+                          ),
+                        );
+                      case BlueskyFacetKind.tag:
+                        showBlueskySearchSheet(
+                          context,
+                          initialQuery: '#${facet.value}',
+                          initialTab: BlueskySearchTab.posts,
+                        );
+                    }
+                  },
+                ),
               ],
             ],
           ),
@@ -365,7 +432,9 @@ class _BlueskyLinkPreview extends StatelessWidget {
                       host,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.labelSmall!.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     if (card.title != null) ...[
                       const SizedBox(height: 4),
@@ -373,7 +442,10 @@ class _BlueskyLinkPreview extends StatelessWidget {
                         card.title!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+                        style: theme.textTheme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          height: 1.25,
+                        ),
                       ),
                     ],
                     if (card.description != null) ...[
@@ -382,7 +454,9 @@ class _BlueskyLinkPreview extends StatelessWidget {
                         card.description!,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall!.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ],
@@ -413,10 +487,12 @@ class _BlueskyEngagementRow extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts =
+        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final likes = context.read<BlueskyLikesStore>();
 
-    String label(int count) => hideCounts ? '' : _blueskyCountFormat.format(count);
+    String label(int count) =>
+        hideCounts ? '' : _blueskyCountFormat.format(count);
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
@@ -426,13 +502,19 @@ class _BlueskyEngagementRow extends StatelessWidget {
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(label(post.replyCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.replyCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           TextButton.icon(
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(label(post.repostCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.repostCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           ScopedBuilder<BlueskyLikesStore, List<BlueskyPost>>(
             store: likes,

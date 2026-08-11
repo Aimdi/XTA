@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Nom, identifiant ou URL de profil",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Personnes",
+  "plugin_bluesky_search_posts": "Publications",
+  "plugin_bluesky_search_posts_hint": "Rechercher des publications ou des #tags",
   "plugin_bluesky_settings_intro": "La lecture fonctionne sans configuration — l’AppView public est déjà renseigné. Ne le changez que si vous en hébergez un. Aucun compte Bluesky n’est requis.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Tester l’AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

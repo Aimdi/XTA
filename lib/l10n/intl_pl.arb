@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Nazwa, uchwyt lub adres URL profilu",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Osoby",
+  "plugin_bluesky_search_posts": "Wpisy",
+  "plugin_bluesky_search_posts_hint": "Szukaj wpisów lub #tagów",
   "plugin_bluesky_settings_intro": "Czytanie działa bez konfiguracji — publiczny AppView jest już wpisany. Zmień tylko przy własnym. Logowanie do Bluesky nie jest potrzebne.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Testuj AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

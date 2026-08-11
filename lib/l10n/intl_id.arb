@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Nama, handle, atau URL profil",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Orang",
+  "plugin_bluesky_search_posts": "Postingan",
+  "plugin_bluesky_search_posts_hint": "Cari postingan atau #tag",
   "plugin_bluesky_settings_intro": "Membaca langsung jalan — AppView publik sudah terisi. Ubah hanya jika Anda punya sendiri. Login Bluesky tidak diperlukan.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Uji AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

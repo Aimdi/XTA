@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Izena, handlea edo profilaren URLa",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Pertsonak",
+  "plugin_bluesky_search_posts": "Argitalpenak",
+  "plugin_bluesky_search_posts_hint": "Bilatu argitalpenak edo #etiketak",
   "plugin_bluesky_settings_intro": "Irakurtzeak funtzionatzen du konfiguraziorik gabe — AppView publikoa dagoeneko beteta dago. Aldatu soilik zeure bat baduzu. Ez da Bluesky saiorik behar.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Probatu AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

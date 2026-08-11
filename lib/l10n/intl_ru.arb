@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Имя, хэндл или URL профиля",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Люди",
+  "plugin_bluesky_search_posts": "Посты",
+  "plugin_bluesky_search_posts_hint": "Искать посты или #теги",
   "plugin_bluesky_settings_intro": "Чтение работает без настройки — публичный AppView уже заполнен. Меняйте только при своём. Вход в Bluesky не нужен.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Проверить AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

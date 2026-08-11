@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Ім’я, хендл або URL профілю",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "Люди",
+  "plugin_bluesky_search_posts": "Дописи",
+  "plugin_bluesky_search_posts_hint": "Шукати дописи або #теги",
   "plugin_bluesky_settings_intro": "Читання працює без налаштування — публічний AppView уже заповнено. Змінюйте лише зі своїм. Вхід у Bluesky не потрібен.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Перевірити AppView",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

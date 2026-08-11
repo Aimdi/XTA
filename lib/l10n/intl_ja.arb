@@ -849,6 +849,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "名前、ハンドル、またはプロフィールURL",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "ユーザー",
+  "plugin_bluesky_search_posts": "投稿",
+  "plugin_bluesky_search_posts_hint": "投稿や #タグ を検索",
   "plugin_bluesky_settings_intro": "設定なしで読めます — 公開 AppView が最初から入っています。自前のときだけ変えてください。Bluesky ログインは不要です。",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "AppView をテスト",
@@ -2076,5 +2079,8 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }

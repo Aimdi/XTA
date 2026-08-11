@@ -28,7 +28,10 @@ translated. This plugin talks to Bluesky's documented public AppView at
 - Post cards with engagement counts, author → profile, repost chrome, quote
   embeds, and external link cards.
 - People search sheet (exact handle/DID/URL opens a profile; free text uses
-  `searchActors`).
+  `searchActors`) and **post search** (`app.bsky.feed.searchPosts`) with a
+  People / Posts tab — hashtag chips open post search.
+- Faceted rich text on cards: tappable links, @mentions → profile, #tags →
+  post search (same approach mature clients like Graysky / Sky.app use).
 - **Import following** from a public handle (`app.bsky.graph.getFollows`) and
   **import list** from a public list URL / AT-URI (`getList`) — both write only
   to local `bluesky_subscription`, never to Bluesky.
@@ -47,4 +50,5 @@ translated. This plugin talks to Bluesky's documented public AppView at
 - Compose, like-on-Bluesky, repost, follow-on-Bluesky, DMs, or any write to Bluesky.
 - Creating / editing lists on Bluesky, starter packs, notifications, or video
   embeds beyond what a card can ignore safely.
-- Interleaving Bluesky posts into the X home / Following feed (groups only).
+- Interleaving Bluesky posts into the X home / Following feed is opt-in
+  (`optionPluginBlueskyInHomeFeed`); groups always include Bluesky members.

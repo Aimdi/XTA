@@ -855,6 +855,9 @@
   "@plugin_bluesky_search": {},
   "plugin_bluesky_search_hint": "Name, handle, or profile URL",
   "@plugin_bluesky_search_hint": {},
+  "plugin_bluesky_search_people": "People",
+  "plugin_bluesky_search_posts": "Posts",
+  "plugin_bluesky_search_posts_hint": "Search posts or #tags",
   "plugin_bluesky_settings_intro": "Reading works without setup — the public AppView is already filled in. Change it only if you run your own. No Bluesky login is required.",
   "@plugin_bluesky_settings_intro": {},
   "plugin_bluesky_test": "Test AppView",
@@ -2118,5 +2121,8 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_bluesky_search_people": {},
+  "@plugin_bluesky_search_posts": {},
+  "@plugin_bluesky_search_posts_hint": {}
 }
