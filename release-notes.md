@@ -4,26 +4,32 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Substack gets discovery — and Listen that actually speaks
+### Home: pin plugin tabs, polish the nav pill, skip disabled accounts
 
-**Find newsletters without already knowing the handle, and hear posts that used
-to stay mute.** Discover browses Substack's public category leaderboards and
-searches by name, handle or URL; Notes discovery rotates across the pubs you
-follow. Read-aloud no longer vanishes on teasers or live-site fallbacks — it
-speaks the title and excerpt immediately, pulls article text from the page when
-needed, and points you at Voice settings when the device engine refuses to start.
+**Pin Bluesky, Threads, Reddit and other plugin timelines next to For you**, and
+the floating bottom bar sits cleaner on X Look. Accounts you turned off at home
+no longer feed Following or For you.
 
-### A floating bottom bar, easier group membership, full reposts
+### Reddit: real previews, fewer junk titles, more posts per page
 
-**Home navigation sits in a blurred pill above the timeline.** Adding Bluesky,
-Threads or Mastodon accounts to a group is a search-and-chip flow instead of an
-X-only slog, and timeline reposts expand in place by default instead of hiding
-behind a carousel.
+**Article and native video cards stretch full-width again** (including
+reconstructed `v.redd.it` DASH when the listing was HTML). Placeholder titles
+like `<image>` stay hidden when the picture is already on the card, and each
+subreddit page asks for more posts so you scroll less.
+
+### Groups, Substack, Threads, Pixiv, Bluesky
+
+**Mark a group NSFW** and it drops under a Censored section with a blurred
+mosaic. Substack pubs can be pinned and added to groups from Substack screens.
+Threads guest feed paints sooner with progressive refresh. Pixiv bookmarks no
+longer collapse to stubs, and profiles get Follow / Unfollow. Bluesky posts keep
+links and mentions as facets, and search splits People and Posts.
 
 ---
 
-Everything from [aimdi93](https://github.com/Aimdi/XTA/releases/tag/aimdi93) is
-in here too: the Threads tab that paints in seconds instead of minutes.
+Everything from [aimdi94](https://github.com/Aimdi/XTA/releases/tag/aimdi94) is
+in here too: Substack discovery and Listen, the floating nav pill, and full
+timeline reposts.
 
 ---
 
