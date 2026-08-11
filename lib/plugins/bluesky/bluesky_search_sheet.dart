@@ -4,36 +4,70 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
+import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
-/// Search people on the public AppView and open a profile from the results.
-Future<void> showBlueskySearchSheet(BuildContext context) {
+enum BlueskySearchTab { people, posts }
+
+/// Search people and posts on the public AppView.
+Future<void> showBlueskySearchSheet(
+  BuildContext context, {
+  String? initialQuery,
+  BlueskySearchTab initialTab = BlueskySearchTab.people,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (sheetContext) => const _BlueskySearchSheet(),
+    builder: (sheetContext) =>
+        _BlueskySearchSheet(initialQuery: initialQuery, initialTab: initialTab),
   );
 }
 
 class _BlueskySearchSheet extends StatefulWidget {
-  const _BlueskySearchSheet();
+  final String? initialQuery;
+  final BlueskySearchTab initialTab;
+
+  const _BlueskySearchSheet({
+    this.initialQuery,
+    this.initialTab = BlueskySearchTab.people,
+  });
 
   @override
   State<_BlueskySearchSheet> createState() => _BlueskySearchSheetState();
 }
 
-class _BlueskySearchSheetState extends State<_BlueskySearchSheet> {
-  final _controller = TextEditingController();
-  List<BlueskyProfile> _results = const [];
+class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
+    with SingleTickerProviderStateMixin {
+  late final TextEditingController _controller;
+  late final TabController _tabs;
+  List<BlueskyProfile> _people = const [];
+  List<BlueskyPost> _posts = const [];
   Object? _error;
   var _loading = false;
   var _searched = false;
 
   @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialQuery ?? '');
+    _tabs = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTab == BlueskySearchTab.posts ? 1 : 0,
+    );
+    if ((widget.initialQuery ?? '').trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _search();
+      });
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
+    _tabs.dispose();
     super.dispose();
   }
 
@@ -53,10 +87,12 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet> {
     }
 
     // Exact handle, DID, or profile URL — open that profile without searching.
-    final direct = normaliseBlueskyHandle(query);
-    if (direct != null) {
-      await _openActor(direct);
-      return;
+    if (_tabs.index == 0) {
+      final direct = normaliseBlueskyHandle(query);
+      if (direct != null) {
+        await _openActor(direct);
+        return;
+      }
     }
 
     setState(() {
@@ -66,18 +102,30 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet> {
     });
 
     try {
-      final results = await context.read<BlueskyClient>().searchActors(query, limit: 20);
-      if (!mounted) return;
-      setState(() {
-        _results = results;
-        _loading = false;
-      });
+      final client = context.read<BlueskyClient>();
+      if (_tabs.index == 0) {
+        final results = await client.searchActors(query, limit: 20);
+        if (!mounted) return;
+        setState(() {
+          _people = results;
+          _loading = false;
+        });
+      } else {
+        final q = query.startsWith('#') ? query.substring(1) : query;
+        final page = await client.searchPosts(q, limit: 20);
+        if (!mounted) return;
+        setState(() {
+          _posts = page.posts;
+          _loading = false;
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = e;
         _loading = false;
-        _results = const [];
+        _people = const [];
+        _posts = const [];
       });
     }
   }
@@ -102,10 +150,12 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: TextField(
                 controller: _controller,
-                autofocus: true,
+                autofocus: widget.initialQuery == null,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  hintText: l10n.plugin_bluesky_search_hint,
+                  hintText: _tabs.index == 0
+                      ? l10n.plugin_bluesky_search_hint
+                      : l10n.plugin_bluesky_search_posts_hint,
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.arrow_forward),
@@ -115,6 +165,19 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet> {
                 ),
                 onSubmitted: (_) => _search(),
               ),
+            ),
+            TabBar(
+              controller: _tabs,
+              onTap: (_) {
+                setState(() {});
+                if (_searched && _controller.text.trim().isNotEmpty) {
+                  _search();
+                }
+              },
+              tabs: [
+                Tab(text: l10n.plugin_bluesky_search_people),
+                Tab(text: l10n.plugin_bluesky_search_posts),
+              ],
             ),
             Expanded(child: _body(l10n)),
           ],
@@ -131,34 +194,60 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Text(blueskyErrorMessage(l10n, _error!), textAlign: TextAlign.center),
+          child: Text(
+            blueskyErrorMessage(l10n, _error!),
+            textAlign: TextAlign.center,
+          ),
         ),
       );
-    }
-    if (_searched && _results.isEmpty) {
-      return Center(child: Text(l10n.plugin_bluesky_no_results));
     }
     if (!_searched) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Text(l10n.plugin_bluesky_search_hint, textAlign: TextAlign.center),
+          child: Text(
+            _tabs.index == 0
+                ? l10n.plugin_bluesky_search_hint
+                : l10n.plugin_bluesky_search_posts_hint,
+            textAlign: TextAlign.center,
+          ),
         ),
       );
     }
 
-    return ListView.separated(
-      itemCount: _results.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final profile = _results[index];
-        return ListTile(
-          leading: _avatar(context, profile),
-          title: Text(profile.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
-          subtitle: Text('@${profile.handle}', maxLines: 1, overflow: TextOverflow.ellipsis),
-          onTap: () => _open(profile),
-        );
-      },
+    if (_tabs.index == 0) {
+      if (_people.isEmpty) {
+        return Center(child: Text(l10n.plugin_bluesky_no_results));
+      }
+      return ListView.separated(
+        itemCount: _people.length,
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (context, index) {
+          final profile = _people[index];
+          return ListTile(
+            leading: _avatar(context, profile),
+            title: Text(
+              profile.displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              '@${profile.handle}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            onTap: () => _open(profile),
+          );
+        },
+      );
+    }
+
+    if (_posts.isEmpty) {
+      return Center(child: Text(l10n.plugin_bluesky_no_results));
+    }
+    return ListView.builder(
+      itemCount: _posts.length,
+      itemBuilder: (context, index) => BlueskyPostCard(post: _posts[index]),
     );
   }
 
