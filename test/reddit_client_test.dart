@@ -1084,6 +1084,44 @@ void main() {
     });
 
     test(
+      'placeholder titles stay hidden when the picture is already shown',
+      () {
+        final image = RedditPost(
+          id: 'a',
+          title: '<image>',
+          subreddit: 'x',
+          permalink: '/r/x/comments/a/',
+          url: 'https://i.redd.it/abc.jpg',
+          domain: 'i.redd.it',
+        );
+        expect(image.showsTitle, isFalse);
+
+        final realTitle = RedditPost(
+          id: 'b',
+          title: 'Look at this',
+          subreddit: 'x',
+          permalink: '/r/x/comments/b/',
+          url: 'https://i.redd.it/abc.jpg',
+          domain: 'i.redd.it',
+        );
+        expect(realTitle.showsTitle, isTrue);
+
+        final textOnly = RedditPost(
+          id: 'c',
+          title: '<image>',
+          subreddit: 'x',
+          permalink: '/r/x/comments/c/',
+          isSelf: true,
+        );
+        expect(
+          textOnly.showsTitle,
+          isTrue,
+          reason: 'no media — keep the title',
+        );
+      },
+    );
+
+    test(
       'a video is recognised so the card offers a play badge, not a dead image',
       () {
         expect(

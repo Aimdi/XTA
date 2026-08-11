@@ -202,6 +202,18 @@ bool _preferRedditImage(String candidate, String current) {
   return candidateWidth > currentWidth;
 }
 
+/// Titles that only announce media the card already shows as a picture.
+///
+/// Meme subs often title image posts `<image>` or `[image]` because the joke
+/// is the picture — showing that label above every comic is just noise.
+final _redditMediaPlaceholderTitle = RegExp(
+  r'^[\[\(\<｛【]?\s*(?:image|img|pic|picture|foto|bild)\s*[\]\)\>｝】]?$',
+  caseSensitive: false,
+);
+
+bool isRedditMediaPlaceholderTitle(String title) =>
+    _redditMediaPlaceholderTitle.hasMatch(title.trim());
+
 /// Whether [url] is a Reddit gallery the listing did not carry the pictures for.
 ///
 /// Scraped from old.reddit, a gallery arrives as this link and a 70px
