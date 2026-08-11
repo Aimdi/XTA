@@ -31,14 +31,20 @@ Set<String> groupAndDescendants(String id, Map<String, String?> parentOf) {
 }
 
 /// The groups nested directly inside [id].
-List<String> childrenOf(String id, Map<String, String?> parentOf) =>
-    parentOf.entries.where((e) => e.value == id).map((e) => e.key).toList(growable: false);
+List<String> childrenOf(String id, Map<String, String?> parentOf) => parentOf
+    .entries
+    .where((e) => e.value == id)
+    .map((e) => e.key)
+    .toList(growable: false);
 
 /// The groups that stand on their own, which is what a board shows.
 ///
 /// A group whose parent has been deleted counts as top level rather than
 /// disappearing — otherwise it would still exist but be unreachable.
-List<String> topLevelGroups(Iterable<String> ids, Map<String, String?> parentOf) {
+List<String> topLevelGroups(
+  Iterable<String> ids,
+  Map<String, String?> parentOf,
+) {
   final present = ids.toSet();
 
   return ids
@@ -57,7 +63,10 @@ List<String> topLevelGroups(Iterable<String> ids, Map<String, String?> parentOf)
 ///
 /// Order within a level is the order given, so whatever sort or manual
 /// arrangement the board is using still holds.
-List<String> groupsInTreeOrder(Iterable<String> ids, Map<String, String?> parentOf) {
+List<String> groupsInTreeOrder(
+  Iterable<String> ids,
+  Map<String, String?> parentOf,
+) {
   final present = ids.toList(growable: false);
   final ordered = <String>[];
   final placed = <String>{};
@@ -88,7 +97,11 @@ List<String> groupsInTreeOrder(Iterable<String> ids, Map<String, String?> parent
 /// True when they are the same group, or when [parent] is already somewhere
 /// inside [child] — either would make a group contain itself, and a feed that
 /// never finished resolving.
-bool wouldNestInsideItself(String child, String parent, Map<String, String?> parentOf) {
+bool wouldNestInsideItself(
+  String child,
+  String parent,
+  Map<String, String?> parentOf,
+) {
   if (child == parent) {
     return true;
   }
@@ -120,4 +133,17 @@ int depthOf(String id, Map<String, String?> parentOf) {
   }
 
   return depth;
+}
+
+/// [groups] with NSFW-marked ones moved after the rest, keeping relative order.
+({List<T> safe, List<T> nsfw}) partitionNsfwGroups<T>(
+  Iterable<T> groups,
+  bool Function(T) isNsfw,
+) {
+  final safe = <T>[];
+  final nsfw = <T>[];
+  for (final group in groups) {
+    (isNsfw(group) ? nsfw : safe).add(group);
+  }
+  return (safe: safe, nsfw: nsfw);
 }

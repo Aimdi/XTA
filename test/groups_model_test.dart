@@ -19,23 +19,33 @@ void main() {
   });
 
   test('create group then reload works on a fresh migrated DB', () async {
-    final prefs = PrefServiceCache(cache: {
-      optionSubscriptionGroupsOrderByField: 'name',
-      optionSubscriptionGroupsOrderByAscending: true,
-    });
+    final prefs = PrefServiceCache(
+      cache: {
+        optionSubscriptionGroupsOrderByField: 'name',
+        optionSubscriptionGroupsOrderByAscending: true,
+      },
+    );
     final model = GroupsModel(prefs);
 
-    await model.saveGroup(null, 'Test Group', defaultGroupIcon, null, <String>{});
+    await model.saveGroup(
+      null,
+      'Test Group',
+      defaultGroupIcon,
+      null,
+      <String>{},
+    );
     await model.reloadGroups();
 
     expect(model.state.map((g) => g.name), contains('Test Group'));
   });
 
   test('importing an old-format backup brings groups back', () async {
-    final prefs = PrefServiceCache(cache: {
-      optionSubscriptionGroupsOrderByField: 'name',
-      optionSubscriptionGroupsOrderByAscending: true,
-    });
+    final prefs = PrefServiceCache(
+      cache: {
+        optionSubscriptionGroupsOrderByField: 'name',
+        optionSubscriptionGroupsOrderByAscending: true,
+      },
+    );
     final model = GroupsModel(prefs);
 
     // Old exports have no pinned/position keys.
@@ -49,10 +59,34 @@ void main() {
 
     await ImportDataModel().importData({
       tableSubscriptionGroup: [oldGroup],
-      tableSubscriptionGroupMember: [SubscriptionGroupMember(group: 'legacy-1', profile: 'user-1')],
+      tableSubscriptionGroupMember: [
+        SubscriptionGroupMember(group: 'legacy-1', profile: 'user-1'),
+      ],
     });
     await model.reloadGroups();
 
     expect(model.state.map((g) => g.name), contains('Legacy Group'));
+  });
+
+  test('NSFW groups sink below safe ones after toggle', () async {
+    final prefs = PrefServiceCache(
+      cache: {
+        optionSubscriptionGroupsOrderByField: 'name',
+        optionSubscriptionGroupsOrderByAscending: true,
+      },
+    );
+    final model = GroupsModel(prefs);
+
+    await model.saveGroup(null, 'Alpha', defaultGroupIcon, null, <String>{});
+    await model.saveGroup(null, 'Zulu', defaultGroupIcon, null, <String>{});
+    await model.reloadGroups();
+
+    final alpha = model.state.firstWhere((g) => g.name == 'Alpha');
+    await model.toggleGroupNsfw(alpha.id, true);
+
+    final names = model.state.map((g) => g.name).toList();
+    expect(names.last, 'Alpha');
+    expect(model.state.firstWhere((g) => g.name == 'Alpha').nsfw, isTrue);
+    expect(model.state.firstWhere((g) => g.name == 'Zulu').nsfw, isFalse);
   });
 }
