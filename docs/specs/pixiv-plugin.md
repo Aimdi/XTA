@@ -35,7 +35,8 @@ Pixiv no longer accepts password login on the app API. XTA supports the same
 Constants and implementation: `lib/plugins/pixiv/pixiv_auth.dart`,
 `lib/plugins/pixiv/pixiv_login_webview.dart`.
 
-No compose, bookmark, follow, or like write-backs to Pixiv.
+No compose, bookmark, or like write-backs to Pixiv. Following a user from
+their profile is supported (`POST /v1/user/follow/add` / `delete`).
 
 ## Features
 
@@ -46,7 +47,7 @@ No compose, bookmark, follow, or like write-backs to Pixiv.
 | Gallery | Pixez-style staggered grid (`flutter_staggered_grid_view`) with page-count / R-18 / ugoira chips |
 | Viewer | In-app illust screen — multi-page manga, caption, tags, bookmark/view counts, related works, local mute actions |
 | Search | Illusts (`/v1/search/illust`) and users (`/v1/search/user`); recent queries; Pixiv artwork/user link open; target and sort controls; tag chips open search |
-| Profile | User detail + staggered grid of their illusts |
+| Profile | User detail + staggered grid of their illusts; Follow / Unfollow |
 | Local mute | Preference-backed author ids, tag names, and work ids filter following, ranking, bookmarks, search, related, and profile grids |
 
 ## Endpoints
@@ -62,12 +63,14 @@ No compose, bookmark, follow, or like write-backs to Pixiv.
 | Related | `GET /v2/illust/related` |
 | User detail | `GET /v1/user/detail` |
 | User illusts | `GET /v1/user/illusts` |
+| Follow add | `POST /v1/user/follow/add` |
+| Follow delete | `POST /v1/user/follow/delete` |
 
 ## Not yet
 
 - Ugoira frame playback
 - Novel API
 - Local download manager
-- Bookmark / follow / like **write** APIs on Pixiv
+- Bookmark / like **write** APIs on Pixiv
 - Comments
 - Proxy / mirror modes

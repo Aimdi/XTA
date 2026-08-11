@@ -26,7 +26,8 @@ class PixivScreen extends StatefulWidget {
   State<PixivScreen> createState() => _PixivScreenState();
 }
 
-class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStateMixin {
+class _PixivScreenState extends State<PixivScreen>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabs;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
@@ -35,7 +36,14 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
   DateTime? _rankingDate;
   var _bookmarksRestrict = 'public';
 
-  static const _rankingModes = ['day', 'week', 'month', 'day_male', 'day_female', 'week_rookie'];
+  static const _rankingModes = [
+    'day',
+    'week',
+    'month',
+    'day_male',
+    'day_female',
+    'week_rookie',
+  ];
 
   @override
   void initState() {
@@ -47,16 +55,25 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
     });
     final mute = context.read<PixivMuteStore>();
     _ranking = PixivIllustListStore(
-      ({nextUrl}) => context.read<PixivClient>().ranking(mode: _rankingMode, date: _rankingDateParam, nextUrl: nextUrl),
+      ({nextUrl}) => context.read<PixivClient>().ranking(
+        mode: _rankingMode,
+        date: _rankingDateParam,
+        nextUrl: nextUrl,
+      ),
       filter: mute.filter,
     );
-    _bookmarks = PixivIllustListStore(_bookmarksLoader(_bookmarksRestrict), filter: mute.filter);
+    _bookmarks = PixivIllustListStore(
+      _bookmarksLoader(_bookmarksRestrict),
+      filter: mute.filter,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       await mute.load();
       if (!mounted) return;
       final prefs = PrefService.of(context, listen: false);
-      final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
+      final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '')
+          .trim()
+          .isNotEmpty;
       if (hasToken) {
         // Warm the token once so the first feed call does not serialise behind
         // a cold refresh, and concurrent tab loads share one in-flight refresh.
@@ -72,7 +89,11 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
       // Prefer the stored id — verify() always hits the token endpoint and made
       // the Bookmarks tab feel like it loaded forever on every open.
       final userId = await client.ensureUserId();
-      return client.bookmarks(userId: userId, restrict: restrict, nextUrl: nextUrl);
+      return client.bookmarks(
+        userId: userId,
+        restrict: restrict,
+        nextUrl: nextUrl,
+      );
     };
   }
 
@@ -86,7 +107,9 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
 
   void _ensureTabLoaded(int index) {
     final prefs = PrefService.of(context, listen: false);
-    if ((prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isEmpty) {
+    if ((prefs.get<String>(optionPluginPixivRefreshToken) ?? '')
+        .trim()
+        .isEmpty) {
       return;
     }
     switch (index) {
@@ -136,7 +159,11 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
 
   Future<void> _reloadRanking() async {
     _ranking.useLoader(
-      ({nextUrl}) => context.read<PixivClient>().ranking(mode: _rankingMode, date: _rankingDateParam, nextUrl: nextUrl),
+      ({nextUrl}) => context.read<PixivClient>().ranking(
+        mode: _rankingMode,
+        date: _rankingDateParam,
+        nextUrl: nextUrl,
+      ),
     );
     await _ranking.refresh();
   }
@@ -167,7 +194,9 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final prefs = PrefService.of(context);
-    final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim().isNotEmpty;
+    final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '')
+        .trim()
+        .isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -177,14 +206,20 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
             IconButton(
               icon: const Icon(Icons.search),
               tooltip: l10n.search,
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PixivSearchScreen())),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PixivSearchScreen()),
+              ),
             ),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: l10n.settings,
             onPressed: () async {
               final feed = context.read<PixivFeedStore>();
-              await Navigator.push(context, MaterialPageRoute(builder: (_) => const PixivSettingsScreen()));
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PixivSettingsScreen()),
+              );
               if (!mounted) return;
               await feed.refresh();
               if (!mounted) return;
@@ -209,7 +244,10 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
               controller: _tabs,
               children: [
                 _KeepAlive(
-                  child: _feedTab(store: context.read<PixivFeedStore>(), empty: l10n.plugin_pixiv_empty),
+                  child: _feedTab(
+                    store: context.read<PixivFeedStore>(),
+                    empty: l10n.plugin_pixiv_empty,
+                  ),
                 ),
                 _KeepAlive(child: _rankingTab(l10n)),
                 _KeepAlive(child: _bookmarksTab(l10n)),
@@ -244,7 +282,11 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
                       }
                     },
               child: _signingIn
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(l10n.plugin_pixiv_sign_in),
             ),
           ],
@@ -277,9 +319,14 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
                     if (_rankingDate != null)
                       InputChip(
                         avatar: const Icon(Icons.history, size: 18),
-                        label: Text(MaterialLocalizations.of(context).formatCompactDate(_rankingDate!)),
+                        label: Text(
+                          MaterialLocalizations.of(
+                            context,
+                          ).formatCompactDate(_rankingDate!),
+                        ),
                         onDeleted: _clearRankingDate,
-                        deleteButtonTooltipMessage: l10n.plugin_pixiv_ranking_back_to_today,
+                        deleteButtonTooltipMessage:
+                            l10n.plugin_pixiv_ranking_back_to_today,
                       ),
                   ],
                 ),
@@ -293,7 +340,10 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
           ],
         ),
         Expanded(
-          child: _feedTab(store: _ranking, empty: l10n.plugin_pixiv_ranking_empty),
+          child: _feedTab(
+            store: _ranking,
+            empty: l10n.plugin_pixiv_ranking_empty,
+          ),
         ),
       ],
     );
@@ -321,13 +371,21 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
           ),
         ),
         Expanded(
-          child: _feedTab(store: _bookmarks, empty: l10n.plugin_pixiv_bookmarks_empty),
+          child: _feedTab(
+            store: _bookmarks,
+            empty: _bookmarksRestrict == 'private'
+                ? l10n.plugin_pixiv_bookmarks_private_empty
+                : l10n.plugin_pixiv_bookmarks_empty,
+          ),
         ),
       ],
     );
   }
 
-  Widget _feedTab({required PixivIllustListStore store, required String empty}) {
+  Widget _feedTab({
+    required PixivIllustListStore store,
+    required String empty,
+  }) {
     final l10n = L10n.of(context);
     return ScopedBuilder<PixivIllustListStore, List<PixivIllust>>(
       store: store,
@@ -375,7 +433,11 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _illustList(BuildContext context, PixivIllustListStore store, List<PixivIllust> illusts) {
+  Widget _illustList(
+    BuildContext context,
+    PixivIllustListStore store,
+    List<PixivIllust> illusts,
+  ) {
     return _ThumbPrefetch(
       illusts: illusts,
       child: NotificationListener<ScrollNotification>(
@@ -388,7 +450,9 @@ class _PixivScreenState extends State<PixivScreen> with SingleTickerProviderStat
         },
         child: PixivIllustGrid(
           illusts: illusts,
-          scrollController: store == context.read<PixivFeedStore>() ? widget.scrollController : null,
+          scrollController: store == context.read<PixivFeedStore>()
+              ? widget.scrollController
+              : null,
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
         ),
@@ -448,7 +512,8 @@ class _KeepAlive extends StatefulWidget {
   State<_KeepAlive> createState() => _KeepAliveState();
 }
 
-class _KeepAliveState extends State<_KeepAlive> with AutomaticKeepAliveClientMixin {
+class _KeepAliveState extends State<_KeepAlive>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 

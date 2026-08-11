@@ -13,7 +13,7 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
 
-/// One Pixiv user's profile and works in a staggered grid (read-only).
+/// One Pixiv user's profile and works in a staggered grid.
 class PixivUserScreen extends StatefulWidget {
   final int userId;
 
@@ -30,6 +30,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
   Object? _error;
   var _loading = true;
   var _loadingMore = false;
+  var _followBusy = false;
 
   @override
   void initState() {
@@ -88,6 +89,49 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
       }
     } catch (_) {
       if (mounted) setState(() => _loadingMore = false);
+    }
+  }
+
+  Future<void> _toggleFollow() async {
+    final user = _user;
+    if (user == null || _followBusy) {
+      return;
+    }
+
+    final client = context.read<PixivClient>();
+    final l10n = L10n.of(context);
+    setState(() => _followBusy = true);
+    try {
+      if (user.isFollowed) {
+        await client.unfollowUser(user.id);
+        if (mounted) {
+          setState(() {
+            _user = user.copyWith(
+              isFollowed: false,
+              followersCount: (user.followersCount - 1).clamp(0, 1 << 30),
+            );
+            _followBusy = false;
+          });
+        }
+      } else {
+        await client.followUser(user.id);
+        if (mounted) {
+          setState(() {
+            _user = user.copyWith(
+              isFollowed: true,
+              followersCount: user.followersCount + 1,
+            );
+            _followBusy = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _followBusy = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, e))));
+      }
     }
   }
 
@@ -170,16 +214,18 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                                 child: PixivNetworkImage(
                                   url: avatar,
                                   fit: BoxFit.cover,
-                                  cacheWidth: (64 *
-                                          MediaQuery.devicePixelRatioOf(
-                                            context,
-                                          ))
-                                      .ceil(),
-                                  cacheHeight: (64 *
-                                          MediaQuery.devicePixelRatioOf(
-                                            context,
-                                          ))
-                                      .ceil(),
+                                  cacheWidth:
+                                      (64 *
+                                              MediaQuery.devicePixelRatioOf(
+                                                context,
+                                              ))
+                                          .ceil(),
+                                  cacheHeight:
+                                      (64 *
+                                              MediaQuery.devicePixelRatioOf(
+                                                context,
+                                              ))
+                                          .ceil(),
                                 ),
                               ),
                       ),
@@ -216,6 +262,23 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   Text(
                     '${numbers.format(user.illustsCount)} ${l10n.tweets} · ${numbers.format(user.followersCount)} ${l10n.followers}',
                     style: theme.textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton.tonalIcon(
+                      onPressed: _followBusy ? null : _toggleFollow,
+                      icon: Icon(
+                        user.isFollowed
+                            ? Icons.person_remove_outlined
+                            : Icons.person_add_alt_1_outlined,
+                      ),
+                      label: Text(
+                        user.isFollowed
+                            ? l10n.plugin_pixiv_unfollow
+                            : l10n.plugin_pixiv_follow,
+                      ),
+                    ),
                   ),
                 ],
               ),
