@@ -320,6 +320,7 @@ const optionPluginBooruApiKey = 'plugin.booru.api_key';
 const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
 const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
 const optionPluginBooruSearchHistory = 'plugin.booru.search_history';
+const optionPluginBooruMutedTags = 'plugin.booru.muted_tags';
 
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
+import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/ui/errors.dart';
 
 class BooruSettingsScreen extends StatefulWidget {
@@ -19,6 +22,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
   late final TextEditingController _host;
   late final TextEditingController _login;
   late final TextEditingController _apiKey;
+  late final TextEditingController _muteTag;
   var _testing = false;
 
   @override
@@ -34,6 +38,10 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     _apiKey = TextEditingController(
       text: prefs.get<String>(optionPluginBooruApiKey) ?? '',
     );
+    _muteTag = TextEditingController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<BooruMuteStore>().load();
+    });
   }
 
   @override
@@ -41,6 +49,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     _host.dispose();
     _login.dispose();
     _apiKey.dispose();
+    _muteTag.dispose();
     super.dispose();
   }
 
@@ -68,7 +77,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
       showSnackBar(
         context,
         icon: '⚠️',
-        message: l10n.plugin_booru_test_failed(e.kind.name),
+        message: l10n.plugin_booru_test_failed(booruErrorMessage(l10n, e)),
       );
     } catch (e) {
       if (!mounted) return;
@@ -165,7 +174,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               controller: _login,
               decoration: InputDecoration(
                 labelText: l10n.plugin_booru_login,
-                helperText: l10n.plugin_booru_login_help,
+                helperText: _loginHelp(l10n, engine),
               ),
               onChanged: (value) => prefs.set(optionPluginBooruLogin, value),
             ),
@@ -176,8 +185,8 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               controller: _apiKey,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: l10n.plugin_booru_api_key,
-                helperText: l10n.plugin_booru_api_key_help,
+                labelText: _apiKeyLabel(l10n, engine),
+                helperText: _apiKeyHelp(l10n, engine),
               ),
               onChanged: (value) => prefs.set(optionPluginBooruApiKey, value),
             ),
@@ -217,6 +226,57 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
             subtitle: Text(l10n.plugin_booru_show_tab_description),
             pref: optionPluginBooruShowTab,
           ),
+          PrefTitle(title: Text(l10n.plugin_booru_mute_section)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _muteTag,
+              decoration: InputDecoration(
+                labelText: l10n.plugin_booru_mute_tag,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () async {
+                    final tag = normaliseBooruTag(_muteTag.text);
+                    if (tag == null) return;
+                    await context.read<BooruMuteStore>().mute(tag);
+                    _muteTag.clear();
+                  },
+                ),
+              ),
+              onSubmitted: (value) async {
+                final tag = normaliseBooruTag(value);
+                if (tag == null) return;
+                await context.read<BooruMuteStore>().mute(tag);
+                _muteTag.clear();
+              },
+            ),
+          ),
+          ScopedBuilder<BooruMuteStore, Set<String>>(
+            store: context.read<BooruMuteStore>(),
+            onState: (context, muted) {
+              if (muted.isEmpty) {
+                return ListTile(
+                  dense: true,
+                  title: Text(l10n.plugin_booru_mute_empty),
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    for (final tag in muted.toList()..sort())
+                      InputChip(
+                        label: Text(tag),
+                        onDeleted: () =>
+                            context.read<BooruMuteStore>().unmute(tag),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
           ListTile(
             title: Text(l10n.plugin_booru_test_connection),
             trailing: _testing
@@ -237,6 +297,7 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     BooruEngine.danbooru => l10n.plugin_booru_engine_danbooru,
     BooruEngine.moebooru => l10n.plugin_booru_engine_moebooru,
     BooruEngine.gelbooruV2 => l10n.plugin_booru_engine_gelbooru,
+    BooruEngine.e621 => l10n.plugin_booru_engine_e621,
   };
 
   String _ratingLabel(L10n l10n, BooruRating rating) => switch (rating) {
@@ -244,5 +305,22 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     BooruRating.sensitive => l10n.plugin_booru_rating_sensitive,
     BooruRating.questionable => l10n.plugin_booru_rating_questionable,
     BooruRating.explicit => l10n.plugin_booru_rating_explicit,
+  };
+
+  String _loginHelp(L10n l10n, BooruEngine engine) => switch (engine) {
+    BooruEngine.gelbooruV2 => l10n.plugin_booru_login_help_gelbooru,
+    BooruEngine.moebooru => l10n.plugin_booru_login_help_moebooru,
+    _ => l10n.plugin_booru_login_help,
+  };
+
+  String _apiKeyLabel(L10n l10n, BooruEngine engine) => switch (engine) {
+    BooruEngine.moebooru => l10n.plugin_booru_password_hash,
+    _ => l10n.plugin_booru_api_key,
+  };
+
+  String _apiKeyHelp(L10n l10n, BooruEngine engine) => switch (engine) {
+    BooruEngine.moebooru => l10n.plugin_booru_password_hash_help,
+    BooruEngine.gelbooruV2 => l10n.plugin_booru_api_key_help_gelbooru,
+    _ => l10n.plugin_booru_api_key_help,
   };
 }

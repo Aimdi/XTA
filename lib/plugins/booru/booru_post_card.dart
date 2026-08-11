@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/ui/provenance_accent.dart';
@@ -33,19 +34,12 @@ class BooruPostCard extends StatelessWidget {
               child: SizedBox(
                 width: 72,
                 height: 72,
-                child: post.thumbnailUrl.isEmpty
-                    ? ColoredBox(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.image_outlined),
-                      )
-                    : Image.network(
-                        post.thumbnailUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => ColoredBox(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: const Icon(Icons.broken_image_outlined),
-                        ),
-                      ),
+                child: BooruNetworkImage(
+                  url: post.thumbnailUrl,
+                  fit: BoxFit.cover,
+                  cacheWidth: (72 * MediaQuery.devicePixelRatioOf(context))
+                      .ceil(),
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -85,10 +79,10 @@ class BooruPostCard extends StatelessWidget {
 
 List<InterleavedItem> booruInterleavedItems(Iterable<BooruPost> posts) => [
   for (final post in posts)
-    if (post.createdAt case final date?)
-      provenanceInterleavedItem(
-        date: date,
-        pluginId: pluginIdBooru,
-        build: (_) => BooruPostCard(post: post),
-      ),
+    provenanceInterleavedItem(
+      // Gelbooru sometimes omits dates — still show the card rather than drop it.
+      date: post.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      pluginId: pluginIdBooru,
+      build: (_) => BooruPostCard(post: post),
+    ),
 ];

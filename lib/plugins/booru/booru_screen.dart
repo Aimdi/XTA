@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
+import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
@@ -25,7 +26,9 @@ class _BooruScreenState extends State<BooruScreen>
   late final TabController _tabs;
   late final BooruFeedStore _latest;
   late final BooruFeedStore _following;
+  Disposer? _tagsDisposer;
   var _followingBootstrapped = false;
+  List<String> _lastFollowingTags = const [];
 
   @override
   void initState() {
@@ -45,8 +48,21 @@ class _BooruScreenState extends State<BooruScreen>
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await context.read<BooruTagsStore>().load();
+      final tags = context.read<BooruTagsStore>();
+      await tags.load();
       if (!mounted) return;
+      await context.read<BooruMuteStore>().load();
+      if (!mounted) return;
+      _tagsDisposer = tags.observer(
+        onState: (next) {
+          if (!_listEquals(next, _lastFollowingTags)) {
+            _lastFollowingTags = List.of(next);
+            if (_followingBootstrapped || _tabs.index == 1) {
+              _following.refresh();
+            }
+          }
+        },
+      );
       await _latest.refresh();
     });
   }
@@ -56,8 +72,6 @@ class _BooruScreenState extends State<BooruScreen>
     if (tags.isEmpty) {
       return const BooruPostPage(posts: [], page: 1, hasMore: false);
     }
-    // Following is a merged first page of each tag; further pages would need
-    // per-tag cursors — Phase 1 keeps one combined shot.
     if (page > 1) {
       return BooruPostPage(posts: const [], page: page, hasMore: false);
     }
@@ -71,8 +85,23 @@ class _BooruScreenState extends State<BooruScreen>
     await _following.refresh();
   }
 
+  bool _listEquals(List<String> a, List<String> b) {
+    if (identical(a, b)) return true;
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
+
   @override
   void dispose() {
+    final disposeObserver = _tagsDisposer;
+    _tagsDisposer = null;
+    if (disposeObserver != null) {
+      // ignore: discarded_futures
+      disposeObserver();
+    }
     _tabs.dispose();
     _latest.destroy();
     _following.destroy();
@@ -143,18 +172,30 @@ class _FeedTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
     return ScopedBuilder<BooruFeedStore, List<BooruPost>>.transition(
       store: store,
       onLoading: (_) => const Center(child: CircularProgressIndicator()),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
         stackTrace: null,
-        prefix: L10n.of(context).plugin_booru_load_error,
+        prefix: booruErrorMessage(l10n, error),
         onRetry: () => store.refresh(),
       ),
       onState: (context, posts) {
         if (posts.isEmpty) {
-          return Center(child: Text(emptyLabel));
+          return RefreshIndicator(
+            onRefresh: store.refresh,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.4,
+                  child: Center(child: Text(emptyLabel)),
+                ),
+              ],
+            ),
+          );
         }
         return BooruPostGrid(
           posts: posts,
@@ -195,6 +236,13 @@ class _FollowingTab extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: InputChip(
                         label: Text(tag),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                BooruSearchScreen(initialQuery: tag),
+                          ),
+                        ),
                         onDeleted: () =>
                             context.read<BooruTagsStore>().remove(tag),
                       ),

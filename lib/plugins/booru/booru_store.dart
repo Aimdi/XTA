@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
@@ -67,6 +71,52 @@ class BooruTagsStore extends Store<List<String>> {
   }
 }
 
+/// Local mute list — preference-backed, like Pixiv muted tags.
+class BooruMuteStore extends Store<Set<String>> {
+  final BasePrefService prefs;
+
+  BooruMuteStore(this.prefs) : super(const {});
+
+  Future<void> load() async {
+    await execute(() async => _read());
+  }
+
+  Set<String> _read() {
+    final raw = prefs.get<String>(optionPluginBooruMutedTags) ?? '[]';
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        return {
+          for (final tag in decoded.whereType<String>())
+            ?normaliseBooruTag(tag),
+        };
+      }
+    } catch (_) {}
+    return const {};
+  }
+
+  Future<void> _persist(Set<String> tags) async {
+    final sorted = tags.toList()..sort();
+    await prefs.set(optionPluginBooruMutedTags, jsonEncode(sorted));
+    update(tags);
+  }
+
+  Future<void> mute(String tag) async {
+    final normalised = normaliseBooruTag(tag);
+    if (normalised == null) return;
+    await _persist({...state, normalised});
+  }
+
+  Future<void> unmute(String tag) async {
+    final normalised = normaliseBooruTag(tag);
+    if (normalised == null) return;
+    await _persist({
+      for (final t in state)
+        if (t != normalised) t,
+    });
+  }
+}
+
 /// Paginated post list for Latest / Search / Following.
 class BooruFeedStore extends Store<List<BooruPost>> {
   final BooruClient client;
@@ -93,14 +143,22 @@ class BooruFeedStore extends Store<List<BooruPost>> {
   }
 
   Future<void> loadMore() async {
-    if (!_hasMore || _loadingMore || state.isEmpty) return;
+    if (!_hasMore || _loadingMore) return;
     _loadingMore = true;
     try {
-      final next = _page + 1;
-      final page = await loader(page: next);
-      _page = next;
-      _hasMore = page.hasMore;
-      update([...state, ...page.posts]);
+      // Skip empty filtered pages while the API still has more raw results.
+      for (var attempt = 0; attempt < 3 && _hasMore; attempt++) {
+        final next = _page + 1;
+        final page = await loader(page: next);
+        _page = next;
+        _hasMore = page.hasMore;
+        if (page.posts.isEmpty) {
+          if (!_hasMore) break;
+          continue;
+        }
+        update([...state, ...page.posts]);
+        break;
+      }
     } catch (_) {
       // Keep what we have; the reader can pull-to-refresh.
     } finally {

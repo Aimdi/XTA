@@ -142,10 +142,14 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBooruMaxRating, BooruRating.general.code);
     await prefs.set(optionPluginBooruInHomeFeed, false);
     await prefs.set(optionPluginBooruSearchHistory, '[]');
+    await prefs.set(optionPluginBooruMutedTags, '[]');
   }
 
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
-    await context.read<BooruTagsStore>().load();
+    final tags = context.read<BooruTagsStore>();
+    final mute = context.read<BooruMuteStore>();
+    await tags.load();
+    await mute.load();
   }
 }

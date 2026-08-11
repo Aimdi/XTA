@@ -4,12 +4,14 @@ library;
 enum BooruEngine {
   danbooru,
   moebooru,
-  gelbooruV2;
+  gelbooruV2,
+  e621;
 
   String get id => switch (this) {
     BooruEngine.danbooru => 'danbooru',
     BooruEngine.moebooru => 'moebooru',
     BooruEngine.gelbooruV2 => 'gelbooru_v2',
+    BooruEngine.e621 => 'e621',
   };
 
   static BooruEngine? tryParse(String? raw) {
@@ -22,6 +24,9 @@ enum BooruEngine {
       case 'gelbooru_v2':
       case 'gelbooru2':
         return BooruEngine.gelbooruV2;
+      case 'e621':
+      case 'e926':
+        return BooruEngine.e621;
       default:
         return null;
     }
@@ -43,7 +48,7 @@ class BooruPreset {
 }
 
 /// Built-in hosts — guest-friendly first. Gelbooru.com often needs an API key;
-/// Safebooru stays usable without one.
+/// Safebooru stays usable without one. e926 is the safe mirror of e621.
 const List<BooruPreset> booruPresets = [
   BooruPreset(
     id: 'danbooru',
@@ -75,6 +80,18 @@ const List<BooruPreset> booruPresets = [
     engine: BooruEngine.gelbooruV2,
     host: 'https://gelbooru.com',
   ),
+  BooruPreset(
+    id: 'e926',
+    name: 'e926',
+    engine: BooruEngine.e621,
+    host: 'https://e926.net',
+  ),
+  BooruPreset(
+    id: 'e621',
+    name: 'e621',
+    engine: BooruEngine.e621,
+    host: 'https://e621.net',
+  ),
 ];
 
 String normaliseBooruHost(String raw) {
@@ -99,4 +116,17 @@ String? normaliseBooruTag(String raw) {
   final tag = raw.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '_');
   if (tag.isEmpty) return null;
   return tag;
+}
+
+/// Last space-separated token in a search query, for "follow this tag".
+String? lastBooruTagToken(String query) {
+  final parts = query
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((t) => t.isNotEmpty)
+      .toList(growable: false);
+  if (parts.isEmpty) return null;
+  final last = parts.last;
+  if (last.contains(':')) return null; // metatag, not a followable tag
+  return normaliseBooruTag(last);
 }

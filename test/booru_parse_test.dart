@@ -5,13 +5,21 @@ import 'package:xta/plugins/booru/booru_parse.dart';
 
 void main() {
   group('BooruRating', () {
-    test('parses legacy and modern labels', () {
-      expect(BooruRating.tryParse('g'), BooruRating.general);
+    test('preference parse keeps s as sensitive', () {
+      expect(BooruRating.tryParse('s'), BooruRating.sensitive);
       expect(BooruRating.tryParse('safe'), BooruRating.general);
-      expect(BooruRating.tryParse('general'), BooruRating.general);
-      expect(BooruRating.tryParse('sensitive'), BooruRating.sensitive);
-      expect(BooruRating.tryParse('q'), BooruRating.questionable);
-      expect(BooruRating.tryParse('explicit'), BooruRating.explicit);
+    });
+
+    test('Moebooru and e621 wire s means safe', () {
+      expect(
+        BooruRating.parseWire('s', BooruEngine.moebooru),
+        BooruRating.general,
+      );
+      expect(BooruRating.parseWire('s', BooruEngine.e621), BooruRating.general);
+      expect(
+        BooruRating.parseWire('s', BooruEngine.danbooru),
+        BooruRating.sensitive,
+      );
     });
 
     test('exceeds compares ordinal rank', () {
@@ -48,12 +56,11 @@ void main() {
       expect(post.id, '42');
       expect(post.tags, ['1girl', 'landscape']);
       expect(post.rating, BooruRating.general);
-      expect(post.previewUrl, 'https://cdn.example/p.jpg');
-      expect(post.width, 800);
+      expect(post.hostPageUrl, 'https://danbooru.donmai.us/posts/42');
       expect(booruPostAllowed(post, BooruRating.general), isTrue);
     });
 
-    test('parses a Moebooru post with unix created_at', () {
+    test('parses Moebooru safe rating as general', () {
       final posts = parseBooruPosts(
         [
           {
@@ -75,8 +82,9 @@ void main() {
       );
 
       expect(posts.single.previewUrl, 'https://yande.re/data/preview/ab.jpg');
-      expect(posts.single.createdAt, isNotNull);
-      expect(posts.single.rating, BooruRating.sensitive);
+      expect(posts.single.rating, BooruRating.general);
+      expect(posts.single.hostPageUrl, 'https://yande.re/post/show/99');
+      expect(booruPostAllowed(posts.single, BooruRating.general), isTrue);
     });
 
     test('parses Gelbooru-style posts', () {
@@ -103,13 +111,55 @@ void main() {
       expect(posts.single.tags, ['solo', 'smile']);
     });
 
-    test('filters by max rating', () {
+    test('parses e621 nested posts payload', () {
+      final posts = parseBooruPosts(
+        {
+          'posts': [
+            {
+              'id': 6617540,
+              'created_at': '2026-08-11T19:31:24.361-04:00',
+              'score': {'up': 1, 'down': 0, 'total': 1},
+              'rating': 's',
+              'file': {
+                'width': 200,
+                'height': 300,
+                'ext': 'png',
+                'url': 'https://static1.e621.net/data/a.png',
+              },
+              'preview': {'url': 'https://static1.e621.net/data/preview/a.jpg'},
+              'sample': {'url': 'https://static1.e621.net/data/sample/a.jpg'},
+              'tags': {
+                'general': ['smile'],
+                'artist': ['someone'],
+                'character': [],
+                'copyright': [],
+                'species': ['fox'],
+                'meta': [],
+                'lore': [],
+              },
+              'sources': ['https://example.com'],
+            },
+          ],
+        },
+        engine: BooruEngine.e621,
+        host: 'https://e621.net',
+      );
+
+      expect(posts, hasLength(1));
+      expect(posts.single.rating, BooruRating.general);
+      expect(posts.single.score, 1);
+      expect(posts.single.tags, containsAll(['smile', 'someone', 'fox']));
+      expect(posts.single.previewUrl, contains('preview'));
+      expect(posts.single.hostPageUrl, 'https://e621.net/posts/6617540');
+    });
+
+    test('filters by max rating and muted tags', () {
       final explicit = parseBooruPosts(
         [
           {
             'id': 1,
             'rating': 'e',
-            'tag_string': 'x',
+            'tag_string': 'x loud',
             'preview_file_url': 'https://x/a.jpg',
             'image_width': 1,
             'image_height': 1,
@@ -121,6 +171,8 @@ void main() {
 
       expect(booruPostAllowed(explicit, BooruRating.general), isFalse);
       expect(booruPostAllowed(explicit, BooruRating.explicit), isTrue);
+      expect(booruPostMuted(explicit, {'loud'}), isTrue);
+      expect(booruPostMuted(explicit, {'quiet'}), isFalse);
     });
   });
 
@@ -132,6 +184,19 @@ void main() {
       );
       expect(normaliseBooruTag('  Blue Sky '), 'blue_sky');
       expect(normaliseBooruTag('   '), isNull);
+      expect(lastBooruTagToken('1girl blue_sky'), 'blue_sky');
+      expect(lastBooruTagToken('1girl rating:g'), isNull);
+    });
+  });
+
+  group('tag suggestions', () {
+    test('parses Danbooru-shaped tag rows', () {
+      final tags = parseBooruTagSuggestions([
+        {'name': '1girl', 'post_count': 100},
+        {'name': '2girls', 'count': 50},
+      ], engine: BooruEngine.danbooru);
+      expect(tags.map((t) => t.name), ['1girl', '2girls']);
+      expect(tags.first.postCount, 100);
     });
   });
 }

@@ -6,6 +6,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
+import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 
 class BooruPostScreen extends StatelessWidget {
@@ -17,11 +18,18 @@ class BooruPostScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
+    final hostPage = post.hostPageUrl;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('#${post.id}'),
         actions: [
+          if (hostPage != null)
+            IconButton(
+              tooltip: l10n.plugin_booru_open_on_host,
+              icon: const Icon(Icons.public),
+              onPressed: () => _open(hostPage),
+            ),
           if (post.source != null && post.source!.trim().isNotEmpty)
             IconButton(
               tooltip: l10n.plugin_booru_open_source,
@@ -45,9 +53,43 @@ class BooruPostScreen extends StatelessWidget {
             tag: booruPostHeroTag(post),
             child: AspectRatio(
               aspectRatio: post.aspectRatio.clamp(0.4, 2.2),
-              child: BooruNetworkImage(
-                url: post.displayUrl,
-                fit: BoxFit.contain,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  BooruNetworkImage(
+                    url: post.isVideo ? post.thumbnailUrl : post.displayUrl,
+                    fit: BoxFit.contain,
+                  ),
+                  if (post.isVideo)
+                    Material(
+                      color: Colors.black45,
+                      child: InkWell(
+                        onTap: () {
+                          final url = post.fileUrl ?? post.sampleUrl;
+                          if (url != null) _open(url);
+                        },
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.play_circle_outline,
+                                size: 56,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                l10n.plugin_booru_open_video,
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -70,6 +112,7 @@ class BooruPostScreen extends StatelessWidget {
             store: context.read<BooruTagsStore>(),
             onState: (context, followed) {
               final tags = followed.toSet();
+              final muted = context.read<BooruMuteStore>().state;
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Wrap(
@@ -77,13 +120,8 @@ class BooruPostScreen extends StatelessWidget {
                   runSpacing: 6,
                   children: [
                     for (final tag in post.tags)
-                      ActionChip(
-                        label: Text(tag),
-                        avatar: Icon(
-                          tags.contains(tag) ? Icons.check : Icons.add,
-                          size: 16,
-                        ),
-                        onPressed: () async {
+                      GestureDetector(
+                        onLongPress: () async {
                           final store = context.read<BooruTagsStore>();
                           if (tags.contains(tag)) {
                             await store.remove(tag);
@@ -91,11 +129,36 @@ class BooruPostScreen extends StatelessWidget {
                             await store.add(tag);
                           }
                         },
+                        child: ActionChip(
+                          label: Text(tag),
+                          avatar: Icon(
+                            tags.contains(tag)
+                                ? Icons.check
+                                : muted.contains(tag)
+                                ? Icons.volume_off
+                                : Icons.add,
+                            size: 16,
+                          ),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  BooruSearchScreen(initialQuery: tag),
+                            ),
+                          ),
+                        ),
                       ),
                   ],
                 ),
               );
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Text(
+              l10n.plugin_booru_tag_hint,
+              style: theme.textTheme.bodySmall,
+            ),
           ),
           if (post.source != null && post.source!.trim().isNotEmpty)
             ListTile(
@@ -103,9 +166,40 @@ class BooruPostScreen extends StatelessWidget {
               subtitle: Text(post.source!),
               onTap: () => _open(post.source!),
             ),
-          ListTile(
-            dense: true,
-            title: Text(post.host, style: theme.textTheme.bodySmall),
+          if (hostPage != null)
+            ListTile(
+              title: Text(l10n.plugin_booru_open_on_host),
+              subtitle: Text(post.host),
+              onTap: () => _open(hostPage),
+            )
+          else
+            ListTile(
+              dense: true,
+              title: Text(post.host, style: theme.textTheme.bodySmall),
+            ),
+          ScopedBuilder<BooruMuteStore, Set<String>>(
+            store: context.read<BooruMuteStore>(),
+            onState: (context, muted) {
+              return ExpansionTile(
+                title: Text(l10n.plugin_booru_mute_section),
+                children: [
+                  for (final tag in post.tags.take(40))
+                    SwitchListTile(
+                      dense: true,
+                      title: Text(tag),
+                      value: muted.contains(tag),
+                      onChanged: (value) async {
+                        final store = context.read<BooruMuteStore>();
+                        if (value) {
+                          await store.mute(tag);
+                        } else {
+                          await store.unmute(tag);
+                        }
+                      },
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ),

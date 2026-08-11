@@ -38,7 +38,7 @@ class BooruClient {
 
   static const _timeout = Duration(seconds: 20);
   static const _userAgent =
-      'XTA-Booru/0.1 (read-only; +https://github.com/Aimdi/XTA)';
+      'XTA-Booru/0.1 (by Aimdi; read-only; +https://github.com/Aimdi/XTA)';
   static const defaultPageSize = 40;
 
   BooruEngine get engine =>
@@ -60,6 +60,20 @@ class BooruClient {
   BooruRating get maxRating =>
       BooruRating.tryParse(prefs.get<String>(optionPluginBooruMaxRating)) ??
       BooruRating.general;
+
+  Set<String> get mutedTags {
+    final raw = prefs.get<String>(optionPluginBooruMutedTags) ?? '[]';
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        return {
+          for (final tag in decoded.whereType<String>())
+            ?normaliseBooruTag(tag),
+        };
+      }
+    } catch (_) {}
+    return const {};
+  }
 
   bool get isConfigured => host.isNotEmpty;
 
@@ -96,16 +110,39 @@ class BooruClient {
     final response = await _get(uri);
     final decoded = _decodeJson(response, uri);
     final parsed = parseBooruPosts(decoded, engine: engine, host: host);
+    final muted = mutedTags;
     final filtered = [
       for (final post in parsed)
-        if (booruPostAllowed(post, maxRating)) post,
+        if (booruPostAllowed(post, maxRating) && !booruPostMuted(post, muted))
+          post,
     ];
 
+    // Pagination follows the raw API page: rating/mute filters must not make
+    // an empty filtered page look like the end of the feed.
     return BooruPostPage(
       posts: filtered,
       page: page,
       hasMore: parsed.length >= limit,
     );
+  }
+
+  Future<List<BooruTagSuggestion>> suggestTags(
+    String prefix, {
+    int limit = 12,
+  }) async {
+    final query = prefix.trim();
+    if (query.isEmpty || !isConfigured) return const [];
+
+    final uri = _tagsUri(query: query, limit: limit);
+    if (uri == null) return const [];
+
+    try {
+      final response = await _get(uri);
+      final decoded = _decodeJson(response, uri);
+      return parseBooruTagSuggestions(decoded, engine: engine);
+    } catch (_) {
+      return const [];
+    }
   }
 
   /// One page per tag query, newest-first merge for interleaved feeds.
@@ -148,14 +185,75 @@ class BooruClient {
       return tags;
     }
 
-    // Danbooru/Moebooru: nudge the query toward the reader's max rating.
-    // Client-side filtering remains the source of truth.
+    // Moebooru / e621: s = safe. Danbooru: g = general, s = sensitive.
+    if (engine == BooruEngine.moebooru || engine == BooruEngine.e621) {
+      return [
+        ...tags,
+        if (maxRating == BooruRating.general) 'rating:s',
+        if (maxRating == BooruRating.sensitive) ...['-rating:q', '-rating:e'],
+        if (maxRating == BooruRating.questionable) '-rating:e',
+      ];
+    }
+
     return [
       ...tags,
       if (maxRating == BooruRating.general) 'rating:g',
       if (maxRating == BooruRating.sensitive) ...['-rating:q', '-rating:e'],
       if (maxRating == BooruRating.questionable) '-rating:e',
     ];
+  }
+
+  Uri? _tagsUri({required String query, required int limit}) {
+    final base = Uri.parse(host);
+    final path = _trimPath(base.path);
+    // Prefix match — engines differ on wildcard syntax.
+    switch (engine) {
+      case BooruEngine.danbooru:
+        return base.replace(
+          path: '$path/tags.json',
+          queryParameters: {
+            'search[name_matches]': '$query*',
+            'search[order]': 'count',
+            'limit': '$limit',
+            if (login.isNotEmpty) 'login': login,
+            if (apiKey.isNotEmpty) 'api_key': apiKey,
+          },
+        );
+      case BooruEngine.moebooru:
+        return base.replace(
+          path: '$path/tag.json',
+          queryParameters: {
+            'name': '$query*',
+            'order': 'count',
+            'limit': '$limit',
+          },
+        );
+      case BooruEngine.gelbooruV2:
+        return base.replace(
+          path: '$path/index.php',
+          queryParameters: {
+            'page': 'dapi',
+            's': 'tag',
+            'q': 'index',
+            'json': '1',
+            'limit': '$limit',
+            'name_pattern': '$query%',
+            if (login.isNotEmpty) 'user_id': login,
+            if (apiKey.isNotEmpty) 'api_key': apiKey,
+          },
+        );
+      case BooruEngine.e621:
+        return base.replace(
+          path: '$path/tags.json',
+          queryParameters: {
+            'search[name_matches]': '$query*',
+            'search[order]': 'count',
+            'limit': '$limit',
+            if (login.isNotEmpty) 'login': login,
+            if (apiKey.isNotEmpty) 'api_key': apiKey,
+          },
+        );
+    }
   }
 
   Uri _postsUri({
@@ -165,11 +263,12 @@ class BooruClient {
   }) {
     final base = Uri.parse(host);
     final tagQuery = tags.join(' ');
+    final path = _trimPath(base.path);
 
     switch (engine) {
       case BooruEngine.danbooru:
         return base.replace(
-          path: '${_trimPath(base.path)}/posts.json',
+          path: '$path/posts.json',
           queryParameters: {
             'limit': '$limit',
             'page': '$page',
@@ -180,7 +279,7 @@ class BooruClient {
         );
       case BooruEngine.moebooru:
         return base.replace(
-          path: '${_trimPath(base.path)}/post.json',
+          path: '$path/post.json',
           queryParameters: {
             'limit': '$limit',
             'page': '$page',
@@ -191,7 +290,7 @@ class BooruClient {
         );
       case BooruEngine.gelbooruV2:
         return base.replace(
-          path: '${_trimPath(base.path)}/index.php',
+          path: '$path/index.php',
           queryParameters: {
             'page': 'dapi',
             's': 'post',
@@ -201,6 +300,17 @@ class BooruClient {
             'pid': '${page - 1}',
             if (tagQuery.isNotEmpty) 'tags': tagQuery,
             if (login.isNotEmpty) 'user_id': login,
+            if (apiKey.isNotEmpty) 'api_key': apiKey,
+          },
+        );
+      case BooruEngine.e621:
+        return base.replace(
+          path: '$path/posts.json',
+          queryParameters: {
+            'limit': '$limit',
+            'page': '$page',
+            if (tagQuery.isNotEmpty) 'tags': tagQuery,
+            if (login.isNotEmpty) 'login': login,
             if (apiKey.isNotEmpty) 'api_key': apiKey,
           },
         );

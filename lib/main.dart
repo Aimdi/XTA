@@ -557,6 +557,7 @@ Future<void> main() async {
       optionPluginBooruMaxRating: 'g',
       optionPluginBooruInHomeFeed: false,
       optionPluginBooruSearchHistory: '[]',
+      optionPluginBooruMutedTags: '[]',
       optionPluginThreadsDirectCookies: '',
       optionPluginThreadsDirectBearer: '',
       optionPluginThreadsDirectDeviceId: '',
@@ -720,6 +721,7 @@ Future<void> main() async {
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
+    final booruMute = BooruMuteStore(prefService);
 
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
@@ -764,8 +766,10 @@ Future<void> main() async {
         pixivMute.load(),
         pixivSearchHistory.load(),
       ],
-      if (prefService.get<bool>(optionPluginBooruEnabled) == true)
+      if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
         booruTags.load(),
+        booruMute.load(),
+      ],
     ]);
 
     runApp(
@@ -854,6 +858,7 @@ Future<void> main() async {
             Provider(create: (_) => pixivFeed),
             Provider(create: (_) => booruClient),
             Provider(create: (_) => booruTags),
+            Provider(create: (_) => booruMute),
             ChangeNotifierProvider(
               create: (_) =>
                   VideoContextState(prefService.get(optionMediaDefaultMute)),
