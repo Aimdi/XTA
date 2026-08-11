@@ -1143,6 +1143,71 @@ void main() {
       },
     );
 
+    test(
+      'HTML listings without secure_media still resolve a playable DASH URL',
+      () {
+        final scraped = post(
+          url: 'https://v.redd.it/pigday1',
+          domain: 'v.redd.it',
+        );
+        expect(
+          scraped.resolvedVideoDashUrl,
+          'https://v.redd.it/pigday1/DASHPlaylist.mpd',
+        );
+        expect(
+          post(
+            url: 'https://youtube.com/watch?v=1',
+            domain: 'youtube.com',
+          ).resolvedVideoDashUrl,
+          isNull,
+          reason: 'only native Reddit video gets a reconstructed DASH URL',
+        );
+      },
+    );
+
+    test('JSON videoDashUrl wins over reconstructing from the link', () {
+      final withDash = RedditPost(
+        id: 'a',
+        title: 't',
+        subreddit: 'x',
+        permalink: '/r/x/comments/a/',
+        url: 'https://v.redd.it/abc',
+        domain: 'v.redd.it',
+        videoDashUrl: 'https://v.redd.it/abc/DASHPlaylist.mpd',
+      );
+      expect(withDash.resolvedVideoDashUrl, withDash.videoDashUrl);
+    });
+
+    test('link cards use previewImage, else the listing thumbnail', () {
+      final withPreview = RedditPost(
+        id: 'a',
+        title: 't',
+        subreddit: 'x',
+        permalink: '/r/x/comments/a/',
+        url: 'https://t-online.de/story',
+        domain: 't-online.de',
+        previewImage: 'https://preview.redd.it/article.jpg?width=1080',
+        thumbnail: 'https://b.thumbs.redditmedia.com/small.jpg',
+      );
+      expect(withPreview.cardPreviewImage, withPreview.previewImage);
+
+      final htmlOnly = RedditPost(
+        id: 'b',
+        title: 't',
+        subreddit: 'x',
+        permalink: '/r/x/comments/b/',
+        url: 'https://t-online.de/story',
+        domain: 't-online.de',
+        thumbnail: 'https://b.thumbs.redditmedia.com/article.jpg',
+      );
+      expect(
+        htmlOnly.cardPreviewImage,
+        'https://b.thumbs.redditmedia.com/article.jpg',
+        reason:
+            'old.reddit scrape has no previewImage — thumbnail still fills the banner',
+      );
+    });
+
     test('NSFW hide mode removes over-18 posts', () {
       final safe = post();
       final adult = RedditPost(

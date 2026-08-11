@@ -48,7 +48,7 @@ class RedditPostMedia extends StatelessWidget {
     // creation gate, same controls. libmpv reads the DASH manifest whole —
     // video and its separate audio track together; the progressive fallback
     // is video-only and serves as the download target.
-    final dash = post.videoDashUrl ?? post.videoFallbackUrl;
+    final dash = post.resolvedVideoDashUrl;
     if (dash != null) {
       final ratio = redditMediaAspectRatio(post.videoAspectRatio);
 
@@ -121,7 +121,7 @@ class RedditPostMedia extends StatelessWidget {
         tweetId: 'reddit-${post.id}',
         metadata: TweetVideoMetadata(
           ratio,
-          post.previewImage ?? post.thumbnailUrl,
+          post.cardPreviewImage,
           () async => TweetVideoUrls(dash, post.videoFallbackUrl),
         ),
       ),
@@ -269,7 +269,7 @@ class _RedditLinkCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final radius = tweetMediaRadiusOf(context);
-    final preview = post.previewImage;
+    final preview = post.cardPreviewImage;
 
     return Semantics(
       button: true,
@@ -302,7 +302,7 @@ class _RedditLinkCard extends StatelessWidget {
 
     return Row(
       children: [
-        if (post.previewImage == null) _leading(context, post.thumbnailUrl),
+        if (post.cardPreviewImage == null) _leading(context, post.thumbnailUrl),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
