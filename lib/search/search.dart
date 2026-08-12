@@ -29,10 +29,14 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final arguments = ModalRoute.of(context)!.settings.arguments as SearchArguments;
+    final arguments =
+        ModalRoute.of(context)!.settings.arguments as SearchArguments;
 
     return _ResultsScreen(
-        initialTab: arguments.initialTab, query: arguments.query, focusInputOnOpen: arguments.focusInputOnOpen);
+      initialTab: arguments.initialTab,
+      query: arguments.query,
+      focusInputOnOpen: arguments.focusInputOnOpen,
+    );
   }
 }
 
@@ -41,13 +45,18 @@ class _ResultsScreen extends StatefulWidget {
   final String? query;
   final bool focusInputOnOpen;
 
-  const _ResultsScreen({required this.initialTab, this.query, this.focusInputOnOpen = false});
+  const _ResultsScreen({
+    required this.initialTab,
+    this.query,
+    this.focusInputOnOpen = false,
+  });
 
   @override
   State<_ResultsScreen> createState() => _ResultsScreenState();
 }
 
-class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProviderStateMixin {
+class _ResultsScreenState extends State<_ResultsScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _queryController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
@@ -72,11 +81,21 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
   void initState() {
     super.initState();
 
-    _tabController = TabController(length: 4, vsync: this, initialIndex: widget.initialTab);
+    _tabController = TabController(
+      length: 4,
+      vsync: this,
+      initialIndex: widget.initialTab,
+    );
 
     final initialQuery = widget.query ?? '';
-    _topTweets = SearchTweetsPagination(product: 'Top', initialQuery: initialQuery);
-    _latestTweets = SearchTweetsPagination(product: 'Latest', initialQuery: initialQuery);
+    _topTweets = SearchTweetsPagination(
+      product: 'Top',
+      initialQuery: initialQuery,
+    );
+    _latestTweets = SearchTweetsPagination(
+      product: 'Latest',
+      initialQuery: initialQuery,
+    );
     _mediaResults = SearchMediaPagination(initialQuery: initialQuery);
     _searchUsersModel = SearchUsersModel();
 
@@ -156,13 +175,22 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        toolbarHeight: 72,
         flexibleSpace: Padding(
-          padding: EdgeInsets.fromLTRB(8, 36, 8, 8),
+          padding: EdgeInsets.fromLTRB(
+            8,
+            MediaQuery.paddingOf(context).top + 8,
+            8,
+            8,
+          ),
           child: SearchBar(
             controller: _queryController,
             focusNode: _focusNode,
             textInputAction: TextInputAction.search,
-            leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
             trailing: [
               IconButton(
                 icon: const Icon(Icons.sensors),
@@ -175,7 +203,10 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
                 onPressed: () async {
                   final query = await Navigator.push<String>(
                     context,
-                    MaterialPageRoute(fullscreenDialog: true, builder: (_) => const AdvancedSearchScreen()),
+                    MaterialPageRoute(
+                      fullscreenDialog: true,
+                      builder: (_) => const AdvancedSearchScreen(),
+                    ),
                   );
                   if (query != null && query.trim().isNotEmpty) {
                     _queryController.text = query;
@@ -191,7 +222,12 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
 
                   return query.isEmpty
                       ? const SizedBox.shrink()
-                      : FollowButton(user: SearchSubscription(id: query, createdAt: DateTime.now()));
+                      : FollowButton(
+                          user: SearchSubscription(
+                            id: query,
+                            createdAt: DateTime.now(),
+                          ),
+                        );
                 },
               ),
             ],
@@ -199,23 +235,42 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.trending_up)),
-            Tab(icon: Icon(Icons.access_time_outlined)),
-            Tab(icon: Icon(Icons.image)),
-            Tab(icon: Icon(Icons.person_search)),
+          tabs: [
+            Tab(
+              icon: Tooltip(
+                message: L10n.of(context).tweets,
+                child: const Icon(Icons.trending_up),
+              ),
+            ),
+            Tab(
+              icon: Tooltip(
+                message: L10n.of(context).recent,
+                child: const Icon(Icons.access_time_outlined),
+              ),
+            ),
+            Tab(
+              icon: Tooltip(
+                message: L10n.of(context).media,
+                child: const Icon(Icons.image),
+              ),
+            ),
+            const Tab(icon: Icon(Icons.person_search)),
           ],
           labelColor: Theme.of(context).appBarTheme.foregroundColor,
           indicatorColor: Theme.of(context).appBarTheme.foregroundColor,
-          dividerColor: Theme.of(context).colorScheme.surfaceBright.withAlpha(150),
+          dividerColor: Theme.of(
+            context,
+          ).colorScheme.surfaceBright.withAlpha(150),
         ),
       ),
       body: MultiProvider(
         providers: [
           ChangeNotifierProvider<TweetContextState>(
-              create: (_) => TweetContextState.fromPrefs(prefs)),
+            create: (_) => TweetContextState.fromPrefs(prefs),
+          ),
           ChangeNotifierProvider<VideoContextState>(
-              create: (_) => VideoContextState(prefs.get(optionMediaDefaultMute))),
+            create: (_) => VideoContextState(prefs.get(optionMediaDefaultMute)),
+          ),
         ],
         child: TabBarView(
           controller: _tabController,
@@ -224,20 +279,31 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
               feed: _topTweets.feed,
               loadPage: _topTweets.loadPage,
               username: null,
-              firstPageErrorPrefix: L10n.of(context).unable_to_load_the_search_results,
-              newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+              firstPageErrorPrefix: L10n.of(
+                context,
+              ).unable_to_load_the_search_results,
+              newPageErrorPrefix: L10n.of(
+                context,
+              ).unable_to_load_the_next_page_of_tweets,
               emptyMessage: L10n.of(context).no_results,
             ),
             PaginatedTweetList(
               feed: _latestTweets.feed,
               loadPage: _latestTweets.loadPage,
               username: null,
-              firstPageErrorPrefix: L10n.of(context).unable_to_load_the_search_results,
-              newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+              firstPageErrorPrefix: L10n.of(
+                context,
+              ).unable_to_load_the_search_results,
+              newPageErrorPrefix: L10n.of(
+                context,
+              ).unable_to_load_the_next_page_of_tweets,
               emptyMessage: L10n.of(context).no_results,
             ),
             SearchMediaGrid(model: _mediaResults),
-            _UserSearchResultList(store: _searchUsersModel, onRetry: _dispatchQuery),
+            _UserSearchResultList(
+              store: _searchUsersModel,
+              onRetry: _dispatchQuery,
+            ),
           ],
         ),
       ),
@@ -267,7 +333,9 @@ class _UserSearchResultList extends StatelessWidget {
           return Center(child: Text(L10n.of(context).no_results));
         }
         return ListView.builder(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
           itemCount: items.length,
           itemBuilder: (context, index) {
             return UserTile(user: UserSubscription.fromUser(items[index]));

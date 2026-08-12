@@ -24,8 +24,7 @@ class GroupFeedShell extends StatefulWidget {
   final List<Widget> Function(BuildContext) actionsBuilder;
 
   /// An extra strip under the title row — the home screen puts its feed tabs
-  /// here. The shell finishes the bar with a hairline either way, so content
-  /// scrolling underneath no longer dissolves into it.
+  /// here. The bar stays pinned so those tabs do not scroll away with the feed.
   final PreferredSizeWidget Function(BuildContext)? bottomBuilder;
 
   /// X centres its logo; group names stay leading like every pushed screen.
@@ -192,14 +191,11 @@ class _GroupFeedShellState extends State<GroupFeedShell>
           value: _feedRefreshController,
           child: NestedScrollView(
             controller: widget.scrollController,
-            floatHeaderSlivers: true,
             headerSliverBuilder: (context, innerBoxIsScrolled) {
               return [
                 SliverAppBar(
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  pinned: false,
-                  snap: true,
-                  floating: true,
+                  pinned: true,
                   centerTitle: widget.centerTitle,
                   leading: widget.leading,
                   title: widget.titleBuilder(context),

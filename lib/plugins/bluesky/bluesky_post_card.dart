@@ -537,10 +537,13 @@ class _BlueskyEngagementRow extends StatelessWidget {
             },
           ),
           const Spacer(),
-          IconButton(
-            tooltip: L10n.of(context).open_in_browser,
-            onPressed: onOpenBrowser,
-            icon: Icon(Icons.open_in_new, size: 18, color: muted),
+          tweetFooterIconButton(
+            context,
+            Icons.open_in_new,
+            muted,
+            null,
+            onOpenBrowser,
+            L10n.of(context).open_in_browser,
           ),
         ],
       ),

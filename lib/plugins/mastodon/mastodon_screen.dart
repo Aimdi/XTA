@@ -9,6 +9,7 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
 /// The Mastodon tab: every locally followed acct, merged newest first.
@@ -118,35 +119,26 @@ class _MastodonScreenState extends State<MastodonScreen> {
       // and this used to be a static screen with no gesture on it at all.
       return ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
         store: context.read<MastodonAccountsStore>(),
-        onState: (context, accounts) => RefreshIndicator(
+        onState: (context, accounts) => EmptyPane(
+          icon: Icons.public,
+          message: accounts.isEmpty
+              ? l10n.plugin_mastodon_empty
+              : l10n.plugin_mastodon_no_posts,
+          scrollController: widget.scrollController,
           onRefresh: () =>
               context.read<MastodonFeedStore>().refresh(force: true),
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  children: [
-                    Text(
-                      accounts.isEmpty
-                          ? l10n.plugin_mastodon_empty
-                          : l10n.plugin_mastodon_no_posts,
-                      textAlign: TextAlign.center,
-                    ),
-                    if (accounts.isEmpty) ...[
-                      const SizedBox(height: 16),
-                      FilledButton.icon(
-                        onPressed: () => showMastodonSearchSheet(context),
-                        icon: const Icon(Icons.explore_outlined),
-                        label: Text(l10n.plugin_mastodon_discover),
-                      ),
-                    ],
-                  ],
+          action: accounts.isEmpty
+              ? FilledButton.icon(
+                  onPressed: () => showMastodonSearchSheet(context),
+                  icon: const Icon(Icons.explore_outlined),
+                  label: Text(l10n.plugin_mastodon_discover),
+                )
+              : FilledButton.icon(
+                  onPressed: () =>
+                      context.read<MastodonFeedStore>().refresh(force: true),
+                  icon: const Icon(Icons.refresh),
+                  label: Text(l10n.retry),
                 ),
-              ),
-            ],
-          ),
         ),
       );
     }

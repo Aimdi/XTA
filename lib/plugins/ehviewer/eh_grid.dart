@@ -48,6 +48,7 @@ class EhNetworkImage extends StatelessWidget {
 
 class EhGalleryGrid extends StatelessWidget {
   final List<EhGallery> galleries;
+  final ScrollController? scrollController;
   final Future<void> Function()? onRefresh;
   final VoidCallback? onNearEnd;
   final bool loadingMore;
@@ -55,6 +56,7 @@ class EhGalleryGrid extends StatelessWidget {
   const EhGalleryGrid({
     super.key,
     required this.galleries,
+    this.scrollController,
     this.onRefresh,
     this.onNearEnd,
     this.loadingMore = false,
@@ -72,6 +74,7 @@ class EhGalleryGrid extends StatelessWidget {
         return false;
       },
       child: CustomScrollView(
+        controller: scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(

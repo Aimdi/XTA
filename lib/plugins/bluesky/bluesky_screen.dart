@@ -12,6 +12,7 @@ import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
 /// The Bluesky tab: local follows feed, plus a device-only Liked library.
@@ -285,35 +286,27 @@ class _HomePane extends StatelessWidget {
             accounts.map((e) => e.actor).toList(growable: false),
           );
 
-          return RefreshIndicator(
+          return EmptyPane(
+            icon: Icons.cloud_outlined,
+            message: accounts.isEmpty
+                ? l10n.plugin_bluesky_empty
+                : l10n.plugin_bluesky_no_posts,
+            scrollController: scrollController,
             onRefresh: onRefresh,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                if (pending > 0) _PendingAccountsNote(pending: pending),
-                Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    children: [
-                      Text(
-                        accounts.isEmpty
-                            ? l10n.plugin_bluesky_empty
-                            : l10n.plugin_bluesky_no_posts,
-                        textAlign: TextAlign.center,
-                      ),
-                      if (accounts.isEmpty) ...[
-                        const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: () => showBlueskySearchSheet(context),
-                          icon: const Icon(Icons.explore_outlined),
-                          label: Text(l10n.plugin_bluesky_discover),
-                        ),
-                      ],
-                    ],
+            leading: pending > 0
+                ? _PendingAccountsNote(pending: pending)
+                : null,
+            action: accounts.isEmpty
+                ? FilledButton.icon(
+                    onPressed: () => showBlueskySearchSheet(context),
+                    icon: const Icon(Icons.explore_outlined),
+                    label: Text(l10n.plugin_bluesky_discover),
+                  )
+                : FilledButton.icon(
+                    onPressed: onRefresh,
+                    icon: const Icon(Icons.refresh),
+                    label: Text(l10n.retry),
                   ),
-                ),
-              ],
-            ),
           );
         },
       );

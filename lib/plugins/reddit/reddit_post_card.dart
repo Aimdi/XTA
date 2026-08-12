@@ -242,10 +242,13 @@ class _RedditPostFooter extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          IconButton(
-            tooltip: L10n.of(context).open_in_browser,
-            onPressed: () => openUri(context, redditPostUrl(post)),
-            icon: Icon(Icons.open_in_new, size: 18, color: muted),
+          tweetFooterIconButton(
+            context,
+            Icons.open_in_new,
+            muted,
+            null,
+            () => openUri(context, redditPostUrl(post)),
+            L10n.of(context).open_in_browser,
           ),
         ],
       ),
