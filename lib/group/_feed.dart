@@ -153,8 +153,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Every registered source, not only the ones this group has members for: a
   /// source whose last member was just removed still has to be asked, or its
   /// posts stay in the feed after the account that brought them is gone.
-  Future<void> _loadPluginPosts() =>
-      Future.wait(subscriptionSources.map(_loadPostsFrom));
+  Future<void> _loadPluginPosts() {
+    final prefs = PrefService.of(context, listen: false);
+    return Future.wait(enabledSubscriptionSources(prefs).map(_loadPostsFrom));
+  }
 
   Future<void> _loadPostsFrom(SubscriptionSource source) async {
     if (widget.mediaOnly) {
@@ -257,7 +259,11 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (!_feedController.hasItems && (widget.initialPreview?.isEmpty ?? true)) {
       _loadPreview();
     }
-    _loadPluginPosts();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadPluginPosts();
+      }
+    });
   }
 
   Future<void> _loadPreview() async {
@@ -696,7 +702,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         );
 
         // Make sure we load any existing stored tweets from the chunk
-        tweets.addAll(chainsFromStoredChunks(storedChunks));
+        tweets.addAll(await chainsFromStoredChunksAsync(storedChunks));
         storedNewestId = newestTweetIdOf(tweets);
 
         // Use the latest chunk's top cursor to load any new tweets since the last time we checked

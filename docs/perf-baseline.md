@@ -68,6 +68,16 @@ These landed before this baseline doc and are **not** double-counted as Phase 2 
 - Avatar `cacheWidth` decode cap (`9dc41c4`)
 - Reverted feed `cacheExtent` bump — GIF tiles spin native players on build (`d66b60b`)
 
+## Later pass (feeds / plugins / startup)
+
+Mechanism work after the tweet-module pass. Device rows above stay TBD.
+
+- Plugin timelines share `FeedListView` (`kFeedListCacheExtent`, no keep-alives) and wrap cards in `RepaintBoundary`.
+- Home/group shells no longer rebuild the feed on every pref write; subscribe badges / Substack read / Reddit votes use `distinct:`.
+- Non-sensitive media skips the hide-sensitive `Consumer`.
+- Cached chunk JSON decodes on a background isolate; plugin interleave waits until after the first frame and skips disabled plugins.
+- Audio service bind moved to the same post-frame callback as MediaKit.
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

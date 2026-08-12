@@ -55,16 +55,23 @@ class _RedditFeedListState extends State<RedditFeedList>
       onRefresh: () => feed.refresh(force: true),
       child: ScopedBuilder<RedditFeedStore, List<RedditPost>>(
         store: feed,
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: redditErrorMessage(l10n, error!),
-          // Also forced: the failure it is retrying is remembered for a while
-          // so every surface does not ask a broken subreddit again, and this
-          // is the reader saying to ask anyway.
-          onRetry: () => feed.refresh(force: true),
-        ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onError: (_, error) {
+          if (feed.state.isNotEmpty) {
+            return _list(feed.state);
+          }
+          return FullPageErrorWidget(
+            error: error,
+            stackTrace: null,
+            prefix: redditErrorMessage(l10n, error!),
+            onRetry: () => feed.refresh(force: true),
+          );
+        },
+        onLoading: (_) {
+          if (feed.state.isNotEmpty) {
+            return _list(feed.state);
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
         onState: (_, posts) =>
             posts.isEmpty ? _empty(context, l10n) : _list(posts),
       ),

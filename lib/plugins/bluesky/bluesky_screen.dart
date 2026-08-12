@@ -267,15 +267,20 @@ class _HomePane extends StatelessWidget {
         }
         return const Center(child: CircularProgressIndicator());
       },
-      onError: (context, error) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: blueskyErrorMessage(l10n, error ?? Exception()),
-          onRetry: () => context.read<BlueskyFeedStore>().refresh(),
-        ),
-      ),
+      onError: (context, error) {
+        if (feed.state.isNotEmpty) {
+          return _feed(context, l10n, feed.state);
+        }
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: FullPageErrorWidget(
+            error: error,
+            stackTrace: null,
+            prefix: blueskyErrorMessage(l10n, error ?? Exception()),
+            onRetry: () => context.read<BlueskyFeedStore>().refresh(),
+          ),
+        );
+      },
       onState: (context, posts) => _feed(context, l10n, posts),
     );
   }

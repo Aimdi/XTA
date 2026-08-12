@@ -104,15 +104,20 @@ class _MastodonScreenState extends State<MastodonScreen> {
           }
           return const Center(child: CircularProgressIndicator());
         },
-        onError: (context, error) => Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: mastodonErrorMessage(l10n, error ?? Exception()),
-            onRetry: () => context.read<MastodonFeedStore>().refresh(),
-          ),
-        ),
+        onError: (context, error) {
+          if (feed.state.isNotEmpty) {
+            return _feed(context, l10n, feed.state);
+          }
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: FullPageErrorWidget(
+              error: error,
+              stackTrace: null,
+              prefix: mastodonErrorMessage(l10n, error ?? Exception()),
+              onRetry: () => context.read<MastodonFeedStore>().refresh(),
+            ),
+          );
+        },
         onState: (context, posts) => _feed(context, l10n, posts),
       ),
     );

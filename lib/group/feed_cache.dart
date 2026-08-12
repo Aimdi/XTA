@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
@@ -10,12 +11,36 @@ import 'package:sqflite/sqflite.dart';
 /// feed loader and the "show cached tweets while loading" previews build their
 /// chains identically.
 
-List<TweetChain> chainsFromStoredChunks(List<Map<String, Object?>> storedChunks) {
+List<TweetChain> chainsFromStoredChunks(
+  List<Map<String, Object?>> storedChunks,
+) {
   return storedChunks
       .map((e) => jsonDecode(e['response'] as String))
       .map((e) => List.from(e))
       .expand((e) => e.map((c) => TweetChain.fromJson(c)))
       .toList();
+}
+
+/// JSON decode on a background isolate; [TweetChain.fromJson] stays on the UI
+/// isolate because tombstones read [L10n.current].
+Future<List<TweetChain>> chainsFromStoredChunksAsync(
+  List<Map<String, Object?>> storedChunks,
+) async {
+  if (storedChunks.isEmpty) {
+    return const [];
+  }
+  final blobs = [for (final row in storedChunks) row['response'] as String];
+  final decoded = await compute(_decodeChunkBlobs, blobs);
+  return [
+    for (final chain in decoded)
+      TweetChain.fromJson(Map<String, dynamic>.from(chain as Map)),
+  ];
+}
+
+List<dynamic> _decodeChunkBlobs(List<String> blobs) {
+  return [
+    for (final blob in blobs) ...List<dynamic>.from(jsonDecode(blob) as List),
+  ];
 }
 
 /// Keeps only the first occurrence of each chain id, and of each leading tweet
@@ -54,7 +79,8 @@ List<TweetChain> sortChainsNewestFirst(List<TweetChain> chains) {
 /// a feed showing them after a failed refresh can say how old they are.
 typedef CachedChains = ({List<TweetChain> chains, DateTime? cachedAt});
 
-DateTime? _newer(DateTime? a, DateTime? b) => a == null ? b : (b == null || a.isAfter(b) ? a : b);
+DateTime? _newer(DateTime? a, DateTime? b) =>
+    a == null ? b : (b == null || a.isAfter(b) ? a : b);
 
 /// `created_at` defaults to SQLite's `CURRENT_TIMESTAMP`, which is UTC written
 /// without a zone ("2026-08-04 12:00:00"). [DateTime.tryParse] reads that as
@@ -73,12 +99,16 @@ DateTime? parseChunkTimestamp(Object? raw) {
 }
 
 /// The most recent `created_at` across [rows], ignoring unparseable ones.
-DateTime? newestChunkTimestamp(Iterable<Map<String, Object?>> rows) =>
-    rows.map((e) => parseChunkTimestamp(e['created_at'])).fold<DateTime?>(null, _newer);
+DateTime? newestChunkTimestamp(Iterable<Map<String, Object?>> rows) => rows
+    .map((e) => parseChunkTimestamp(e['created_at']))
+    .fold<DateTime?>(null, _newer);
 
 /// Cached tweets for the given chunk [hashes], newest first, capped at
 /// [maxCachedChunkRows] rows per hash.
-Future<CachedChains> readCachedChainsForHashes(Database repository, Iterable<String> hashes) async {
+Future<CachedChains> readCachedChainsForHashes(
+  Database repository,
+  Iterable<String> hashes,
+) async {
   var chains = <TweetChain>[];
   DateTime? cachedAt;
   for (var hash in hashes) {
@@ -89,10 +119,13 @@ Future<CachedChains> readCachedChainsForHashes(Database repository, Iterable<Str
       orderBy: 'created_at DESC',
       limit: maxCachedChunkRows,
     );
-    chains.addAll(chainsFromStoredChunks(storedChunks));
+    chains.addAll(await chainsFromStoredChunksAsync(storedChunks));
     cachedAt = _newer(cachedAt, newestChunkTimestamp(storedChunks));
   }
-  return (chains: sortChainsNewestFirst(dedupeChainsById(chains)), cachedAt: cachedAt);
+  return (
+    chains: sortChainsNewestFirst(dedupeChainsById(chains)),
+    cachedAt: cachedAt,
+  );
 }
 
 /// The newest cached tweets across all chunks, de-duplicated. Used to preview
@@ -101,9 +134,15 @@ Future<CachedChains> readCachedChainsForHashes(Database repository, Iterable<Str
 /// so it is capped hard: it only has to fill the screen the reader is waiting
 /// for, and every extra row is JSON decoded ahead of the first paint.
 Future<CachedChains> readAllCachedChains(Database repository) async {
-  var storedChunks = await repository.query(tableFeedGroupChunk, orderBy: 'created_at DESC', limit: maxCachedChunkRows);
+  var storedChunks = await repository.query(
+    tableFeedGroupChunk,
+    orderBy: 'created_at DESC',
+    limit: maxCachedChunkRows,
+  );
   return (
-    chains: sortChainsNewestFirst(dedupeChainsById(chainsFromStoredChunks(storedChunks))),
+    chains: sortChainsNewestFirst(
+      dedupeChainsById(await chainsFromStoredChunksAsync(storedChunks)),
+    ),
     cachedAt: newestChunkTimestamp(storedChunks),
   );
 }

@@ -412,13 +412,10 @@ Future<void> main() async {
   });
 
   // Neither belongs in front of the first frame. MediaKit is dlopen'ing
-  // libmpv — it is initialised in the post-frame callback below, and this
-  // eager twin quietly made that deferral a no-op. The audio service is an
-  // Android service bind nothing on the launch path reads: every consumer is
-  // `audioHandler?.`-guarded, so a handler that arrives a moment later is
-  // already a supported state.
-  unawaited(initXtaAudio());
-
+  // libmpv — it is initialised in the post-frame callback below. The audio
+  // service is an Android service bind nothing on the launch path reads:
+  // every consumer is `audioHandler?.`-guarded, so a handler that arrives a
+  // moment later is already a supported state. Both start after first paint.
   setTimeagoLocales();
 
   final prefService = await PrefServiceShared.init(
@@ -763,14 +760,14 @@ Future<void> main() async {
       ],
       if (prefService.get<bool>(optionPluginStocksEnabled) == true)
         stocksWatchlist.load(),
-      if (prefService.get<bool>(optionPluginThreadsEnabled) == true)
+      if (prefService.get<bool>(optionPluginThreadsEnabled) == true) ...[
         threadsAccounts.load(),
-      // Local likes are tiny and used wherever a Threads card paints (tab or home).
-      threadsLikes.load(),
-      // Same for Bluesky — hearts can paint on cards outside the Bluesky tab.
-      blueskyLikes.load(),
-      if (prefService.get<bool>(optionPluginBlueskyEnabled) == true)
+        threadsLikes.load(),
+      ],
+      if (prefService.get<bool>(optionPluginBlueskyEnabled) == true) ...[
         blueskyAccounts.load(),
+        blueskyLikes.load(),
+      ],
       if (prefService.get<bool>(optionPluginMastodonEnabled) == true)
         mastodonAccounts.load(),
       if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
@@ -889,9 +886,10 @@ Future<void> main() async {
     // earliest a player can be built is a feed tile that has already fetched its
     // stream urls and been scrolled into view, which is several async hops after
     // this callback has run.
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => MediaKit.ensureInitialized(),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      MediaKit.ensureInitialized();
+      unawaited(initXtaAudio());
+    });
   } catch (e, stackTrace) {
     log('Unable to start Fritter', error: e, stackTrace: stackTrace);
   }

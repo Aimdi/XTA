@@ -1,0 +1,25 @@
+import 'dart:convert';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/group/feed_cache.dart';
+
+void main() {
+  test('async chunk decode matches the sync path', () async {
+    final row = {
+      'response': jsonEncode([
+        {'id': 'c1', 'isPinned': false, 'tweets': <Map<String, dynamic>>[]},
+        {'id': 'c2', 'isPinned': true, 'tweets': <Map<String, dynamic>>[]},
+      ]),
+    };
+
+    final sync = chainsFromStoredChunks([row]);
+    final decoded = await chainsFromStoredChunksAsync([row]);
+
+    expect(decoded.map((c) => c.id), sync.map((c) => c.id));
+    expect(decoded.map((c) => c.isPinned), sync.map((c) => c.isPinned));
+  });
+
+  test('an empty store is nothing to decode', () async {
+    expect(await chainsFromStoredChunksAsync(const []), isEmpty);
+  });
+}
