@@ -103,12 +103,14 @@ class _EhSearchScreenState extends State<EhSearchScreen> {
           decoration: InputDecoration(
             hintText: l10n.plugin_eh_search_hint,
             border: InputBorder.none,
+            suffixIcon: IconButton(
+              tooltip: l10n.search,
+              icon: const Icon(Icons.search),
+              onPressed: _search,
+            ),
           ),
           onSubmitted: (_) => _search(),
         ),
-        actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: _search),
-        ],
       ),
       body: Column(
         children: [

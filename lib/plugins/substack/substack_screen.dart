@@ -399,9 +399,36 @@ class _PostsPane extends StatelessWidget {
                       if (snapshot.posts.isEmpty) {
                         children.addAll([
                           const SizedBox(height: 48),
+                          Icon(
+                            Icons.article_outlined,
+                            size: 52,
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                          const SizedBox(height: 16),
                           Center(
                             child: Text(
                               L10n.of(context).plugin_substack_feed_empty,
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.titleMedium!
+                                  .copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Center(
+                            child: FilledButton.icon(
+                              onPressed: onDiscover,
+                              icon: const Icon(Icons.explore_outlined),
+                              label: Text(
+                                L10n.of(context).plugin_substack_discover,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Center(
+                            child: OutlinedButton.icon(
+                              onPressed: onAdd,
+                              icon: const Icon(Icons.add),
+                              label: Text(L10n.of(context).plugin_substack_add),
                             ),
                           ),
                         ]);

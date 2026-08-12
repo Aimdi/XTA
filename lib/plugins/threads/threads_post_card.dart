@@ -146,7 +146,9 @@ class ThreadsPostCard extends StatelessWidget {
                               const SizedBox(height: 6),
                               ThreadsCaption(
                                 text: post.text,
-                                style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+                                style: theme.textTheme.bodyLarge!.copyWith(
+                                  height: 1.35,
+                                ),
                               ),
                             ],
                             if (post.hasMedia) ...[
@@ -192,7 +194,9 @@ class ThreadsPostCard extends StatelessWidget {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                L10n.of(context).plugin_threads_reposted(post.reposterDisplayName),
+                L10n.of(
+                  context,
+                ).plugin_threads_reposted(post.reposterDisplayName),
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelMedium!.copyWith(color: muted),
               ),
@@ -288,7 +292,8 @@ class ThreadsPostCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _ThreadsImageViewer(images: post.images, initialIndex: index),
+        builder: (_) =>
+            _ThreadsImageViewer(images: post.images, initialIndex: index),
       ),
     );
   }
@@ -379,7 +384,11 @@ class _ThreadsImageViewerState extends State<_ThreadsImageViewer> {
               widget.images[index],
               fit: BoxFit.contain,
               mode: ExtendedImageMode.gesture,
-              initGestureConfigHandler: (_) => GestureConfig(minScale: 1, maxScale: 4, animationMinScale: 0.8),
+              initGestureConfigHandler: (_) => GestureConfig(
+                minScale: 1,
+                maxScale: 4,
+                animationMinScale: 0.8,
+              ),
             ),
           ),
           if (widget.images.length > 1)
@@ -568,10 +577,13 @@ class _ThreadsEngagementRow extends StatelessWidget {
           ),
           const Spacer(),
           if (post.url != null)
-            IconButton(
-              tooltip: L10n.of(context).open_in_browser,
-              onPressed: onOpenBrowser,
-              icon: Icon(Icons.open_in_new, size: 18, color: muted),
+            tweetFooterIconButton(
+              context,
+              Icons.open_in_new,
+              muted,
+              null,
+              onOpenBrowser,
+              L10n.of(context).open_in_browser,
             ),
         ],
       ),

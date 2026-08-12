@@ -142,6 +142,11 @@ class _BooruSearchScreenState extends State<BooruSearchScreen> {
           decoration: InputDecoration(
             hintText: l10n.plugin_booru_search_hint,
             border: InputBorder.none,
+            suffixIcon: IconButton(
+              tooltip: l10n.search,
+              icon: const Icon(Icons.search),
+              onPressed: _search,
+            ),
           ),
           onChanged: (_) {
             if (_submitted) setState(() => _submitted = false);
@@ -149,7 +154,6 @@ class _BooruSearchScreenState extends State<BooruSearchScreen> {
           onSubmitted: (_) => _search(),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: _search),
           IconButton(
             tooltip: l10n.plugin_booru_follow_tag,
             icon: const Icon(Icons.person_add_alt_1_outlined),

@@ -9,6 +9,7 @@ import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_search_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_settings.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
 /// EhViewer-inspired home: Popular / Front / Favorites.
@@ -62,49 +63,46 @@ class _EhScreenState extends State<EhScreen>
     final l10n = L10n.of(context);
 
     return Scaffold(
-      body: NestedScrollView(
-        controller: widget.scrollController,
-        headerSliverBuilder: (context, _) => [
-          SliverAppBar(
-            floating: true,
-            snap: true,
-            title: Text(l10n.plugin_eh_title),
-            actions: [
-              IconButton(
-                tooltip: l10n.search,
-                icon: const Icon(Icons.search),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EhSearchScreen()),
-                ),
-              ),
-              IconButton(
-                tooltip: l10n.settings,
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EhSettingsScreen()),
-                ),
-              ),
-            ],
-            bottom: TabBar(
-              controller: _tabs,
-              tabs: [
-                Tab(text: l10n.plugin_eh_tab_popular),
-                Tab(text: l10n.plugin_eh_tab_front),
-                Tab(text: l10n.plugin_eh_tab_favorites),
-              ],
+      appBar: AppBar(
+        title: Text(l10n.plugin_eh_title),
+        actions: [
+          IconButton(
+            tooltip: l10n.search,
+            icon: const Icon(Icons.search),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EhSearchScreen()),
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.settings,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EhSettingsScreen()),
             ),
           ),
         ],
-        body: TabBarView(
+        bottom: TabBar(
           controller: _tabs,
-          children: [
-            _FeedTab(store: _popular, empty: l10n.plugin_eh_empty_list),
-            _FeedTab(store: _front, empty: l10n.plugin_eh_empty_list),
-            _FavoritesTab(),
+          tabs: [
+            Tab(text: l10n.plugin_eh_tab_popular),
+            Tab(text: l10n.plugin_eh_tab_front),
+            Tab(text: l10n.plugin_eh_tab_favorites),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabs,
+        children: [
+          _FeedTab(
+            store: _popular,
+            empty: l10n.plugin_eh_empty_list,
+            scrollController: widget.scrollController,
+          ),
+          _FeedTab(store: _front, empty: l10n.plugin_eh_empty_list),
+          _FavoritesTab(),
+        ],
       ),
     );
   }
@@ -113,8 +111,13 @@ class _EhScreenState extends State<EhScreen>
 class _FeedTab extends StatelessWidget {
   final EhFeedStore store;
   final String empty;
+  final ScrollController? scrollController;
 
-  const _FeedTab({required this.store, required this.empty});
+  const _FeedTab({
+    required this.store,
+    required this.empty,
+    this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -130,21 +133,21 @@ class _FeedTab extends StatelessWidget {
       ),
       onState: (context, galleries) {
         if (galleries.isEmpty) {
-          return RefreshIndicator(
+          return EmptyPane(
+            icon: Icons.collections_outlined,
+            message: empty,
+            scrollController: scrollController,
             onRefresh: store.refresh,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                SizedBox(
-                  height: MediaQuery.sizeOf(context).height * 0.4,
-                  child: Center(child: Text(empty)),
-                ),
-              ],
+            action: FilledButton.icon(
+              onPressed: store.refresh,
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.retry),
             ),
           );
         }
         return EhGalleryGrid(
           galleries: galleries,
+          scrollController: scrollController,
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
           onNearEnd: store.loadMore,
@@ -162,7 +165,18 @@ class _FavoritesTab extends StatelessWidget {
       store: context.read<EhFavoritesStore>(),
       onState: (context, galleries) {
         if (galleries.isEmpty) {
-          return Center(child: Text(l10n.plugin_eh_empty_favorites));
+          return EmptyPane(
+            icon: Icons.favorite_border,
+            message: l10n.plugin_eh_empty_favorites,
+            action: FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const EhSearchScreen()),
+              ),
+              icon: const Icon(Icons.search),
+              label: Text(l10n.search),
+            ),
+          );
         }
         return EhGalleryGrid(
           galleries: galleries,

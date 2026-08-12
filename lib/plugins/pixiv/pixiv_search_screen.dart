@@ -271,17 +271,15 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
           decoration: InputDecoration(
             hintText: l10n.plugin_pixiv_search_hint,
             border: InputBorder.none,
+            suffixIcon: IconButton(
+              tooltip: l10n.search,
+              onPressed: _search,
+              icon: const Icon(Icons.search),
+            ),
           ),
           onChanged: _onQueryChanged,
           onSubmitted: (_) => _search(),
         ),
-        actions: [
-          IconButton(
-            tooltip: l10n.search,
-            onPressed: _search,
-            icon: const Icon(Icons.search),
-          ),
-        ],
         bottom: TabBar(
           controller: _tabs,
           tabs: [

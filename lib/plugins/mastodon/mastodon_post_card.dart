@@ -53,7 +53,10 @@ class MastodonPostCard extends StatelessWidget {
       onOpen!();
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post)),
+    );
   }
 
   void _openAuthor(BuildContext context) {
@@ -61,7 +64,10 @@ class MastodonPostCard extends StatelessWidget {
       onAuthorTap!();
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: post.acct)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: post.acct)),
+    );
   }
 
   void _openBrowser(BuildContext context) {
@@ -106,7 +112,9 @@ class MastodonPostCard extends StatelessWidget {
                           const SizedBox(height: 6),
                           Text(
                             post.text,
-                            style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+                            style: theme.textTheme.bodyLarge!.copyWith(
+                              height: 1.35,
+                            ),
                           ),
                         ],
                         if (post.hasMedia) ...[
@@ -153,7 +161,8 @@ class MastodonPostCard extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
+              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context))
+                  .ceil(),
             ),
     );
   }
@@ -177,12 +186,17 @@ class MastodonPostCard extends StatelessWidget {
               child: Text(
                 post.authorName,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
+                style: theme.textTheme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             if (date != null) ...[
               const SizedBox(width: 6),
-              Text('· ${createRelativeDate(date)}', style: theme.textTheme.bodySmall),
+              Text(
+                '· ${createRelativeDate(date)}',
+                style: theme.textTheme.bodySmall,
+              ),
             ],
           ],
         ),
@@ -304,7 +318,9 @@ class _MastodonLinkPreview extends StatelessWidget {
                       host,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.labelSmall!.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     if (card.title != null) ...[
                       const SizedBox(height: 4),
@@ -312,7 +328,10 @@ class _MastodonLinkPreview extends StatelessWidget {
                         card.title!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+                        style: theme.textTheme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          height: 1.25,
+                        ),
                       ),
                     ],
                     if (card.description != null) ...[
@@ -321,7 +340,9 @@ class _MastodonLinkPreview extends StatelessWidget {
                         card.description!,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall!.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ],
@@ -352,9 +373,11 @@ class _MastodonEngagementRow extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts =
+        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
-    String label(int count) => hideCounts ? '' : _mastodonCountFormat.format(count);
+    String label(int count) =>
+        hideCounts ? '' : _mastodonCountFormat.format(count);
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
@@ -364,25 +387,37 @@ class _MastodonEngagementRow extends StatelessWidget {
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(label(post.repliesCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.repliesCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           TextButton.icon(
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(label(post.reblogsCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.reblogsCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           TextButton.icon(
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.favorite_border, size: 18, color: muted),
-            label: Text(label(post.favouritesCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.favouritesCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           const Spacer(),
-          IconButton(
-            tooltip: L10n.of(context).open_in_browser,
-            onPressed: onOpenBrowser,
-            icon: Icon(Icons.open_in_new, size: 18, color: muted),
+          tweetFooterIconButton(
+            context,
+            Icons.open_in_new,
+            muted,
+            null,
+            onOpenBrowser,
+            L10n.of(context).open_in_browser,
           ),
         ],
       ),

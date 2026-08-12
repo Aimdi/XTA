@@ -9,6 +9,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_search_screen.dart';
 import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 
 /// Boorusama-inspired home: Latest / Following / Search entry.
@@ -113,52 +114,44 @@ class _BooruScreenState extends State<BooruScreen>
     final l10n = L10n.of(context);
 
     return Scaffold(
-      body: NestedScrollView(
-        controller: widget.scrollController,
-        headerSliverBuilder: (context, _) => [
-          SliverAppBar(
-            floating: true,
-            snap: true,
-            title: Text(l10n.plugin_booru_title),
-            actions: [
-              IconButton(
-                tooltip: l10n.search,
-                icon: const Icon(Icons.search),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const BooruSearchScreen()),
-                ),
-              ),
-              IconButton(
-                tooltip: l10n.settings,
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const BooruSettingsScreen(),
-                  ),
-                ),
-              ),
-            ],
-            bottom: TabBar(
-              controller: _tabs,
-              tabs: [
-                Tab(text: l10n.plugin_booru_tab_latest),
-                Tab(text: l10n.plugin_booru_tab_following),
-              ],
+      appBar: AppBar(
+        title: Text(l10n.plugin_booru_title),
+        actions: [
+          IconButton(
+            tooltip: l10n.search,
+            icon: const Icon(Icons.search),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BooruSearchScreen()),
+            ),
+          ),
+          IconButton(
+            tooltip: l10n.settings,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BooruSettingsScreen()),
             ),
           ),
         ],
-        body: TabBarView(
+        bottom: TabBar(
           controller: _tabs,
-          children: [
-            _FeedTab(
-              store: _latest,
-              emptyLabel: l10n.plugin_booru_empty_latest,
-            ),
-            _FollowingTab(store: _following),
+          tabs: [
+            Tab(text: l10n.plugin_booru_tab_latest),
+            Tab(text: l10n.plugin_booru_tab_following),
           ],
         ),
+      ),
+      body: TabBarView(
+        controller: _tabs,
+        children: [
+          _FeedTab(
+            store: _latest,
+            emptyLabel: l10n.plugin_booru_empty_latest,
+            scrollController: widget.scrollController,
+          ),
+          _FollowingTab(store: _following),
+        ],
       ),
     );
   }
@@ -167,8 +160,13 @@ class _BooruScreenState extends State<BooruScreen>
 class _FeedTab extends StatelessWidget {
   final BooruFeedStore store;
   final String emptyLabel;
+  final ScrollController? scrollController;
 
-  const _FeedTab({required this.store, required this.emptyLabel});
+  const _FeedTab({
+    required this.store,
+    required this.emptyLabel,
+    this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -184,21 +182,21 @@ class _FeedTab extends StatelessWidget {
       ),
       onState: (context, posts) {
         if (posts.isEmpty) {
-          return RefreshIndicator(
+          return EmptyPane(
+            icon: Icons.photo_outlined,
+            message: emptyLabel,
+            scrollController: scrollController,
             onRefresh: store.refresh,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              children: [
-                SizedBox(
-                  height: MediaQuery.sizeOf(context).height * 0.4,
-                  child: Center(child: Text(emptyLabel)),
-                ),
-              ],
+            action: FilledButton.icon(
+              onPressed: store.refresh,
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.retry),
             ),
           );
         }
         return BooruPostGrid(
           posts: posts,
+          scrollController: scrollController,
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
           onNearEnd: store.loadMore,
@@ -221,7 +219,18 @@ class _FollowingTab extends StatelessWidget {
       store: context.read<BooruTagsStore>(),
       onState: (context, tags) {
         if (tags.isEmpty) {
-          return Center(child: Text(l10n.plugin_booru_empty_following));
+          return EmptyPane(
+            icon: Icons.sell_outlined,
+            message: l10n.plugin_booru_empty_following,
+            action: FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BooruSearchScreen()),
+              ),
+              icon: const Icon(Icons.search),
+              label: Text(l10n.search),
+            ),
+          );
         }
         return Column(
           children: [

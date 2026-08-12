@@ -56,10 +56,17 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
             controller: _controller,
             autofocus: true,
             textInputAction: TextInputAction.search,
-            decoration: InputDecoration(border: InputBorder.none, hintText: l10n.plugin_reddit_search_hint),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: l10n.plugin_reddit_search_hint,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.search),
+                tooltip: l10n.search,
+                onPressed: () => _search(_controller.text),
+              ),
+            ),
             onSubmitted: _search,
           ),
-          actions: [IconButton(icon: const Icon(Icons.search), onPressed: () => _search(_controller.text))],
           bottom: TabBar(
             tabs: [
               Tab(text: l10n.tweets),
@@ -77,7 +84,8 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
                   child: _RedditSearchTab<RedditPost>(
                     query: '$_query·$_searchSort',
                     search: (client, _) => _searchPosts(client, _query),
-                    itemBuilder: (context, post) => RedditPostCard(post: post, showSourceBadge: false),
+                    itemBuilder: (context, post) =>
+                        RedditPostCard(post: post, showSourceBadge: false),
                   ),
                 ),
               ],
@@ -93,7 +101,8 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
                 icon: Icons.travel_explore,
                 onTap: () => _open(context, RedditListingScreen.subreddit(q)),
               ),
-              itemBuilder: (context, result) => _RedditSubredditRow(result: result),
+              itemBuilder: (context, result) =>
+                  _RedditSubredditRow(result: result),
             ),
             _RedditSearchTab<RedditUserResult>(
               query: _query,
@@ -106,7 +115,8 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
               itemBuilder: (context, result) => _RedditNameRow(
                 label: 'u/${result.name}',
                 icon: Icons.person_outline,
-                onTap: () => _open(context, RedditListingScreen.user(result.name)),
+                onTap: () =>
+                    _open(context, RedditListingScreen.user(result.name)),
               ),
             ),
           ],
@@ -119,9 +129,18 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 
-  Future<List<RedditPost>> _searchPosts(RedditClient client, String query) async {
-    final nsfwMode = storedRedditNsfwMode(PrefService.of(context, listen: false));
-    final posts = await client.searchPosts(query, subreddit: widget.subreddit, searchSort: _searchSort);
+  Future<List<RedditPost>> _searchPosts(
+    RedditClient client,
+    String query,
+  ) async {
+    final nsfwMode = storedRedditNsfwMode(
+      PrefService.of(context, listen: false),
+    );
+    final posts = await client.searchPosts(
+      query,
+      subreddit: widget.subreddit,
+      searchSort: _searchSort,
+    );
     return filterRedditPosts(posts, nsfwMode: nsfwMode);
   }
 
@@ -186,7 +205,8 @@ class _RedditSearchTab<T> extends StatefulWidget {
   State<_RedditSearchTab<T>> createState() => _RedditSearchTabState<T>();
 }
 
-class _RedditSearchTabState<T> extends State<_RedditSearchTab<T>> with AutomaticKeepAliveClientMixin {
+class _RedditSearchTabState<T> extends State<_RedditSearchTab<T>>
+    with AutomaticKeepAliveClientMixin {
   List<T>? _results;
   Object? _error;
   String? _loaded;
@@ -290,10 +310,16 @@ class _RedditSubredditRow extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.travel_explore),
       title: Text('r/${result.name}'),
-      subtitle: description == null ? null : Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
+      subtitle: description == null
+          ? null
+          : Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
       trailing: subscribers == null ? null : Text('$subscribers'),
-      onTap: () =>
-          Navigator.push(context, MaterialPageRoute(builder: (_) => RedditListingScreen.subreddit(result.name))),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RedditListingScreen.subreddit(result.name),
+        ),
+      ),
     );
   }
 }
@@ -304,7 +330,11 @@ class _RedditNameRow extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _RedditNameRow({required this.label, required this.icon, required this.onTap});
+  const _RedditNameRow({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
