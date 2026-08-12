@@ -25,6 +25,7 @@ const String tableThreadsSubscription = 'threads_subscription';
 const String tableBlueskySubscription = 'bluesky_subscription';
 const String tableMastodonSubscription = 'mastodon_subscription';
 const String tableRedditSubscription = 'reddit_subscription';
+const String tableBooruSubscription = 'booru_subscription';
 const String tableImmichUpload = 'immich_upload';
 const String tableRedditLocalVote = 'reddit_local_vote';
 const String tableThreadsLocalLike = 'threads_local_like';
@@ -44,7 +45,7 @@ const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 
-const int databaseVersion = 52;
+const int databaseVersion = 53;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -736,6 +737,16 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     SqlMigration(
       'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
       reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN nsfw',
+    ),
+  ],
+  53: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableBooruSubscription ('
+      'id VARCHAR PRIMARY KEY, '
+      'name VARCHAR NOT NULL, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableBooruSubscription',
     ),
   ],
 });

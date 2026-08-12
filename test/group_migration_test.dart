@@ -183,4 +183,23 @@ void main() {
     expect(rows.every((r) => r['nsfw'] == 0), isTrue);
     await db.close();
   });
+
+  test('migration 53 creates booru_subscription', () async {
+    await databaseFactory.deleteDatabase(databaseName);
+    await _createV34Fixture();
+
+    await Repository().migrate();
+
+    final db = await databaseFactory.openDatabase(databaseName);
+    await db.insert(tableBooruSubscription, {
+      'id': '1girl',
+      'name': '1girl',
+      'in_feed': 1,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+    final rows = await db.query(tableBooruSubscription);
+    expect(rows, hasLength(1));
+    expect(rows.single['id'], '1girl');
+    await db.close();
+  });
 }
