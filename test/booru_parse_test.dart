@@ -107,8 +107,34 @@ void main() {
         host: 'https://safebooru.org',
       );
 
-      expect(posts.single.id, '7');
+      expect(
+        posts.single.hostPageUrl,
+        'https://safebooru.org/index.php?page=post&s=view&id=7',
+      );
       expect(posts.single.tags, ['solo', 'smile']);
+    });
+
+    test('Rule34 API host opens the public site', () {
+      final posts = parseBooruPosts(
+        [
+          {
+            'id': 8,
+            'tags': 'test',
+            'rating': 's',
+            'width': 1,
+            'height': 1,
+            'preview_url': 'https://rule34.xxx/thumb.jpg',
+          },
+        ],
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://api.rule34.xxx',
+      );
+
+      expect(
+        posts.single.hostPageUrl,
+        'https://rule34.xxx/index.php?page=post&s=view&id=8',
+      );
+      expect(posts.single.rating, BooruRating.general);
     });
 
     test('parses e621 nested posts payload', () {
@@ -186,6 +212,47 @@ void main() {
       expect(normaliseBooruTag('   '), isNull);
       expect(lastBooruTagToken('1girl blue_sky'), 'blue_sky');
       expect(lastBooruTagToken('1girl rating:g'), isNull);
+    });
+
+    test('guesses the engine and Rule34 API host', () {
+      expect(guessBooruEngine('rule34.xxx'), BooruEngine.gelbooruV2);
+      expect(guessBooruEngine('https://xbooru.com'), BooruEngine.gelbooruV2);
+      expect(guessBooruEngine('danbooru.donmai.us'), BooruEngine.danbooru);
+      expect(guessBooruEngine('yande.re'), BooruEngine.moebooru);
+      expect(guessBooruEngine('e621.net'), BooruEngine.e621);
+      expect(guessBooruEngine('rule34.paheal.net'), isNull);
+      expect(booruRequestHost('https://rule34.xxx'), 'https://api.rule34.xxx');
+      expect(booruPageHost('https://api.rule34.xxx'), 'https://rule34.xxx');
+    });
+
+    test('saves custom sites by host', () {
+      const site = BooruPreset(
+        id: 'custom:example.com',
+        name: 'Example',
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://example.com',
+      );
+      final encoded = encodeBooruCustomSites([site]);
+      final parsed = parseBooruCustomSites(encoded);
+      expect(parsed, hasLength(1));
+      expect(parsed.single.host, 'https://example.com');
+      expect(parsed.single.engine, BooruEngine.gelbooruV2);
+
+      final updated = upsertBooruCustomSite(parsed, site);
+      expect(updated, hasLength(1));
+    });
+  });
+
+  group('Gelbooru-family ratings', () {
+    test('letter s means safe, not Danbooru sensitive', () {
+      expect(
+        BooruRating.parseWire('s', BooruEngine.gelbooruV2),
+        BooruRating.general,
+      );
+      expect(
+        BooruRating.parseWire('sensitive', BooruEngine.gelbooruV2),
+        BooruRating.sensitive,
+      );
     });
   });
 

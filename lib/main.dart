@@ -560,6 +560,7 @@ Future<void> main() async {
       optionPluginBooruInHomeFeed: false,
       optionPluginBooruSearchHistory: '[]',
       optionPluginBooruMutedTags: '[]',
+      optionPluginBooruCustomSites: '[]',
       optionPluginEhEnabled: false,
       optionPluginEhShowTab: true,
       optionPluginEhCookies: '',

@@ -204,7 +204,7 @@ class BooruClient {
   }
 
   Uri? _tagsUri({required String query, required int limit}) {
-    final base = Uri.parse(host);
+    final base = Uri.parse(booruRequestHost(host));
     final path = _trimPath(base.path);
     // Prefix match — engines differ on wildcard syntax.
     switch (engine) {
@@ -261,7 +261,7 @@ class BooruClient {
     required int page,
     required int limit,
   }) {
-    final base = Uri.parse(host);
+    final base = Uri.parse(booruRequestHost(host));
     final tagQuery = tags.join(' ');
     final path = _trimPath(base.path);
 
