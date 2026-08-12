@@ -44,44 +44,52 @@ class RedditPostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InkWell(
-          onTap: () => _open(context),
-          // Everywhere else the post can lead. A long press is where Android
-          // readers look for it, and the author line offers it outright.
-          onLongPress: () => openRedditPostSheet(context, post),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _RedditPostHeader(post: post, showSourceBadge: showSourceBadge),
-                if (post.showsTitle) _title(context),
-                if (post.flair != null) _RedditFlair(label: post.flair!),
-                // On a discussion subreddit the body is most of the post; a
-                // card that showed only the title said almost nothing.
-                if (post.isSelf && (post.selfText?.isNotEmpty ?? false))
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-                    child: Text(
-                      post.selfText!,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            onTap: () => _open(context),
+            // Everywhere else the post can lead. A long press is where Android
+            // readers look for it, and the author line offers it outright.
+            onLongPress: () => openRedditPostSheet(context, post),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _RedditPostHeader(
+                    post: post,
+                    showSourceBadge: showSourceBadge,
+                  ),
+                  if (post.showsTitle) _title(context),
+                  if (post.flair != null) _RedditFlair(label: post.flair!),
+                  // On a discussion subreddit the body is most of the post; a
+                  // card that showed only the title said almost nothing.
+                  if (post.isSelf && (post.selfText?.isNotEmpty ?? false))
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                      child: Text(
+                        post.selfText!,
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
+                  RedditPostMedia(post: post),
+                  _RedditPostFooter(
+                    post: post,
+                    onComments: () => _open(context),
                   ),
-                RedditPostMedia(post: post),
-                _RedditPostFooter(post: post, onComments: () => _open(context)),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        tweetHairlineDivider(context),
-      ],
+          tweetHairlineDivider(context),
+        ],
+      ),
     );
   }
 
@@ -269,6 +277,7 @@ class _UpvoteButton extends StatelessWidget {
 
     return ScopedBuilder<RedditVotesStore, Set<String>>(
       store: votes,
+      distinct: (_) => votes.isUpvoted(post.id),
       onState: (context, state) {
         final upvoted = state.contains(post.id);
         final color = upvoted ? theme.colorScheme.primary : muted;

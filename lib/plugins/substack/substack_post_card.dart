@@ -21,17 +21,28 @@ class SubstackPostCard extends StatelessWidget {
   /// from the subscription that produced the post when there is one.
   final String? logoUrl;
 
-  const SubstackPostCard({super.key, required this.post, this.showSourceBadge = true, this.logoUrl});
+  const SubstackPostCard({
+    super.key,
+    required this.post,
+    this.showSourceBadge = true,
+    this.logoUrl,
+  });
 
   void _open(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
       store: context.read<SubstackReadStore>(),
-      onState: (context, readIds) => _build(context, unread: !readIds.contains(post.id)),
+      distinct: (_) =>
+          !context.read<SubstackReadStore>().state.contains(post.id),
+      onState: (context, readIds) =>
+          _build(context, unread: !readIds.contains(post.id)),
     );
   }
 
@@ -40,56 +51,65 @@ class SubstackPostCard extends StatelessWidget {
     final date = post.publishedAt;
     final hasCover = post.coverImage != null && post.coverImage!.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tweetFlatCard(
-          color: Theme.of(context).cardColor,
-          child: InkWell(
-            onTap: () => _open(context),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (hasCover) _cover(context),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(16, hasCover ? 12 : 12, 16, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _header(context, date, unread: unread),
-                      const SizedBox(height: 8),
-                      Text(
-                        post.title,
-                        maxLines: hasCover ? 4 : 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium!.copyWith(
-                          fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
-                          height: 1.25,
-                        ),
-                      ),
-                      if (post.excerpt != null) ...[
-                        const SizedBox(height: 6),
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tweetFlatCard(
+            color: Theme.of(context).cardColor,
+            child: InkWell(
+              onTap: () => _open(context),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (hasCover) _cover(context),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      hasCover ? 12 : 12,
+                      16,
+                      12,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _header(context, date, unread: unread),
+                        const SizedBox(height: 8),
                         Text(
-                          post.excerpt!,
-                          maxLines: hasCover ? 2 : 3,
+                          post.title,
+                          maxLines: hasCover ? 4 : 3,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium!.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            height: 1.35,
+                          style: theme.textTheme.titleMedium!.copyWith(
+                            fontWeight: unread
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                            height: 1.25,
                           ),
                         ),
+                        if (post.excerpt != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            post.excerpt!,
+                            maxLines: hasCover ? 2 : 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium!.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 10),
+                        _counts(context),
                       ],
-                      const SizedBox(height: 10),
-                      _counts(context),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        tweetHairlineDivider(context),
-      ],
+          tweetHairlineDivider(context),
+        ],
+      ),
     );
   }
 
@@ -116,14 +136,19 @@ class SubstackPostCard extends StatelessWidget {
                   width: 28,
                   height: 28,
                   color: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(Icons.article_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  child: Icon(
+                    Icons.article_outlined,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 )
               : ExtendedImage.network(
                   logo,
                   width: 28,
                   height: 28,
                   fit: BoxFit.cover,
-                  cacheWidth: (28 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                  cacheWidth: (28 * MediaQuery.devicePixelRatioOf(context))
+                      .ceil(),
                 ),
         ),
         const SizedBox(width: 8),
@@ -131,7 +156,9 @@ class SubstackPostCard extends StatelessWidget {
           child: Text(
             post.publicationName,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w700),
+            style: theme.textTheme.labelLarge!.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         if (showSourceBadge) ...[
@@ -144,10 +171,15 @@ class SubstackPostCard extends StatelessWidget {
         ],
         if (post.isPodcast) ...[
           const SizedBox(width: 6),
-          Icon(Icons.podcasts, size: 16, color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            Icons.podcasts,
+            size: 16,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ],
         const Spacer(),
-        if (date != null) Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
+        if (date != null)
+          Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
       ],
     );
   }
@@ -161,6 +193,7 @@ class SubstackPostCard extends StatelessWidget {
 
     return ScopedBuilder<SubstackLikesStore, List<SubstackPost>>(
       store: likes,
+      distinct: (_) => likes.isLiked(post.id),
       onState: (context, liked) {
         final isLiked = liked.any((p) => p.id == post.id);
         final remote = post.reactionCount ?? 0;
@@ -168,6 +201,7 @@ class SubstackPostCard extends StatelessWidget {
 
         return ScopedBuilder<SubstackSavedStore, List<SubstackPost>>(
           store: saved,
+          distinct: (_) => saved.isSaved(post.id),
           onState: (context, savedPosts) {
             final isSaved = savedPosts.any((p) => p.id == post.id);
             return Row(
@@ -176,7 +210,10 @@ class SubstackPostCard extends StatelessWidget {
                   onTap: () => likes.toggle(post),
                   borderRadius: BorderRadius.circular(16),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
                     child: Row(
                       children: [
                         Icon(
@@ -197,7 +234,10 @@ class SubstackPostCard extends StatelessWidget {
                   onTap: () => saved.toggle(post),
                   borderRadius: BorderRadius.circular(16),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
                     child: Icon(
                       isSaved ? Icons.bookmark : Icons.bookmark_outline,
                       size: 16,
@@ -241,12 +281,18 @@ class SubstackPostCard extends StatelessWidget {
           child: ExtendedImage.network(
             post.coverImage!,
             fit: BoxFit.cover,
-            cacheWidth: (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil(),
+            cacheWidth:
+                (MediaQuery.sizeOf(context).width *
+                        MediaQuery.devicePixelRatioOf(context))
+                    .ceil(),
           ),
         ),
         if (post.isVideo)
           Container(
-            decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: Colors.black54,
+              shape: BoxShape.circle,
+            ),
             padding: const EdgeInsets.all(12),
             child: const Icon(Icons.play_arrow, color: Colors.white, size: 32),
           ),

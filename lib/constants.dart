@@ -539,6 +539,12 @@ const maxFeedGapFillPages = 4;
 // painted anything -- for posts far below where anyone scrolls.
 const maxCachedChunkRows = 8;
 
+/// How far a timeline [ListView.builder] builds off-screen.
+///
+/// Matches the X feed. Video tiles are visibility-gated, so this window only
+/// decodes images and lays out cards — not native players.
+const double kFeedListCacheExtent = 600;
+
 // How many timeline_cache rows survive the startup purge, newest first.
 //
 // The 7-day purge bounds how *old* a row gets, not how many there are: a row is

@@ -13,6 +13,7 @@ import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// The Bluesky tab: local follows feed, plus a device-only Liked library.
 class BlueskyScreen extends StatefulWidget {
@@ -256,9 +257,16 @@ class _HomePane extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
 
-    return ScopedBuilder<BlueskyFeedStore, List<BlueskyPost>>.transition(
-      store: context.read<BlueskyFeedStore>(),
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+    final feed = context.read<BlueskyFeedStore>();
+
+    return ScopedBuilder<BlueskyFeedStore, List<BlueskyPost>>(
+      store: feed,
+      onLoading: (_) {
+        if (feed.state.isNotEmpty) {
+          return _feed(context, l10n, feed.state);
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
       onError: (context, error) => Padding(
         padding: const EdgeInsets.all(24),
         child: FullPageErrorWidget(
@@ -319,32 +327,25 @@ class _HomePane extends StatelessWidget {
       );
     }
 
+    final accounts = context.read<BlueskyAccountsStore>().state;
+    final pending = context.read<BlueskyFeedStore>().pending(
+      accounts.map((e) => e.actor).toList(growable: false),
+    );
+
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
-        store: context.read<BlueskyAccountsStore>(),
-        onState: (context, accounts) {
-          final pending = context.read<BlueskyFeedStore>().pending(
-            accounts.map((e) => e.actor).toList(growable: false),
-          );
-
-          return ListView.builder(
-            controller: scrollController,
-            // A note at the top when a load could not reach every account:
-            // otherwise a freshly imported following list looks like a short
-            // feed rather than one still filling in.
-            itemCount: posts.length + (pending > 0 ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (pending > 0 && index == 0) {
-                return _PendingAccountsNote(pending: pending);
-              }
-              final post = posts[index - (pending > 0 ? 1 : 0)];
-              return BlueskyPostCard(
-                key: ValueKey(post.uri),
-                post: post,
-                showSourceBadge: false,
-              );
-            },
+      child: FeedListView(
+        controller: scrollController,
+        itemCount: posts.length + (pending > 0 ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (pending > 0 && index == 0) {
+            return _PendingAccountsNote(pending: pending);
+          }
+          final post = posts[index - (pending > 0 ? 1 : 0)];
+          return BlueskyPostCard(
+            key: ValueKey(post.uri),
+            post: post,
+            showSourceBadge: false,
           );
         },
       ),

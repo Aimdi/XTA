@@ -10,6 +10,7 @@ import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// The Mastodon tab: every locally followed acct, merged newest first.
 class MastodonScreen extends StatefulWidget {
@@ -77,6 +78,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final feed = context.read<MastodonFeedStore>();
 
     return Scaffold(
       appBar: AppBar(
@@ -94,9 +96,14 @@ class _MastodonScreenState extends State<MastodonScreen> {
           ),
         ],
       ),
-      body: ScopedBuilder<MastodonFeedStore, List<MastodonPost>>.transition(
-        store: context.read<MastodonFeedStore>(),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      body: ScopedBuilder<MastodonFeedStore, List<MastodonPost>>(
+        store: feed,
+        onLoading: (_) {
+          if (feed.state.isNotEmpty) {
+            return _feed(context, l10n, feed.state);
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
         onError: (context, error) => Padding(
           padding: const EdgeInsets.all(24),
           child: FullPageErrorWidget(
@@ -154,7 +161,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
     return RefreshIndicator(
       // Past the ten-minute per-account cache: the pull is the reader asking.
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
-      child: ListView.builder(
+      child: FeedListView(
         controller: widget.scrollController,
         itemCount: posts.length,
         itemBuilder: (context, index) => MastodonPostCard(

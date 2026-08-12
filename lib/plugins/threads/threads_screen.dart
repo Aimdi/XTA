@@ -14,6 +14,7 @@ import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// What a failed Threads read should say, in the reader's terms.
 String threadsErrorMessage(L10n l10n, Object error) {
@@ -276,7 +277,7 @@ class _HomePane extends StatelessWidget {
     return RefreshIndicator(
       // The reader pulled: that is the one moment worth going past the cache.
       onRefresh: onRefresh,
-      child: ListView.builder(
+      child: FeedListView(
         controller: scrollController,
         itemCount: posts.length + (pending > 0 ? 1 : 0),
         itemBuilder: (context, index) {
@@ -302,7 +303,7 @@ class _HomePane extends StatelessWidget {
       children: [
         ThreadsFollowingStrip(onAddAccount: onAddAccount),
         Expanded(
-          child: ScopedBuilder<ThreadsFeedStore, List<ThreadsPost>>.transition(
+          child: ScopedBuilder<ThreadsFeedStore, List<ThreadsPost>>(
             store: feed,
             onLoading: (_) {
               // Soft refresh must not blank a healthy feed into a forever spinner.

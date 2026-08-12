@@ -53,7 +53,10 @@ class MastodonPostCard extends StatelessWidget {
       onOpen!();
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post)),
+    );
   }
 
   void _openAuthor(BuildContext context) {
@@ -61,7 +64,10 @@ class MastodonPostCard extends StatelessWidget {
       onAuthorTap!();
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: post.acct)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: post.acct)),
+    );
   }
 
   void _openBrowser(BuildContext context) {
@@ -76,62 +82,66 @@ class MastodonPostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tweetFlatCard(
-          color: theme.cardColor,
-          child: InkWell(
-            onTap: openOnTap ? () => _open(context) : null,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () => _openAuthor(context),
-                    child: _avatar(context),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        GestureDetector(
-                          onTap: () => _openAuthor(context),
-                          behavior: HitTestBehavior.opaque,
-                          child: _header(context),
-                        ),
-                        if (post.text.isNotEmpty) ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            post.text,
-                            style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tweetFlatCard(
+            color: theme.cardColor,
+            child: InkWell(
+              onTap: openOnTap ? () => _open(context) : null,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () => _openAuthor(context),
+                      child: _avatar(context),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          GestureDetector(
+                            onTap: () => _openAuthor(context),
+                            behavior: HitTestBehavior.opaque,
+                            child: _header(context),
+                          ),
+                          if (post.text.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              post.text,
+                              style: theme.textTheme.bodyLarge!.copyWith(
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                          if (post.hasMedia) ...[
+                            const SizedBox(height: 10),
+                            _media(context),
+                          ],
+                          if (post.linkCard != null) ...[
+                            const SizedBox(height: 10),
+                            _MastodonLinkPreview(card: post.linkCard!),
+                          ],
+                          _MastodonEngagementRow(
+                            post: post,
+                            onOpen: () => _open(context),
+                            onOpenBrowser: () => _openBrowser(context),
                           ),
                         ],
-                        if (post.hasMedia) ...[
-                          const SizedBox(height: 10),
-                          _media(context),
-                        ],
-                        if (post.linkCard != null) ...[
-                          const SizedBox(height: 10),
-                          _MastodonLinkPreview(card: post.linkCard!),
-                        ],
-                        _MastodonEngagementRow(
-                          post: post,
-                          onOpen: () => _open(context),
-                          onOpenBrowser: () => _openBrowser(context),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        tweetHairlineDivider(context),
-      ],
+          tweetHairlineDivider(context),
+        ],
+      ),
     );
   }
 
@@ -153,7 +163,8 @@ class MastodonPostCard extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
+              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context))
+                  .ceil(),
             ),
     );
   }
@@ -177,12 +188,17 @@ class MastodonPostCard extends StatelessWidget {
               child: Text(
                 post.authorName,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
+                style: theme.textTheme.titleSmall!.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
             if (date != null) ...[
               const SizedBox(width: 6),
-              Text('· ${createRelativeDate(date)}', style: theme.textTheme.bodySmall),
+              Text(
+                '· ${createRelativeDate(date)}',
+                style: theme.textTheme.bodySmall,
+              ),
             ],
           ],
         ),
@@ -304,7 +320,9 @@ class _MastodonLinkPreview extends StatelessWidget {
                       host,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                      style: theme.textTheme.labelSmall!.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     if (card.title != null) ...[
                       const SizedBox(height: 4),
@@ -312,7 +330,10 @@ class _MastodonLinkPreview extends StatelessWidget {
                         card.title!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+                        style: theme.textTheme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          height: 1.25,
+                        ),
                       ),
                     ],
                     if (card.description != null) ...[
@@ -321,7 +342,9 @@ class _MastodonLinkPreview extends StatelessWidget {
                         card.description!,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall!.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ],
@@ -352,9 +375,11 @@ class _MastodonEngagementRow extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts =
+        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
-    String label(int count) => hideCounts ? '' : _mastodonCountFormat.format(count);
+    String label(int count) =>
+        hideCounts ? '' : _mastodonCountFormat.format(count);
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
@@ -364,19 +389,28 @@ class _MastodonEngagementRow extends StatelessWidget {
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(label(post.repliesCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.repliesCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           TextButton.icon(
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(label(post.reblogsCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.reblogsCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           TextButton.icon(
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.favorite_border, size: 18, color: muted),
-            label: Text(label(post.favouritesCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              label(post.favouritesCount),
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           const Spacer(),
           IconButton(

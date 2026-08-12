@@ -13,6 +13,7 @@ import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
 import 'package:xta/plugins/reddit/reddit_states.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class RedditListingState {
   final List<RedditPost>? posts;
@@ -238,7 +239,7 @@ class RedditListingBodyState extends State<RedditListingBody>
       );
     }
 
-    final list = ListView.builder(
+    final list = FeedListView(
       controller: widget.scrollController,
       padding: const EdgeInsets.only(bottom: 24),
       itemCount: posts.length + 1,
@@ -256,6 +257,7 @@ class RedditListingBodyState extends State<RedditListingBody>
           );
         }
         return RedditPostCard(
+          key: ValueKey(posts[index].id),
           post: posts[index],
           showSourceBadge: widget.showSourceBadge,
         );

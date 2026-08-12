@@ -16,6 +16,7 @@ import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
 
 /// What a failed Xy / guest lookup should say.
@@ -55,7 +56,10 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
   Object? _error;
   var _loading = true;
 
-  String get _handle => (normaliseThreadsHandle(widget.username) ?? widget.username).trim().toLowerCase();
+  String get _handle =>
+      (normaliseThreadsHandle(widget.username) ?? widget.username)
+          .trim()
+          .toLowerCase();
 
   @override
   void initState() {
@@ -80,7 +84,10 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     if (handle.isEmpty) {
       if (mounted) {
         setState(() {
-          _error = ThreadsException(ThreadsErrorKind.noSuchFeed, 'empty handle');
+          _error = ThreadsException(
+            ThreadsErrorKind.noSuchFeed,
+            'empty handle',
+          );
           _loading = false;
         });
       }
@@ -91,12 +98,19 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     final direct = context.read<ThreadsDirectClient>();
     final api = context.read<ThreadsApi>();
     final feed = context.read<ThreadsFeedStore>();
-    final apiBase = prefs.get<String>(optionPluginThreadsApiBase) ?? kThreadsApiDefaultBase;
+    final apiBase =
+        prefs.get<String>(optionPluginThreadsApiBase) ?? kThreadsApiDefaultBase;
     final apiToken = prefs.get<String>(optionPluginThreadsApiToken) ?? '';
 
     // Header + posts for one handle: guest HTML is single-flight in the client
     // so this is not two paced GETs. Prefer cache on first open; pull forces.
-    final profileFuture = _resolveProfile(direct, api, apiBase, apiToken, handle);
+    final profileFuture = _resolveProfile(
+      direct,
+      api,
+      apiBase,
+      apiToken,
+      handle,
+    );
     final postsFuture = feed.postsFor([handle], forceRefresh: forceRefresh);
 
     ThreadsProfile? profile;
@@ -126,9 +140,13 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
       if (profile == null && posts.isEmpty) {
         if (!keepContent) {
           setState(() {
-            _error = profileError ??
+            _error =
+                profileError ??
                 postsError ??
-                ThreadsException(ThreadsErrorKind.noSuchFeed, 'profile missing');
+                ThreadsException(
+                  ThreadsErrorKind.noSuchFeed,
+                  'profile missing',
+                );
           });
         }
         return;
@@ -198,7 +216,12 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     final user = subscriptionOf(profile.toAccount());
     final groups = await groupsModel.listGroupsForUser(user.id);
     if (!mounted) return;
-    await pickUserGroups(context, user: user, followed: true, groupsForUser: groups);
+    await pickUserGroups(
+      context,
+      user: user,
+      followed: true,
+      groupsForUser: groups,
+    );
     if (mounted) setState(() {});
   }
 
@@ -231,31 +254,43 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     }
 
     final profile = _profile!;
-    final alreadyFollows = context.read<ThreadsAccountsStore>().state.any((a) => a.handle == profile.username);
+    final alreadyFollows = context.read<ThreadsAccountsStore>().state.any(
+      (a) => a.handle == profile.username,
+    );
 
     return RefreshIndicator(
       onRefresh: () => _load(forceRefresh: true),
-      child: ListView(
+      child: FeedListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 24),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ThreadsProfileCard(
-              profile: profile,
-              onFollow: alreadyFollows ? null : () => _follow(profile),
-              onAddToGroup: () => _addToGroup(profile),
-            ),
-          ),
-          if (_posts.isEmpty)
-            Padding(
+        itemCount: 1 + (_posts.isEmpty ? 1 : _posts.length),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: ThreadsProfileCard(
+                profile: profile,
+                onFollow: alreadyFollows ? null : () => _follow(profile),
+                onAddToGroup: () => _addToGroup(profile),
+              ),
+            );
+          }
+          if (_posts.isEmpty) {
+            return Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Text(l10n.plugin_threads_no_posts, textAlign: TextAlign.center),
-            )
-          else
-            for (final post in _posts)
-              ThreadsPostCard(key: ValueKey(post.id), post: post, showSourceBadge: false),
-        ],
+              child: Text(
+                l10n.plugin_threads_no_posts,
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+          final post = _posts[index - 1];
+          return ThreadsPostCard(
+            key: ValueKey(post.id),
+            post: post,
+            showSourceBadge: false,
+          );
+        },
       ),
     );
   }
@@ -268,7 +303,12 @@ class ThreadsProfileCard extends StatelessWidget {
   final VoidCallback? onFollow;
   final VoidCallback? onAddToGroup;
 
-  const ThreadsProfileCard({super.key, required this.profile, this.onFollow, this.onAddToGroup});
+  const ThreadsProfileCard({
+    super.key,
+    required this.profile,
+    this.onFollow,
+    this.onAddToGroup,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -294,7 +334,8 @@ class ThreadsProfileCard extends StatelessWidget {
                       width: 64,
                       height: 64,
                       fit: BoxFit.cover,
-                      cacheWidth: (64 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                      cacheWidth: (64 * MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
                     ),
             ),
             const SizedBox(width: 14),
@@ -309,22 +350,34 @@ class ThreadsProfileCard extends StatelessWidget {
                           profile.displayName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700),
+                          style: theme.textTheme.titleLarge!.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                       if (profile.isVerified) ...[
                         const SizedBox(width: 6),
-                        Icon(Icons.verified, size: 20, color: theme.colorScheme.primary),
+                        Icon(
+                          Icons.verified,
+                          size: 20,
+                          color: theme.colorScheme.primary,
+                        ),
                       ],
                       if (profile.isPrivate) ...[
                         const SizedBox(width: 6),
-                        Icon(Icons.lock, size: 18, color: theme.colorScheme.onSurfaceVariant),
+                        Icon(
+                          Icons.lock,
+                          size: 18,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ],
                     ],
                   ),
                   Text(
                     '@${profile.username}',
-                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -341,7 +394,11 @@ class ThreadsProfileCard extends StatelessWidget {
             onTap: () => openUri(context, profile.externalUrl!),
             child: Row(
               children: [
-                Icon(Icons.link, size: 15, color: theme.colorScheme.onSurfaceVariant),
+                Icon(
+                  Icons.link,
+                  size: 15,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(
@@ -360,8 +417,16 @@ class ThreadsProfileCard extends StatelessWidget {
           spacing: 18,
           runSpacing: 6,
           children: [
-            _count(context, numbers.format(profile.followerCount), l10n.followers),
-            _count(context, numbers.format(profile.followingCount), l10n.following),
+            _count(
+              context,
+              numbers.format(profile.followerCount),
+              l10n.followers,
+            ),
+            _count(
+              context,
+              numbers.format(profile.followingCount),
+              l10n.following,
+            ),
             _count(context, numbers.format(profile.mediaCount), l10n.tweets),
           ],
         ),
@@ -388,7 +453,10 @@ class ThreadsProfileCard extends StatelessWidget {
         ],
         if (profile.isPrivate) ...[
           const SizedBox(height: 14),
-          Text(l10n.plugin_threads_profile_private, style: theme.textTheme.bodySmall),
+          Text(
+            l10n.plugin_threads_profile_private,
+            style: theme.textTheme.bodySmall,
+          ),
         ],
       ],
     );

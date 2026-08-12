@@ -8,6 +8,7 @@ import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// Every followed subreddit, newest first.
 ///
@@ -23,7 +24,8 @@ class RedditFeedList extends StatefulWidget {
   State<RedditFeedList> createState() => _RedditFeedListState();
 }
 
-class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAliveClientMixin {
+class _RedditFeedListState extends State<RedditFeedList>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -51,7 +53,7 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
       // Forced: a pull that was answered out of the shared cache would hand
       // back the posts already on screen, which is not what a pull is for.
       onRefresh: () => feed.refresh(force: true),
-      child: ScopedBuilder<RedditFeedStore, List<RedditPost>>.transition(
+      child: ScopedBuilder<RedditFeedStore, List<RedditPost>>(
         store: feed,
         onError: (_, error) => FullPageErrorWidget(
           error: error,
@@ -63,16 +65,21 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
           onRetry: () => feed.refresh(force: true),
         ),
         onLoading: (_) => const Center(child: CircularProgressIndicator()),
-        onState: (_, posts) => posts.isEmpty ? _empty(context, l10n) : _list(posts),
+        onState: (_, posts) =>
+            posts.isEmpty ? _empty(context, l10n) : _list(posts),
       ),
     );
   }
 
   Widget _list(List<RedditPost> posts) {
-    return ListView.builder(
+    return FeedListView(
       controller: widget.scrollController,
       itemCount: posts.length,
-      itemBuilder: (context, index) => RedditPostCard(post: posts[index], showSourceBadge: false),
+      itemBuilder: (context, index) => RedditPostCard(
+        key: ValueKey(posts[index].id),
+        post: posts[index],
+        showSourceBadge: false,
+      ),
     );
   }
 
@@ -81,7 +88,11 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
       controller: widget.scrollController,
       padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
       children: [
-        Icon(Icons.forum_outlined, size: 48, color: Theme.of(context).colorScheme.outline),
+        Icon(
+          Icons.forum_outlined,
+          size: 48,
+          color: Theme.of(context).colorScheme.outline,
+        ),
         const SizedBox(height: 16),
         Text(l10n.plugin_reddit_empty, textAlign: TextAlign.center),
         const SizedBox(height: 16),

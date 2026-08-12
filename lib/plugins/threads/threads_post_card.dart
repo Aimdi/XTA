@@ -112,68 +112,72 @@ class ThreadsPostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tweetFlatCard(
-          color: tweetCardColor(context),
-          child: InkWell(
-            onTap: openOnTap ? () => _open(context) : null,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (post.isRepost) _repostLine(context),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () => _openAuthor(context),
-                        child: _avatar(context),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            GestureDetector(
-                              onTap: () => _openAuthor(context),
-                              behavior: HitTestBehavior.opaque,
-                              child: _header(context),
-                            ),
-                            if (post.text.isNotEmpty) ...[
-                              const SizedBox(height: 6),
-                              ThreadsCaption(
-                                text: post.text,
-                                style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tweetFlatCard(
+            color: tweetCardColor(context),
+            child: InkWell(
+              onTap: openOnTap ? () => _open(context) : null,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (post.isRepost) _repostLine(context),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _openAuthor(context),
+                          child: _avatar(context),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              GestureDetector(
+                                onTap: () => _openAuthor(context),
+                                behavior: HitTestBehavior.opaque,
+                                child: _header(context),
+                              ),
+                              if (post.text.isNotEmpty) ...[
+                                const SizedBox(height: 6),
+                                ThreadsCaption(
+                                  text: post.text,
+                                  style: theme.textTheme.bodyLarge!.copyWith(
+                                    height: 1.35,
+                                  ),
+                                ),
+                              ],
+                              if (post.hasMedia) ...[
+                                const SizedBox(height: 10),
+                                _media(context),
+                              ],
+                              if (post.linkCard != null) ...[
+                                const SizedBox(height: 10),
+                                _ThreadsLinkPreview(card: post.linkCard!),
+                              ],
+                              _ThreadsEngagementRow(
+                                post: post,
+                                onOpen: () => _open(context),
+                                onOpenBrowser: () => _openBrowser(context),
                               ),
                             ],
-                            if (post.hasMedia) ...[
-                              const SizedBox(height: 10),
-                              _media(context),
-                            ],
-                            if (post.linkCard != null) ...[
-                              const SizedBox(height: 10),
-                              _ThreadsLinkPreview(card: post.linkCard!),
-                            ],
-                            _ThreadsEngagementRow(
-                              post: post,
-                              onOpen: () => _open(context),
-                              onOpenBrowser: () => _openBrowser(context),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        tweetHairlineDivider(context),
-      ],
+          tweetHairlineDivider(context),
+        ],
+      ),
     );
   }
 
@@ -192,7 +196,9 @@ class ThreadsPostCard extends StatelessWidget {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                L10n.of(context).plugin_threads_reposted(post.reposterDisplayName),
+                L10n.of(
+                  context,
+                ).plugin_threads_reposted(post.reposterDisplayName),
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelMedium!.copyWith(color: muted),
               ),
@@ -288,7 +294,8 @@ class ThreadsPostCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => _ThreadsImageViewer(images: post.images, initialIndex: index),
+        builder: (_) =>
+            _ThreadsImageViewer(images: post.images, initialIndex: index),
       ),
     );
   }
@@ -379,7 +386,11 @@ class _ThreadsImageViewerState extends State<_ThreadsImageViewer> {
               widget.images[index],
               fit: BoxFit.contain,
               mode: ExtendedImageMode.gesture,
-              initGestureConfigHandler: (_) => GestureConfig(minScale: 1, maxScale: 4, animationMinScale: 0.8),
+              initGestureConfigHandler: (_) => GestureConfig(
+                minScale: 1,
+                maxScale: 4,
+                animationMinScale: 0.8,
+              ),
             ),
           ),
           if (widget.images.length > 1)
