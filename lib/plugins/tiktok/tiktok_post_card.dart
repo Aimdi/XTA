@@ -148,6 +148,7 @@ class TikTokPostCard extends StatelessWidget {
     );
     if (!context.mounted) return;
     await onProfileClosed?.call();
+    if (!context.mounted) return;
   }
 
   void _openPlayer(BuildContext context) {

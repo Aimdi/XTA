@@ -171,6 +171,7 @@ class _TikTokEmbedViewState extends State<TikTokEmbedView> {
     await _controller.loadRequest(
       Uri.parse('https://www.tiktok.com/embed/v3/${widget.videoId}'),
     );
+    if (!mounted) return;
   }
 
   @override

@@ -224,6 +224,7 @@ class _AccountsTab extends StatelessWidget {
                   await context.read<TikTokFollowsStore>().unfollow(follow.id);
                   if (!context.mounted) return;
                   await onUnfollow();
+                  if (!context.mounted) return;
                 },
                 background: Container(
                   color: Theme.of(context).colorScheme.error,
@@ -248,6 +249,7 @@ class _AccountsTab extends StatelessWidget {
                     );
                     if (!context.mounted) return;
                     await onProfileClosed();
+                    if (!context.mounted) return;
                   },
                 ),
               );
