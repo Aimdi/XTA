@@ -11,8 +11,7 @@ import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/_plugin_row.dart';
 
-/// What the reader has installed, and what is on offer — grouped by what each
-/// plugin is for (social, communities, newsletters, art, …) rather than a flat list.
+/// What the reader has installed, then what is on offer grouped by purpose.
 ///
 /// The offer comes from a document published in the app's repository, so a
 /// plugin can be added or withdrawn without a release. It can only ever narrow
@@ -22,11 +21,15 @@ class SettingsPluginStoreFragment extends StatefulWidget {
   const SettingsPluginStoreFragment({super.key});
 
   @override
-  State<SettingsPluginStoreFragment> createState() => _SettingsPluginStoreFragmentState();
+  State<SettingsPluginStoreFragment> createState() =>
+      _SettingsPluginStoreFragmentState();
 }
 
-class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragment> {
-  late final PluginCatalogue _catalogue = PluginCatalogue(PrefService.of(context, listen: false));
+class _SettingsPluginStoreFragmentState
+    extends State<SettingsPluginStoreFragment> {
+  late final PluginCatalogue _catalogue = PluginCatalogue(
+    PrefService.of(context, listen: false),
+  );
 
   List<String> _offered = const [];
   bool _loading = true;
@@ -36,7 +39,9 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
   void initState() {
     super.initState();
     // Until a catalogue has ever been read, everything compiled in is on offer.
-    _offered = _catalogue.hasCache ? _catalogue.cached() : builtInPlugins.map((p) => p.id).toList();
+    _offered = _catalogue.hasCache
+        ? _catalogue.cached()
+        : builtInPlugins.map((p) => p.id).toList();
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
   }
 
@@ -62,10 +67,12 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
     final prefs = PrefService.of(context, listen: false);
     final showPrivate = prefs.get<bool>(optionPluginStoreShowPrivate) == true;
     return builtInPlugins
-        .where((plugin) =>
-            plugin.isEnabled(prefs) ||
-            _offered.contains(plugin.id) ||
-            (plugin.isPrivate && showPrivate))
+        .where(
+          (plugin) =>
+              plugin.isEnabled(prefs) ||
+              _offered.contains(plugin.id) ||
+              (plugin.isPrivate && showPrivate),
+        )
         .toList();
   }
 
@@ -83,10 +90,15 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
       builder: (dialogContext) {
         final l10n = L10n.of(dialogContext);
         return AlertDialog(
-          title: Text(l10n.plugin_uninstall_confirm(plugin.title(dialogContext))),
+          title: Text(
+            l10n.plugin_uninstall_confirm(plugin.title(dialogContext)),
+          ),
           content: Text(l10n.plugin_uninstall_confirm_detail),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(l10n.cancel),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, true),
               child: Text(l10n.plugin_uninstall),
@@ -108,7 +120,10 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final prefs = PrefService.of(context, listen: false);
-    final groups = groupPluginsByCategory(_listed);
+    final sections = pluginStoreSections(
+      _listed,
+      isInstalled: (plugin) => plugin.isEnabled(prefs),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -117,7 +132,8 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'private') {
-                final next = !(prefs.get<bool>(optionPluginStoreShowPrivate) == true);
+                final next =
+                    !(prefs.get<bool>(optionPluginStoreShowPrivate) == true);
                 await prefs.set(optionPluginStoreShowPrivate, next);
                 if (mounted) setState(() {});
               }
@@ -146,21 +162,32 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
             if (_loading) const LinearProgressIndicator(minHeight: 2),
             if (_unreachable)
               ListTile(
+                dense: true,
                 leading: const Icon(Icons.cloud_off),
                 title: Text(l10n.plugin_catalogue_unavailable),
-                subtitle: _catalogue.hasCache ? Text(l10n.plugin_catalogue_cached) : null,
+                subtitle: _catalogue.hasCache
+                    ? Text(l10n.plugin_catalogue_cached)
+                    : null,
               ),
-            for (final group in groups) ...[
-              _header(context, group.category.label(context)),
-              for (final plugin in _orderedInCategory(group.plugins, prefs))
-                if (plugin.isEnabled(prefs))
-                  InstalledPluginRow(
+            if (sections.installed.isNotEmpty) ...[
+              _header(context, l10n.plugin_installed),
+              for (final plugin in sections.installed)
+                InstalledPluginRow(
+                  plugin: plugin,
+                  onUninstall: () => _uninstall(plugin),
+                  onChanged: () => setState(() {}),
+                ),
+            ],
+            if (sections.availableByCategory.isNotEmpty) ...[
+              _header(context, l10n.plugin_available),
+              for (final group in sections.availableByCategory) ...[
+                _header(context, group.category.label(context), nested: true),
+                for (final plugin in group.plugins)
+                  AvailablePluginRow(
                     plugin: plugin,
-                    onUninstall: () => _uninstall(plugin),
-                    onChanged: () => setState(() {}),
-                  )
-                else
-                  AvailablePluginRow(plugin: plugin, onInstall: () => _install(plugin)),
+                    onInstall: () => _install(plugin),
+                  ),
+              ],
             ],
           ],
         ),
@@ -168,22 +195,24 @@ class _SettingsPluginStoreFragmentState extends State<SettingsPluginStoreFragmen
     );
   }
 
-  /// Installed first within a category, so what the reader already uses sits
-  /// above the install buttons.
-  List<XtaPlugin> _orderedInCategory(List<XtaPlugin> plugins, BasePrefService prefs) {
-    final installed = plugins.where((p) => p.isEnabled(prefs)).toList();
-    final available = plugins.where((p) => !p.isEnabled(prefs)).toList();
-    return [...installed, ...available];
+  Widget _header(BuildContext context, String text, {bool nested = false}) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: nested
+          ? const EdgeInsets.fromLTRB(16, 10, 16, 2)
+          : const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Text(
+        text,
+        style: nested
+            ? theme.textTheme.labelLarge!.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              )
+            : theme.textTheme.titleSmall!.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w700,
+              ),
+      ),
+    );
   }
-
-  Widget _header(BuildContext context, String text) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 6),
-        child: Text(
-          text,
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall!
-              .copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700),
-        ),
-      );
 }
