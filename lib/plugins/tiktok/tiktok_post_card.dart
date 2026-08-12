@@ -16,9 +16,10 @@ import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
-import 'package:xta/utils/urls.dart';
 
 final NumberFormat _tiktokCountFormat = NumberFormat.compact(locale: 'en_US');
+
+const double kTikTokAvatarSize = 48;
 
 class TikTokPostCard extends StatelessWidget {
   final TikTokPost post;
@@ -35,56 +36,93 @@ class TikTokPostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
 
     return tweetFlatCard(
       color: tweetCardColor(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ListTile(
-            contentPadding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
-            leading: GestureDetector(
-              onTap: openAuthor ? () => _openAuthor(context) : null,
-              child: TikTokAvatar(
-                url: post.author.avatarUrl,
-                seed: post.author.uniqueId,
-                name: post.author.displayName,
-                size: 44,
-              ),
-            ),
-            title: Row(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
+            child: Row(
               children: [
-                Flexible(
-                  child: Text(
-                    post.author.displayName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                GestureDetector(
+                  onTap: openAuthor ? () => _openAuthor(context) : null,
+                  child: TikTokAvatar(
+                    url: post.author.avatarUrl,
+                    seed: post.author.uniqueId,
+                    name: post.author.displayName,
+                    size: kTikTokAvatarSize,
                   ),
                 ),
-                if (post.author.verified) ...[
-                  const SizedBox(width: 4),
-                  Icon(Icons.verified, size: 16, color: scheme.primary),
-                ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              post.author.displayName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          if (post.author.verified) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.verified,
+                              size: 16,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ],
+                        ],
+                      ),
+                      Text(
+                        '@${post.author.uniqueId} · ${createRelativeDate(post.createdAt)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
-            ),
-            subtitle: Text(
-              '@${post.author.uniqueId} · ${createRelativeDate(post.createdAt)}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (post.desc.trim().isNotEmpty)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
               child: Text(post.desc),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: _Media(post: post),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+            child: _Cover(post: post),
           ),
+          if (post.playCount > 0)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Row(
+                children: [
+                  Icon(Icons.play_arrow, size: 16, color: muted),
+                  const SizedBox(width: 2),
+                  Text(
+                    _tiktokCountFormat.format(post.playCount),
+                    style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                  ),
+                ],
+              ),
+            ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 0, 8, 4),
+            padding: const EdgeInsets.fromLTRB(8, 2, 4, 4),
             child: Row(
               children: [
                 ScopedBuilder<TikTokLikesStore, Set<String>>(
@@ -92,43 +130,23 @@ class TikTokPostCard extends StatelessWidget {
                   onState: (context, ids) => LikeButton(
                     isLiked: ids.contains(post.id),
                     label: _tiktokCountFormat.format(post.diggCount),
-                    color: ids.contains(post.id) ? scheme.primary : null,
+                    color: ids.contains(post.id)
+                        ? theme.colorScheme.primary
+                        : muted,
                     onPressed: () =>
                         context.read<TikTokLikesStore>().toggle(post.id),
                   ),
                 ),
-                TextButton.icon(
-                  onPressed: () => _openPlayer(context),
-                  style: footerButtonStyle,
-                  icon: const Icon(Icons.mode_comment_outlined, size: 20),
-                  label: Text(_tiktokCountFormat.format(post.commentCount)),
-                ),
-                if (post.playCount > 0) ...[
-                  Icon(
-                    Icons.visibility_outlined,
-                    size: 18,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _tiktokCountFormat.format(post.playCount),
-                    style: TextStyle(color: scheme.onSurfaceVariant),
-                  ),
-                ],
                 const Spacer(),
-                IconButton(
-                  tooltip: l10n.share_tweet_content,
-                  icon: const Icon(Icons.share_outlined),
-                  onPressed: () => SharePlus.instance.share(
+                tweetFooterIconButton(
+                  context,
+                  Icons.share_outlined,
+                  muted,
+                  null,
+                  () => SharePlus.instance.share(
                     ShareParams(text: post.webUri().toString()),
                   ),
-                ),
-                IconButton(
-                  tooltip: l10n.plugin_tiktok_open_on_site,
-                  icon: const Icon(Icons.open_in_new),
-                  iconSize: 18,
-                  color: scheme.onSurfaceVariant,
-                  onPressed: () => openUri(context, post.webUri().toString()),
+                  l10n.share_tweet_link,
                 ),
               ],
             ),
@@ -150,19 +168,12 @@ class TikTokPostCard extends StatelessWidget {
     await onProfileClosed?.call();
     if (!context.mounted) return;
   }
-
-  void _openPlayer(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => TikTokPlayerScreen(post: post)),
-    );
-  }
 }
 
-class _Media extends StatelessWidget {
+class _Cover extends StatelessWidget {
   final TikTokPost post;
 
-  const _Media({required this.post});
+  const _Cover({required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -173,71 +184,68 @@ class _Media extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       child: AspectRatio(
         aspectRatio: ratio,
-        child: _Cover(post: post),
-      ),
-    );
-  }
-}
-
-class _Cover extends StatelessWidget {
-  final TikTokPost post;
-
-  const _Cover({required this.post});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => TikTokPlayerScreen(post: post)),
-      ),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          if (post.coverUrl != null)
-            ExtendedImage.network(
-              post.coverUrl!,
-              fit: BoxFit.cover,
-              cache: true,
-            )
-          else
-            ColoredBox(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => TikTokPlayerScreen(post: post)),
             ),
-          if (!post.isPhoto)
-            const Center(
-              child: Icon(
-                Icons.play_circle_fill,
-                size: 64,
-                color: Colors.white,
-              ),
-            ),
-          if (!post.isPhoto && post.durationSeconds > 0)
-            Positioned(
-              right: 8,
-              bottom: 8,
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 3,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (post.coverUrl != null)
+                  ExtendedImage.network(
+                    post.coverUrl!,
+                    fit: BoxFit.cover,
+                    cache: true,
                   ),
-                  child: Text(
-                    formatTikTokDuration(post.durationSeconds),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                if (!post.isPhoto)
+                  Center(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          size: 56,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                if (!post.isPhoto && post.durationSeconds > 0)
+                  Positioned(
+                    right: 10,
+                    bottom: 10,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          formatTikTokDuration(post.durationSeconds),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
-        ],
+          ),
+        ),
       ),
     );
   }

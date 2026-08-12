@@ -22,15 +22,13 @@ class TikTokScreen extends StatefulWidget {
   State<TikTokScreen> createState() => _TikTokScreenState();
 }
 
-class _TikTokScreenState extends State<TikTokScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabs;
+class _TikTokScreenState extends State<TikTokScreen> {
+  final _tabs = _TikTokTabStore();
   late final TikTokFollowingStore _following;
 
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 2, vsync: this);
     final client = context.read<TikTokClient>();
     final follows = context.read<TikTokFollowsStore>();
     _following = TikTokFollowingStore(client, follows);
@@ -46,16 +44,11 @@ class _TikTokScreenState extends State<TikTokScreen>
       await _following.refresh();
       if (!mounted) return;
     });
-
-    _tabs.addListener(() {
-      if (_tabs.indexIsChanging) return;
-      if (_tabs.index == 1) context.read<TikTokFollowsStore>().load();
-    });
   }
 
   @override
   void dispose() {
-    _tabs.dispose();
+    _tabs.destroy();
     _following.destroy();
     super.dispose();
   }
@@ -65,52 +58,47 @@ class _TikTokScreenState extends State<TikTokScreen>
     final l10n = L10n.of(context);
 
     return Scaffold(
-      body: NestedScrollView(
-        controller: widget.scrollController,
-        headerSliverBuilder: (context, _) => [
-          SliverAppBar(
-            floating: true,
-            snap: true,
-            title: Text(l10n.plugin_tiktok_title),
-            actions: [
-              IconButton(
-                tooltip: l10n.search,
-                icon: const Icon(Icons.search),
-                onPressed: _openSearch,
-              ),
-              IconButton(
-                tooltip: l10n.settings,
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const TikTokSettingsScreen(),
-                  ),
-                ),
-              ),
-            ],
-            bottom: TabBar(
-              controller: _tabs,
-              tabs: [
-                Tab(text: l10n.plugin_tiktok_tab_following),
-                Tab(text: l10n.plugin_tiktok_tab_accounts),
-              ],
+      appBar: AppBar(
+        title: Text(l10n.plugin_tiktok_title),
+        actions: [
+          IconButton(
+            tooltip: l10n.plugin_tiktok_find_handle,
+            icon: const Icon(Icons.person_add_alt),
+            onPressed: _openSearch,
+          ),
+          IconButton(
+            tooltip: l10n.settings,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TikTokSettingsScreen()),
             ),
           ),
         ],
-        body: TabBarView(
-          controller: _tabs,
+      ),
+      body: ScopedBuilder<_TikTokTabStore, int>(
+        store: _tabs,
+        onState: (context, tab) => Column(
           children: [
-            _FollowingTab(
-              store: _following,
-              follows: context.read<TikTokFollowsStore>(),
-              onFindHandle: _openSearch,
-              onProfileClosed: _refreshFollowing,
-            ),
-            _AccountsTab(
-              onFindHandle: _openSearch,
-              onProfileClosed: _refreshFollowing,
-              onUnfollow: _refreshFollowing,
+            _HomeTabs(selected: tab, onSelected: _tabs.select),
+            Expanded(
+              child: IndexedStack(
+                index: tab,
+                children: [
+                  _FollowingTab(
+                    scrollController: widget.scrollController,
+                    store: _following,
+                    follows: context.read<TikTokFollowsStore>(),
+                    onFindHandle: _openSearch,
+                    onProfileClosed: _refreshFollowing,
+                  ),
+                  _AccountsTab(
+                    onFindHandle: _openSearch,
+                    onProfileClosed: _refreshFollowing,
+                    onUnfollow: _refreshFollowing,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -132,13 +120,109 @@ class _TikTokScreenState extends State<TikTokScreen>
   }
 }
 
+class _TikTokTabStore extends Store<int> {
+  _TikTokTabStore() : super(0);
+
+  void select(int index) => update(index);
+}
+
+class _HomeTabs extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onSelected;
+
+  const _HomeTabs({required this.selected, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Row(
+        children: [
+          _HomeTab(
+            label: l10n.plugin_tiktok_tab_following,
+            icon: Icons.music_video_outlined,
+            selected: selected == 0,
+            onTap: () => onSelected(0),
+          ),
+          _HomeTab(
+            label: l10n.plugin_tiktok_tab_accounts,
+            icon: Icons.people_outline,
+            selected: selected == 1,
+            onTap: () {
+              onSelected(1);
+              context.read<TikTokFollowsStore>().load();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HomeTab extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _HomeTab({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: selected
+                    ? theme.colorScheme.primary
+                    : theme.dividerColor,
+                width: selected ? 3 : 1,
+              ),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 18, color: color),
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: theme.textTheme.labelLarge?.copyWith(color: color),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _FollowingTab extends StatelessWidget {
+  final ScrollController scrollController;
   final TikTokFollowingStore store;
   final TikTokFollowsStore follows;
   final Future<void> Function() onFindHandle;
   final Future<void> Function() onProfileClosed;
 
   const _FollowingTab({
+    required this.scrollController,
     required this.store,
     required this.follows,
     required this.onFindHandle,
@@ -152,6 +236,7 @@ class _FollowingTab extends StatelessWidget {
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _PostList(
+              scrollController: scrollController,
               posts: store.state,
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
@@ -159,6 +244,7 @@ class _FollowingTab extends StatelessWidget {
           : const Center(child: CircularProgressIndicator()),
       onError: (_, error) => store.state.isNotEmpty
           ? _PostList(
+              scrollController: scrollController,
               posts: store.state,
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
@@ -178,6 +264,7 @@ class _FollowingTab extends StatelessWidget {
           );
         }
         return _PostList(
+          scrollController: scrollController,
           posts: posts,
           onRefresh: () => store.refresh(force: true),
           onProfileClosed: onProfileClosed,
@@ -219,14 +306,7 @@ class _AccountsTab extends StatelessWidget {
               return Dismissible(
                 key: ValueKey(follow.id),
                 direction: DismissDirection.endToStart,
-                confirmDismiss: (_) async {
-                  final followsStore = context.read<TikTokFollowsStore>();
-                  final confirmed = await _confirmUnfollow(context, follow.id);
-                  if (confirmed != true) return false;
-                  await followsStore.unfollow(follow.id);
-                  if (context.mounted) await onUnfollow();
-                  return true;
-                },
+                confirmDismiss: (_) => _unfollow(context, follow.id),
                 onDismissed: (_) {},
                 background: Container(
                   color: Theme.of(context).colorScheme.error,
@@ -238,13 +318,47 @@ class _AccountsTab extends StatelessWidget {
                   ),
                 ),
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   leading: TikTokAvatar(
                     url: follow.avatarUrl,
                     seed: follow.id,
                     name: follow.name,
+                    size: 48,
                   ),
-                  title: Text(follow.name),
+                  title: Text(
+                    follow.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   subtitle: Text('@${follow.id}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PopupMenuButton<String>(
+                        onSelected: (value) async {
+                          if (value == 'unfollow') {
+                            await _unfollow(context, follow.id);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'unfollow',
+                            child: Text(
+                              L10n.of(context).plugin_tiktok_unfollow,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
                   onTap: () async {
                     await Navigator.push(
                       context,
@@ -263,6 +377,15 @@ class _AccountsTab extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<bool> _unfollow(BuildContext context, String handle) async {
+    final followsStore = context.read<TikTokFollowsStore>();
+    final confirmed = await _confirmUnfollow(context, handle);
+    if (confirmed != true) return false;
+    await followsStore.unfollow(handle);
+    if (context.mounted) await onUnfollow();
+    return true;
   }
 
   Future<bool?> _confirmUnfollow(BuildContext context, String handle) {
@@ -287,11 +410,13 @@ class _AccountsTab extends StatelessWidget {
 }
 
 class _PostList extends StatelessWidget {
+  final ScrollController? scrollController;
   final List<TikTokPost> posts;
   final Future<void> Function() onRefresh;
   final Future<void> Function()? onProfileClosed;
 
   const _PostList({
+    this.scrollController,
     required this.posts,
     required this.onRefresh,
     this.onProfileClosed,
@@ -302,6 +427,7 @@ class _PostList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView.builder(
+        controller: scrollController,
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return TikTokPostCard(
@@ -361,11 +487,21 @@ class _EmptyFollowing extends StatelessWidget {
           const SizedBox(height: 24),
           Center(
             child: FilledButton.icon(
-              onPressed: onFindHandle,
-              icon: const Icon(Icons.search),
-              label: Text(l10n.plugin_tiktok_find_handle),
+              onPressed: hasAccounts ? onRefresh : onFindHandle,
+              icon: Icon(hasAccounts ? Icons.refresh : Icons.person_add_alt),
+              label: Text(
+                hasAccounts ? l10n.retry : l10n.plugin_tiktok_find_handle,
+              ),
             ),
           ),
+          if (hasAccounts)
+            Center(
+              child: TextButton.icon(
+                onPressed: onFindHandle,
+                icon: const Icon(Icons.person_add_alt),
+                label: Text(l10n.plugin_tiktok_find_handle),
+              ),
+            ),
         ],
       ),
     );

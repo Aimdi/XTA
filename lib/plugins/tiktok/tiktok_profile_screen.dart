@@ -160,8 +160,11 @@ class _Header extends StatelessWidget {
     final l10n = L10n.of(context);
     final follows = context.read<TikTokFollowsStore>();
 
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -173,96 +176,113 @@ class _Header extends StatelessWidget {
                 name: profile.displayName,
                 size: 72,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
-                child: Wrap(
-                  spacing: 16,
-                  runSpacing: 8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _Stat(
-                      label: l10n.plugin_tiktok_stat_followers,
-                      value: profile.followerCount,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            profile.displayName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        if (profile.verified) ...[
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.verified,
+                            size: 20,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ],
+                        if (profile.privateAccount) ...[
+                          const SizedBox(width: 6),
+                          Icon(Icons.lock, size: 18, color: muted),
+                        ],
+                      ],
                     ),
-                    _Stat(
-                      label: l10n.plugin_tiktok_stat_videos,
-                      value: profile.videoCount,
-                    ),
-                    _Stat(
-                      label: l10n.plugin_tiktok_stat_likes,
-                      value: profile.heartCount,
+                    Text(
+                      '@${profile.uniqueId}',
+                      style: theme.textTheme.bodyMedium?.copyWith(color: muted),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          if (profile.signature != null &&
+              profile.signature!.trim().isNotEmpty) ...[
+            const SizedBox(height: 14),
+            Text(profile.signature!.trim()),
+          ],
+          const SizedBox(height: 16),
           Row(
             children: [
-              Flexible(
-                child: Text(
-                  profile.displayName,
-                  style: Theme.of(context).textTheme.titleMedium,
+              Expanded(
+                child: _Stat(
+                  label: l10n.plugin_tiktok_stat_followers,
+                  value: profile.followerCount,
                 ),
               ),
-              if (profile.verified) ...[
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.verified,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.primary,
+              Expanded(
+                child: _Stat(
+                  label: l10n.plugin_tiktok_stat_videos,
+                  value: profile.videoCount,
                 ),
-              ],
+              ),
+              Expanded(
+                child: _Stat(
+                  label: l10n.plugin_tiktok_stat_likes,
+                  value: profile.heartCount,
+                ),
+              ),
             ],
           ),
-          Text('@${profile.uniqueId}'),
-          if (profile.signature != null && profile.signature!.trim().isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(profile.signature!),
-            ),
-          const SizedBox(height: 12),
-          if (profile.privateAccount)
-            Row(
-              children: [
-                Icon(
-                  Icons.lock_outline,
-                  size: 18,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 6),
-                Expanded(child: Text(l10n.plugin_tiktok_error_private)),
-              ],
-            ),
           if (!profile.privateAccount) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             ScopedBuilder<TikTokFollowsStore, List<TikTokFollow>>(
               store: follows,
               onState: (context, list) {
                 final following = list.any(
                   (f) => f.id == profile.uniqueId.toLowerCase(),
                 );
-                return FilledButton.tonalIcon(
-                  onPressed: () async {
-                    if (following) {
-                      await follows.unfollow(profile.uniqueId);
-                    } else {
-                      await follows.follow(profile);
-                    }
-                    if (!context.mounted) return;
-                  },
-                  icon: Icon(
-                    following
-                        ? Icons.person_remove_alt_1
-                        : Icons.person_add_alt,
-                  ),
-                  label: Text(
-                    following
-                        ? l10n.plugin_tiktok_unfollow
-                        : l10n.plugin_tiktok_follow,
+                return SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.tonalIcon(
+                    onPressed: () async {
+                      if (following) {
+                        await follows.unfollow(profile.uniqueId);
+                      } else {
+                        await follows.follow(profile);
+                      }
+                      if (!context.mounted) return;
+                    },
+                    icon: Icon(
+                      following
+                          ? Icons.person_remove_alt_1
+                          : Icons.person_add_alt,
+                    ),
+                    label: Text(
+                      following
+                          ? l10n.plugin_tiktok_unfollow
+                          : l10n.plugin_tiktok_follow,
+                    ),
                   ),
                 );
               },
+            ),
+          ],
+          if (profile.privateAccount) ...[
+            const SizedBox(height: 16),
+            Text(
+              l10n.plugin_tiktok_profile_private,
+              style: theme.textTheme.bodySmall?.copyWith(color: muted),
             ),
           ],
         ],
@@ -284,9 +304,16 @@ class _Stat extends StatelessWidget {
       children: [
         Text(
           _count.format(value),
-          style: Theme.of(context).textTheme.titleMedium,
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
         ),
-        Text(label, style: Theme.of(context).textTheme.bodySmall),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }

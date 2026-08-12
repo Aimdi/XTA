@@ -11,6 +11,7 @@ Future<void> showTikTokSearchSheet(BuildContext context) {
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    showDragHandle: true,
     builder: (_) => const _TikTokSearchSheet(),
   );
 }
@@ -59,36 +60,33 @@ class _TikTokSearchSheetState extends State<_TikTokSearchSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final theme = Theme.of(context);
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
       child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * 0.55,
+        height: MediaQuery.sizeOf(context).height * 0.7,
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
               child: TextField(
                 controller: _controller,
                 autofocus: true,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
-                  labelText: l10n.plugin_tiktok_search_hint,
+                  filled: true,
+                  hintText: l10n.plugin_tiktok_search_hint,
                   errorText: _error,
-                  prefixText: '@',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    tooltip: l10n.plugin_tiktok_open_handle,
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: () => _open(_controller.text),
+                  ),
                 ),
                 onSubmitted: _open,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  onPressed: () => _open(_controller.text),
-                  child: Text(l10n.plugin_tiktok_open_handle),
-                ),
               ),
             ),
             Expanded(
@@ -99,13 +97,22 @@ class _TikTokSearchSheetState extends State<_TikTokSearchSheet> {
                   return ListView(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                        child: Text(l10n.plugin_tiktok_recent_handles),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                        child: Text(
+                          l10n.plugin_tiktok_recent_handles,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
                       for (final handle in history)
                         ListTile(
                           leading: const Icon(Icons.history),
                           title: Text('@$handle'),
+                          trailing: Icon(
+                            Icons.chevron_right,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                           onTap: () => _open(handle),
                         ),
                     ],

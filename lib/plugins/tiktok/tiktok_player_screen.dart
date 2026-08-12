@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
+import 'package:xta/plugins/tiktok/tiktok_post_card.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/utils/urls.dart';
-import 'package:provider/provider.dart';
 
 /// Full-screen TikTok watch: native CDN when headers work, else the official embed.
 class TikTokPlayerScreen extends StatefulWidget {
@@ -42,66 +43,185 @@ class _TikTokPlayerScreenState extends State<TikTokPlayerScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
+        elevation: 0,
         title: Text(
           '@${post.author.uniqueId}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
-          IconButton(
-            tooltip: _embed
-                ? l10n.plugin_tiktok_try_native
-                : l10n.plugin_tiktok_use_embed,
-            icon: Icon(_embed ? Icons.videocam_outlined : Icons.public),
-            onPressed: () => setState(() => _embed = !_embed),
-          ),
-          IconButton(
-            tooltip: l10n.plugin_tiktok_open_on_site,
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () => openUri(context, post.webUri().toString()),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'toggle') {
+                setState(() => _embed = !_embed);
+              } else if (value == 'open') {
+                openUri(context, post.webUri().toString());
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'toggle',
+                child: Text(
+                  _embed
+                      ? l10n.plugin_tiktok_try_native
+                      : l10n.plugin_tiktok_use_embed,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'open',
+                child: Text(l10n.plugin_tiktok_open_on_site),
+              ),
+            ],
           ),
         ],
       ),
-      body: Center(
-        child: AspectRatio(
-          aspectRatio: post.aspectRatio.clamp(9 / 16, 16 / 9),
-          child: _embed || post.playUrl == null
-              ? TikTokEmbedView(
-                  videoId: post.id,
-                  cookies: context.read<TikTokClient>().cookies,
-                )
-              : TweetVideo(
-                  username: post.author.uniqueId,
-                  loop: true,
-                  alwaysPlay: true,
-                  tweetId: 'tiktok-player-${post.id}',
-                  metadata: TweetVideoMetadata(
-                    post.aspectRatio,
-                    post.coverUrl,
-                    () async {
-                      final headers = context
-                          .read<TikTokClient>()
-                          .playbackHeaders;
-                      final qualities = [
-                        for (final source in post.sources)
-                          if (source.label != 'download')
-                            TweetVideoQuality(source.url, source.label ?? '—'),
-                      ];
-                      return TweetVideoUrls(
-                        post.playUrl!,
-                        null,
-                        qualities: qualities,
-                        httpHeaders: headers,
-                      );
-                    },
-                  ),
-                  onPlaybackError: () {
-                    if (mounted) setState(() => _embed = true);
-                  },
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          ColoredBox(
+            color: Colors.black,
+            child: Center(child: _player(post)),
+          ),
+          const IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.center,
+                  colors: [Color(0x99000000), Color(0x00000000)],
                 ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _CaptionOverlay(post: post),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _player(TikTokPost post) {
+    final child = _embed || post.playUrl == null
+        ? TikTokEmbedView(
+            videoId: post.id,
+            cookies: context.read<TikTokClient>().cookies,
+          )
+        : TweetVideo(
+            username: post.author.uniqueId,
+            loop: true,
+            alwaysPlay: true,
+            tweetId: 'tiktok-player-${post.id}',
+            metadata: TweetVideoMetadata(
+              post.aspectRatio,
+              post.coverUrl,
+              () async {
+                final headers = context.read<TikTokClient>().playbackHeaders;
+                final qualities = [
+                  for (final source in post.sources)
+                    if (source.label != 'download')
+                      TweetVideoQuality(source.url, source.label ?? '—'),
+                ];
+                return TweetVideoUrls(
+                  post.playUrl!,
+                  null,
+                  qualities: qualities,
+                  httpHeaders: headers,
+                );
+              },
+            ),
+            onPlaybackError: () {
+              if (mounted) setState(() => _embed = true);
+            },
+          );
+    if (_embed || post.playUrl == null) {
+      return AspectRatio(
+        aspectRatio: post.aspectRatio.clamp(9 / 16, 16 / 9),
+        child: child,
+      );
+    }
+    return child;
+  }
+}
+
+class _CaptionOverlay extends StatelessWidget {
+  final TikTokPost post;
+
+  const _CaptionOverlay({required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    final desc = post.desc.trim();
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0x00000000), Color(0xCC000000)],
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              TikTokAvatar(
+                url: post.author.avatarUrl,
+                seed: post.author.uniqueId,
+                name: post.author.displayName,
+                size: 40,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      post.author.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      '@${post.author.uniqueId}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 13,
+                      ),
+                    ),
+                    if (desc.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        desc,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

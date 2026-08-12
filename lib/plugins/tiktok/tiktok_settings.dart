@@ -50,6 +50,7 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.plugin_tiktok_settings_title)),
@@ -57,7 +58,20 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(l10n.plugin_tiktok_guest_note),
+            child: Card(
+              margin: EdgeInsets.zero,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(l10n.plugin_tiktok_guest_note)),
+                  ],
+                ),
+              ),
+            ),
           ),
           PrefSwitch(
             title: Text(l10n.plugin_tiktok_show_tab),
@@ -72,7 +86,9 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
           ),
           PrefTitle(title: Text(l10n.plugin_tiktok_section_session)),
           ListTile(
+            leading: const Icon(Icons.cookie_outlined),
             title: Text(l10n.plugin_tiktok_clear_session),
+            subtitle: Text(l10n.plugin_tiktok_clear_session_description),
             onTap: () async {
               await context.read<TikTokClient>().clearSession();
               if (!context.mounted) return;
@@ -84,14 +100,16 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.network_check),
             title: Text(l10n.plugin_tiktok_test_connection),
+            subtitle: Text(l10n.plugin_tiktok_test_connection_description),
             trailing: _testing
                 ? const SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.network_check),
+                : null,
             onTap: _testing ? null : _test,
           ),
         ],
