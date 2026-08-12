@@ -35,8 +35,10 @@ Pixiv no longer accepts password login on the app API. XTA supports the same
 Constants and implementation: `lib/plugins/pixiv/pixiv_auth.dart`,
 `lib/plugins/pixiv/pixiv_login_webview.dart`.
 
-No compose, bookmark, or like write-backs to Pixiv. Following a user from
-their profile is supported (`POST /v1/user/follow/add` / `delete`).
+No compose or like-on-X. Following a user from their profile
+(`POST /v1/user/follow/add` / `delete`) and bookmarking an illust
+(`POST /v2/illust/bookmark/add` / `POST /v1/illust/bookmark/delete`) write
+back to Pixiv so the Bookmarks tab stays in sync. There is no compose.
 
 ## Features
 
@@ -45,7 +47,7 @@ their profile is supported (`POST /v1/user/follow/add` / `delete`).
 | Settings | Sign in with Pixiv (WebView PKCE), sign out, advanced refresh-token paste, show R-18 toggle (off by default), test connection, local muted author/tag/work review |
 | Home tabs | Following (`/v2/illust/follow`), Recommended (`/v1/illust/recommended`, Flare-oriented), Ranking (`/v1/illust/ranking`), public/private Bookmarks (`/v1/user/bookmarks/illust`) |
 | Gallery | Pixez-style staggered grid (`flutter_staggered_grid_view`) with page-count / R-18 / ugoira chips |
-| Viewer | In-app illust screen — multi-page manga, caption, tags, bookmark/view counts, related works, local mute actions |
+| Viewer | In-app illust screen — multi-page manga, caption, tags, bookmark/view counts, related works, Pixiv bookmark heart, local mute actions |
 | Search | Illusts (`/v1/search/illust`) and users (`/v1/search/user`); recommended users strip (`/v1/user/recommended`); recent queries; Pixiv artwork/user link open; target and sort controls; tag chips open search |
 | Profile | User detail + staggered grid of their illusts; Follow / Unfollow |
 | Local mute | Preference-backed author ids, tag names, and work ids filter following, ranking, bookmarks, search, related, and profile grids |
@@ -67,12 +69,13 @@ their profile is supported (`POST /v1/user/follow/add` / `delete`).
 | User illusts | `GET /v1/user/illusts` |
 | Follow add | `POST /v1/user/follow/add` |
 | Follow delete | `POST /v1/user/follow/delete` |
+| Bookmark add | `POST /v2/illust/bookmark/add` |
+| Bookmark delete | `POST /v1/illust/bookmark/delete` |
 
 ## Not yet
 
 - Ugoira frame playback
 - Novel API
 - Local download manager
-- Bookmark / like **write** APIs on Pixiv
 - Comments
 - Proxy / mirror modes

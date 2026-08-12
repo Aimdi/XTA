@@ -26,6 +26,7 @@ void main() {
           'page_count': 2,
           'total_bookmarks': 10,
           'total_view': 100,
+          'is_bookmarked': true,
           'x_restrict': 0,
           'sanity_level': 2,
         },
@@ -60,6 +61,8 @@ void main() {
       expect(posts.first.url, 'https://www.pixiv.net/artworks/42');
       expect(posts.first.thumbnailUrl, contains('540x540'));
       expect(posts.first.caption, 'meow');
+      expect(posts.first.isBookmarked, isTrue);
+      expect(posts.first.totalBookmarks, 10);
     });
 
     test('reads tags, size and manga page urls', () {

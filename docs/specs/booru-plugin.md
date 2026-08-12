@@ -21,7 +21,7 @@ the well-known public JSON shapes (Danbooru, Moebooru, Gelbooru v2, e621).
 | Presets | Danbooru, Yande.re, Konachan, Safebooru, Gelbooru, e926, e621 |
 | Settings | Engine, host, credentials, max rating, muted tags, home-feed, tab |
 | Home tabs | Latest · Following (followed tags) · Search (+ autocomplete) |
-| Grid / viewer | Staggered thumbnails → post screen (open on host / source / video) |
+| Grid / viewer | Staggered catalog uses sample/large (~850px), not the ~150px preview; post screen opens host / source / video |
 | Subscriptions | `booru_subscription` table; tags join groups via `SubscriptionSource` |
 | Interleave | Recent posts per followed tag, provenance strip, fail soft |
 | Catalogue | Listed in `plugins.json` |

@@ -102,7 +102,7 @@ class BooruPostTile extends StatelessWidget {
                     tag: booruPostHeroTag(post),
                     child: RepaintBoundary(
                       child: BooruNetworkImage(
-                        url: post.thumbnailUrl,
+                        url: post.catalogUrl,
                         fit: BoxFit.cover,
                         loadStateChanged: (state) {
                           if (state.extendedImageLoadState ==

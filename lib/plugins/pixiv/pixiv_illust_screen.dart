@@ -1,8 +1,11 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
@@ -84,6 +87,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
           _illust.title.isEmpty ? l10n.plugin_pixiv_title : _illust.title,
         ),
         actions: [
+          PixivBookmarkButton(illust: _illust),
           IconButton(
             tooltip: l10n.plugin_pixiv_open_on_pixiv,
             onPressed: () => openUri(context, _illust.url),
@@ -264,9 +268,11 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
                             url: avatar,
                             fit: BoxFit.cover,
                             cacheWidth:
-                                (40 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                                (40 * MediaQuery.devicePixelRatioOf(context))
+                                    .ceil(),
                             cacheHeight:
-                                (40 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                                (40 * MediaQuery.devicePixelRatioOf(context))
+                                    .ceil(),
                           ),
                         ),
                 ),
@@ -307,9 +313,18 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             spacing: 12,
             runSpacing: 4,
             children: [
-              _stat(
-                Icons.favorite,
-                _pixivDetailCount.format(_illust.totalBookmarks),
+              ScopedBuilder<PixivBookmarkStore, Map<int, bool>>(
+                store: context.read<PixivBookmarkStore>(),
+                distinct: (_) =>
+                    context.read<PixivBookmarkStore>().isBookmarked(_illust),
+                onState: (context, _) {
+                  final bookmarks = context.read<PixivBookmarkStore>();
+                  final bookmarked = bookmarks.isBookmarked(_illust);
+                  return _stat(
+                    bookmarked ? Icons.favorite : Icons.favorite_border,
+                    _pixivDetailCount.format(bookmarks.bookmarkCount(_illust)),
+                  );
+                },
               ),
               _stat(
                 Icons.visibility_outlined,

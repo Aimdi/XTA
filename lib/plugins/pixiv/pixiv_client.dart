@@ -34,11 +34,11 @@ class PixivIllustPage {
   const PixivIllustPage({required this.illusts, this.nextUrl});
 }
 
-/// Read-only client for Pixiv's unofficial app API.
+/// Client for Pixiv's unofficial app API.
 ///
 /// Auth is a pasted refresh token — same shape community clients use after
-/// password login was removed. Follow is the one write-back; bookmarks and
-/// likes stay read-only.
+/// password login was removed. Follow and bookmark are the write-backs;
+/// there is no compose.
 class PixivClient {
   final http.Client httpClient;
   final BasePrefService prefs;
@@ -403,6 +403,18 @@ class PixivClient {
 
   Future<void> unfollowUser(int userId) async {
     await _apiPost('/v1/user/follow/delete', {'user_id': '$userId'});
+  }
+
+  /// Bookmark [illustId] so it appears in the Bookmarks tab.
+  Future<void> addBookmark(int illustId, {String restrict = 'public'}) async {
+    await _apiPost('/v2/illust/bookmark/add', {
+      'illust_id': '$illustId',
+      'restrict': restrict,
+    });
+  }
+
+  Future<void> deleteBookmark(int illustId) async {
+    await _apiPost('/v1/illust/bookmark/delete', {'illust_id': '$illustId'});
   }
 
   PixivIllustPage _illustPage(Object? json, {bool? includeR18}) {

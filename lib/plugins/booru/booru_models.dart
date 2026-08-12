@@ -108,6 +108,22 @@ class BooruPost {
       ? sampleUrl!
       : (fileUrl ?? previewUrl ?? '');
 
+  /// Sample/large for catalog tiles. Preview (~150px) looks like 240p when
+  /// stretched across a two-column phone tile. Video posters stay on preview
+  /// because sample can be a webm.
+  String get catalogUrl {
+    if (isVideo) {
+      return thumbnailUrl;
+    }
+    if (sampleUrl != null && sampleUrl!.isNotEmpty) {
+      return sampleUrl!;
+    }
+    if (fileUrl != null && fileUrl!.isNotEmpty) {
+      return fileUrl!;
+    }
+    return thumbnailUrl;
+  }
+
   double get aspectRatio {
     if (width <= 0 || height <= 0) return 1;
     return width / height;

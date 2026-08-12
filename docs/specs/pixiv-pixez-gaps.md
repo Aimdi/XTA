@@ -1,7 +1,8 @@
 # Pixiv — remaining Pixez gaps (on top of gallery PR)
 
 Builds on the Pixez-like gallery (Following / Ranking / Bookmarks, grid,
-in-app viewer, search). Still read-only — no Pixiv write APIs.
+in-app viewer, search). Follow and bookmark write back to Pixiv; there is
+no compose.
 
 ## This pass
 

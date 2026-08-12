@@ -57,6 +57,8 @@ void main() {
       expect(post.tags, ['1girl', 'landscape']);
       expect(post.rating, BooruRating.general);
       expect(post.hostPageUrl, 'https://danbooru.donmai.us/posts/42');
+      expect(post.thumbnailUrl, 'https://cdn.example/p.jpg');
+      expect(post.catalogUrl, 'https://cdn.example/l.jpg');
       expect(booruPostAllowed(post, BooruRating.general), isTrue);
     });
 
@@ -82,6 +84,8 @@ void main() {
       );
 
       expect(posts.single.previewUrl, 'https://yande.re/data/preview/ab.jpg');
+      expect(posts.single.catalogUrl, 'https://yande.re/data/sample/ab.jpg');
+      expect(posts.single.thumbnailUrl, 'https://yande.re/data/preview/ab.jpg');
       expect(posts.single.rating, BooruRating.general);
       expect(posts.single.hostPageUrl, 'https://yande.re/post/show/99');
       expect(booruPostAllowed(posts.single, BooruRating.general), isTrue);
@@ -150,6 +154,7 @@ void main() {
       expect(posts.single.score, 1);
       expect(posts.single.tags, containsAll(['smile', 'someone', 'fox']));
       expect(posts.single.previewUrl, contains('preview'));
+      expect(posts.single.catalogUrl, contains('sample'));
       expect(posts.single.hostPageUrl, 'https://e621.net/posts/6617540');
     });
 
@@ -186,6 +191,48 @@ void main() {
       expect(normaliseBooruTag('   '), isNull);
       expect(lastBooruTagToken('1girl blue_sky'), 'blue_sky');
       expect(lastBooruTagToken('1girl rating:g'), isNull);
+    });
+  });
+
+  group('catalogUrl', () {
+    test('uses sample for stills and preview for video', () {
+      const still = BooruPost(
+        id: '1',
+        host: 'https://danbooru.donmai.us',
+        engine: 'danbooru',
+        tags: [],
+        rating: BooruRating.general,
+        score: 0,
+        width: 800,
+        height: 600,
+        previewUrl: 'https://cdn.example/p.jpg',
+        sampleUrl: 'https://cdn.example/l.jpg',
+        fileUrl: 'https://cdn.example/f.png',
+        fileExt: 'png',
+        source: null,
+        createdAt: null,
+      );
+      const video = BooruPost(
+        id: '2',
+        host: 'https://danbooru.donmai.us',
+        engine: 'danbooru',
+        tags: [],
+        rating: BooruRating.general,
+        score: 0,
+        width: 800,
+        height: 600,
+        previewUrl: 'https://cdn.example/poster.jpg',
+        sampleUrl: 'https://cdn.example/clip.webm',
+        fileUrl: 'https://cdn.example/clip.webm',
+        fileExt: 'webm',
+        source: null,
+        createdAt: null,
+      );
+
+      expect(still.catalogUrl, 'https://cdn.example/l.jpg');
+      expect(still.thumbnailUrl, 'https://cdn.example/p.jpg');
+      expect(video.catalogUrl, 'https://cdn.example/poster.jpg');
+      expect(video.isVideo, isTrue);
     });
   });
 
