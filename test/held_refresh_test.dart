@@ -56,4 +56,18 @@ void main() {
       expect(held.isPending, isFalse);
     });
   });
+
+  group('feedRefreshAtTop', () {
+    test('uses pixels when the scroll position is attached', () {
+      expect(feedRefreshAtTop(pixels: 0, lastKnownAtTop: false), isTrue);
+      expect(feedRefreshAtTop(pixels: 400, lastKnownAtTop: true), isFalse);
+    });
+
+    // NestedScrollView briefly reports no single position when a sheet closes.
+    // Treating that as "at top" used to run a held refresh and wipe mid-scroll.
+    test('keeps the last known answer when pixels are unavailable', () {
+      expect(feedRefreshAtTop(pixels: null, lastKnownAtTop: false), isFalse);
+      expect(feedRefreshAtTop(pixels: null, lastKnownAtTop: true), isTrue);
+    });
+  });
 }
