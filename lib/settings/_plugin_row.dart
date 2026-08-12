@@ -8,29 +8,37 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_storage.dart';
 
-/// A plugin on offer but not installed: what it does, and a button.
+/// A plugin on offer but not installed: one line of what it does, and Install.
 class AvailablePluginRow extends StatelessWidget {
   final XtaPlugin plugin;
   final VoidCallback onInstall;
 
-  const AvailablePluginRow({super.key, required this.plugin, required this.onInstall});
+  const AvailablePluginRow({
+    super.key,
+    required this.plugin,
+    required this.onInstall,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: pluginBrandIcon(context, plugin),
-      title: Text(plugin.title(context)),
-      subtitle: Text(plugin.description(context)),
+    final l10n = L10n.of(context);
+    return _PluginStoreTile(
+      plugin: plugin,
+      subtitle: plugin.description(context),
       trailing: FilledButton.tonal(
         onPressed: onInstall,
-        child: Text(L10n.of(context).plugin_install),
+        style: FilledButton.styleFrom(
+          visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+        ),
+        child: Text(l10n.plugin_install),
       ),
     );
   }
 }
 
-/// An installed plugin: what it is holding, its tab, its settings, and the way
-/// back off the device.
+/// An installed plugin on one row: footprint, tab, settings, uninstall.
 class InstalledPluginRow extends StatelessWidget {
   final XtaPlugin plugin;
   final VoidCallback onUninstall;
@@ -49,49 +57,68 @@ class InstalledPluginRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prefs = PrefService.of(context);
+    final l10n = L10n.of(context);
     final tabPref = plugin.homeTabPrefKey;
     final settings = plugin.settingsScreen(context);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListTile(
-          leading: pluginBrandIcon(context, plugin),
-          title: Text(plugin.title(context)),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(plugin.description(context)),
-              const SizedBox(height: 2),
-              PluginFootprintText(plugin: plugin),
-            ],
-          ),
-          trailing: TextButton(
-            onPressed: onUninstall,
-            child: Text(L10n.of(context).plugin_uninstall),
-          ),
-        ),
-        // Plugins whose feature is reachable from the Groups tab as well can
-        // give up their own tab.
-        if (tabPref != null)
-          SwitchListTile(
-            secondary: const SizedBox(width: 24),
-            title: Text(L10n.of(context).plugin_show_as_tab),
-            subtitle: Text(L10n.of(context).plugin_show_as_tab_description),
-            value: plugin.showsHomeTab(prefs),
-            onChanged: (value) => _setShowsTab(context, prefs, tabPref, value),
-          ),
-        if (settings != null)
-          ListTile(
-            leading: const SizedBox(width: 24),
-            title: Text(L10n.of(context).settings),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () async {
-              await Navigator.push(context, MaterialPageRoute(builder: (_) => settings));
+    return _PluginStoreTile(
+      plugin: plugin,
+      subtitleWidget: PluginFootprintText(plugin: plugin),
+      onTap: settings == null
+          ? null
+          : () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => settings),
+              );
               onChanged();
             },
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (tabPref != null)
+            _PluginIconButton(
+              tooltip: l10n.plugin_show_as_tab,
+              icon: plugin.showsHomeTab(prefs)
+                  ? Icons.tab
+                  : Icons.tab_unselected,
+              selected: plugin.showsHomeTab(prefs),
+              onPressed: () => _setShowsTab(context, prefs, tabPref),
+            ),
+          if (settings != null)
+            _PluginIconButton(
+              tooltip: l10n.settings,
+              icon: Icons.tune,
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => settings),
+                );
+                onChanged();
+              },
+            ),
+          PopupMenuButton<String>(
+            tooltip: l10n.plugin_uninstall,
+            padding: EdgeInsets.zero,
+            iconSize: 20,
+            style: const ButtonStyle(
+              visualDensity: VisualDensity.compact,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            onSelected: (value) {
+              if (value == 'uninstall') {
+                onUninstall();
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'uninstall',
+                child: Text(l10n.plugin_uninstall),
+              ),
+            ],
           ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -99,21 +126,122 @@ class InstalledPluginRow extends StatelessWidget {
     BuildContext context,
     BasePrefService prefs,
     String tabPref,
-    bool value,
   ) async {
-    await prefs.set(tabPref, value);
+    final next = !plugin.showsHomeTab(prefs);
+    await prefs.set(tabPref, next);
 
     // Asking for the tab back has to actually bring it back: the page list only
     // auto-selects a plugin tab it has never seeded, so that memory is cleared
     // here or the switch would turn on and nothing appear.
-    if (value) {
-      final seeded = prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
-      await prefs.set(optionSeededPluginTabs, seeded.where((e) => e != plugin.id).toList());
+    if (next) {
+      final seeded =
+          prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
+      await prefs.set(
+        optionSeededPluginTabs,
+        seeded.where((e) => e != plugin.id).toList(),
+      );
     }
 
     if (!context.mounted) return;
     await context.read<HomeModel>().loadPages();
     onChanged();
+  }
+}
+
+/// Compact store row: brand chip, title, one subtitle line, trailing actions.
+class _PluginStoreTile extends StatelessWidget {
+  final XtaPlugin plugin;
+  final String? subtitle;
+  final Widget? subtitleWidget;
+  final Widget trailing;
+  final VoidCallback? onTap;
+
+  const _PluginStoreTile({
+    required this.plugin,
+    required this.trailing,
+    this.subtitle,
+    this.subtitleWidget,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final caption = theme.textTheme.bodySmall!.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+    final below =
+        subtitleWidget ??
+        (subtitle == null
+            ? null
+            : Text(
+                subtitle!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: caption,
+              ));
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+        child: Row(
+          children: [
+            pluginBrandIcon(context, plugin, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    plugin.title(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (below != null) ...[const SizedBox(height: 2), below],
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            trailing,
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PluginIconButton extends StatelessWidget {
+  final String tooltip;
+  final IconData icon;
+  final VoidCallback onPressed;
+  final bool selected;
+
+  const _PluginIconButton({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+    this.selected = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return IconButton(
+      tooltip: tooltip,
+      onPressed: onPressed,
+      visualDensity: VisualDensity.compact,
+      iconSize: 20,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+      icon: Icon(
+        icon,
+        color: selected ? scheme.primary : scheme.onSurfaceVariant,
+      ),
+    );
   }
 }
 
@@ -146,20 +274,32 @@ class _PluginFootprintTextState extends State<PluginFootprintText> {
   @override
   Widget build(BuildContext context) {
     final footprint = _footprint;
-    final style = Theme.of(context).textTheme.bodySmall;
+    final style = Theme.of(context).textTheme.bodySmall!.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
 
     // Nothing until the answer is in: a "0 items" that turns into a real number
     // reads as the plugin having just been filled.
     if (footprint == null) {
-      return const SizedBox(height: 16);
+      return const SizedBox.shrink();
     }
 
     if (footprint == emptyFootprint) {
-      return Text(L10n.of(context).plugin_storage_empty, style: style);
+      return Text(
+        L10n.of(context).plugin_storage_empty,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
     }
 
     return Text(
-      L10n.of(context).plugin_storage_used('${footprint.items}', formatStorageSize(footprint.bytes)),
+      L10n.of(context).plugin_storage_used(
+        '${footprint.items}',
+        formatStorageSize(footprint.bytes),
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: style,
     );
   }

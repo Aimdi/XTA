@@ -30,4 +30,35 @@ void main() {
     expect(groups[3].plugins.map((p) => p.id), ['pixiv', 'booru', 'ehviewer']);
     expect(groups[4].plugins.single.id, 'stocks');
   });
+
+  test('the store lists installed plugins above available categories', () {
+    final installedIds = {'reddit', 'pixiv'};
+    final sections = pluginStoreSections(
+      builtInPlugins,
+      isInstalled: (plugin) => installedIds.contains(plugin.id),
+    );
+
+    expect(sections.installed.map((p) => p.id), ['reddit', 'pixiv']);
+    expect(sections.availableByCategory.map((g) => g.category), [
+      PluginCategory.social,
+      PluginCategory.newsletters,
+      PluginCategory.art,
+      PluginCategory.markets,
+      PluginCategory.bookmarks,
+      PluginCategory.media,
+    ]);
+    expect(
+      sections.availableByCategory
+          .firstWhere((g) => g.category == PluginCategory.art)
+          .plugins
+          .map((p) => p.id),
+      ['booru', 'ehviewer'],
+    );
+    expect(
+      sections.availableByCategory.any(
+        (g) => g.category == PluginCategory.communities,
+      ),
+      isFalse,
+    );
+  });
 }
