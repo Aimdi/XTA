@@ -24,7 +24,13 @@ const threadsGuestProfileThreadsDocId = '6232751443445612';
 final _lsdTokenPattern = RegExp(r'"LSD",\[\],\{"token":"([^"]+)"\}');
 
 /// Cookie names a browser Threads session must carry for cookie REST reads.
-const _requiredCookieKeys = ['sessionid', 'csrftoken', 'ds_user_id', 'mid', 'ig_did'];
+const _requiredCookieKeys = [
+  'sessionid',
+  'csrftoken',
+  'ds_user_id',
+  'mid',
+  'ig_did',
+];
 
 /// Parses a pasted Cookie header (or `name=value; …`) into a map.
 Map<String, String> parseThreadsCookieHeader(String raw) {
@@ -58,7 +64,9 @@ String? normaliseThreadsBearer(String raw) {
 /// Pure parsers for Meta JSON / SSR — kept free of I/O for unit tests.
 List<ThreadsPost> parseThreadsApiFeed(Object? json) {
   final root = Json(json);
-  final buckets = root['threads'].list.isNotEmpty ? root['threads'].list : root['items'].list;
+  final buckets = root['threads'].list.isNotEmpty
+      ? root['threads'].list
+      : root['items'].list;
   final posts = <ThreadsPost>[];
   for (final bucket in buckets) {
     final items = bucket['thread_items'].list;
@@ -82,7 +90,8 @@ List<ThreadsPost> parseThreadsGraphqlFeed(Object? json) {
 }
 
 /// LSD token embedded in Threads HTML for guest GraphQL.
-String? extractThreadsLsd(String html) => _lsdTokenPattern.firstMatch(html)?.group(1);
+String? extractThreadsLsd(String html) =>
+    _lsdTokenPattern.firstMatch(html)?.group(1);
 
 /// Numeric Threads user id for [handle] from a profile page HTML blob.
 String? extractThreadsUserIdFromHtml(String html, String handle) {
@@ -121,7 +130,8 @@ String? extractThreadsUserIdFromHtml(String html, String handle) {
   for (final id in userIds) {
     counts[id] = (counts[id] ?? 0) + 1;
   }
-  final ranked = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+  final ranked = counts.entries.toList()
+    ..sort((a, b) => b.value.compareTo(a.value));
   return ranked.first.key;
 }
 
@@ -139,14 +149,18 @@ String? _metaContent(String html, String name) {
   ).firstMatch(html)?.group(1);
 }
 
-String _decodeHtmlEntities(String value) => html_parser.parseFragment(value).text ?? value;
+String _decodeHtmlEntities(String value) =>
+    html_parser.parseFragment(value).text ?? value;
 
 /// `5.7M` / `1.4K` / `380` → an int the profile card can show.
 int? parseThreadsCompactCount(String? raw) {
   if (raw == null) {
     return null;
   }
-  final match = RegExp(r'^([\d.,]+)\s*([KMB])?$', caseSensitive: false).firstMatch(raw.trim());
+  final match = RegExp(
+    r'^([\d.,]+)\s*([KMB])?$',
+    caseSensitive: false,
+  ).firstMatch(raw.trim());
   if (match == null) {
     return null;
   }
@@ -170,33 +184,51 @@ ThreadsProfile? threadsProfileFromGuestHtml(String html, String handle) {
     return null;
   }
 
-  final titleRaw = _metaContent(html, 'og:title') ?? _metaContent(html, 'twitter:title');
-  final descRaw = _metaContent(html, 'og:description') ?? _metaContent(html, 'description');
-  final imageRaw = _metaContent(html, 'og:image') ?? _metaContent(html, 'twitter:image');
+  final titleRaw =
+      _metaContent(html, 'og:title') ?? _metaContent(html, 'twitter:title');
+  final descRaw =
+      _metaContent(html, 'og:description') ?? _metaContent(html, 'description');
+  final imageRaw =
+      _metaContent(html, 'og:image') ?? _metaContent(html, 'twitter:image');
   if (titleRaw == null && descRaw == null && imageRaw == null) {
     return null;
   }
 
   final title = titleRaw == null ? '' : _decodeHtmlEntities(titleRaw);
   final desc = descRaw == null ? '' : _decodeHtmlEntities(descRaw);
-  final image = imageRaw == null ? '' : _decodeHtmlEntities(imageRaw).replaceAll('&amp;', '&');
+  final image = imageRaw == null
+      ? ''
+      : _decodeHtmlEntities(imageRaw).replaceAll('&amp;', '&');
 
-  final nameMatch = RegExp(r'^(.*?)\s*\(@', caseSensitive: false).firstMatch(title);
-  final displayName = (nameMatch?.group(1)?.trim().isNotEmpty ?? false) ? nameMatch!.group(1)!.trim() : key;
+  final nameMatch = RegExp(
+    r'^(.*?)\s*\(@',
+    caseSensitive: false,
+  ).firstMatch(title);
+  final displayName = (nameMatch?.group(1)?.trim().isNotEmpty ?? false)
+      ? nameMatch!.group(1)!.trim()
+      : key;
 
   var followers = 0;
   var mediaCount = 0;
   var biography = '';
   final parts = desc.split(RegExp(r'\s*[•·]\s*'));
   for (final part in parts) {
-    final followersMatch = RegExp(r'^([\d.,]+[KMB]?)\s+Followers?$', caseSensitive: false).firstMatch(part.trim());
+    final followersMatch = RegExp(
+      r'^([\d.,]+[KMB]?)\s+Followers?$',
+      caseSensitive: false,
+    ).firstMatch(part.trim());
     if (followersMatch != null) {
-      followers = parseThreadsCompactCount(followersMatch.group(1)) ?? followers;
+      followers =
+          parseThreadsCompactCount(followersMatch.group(1)) ?? followers;
       continue;
     }
-    final threadsMatch = RegExp(r'^([\d.,]+[KMB]?)\s+Threads?$', caseSensitive: false).firstMatch(part.trim());
+    final threadsMatch = RegExp(
+      r'^([\d.,]+[KMB]?)\s+Threads?$',
+      caseSensitive: false,
+    ).firstMatch(part.trim());
     if (threadsMatch != null) {
-      mediaCount = parseThreadsCompactCount(threadsMatch.group(1)) ?? mediaCount;
+      mediaCount =
+          parseThreadsCompactCount(threadsMatch.group(1)) ?? mediaCount;
       continue;
     }
     if (part.trim().isNotEmpty && biography.isEmpty) {
@@ -260,7 +292,10 @@ ThreadsPost? _threadsRepostFromApi({required Json outer, required Json inner}) {
     images: original.images,
     publishedAt: taken == null
         ? original.publishedAt
-        : DateTime.fromMillisecondsSinceEpoch(taken * 1000, isUtc: true).toLocal(),
+        : DateTime.fromMillisecondsSinceEpoch(
+            taken * 1000,
+            isUtc: true,
+          ).toLocal(),
     url: original.url,
     likeCount: original.likeCount,
     replyCount: original.replyCount,
@@ -279,7 +314,8 @@ ThreadsPost? _threadsOriginalFromApi(Json post) {
   final text = (post['caption']['text'].string ?? '').trim();
   final images = _imageUrlsOf(post);
   final linkCard = threadsLinkCardOf(post);
-  if (handle.isEmpty || (text.isEmpty && images.isEmpty && linkCard == null)) return null;
+  if (handle.isEmpty || (text.isEmpty && images.isEmpty && linkCard == null))
+    return null;
 
   final code = post['code'].string;
   final pk = post['pk'].string ?? post['id'].string ?? code;
@@ -290,11 +326,20 @@ ThreadsPost? _threadsOriginalFromApi(Json post) {
   return ThreadsPost(
     id: pk,
     handle: handle,
-    authorName: (user['full_name'].string ?? '').trim().isEmpty ? handle : user['full_name'].string!.trim(),
-    avatarUrl: user['profile_pic_url'].string ?? user['hd_profile_pic_url_info']['url'].string,
+    authorName: (user['full_name'].string ?? '').trim().isEmpty
+        ? handle
+        : user['full_name'].string!.trim(),
+    avatarUrl:
+        user['profile_pic_url'].string ??
+        user['hd_profile_pic_url_info']['url'].string,
     text: text,
     images: images,
-    publishedAt: taken == null ? null : DateTime.fromMillisecondsSinceEpoch(taken * 1000, isUtc: true).toLocal(),
+    publishedAt: taken == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(
+            taken * 1000,
+            isUtc: true,
+          ).toLocal(),
     url: code == null ? null : '$_threadsWeb/@$handle/post/$code',
     likeCount: post['like_count'].integer,
     replyCount: tpi['direct_reply_count'].integer,
@@ -321,7 +366,8 @@ ThreadsProfile? threadsProfileFromUserJson(Json user) {
   if (!user.exists) return null;
   final username = (user['username'].string ?? '').trim();
   if (username.isEmpty) return null;
-  final pk = user['pk'].string ?? user['id'].string ?? user['pk_id'].string ?? '';
+  final pk =
+      user['pk'].string ?? user['id'].string ?? user['pk_id'].string ?? '';
   final url = user['external_url'].string?.trim();
   return ThreadsProfile(
     pk: pk,
@@ -330,7 +376,10 @@ ThreadsProfile? threadsProfileFromUserJson(Json user) {
     fullName: user['full_name'].string ?? '',
     isVerified: user['is_verified'].boolean ?? false,
     isPrivate: user['is_private'].boolean ?? false,
-    profilePicUrl: user['profile_pic_url'].string ?? user['hd_profile_pic_url_info']['url'].string ?? '',
+    profilePicUrl:
+        user['profile_pic_url'].string ??
+        user['hd_profile_pic_url_info']['url'].string ??
+        '',
     biography: user['biography'].string ?? '',
     followerCount: user['follower_count'].integer ?? 0,
     followingCount: user['following_count'].integer ?? 0,
@@ -382,16 +431,27 @@ List<ThreadsPost> parseThreadsSsrThread(String body) {
   return posts;
 }
 
-void _collectSsrPosts(Object? node, String handle, List<ThreadsPost> out, Set<String> seen, {required bool rootsOnly}) {
+void _collectSsrPosts(
+  Object? node,
+  String handle,
+  List<ThreadsPost> out,
+  Set<String> seen, {
+  required bool rootsOnly,
+}) {
   if (node is Map) {
     final items = node['thread_items'];
     if (items is List && items.isNotEmpty) {
       final slice = rootsOnly ? items.take(1) : items;
       for (final item in slice) {
-        final post = threadsPostFromApi(Json(item is Map ? item['post'] : null));
+        final post = threadsPostFromApi(
+          Json(item is Map ? item['post'] : null),
+        );
         // Reposts keep the original author on [ThreadsPost.handle]; the profile
         // owner is [repostedByHandle]. Match either so SSR profile scrapes keep them.
-        final matches = handle.isEmpty || post?.handle == handle || post?.repostedByHandle == handle;
+        final matches =
+            handle.isEmpty ||
+            post?.handle == handle ||
+            post?.repostedByHandle == handle;
         if (post != null && matches && seen.add(post.id)) {
           out.add(post);
         }
@@ -438,7 +498,9 @@ class ThreadsDirectClient {
       return memory;
     }
     final stored = prefs.get<String>(optionPluginThreadsGuestLsd);
-    final at = DateTime.tryParse(prefs.get<String>(optionPluginThreadsGuestLsdAt) ?? '');
+    final at = DateTime.tryParse(
+      prefs.get<String>(optionPluginThreadsGuestLsdAt) ?? '',
+    );
     final fromPrefs = _guestLsdFrom(stored, at);
     if (fromPrefs != null) {
       _guestLsd = fromPrefs;
@@ -466,20 +528,29 @@ class ThreadsDirectClient {
     unawaited(
       Future<void>.sync(() async {
         await prefs.set(optionPluginThreadsGuestLsd, lsd);
-        await prefs.set(optionPluginThreadsGuestLsdAt, _guestLsdAt!.toIso8601String());
+        await prefs.set(
+          optionPluginThreadsGuestLsdAt,
+          _guestLsdAt!.toIso8601String(),
+        );
       }),
     );
   }
 
-  ThreadsDirectClient(this.prefs, {http.Client? httpClient, this.minGap = const Duration(seconds: 2)})
-    : httpClient = httpClient ?? http.Client();
+  ThreadsDirectClient(
+    this.prefs, {
+    http.Client? httpClient,
+    this.minGap = const Duration(seconds: 2),
+  }) : httpClient = httpClient ?? http.Client();
 
   static const _timeout = Duration(seconds: 25);
 
-  Map<String, String> get cookies =>
-      parseThreadsCookieHeader(prefs.get<String>(optionPluginThreadsDirectCookies) ?? '');
+  Map<String, String> get cookies => parseThreadsCookieHeader(
+    prefs.get<String>(optionPluginThreadsDirectCookies) ?? '',
+  );
 
-  String? get bearer => normaliseThreadsBearer(prefs.get<String>(optionPluginThreadsDirectBearer) ?? '');
+  String? get bearer => normaliseThreadsBearer(
+    prefs.get<String>(optionPluginThreadsDirectBearer) ?? '',
+  );
 
   bool get hasCookies => threadsCookiesComplete(cookies);
 
@@ -488,7 +559,8 @@ class ThreadsDirectClient {
   bool get hasDirectAuth => hasCookies || hasBearer;
 
   Future<String> _deviceId() async {
-    final existing = (prefs.get<String>(optionPluginThreadsDirectDeviceId) ?? '').trim();
+    final existing =
+        (prefs.get<String>(optionPluginThreadsDirectDeviceId) ?? '').trim();
     if (existing.isNotEmpty) return existing;
     final created = _randomDeviceId();
     await prefs.set(optionPluginThreadsDirectDeviceId, created);
@@ -517,8 +589,13 @@ class ThreadsDirectClient {
   /// Guest GraphQL/SSR must not honour the cookie/Bearer cooldown: a dead
   /// session parking the plugin for 30 minutes was also blocking the public
   /// path that still returns posts for followed Accounts.
-  Future<T> _enqueue<T>(Future<T> Function() run, {bool respectCooldown = true}) {
-    final departed = _queue.then((_) => _pace(respectCooldown: respectCooldown));
+  Future<T> _enqueue<T>(
+    Future<T> Function() run, {
+    bool respectCooldown = true,
+  }) {
+    final departed = _queue.then(
+      (_) => _pace(respectCooldown: respectCooldown),
+    );
     // A refused departure (cooldown) must not poison the queue behind it.
     _queue = departed.then((_) {}, onError: (Object _) {});
 
@@ -528,7 +605,10 @@ class ThreadsDirectClient {
   Future<void> _pace({bool respectCooldown = true}) async {
     if (respectCooldown) {
       if (await _coolingDown() case final until?) {
-        throw ThreadsException(ThreadsErrorKind.sessionSuspended, 'cooling down until $until');
+        throw ThreadsException(
+          ThreadsErrorKind.sessionSuspended,
+          'cooling down until $until',
+        );
       }
     }
 
@@ -550,7 +630,9 @@ class ThreadsDirectClient {
 
   /// When the session is parked, or null when it may talk to Meta.
   Future<DateTime?> _coolingDown() async {
-    final stored = DateTime.tryParse(prefs.get<String>(optionPluginThreadsDirectCooldownUntil) ?? '');
+    final stored = DateTime.tryParse(
+      prefs.get<String>(optionPluginThreadsDirectCooldownUntil) ?? '',
+    );
     final until = stored ?? _cooldownUntil;
     if (until == null) {
       return null;
@@ -576,10 +658,21 @@ class ThreadsDirectClient {
     final until = DateTime.now().add(length);
     _cooldownUntil = until;
     // `set` is a FutureOr, and this is called from a synchronous throw path.
-    unawaited(Future<void>.sync(() => prefs.set(optionPluginThreadsDirectCooldownUntil, until.toIso8601String())));
+    unawaited(
+      Future<void>.sync(
+        () => prefs.set(
+          optionPluginThreadsDirectCooldownUntil,
+          until.toIso8601String(),
+        ),
+      ),
+    );
   }
 
-  Future<http.Response> _get(Uri uri, Map<String, String> headers, {bool respectCooldown = true}) {
+  Future<http.Response> _get(
+    Uri uri,
+    Map<String, String> headers, {
+    bool respectCooldown = true,
+  }) {
     return _enqueue(() async {
       try {
         return await httpClient.get(uri, headers: headers).timeout(_timeout);
@@ -589,10 +682,17 @@ class ThreadsDirectClient {
     }, respectCooldown: respectCooldown);
   }
 
-  Future<http.Response> _post(Uri uri, Map<String, String> headers, String body, {bool respectCooldown = true}) {
+  Future<http.Response> _post(
+    Uri uri,
+    Map<String, String> headers,
+    String body, {
+    bool respectCooldown = true,
+  }) {
     return _enqueue(() async {
       try {
-        return await httpClient.post(uri, headers: headers, body: body).timeout(_timeout);
+        return await httpClient
+            .post(uri, headers: headers, body: body)
+            .timeout(_timeout);
       } catch (e) {
         throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: $e');
       }
@@ -601,15 +701,21 @@ class ThreadsDirectClient {
 
   void _throwForStatus(http.Response response, Uri uri) {
     final body = utf8.decode(response.bodyBytes);
-    final loginRequired = body.contains('login_required') || body.contains('logout_reason');
-    if (response.statusCode == 429 || body.contains('Please wait a few minutes')) {
+    final loginRequired =
+        body.contains('login_required') || body.contains('logout_reason');
+    if (response.statusCode == 429 ||
+        body.contains('Please wait a few minutes')) {
       _armCooldown();
       throw ThreadsException(ThreadsErrorKind.throttled, '$uri: rate limited');
     }
-    if (response.statusCode == 401 || response.statusCode == 403 || loginRequired) {
+    if (response.statusCode == 401 ||
+        response.statusCode == 403 ||
+        loginRequired) {
       if (loginRequired) _armCooldown();
       throw ThreadsException(
-        loginRequired ? ThreadsErrorKind.sessionSuspended : ThreadsErrorKind.unauthorized,
+        loginRequired
+            ? ThreadsErrorKind.sessionSuspended
+            : ThreadsErrorKind.unauthorized,
         '$uri: ${response.statusCode}',
       );
     }
@@ -617,7 +723,10 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.noSuchFeed, '$uri: 404');
     }
     if (response.statusCode != 200) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: ${response.statusCode}');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        '$uri: ${response.statusCode}',
+      );
     }
   }
 
@@ -631,7 +740,9 @@ class ThreadsDirectClient {
 
   Map<String, String> _cookieHeaders() {
     final c = cookies;
-    final cookieHeader = _requiredCookieKeys.map((k) => '$k=${c[k]}').join('; ');
+    final cookieHeader = _requiredCookieKeys
+        .map((k) => '$k=${c[k]}')
+        .join('; ');
     return {
       'User-Agent': _barcelonaUa,
       'Accept': 'application/json, text/plain, */*',
@@ -640,7 +751,12 @@ class ThreadsDirectClient {
       // Typed, not asserted: `cookies` re-reads prefs on every access, so the
       // reader clearing the pasted header mid-flight used to turn this into a
       // raw null-check crash that no ThreadsException handler caught.
-      'X-CSRFToken': c['csrftoken'] ?? (throw ThreadsException(ThreadsErrorKind.unauthorized, 'session cleared')),
+      'X-CSRFToken':
+          c['csrftoken'] ??
+          (throw ThreadsException(
+            ThreadsErrorKind.unauthorized,
+            'session cleared',
+          )),
       'X-ASBD-ID': '129477',
       'X-IG-WWW-Claim': '0',
       'Referer': '$_threadsWeb/',
@@ -662,7 +778,10 @@ class ThreadsDirectClient {
   /// Confirms cookies via current_user and/or Bearer via a tiny timeline fetch.
   Future<String> verify() async {
     if (!hasDirectAuth) {
-      throw ThreadsException(ThreadsErrorKind.notConfigured, 'no direct session');
+      throw ThreadsException(
+        ThreadsErrorKind.notConfigured,
+        'no direct session',
+      );
     }
     if (hasCookies) {
       final me = await currentUser();
@@ -674,13 +793,18 @@ class ThreadsDirectClient {
 
   Future<ThreadsProfile> currentUser() async {
     _requireCookies();
-    final uri = Uri.parse('$_threadsWeb/api/v1/accounts/current_user/').replace(queryParameters: {'edit': 'true'});
+    final uri = Uri.parse(
+      '$_threadsWeb/api/v1/accounts/current_user/',
+    ).replace(queryParameters: {'edit': 'true'});
     final response = await _get(uri, _cookieHeaders());
     _throwForStatus(response, uri);
     final user = Json(_decodeJson(response, uri))['user'];
     final profile = threadsProfileFromUserJson(user);
     if (profile == null) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, 'current_user missing user');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        'current_user missing user',
+      );
     }
     return profile;
   }
@@ -706,8 +830,12 @@ class ThreadsDirectClient {
 
   Map<String, String> _storedUserIds() {
     try {
-      final decoded = jsonDecode(prefs.get<String>(optionPluginThreadsUserIds) ?? '{}');
-      return decoded is Map ? {for (final e in decoded.entries) '${e.key}': '${e.value}'} : {};
+      final decoded = jsonDecode(
+        prefs.get<String>(optionPluginThreadsUserIds) ?? '{}',
+      );
+      return decoded is Map
+          ? {for (final e in decoded.entries) '${e.key}': '${e.value}'}
+          : {};
     } catch (_) {
       return {};
     }
@@ -718,21 +846,54 @@ class ThreadsDirectClient {
     if (key.isEmpty || id.isEmpty) return;
     final known = _storedUserIds();
     if (known[key] == id) return;
-    await prefs.set(optionPluginThreadsUserIds, jsonEncode({...known, key: id}));
+    await prefs.set(
+      optionPluginThreadsUserIds,
+      jsonEncode({...known, key: id}),
+    );
   }
 
   Future<String> _searchUserId(String handle) async {
-    final uri = Uri.parse('$_threadsWeb/api/v1/users/search/').replace(queryParameters: {'q': handle, 'count': '10'});
-    final response = await _get(uri, _cookieHeaders());
-    _throwForStatus(response, uri);
-    final users = Json(_decodeJson(response, uri))['users'].list;
+    final users = await searchUsers(handle);
     for (final user in users) {
-      if ((user['username'].string ?? '').toLowerCase() == handle.toLowerCase()) {
-        final id = user['pk'].string ?? user['id'].string ?? user['pk_id'].string;
-        if (id != null && id.isNotEmpty) return id;
+      if (user.username.toLowerCase() == handle.toLowerCase()) {
+        if (user.pk.isNotEmpty) return user.pk;
+        if (user.id.isNotEmpty) return user.id;
       }
     }
-    throw ThreadsException(ThreadsErrorKind.noSuchFeed, 'user not found: $handle');
+    throw ThreadsException(
+      ThreadsErrorKind.noSuchFeed,
+      'user not found: $handle',
+    );
+  }
+
+  /// Multi-result people search — Meta's cookie `users/search` endpoint.
+  ///
+  /// Guest sessions have no public search; callers should fall back to an
+  /// exact `@handle` profile open when [hasCookies] is false.
+  Future<List<ThreadsProfile>> searchUsers(
+    String query, {
+    int count = 10,
+  }) async {
+    _requireCookies();
+    final q = query.trim().replaceFirst(RegExp(r'^@'), '');
+    if (q.isEmpty) return const [];
+
+    final uri = Uri.parse(
+      '$_threadsWeb/api/v1/users/search/',
+    ).replace(queryParameters: {'q': q, 'count': '$count'});
+    final response = await _get(uri, _cookieHeaders());
+    _throwForStatus(response, uri);
+    final users = <ThreadsProfile>[];
+    for (final user in Json(_decodeJson(response, uri))['users'].list) {
+      final profile = threadsProfileFromUserJson(user);
+      if (profile != null) {
+        users.add(profile);
+        if (profile.pk.isNotEmpty) {
+          await _rememberUserId(profile.username.toLowerCase(), profile.pk);
+        }
+      }
+    }
+    return users;
   }
 
   Future<ThreadsProfile> fetchProfile(String handle) async {
@@ -742,7 +903,9 @@ class ThreadsDirectClient {
         final uri = Uri.parse('$_threadsWeb/api/v1/users/$id/info/');
         final response = await _get(uri, _cookieHeaders());
         _throwForStatus(response, uri);
-        final profile = threadsProfileFromUserJson(Json(_decodeJson(response, uri))['user']);
+        final profile = threadsProfileFromUserJson(
+          Json(_decodeJson(response, uri))['user'],
+        );
         if (profile != null) {
           return profile;
         }
@@ -759,7 +922,10 @@ class ThreadsDirectClient {
     final htmlBody = await _fetchProfileHtml(key);
     final profile = threadsProfileFromGuestHtml(htmlBody, key);
     if (profile == null) {
-      throw ThreadsException(ThreadsErrorKind.noSuchFeed, 'guest profile missing: @$key');
+      throw ThreadsException(
+        ThreadsErrorKind.noSuchFeed,
+        'guest profile missing: @$key',
+      );
     }
     if (profile.pk.isNotEmpty) {
       await _rememberUserId(key, profile.pk);
@@ -773,7 +939,10 @@ class ThreadsDirectClient {
   /// When the cookie REST path is dead (`login_required`) or returns nothing,
   /// public GraphQL still works for public handles — so we keep showing posts
   /// instead of a parked empty feed.
-  Future<List<ThreadsPost>> fetchUserThreads(String handle, {int count = threadsPostsPerAccount}) async {
+  Future<List<ThreadsPost>> fetchUserThreads(
+    String handle, {
+    int count = threadsPostsPerAccount,
+  }) async {
     if (hasCookies) {
       try {
         final id = await resolveUserId(handle);
@@ -800,15 +969,16 @@ class ThreadsDirectClient {
     // Params aligned with threads-go HomeTimeline — the old
     // `pagination_source=text_post_feed_following` alone now 404s as HTML.
     final deviceId = await _deviceId();
-    final uri = Uri.parse('$_instagramApi/api/v1/feed/text_post_app_timeline/').replace(
-      queryParameters: {
-        'feed_type': 'for_you',
-        'feed_view_info': '[]',
-        'reason': 'cold_start_fetch',
-        'client_session_id': deviceId,
-        'pagination_source_module': 'feed_unit',
-      },
-    );
+    final uri = Uri.parse('$_instagramApi/api/v1/feed/text_post_app_timeline/')
+        .replace(
+          queryParameters: {
+            'feed_type': 'for_you',
+            'feed_view_info': '[]',
+            'reason': 'cold_start_fetch',
+            'client_session_id': deviceId,
+            'pagination_source_module': 'feed_unit',
+          },
+        );
     final response = await _get(uri, await _bearerHeaders());
     _throwForStatus(response, uri);
     final posts = parseThreadsApiFeed(_decodeJson(response, uri));
@@ -830,7 +1000,11 @@ class ThreadsDirectClient {
     if (knownId != null && knownId.isNotEmpty) {
       if (_freshGuestLsd case final lsd?) {
         try {
-          final posts = await _fetchGuestGraphqlThreads(handle: key, userId: knownId, lsd: lsd);
+          final posts = await _fetchGuestGraphqlThreads(
+            handle: key,
+            userId: knownId,
+            lsd: lsd,
+          );
           if (posts.isNotEmpty) {
             return posts;
           }
@@ -843,12 +1017,18 @@ class ThreadsDirectClient {
     final htmlBody = await _fetchProfileHtml(key);
     final lsd = extractThreadsLsd(htmlBody);
     _rememberGuestLsd(lsd);
-    final userId = (knownId != null && knownId.isNotEmpty) ? knownId : extractThreadsUserIdFromHtml(htmlBody, key);
+    final userId = (knownId != null && knownId.isNotEmpty)
+        ? knownId
+        : extractThreadsUserIdFromHtml(htmlBody, key);
 
     if (lsd != null && userId != null && userId.isNotEmpty) {
       await _rememberUserId(key, userId);
       try {
-        final posts = await _fetchGuestGraphqlThreads(handle: key, userId: userId, lsd: lsd);
+        final posts = await _fetchGuestGraphqlThreads(
+          handle: key,
+          userId: userId,
+          lsd: lsd,
+        );
         if (posts.isNotEmpty) {
           return posts;
         }
@@ -859,7 +1039,10 @@ class ThreadsDirectClient {
 
     final posts = parseThreadsSsrHtml(htmlBody, key);
     if (posts.isEmpty) {
-      throw ThreadsException(ThreadsErrorKind.noSuchFeed, 'no posts for @$key (GraphQL+SSR empty)');
+      throw ThreadsException(
+        ThreadsErrorKind.noSuchFeed,
+        'no posts for @$key (GraphQL+SSR empty)',
+      );
     }
     return posts;
   }
@@ -871,12 +1054,16 @@ class ThreadsDirectClient {
   Future<List<ThreadsPost>> fetchGuestPostThread(String postUrl) async {
     final uri = Uri.tryParse(postUrl.trim());
     if (uri == null || !uri.host.contains('threads.')) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, 'not a threads url: $postUrl');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        'not a threads url: $postUrl',
+      );
     }
 
     final response = await _get(uri, {
       'User-Agent': _safariUa,
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept':
+          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'en-US,en;q=0.9',
     }, respectCooldown: false);
     if (response.statusCode == 404) {
@@ -886,7 +1073,10 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
     }
     if (response.statusCode != 200) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: ${response.statusCode}');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        '$uri: ${response.statusCode}',
+      );
     }
 
     return parseThreadsSsrThread(utf8.decode(response.bodyBytes));
@@ -907,7 +1097,8 @@ class ThreadsDirectClient {
     final uri = Uri.parse('$_threadsWeb/@$handle');
     final response = await _get(uri, {
       'User-Agent': _safariUa,
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'Accept':
+          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       'Accept-Language': 'en-US,en;q=0.9',
     }, respectCooldown: false);
     if (response.statusCode == 404) {
@@ -917,7 +1108,10 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
     }
     if (response.statusCode != 200) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: ${response.statusCode}');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        '$uri: ${response.statusCode}',
+      );
     }
     return utf8.decode(response.bodyBytes);
   }
@@ -947,7 +1141,12 @@ class ThreadsDirectClient {
         'Origin': _threadsWeb,
         'Referer': '$_threadsWeb/@$handle',
       },
-      body.entries.map((e) => '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value)}').join('&'),
+      body.entries
+          .map(
+            (e) =>
+                '${Uri.encodeQueryComponent(e.key)}=${Uri.encodeQueryComponent(e.value)}',
+          )
+          .join('&'),
       respectCooldown: false,
     );
 
@@ -955,27 +1154,39 @@ class ThreadsDirectClient {
       throw ThreadsException(ThreadsErrorKind.throttled, '$uri: 429');
     }
     if (response.statusCode != 200) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: ${response.statusCode}');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        '$uri: ${response.statusCode}',
+      );
     }
 
     final decoded = _decodeJson(response, uri);
     final text = utf8.decode(response.bodyBytes);
     // Guest GraphQL sometimes returns the HTML shell when headers are wrong.
     if (text.trimLeft().startsWith('<!') || text.contains('<html')) {
-      throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: HTML instead of JSON');
+      throw ThreadsException(
+        ThreadsErrorKind.unreachable,
+        '$uri: HTML instead of JSON',
+      );
     }
     return parseThreadsGraphqlFeed(decoded);
   }
 
   void _requireCookies() {
     if (!hasCookies) {
-      throw ThreadsException(ThreadsErrorKind.notConfigured, 'incomplete cookies');
+      throw ThreadsException(
+        ThreadsErrorKind.notConfigured,
+        'incomplete cookies',
+      );
     }
   }
 }
 
 String _randomDeviceId() {
   final r = Random.secure();
-  String hex(int n) => List.generate(n, (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+  String hex(int n) => List.generate(
+    n,
+    (_) => r.nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ).join();
   return '${hex(4)}-${hex(2)}-${hex(2)}-${hex(2)}-${hex(6)}';
 }

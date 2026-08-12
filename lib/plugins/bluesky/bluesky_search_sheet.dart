@@ -43,10 +43,12 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
   late final TextEditingController _controller;
   late final TabController _tabs;
   List<BlueskyProfile> _people = const [];
+  List<BlueskyProfile> _suggestions = const [];
   List<BlueskyPost> _posts = const [];
   Object? _error;
   var _loading = false;
   var _searched = false;
+  var _suggestionsLoading = false;
 
   @override
   void initState() {
@@ -60,6 +62,10 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
     if ((widget.initialQuery ?? '').trim().isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) _search();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _loadSuggestions();
       });
     }
   }
@@ -78,6 +84,29 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
       context,
       MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)),
     );
+  }
+
+  Future<void> _loadSuggestions() async {
+    setState(() {
+      _suggestionsLoading = true;
+      _error = null;
+    });
+    try {
+      final results = await context.read<BlueskyClient>().getSuggestions(
+        limit: 20,
+      );
+      if (!mounted) return;
+      setState(() {
+        _suggestions = results;
+        _suggestionsLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e;
+        _suggestionsLoading = false;
+      });
+    }
   }
 
   Future<void> _search() async {
@@ -187,10 +216,10 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
   }
 
   Widget _body(L10n l10n) {
-    if (_loading) {
+    if (_loading || (_suggestionsLoading && !_searched && _tabs.index == 0)) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (_error != null) {
+    if (_error != null && (_searched || _suggestions.isEmpty)) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -202,16 +231,57 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
       );
     }
     if (!_searched) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            _tabs.index == 0
-                ? l10n.plugin_bluesky_search_hint
-                : l10n.plugin_bluesky_search_posts_hint,
-            textAlign: TextAlign.center,
+      if (_tabs.index == 1) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l10n.plugin_bluesky_search_posts_hint,
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
+        );
+      }
+      if (_suggestions.isEmpty) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l10n.plugin_bluesky_search_hint,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }
+      return ListView(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Text(
+              l10n.plugin_bluesky_suggested,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+          for (final profile in _suggestions) ...[
+            ListTile(
+              leading: _avatar(context, profile),
+              title: Text(
+                profile.displayName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Text(
+                '@${profile.handle}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              onTap: () => _open(profile),
+            ),
+            const Divider(height: 1),
+          ],
+        ],
       );
     }
 

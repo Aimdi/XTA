@@ -135,6 +135,17 @@ class BlueskyClient {
     ];
   }
 
+  /// Suggested accounts from the public AppView (guest Discover).
+  Future<List<BlueskyProfile>> getSuggestions({int limit = 20}) async {
+    final json = await _get(
+      _uri('/xrpc/app.bsky.actor.getSuggestions', {'limit': '$limit'}),
+    );
+    return [
+      for (final actor in json['actors'].list)
+        BlueskyProfile.fromJson(actor.raw),
+    ];
+  }
+
   /// Posts matching [q] via the public AppView search index.
   Future<BlueskyFeedPage> searchPosts(
     String q, {

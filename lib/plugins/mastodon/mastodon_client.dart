@@ -5,7 +5,14 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/utils/json.dart';
 
 /// Why a Mastodon read could not be served, in terms the screen explains it.
-enum MastodonErrorKind { notConfigured, network, notFound, rateLimited, unauthorized, badResponse }
+enum MastodonErrorKind {
+  notConfigured,
+  network,
+  notFound,
+  rateLimited,
+  unauthorized,
+  badResponse,
+}
 
 class MastodonException implements Exception {
   final MastodonErrorKind kind;
@@ -21,7 +28,8 @@ class MastodonException implements Exception {
 class MastodonClient {
   final http.Client httpClient;
 
-  MastodonClient({http.Client? httpClient}) : httpClient = httpClient ?? http.Client();
+  MastodonClient({http.Client? httpClient})
+    : httpClient = httpClient ?? http.Client();
 
   static const _timeout = Duration(seconds: 20);
   static const userAgent = 'XTA Mastodon plugin';
@@ -29,7 +37,10 @@ class MastodonClient {
   Uri _uri(String instance, String path, [Map<String, String>? query]) {
     final base = normaliseMastodonInstance(instance);
     if (base == null) {
-      throw MastodonException(MastodonErrorKind.notConfigured, 'bad instance: $instance');
+      throw MastodonException(
+        MastodonErrorKind.notConfigured,
+        'bad instance: $instance',
+      );
     }
     final root = Uri.parse(base);
     return Uri(
@@ -45,7 +56,10 @@ class MastodonClient {
     final http.Response response;
     try {
       response = await httpClient
-          .get(uri, headers: {'User-Agent': userAgent, 'Accept': 'application/json'})
+          .get(
+            uri,
+            headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
+          )
           .timeout(_timeout);
     } catch (e) {
       throw MastodonException(MastodonErrorKind.network, '$uri: $e');
@@ -55,13 +69,19 @@ class MastodonClient {
       throw MastodonException(MastodonErrorKind.notFound, '$uri: 404');
     }
     if (response.statusCode == 401 || response.statusCode == 403) {
-      throw MastodonException(MastodonErrorKind.unauthorized, '$uri: ${response.statusCode}');
+      throw MastodonException(
+        MastodonErrorKind.unauthorized,
+        '$uri: ${response.statusCode}',
+      );
     }
     if (response.statusCode == 429) {
       throw MastodonException(MastodonErrorKind.rateLimited, '$uri: 429');
     }
     if (response.statusCode != 200) {
-      throw MastodonException(MastodonErrorKind.badResponse, '$uri: ${response.statusCode}');
+      throw MastodonException(
+        MastodonErrorKind.badResponse,
+        '$uri: ${response.statusCode}',
+      );
     }
 
     try {
@@ -79,9 +99,15 @@ class MastodonClient {
   /// asking. When the whole walk fails, the error kept is the most telling
   /// one — a throttle or a refusal explains more than the 404 the least
   /// conclusive instance ended on.
-  Future<T> firstInstanceThat<T>(List<String> instances, Future<T> Function(String instance) read) async {
+  Future<T> firstInstanceThat<T>(
+    List<String> instances,
+    Future<T> Function(String instance) read,
+  ) async {
     if (instances.isEmpty) {
-      throw MastodonException(MastodonErrorKind.notConfigured, 'no instance to ask');
+      throw MastodonException(
+        MastodonErrorKind.notConfigured,
+        'no instance to ask',
+      );
     }
 
     MastodonException? worst;
@@ -96,7 +122,10 @@ class MastodonClient {
     throw worst!;
   }
 
-  static MastodonException? _moreTelling(MastodonException? a, MastodonException? b) {
+  static MastodonException? _moreTelling(
+    MastodonException? a,
+    MastodonException? b,
+  ) {
     int rank(MastodonException? e) => switch (e?.kind) {
       MastodonErrorKind.rateLimited => 5,
       MastodonErrorKind.unauthorized => 4,
@@ -119,17 +148,25 @@ class MastodonClient {
   /// The lookup and the statuses read stay on whichever instance answered:
   /// account ids are instance-local, so an id resolved on one is meaningless
   /// on the next.
-  Future<List<MastodonPost>> fetchAccountAnywhere(List<String> instances, String acct, {int limit = 20}) =>
-      firstInstanceThat(instances, (instance) => fetchAccount(instance, acct, limit: limit));
+  Future<List<MastodonPost>> fetchAccountAnywhere(
+    List<String> instances,
+    String acct, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => fetchAccount(instance, acct, limit: limit),
+  );
 
   /// A profile and its first page of posts from one instance, walked the same
   /// way — both halves must come from the same place for the id to mean
   /// anything.
-  Future<({MastodonProfile profile, List<MastodonPost> posts})> profileAnywhere(List<String> instances, String acct) =>
-      firstInstanceThat(instances, (instance) async {
-        final profile = await lookup(instance, acct);
-        return (profile: profile, posts: await getStatuses(instance, profile.id));
-      });
+  Future<({MastodonProfile profile, List<MastodonPost> posts})> profileAnywhere(
+    List<String> instances,
+    String acct,
+  ) => firstInstanceThat(instances, (instance) async {
+    final profile = await lookup(instance, acct);
+    return (profile: profile, posts: await getStatuses(instance, profile.id));
+  });
 
   /// Confirms the instance answers the public instance metadata endpoint.
   Future<void> verify(String instance) async {
@@ -144,19 +181,31 @@ class MastodonClient {
     }
   }
 
-  String? _homeDomain(String instance) => mastodonInstanceDomain(normaliseMastodonInstance(instance) ?? instance);
+  String? _homeDomain(String instance) =>
+      mastodonInstanceDomain(normaliseMastodonInstance(instance) ?? instance);
 
   /// Resolve [acct] (local username or `user@domain`) on the home instance.
   Future<MastodonProfile> lookup(String instance, String acct) async {
     final normalised = normaliseMastodonAcct(acct);
     if (normalised == null) {
-      throw MastodonException(MastodonErrorKind.notFound, 'invalid acct: $acct');
+      throw MastodonException(
+        MastodonErrorKind.notFound,
+        'invalid acct: $acct',
+      );
     }
 
-    final json = await _get(_uri(instance, '/api/v1/accounts/lookup', {'acct': normalised}));
-    final profile = MastodonProfile.fromJson(json, homeDomain: _homeDomain(instance));
+    final json = await _get(
+      _uri(instance, '/api/v1/accounts/lookup', {'acct': normalised}),
+    );
+    final profile = MastodonProfile.fromJson(
+      json,
+      homeDomain: _homeDomain(instance),
+    );
     if (profile.id.isEmpty || profile.acct.isEmpty) {
-      throw MastodonException(MastodonErrorKind.badResponse, 'empty profile for $normalised');
+      throw MastodonException(
+        MastodonErrorKind.badResponse,
+        'empty profile for $normalised',
+      );
     }
     return profile;
   }
@@ -174,13 +223,20 @@ class MastodonClient {
     bool excludeReplies = true,
   }) async {
     final json = await _get(
-      _uri(instance, '/api/v1/accounts/$id/statuses', {'limit': '$limit', 'exclude_replies': '$excludeReplies'}),
+      _uri(instance, '/api/v1/accounts/$id/statuses', {
+        'limit': '$limit',
+        'exclude_replies': '$excludeReplies',
+      }),
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
   }
 
   /// Lookup then statuses — what the merged feed needs for one followed acct.
-  Future<List<MastodonPost>> fetchAccount(String instance, String acct, {int limit = 20}) async {
+  Future<List<MastodonPost>> fetchAccount(
+    String instance,
+    String acct, {
+    int limit = 20,
+  }) async {
     final profile = await lookup(instance, acct);
     return getStatuses(instance, profile.id, limit: limit);
   }
@@ -188,20 +244,32 @@ class MastodonClient {
   /// One public status by local id on [instance].
   Future<MastodonPost> getStatus(String instance, String id) async {
     final json = await _get(_uri(instance, '/api/v1/statuses/$id'));
-    final post = mastodonPostFromStatus(json, homeDomain: _homeDomain(instance));
+    final post = mastodonPostFromStatus(
+      json,
+      homeDomain: _homeDomain(instance),
+    );
     if (post == null) {
-      throw MastodonException(MastodonErrorKind.badResponse, 'empty status $id');
+      throw MastodonException(
+        MastodonErrorKind.badResponse,
+        'empty status $id',
+      );
     }
     return post;
   }
 
   /// Ancestors and replies for a status on [instance].
-  Future<({List<MastodonPost> ancestors, List<MastodonPost> descendants})> getContext(String instance, String id) async {
-    final root = Json(await _get(_uri(instance, '/api/v1/statuses/$id/context')));
+  Future<({List<MastodonPost> ancestors, List<MastodonPost> descendants})>
+  getContext(String instance, String id) async {
+    final root = Json(
+      await _get(_uri(instance, '/api/v1/statuses/$id/context')),
+    );
     final home = _homeDomain(instance);
     return (
       ancestors: parseMastodonStatuses(root['ancestors'].raw, homeDomain: home),
-      descendants: parseMastodonStatuses(root['descendants'].raw, homeDomain: home),
+      descendants: parseMastodonStatuses(
+        root['descendants'].raw,
+        homeDomain: home,
+      ),
     );
   }
 
@@ -225,8 +293,10 @@ class MastodonClient {
   }
 
   /// [fetchThread] over [instances], same walk as profile lookups.
-  Future<MastodonThread> fetchThreadAnywhere(List<String> instances, MastodonPost seed) =>
-      firstInstanceThat(instances, (instance) => fetchThread(instance, seed));
+  Future<MastodonThread> fetchThreadAnywhere(
+    List<String> instances,
+    MastodonPost seed,
+  ) => firstInstanceThat(instances, (instance) => fetchThread(instance, seed));
 
   Future<MastodonPost> _locateStatus(String instance, MastodonPost seed) async {
     final fromDirect = await _statusByKnownIds(instance, seed);
@@ -244,11 +314,17 @@ class MastodonClient {
       return fromAccount;
     }
 
-    throw MastodonException(MastodonErrorKind.notFound, 'status not on $instance: ${seed.url}');
+    throw MastodonException(
+      MastodonErrorKind.notFound,
+      'status not on $instance: ${seed.url}',
+    );
   }
 
   /// Try [GET /statuses/:id] with the URL snowflake and the card's local id.
-  Future<MastodonPost?> _statusByKnownIds(String instance, MastodonPost seed) async {
+  Future<MastodonPost?> _statusByKnownIds(
+    String instance,
+    MastodonPost seed,
+  ) async {
     final ids = <String>{
       if (mastodonStatusIdFromUrl(seed.url) case final fromUrl?) fromUrl,
       if (seed.id.trim().isNotEmpty) seed.id.trim(),
@@ -279,10 +355,18 @@ class MastodonClient {
     try {
       final json = Json(
         await _get(
-          _uri(instance, '/api/v2/search', {'q': trimmed, 'resolve': 'true', 'type': 'statuses', 'limit': '1'}),
+          _uri(instance, '/api/v2/search', {
+            'q': trimmed,
+            'resolve': 'true',
+            'type': 'statuses',
+            'limit': '1',
+          }),
         ),
       );
-      final posts = parseMastodonStatuses(json['statuses'].raw, homeDomain: _homeDomain(instance));
+      final posts = parseMastodonStatuses(
+        json['statuses'].raw,
+        homeDomain: _homeDomain(instance),
+      );
       return posts.isEmpty ? null : posts.first;
     } on MastodonException catch (e) {
       if (e.kind == MastodonErrorKind.rateLimited) {
@@ -293,11 +377,18 @@ class MastodonClient {
   }
 
   /// Federated rediscovery: lookup the author, match [seed.url] in recent posts.
-  Future<MastodonPost?> _findStatusInAccount(String instance, MastodonPost seed) async {
+  Future<MastodonPost?> _findStatusInAccount(
+    String instance,
+    MastodonPost seed,
+  ) async {
     final profile = await lookup(instance, seed.acct);
     String? maxId;
     for (var page = 0; page < 3; page++) {
-      final posts = await _accountStatusesPage(instance, profile.id, maxId: maxId);
+      final posts = await _accountStatusesPage(
+        instance,
+        profile.id,
+        maxId: maxId,
+      );
       if (posts.isEmpty) {
         return null;
       }
@@ -311,7 +402,11 @@ class MastodonClient {
     return null;
   }
 
-  Future<List<MastodonPost>> _accountStatusesPage(String instance, String accountId, {String? maxId}) async {
+  Future<List<MastodonPost>> _accountStatusesPage(
+    String instance,
+    String accountId, {
+    String? maxId,
+  }) async {
     final json = await _get(
       _uri(instance, '/api/v1/accounts/$accountId/statuses', {
         'limit': '40',
@@ -321,4 +416,85 @@ class MastodonClient {
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
   }
+
+  /// Trending hashtags on [instance] (public, no login).
+  Future<List<MastodonTrendingTag>> getTrendingTags(
+    String instance, {
+    int limit = 20,
+  }) async {
+    final json = await _get(
+      _uri(instance, '/api/v1/trends/tags', {'limit': '$limit'}),
+    );
+    return parseMastodonTrendingTags(json);
+  }
+
+  /// [getTrendingTags] over [instances].
+  Future<List<MastodonTrendingTag>> getTrendingTagsAnywhere(
+    List<String> instances, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => getTrendingTags(instance, limit: limit),
+  );
+
+  /// Account search without `resolve` — works as a guest on many instances.
+  Future<List<MastodonProfile>> searchAccounts(
+    String instance,
+    String q, {
+    int limit = 20,
+  }) async {
+    final query = q.trim();
+    if (query.isEmpty) {
+      return const [];
+    }
+    final json = await _get(
+      _uri(instance, '/api/v2/search', {
+        'q': query,
+        'type': 'accounts',
+        'limit': '$limit',
+      }),
+    );
+    final root = Json(json);
+    final home = _homeDomain(instance);
+    return [
+      for (final account in root['accounts'].list)
+        MastodonProfile.fromJson(account.raw, homeDomain: home),
+    ];
+  }
+
+  /// [searchAccounts] over [instances].
+  Future<List<MastodonProfile>> searchAccountsAnywhere(
+    List<String> instances,
+    String q, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => searchAccounts(instance, q, limit: limit),
+  );
+
+  /// Public hashtag timeline on [instance].
+  Future<List<MastodonPost>> getTagTimeline(
+    String instance,
+    String tag, {
+    int limit = 30,
+  }) async {
+    final name = tag.replaceFirst(RegExp(r'^#'), '').trim();
+    if (name.isEmpty) {
+      return const [];
+    }
+    final json = await _get(
+      _uri(instance, '/api/v1/timelines/tag/$name', {'limit': '$limit'}),
+    );
+    return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
+  }
+
+  /// [getTagTimeline] over [instances].
+  Future<List<MastodonPost>> getTagTimelineAnywhere(
+    List<String> instances,
+    String tag, {
+    int limit = 30,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => getTagTimeline(instance, tag, limit: limit),
+  );
 }

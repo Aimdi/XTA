@@ -420,6 +420,32 @@ class PixivClient {
     return _illustPage(json);
   }
 
+  /// Personalized For You feed — Flare's Discover "status" surface.
+  ///
+  /// `include_ranking_illusts` mixes today's ranking in when the personalised
+  /// set is thin, matching DimensionDev/Flare's `recommendedIllusts` call.
+  Future<PixivIllustPage> recommended({String? nextUrl}) async {
+    final json = nextUrl == null
+        ? await _apiGet('/v1/illust/recommended', {
+            'include_ranking_illusts': 'true',
+            'include_privacy_policy': 'true',
+            'filter': 'for_android',
+          })
+        : await _apiGetUrl(nextUrl);
+    return _illustPage(json);
+  }
+
+  /// Creators Pixiv suggests — Flare's Discover "users" strip.
+  Future<({List<PixivUser> users, String? nextUrl})> recommendedUsers({
+    String? nextUrl,
+  }) async {
+    final json = nextUrl == null
+        ? await _apiGet('/v1/user/recommended', {'filter': 'for_android'})
+        : await _apiGetUrl(nextUrl);
+    final root = Json(json);
+    return (users: parsePixivUserList(json), nextUrl: root['next_url'].string);
+  }
+
   /// Daily / weekly / monthly ranking — Pixez's discovery surface.
   ///
   /// [date] (`YYYY-MM-DD`) opens that day's archived board; null is today's.
