@@ -42,9 +42,13 @@ void main() {
   });
 
   test('HTML entities in rehydration JSON are unescaped', () {
-    final profile = parseTikTokProfileHtml(
-      _profileHtml.replaceAll('"', '&quot;'),
-    );
+    final bodyStart = _profileHtml.indexOf('\n') + 1;
+    final bodyEnd = _profileHtml.lastIndexOf('\n');
+    final escapedHtml =
+        _profileHtml.substring(0, bodyStart) +
+        _profileHtml.substring(bodyStart, bodyEnd).replaceAll('"', '&quot;') +
+        _profileHtml.substring(bodyEnd);
+    final profile = parseTikTokProfileHtml(escapedHtml);
     expect(profile, isNotNull);
     expect(profile!.uniqueId, 'tiktok');
   });
