@@ -4,13 +4,14 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
-/// Private Pixiv gallery — following, ranking, bookmarks, search (read-only).
+/// Private Pixiv gallery — following, ranking, bookmarks, search.
 ///
 /// Inspired by pixez-flutter's approach; code is original.
 /// See docs/specs/pixiv-plugin.md.
@@ -79,5 +80,6 @@ class PixivPlugin extends XtaPlugin {
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
     context.read<PixivFeedStore>().update(const []);
+    context.read<PixivBookmarkStore>().update(const {});
   }
 }

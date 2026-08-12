@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_login_webview.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
@@ -164,6 +165,7 @@ class _PixivSettingsScreenState extends State<PixivSettingsScreen> {
     await context.read<PixivClient>().signOut();
     if (mounted) {
       context.read<PixivFeedStore>().update(const []);
+      context.read<PixivBookmarkStore>().update(const {});
       setState(() {
         _signedInName = null;
         _token.text = '';

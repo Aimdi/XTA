@@ -309,6 +309,71 @@ void main() {
       expect(follow!.body, contains('restrict=public'));
     });
 
+    test('addBookmark posts to the bookmark-add endpoint', () async {
+      http.Request? bookmark;
+      final client = PixivClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          if (request.url.host == 'oauth.secure.pixiv.net') {
+            return http.Response(
+              jsonEncode({
+                'access_token': 'access-1',
+                'refresh_token': 'refresh-2',
+                'expires_in': 3600,
+                'user': {'id': '123', 'name': 'Reader', 'account': 'reader'},
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          bookmark = request;
+          return http.Response(
+            '{}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await client.addBookmark(99);
+      expect(bookmark!.method, 'POST');
+      expect(bookmark!.url.path, '/v2/illust/bookmark/add');
+      expect(bookmark!.body, contains('illust_id=99'));
+      expect(bookmark!.body, contains('restrict=public'));
+    });
+
+    test('deleteBookmark posts to the bookmark-delete endpoint', () async {
+      http.Request? bookmark;
+      final client = PixivClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          if (request.url.host == 'oauth.secure.pixiv.net') {
+            return http.Response(
+              jsonEncode({
+                'access_token': 'access-1',
+                'refresh_token': 'refresh-2',
+                'expires_in': 3600,
+                'user': {'id': '123', 'name': 'Reader', 'account': 'reader'},
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          bookmark = request;
+          return http.Response(
+            '{}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await client.deleteBookmark(99);
+      expect(bookmark!.method, 'POST');
+      expect(bookmark!.url.path, '/v1/illust/bookmark/delete');
+      expect(bookmark!.body, contains('illust_id=99'));
+    });
+
     test('a refused token surfaces what Pixiv actually said', () async {
       final client = PixivClient(
         prefs,

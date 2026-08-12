@@ -45,6 +45,7 @@ import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
@@ -734,6 +735,7 @@ Future<void> main() async {
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistoryStore(prefService);
+    final pixivBookmarks = PixivBookmarkStore();
     final pixivFeed = PixivFeedStore(pixivClient, filter: pixivMute.filter);
     final booruClient = BooruClient(prefService);
     final booruTags = BooruTagsStore();
@@ -884,6 +886,7 @@ Future<void> main() async {
             Provider(create: (_) => pixivClient),
             Provider(create: (_) => pixivMute),
             Provider(create: (_) => pixivSearchHistory),
+            Provider(create: (_) => pixivBookmarks),
             Provider(create: (_) => pixivFeed),
             Provider(create: (_) => booruClient),
             Provider(create: (_) => booruTags),

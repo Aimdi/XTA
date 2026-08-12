@@ -53,6 +53,7 @@ class PixivIllust {
   final int totalBookmarks;
   final int totalViews;
   final bool isR18;
+  final bool isBookmarked;
 
   const PixivIllust({
     required this.id,
@@ -74,7 +75,32 @@ class PixivIllust {
     this.totalBookmarks = 0,
     this.totalViews = 0,
     this.isR18 = false,
+    this.isBookmarked = false,
   });
+
+  PixivIllust copyWith({bool? isBookmarked, int? totalBookmarks}) =>
+      PixivIllust(
+        id: id,
+        title: title,
+        caption: caption,
+        type: type,
+        thumbnailUrl: thumbnailUrl,
+        largeUrl: largeUrl,
+        pageUrls: pageUrls,
+        tags: tags,
+        pageCount: pageCount,
+        width: width,
+        height: height,
+        userId: userId,
+        userName: userName,
+        userAccount: userAccount,
+        userAvatarUrl: userAvatarUrl,
+        createdAt: createdAt,
+        totalBookmarks: totalBookmarks ?? this.totalBookmarks,
+        totalViews: totalViews,
+        isR18: isR18,
+        isBookmarked: isBookmarked ?? this.isBookmarked,
+      );
 
   String get url => 'https://www.pixiv.net/artworks/$id';
   String get userUrl => 'https://www.pixiv.net/users/$userId';
@@ -294,6 +320,7 @@ PixivIllust? pixivIllustFromJson(Object? json) {
     totalBookmarks: data['total_bookmarks'].integer ?? 0,
     totalViews: data['total_view'].integer ?? 0,
     isR18: pixivIsR18(data),
+    isBookmarked: data['is_bookmarked'].boolean == true,
   );
 }
 

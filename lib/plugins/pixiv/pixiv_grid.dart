@@ -6,6 +6,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
@@ -113,7 +115,8 @@ class PixivIllustTile extends StatelessWidget {
                         url: illust.thumbnailUrl,
                         fit: BoxFit.cover,
                         loadStateChanged: (state) {
-                          if (state.extendedImageLoadState == LoadState.failed) {
+                          if (state.extendedImageLoadState ==
+                              LoadState.failed) {
                             return ColoredBox(
                               color: theme.colorScheme.surfaceContainerHighest,
                               child: Icon(
@@ -157,6 +160,11 @@ class PixivIllustTile extends StatelessWidget {
                         l10n.plugin_pixiv_r18,
                       ),
                     ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: PixivBookmarkButton(illust: illust, compact: true),
+                  ),
                 ],
               ),
             ),
@@ -188,17 +196,38 @@ class PixivIllustTile extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Icon(
-                        Icons.favorite,
-                        size: 12,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        _pixivCountFormat.format(illust.totalBookmarks),
-                        style: theme.textTheme.labelSmall!.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                      ScopedBuilder<PixivBookmarkStore, Map<int, bool>>(
+                        store: context.read<PixivBookmarkStore>(),
+                        distinct: (_) => context
+                            .read<PixivBookmarkStore>()
+                            .isBookmarked(illust),
+                        onState: (context, _) {
+                          final bookmarks = context.read<PixivBookmarkStore>();
+                          final bookmarked = bookmarks.isBookmarked(illust);
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                bookmarked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                size: 12,
+                                color: bookmarked
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                _pixivCountFormat.format(
+                                  bookmarks.bookmarkCount(illust),
+                                ),
+                                style: theme.textTheme.labelSmall!.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
