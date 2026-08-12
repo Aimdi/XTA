@@ -220,9 +220,10 @@ class _AccountsTab extends StatelessWidget {
                 key: ValueKey(follow.id),
                 direction: DismissDirection.endToStart,
                 confirmDismiss: (_) async {
+                  final followsStore = context.read<TikTokFollowsStore>();
                   final confirmed = await _confirmUnfollow(context, follow.id);
                   if (confirmed != true) return false;
-                  await context.read<TikTokFollowsStore>().unfollow(follow.id);
+                  await followsStore.unfollow(follow.id);
                   if (context.mounted) await onUnfollow();
                   return true;
                 },

@@ -68,7 +68,7 @@ class _TikTokProfileScreenState extends State<TikTokProfileScreen> {
         title: ScopedBuilder<TikTokProfileStore, TikTokProfile?>(
           store: _profileStore,
           onLoading: (_) => Text('@${widget.handle}'),
-          onError: (_, __) => Text('@${widget.handle}'),
+          onError: (context, error) => Text('@${widget.handle}'),
           onState: (_, profile) => Text(
             profile?.displayName ?? '@${widget.handle}',
             maxLines: 1,
