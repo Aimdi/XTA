@@ -212,8 +212,20 @@ const optionPluginThreadsLikedPosts = 'plugin.threads.liked_posts';
 /// Whether followed Threads accounts also appear in Following and For you.
 const optionPluginThreadsInHomeFeed = 'plugin.threads.in_home_feed';
 
+/// When true, followed accounts / people search use the pasted cookie session.
+/// Off by default: public guest GraphQL has no account to ban. Turning this on
+/// is the one setting that can cost the reader a Threads login.
+const optionPluginThreadsUseSessionApis = 'plugin.threads.use_session_apis';
+
 /// How many posts one account contributes to the merged feed.
 const threadsPostsPerAccount = 20;
+
+/// Guest (and RSSHub) refreshes this many followed handles per load.
+const threadsMaxAccountsPerLoad = 20;
+
+/// Cookie-session refreshes are capped harder — a burst of `text_feed` calls
+/// is what Meta's anti-scripting treats as a bot.
+const threadsSessionMaxAccountsPerLoad = 6;
 
 /// How many full liked-post snapshots are kept for the local Liked tab.
 const threadsLikedPostsCap = 400;
@@ -249,6 +261,10 @@ const optionPluginThreadsGuestLsdAt = 'plugin.threads.guest_lsd_at';
 /// Floor between guest (public) request departures. Session traffic still uses
 /// the stricter [ThreadsDirectClient.minGap] — guest has no account to ban.
 const threadsGuestMinGap = Duration(milliseconds: 550);
+
+/// Floor between cookie/Bearer departures. Longer than a person tapping
+/// around, short enough that a handful of opted-in session reads still finish.
+const threadsSessionMinGap = Duration(seconds: 3);
 
 /// Bluesky, read through the public AppView — local follows, no Bluesky account.
 const pluginIdBluesky = 'bluesky';

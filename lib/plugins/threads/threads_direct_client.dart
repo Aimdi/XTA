@@ -539,7 +539,7 @@ class ThreadsDirectClient {
   ThreadsDirectClient(
     this.prefs, {
     http.Client? httpClient,
-    this.minGap = const Duration(seconds: 2),
+    this.minGap = threadsSessionMinGap,
   }) : httpClient = httpClient ?? http.Client();
 
   static const _timeout = Duration(seconds: 25);
@@ -557,6 +557,21 @@ class ThreadsDirectClient {
   bool get hasBearer => bearer != null;
 
   bool get hasDirectAuth => hasCookies || hasBearer;
+
+  /// Cookie REST / people search — off unless the reader opts in. Guest
+  /// GraphQL is how followed accounts are read by default, so a pasted
+  /// session is not spent on every refresh.
+  bool get useSessionApis =>
+      prefs.get<bool>(optionPluginThreadsUseSessionApis) == true;
+
+  /// True while Meta has asked this session to stop (throttle / login_required).
+  bool get isSessionParked {
+    final stored = DateTime.tryParse(
+      prefs.get<String>(optionPluginThreadsDirectCooldownUntil) ?? '',
+    );
+    final until = stored ?? _cooldownUntil;
+    return until != null && DateTime.now().isBefore(until);
+  }
 
   Future<String> _deviceId() async {
     final existing =
@@ -744,7 +759,7 @@ class ThreadsDirectClient {
         .map((k) => '$k=${c[k]}')
         .join('; ');
     return {
-      'User-Agent': _barcelonaUa,
+      'User-Agent': _safariUa,
       'Accept': 'application/json, text/plain, */*',
       'Accept-Language': 'en-US,en;q=0.9',
       'X-IG-App-ID': _igAppId,
@@ -897,23 +912,26 @@ class ThreadsDirectClient {
   }
 
   Future<ThreadsProfile> fetchProfile(String handle) async {
-    if (hasCookies) {
-      try {
-        final id = await resolveUserId(handle);
-        final uri = Uri.parse('$_threadsWeb/api/v1/users/$id/info/');
-        final response = await _get(uri, _cookieHeaders());
-        _throwForStatus(response, uri);
-        final profile = threadsProfileFromUserJson(
-          Json(_decodeJson(response, uri))['user'],
-        );
-        if (profile != null) {
-          return profile;
-        }
-      } on ThreadsException {
-        // Public HTML still has name / bio / avatar.
-      }
+    try {
+      return await fetchGuestProfile(handle);
+    } on ThreadsException {
+      if (!useSessionApis || !hasCookies) rethrow;
     }
-    return fetchGuestProfile(handle);
+
+    final id = await resolveUserId(handle);
+    final uri = Uri.parse('$_threadsWeb/api/v1/users/$id/info/');
+    final response = await _get(uri, _cookieHeaders());
+    _throwForStatus(response, uri);
+    final profile = threadsProfileFromUserJson(
+      Json(_decodeJson(response, uri))['user'],
+    );
+    if (profile != null) {
+      return profile;
+    }
+    throw ThreadsException(
+      ThreadsErrorKind.noSuchFeed,
+      'profile missing: @$handle',
+    );
   }
 
   /// Profile card from the public `threads.com/@handle` page — no login.
@@ -933,17 +951,14 @@ class ThreadsDirectClient {
     return profile;
   }
 
-  /// Per-account posts with cookies, falling back to guest GraphQL/SSR.
-  ///
-  /// Readers who paste a session expect Accounts to fill from that session.
-  /// When the cookie REST path is dead (`login_required`) or returns nothing,
-  /// public GraphQL still works for public handles — so we keep showing posts
-  /// instead of a parked empty feed.
+  /// Per-account posts. Guest GraphQL is the default; cookie REST only when
+  /// [useSessionApis] is on, and even then guest is the fallback so a dead
+  /// session does not empty the tab.
   Future<List<ThreadsPost>> fetchUserThreads(
     String handle, {
     int count = threadsPostsPerAccount,
   }) async {
-    if (hasCookies) {
+    if (useSessionApis && hasCookies) {
       try {
         final id = await resolveUserId(handle);
         final uri = Uri.parse(

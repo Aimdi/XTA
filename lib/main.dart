@@ -509,6 +509,7 @@ Future<void> main() async {
       optionPluginRedditClientId: '',
       optionPluginRedditInHomeFeed: false,
       optionPluginThreadsInHomeFeed: false,
+      optionPluginThreadsUseSessionApis: false,
       optionPluginBlueskyInHomeFeed: false,
       optionPluginMastodonInHomeFeed: false,
       optionPluginRedditShowTab: false,

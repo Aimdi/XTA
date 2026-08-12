@@ -44,7 +44,8 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
   String title(BuildContext context) => L10n.of(context).plugin_threads_title;
 
   @override
-  String description(BuildContext context) => L10n.of(context).plugin_threads_description;
+  String description(BuildContext context) =>
+      L10n.of(context).plugin_threads_description;
 
   @override
   NavigationPage homePage(BuildContext context) {
@@ -74,7 +75,8 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
   String get subscriptionTable => tableThreadsSubscription;
 
   @override
-  Subscription subscriptionFromMap(Map<String, Object?> row) => ThreadsSubscription.fromMap(row);
+  Subscription subscriptionFromMap(Map<String, Object?> row) =>
+      ThreadsSubscription.fromMap(row);
 
   @override
   bool owns(Subscription subscription) => subscription is ThreadsSubscription;
@@ -84,18 +86,22 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
       () => ThreadsProfileScreen(username: subscription.id);
 
   @override
-  Future<void> reloadFromDatabase(BuildContext context) => context.read<ThreadsAccountsStore>().load();
+  Future<void> reloadFromDatabase(BuildContext context) =>
+      context.read<ThreadsAccountsStore>().load();
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
       context.read<ThreadsAccountsStore>().remove(subscription.id);
 
   @override
-  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
-      loadThreadsInterleaved(context, ids);
+  Future<List<InterleavedItem>> interleavedPosts(
+    BuildContext context,
+    List<String> ids,
+  ) => loadThreadsInterleaved(context, ids);
 
   @override
-  bool inHomeFeed(BuildContext context) => threadsInHomeFeed(PrefService.of(context, listen: false));
+  bool inHomeFeed(BuildContext context) =>
+      threadsInHomeFeed(PrefService.of(context, listen: false));
 
   @override
   List<String> homeFeedIds(BuildContext context) => threadsHomeHandles(context);
@@ -124,6 +130,7 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginThreadsDirectCookies, '');
     await prefs.set(optionPluginThreadsDirectBearer, '');
     await prefs.set(optionPluginThreadsDirectDeviceId, '');
+    await prefs.set(optionPluginThreadsUseSessionApis, false);
     await prefs.set(optionPluginThreadsLikedPosts, '[]');
     await prefs.set(optionPluginThreadsGuestLsd, '');
     await prefs.set(optionPluginThreadsGuestLsdAt, '');

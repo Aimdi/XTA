@@ -19,14 +19,16 @@ class _AccountsStub extends ThreadsAccountsStore {
 
 void main() {
   test('refresh loads Accounts even when a Bearer is pasted', () async {
-    final prefs = PrefServiceCache(cache: {
-      optionPluginThreadsDirectCookies: '',
-      optionPluginThreadsDirectBearer: 'IGT:2:secret',
-      optionPluginThreadsDirectDeviceId: 'device-1',
-      optionPluginThreadsInstance: '',
-      optionPluginThreadsUserIds: '{}',
-      optionPluginThreadsDirectCooldownUntil: '',
-    });
+    final prefs = PrefServiceCache(
+      cache: {
+        optionPluginThreadsDirectCookies: '',
+        optionPluginThreadsDirectBearer: 'IGT:2:secret',
+        optionPluginThreadsDirectDeviceId: 'device-1',
+        optionPluginThreadsInstance: '',
+        optionPluginThreadsUserIds: '{}',
+        optionPluginThreadsDirectCooldownUntil: '',
+      },
+    );
 
     var followingCalled = false;
     final direct = ThreadsDirectClient(
@@ -55,10 +57,14 @@ void main() {
     );
 
     final store = ThreadsFeedStore(
-      ThreadsClient(httpClient: MockClient((_) async => http.Response('[]', 404))),
+      ThreadsClient(
+        httpClient: MockClient((_) async => http.Response('[]', 404)),
+      ),
       direct,
       prefs,
-      _AccountsStub([const ThreadsAccount(handle: 'instagram', name: 'instagram')]),
+      _AccountsStub([
+        const ThreadsAccount(handle: 'instagram', name: 'instagram'),
+      ]),
     );
 
     await store.refresh(force: true);
@@ -67,14 +73,16 @@ void main() {
   });
 
   test('refresh falls back to guest when RSSHub returns nothing', () async {
-    final prefs = PrefServiceCache(cache: {
-      optionPluginThreadsDirectCookies: '',
-      optionPluginThreadsDirectBearer: '',
-      optionPluginThreadsDirectDeviceId: 'device-1',
-      optionPluginThreadsInstance: 'https://rsshub.example.org',
-      optionPluginThreadsUserIds: '{}',
-      optionPluginThreadsDirectCooldownUntil: '',
-    });
+    final prefs = PrefServiceCache(
+      cache: {
+        optionPluginThreadsDirectCookies: '',
+        optionPluginThreadsDirectBearer: '',
+        optionPluginThreadsDirectDeviceId: 'device-1',
+        optionPluginThreadsInstance: 'https://rsshub.example.org',
+        optionPluginThreadsUserIds: '{}',
+        optionPluginThreadsDirectCooldownUntil: '',
+      },
+    );
 
     var guestGraphql = false;
     final direct = ThreadsDirectClient(
@@ -105,7 +113,9 @@ void main() {
       ),
       direct,
       prefs,
-      _AccountsStub([const ThreadsAccount(handle: 'instagram', name: 'instagram')]),
+      _AccountsStub([
+        const ThreadsAccount(handle: 'instagram', name: 'instagram'),
+      ]),
     );
 
     await store.refresh(force: true);
@@ -114,14 +124,16 @@ void main() {
   });
 
   test('soft refresh failure keeps prior posts on screen', () async {
-    final prefs = PrefServiceCache(cache: {
-      optionPluginThreadsDirectCookies: '',
-      optionPluginThreadsDirectBearer: '',
-      optionPluginThreadsDirectDeviceId: 'device-1',
-      optionPluginThreadsInstance: '',
-      optionPluginThreadsUserIds: '{}',
-      optionPluginThreadsDirectCooldownUntil: '',
-    });
+    final prefs = PrefServiceCache(
+      cache: {
+        optionPluginThreadsDirectCookies: '',
+        optionPluginThreadsDirectBearer: '',
+        optionPluginThreadsDirectDeviceId: 'device-1',
+        optionPluginThreadsInstance: '',
+        optionPluginThreadsUserIds: '{}',
+        optionPluginThreadsDirectCooldownUntil: '',
+      },
+    );
 
     var fail = false;
     final direct = ThreadsDirectClient(
@@ -149,10 +161,14 @@ void main() {
     );
 
     final store = ThreadsFeedStore(
-      ThreadsClient(httpClient: MockClient((_) async => http.Response('[]', 404))),
+      ThreadsClient(
+        httpClient: MockClient((_) async => http.Response('[]', 404)),
+      ),
       direct,
       prefs,
-      _AccountsStub([const ThreadsAccount(handle: 'instagram', name: 'instagram')]),
+      _AccountsStub([
+        const ThreadsAccount(handle: 'instagram', name: 'instagram'),
+      ]),
     );
 
     await store.refresh(force: true);
@@ -163,4 +179,57 @@ void main() {
     expect(store.state.single.text, 'kept');
     expect(store.error, isNull);
   });
+
+  test(
+    'refresh with cookies still uses guest unless session APIs are opted in',
+    () async {
+      final prefs = PrefServiceCache(
+        cache: {
+          optionPluginThreadsDirectCookies:
+              'sessionid=s; csrftoken=c; ds_user_id=1; mid=m; ig_did=g',
+          optionPluginThreadsDirectBearer: '',
+          optionPluginThreadsDirectDeviceId: 'device-1',
+          optionPluginThreadsInstance: '',
+          optionPluginThreadsUserIds: '{"instagram":"63404918397"}',
+          optionPluginThreadsDirectCooldownUntil: '',
+          optionPluginThreadsGuestLsd: 'tok',
+          optionPluginThreadsGuestLsdAt: DateTime.now().toIso8601String(),
+        },
+      );
+
+      var textFeed = false;
+      final direct = ThreadsDirectClient(
+        prefs,
+        minGap: Duration.zero,
+        httpClient: MockClient((request) async {
+          if (request.url.path.contains('/text_feed/')) {
+            textFeed = true;
+            return http.Response('{"threads":[]}', 200);
+          }
+          if (request.method == 'POST' && request.url.path == '/api/graphql') {
+            return http.Response(
+              '''{"data":{"mediaData":{"threads":[{"thread_items":[{"post":{"pk":"1","code":"c","caption":{"text":"guest default"},"user":{"username":"instagram","full_name":"IG"}}}]}]}}}''',
+              200,
+            );
+          }
+          return http.Response('unexpected ${request.url}', 500);
+        }),
+      );
+
+      final store = ThreadsFeedStore(
+        ThreadsClient(
+          httpClient: MockClient((_) async => http.Response('[]', 404)),
+        ),
+        direct,
+        prefs,
+        _AccountsStub([
+          const ThreadsAccount(handle: 'instagram', name: 'instagram'),
+        ]),
+      );
+
+      await store.refresh(force: true);
+      expect(textFeed, isFalse);
+      expect(store.state.map((p) => p.text), ['guest default']);
+    },
+  );
 }

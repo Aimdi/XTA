@@ -49,11 +49,10 @@ original author/content, and mark `repostedByHandle` so cards show
 ## Feed priority
 
 1. Local Accounts non-empty → merge those handles via:
-   - cookies → `GET /api/v1/text_feed/{id}/profile/` (on failure/empty → guest)
+   - **guest GraphQL** (default), even when cookies are pasted
+   - cookies → `GET /api/v1/text_feed/{id}/profile/` only if
+     `optionPluginThreadsUseSessionApis` is on (on failure/empty → guest)
    - else RSSHub instance → JSON Feed (on failure/empty → guest)
-   - else guest: profile HTML → LSD + `props.user_id` →
-     `POST /api/graphql` `BarcelonaProfileThreadsTabQuery`
-     (`doc_id` in `threadsGuestProfileThreadsDocId`), SSR `thread_items` fallback
 2. Else Bearer configured → Meta home/For You
    (`GET i.instagram.com/api/v1/feed/text_post_app_timeline/` with
    `feed_type=for_you`, `reason=cold_start_fetch`, `client_session_id`, …)
@@ -69,8 +68,19 @@ RSSHub route as the feed) — a header-only screen was reading as empty.
 
 ## Throttle & risk
 
-- ≥2s between private API calls; stop that credential set for 30 minutes on
-  `429`, “Please wait…”, or `login_required` / `logout_reason: 8`.
+Followed accounts use **guest GraphQL by default**, even if cookies are
+pasted. Cookie REST (`text_feed`, people search) is off until Settings →
+“Use my session for followed accounts”. That toggle is the one control that
+can cost a Threads login.
+
+- Cookie web calls send a browser User-Agent (not the official Barcelona app
+  UA). Barcelona UA is only used on `i.instagram.com` Bearer For you.
+- Session departures keep a 3s floor + jitter, one at a time; guest stays at
+  `threadsGuestMinGap`.
+- A refresh asks at most `threadsMaxAccountsPerLoad` (20) handles as a guest,
+  or `threadsSessionMaxAccountsPerLoad` (6) when session APIs are on.
+- Stop that credential set for 30 minutes on `429`, “Please wait…”, or
+  `login_required` / `logout_reason: 8`.
 - Sessions may die; accounts may be checkpointed. Documented in settings copy.
 - Guest GraphQL `doc_id`s can rotate; SSR remains the fallback.
 - Soft refresh keeps prior posts on screen; failures do not blank the feed.
