@@ -65,7 +65,16 @@ class _TikTokProfileScreenState extends State<TikTokProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('@${widget.handle}'),
+        title: ScopedBuilder<TikTokProfileStore, TikTokProfile?>(
+          store: _profileStore,
+          onLoading: (_) => Text('@${widget.handle}'),
+          onError: (_, __) => Text('@${widget.handle}'),
+          onState: (_, profile) => Text(
+            profile?.displayName ?? '@${widget.handle}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         actions: [
           ScopedBuilder<TikTokProfileStore, TikTokProfile?>(
             store: _profileStore,
@@ -225,33 +234,37 @@ class _Header extends StatelessWidget {
                 Expanded(child: Text(l10n.plugin_tiktok_error_private)),
               ],
             ),
-          const SizedBox(height: 12),
-          ScopedBuilder<TikTokFollowsStore, List<TikTokFollow>>(
-            store: follows,
-            onState: (context, list) {
-              final following = list.any(
-                (f) => f.id == profile.uniqueId.toLowerCase(),
-              );
-              return FilledButton.tonalIcon(
-                onPressed: () async {
-                  if (following) {
-                    await follows.unfollow(profile.uniqueId);
-                  } else {
-                    await follows.follow(profile);
-                  }
-                  if (!context.mounted) return;
-                },
-                icon: Icon(
-                  following ? Icons.person_remove_alt_1 : Icons.person_add_alt,
-                ),
-                label: Text(
-                  following
-                      ? l10n.plugin_tiktok_unfollow
-                      : l10n.plugin_tiktok_follow,
-                ),
-              );
-            },
-          ),
+          if (!profile.privateAccount) ...[
+            const SizedBox(height: 12),
+            ScopedBuilder<TikTokFollowsStore, List<TikTokFollow>>(
+              store: follows,
+              onState: (context, list) {
+                final following = list.any(
+                  (f) => f.id == profile.uniqueId.toLowerCase(),
+                );
+                return FilledButton.tonalIcon(
+                  onPressed: () async {
+                    if (following) {
+                      await follows.unfollow(profile.uniqueId);
+                    } else {
+                      await follows.follow(profile);
+                    }
+                    if (!context.mounted) return;
+                  },
+                  icon: Icon(
+                    following
+                        ? Icons.person_remove_alt_1
+                        : Icons.person_add_alt,
+                  ),
+                  label: Text(
+                    following
+                        ? l10n.plugin_tiktok_unfollow
+                        : l10n.plugin_tiktok_follow,
+                  ),
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

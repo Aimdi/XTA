@@ -100,6 +100,9 @@ class TweetVideo extends StatefulWidget {
   final String? tweetId;
   final int mediaIndex;
 
+  /// Called once when playback fails before the first frame (e.g. CDN 403).
+  final VoidCallback? onPlaybackError;
+
   const TweetVideo({
     super.key,
     required this.username,
@@ -109,6 +112,7 @@ class TweetVideo extends StatefulWidget {
     this.disableControls = false,
     this.tweetId,
     this.mediaIndex = 0,
+    this.onPlaybackError,
   });
 
   @override
@@ -324,7 +328,10 @@ class _TweetVideoState extends State<TweetVideo> {
       }
       // Ignore transient mid-playback errors libmpv recovers from; only a video
       // that never rendered a frame is a real failure.
-      if (!_firstFrameRendered) setState(() => _playbackError = true);
+      if (!_firstFrameRendered && !_playbackError) {
+        setState(() => _playbackError = true);
+        widget.onPlaybackError?.call();
+      }
     });
 
     pooled.videoController.waitUntilFirstFrameRendered.then((_) {

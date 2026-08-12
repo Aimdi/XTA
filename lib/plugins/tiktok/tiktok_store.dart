@@ -37,27 +37,25 @@ class TikTokFollowsStore extends Store<List<TikTokFollow>> {
   }
 
   Future<void> follow(TikTokProfile profile) async {
-    await execute(() async {
-      final database = await Repository.writable();
-      await database.insert(
-        tableTiktokSubscription,
-        TikTokFollow.fromProfile(profile).toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-      return _read();
-    });
+    final next = TikTokFollow.fromProfile(profile);
+    update([next, ...state.where((follow) => follow.id != next.id)]);
+    final database = await Repository.writable();
+    await database.insert(
+      tableTiktokSubscription,
+      next.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<void> unfollow(String handle) async {
-    await execute(() async {
-      final database = await Repository.writable();
-      await database.delete(
-        tableTiktokSubscription,
-        where: 'id = ?',
-        whereArgs: [handle.toLowerCase()],
-      );
-      return _read();
-    });
+    final key = handle.toLowerCase();
+    update(state.where((follow) => follow.id != key).toList());
+    final database = await Repository.writable();
+    await database.delete(
+      tableTiktokSubscription,
+      where: 'id = ?',
+      whereArgs: [key],
+    );
   }
 }
 
@@ -193,6 +191,17 @@ class TikTokFeedStore extends Store<List<TikTokPost>> {
   Future<void> refresh() async {
     _cursor = null;
     _hasMore = true;
+    if (state.isNotEmpty) {
+      try {
+        final page = await loader(cursor: null);
+        _cursor = page.cursor;
+        _hasMore = page.hasMore;
+        update(page.posts);
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
     await execute(() async {
       final page = await loader(cursor: null);
       _cursor = page.cursor;
@@ -269,6 +278,14 @@ class TikTokProfileStore extends Store<TikTokProfile?> {
   TikTokProfileStore(this.client, this.handle) : super(null);
 
   Future<void> load() async {
+    if (state != null) {
+      try {
+        update(await client.profile(handle));
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
     await execute(() => client.profile(handle));
   }
 }

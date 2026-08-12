@@ -111,12 +111,14 @@ class TikTokClient {
     int count = 15,
   }) async {
     var page = await _fetchCreatorItems(secUid, cursor, count);
-    _validateCreatorPage(page, secUid);
+    if (page.statusCode == 10201) {
+      throw TikTokException(TikTokErrorKind.notFound, secUid);
+    }
     if (page.posts.isEmpty && page.hasMore) {
       await _rotateDeviceId();
       page = await _fetchCreatorItems(secUid, cursor, count);
-      _validateCreatorPage(page, secUid);
     }
+    _validateCreatorPage(page, secUid);
     return page;
   }
 

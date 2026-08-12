@@ -153,33 +153,33 @@ class _FollowingTab extends StatelessWidget {
       onLoading: (_) => store.state.isNotEmpty
           ? _PostList(
               posts: store.state,
-              onRefresh: store.refresh,
+              onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
             )
           : const Center(child: CircularProgressIndicator()),
       onError: (_, error) => store.state.isNotEmpty
           ? _PostList(
               posts: store.state,
-              onRefresh: store.refresh,
+              onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
             )
           : FullPageErrorWidget(
               error: error,
               stackTrace: null,
               prefix: tiktokErrorMessage(l10n, error),
-              onRetry: store.refresh,
+              onRetry: () => store.refresh(force: true),
             ),
       onState: (context, posts) {
         if (posts.isEmpty) {
           return _EmptyFollowing(
             hasAccounts: follows.state.isNotEmpty,
-            onRefresh: store.refresh,
+            onRefresh: () => store.refresh(force: true),
             onFindHandle: onFindHandle,
           );
         }
         return _PostList(
           posts: posts,
-          onRefresh: store.refresh,
+          onRefresh: () => store.refresh(force: true),
           onProfileClosed: onProfileClosed,
         );
       },
@@ -219,18 +219,22 @@ class _AccountsTab extends StatelessWidget {
               return Dismissible(
                 key: ValueKey(follow.id),
                 direction: DismissDirection.endToStart,
-                confirmDismiss: (_) => _confirmUnfollow(context, follow.id),
-                onDismissed: (_) async {
+                confirmDismiss: (_) async {
+                  final confirmed = await _confirmUnfollow(context, follow.id);
+                  if (confirmed != true) return false;
                   await context.read<TikTokFollowsStore>().unfollow(follow.id);
-                  if (!context.mounted) return;
-                  await onUnfollow();
-                  if (!context.mounted) return;
+                  if (context.mounted) await onUnfollow();
+                  return true;
                 },
+                onDismissed: (_) {},
                 background: Container(
                   color: Theme.of(context).colorScheme.error,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: const Icon(Icons.person_remove_outlined),
+                  child: Icon(
+                    Icons.person_remove_outlined,
+                    color: Theme.of(context).colorScheme.onError,
+                  ),
                 ),
                 child: ListTile(
                   leading: TikTokAvatar(

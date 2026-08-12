@@ -26,14 +26,15 @@ Confirmed live (2026-08-12) from Dart-equivalent `http`:
 | `playAddr` CDN GET | often **403** (Akamai) from datacenter IPs even with `ttwid` + Referer |
 | `/api/recommend/item_list/` (For You) | empty without signing — **not implemented** |
 
-## Phase 1 (this PR)
+## Behaviour
 
 | Piece | Detail |
 |---|---|
-| Home | Following (local SQLite handles) · Accounts list |
-| Open | Exact `@handle` lookup (no fuzzy search — that API is WAF’d) |
-| Profile | Avatar, stats, posts, local follow |
-| Player | Native `media_kit` with Referer + Cookie headers; WebView `embed/v3/{id}` fallback |
+| Home | Following (local SQLite handles, `AccountPostCache` merge) · Accounts list |
+| Open | Exact `@handle` lookup, including `tiktok.com/@user` URLs (no fuzzy search) |
+| Profile | `TikTokProfileStore`; private accounts show a lock, not an error; posts paginate |
+| Cards | Cover + play overlay (never inline `TweetVideo` — CDN 403). Photos show cover only |
+| Player | Native `media_kit` with Referer + Cookie; on first-frame failure, WebView `embed/v3/{id}` with guest cookies and Android autoplay |
 | Settings | Show tab, prefer embed, test connection, clear guest session |
 | Storage | `tiktok_subscription` (migration 55) |
 | Catalogue | Private / unavailable |
@@ -41,7 +42,7 @@ Confirmed live (2026-08-12) from Dart-equivalent `http`:
 ## Not yet / not ever
 
 - TikTok login, For You, following-on-TikTok, like/comment/repost write-back
-- DMs, live, slideshow-only posts as a first-class reader
+- DMs, live, slideshow-as-a-reader (covers parse; there is no page-by-page album)
 - X-Bogus / X-Gnarly / Playwright sidecar (rotates; not maintainable in Dart)
 - Interleaving TikTok into the X home feed (vertical video ≠ tweet cards)
 
@@ -52,3 +53,4 @@ Confirmed live (2026-08-12) from Dart-equivalent `http`:
 - Store pattern; ARB for UI strings
 - Do not rewrite `lib/client/` / X timeline code
 - Optional `httpHeaders` on `TweetVideoUrls` must stay null for X / Reddit
+- Optional `onPlaybackError` on `TweetVideo` is a callback only — X cards ignore it
