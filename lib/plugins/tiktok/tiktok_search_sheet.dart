@@ -27,6 +27,16 @@ class _TikTokSearchSheetState extends State<_TikTokSearchSheet> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await context.read<TikTokSearchHistoryStore>().load();
+      if (!mounted) return;
+    });
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -43,6 +53,7 @@ class _TikTokSearchSheetState extends State<_TikTokSearchSheet> {
     await navigator.push(
       MaterialPageRoute(builder: (_) => TikTokProfileScreen(handle: handle)),
     );
+    if (!mounted) return;
   }
 
   @override

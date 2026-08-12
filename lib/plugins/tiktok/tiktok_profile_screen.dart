@@ -23,44 +23,38 @@ class TikTokProfileScreen extends StatefulWidget {
 }
 
 class _TikTokProfileScreenState extends State<TikTokProfileScreen> {
+  late final TikTokProfileStore _profileStore;
   late final TikTokFeedStore _feed;
-  TikTokProfile? _profile;
-  Object? _error;
-  var _loading = true;
 
   @override
   void initState() {
     super.initState();
     final client = context.read<TikTokClient>();
+    _profileStore = TikTokProfileStore(client, widget.handle);
     _feed = TikTokFeedStore(({cursor}) async {
-      final profile = _profile ?? await client.profile(widget.handle);
-      _profile = profile;
+      final profile =
+          _profileStore.state ?? await client.profile(widget.handle);
       return client.creatorItems(secUid: profile.secUid, cursor: cursor);
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => _load());
   }
 
   Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    try {
-      final profile = await context.read<TikTokClient>().profile(widget.handle);
-      if (!mounted) return;
-      _profile = profile;
-      await context.read<TikTokSearchHistoryStore>().remember(profile.uniqueId);
-      if (!mounted) return;
+    await _profileStore.load();
+    if (!mounted) return;
+    final profile = _profileStore.state;
+    if (profile == null) return;
+    await context.read<TikTokSearchHistoryStore>().remember(profile.uniqueId);
+    if (!mounted) return;
+    if (!profile.privateAccount) {
       await _feed.refresh();
-    } catch (e) {
-      _error = e;
-    } finally {
-      if (mounted) setState(() => _loading = false);
+      if (!mounted) return;
     }
   }
 
   @override
   void dispose() {
+    _profileStore.destroy();
     _feed.destroy();
     super.dispose();
   }
@@ -68,48 +62,81 @@ class _TikTokProfileScreenState extends State<TikTokProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final profile = _profile;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(profile?.displayName ?? '@${widget.handle}'),
+        title: Text('@${widget.handle}'),
         actions: [
-          if (profile != null)
-            IconButton(
-              tooltip: l10n.plugin_tiktok_open_on_site,
-              icon: const Icon(Icons.open_in_new),
-              onPressed: () =>
-                  openUri(context, profile.profileUri().toString()),
-            ),
+          ScopedBuilder<TikTokProfileStore, TikTokProfile?>(
+            store: _profileStore,
+            onState: (context, profile) => profile == null
+                ? const SizedBox.shrink()
+                : IconButton(
+                    tooltip: l10n.plugin_tiktok_open_on_site,
+                    icon: const Icon(Icons.open_in_new),
+                    onPressed: () =>
+                        openUri(context, profile.profileUri().toString()),
+                  ),
+          ),
         ],
       ),
-      body: _loading && profile == null
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null && profile == null
-          ? FullPageErrorWidget(
-              error: _error,
-              stackTrace: null,
-              prefix: tiktokErrorMessage(l10n, _error),
-              onRetry: _load,
-            )
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (notification) {
-                  if (notification.metrics.extentAfter < 800) {
-                    _feed.loadMore();
-                  }
-                  return false;
-                },
-                child: CustomScrollView(
-                  slivers: [
-                    if (profile != null)
-                      SliverToBoxAdapter(child: _Header(profile: profile)),
-                    _FeedSliver(store: _feed),
-                  ],
-                ),
-              ),
-            ),
+      body: ScopedBuilder<TikTokProfileStore, TikTokProfile?>(
+        store: _profileStore,
+        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onError: (_, error) => FullPageErrorWidget(
+          error: error,
+          stackTrace: null,
+          prefix: tiktokErrorMessage(l10n, error),
+          onRetry: _load,
+        ),
+        onState: (context, profile) {
+          if (profile == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return _ProfileContent(
+            profile: profile,
+            feed: _feed,
+            onRefresh: _load,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ProfileContent extends StatelessWidget {
+  final TikTokProfile profile;
+  final TikTokFeedStore feed;
+  final Future<void> Function() onRefresh;
+
+  const _ProfileContent({
+    required this.profile,
+    required this.feed,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await onRefresh();
+        if (!context.mounted) return;
+      },
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (!profile.privateAccount &&
+              notification.metrics.extentAfter < 800) {
+            feed.loadMore();
+          }
+          return false;
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: _Header(profile: profile)),
+            if (!profile.privateAccount) _FeedSliver(store: feed),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -161,9 +188,23 @@ class _Header extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            profile.displayName,
-            style: Theme.of(context).textTheme.titleMedium,
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  profile.displayName,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              if (profile.verified) ...[
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.verified,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ],
+            ],
           ),
           Text('@${profile.uniqueId}'),
           if (profile.signature != null && profile.signature!.trim().isNotEmpty)
@@ -172,21 +213,38 @@ class _Header extends StatelessWidget {
               child: Text(profile.signature!),
             ),
           const SizedBox(height: 12),
+          if (profile.privateAccount)
+            Row(
+              children: [
+                Icon(
+                  Icons.lock_outline,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Expanded(child: Text(l10n.plugin_tiktok_error_private)),
+              ],
+            ),
+          const SizedBox(height: 12),
           ScopedBuilder<TikTokFollowsStore, List<TikTokFollow>>(
             store: follows,
             onState: (context, list) {
               final following = list.any(
                 (f) => f.id == profile.uniqueId.toLowerCase(),
               );
-              return FilledButton.tonal(
+              return FilledButton.tonalIcon(
                 onPressed: () async {
                   if (following) {
                     await follows.unfollow(profile.uniqueId);
                   } else {
                     await follows.follow(profile);
                   }
+                  if (!context.mounted) return;
                 },
-                child: Text(
+                icon: Icon(
+                  following ? Icons.person_remove_alt_1 : Icons.person_add_alt,
+                ),
+                label: Text(
                   following
                       ? l10n.plugin_tiktok_unfollow
                       : l10n.plugin_tiktok_follow,

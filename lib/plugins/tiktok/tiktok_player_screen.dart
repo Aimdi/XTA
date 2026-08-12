@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
@@ -68,7 +69,10 @@ class _TikTokPlayerScreenState extends State<TikTokPlayerScreen> {
         child: AspectRatio(
           aspectRatio: post.aspectRatio.clamp(9 / 16, 16 / 9),
           child: _embed || post.playUrl == null
-              ? TikTokEmbedView(videoId: post.id)
+              ? TikTokEmbedView(
+                  videoId: post.id,
+                  cookies: context.read<TikTokClient>().cookies,
+                )
               : TweetVideo(
                   username: post.author.uniqueId,
                   loop: true,
@@ -94,6 +98,9 @@ class _TikTokPlayerScreenState extends State<TikTokPlayerScreen> {
                       );
                     },
                   ),
+                  onPlaybackError: () {
+                    if (mounted) setState(() => _embed = true);
+                  },
                 ),
         ),
       ),
@@ -103,8 +110,13 @@ class _TikTokPlayerScreenState extends State<TikTokPlayerScreen> {
 
 class TikTokEmbedView extends StatefulWidget {
   final String videoId;
+  final Map<String, String> cookies;
 
-  const TikTokEmbedView({super.key, required this.videoId});
+  const TikTokEmbedView({
+    super.key,
+    required this.videoId,
+    required this.cookies,
+  });
 
   @override
   State<TikTokEmbedView> createState() => _TikTokEmbedViewState();
@@ -130,10 +142,35 @@ class _TikTokEmbedViewState extends State<TikTokEmbedView> {
             if (mounted) setState(() => _loading = false);
           },
         ),
-      )
-      ..loadRequest(
-        Uri.parse('https://www.tiktok.com/embed/v3/${widget.videoId}'),
       );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _load();
+    });
+  }
+
+  Future<void> _load() async {
+    final platform = _controller.platform;
+    if (platform is AndroidWebViewController) {
+      await platform.setMediaPlaybackRequiresUserGesture(false);
+      if (!mounted) return;
+    }
+
+    final manager = WebViewCookieManager();
+    for (final entry in widget.cookies.entries) {
+      await manager.setCookie(
+        WebViewCookie(
+          name: entry.key,
+          value: entry.value,
+          domain: '.tiktok.com',
+          path: '/',
+        ),
+      );
+      if (!mounted) return;
+    }
+
+    await _controller.loadRequest(
+      Uri.parse('https://www.tiktok.com/embed/v3/${widget.videoId}'),
+    );
   }
 
   @override
