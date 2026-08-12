@@ -337,6 +337,7 @@ const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
 const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
 const optionPluginBooruSearchHistory = 'plugin.booru.search_history';
 const optionPluginBooruMutedTags = 'plugin.booru.muted_tags';
+const optionPluginBooruCustomSites = 'plugin.booru.custom_sites';
 const pluginIdEhViewer = 'ehviewer';
 const optionPluginEhEnabled = 'plugin.ehviewer.enabled';
 const optionPluginEhShowTab = 'plugin.ehviewer.show_tab';

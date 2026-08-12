@@ -59,8 +59,17 @@ enum BooruRating {
           _ => null,
         };
       case BooruEngine.danbooru:
-      case BooruEngine.gelbooruV2:
         return tryParse(value);
+      case BooruEngine.gelbooruV2:
+        // Classic Gelbooru / Rule34 / Xbooru: s = safe. Newer Gelbooru also
+        // sends the word "sensitive".
+        return switch (value) {
+          's' || 'safe' || 'g' || 'general' => BooruRating.general,
+          'sensitive' => BooruRating.sensitive,
+          'q' || 'questionable' => BooruRating.questionable,
+          'e' || 'explicit' => BooruRating.explicit,
+          _ => tryParse(value),
+        };
     }
   }
 
@@ -140,7 +149,7 @@ class BooruPost {
 
   /// Canonical page on the host for this post, when the engine has one.
   String? get hostPageUrl {
-    final base = Uri.tryParse(host);
+    final base = Uri.tryParse(booruPageHost(host));
     if (base == null) return null;
     final engineKind = BooruEngine.tryParse(engine);
     switch (engineKind) {

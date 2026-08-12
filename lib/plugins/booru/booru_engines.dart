@@ -1,6 +1,8 @@
 /// Which public API family a configured host speaks.
 library;
 
+import 'dart:convert';
+
 enum BooruEngine {
   danbooru,
   moebooru,
@@ -49,6 +51,8 @@ class BooruPreset {
 
 /// Built-in hosts — guest-friendly first. Gelbooru.com often needs an API key;
 /// Safebooru stays usable without one. e926 is the safe mirror of e621.
+/// Rule34 / Xbooru speak Gelbooru v2; their API lives on the same `index.php`
+/// dapi as Safebooru.
 const List<BooruPreset> booruPresets = [
   BooruPreset(
     id: 'danbooru',
@@ -81,6 +85,18 @@ const List<BooruPreset> booruPresets = [
     host: 'https://gelbooru.com',
   ),
   BooruPreset(
+    id: 'rule34',
+    name: 'Rule34',
+    engine: BooruEngine.gelbooruV2,
+    host: 'https://rule34.xxx',
+  ),
+  BooruPreset(
+    id: 'xbooru',
+    name: 'Xbooru',
+    engine: BooruEngine.gelbooruV2,
+    host: 'https://xbooru.com',
+  ),
+  BooruPreset(
     id: 'e926',
     name: 'e926',
     engine: BooruEngine.e621,
@@ -110,6 +126,115 @@ String normaliseBooruHost(String raw) {
     port: uri.hasPort ? uri.port : null,
     path: cleanedPath,
   ).toString();
+}
+
+/// Host used for dapi / JSON. Rule34 serves the API on `api.rule34.xxx`.
+String booruRequestHost(String host) {
+  final normalised = normaliseBooruHost(host);
+  final uri = Uri.tryParse(normalised);
+  if (uri == null) return normalised;
+  final name = uri.host.toLowerCase();
+  if (name == 'rule34.xxx' || name == 'www.rule34.xxx') {
+    return uri.replace(host: 'api.rule34.xxx').toString();
+  }
+  return normalised;
+}
+
+/// Host used for "open on site" links. `api.rule34.xxx` is not a page host.
+String booruPageHost(String host) {
+  final normalised = normaliseBooruHost(host);
+  final uri = Uri.tryParse(normalised);
+  if (uri == null) return normalised;
+  if (uri.host.toLowerCase() == 'api.rule34.xxx') {
+    return uri.replace(host: 'rule34.xxx').toString();
+  }
+  return normalised;
+}
+
+/// Best-effort engine from a hostname. Unknown Gelbooru-style clones default
+/// to v2 dapi — that is what Rule34 forks speak. Paheal / Sankaku are not.
+BooruEngine? guessBooruEngine(String host) {
+  final h = Uri.tryParse(normaliseBooruHost(host))?.host.toLowerCase() ?? '';
+  if (h.isEmpty) return null;
+  if (h.contains('paheal') || h.contains('sankaku')) return null;
+  if (h.contains('e621') || h.contains('e926')) return BooruEngine.e621;
+  if (h.contains('yande.re') ||
+      h.contains('konachan') ||
+      h.contains('hypnohub')) {
+    return BooruEngine.moebooru;
+  }
+  if (h.contains('donmai.us') ||
+      h.contains('danbooru') ||
+      h.contains('aibooru')) {
+    return BooruEngine.danbooru;
+  }
+  return BooruEngine.gelbooruV2;
+}
+
+String customBooruSiteId(String host) {
+  final uri = Uri.tryParse(normaliseBooruHost(host));
+  final name = uri?.host ?? '';
+  return name.isEmpty ? '' : 'custom:$name';
+}
+
+String displayNameForBooruHost(String host) {
+  return Uri.tryParse(normaliseBooruHost(host))?.host ?? host;
+}
+
+List<BooruPreset> parseBooruCustomSites(String? raw) {
+  if (raw == null || raw.trim().isEmpty) return const [];
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) return const [];
+    return [
+      for (final item in decoded)
+        if (item is Map) ?_customSiteFromMap(item),
+    ];
+  } catch (_) {
+    return const [];
+  }
+}
+
+BooruPreset? _customSiteFromMap(Map<dynamic, dynamic> item) {
+  final host = normaliseBooruHost('${item['host'] ?? ''}');
+  final engine = BooruEngine.tryParse('${item['engine'] ?? ''}');
+  if (host.isEmpty || engine == null) return null;
+  final name = '${item['name'] ?? ''}'.trim();
+  final id = '${item['id'] ?? ''}'.trim();
+  return BooruPreset(
+    id: id.isEmpty ? customBooruSiteId(host) : id,
+    name: name.isEmpty ? displayNameForBooruHost(host) : name,
+    engine: engine,
+    host: host,
+  );
+}
+
+String encodeBooruCustomSites(List<BooruPreset> sites) => jsonEncode([
+  for (final site in sites)
+    {
+      'id': site.id,
+      'name': site.name,
+      'engine': site.engine.id,
+      'host': site.host,
+    },
+]);
+
+List<BooruPreset> upsertBooruCustomSite(
+  List<BooruPreset> sites,
+  BooruPreset site,
+) {
+  final id = site.id.isEmpty ? customBooruSiteId(site.host) : site.id;
+  final next = BooruPreset(
+    id: id,
+    name: site.name,
+    engine: site.engine,
+    host: site.host,
+  );
+  return [
+    for (final existing in sites)
+      if (existing.id != next.id && existing.host != next.host) existing,
+    next,
+  ];
 }
 
 String? normaliseBooruTag(String raw) {

@@ -61,6 +61,53 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     setState(() => _host.text = preset.host);
   }
 
+  Future<void> _addCustomSite() async {
+    final added = await showDialog<BooruPreset>(
+      context: context,
+      builder: (context) => _AddBooruSiteDialog(initialHost: _host.text),
+    );
+    if (added == null || !mounted) return;
+
+    final builtin = [
+      for (final preset in booruPresets)
+        if (preset.host == added.host) preset,
+    ];
+    if (builtin.isNotEmpty) {
+      await _applyPreset(builtin.first);
+      return;
+    }
+
+    final prefs = PrefService.of(context, listen: false);
+    final sites = upsertBooruCustomSite(
+      parseBooruCustomSites(prefs.get<String>(optionPluginBooruCustomSites)),
+      added,
+    );
+    await prefs.set(
+      optionPluginBooruCustomSites,
+      encodeBooruCustomSites(sites),
+    );
+    await _applyPreset(sites.last);
+  }
+
+  Future<void> _removeCustomSite(BooruPreset site) async {
+    final prefs = PrefService.of(context, listen: false);
+    final remaining = [
+      for (final existing in parseBooruCustomSites(
+        prefs.get<String>(optionPluginBooruCustomSites),
+      ))
+        if (existing.id != site.id) existing,
+    ];
+    await prefs.set(
+      optionPluginBooruCustomSites,
+      encodeBooruCustomSites(remaining),
+    );
+    if ((prefs.get<String>(optionPluginBooruPreset) ?? '') == site.id) {
+      await _applyPreset(booruPresets.first);
+    } else {
+      setState(() {});
+    }
+  }
+
   Future<void> _test() async {
     setState(() => _testing = true);
     final l10n = L10n.of(context);
@@ -103,6 +150,9 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
         BooruRating.tryParse(prefs.get<String>(optionPluginBooruMaxRating)) ??
         BooruRating.general;
     final presetId = prefs.get<String>(optionPluginBooruPreset) ?? 'danbooru';
+    final customSites = parseBooruCustomSites(
+      prefs.get<String>(optionPluginBooruCustomSites),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.plugin_booru_settings_title)),
@@ -121,6 +171,19 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
                     selected: presetId == preset.id,
                     onSelected: (_) => _applyPreset(preset),
                   ),
+                for (final site in customSites)
+                  InputChip(
+                    label: Text(site.name),
+                    selected: presetId == site.id,
+                    onPressed: () => _applyPreset(site),
+                    onDeleted: () => _removeCustomSite(site),
+                    deleteButtonTooltipMessage: l10n.plugin_booru_remove_site,
+                  ),
+                ActionChip(
+                  avatar: const Icon(Icons.add, size: 18),
+                  label: Text(l10n.plugin_booru_add_site),
+                  onPressed: _addCustomSite,
+                ),
               ],
             ),
           ),
@@ -155,14 +218,16 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
               controller: _host,
               decoration: InputDecoration(
                 labelText: l10n.plugin_booru_host,
-                hintText: 'https://danbooru.donmai.us',
+                hintText: l10n.plugin_booru_host_hint,
               ),
               onChanged: (value) async {
-                await prefs.set(
-                  optionPluginBooruHost,
-                  normaliseBooruHost(value),
-                );
+                final host = normaliseBooruHost(value);
+                await prefs.set(optionPluginBooruHost, host);
                 await prefs.set(optionPluginBooruPreset, 'custom');
+                final guessed = guessBooruEngine(host);
+                if (guessed != null) {
+                  await prefs.set(optionPluginBooruEngine, guessed.id);
+                }
               },
             ),
           ),
@@ -322,5 +387,131 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     BooruEngine.moebooru => l10n.plugin_booru_password_hash_help,
     BooruEngine.gelbooruV2 => l10n.plugin_booru_api_key_help_gelbooru,
     _ => l10n.plugin_booru_api_key_help,
+  };
+}
+
+class _AddBooruSiteDialog extends StatefulWidget {
+  final String initialHost;
+
+  const _AddBooruSiteDialog({required this.initialHost});
+
+  @override
+  State<_AddBooruSiteDialog> createState() => _AddBooruSiteDialogState();
+}
+
+class _AddBooruSiteDialogState extends State<_AddBooruSiteDialog> {
+  late final TextEditingController _host;
+  late final TextEditingController _name;
+  late BooruEngine _engine;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    final seed = widget.initialHost.trim();
+    _host = TextEditingController(text: seed);
+    _name = TextEditingController(
+      text: seed.isEmpty ? '' : displayNameForBooruHost(seed),
+    );
+    _engine = guessBooruEngine(seed) ?? BooruEngine.gelbooruV2;
+  }
+
+  @override
+  void dispose() {
+    _host.dispose();
+    _name.dispose();
+    super.dispose();
+  }
+
+  void _onHostChanged(String value) {
+    final guessed = guessBooruEngine(value);
+    setState(() {
+      _error = null;
+      if (guessed != null) _engine = guessed;
+      if (_name.text.isEmpty ||
+          _name.text == displayNameForBooruHost(widget.initialHost)) {
+        _name.text = displayNameForBooruHost(value);
+      }
+    });
+  }
+
+  void _submit() {
+    final host = normaliseBooruHost(_host.text);
+    if (host.isEmpty) {
+      setState(() => _error = L10n.of(context).plugin_booru_site_invalid);
+      return;
+    }
+    final name = _name.text.trim();
+    Navigator.pop(
+      context,
+      BooruPreset(
+        id: customBooruSiteId(host),
+        name: name.isEmpty ? displayNameForBooruHost(host) : name,
+        engine: _engine,
+        host: host,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(l10n.plugin_booru_add_site_title),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _host,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: l10n.plugin_booru_host,
+              hintText: l10n.plugin_booru_host_hint,
+              errorText: _error,
+            ),
+            onChanged: _onHostChanged,
+            onSubmitted: (_) => _submit(),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _name,
+            decoration: InputDecoration(labelText: l10n.plugin_booru_site_name),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<BooruEngine>(
+            key: ValueKey(_engine),
+            initialValue: _engine,
+            decoration: InputDecoration(labelText: l10n.plugin_booru_engine),
+            items: [
+              for (final engine in BooruEngine.values)
+                DropdownMenuItem(
+                  value: engine,
+                  child: Text(_engineLabel(l10n, engine)),
+                ),
+            ],
+            onChanged: (value) {
+              if (value != null) setState(() => _engine = value);
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: Text(l10n.plugin_booru_add_site),
+        ),
+      ],
+    );
+  }
+
+  String _engineLabel(L10n l10n, BooruEngine engine) => switch (engine) {
+    BooruEngine.danbooru => l10n.plugin_booru_engine_danbooru,
+    BooruEngine.moebooru => l10n.plugin_booru_engine_moebooru,
+    BooruEngine.gelbooruV2 => l10n.plugin_booru_engine_gelbooru,
+    BooruEngine.e621 => l10n.plugin_booru_engine_e621,
   };
 }

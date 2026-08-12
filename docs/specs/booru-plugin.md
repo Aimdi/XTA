@@ -18,8 +18,8 @@ the well-known public JSON shapes (Danbooru, Moebooru, Gelbooru v2, e621).
 | Piece | Detail |
 |---|---|
 | Engines | `danbooru`, `moebooru`, `gelbooru_v2`, `e621` |
-| Presets | Danbooru, Yande.re, Konachan, Safebooru, Gelbooru, e926, e621 |
-| Settings | Engine, host, credentials, max rating, muted tags, home-feed, tab |
+| Presets | Danbooru, Yande.re, Konachan, Safebooru, Gelbooru, Rule34, Xbooru, e926, e621 |
+| Settings | Engine, host, **Add site** for any Gelbooru/Danbooru/Moebooru/e621 host, credentials, max rating, muted tags, home-feed, tab |
 | Home tabs | Latest · Following (followed tags) · Search (+ autocomplete) |
 | Grid / viewer | Staggered catalog uses sample/large (~850px), not the ~150px preview; post screen opens host / source / video |
 | Subscriptions | `booru_subscription` table; tags join groups via `SubscriptionSource` |
@@ -43,7 +43,7 @@ Danbooru-family / Moebooru / e621 queries also append rating metatags.
 
 - More engines: Philomena, Sankaku, Shimmie2, Szurubooru, Zerochan, Nozomi,
   Anime-Pictures, Hydrus, Hybooru, Eshuushuu
-- Multiple saved booru profiles (per-host follows)
+- Multiple saved booru profiles with **per-host follows** (custom hosts are saved as extra chips; follows stay global)
 - In-app video / GIF playback (currently opens the file URL)
 - Local favorites / downloads / bulk save
 - Notes / comments / pools / artists screens
