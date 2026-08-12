@@ -58,6 +58,8 @@ class TikTokClient {
   String get cookieHeader =>
       _cookies.entries.map((e) => '${e.key}=${e.value}').join('; ');
 
+  Map<String, String> get cookies => Map.unmodifiable(_cookies);
+
   Map<String, String> get playbackHeaders =>
       tiktokPlaybackHeaders(cookieHeader);
 
@@ -100,9 +102,6 @@ class TikTokClient {
     if (profile == null) {
       throw TikTokException(TikTokErrorKind.notFound, '@$key');
     }
-    if (profile.privateAccount) {
-      throw TikTokException(TikTokErrorKind.privateAccount, '@$key');
-    }
     return profile;
   }
 
@@ -111,21 +110,12 @@ class TikTokClient {
     String? cursor,
     int count = 15,
   }) async {
-    final query = _creatorQuery(secUid, cursor, count);
-    final uri = Uri.parse(
-      '$tiktokWebOrigin/api/creator/item_list/',
-    ).replace(queryParameters: query);
-    final response = await _get(uri, referer: '$tiktokWebOrigin/');
-    final decoded = _decodeJson(response, uri);
-    final page = parseTikTokItemList(decoded);
-    if (page.statusCode == 10201) {
-      throw TikTokException(TikTokErrorKind.notFound, secUid);
-    }
-    if (page.statusCode != null && page.statusCode != 0 && page.posts.isEmpty) {
-      throw TikTokException(
-        TikTokErrorKind.badResponse,
-        'status ${page.statusCode}',
-      );
+    var page = await _fetchCreatorItems(secUid, cursor, count);
+    _validateCreatorPage(page, secUid);
+    if (page.posts.isEmpty && page.hasMore) {
+      await _rotateDeviceId();
+      page = await _fetchCreatorItems(secUid, cursor, count);
+      _validateCreatorPage(page, secUid);
     }
     return page;
   }
@@ -142,6 +132,7 @@ class TikTokClient {
   }
 
   Map<String, String> _creatorQuery(String secUid, String? cursor, int count) {
+    final msToken = _cookies['msToken'];
     return {
       'aid': '1988',
       'app_language': 'en',
@@ -154,7 +145,7 @@ class TikTokClient {
       'channel': 'tiktok_web',
       'cookie_enabled': 'true',
       'count': '$count',
-      'cursor': cursor ?? '${DateTime.now().millisecondsSinceEpoch}',
+      'cursor': cursor ?? '0',
       'device_id': deviceId,
       'device_platform': 'web_pc',
       'focus_state': 'true',
@@ -173,7 +164,37 @@ class TikTokClient {
       'type': '1',
       'tz_name': 'UTC',
       'webcast_language': 'en',
+      if (msToken != null && msToken.isNotEmpty) 'msToken': msToken,
     };
+  }
+
+  Future<TikTokItemPage> _fetchCreatorItems(
+    String secUid,
+    String? cursor,
+    int count,
+  ) async {
+    final query = _creatorQuery(secUid, cursor, count);
+    final uri = Uri.parse(
+      '$tiktokWebOrigin/api/creator/item_list/',
+    ).replace(queryParameters: query);
+    final response = await _get(uri, referer: '$tiktokWebOrigin/');
+    return parseTikTokItemList(_decodeJson(response, uri));
+  }
+
+  void _validateCreatorPage(TikTokItemPage page, String secUid) {
+    if (page.statusCode == 10201) {
+      throw TikTokException(TikTokErrorKind.notFound, secUid);
+    }
+    if (page.statusCode != null && page.statusCode != 0 && page.posts.isEmpty) {
+      throw TikTokException(
+        TikTokErrorKind.badResponse,
+        'status ${page.statusCode}',
+      );
+    }
+  }
+
+  Future<void> _rotateDeviceId() async {
+    await prefs.set(optionPluginTiktokDeviceId, randomTikTokDeviceId());
   }
 
   Future<http.Response> _get(

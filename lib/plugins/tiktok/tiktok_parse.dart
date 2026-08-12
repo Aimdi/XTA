@@ -4,8 +4,11 @@ library;
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:html_unescape/html_unescape.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/utils/json.dart';
+
+final _unescape = HtmlUnescape();
 
 final _universalData = RegExp(
   r'<script[^>]+id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>(.*?)</script>',
@@ -20,10 +23,23 @@ const tiktokDeviceIdMax = 7351147085025500000;
 
 String? normaliseTikTokHandle(String? raw) {
   if (raw == null) return null;
-  var handle = raw.trim();
-  if (handle.startsWith('@')) handle = handle.substring(1).trim();
-  handle = handle.split('/').last.trim();
-  if (handle.toLowerCase().startsWith('tiktok.com')) return null;
+  final value = raw.trim();
+  if (value.startsWith('@')) return _validHandle(value.substring(1).trim());
+
+  final uri = Uri.tryParse(value.contains('://') ? value : 'https://$value');
+  final host = uri?.host.toLowerCase();
+  if (host == 'tiktok.com' || host?.endsWith('.tiktok.com') == true) {
+    if (host == 'vm.tiktok.com' || host == 'vt.tiktok.com') return null;
+    final segment = uri!.pathSegments.isEmpty
+        ? ''
+        : uri.pathSegments.first.trim();
+    return segment.startsWith('@') ? _validHandle(segment.substring(1)) : null;
+  }
+  if (value.contains('/') || value.contains('://')) return null;
+  return _validHandle(value);
+}
+
+String? _validHandle(String handle) {
   if (!_handlePattern.hasMatch(handle)) return null;
   return handle.toLowerCase();
 }
@@ -39,7 +55,8 @@ Json? parseTikTokUniversalScope(String html) {
   final match = _universalData.firstMatch(html);
   if (match == null) return null;
   try {
-    return Json(jsonDecode(match.group(1)!))['__DEFAULT_SCOPE__'];
+    final json = _unescape.convert(match.group(1)!);
+    return Json(jsonDecode(json))['__DEFAULT_SCOPE__'];
   } catch (_) {
     return null;
   }
@@ -94,7 +111,10 @@ TikTokItemPage parseTikTokItemList(Object? json) {
     if (post != null) posts.add(post);
   }
   final last = posts.isEmpty ? null : posts.last;
-  final cursor = last == null
+  final apiCursor = root['cursor'].string ?? root['cursor'].integer?.toString();
+  final cursor = apiCursor?.trim().isNotEmpty == true
+      ? apiCursor
+      : last == null
       ? null
       : '${last.createdAt.millisecondsSinceEpoch}';
   return TikTokItemPage(
@@ -123,6 +143,10 @@ TikTokPost? parseTikTokPost(Json item) {
   final stats = item['stats'];
   final sources = parseTikTokVideoSources(video);
   final duration = video['duration'].integer ?? 0;
+  final coverUrl =
+      _firstUrl(video['originCover'], video['cover'], video['dynamicCover']) ??
+      _firstUrl(item['imagePost']['cover']['imageURL']['urlList'][0]) ??
+      _firstUrl(item['imagePost']['images'][0]['imageURL']['urlList'][0]);
 
   return TikTokPost(
     id: id,
@@ -139,11 +163,7 @@ TikTokPost? parseTikTokPost(Json item) {
       ),
       verified: authorJson['verified'].boolean ?? false,
     ),
-    coverUrl: _firstUrl(
-      video['originCover'],
-      video['cover'],
-      video['dynamicCover'],
-    ),
+    coverUrl: coverUrl,
     durationSeconds: duration > 1000 ? (duration / 1000).round() : duration,
     width: video['width'].integer ?? 0,
     height: video['height'].integer ?? 0,
@@ -224,4 +244,11 @@ String? _qualityLabel(String? key) {
   if (key == null || key.isEmpty) return null;
   final match = RegExp(r'(\d+p)', caseSensitive: false).firstMatch(key);
   return match?.group(1);
+}
+
+String formatTikTokDuration(int seconds) {
+  if (seconds <= 0) return '';
+  final m = seconds ~/ 60;
+  final s = seconds % 60;
+  return '$m:${s.toString().padLeft(2, '0')}';
 }

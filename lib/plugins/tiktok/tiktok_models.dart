@@ -100,6 +100,8 @@ class TikTokPost {
 
   String? get playUrl => sources.isEmpty ? null : sources.first.url;
 
+  bool get isPhoto => sources.isEmpty && coverUrl != null;
+
   Uri webUri() =>
       Uri.parse('https://www.tiktok.com/@${author.uniqueId}/video/$id');
 
