@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:xta/constants.dart';
 
 /// A timeline list with the same scroll budget as the X feed.
@@ -28,7 +29,7 @@ class FeedListView extends StatelessWidget {
       padding: padding,
       physics: physics,
       itemCount: itemCount,
-      cacheExtent: kFeedListCacheExtent,
+      scrollCacheExtent: const ScrollCacheExtent.pixels(kFeedListCacheExtent),
       addAutomaticKeepAlives: false,
       itemBuilder: itemBuilder,
     );
