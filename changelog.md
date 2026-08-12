@@ -1,3 +1,14 @@
+## XTA aimdi97
+
+What's new in XTA aimdi97:
+  - Private guest TikTok plugin (follows and likes stay on this device)
+  - Plugin and app chrome: larger footers, pinned feed bars, empty states with a way out
+  - Threads is guest-first so a pasted session is not spent on every refresh
+  - Faster feeds: cheaper off-screen tiles, capped image decode, cache JSON off the UI isolate
+  - Pixiv heart bookmarks on Pixiv (sign-in required); Booru catalog tiles use sample/large instead of tiny previews
+  - Plugin store: Installed on top in compact rows; Available grouped by category
+  - Booru: Rule34 and Xbooru presets, plus Add site for other Gelbooru/Danbooru/Moebooru/e621 hosts
+
 ## XTA aimdi96
 
 What's new in XTA aimdi96:
