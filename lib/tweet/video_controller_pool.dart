@@ -22,6 +22,9 @@ class PooledVideo {
   /// The MP4 variant currently open in [player]; updated on a quality switch.
   String currentStreamUrl;
 
+  /// Optional request headers for CDN playback (TikTok Referer + Cookie).
+  final Map<String, String>? httpHeaders;
+
   bool _disposed = false;
 
   PooledVideo({
@@ -31,6 +34,7 @@ class PooledVideo {
     required this.qualities,
     required this.currentStreamUrl,
     required this.pausableByPolicy,
+    this.httpHeaders,
   });
 
   Future<void> dispose() async {
@@ -115,7 +119,10 @@ class VideoControllerPool {
     }
   }
 
-  Future<PooledVideo> acquire(String key, Future<PooledVideo> Function() create) {
+  Future<PooledVideo> acquire(
+    String key,
+    Future<PooledVideo> Function() create,
+  ) {
     var entry = _entries.remove(key) ?? _Entry(create());
     _entries[key] = entry;
     entry.refCount++;

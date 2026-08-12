@@ -221,4 +221,24 @@ void main() {
     expect(rows.single['token'], 'abc');
     await db.close();
   });
+
+  test('migration 55 creates tiktok_subscription', () async {
+    await databaseFactory.deleteDatabase(databaseName);
+    await _createV34Fixture();
+
+    await Repository().migrate();
+
+    final db = await databaseFactory.openDatabase(databaseName);
+    await db.insert(tableTiktokSubscription, {
+      'id': 'tiktok',
+      'sec_uid': 'MS4wLjABAAAA',
+      'name': 'TikTok',
+      'in_feed': 1,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+    final rows = await db.query(tableTiktokSubscription);
+    expect(rows, hasLength(1));
+    expect(rows.single['id'], 'tiktok');
+    await db.close();
+  });
 }

@@ -12,12 +12,14 @@ import 'package:xta/plugins/reddit/reddit_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/threads/threads_plugin.dart';
+import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
 
 /// Built-in plugins shipped with XTA, ordered the way the store groups them.
 final List<XtaPlugin> builtInPlugins = [
   ThreadsPlugin(),
   BlueskyPlugin(),
   MastodonPlugin(),
+  TikTokPlugin(),
   RedditPlugin(),
   SubstackPlugin(),
   PixivPlugin(),

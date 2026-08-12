@@ -52,6 +52,8 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
+import 'package:xta/plugins/tiktok/tiktok_client.dart';
+import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
@@ -566,6 +568,13 @@ Future<void> main() async {
       optionPluginEhUseExhentai: false,
       optionPluginEhCategories: '',
       optionPluginEhSearchHistory: '[]',
+      optionPluginTiktokEnabled: false,
+      optionPluginTiktokShowTab: true,
+      optionPluginTiktokCookies: '',
+      optionPluginTiktokDeviceId: '',
+      optionPluginTiktokSearchHistory: '[]',
+      optionPluginTiktokLikedPosts: '[]',
+      optionPluginTiktokPreferEmbed: false,
       optionPluginThreadsDirectCookies: '',
       optionPluginThreadsDirectBearer: '',
       optionPluginThreadsDirectDeviceId: '',
@@ -733,6 +742,10 @@ Future<void> main() async {
     final booruMute = BooruMuteStore(prefService);
     final ehClient = EhClient(prefService);
     final ehFavorites = EhFavoritesStore();
+    final tiktokClient = TikTokClient(prefService);
+    final tiktokFollows = TikTokFollowsStore();
+    final tiktokLikes = TikTokLikesStore(prefService);
+    final tiktokSearchHistory = TikTokSearchHistoryStore(prefService);
 
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
@@ -783,6 +796,11 @@ Future<void> main() async {
       ],
       if (prefService.get<bool>(optionPluginEhEnabled) == true)
         ehFavorites.load(),
+      if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
+        tiktokFollows.load(),
+        tiktokLikes.load(),
+        tiktokSearchHistory.load(),
+      ],
     ]);
 
     runApp(
@@ -874,6 +892,10 @@ Future<void> main() async {
             Provider(create: (_) => booruMute),
             Provider(create: (_) => ehClient),
             Provider(create: (_) => ehFavorites),
+            Provider(create: (_) => tiktokClient),
+            Provider(create: (_) => tiktokFollows),
+            Provider(create: (_) => tiktokLikes),
+            Provider(create: (_) => tiktokSearchHistory),
             ChangeNotifierProvider(
               create: (_) =>
                   VideoContextState(prefService.get(optionMediaDefaultMute)),

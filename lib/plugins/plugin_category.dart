@@ -3,7 +3,7 @@ import 'package:xta/generated/l10n.dart';
 
 /// Why a plugin exists, for the store — not how it is installed.
 enum PluginCategory {
-  /// Short-form social networks (Threads, Bluesky, Mastodon).
+  /// Short-form social networks (Threads, Bluesky, Mastodon, TikTok).
   social,
 
   /// Forums and link communities (Reddit).

@@ -23,8 +23,14 @@ class TweetVideoUrls {
   final String streamUrl;
   final String? downloadUrl;
   final List<TweetVideoQuality> qualities;
+  final Map<String, String>? httpHeaders;
 
-  TweetVideoUrls(this.streamUrl, this.downloadUrl, {this.qualities = const []});
+  TweetVideoUrls(
+    this.streamUrl,
+    this.downloadUrl, {
+    this.qualities = const [],
+    this.httpHeaders,
+  });
 }
 
 class TweetVideoMetadata {
@@ -34,7 +40,9 @@ class TweetVideoMetadata {
 
   TweetVideoMetadata(this.aspectRatio, this.imageUrl, this.streamUrlsBuilder);
 
-  static Future<TweetVideoUrls> Function() streamUrlsBuilderFromVariants(List<Variant> variants) {
+  static Future<TweetVideoUrls> Function() streamUrlsBuilderFromVariants(
+    List<Variant> variants,
+  ) {
     // Use progressive MP4, not X's HLS master playlist (variants[0]): libmpv
     // plays the .m3u8 poorly (delayed start, bad seek, phantom subtitle tracks).
     // Fall back to variants[0] only when no MP4 exists (e.g. live broadcasts).
@@ -45,7 +53,9 @@ class TweetVideoMetadata {
         .sorted((a, b) => -(a.bitrate!.compareTo(b.bitrate!)))
         .toList();
 
-    var qualities = mp4Variants.map((e) => TweetVideoQuality(e.url!, _qualityLabel(e.url!, e.bitrate))).toList();
+    var qualities = mp4Variants
+        .map((e) => TweetVideoQuality(e.url!, _qualityLabel(e.url!, e.bitrate)))
+        .toList();
 
     var mp4Url = qualities.isNotEmpty ? qualities.first.url : null;
     var streamUrl = mp4Url ?? variants[0].url!;
@@ -73,7 +83,11 @@ class TweetVideoMetadata {
     var variants = media.videoInfo?.variants ?? [];
     var imageUrl = media.mediaUrlHttps!;
 
-    return TweetVideoMetadata(aspectRatio, imageUrl, streamUrlsBuilderFromVariants(variants));
+    return TweetVideoMetadata(
+      aspectRatio,
+      imageUrl,
+      streamUrlsBuilderFromVariants(variants),
+    );
   }
 }
 
@@ -129,7 +143,8 @@ class _TweetVideoState extends State<TweetVideo> {
   StreamSubscription<String>? _errorSub;
   StreamSubscription<bool>? _playingSub;
 
-  String? get _cacheKey => widget.tweetId == null ? null : '${widget.tweetId}:${widget.mediaIndex}';
+  String? get _cacheKey =>
+      widget.tweetId == null ? null : '${widget.tweetId}:${widget.mediaIndex}';
 
   @override
   void initState() {
@@ -145,7 +160,10 @@ class _TweetVideoState extends State<TweetVideo> {
   static String _defaultQualityUrl(TweetVideoUrls urls, String quality) {
     final q = urls.qualities;
     if (q.isEmpty) return urls.streamUrl;
-    final i = switch (MediaQuality.fromStored(quality, fallback: MediaQuality.large)) {
+    final i = switch (MediaQuality.fromStored(
+      quality,
+      fallback: MediaQuality.large,
+    )) {
       MediaQuality.thumb => q.length - 1,
       MediaQuality.small => (q.length * 3) ~/ 4,
       MediaQuality.medium => q.length ~/ 2,
@@ -179,7 +197,10 @@ class _TweetVideoState extends State<TweetVideo> {
       // surface over and copies nothing. The direct path is much cheaper and is
       // what makes a feed scroll while a video plays, but it renders black on
       // some devices — hence a setting rather than a default.
-      await platform.setProperty('hwdec', directHwdec ? 'mediacodec' : 'mediacodec-copy');
+      await platform.setProperty(
+        'hwdec',
+        directHwdec ? 'mediacodec' : 'mediacodec-copy',
+      );
 
       // How far ahead a feed video reads.
       //
@@ -193,17 +214,31 @@ class _TweetVideoState extends State<TweetVideo> {
       // The demuxer bounds are what actually govern this: cache-secs limits
       // time, these limit the bytes behind it. Both are set, and the reader's
       // own prefetch still overrides the time.
-      await platform.setProperty('cache-secs', '${prefetchSeconds > 0 ? prefetchSeconds : kVideoReadaheadSeconds}');
-      await platform.setProperty('demuxer-readahead-secs', '$kVideoReadaheadSeconds');
+      await platform.setProperty(
+        'cache-secs',
+        '${prefetchSeconds > 0 ? prefetchSeconds : kVideoReadaheadSeconds}',
+      );
+      await platform.setProperty(
+        'demuxer-readahead-secs',
+        '$kVideoReadaheadSeconds',
+      );
       await platform.setProperty('demuxer-max-bytes', '$kVideoDemuxerMaxBytes');
       // What is kept of what has already played, for scrubbing back. Small: a
       // feed is not somewhere anyone rewinds far.
-      await platform.setProperty('demuxer-max-back-bytes', '$kVideoDemuxerMaxBackBytes');
+      await platform.setProperty(
+        'demuxer-max-back-bytes',
+        '$kVideoDemuxerMaxBackBytes',
+      );
     }
 
-    await player.setPlaylistMode((widget.loop || prefLoop) ? mk.PlaylistMode.single : mk.PlaylistMode.none);
+    await player.setPlaylistMode(
+      (widget.loop || prefLoop) ? mk.PlaylistMode.single : mk.PlaylistMode.none,
+    );
     await player.setVolume(startMuted ? 0.0 : 100.0);
-    await player.open(mk.Media(streamUrl), play: widget.alwaysPlay || _userRequestedPlay);
+    await player.open(
+      mk.Media(streamUrl, httpHeaders: urls.httpHeaders),
+      play: widget.alwaysPlay || _userRequestedPlay,
+    );
 
     return PooledVideo(
       player: player,
@@ -212,6 +247,7 @@ class _TweetVideoState extends State<TweetVideo> {
       qualities: urls.qualities,
       currentStreamUrl: streamUrl,
       pausableByPolicy: !widget.disableControls,
+      httpHeaders: urls.httpHeaders,
     );
   }
 
@@ -220,8 +256,15 @@ class _TweetVideoState extends State<TweetVideo> {
     var prefs = PrefService.of(context, listen: false);
     var quality = prefs.get(optionMediaVideoQuality);
     var prefetchSeconds = prefs.get<int>(optionMediaVideoPrefetchSeconds) ?? 0;
-    var directHwdec = prefs.get<bool>(optionMediaDirectHardwareDecoding) ?? false;
-    create() => _createPooled(prefLoop, startMuted, quality, prefetchSeconds, directHwdec);
+    var directHwdec =
+        prefs.get<bool>(optionMediaDirectHardwareDecoding) ?? false;
+    create() => _createPooled(
+      prefLoop,
+      startMuted,
+      quality,
+      prefetchSeconds,
+      directHwdec,
+    );
 
     final key = _cacheKey;
     final pool = _pool;
@@ -261,7 +304,10 @@ class _TweetVideoState extends State<TweetVideo> {
         _autoRetries = 0;
         if (_playbackError) setState(() => _playbackError = false);
         _pool?.pauseOthers(pooled);
-        VideoAudioFocus.instance.onStartedPlaying(pooled.player, mixWithOthers: _mixWithOthers);
+        VideoAudioFocus.instance.onStartedPlaying(
+          pooled.player,
+          mixWithOthers: _mixWithOthers,
+        );
       } else {
         VideoAudioFocus.instance.onStoppedPlaying(pooled.player);
       }
@@ -319,7 +365,9 @@ class _TweetVideoState extends State<TweetVideo> {
     if (isVisible) {
       if (key != null) _pool?.markVisible(key, this);
       _cancelVisibilityTimers();
-      if ((_autoPlay || widget.alwaysPlay) && !wasVisible && !pooled.player.state.playing) {
+      if ((_autoPlay || widget.alwaysPlay) &&
+          !wasVisible &&
+          !pooled.player.state.playing) {
         pooled.player.play();
       }
     } else if (wasVisible) {
@@ -379,7 +427,10 @@ class _TweetVideoState extends State<TweetVideo> {
     });
   }
 
-  Future<void> _openFullscreen(PooledVideo pooled, bool prefBackgroundPlayback) async {
+  Future<void> _openFullscreen(
+    PooledVideo pooled,
+    bool prefBackgroundPlayback,
+  ) async {
     if (_isFullscreen) return;
     _isFullscreen = true;
     _cancelVisibilityTimers();
@@ -434,7 +485,10 @@ class _TweetVideoState extends State<TweetVideo> {
     if (mounted) setState(() {});
     if (enable) {
       final subs = pooled.player.state.tracks.subtitle;
-      final track = subs.firstWhere((t) => t.id != 'no' && t.id != 'auto', orElse: () => mk.SubtitleTrack.auto());
+      final track = subs.firstWhere(
+        (t) => t.id != 'no' && t.id != 'auto',
+        orElse: () => mk.SubtitleTrack.auto(),
+      );
       pooled.player.setSubtitleTrack(track);
     } else {
       pooled.player.setSubtitleTrack(mk.SubtitleTrack.no());
@@ -455,11 +509,14 @@ class _TweetVideoState extends State<TweetVideo> {
               accentColor: accent,
               subtitlesEnabled: _subtitlesEnabled,
               onToggleSubtitles: () => _toggleSubtitles(pooled),
-              onToggleFullscreen: () => _openFullscreen(pooled, prefBackgroundPlayback),
+              onToggleFullscreen: () =>
+                  _openFullscreen(pooled, prefBackgroundPlayback),
             ),
       wakelock: !widget.disableControls,
       pauseUponEnteringBackgroundMode: !prefBackgroundPlayback,
-      subtitleViewConfiguration: SubtitleViewConfiguration(visible: _subtitlesEnabled),
+      subtitleViewConfiguration: SubtitleViewConfiguration(
+        visible: _subtitlesEnabled,
+      ),
     );
 
     if (_posterGone) {
@@ -477,7 +534,8 @@ class _TweetVideoState extends State<TweetVideo> {
             opacity: _firstFrameRendered ? 0.0 : 1.0,
             duration: const Duration(milliseconds: 200),
             onEnd: () {
-              if (_firstFrameRendered && !_posterGone) setState(() => _posterGone = true);
+              if (_firstFrameRendered && !_posterGone)
+                setState(() => _posterGone = true);
             },
             child: Stack(
               fit: StackFit.expand,
@@ -485,7 +543,8 @@ class _TweetVideoState extends State<TweetVideo> {
               children: [
                 if (widget.metadata.imageUrl != null)
                   CappedNetworkImage(url: widget.metadata.imageUrl!),
-                if (!widget.disableControls) const Center(child: CircularProgressIndicator()),
+                if (!widget.disableControls)
+                  const Center(child: CircularProgressIndicator()),
               ],
             ),
           ),
@@ -609,7 +668,11 @@ class _TweetVideoState extends State<TweetVideo> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.white, size: 48),
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 48,
+                  ),
                   const SizedBox(height: 12),
                   Text(L10n.of(context).failed_to_load_video),
                   const SizedBox(height: 12),
@@ -628,7 +691,8 @@ class _TweetVideoState extends State<TweetVideo> {
           child: hasVideo
               ? VisibilityDetector(
                   key: _visibilityKey,
-                  onVisibilityChanged: (info) => _onVisibilityChanged(info, pooled),
+                  onVisibilityChanged: (info) =>
+                      _onVisibilityChanged(info, pooled),
                   child: _buildVideo(pooled, prefBackgroundPlayback),
                 )
               : const SizedBox.shrink(),

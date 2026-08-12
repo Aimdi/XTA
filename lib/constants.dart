@@ -329,6 +329,15 @@ const optionPluginEhUseExhentai = 'plugin.ehviewer.use_exhentai';
 const optionPluginEhCategories = 'plugin.ehviewer.categories';
 const optionPluginEhSearchHistory = 'plugin.ehviewer.search_history';
 
+const pluginIdTiktok = 'tiktok';
+const optionPluginTiktokEnabled = 'plugin.tiktok.enabled';
+const optionPluginTiktokShowTab = 'plugin.tiktok.show_tab';
+const optionPluginTiktokCookies = 'plugin.tiktok.cookies';
+const optionPluginTiktokDeviceId = 'plugin.tiktok.device_id';
+const optionPluginTiktokSearchHistory = 'plugin.tiktok.search_history';
+const optionPluginTiktokLikedPosts = 'plugin.tiktok.liked_posts';
+const optionPluginTiktokPreferEmbed = 'plugin.tiktok.prefer_embed';
+
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.
 const optionPluginStoreShowPrivate = 'plugin_store.show_private';
@@ -644,6 +653,7 @@ const secretPrefKeys = {
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
   optionPluginEhCookies,
+  optionPluginTiktokCookies,
 };
 
 /// The declared keys, plus anything shaped like a credential.

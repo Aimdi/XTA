@@ -9,6 +9,7 @@
     { "id": "pixiv", "available": false },
     { "id": "booru" },
     { "id": "ehviewer", "available": false },
+    { "id": "tiktok", "available": false },
     { "id": "stocks" },
     { "id": "karakeep" },
     { "id": "deepmarks" },

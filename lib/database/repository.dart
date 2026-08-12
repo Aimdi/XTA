@@ -27,6 +27,7 @@ const String tableMastodonSubscription = 'mastodon_subscription';
 const String tableRedditSubscription = 'reddit_subscription';
 const String tableBooruSubscription = 'booru_subscription';
 const String tableEhFavorite = 'eh_favorite';
+const String tableTiktokSubscription = 'tiktok_subscription';
 const String tableImmichUpload = 'immich_upload';
 const String tableRedditLocalVote = 'reddit_local_vote';
 const String tableThreadsLocalLike = 'threads_local_like';
@@ -46,7 +47,7 @@ const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 
-const int databaseVersion = 54;
+const int databaseVersion = 55;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -764,6 +765,19 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       'posted_at TEXT, '
       'favorited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
       reverseSql: 'DROP TABLE $tableEhFavorite',
+    ),
+  ],
+  55: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableTiktokSubscription ('
+      'id VARCHAR PRIMARY KEY, '
+      'sec_uid VARCHAR NOT NULL, '
+      'name VARCHAR NOT NULL, '
+      'avatar_url VARCHAR, '
+      'signature VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableTiktokSubscription',
     ),
   ],
 });

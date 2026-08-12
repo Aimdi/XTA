@@ -1,0 +1,111 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/plugins/tiktok/tiktok_parse.dart';
+
+const _profileHtml = '''
+<html><script id="__UNIVERSAL_DATA_FOR_REHYDRATION__">
+{"__DEFAULT_SCOPE__":{"webapp.user-detail":{"userInfo":{"user":{"id":"1","secUid":"MS4wLjABAAAA","uniqueId":"tiktok","nickname":"TikTok","signature":"hello","avatarThumb":"https://p16.tiktokcdn.com/a.jpg","privateAccount":false,"verified":true},"stats":{"followerCount":10,"followingCount":2,"videoCount":3,"heartCount":99}}}}}
+</script></html>
+''';
+
+const _videoHtml = '''
+<html><script id="__UNIVERSAL_DATA_FOR_REHYDRATION__">
+{"__DEFAULT_SCOPE__":{"webapp.video-detail":{"itemInfo":{"itemStruct":{"id":"123","desc":"clip","createTime":1700000000,"author":{"uniqueId":"tiktok","nickname":"TikTok","secUid":"MS4wLjABAAAA","avatarThumb":"https://p16.tiktokcdn.com/a.jpg"},"stats":{"diggCount":1,"commentCount":2,"shareCount":3,"playCount":4},"video":{"playAddr":"https://v16-webapp-prime.us.tiktok.com/play.mp4","cover":"https://p16.tiktokcdn.com/c.jpg","duration":12,"width":720,"height":1280}}}}}}
+</script></html>
+''';
+
+void main() {
+  test('normaliseTikTokHandle strips @ and rejects junk', () {
+    expect(normaliseTikTokHandle('@TikTok'), 'tiktok');
+    expect(normaliseTikTokHandle(' some.user_1 '), 'some.user_1');
+    expect(normaliseTikTokHandle('ab'), 'ab');
+    expect(normaliseTikTokHandle('a'), isNull);
+    expect(normaliseTikTokHandle('https://www.tiktok.com/@x'), isNull);
+  });
+
+  test('parseTikTokProfileHtml reads user-detail rehydration', () {
+    final profile = parseTikTokProfileHtml(_profileHtml);
+    expect(profile, isNotNull);
+    expect(profile!.uniqueId, 'tiktok');
+    expect(profile.secUid, 'MS4wLjABAAAA');
+    expect(profile.nickname, 'TikTok');
+    expect(profile.followerCount, 10);
+    expect(profile.verified, isTrue);
+    expect(profile.privateAccount, isFalse);
+    expect(profile.avatarUrl, contains('tiktokcdn'));
+  });
+
+  test('parseTikTokVideoHtml reads itemStruct playAddr', () {
+    final post = parseTikTokVideoHtml(_videoHtml);
+    expect(post, isNotNull);
+    expect(post!.id, '123');
+    expect(post.desc, 'clip');
+    expect(post.author.uniqueId, 'tiktok');
+    expect(post.playUrl, startsWith('https://v16-webapp-prime'));
+    expect(post.durationSeconds, 12);
+    expect(post.aspectRatio, closeTo(720 / 1280, 0.001));
+  });
+
+  test('parseTikTokItemList reads unsigned creator list', () {
+    final page = parseTikTokItemList({
+      'statusCode': 0,
+      'hasMorePrevious': true,
+      'itemList': [
+        {
+          'id': '9',
+          'desc': 'hi',
+          'createTime': 1700000000,
+          'author': {'uniqueId': 'bob', 'nickname': 'Bob'},
+          'stats': {'diggCount': 5},
+          'video': {
+            'playAddr': 'https://v16.tiktokcdn.com/a.mp4',
+            'bitrateInfo': [
+              {
+                'PlayAddr': {
+                  'UrlKey': 'id_h264_720p_1',
+                  'UrlList': ['https://v16.tiktokcdn.com/720.mp4'],
+                },
+              },
+            ],
+            'cover': 'https://p16.tiktokcdn.com/c.jpg',
+            'width': 1080,
+            'height': 1920,
+            'duration': 8,
+          },
+        },
+      ],
+    });
+    expect(page.statusCode, 0);
+    expect(page.hasMore, isTrue);
+    expect(page.posts, hasLength(1));
+    expect(page.posts.single.author.uniqueId, 'bob');
+    expect(page.posts.single.sources.first.label, '720p');
+    expect(page.cursor, isNotNull);
+  });
+
+  test('drops www.tiktok.com play URLs and missing fields', () {
+    final page = parseTikTokItemList({
+      'statusCode': 0,
+      'itemList': [
+        {
+          'id': '1',
+          'author': {'uniqueId': 'a', 'nickname': 'A'},
+          'video': {'playAddr': 'https://www.tiktok.com/aweme/v1/play/'},
+        },
+        {'id': '2'},
+      ],
+    });
+    expect(page.posts, hasLength(1));
+    expect(page.posts.single.playUrl, isNull);
+  });
+
+  test('status 10201 is preserved for the client', () {
+    final page = parseTikTokItemList({'statusCode': 10201, 'itemList': []});
+    expect(page.statusCode, 10201);
+    expect(page.posts, isEmpty);
+  });
+
+  test('missing rehydration is null, not an exception', () {
+    expect(parseTikTokProfileHtml('<html></html>'), isNull);
+    expect(parseTikTokVideoHtml('<html></html>'), isNull);
+  });
+}
