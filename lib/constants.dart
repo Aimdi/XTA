@@ -321,6 +321,13 @@ const optionPluginBooruMaxRating = 'plugin.booru.max_rating';
 const optionPluginBooruInHomeFeed = 'plugin.booru.in_home_feed';
 const optionPluginBooruSearchHistory = 'plugin.booru.search_history';
 const optionPluginBooruMutedTags = 'plugin.booru.muted_tags';
+const pluginIdEhViewer = 'ehviewer';
+const optionPluginEhEnabled = 'plugin.ehviewer.enabled';
+const optionPluginEhShowTab = 'plugin.ehviewer.show_tab';
+const optionPluginEhCookies = 'plugin.ehviewer.cookies';
+const optionPluginEhUseExhentai = 'plugin.ehviewer.use_exhentai';
+const optionPluginEhCategories = 'plugin.ehviewer.categories';
+const optionPluginEhSearchHistory = 'plugin.ehviewer.search_history';
 
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.
@@ -636,6 +643,7 @@ const secretPrefKeys = {
   optionPluginThreadsDirectBearer,
   optionPluginPixivRefreshToken,
   optionPluginPixivAccessToken,
+  optionPluginEhCookies,
 };
 
 /// The declared keys, plus anything shaped like a credential.

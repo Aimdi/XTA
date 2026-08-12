@@ -1,3 +1,11 @@
+## XTA aimdi96
+
+What's new in XTA aimdi96:
+  - Booru plugin (Danbooru / Moebooru / Gelbooru / e621) with tag follows, mute, autocomplete
+  - Private EH gallery plugin (Popular / Front / search / reader / local favorites)
+  - Discover/search for Bluesky, Mastodon, Threads, and Pixiv
+  - Groups: stop timeline reset when adding a member; compact plugin feed rows
+
 ## QuaX v4.12.0
 
 What's new in QuaX v4.12.0:

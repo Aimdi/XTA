@@ -1147,6 +1147,133 @@
   "@plugin_deepmarks_test_ok_unverified": {},
   "plugin_deepmarks_title": "Deepmarks",
   "@plugin_deepmarks_title": {},
+  "plugin_eh_clear_cookies": "Clear cookies",
+  "@plugin_eh_clear_cookies": {},
+  "plugin_eh_cookies": "Cookies",
+  "@plugin_eh_cookies": {},
+  "plugin_eh_cookies_help": "Paste ipb_member_id and ipb_pass_hash (and igneous for ExHentai) from your browser. Never shared off-device.",
+  "@plugin_eh_cookies_help": {},
+  "plugin_eh_description": "Browse E-Hentai galleries — private, read-only, inspired by EhViewer",
+  "@plugin_eh_description": {},
+  "plugin_eh_empty_favorites": "No local favorites yet",
+  "@plugin_eh_empty_favorites": {},
+  "plugin_eh_empty_list": "No galleries — try again or check your connection",
+  "@plugin_eh_empty_list": {},
+  "plugin_eh_empty_search": "No galleries matched that search",
+  "@plugin_eh_empty_search": {},
+  "plugin_eh_error_ban": "This IP is temporarily banned by the site",
+  "@plugin_eh_error_ban": {},
+  "plugin_eh_error_network": "Could not reach E-Hentai",
+  "@plugin_eh_error_network": {},
+  "plugin_eh_error_not_configured": "EH is not ready — check settings",
+  "@plugin_eh_error_not_configured": {},
+  "plugin_eh_error_not_found": "That gallery was not found",
+  "@plugin_eh_error_not_found": {},
+  "plugin_eh_error_rate_limited": "The site is rate limiting — try again later",
+  "@plugin_eh_error_rate_limited": {},
+  "plugin_eh_error_response": "The site returned something unexpected",
+  "@plugin_eh_error_response": {},
+  "plugin_eh_error_unauthorized": "Access refused — check cookies / ExHentai toggle",
+  "@plugin_eh_error_unauthorized": {},
+  "plugin_eh_favorite": "Add to favorites",
+  "@plugin_eh_favorite": {},
+  "plugin_eh_jump_go": "Đi",
+  "@plugin_eh_jump_go": {},
+  "plugin_eh_jump_hint": "1–{total}",
+  "@plugin_eh_jump_hint": {},
+  "plugin_eh_jump_invalid": "Nhập trang từ 1 đến {total}",
+  "@plugin_eh_jump_invalid": {},
+  "plugin_eh_jump_to_page": "Nhảy tới trang",
+  "@plugin_eh_jump_to_page": {},
+  "plugin_eh_load_more_previews": "Tải thêm xem trước",
+  "@plugin_eh_load_more_previews": {},
+  "plugin_eh_open_on_site": "Open on site",
+  "@plugin_eh_open_on_site": {},
+  "plugin_eh_page_of": "Page {page} of {total}",
+  "@plugin_eh_page_of": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_pages": "{count} pages",
+  "@plugin_eh_pages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_previews": "Xem trước",
+  "@plugin_eh_previews": {},
+  "plugin_eh_rating": "Rating {rating}",
+  "@plugin_eh_rating": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_read": "Read",
+  "@plugin_eh_read": {},
+  "plugin_eh_search_hint": "Search title, tags, uploader…",
+  "@plugin_eh_search_hint": {},
+  "plugin_eh_section_account": "Account",
+  "@plugin_eh_section_account": {},
+  "plugin_eh_section_categories": "Default categories",
+  "@plugin_eh_section_categories": {},
+  "plugin_eh_settings_title": "EH settings",
+  "@plugin_eh_settings_title": {},
+  "plugin_eh_show_tab": "Show EH tab",
+  "@plugin_eh_show_tab": {},
+  "plugin_eh_show_tab_description": "Adds EH to the bottom navigation when the plugin is enabled",
+  "@plugin_eh_show_tab_description": {},
+  "plugin_eh_tab_favorites": "Favorites",
+  "@plugin_eh_tab_favorites": {},
+  "plugin_eh_tab_front": "Front page",
+  "@plugin_eh_tab_front": {},
+  "plugin_eh_tab_popular": "Popular",
+  "@plugin_eh_tab_popular": {},
+  "plugin_eh_tags": "Tags",
+  "@plugin_eh_tags": {},
+  "plugin_eh_test_connection": "Test connection",
+  "@plugin_eh_test_connection": {},
+  "plugin_eh_test_failed": "EH test failed: {detail}",
+  "@plugin_eh_test_failed": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_test_ok": "Site answered ({count} galleries)",
+  "@plugin_eh_test_ok": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_eh_title": "EH",
+  "@plugin_eh_title": {},
+  "plugin_eh_unfavorite": "Remove from favorites",
+  "@plugin_eh_unfavorite": {},
+  "plugin_eh_uploader": "Uploader {name}",
+  "@plugin_eh_uploader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_eh_use_exhentai": "Use ExHentai",
+  "@plugin_eh_use_exhentai": {},
+  "plugin_eh_use_exhentai_description": "Requires valid cookies; falls back to E-Hentai when cookies are empty",
+  "@plugin_eh_use_exhentai_description": {},
   "plugin_immich_album_per_folder": "Mỗi thư mục một album",
   "@plugin_immich_album_per_folder": {},
   "plugin_immich_album_per_folder_description": "Nội dung tải lên sẽ vào một album Immich mang tên thư mục dấu trang, được tạo nếu chưa có",

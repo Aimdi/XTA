@@ -26,6 +26,7 @@ const String tableBlueskySubscription = 'bluesky_subscription';
 const String tableMastodonSubscription = 'mastodon_subscription';
 const String tableRedditSubscription = 'reddit_subscription';
 const String tableBooruSubscription = 'booru_subscription';
+const String tableEhFavorite = 'eh_favorite';
 const String tableImmichUpload = 'immich_upload';
 const String tableRedditLocalVote = 'reddit_local_vote';
 const String tableThreadsLocalLike = 'threads_local_like';
@@ -45,7 +46,7 @@ const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 
-const int databaseVersion = 53;
+const int databaseVersion = 54;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -734,10 +735,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   52: [
     // Reader-marked adult groups: board sinks them under a Censored section.
     // Distinct from content_filter, which filters posts inside a custom feed.
-    SqlMigration(
-      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN nsfw',
-    ),
+    // Tolerant: partial fixtures (and the indexes upgrade test) may omit the
+    // groups table — a bare ALTER would brick later migrations.
+    Migration(Operation(_addSubscriptionGroupNsfwColumn)),
   ],
   53: [
     SqlMigration(
@@ -747,6 +747,23 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       'in_feed INTEGER NOT NULL DEFAULT 1, '
       'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
       reverseSql: 'DROP TABLE $tableBooruSubscription',
+    ),
+  ],
+  54: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableEhFavorite ('
+      'gid INTEGER PRIMARY KEY, '
+      'token VARCHAR NOT NULL, '
+      'title VARCHAR NOT NULL, '
+      'title_jpn VARCHAR, '
+      'category VARCHAR, '
+      'thumb_url VARCHAR, '
+      'uploader VARCHAR, '
+      'page_count INTEGER, '
+      'rating REAL, '
+      'posted_at TEXT, '
+      'favorited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableEhFavorite',
     ),
   ],
 });
@@ -809,6 +826,16 @@ Future<void> _addSubscriptionMaxPostsColumn(Database db) async {
     Repository.log.warning(
       'Could not add max_posts_per_load to $tableSubscription: $e',
     );
+  }
+}
+
+Future<void> _addSubscriptionGroupNsfwColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not add nsfw to $tableSubscriptionGroup: $e');
   }
 }
 

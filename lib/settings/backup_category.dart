@@ -15,6 +15,7 @@ enum BackupCategory {
   bluesky,
   mastodon,
   booruTags,
+  ehFavorites,
   groups,
   groupMembers,
   savedPosts,

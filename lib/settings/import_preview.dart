@@ -140,6 +140,7 @@ String _label(BuildContext context, BackupCategory category) =>
       BackupCategory.bluesky => L10n.of(context).plugin_bluesky_title,
       BackupCategory.mastodon => L10n.of(context).plugin_mastodon_title,
       BackupCategory.booruTags => L10n.of(context).plugin_booru_followed_tags,
+      BackupCategory.ehFavorites => L10n.of(context).plugin_eh_tab_favorites,
       BackupCategory.groups => L10n.of(context).groups,
       BackupCategory.groupMembers => L10n.of(context).group_members,
       BackupCategory.savedPosts => L10n.of(context).saved,
