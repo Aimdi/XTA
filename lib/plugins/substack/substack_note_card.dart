@@ -53,6 +53,10 @@ class SubstackNoteCard extends StatelessWidget {
                             width: 28,
                             height: 28,
                             fit: BoxFit.cover,
+                            cache: true,
+                            cacheWidth:
+                                (28 * MediaQuery.devicePixelRatioOf(context))
+                                    .ceil(),
                           ),
                         )
                       else
@@ -84,9 +88,16 @@ class SubstackNoteCard extends StatelessWidget {
                     const SizedBox(height: 12),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: ExtendedImage.network(
-                        note.imageUrl!,
-                        fit: BoxFit.cover,
+                      child: RepaintBoundary(
+                        child: ExtendedImage.network(
+                          note.imageUrl!,
+                          fit: BoxFit.cover,
+                          cache: true,
+                          cacheWidth:
+                              ((MediaQuery.sizeOf(context).width - 32) *
+                                      MediaQuery.devicePixelRatioOf(context))
+                                  .ceil(),
+                        ),
                       ),
                     ),
                   ],

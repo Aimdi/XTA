@@ -127,34 +127,46 @@ class EhGalleryTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  EhNetworkImage(url: gallery.thumbUrl ?? ''),
-                  if (gallery.category != null)
-                    Positioned(
-                      left: 6,
-                      top: 6,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withValues(
-                            alpha: 0.85,
-                          ),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          child: Text(
-                            gallery.category!.label,
-                            style: theme.textTheme.labelSmall,
-                          ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      RepaintBoundary(
+                        child: EhNetworkImage(
+                          url: gallery.thumbUrl ?? '',
+                          cacheWidth:
+                              (constraints.maxWidth *
+                                      MediaQuery.devicePixelRatioOf(context))
+                                  .ceil(),
                         ),
                       ),
-                    ),
-                ],
+                      if (gallery.category != null)
+                        Positioned(
+                          left: 6,
+                          top: 6,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface.withValues(
+                                alpha: 0.85,
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              child: Text(
+                                gallery.category!.label,
+                                style: theme.textTheme.labelSmall,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
             ),
             Padding(
@@ -215,6 +227,10 @@ class EhSpriteThumb extends StatelessWidget {
                 height: constraints.maxHeight,
                 fit: BoxFit.fitHeight,
                 cache: true,
+                cacheWidth:
+                    (constraints.maxWidth *
+                            MediaQuery.devicePixelRatioOf(context))
+                        .ceil(),
                 timeLimit: ehImageTimeLimit,
                 retries: 1,
                 loadStateChanged: (state) {

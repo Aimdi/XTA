@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -30,14 +31,18 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
   void initState() {
     super.initState();
     final prefs = PrefService.of(context, listen: false);
-    _instance = TextEditingController(text: prefs.get<String>(optionPluginMastodonInstance) ?? '');
+    _instance = TextEditingController(
+      text: prefs.get<String>(optionPluginMastodonInstance) ?? '',
+    );
     _newInstance = TextEditingController();
     _extras = _storedExtras(prefs);
   }
 
   static List<String> _storedExtras(BasePrefService prefs) {
     try {
-      final decoded = jsonDecode(prefs.get<String>(optionPluginMastodonInstances) ?? '[]');
+      final decoded = jsonDecode(
+        prefs.get<String>(optionPluginMastodonInstances) ?? '[]',
+      );
       return decoded is List ? decoded.whereType<String>().toList() : const [];
     } catch (_) {
       return const [];
@@ -52,7 +57,10 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
   }
 
   Future<void> _saveExtras() async {
-    await PrefService.of(context, listen: false).set(optionPluginMastodonInstances, jsonEncode(_extras));
+    await PrefService.of(
+      context,
+      listen: false,
+    ).set(optionPluginMastodonInstances, jsonEncode(_extras));
   }
 
   Future<void> _addExtra() async {
@@ -74,8 +82,12 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
   }
 
   Future<void> _save() async {
-    final normalised = normaliseMastodonInstance(_instance.text) ?? _instance.text.trim();
-    await PrefService.of(context, listen: false).set(optionPluginMastodonInstance, normalised);
+    final normalised =
+        normaliseMastodonInstance(_instance.text) ?? _instance.text.trim();
+    await PrefService.of(
+      context,
+      listen: false,
+    ).set(optionPluginMastodonInstance, normalised);
     if (normalised != _instance.text) {
       _instance.text = normalised;
     }
@@ -123,15 +135,28 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
             secondary: const Icon(Icons.dynamic_feed_outlined),
             title: Text(l10n.plugin_mastodon_in_home_feed),
             subtitle: Text(l10n.plugin_mastodon_in_home_feed_description),
-            value: PrefService.of(context).get<bool>(optionPluginMastodonInHomeFeed) == true,
+            value:
+                PrefService.of(
+                  context,
+                ).get<bool>(optionPluginMastodonInHomeFeed) ==
+                true,
             onChanged: (value) async {
-              await PrefService.of(context, listen: false).set(optionPluginMastodonInHomeFeed, value);
+              await PrefService.of(
+                context,
+                listen: false,
+              ).set(optionPluginMastodonInHomeFeed, value);
               if (mounted) setState(() {});
             },
           ),
-          Text(l10n.plugin_mastodon_settings_intro, style: theme.textTheme.bodyMedium),
+          Text(
+            l10n.plugin_mastodon_settings_intro,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
-          Text(l10n.plugin_mastodon_instance, style: theme.textTheme.titleSmall),
+          Text(
+            l10n.plugin_mastodon_instance,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           TextField(
             controller: _instance,
@@ -149,37 +174,55 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
             child: FilledButton.tonal(
               onPressed: _testing ? null : _test,
               child: _testing
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(l10n.plugin_mastodon_test),
             ),
           ),
           const SizedBox(height: 28),
-          Text(l10n.plugin_mastodon_more_instances, style: theme.textTheme.titleSmall),
+          Text(
+            l10n.plugin_mastodon_more_instances,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           for (final instance in _extras)
             ListTile(
               contentPadding: EdgeInsets.zero,
               dense: true,
               title: Text(instance),
-              trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => _removeExtra(instance)),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: () => _removeExtra(instance),
+              ),
             ),
           TextField(
             controller: _newInstance,
             decoration: InputDecoration(
               hintText: l10n.plugin_mastodon_instance_hint,
               border: const OutlineInputBorder(),
-              suffixIcon: IconButton(icon: const Icon(Icons.add), onPressed: _addExtra),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: _addExtra,
+              ),
             ),
             keyboardType: TextInputType.url,
             autocorrect: false,
             onSubmitted: (_) => _addExtra(),
           ),
           const SizedBox(height: 28),
-          Text(l10n.plugin_mastodon_builtin_instances, style: theme.textTheme.titleSmall),
+          Text(
+            l10n.plugin_mastodon_builtin_instances,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           Text(
             l10n.plugin_mastodon_builtin_instances_description,
-            style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 8),
           for (final instance in kMastodonDefaultInstances)
@@ -187,11 +230,16 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
               padding: const EdgeInsets.symmetric(vertical: 2),
               child: Text(
                 mastodonInstanceDomain(instance) ?? instance,
-                style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodyMedium!.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           const SizedBox(height: 28),
-          Text(l10n.plugin_mastodon_accounts, style: theme.textTheme.titleSmall),
+          Text(
+            l10n.plugin_mastodon_accounts,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
             store: context.read<MastodonAccountsStore>(),
@@ -201,7 +249,9 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     l10n.plugin_mastodon_no_accounts,
-                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               }
@@ -219,7 +269,19 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
                                 size: 40,
                                 accent: theme.colorScheme.primary,
                               )
-                            : Image.network(account.avatarUrl!, width: 40, height: 40, fit: BoxFit.cover),
+                            : ExtendedImage.network(
+                                account.avatarUrl!,
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                cache: true,
+                                cacheWidth:
+                                    (40 *
+                                            MediaQuery.devicePixelRatioOf(
+                                              context,
+                                            ))
+                                        .ceil(),
+                              ),
                       ),
                       title: Text(account.name),
                       subtitle: Text('@${account.acct}'),
@@ -230,7 +292,10 @@ class _MastodonSettingsScreenState extends State<MastodonSettingsScreen> {
                       ),
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct)),
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              MastodonProfileScreen(acct: account.acct),
+                        ),
                       ),
                     ),
                 ],

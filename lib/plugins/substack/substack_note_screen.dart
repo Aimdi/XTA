@@ -54,6 +54,9 @@ class SubstackNoteScreen extends StatelessWidget {
                     width: 40,
                     height: 40,
                     fit: BoxFit.cover,
+                    cache: true,
+                    cacheWidth: (40 * MediaQuery.devicePixelRatioOf(context))
+                        .ceil(),
                   ),
                 )
               else
@@ -97,7 +100,17 @@ class SubstackNoteScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: ExtendedImage.network(note.imageUrl!, fit: BoxFit.cover),
+              child: RepaintBoundary(
+                child: ExtendedImage.network(
+                  note.imageUrl!,
+                  fit: BoxFit.cover,
+                  cache: true,
+                  cacheWidth:
+                      (MediaQuery.sizeOf(context).width *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
+                ),
+              ),
             ),
           ],
           if ((note.reactionCount ?? 0) > 0) ...[
@@ -131,6 +144,10 @@ class SubstackNoteScreen extends StatelessWidget {
                         width: 40,
                         height: 40,
                         fit: BoxFit.cover,
+                        cache: true,
+                        cacheWidth:
+                            (40 * MediaQuery.devicePixelRatioOf(context))
+                                .ceil(),
                       ),
                     ),
               title: Text(pub.name),

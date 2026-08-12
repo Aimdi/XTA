@@ -1,9 +1,9 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/ui/capped_network_image.dart';
 
 part 'markdown_entity.dart';
 part 'image_entity.dart';
