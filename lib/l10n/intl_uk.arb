@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Скинути гостьову сесію",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Видаляє гостьові файли cookie та ідентифікатор пристрою, які використовуються для списку відео",
   "plugin_tiktok_description": "Дивіться відкриті профілі TikTok без облікового запису — приватно, лише читання; підписки лишаються на пристрої",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Знайдіть відкритий @нік, щоб підписатися на нього на цьому пристрої. Вхід у TikTok не потрібен.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Використовувати плеєр TikTok на сторінці, якщо CDN блокує пряме відтворення",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Публічні відео цього облікового запису недоступні без входу в TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Недавні ніки",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Відкритий нік",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Перевірити з’єднання",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Відкриває публічний профіль @tiktok, щоб перевірити, чи відповідає TikTok",
   "plugin_tiktok_test_failed": "Перевірка TikTok не вдалася: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok відповів ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

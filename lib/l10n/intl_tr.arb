@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Konuk oturumunu temizle",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Videoları listelemek için kullanılan misafir çerezlerini ve cihaz kimliğini kaldırır",
   "plugin_tiktok_description": "Hesap olmadan herkese açık TikTok profillerine bakın — gizli, salt okunur; takipler bu cihazda kalır",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Bu cihazda takip etmek için herkese açık bir @kullanıcı adı arayın. TikTok'a giriş yapmanız gerekmez.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Video CDN doğrudan oynatmayı engellerse sayfadaki TikTok oynatıcısını kullan",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Bu hesaptaki herkese açık videolar TikTok'a giriş yapılmadan kullanılamaz.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Son adlar",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Herkese açık ad",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Bağlantıyı dene",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "TikTok'un yanıt verip vermediğini kontrol etmek için herkese açık @tiktok profilini açar",
   "plugin_tiktok_test_failed": "TikTok testi başarısız: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok yanıt verdi ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

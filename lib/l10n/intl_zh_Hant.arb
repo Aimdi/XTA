@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "清除訪客工作階段",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "移除用於列出影片的訪客 Cookie 與裝置 ID",
   "plugin_tiktok_description": "無需帳號瀏覽公開 TikTok 個人檔 — 私密、唯讀，追蹤留在本機",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "搜尋公開的 @使用者名稱，在此裝置上追蹤它。不需要登入 TikTok。",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "當影片 CDN 阻擋直接播放時，改用頁面內的 TikTok 播放器",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "未登入 TikTok，無法查看此帳號的公開影片。",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "最近的帳號",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "公開帳號",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "測試連線",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "開啟公開的 @tiktok 個人檔，檢查 TikTok 是否有回應",
   "plugin_tiktok_test_failed": "TikTok 測試失敗：{detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok 已回應（{name}）",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "禪模式時間軸長度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

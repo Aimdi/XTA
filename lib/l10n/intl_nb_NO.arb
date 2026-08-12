@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Tøm gjesteøkt",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Fjerner gjestekapsler og enhets-ID-en som brukes til å liste opp videoer",
   "plugin_tiktok_description": "Se offentlige TikTok-profiler uten konto — privat, skrivebeskyttet; følger blir på denne enheten",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Søk etter et offentlig @brukernavn for å følge det på denne enheten. Du trenger ikke å logge inn på TikTok.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Bruk TikTok-spilleren på siden når video-CDN blokkerer direkte avspilling",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Offentlige videoer fra denne kontoen er ikke tilgjengelige uten innlogging på TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Nylige navn",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Offentlig navn",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Test tilkobling",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Åpner den offentlige @tiktok-profilen for å sjekke at TikTok svarer",
   "plugin_tiktok_test_failed": "TikTok-testen mislyktes: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok svarte ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Borrar sesión de invitado",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Bisitarien cookie-ak eta bideoak zerrendatzeko erabiltzen den gailuaren IDa kentzen ditu",
   "plugin_tiktok_description": "Mira perfiles públicos de TikTok sin cuenta: privado, solo lectura; los seguidos se quedan en este dispositivo",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Bilatu @erabiltzaile-izen publiko bat gailu honetan jarraitzeko. Ez da beharrezkoa TikTok-en saioa hastea.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Usa el reproductor de TikTok en la página si la CDN bloquea la reproducción directa",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Kontu honetako bideo publikoak ez daude eskuragarri TikTok-en saioa hasi gabe.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Usuarios recientes",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Usuario público",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Probatu konexioa",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "@tiktok profil publikoa irekitzen du TikTok-ek erantzuten duen egiaztatzeko",
   "plugin_tiktok_test_failed": "La prueba de TikTok falló: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok respondió ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

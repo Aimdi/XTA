@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Сбросить гостевую сессию",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Vydalyae hascavyya fajly cookie i identyfikatar pryłady, jaki vykarystoŭvayucca dlya spisu video",
   "plugin_tiktok_description": "Смотрите открытые профили TikTok без аккаунта — приватно, только чтение, подписки остаются на устройстве",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Znajdziće publičny @nik, kab padpisacca na jaho na hetaj pryładzie. Uvachod u TikTok nie patrebny.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Использовать плеер TikTok на странице, если CDN блокирует прямое воспроизведение",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Publichnyya video z hetaha akaŭnta nedastupnyya bez uvahodu ŭ TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Недавние ники",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Открытый ник",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Pravieryć złučennie",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Adkryvae publichny profil @tiktok, kab praveryts, ci adkazvae TikTok",
   "plugin_tiktok_test_failed": "Проверка TikTok не удалась: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok ответил ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

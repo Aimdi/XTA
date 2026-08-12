@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "अतिथि सत्र साफ़ करें",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "वीडियो सूचीबद्ध करने के लिए इस्तेमाल की जाने वाली अतिथि कुकी और डिवाइस आईडी हटाता है",
   "plugin_tiktok_description": "बिना खाते सार्वजनिक TikTok प्रोफ़ाइल देखें — निजी, केवल पढ़ने के लिए; फ़ॉलो इस डिवाइस पर रहते हैं",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "इस डिवाइस पर फ़ॉलो करने के लिए कोई सार्वजनिक @हैंडल खोजें। TikTok में लॉग इन करने की ज़रूरत नहीं है।",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "जब वीडियो CDN सीधे चलाने से रोके तो पेज वाला TikTok प्लेयर इस्तेमाल करें",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "इस खाते के सार्वजनिक वीडियो TikTok में लॉग इन किए बिना उपलब्ध नहीं हैं।",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "हाल के हैंडल",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "सार्वजनिक हैंडल",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "कनेक्शन जाँचें",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "यह सार्वजनिक @tiktok प्रोफ़ाइल खोलकर जाँचता है कि TikTok जवाब दे रहा है या नहीं",
   "plugin_tiktok_test_failed": "TikTok जाँच विफल: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok ने जवाब दिया ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

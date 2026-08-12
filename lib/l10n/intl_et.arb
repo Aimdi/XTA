@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Tühjenda külalisseanss",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Eemaldab külalise küpsised ja videote loetlemiseks kasutatava seadme ID",
   "plugin_tiktok_description": "Vaata avalikke TikToki profiile ilma kontota — privaatne, ainult lugemine; jälgimised jäävad sellesse seadmesse",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Otsi avalikku @kasutajanime, et seda selles seadmes jälgida. TikToki sisselogimist pole vaja.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Kasuta lehel olevat TikToki mängijat, kui video CDN blokeerib otsese esituse",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Selle konto avalikud videod pole ilma TikToki sisselogimiseta saadaval.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Hiljutised nimed",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Avalik nimi",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Testi ühendust",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Avab avaliku @tiktok profiili, et kontrollida, kas TikTok vastab",
   "plugin_tiktok_test_failed": "TikToki test ebaõnnestus: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok vastas ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

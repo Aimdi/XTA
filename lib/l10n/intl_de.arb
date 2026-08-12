@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Gastsitzung löschen",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Entfernt Gast-Cookies und die Geräte-ID, die zum Auflisten von Videos verwendet wird",
   "plugin_tiktok_description": "Öffentliche TikTok-Profile ohne Konto ansehen — privat, nur lesen, Folgen bleibt auf diesem Gerät",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Suche nach einem öffentlichen @Handle, um ihm auf diesem Gerät zu folgen. Eine TikTok-Anmeldung ist nicht erforderlich.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "TikToks Seiten-Player nutzen, wenn das Video-CDN die direkte Wiedergabe blockiert",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Öffentliche Videos dieses Kontos sind ohne Anmeldung bei TikTok nicht verfügbar.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Zuletzt geöffnet",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Öffentlicher Name",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Verbindung testen",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Öffnet das öffentliche @tiktok-Profil, um zu prüfen, ob TikTok antwortet",
   "plugin_tiktok_test_failed": "TikTok-Test fehlgeschlagen: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok hat geantwortet ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

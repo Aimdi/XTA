@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Hapus sesi tamu",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Menghapus cookie tamu dan ID perangkat yang digunakan untuk menampilkan daftar video",
   "plugin_tiktok_description": "Tonton profil TikTok publik tanpa akun — privat, hanya baca; ikutan tetap di perangkat ini",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Cari @nama pengguna publik untuk diikuti di perangkat ini. Tidak perlu login ke TikTok.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Gunakan pemutar TikTok di halaman jika CDN memblokir pemutaran langsung",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Video publik dari akun ini tidak tersedia tanpa login ke TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Nama terkini",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Nama publik",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Uji koneksi",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Membuka profil publik @tiktok untuk memeriksa apakah TikTok merespons",
   "plugin_tiktok_test_failed": "Uji TikTok gagal: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok menjawab ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

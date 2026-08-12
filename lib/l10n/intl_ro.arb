@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Cancella sessione ospite",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Elimină cookie-urile de vizitator și ID-ul dispozitivului folosit pentru a lista videoclipurile",
   "plugin_tiktok_description": "Guarda profili TikTok pubblici senza account — privato, sola lettura; i seguiti restano su questo dispositivo",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Caută un @nume de utilizator public pentru a-l urmări pe acest dispozitiv. Nu este necesar să te conectezi la TikTok.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Usa il lettore TikTok nella pagina se la CDN blocca la riproduzione diretta",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Videoclipurile publice ale acestui cont nu sunt disponibile fără autentificare în TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Nomi recenti",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Nome pubblico",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Testează conexiunea",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Deschide profilul public @tiktok pentru a verifica dacă TikTok răspunde",
   "plugin_tiktok_test_failed": "Test TikTok non riuscito: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok ha risposto ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

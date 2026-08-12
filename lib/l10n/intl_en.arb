@@ -2041,6 +2041,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Clear guest session",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Removes guest cookies and the device id used to list videos",
   "plugin_tiktok_description": "Watch public TikTok profiles without an account — private, read-only, follows stay on this device",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Search a public @handle to follow it on this device. No TikTok login needed.",
@@ -2077,6 +2078,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Use TikTok’s in-page player when the video CDN blocks direct playback",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Public videos from this account are not available without a TikTok login.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Recent handles",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Public handle",
@@ -2105,6 +2108,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Test connection",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Opens the public @tiktok profile to check that TikTok answers",
   "plugin_tiktok_test_failed": "TikTok test failed: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok answered ({name})",
@@ -2587,5 +2591,7 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

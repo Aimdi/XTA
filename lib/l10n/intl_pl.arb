@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Wyczyść sesję gościa",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Usuwa pliki cookie gościa i identyfikator urządzenia używane do wyświetlania filmów",
   "plugin_tiktok_description": "Oglądaj publiczne profile TikToka bez konta — prywatnie, tylko odczyt; obserwowane zostają na tym urządzeniu",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Wyszukaj publiczny @nick, aby obserwować go na tym urządzeniu. Logowanie do TikToka nie jest potrzebne.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Użyj odtwarzacza TikToka na stronie, gdy CDN blokuje bezpośrednie odtwarzanie",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Publiczne filmy z tego konta są niedostępne bez logowania do TikToka.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Ostatnie nazwy",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Publiczna nazwa",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Testuj połączenie",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Otwiera publiczny profil @tiktok, aby sprawdzić, czy TikTok odpowiada",
   "plugin_tiktok_test_failed": "Test TikToka nie powiódł się: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok odpowiedział ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

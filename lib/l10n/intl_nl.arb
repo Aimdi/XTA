@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Gastsessie wissen",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Verwijdert gastcookies en de apparaat-ID die wordt gebruikt om video’s weer te geven",
   "plugin_tiktok_description": "Bekijk openbare TikTok-profielen zonder account — privé, alleen lezen; volgers blijven op dit apparaat",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Zoek een openbare @gebruikersnaam om die op dit apparaat te volgen. Inloggen bij TikTok is niet nodig.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Gebruik de TikTok-speler op de pagina als het video-CDN directe weergave blokkeert",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Openbare video’s van dit account zijn niet beschikbaar zonder in te loggen bij TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Recente namen",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Openbare naam",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Verbinding testen",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Opent het openbare @tiktok-profiel om te controleren of TikTok antwoordt",
   "plugin_tiktok_test_failed": "TikTok-test mislukt: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok antwoordde ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

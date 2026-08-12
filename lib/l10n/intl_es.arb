@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Borrar sesión de invitado",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Elimina las cookies de invitado y el ID del dispositivo que se usan para listar vídeos",
   "plugin_tiktok_description": "Mira perfiles públicos de TikTok sin cuenta: privado, solo lectura; los seguidos se quedan en este dispositivo",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Busca un @usuario público para seguirlo en este dispositivo. No necesitas iniciar sesión en TikTok.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Usa el reproductor de TikTok en la página si la CDN bloquea la reproducción directa",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Los vídeos públicos de esta cuenta no están disponibles sin iniciar sesión en TikTok.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Usuarios recientes",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Usuario público",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Probar conexión",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Abre el perfil público @tiktok para comprobar que TikTok responde",
   "plugin_tiktok_test_failed": "La prueba de TikTok falló: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok respondió ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Longitud del feed en modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Cuántas páginas carga el feed en modo zen antes de hacer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

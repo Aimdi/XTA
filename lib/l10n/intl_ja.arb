@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "ゲストセッションを消去",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "動画の一覧表示に使われるゲスト Cookie とデバイス ID を削除します",
   "plugin_tiktok_description": "アカウントなしで公開TikTokプロフィールを見る — 非公開・閲覧専用。フォローはこの端末に残ります",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "この端末でフォローする公開 @ユーザー名を検索してください。TikTokへのログインは不要です。",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "動画CDNが直接再生を拒否するときは、ページ内のTikTokプレーヤーを使います",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "このアカウントの公開動画は、TikTok にログインしないと利用できません。",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "最近のハンドル",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "公開ハンドル",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "接続をテスト",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "公開の @tiktok プロフィールを開いて、TikTok が応答するか確認します",
   "plugin_tiktok_test_failed": "TikTokのテストに失敗しました: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTokが応答しました（{name}）",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

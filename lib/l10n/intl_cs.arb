@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "Vymazat hostovskou relaci",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "Odstraní cookies hosta a ID zařízení používané k načtení seznamu videí",
   "plugin_tiktok_description": "Prohlížejte veřejné profily TikToku bez účtu — soukromě, jen ke čtení; sledování zůstane v tomto zařízení",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "Vyhledejte veřejné @uživatelské jméno a sledujte ho na tomto zařízení. Přihlášení k TikToku není potřeba.",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "Použít přehrávač TikToku na stránce, když CDN blokuje přímé přehrávání",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "Veřejná videa z tohoto účtu nejsou dostupná bez přihlášení k TikToku.",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "Nedávná jména",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "Veřejné jméno",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "Otestovat připojení",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "Otevře veřejný profil @tiktok a ověří, zda TikTok odpovídá",
   "plugin_tiktok_test_failed": "Test TikToku selhal: {detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok odpověděl ({name})",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }

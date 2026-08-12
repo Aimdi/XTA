@@ -2014,6 +2014,7 @@
   "@plugin_threads_unfollow": {},
   "plugin_tiktok_clear_session": "清除访客会话",
   "@plugin_tiktok_clear_session": {},
+  "plugin_tiktok_clear_session_description": "移除用于列出视频的访客 Cookie 和设备 ID",
   "plugin_tiktok_description": "无需账号浏览公开 TikTok 主页 — 私密、只读，关注留在本机",
   "@plugin_tiktok_description": {},
   "plugin_tiktok_empty_cta": "搜索一个公开的 @用户名，在此设备上关注它。无需登录 TikTok。",
@@ -2050,6 +2051,8 @@
   "@plugin_tiktok_prefer_embed": {},
   "plugin_tiktok_prefer_embed_description": "当视频 CDN 阻止直接播放时，使用页面内的 TikTok 播放器",
   "@plugin_tiktok_prefer_embed_description": {},
+  "plugin_tiktok_profile_private": "未登录 TikTok，无法查看此账号的公开视频。",
+  "@plugin_tiktok_profile_private": {},
   "plugin_tiktok_recent_handles": "最近的用户名",
   "@plugin_tiktok_recent_handles": {},
   "plugin_tiktok_search_hint": "公开用户名",
@@ -2078,6 +2081,7 @@
   "@plugin_tiktok_tab_following": {},
   "plugin_tiktok_test_connection": "测试连接",
   "@plugin_tiktok_test_connection": {},
+  "plugin_tiktok_test_connection_description": "打开公开的 @tiktok 主页，检查 TikTok 是否响应",
   "plugin_tiktok_test_failed": "TikTok 测试失败：{detail}",
   "@plugin_tiktok_test_failed": {},
   "plugin_tiktok_test_ok": "TikTok 已响应（{name}）",
@@ -2545,5 +2549,7 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_tiktok_clear_session_description": {},
+  "@plugin_tiktok_test_connection_description": {}
 }
