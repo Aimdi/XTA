@@ -4,32 +4,30 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Home: pin plugin tabs, polish the nav pill, skip disabled accounts
+### Plugins: Booru and private EH galleries
 
-**Pin Bluesky, Threads, Reddit and other plugin timelines next to For you**, and
-the floating bottom bar sits cleaner on X Look. Accounts you turned off at home
-no longer feed Following or For you.
+**Browse Danbooru, Moebooru, Gelbooru and e621** with tag follows, mute, and
+autocomplete. A private **EH gallery reader** (EhViewer-inspired) covers Popular,
+Front, search, previews, jump-to-page reading, and local favorites — ExHentai
+when you paste cookies. Neither plugin posts, favorites, or rates on the remote
+site.
 
-### Reddit: real previews, fewer junk titles, more posts per page
+### Discover across Bluesky, Mastodon, Threads, and Pixiv
 
-**Article and native video cards stretch full-width again** (including
-reconstructed `v.redd.it` DASH when the listing was HTML). Placeholder titles
-like `<image>` stay hidden when the picture is already on the card, and each
-subreddit page asks for more posts so you scroll less.
+**Find people and posts** from each plugin’s own search/discover surfaces:
+Bluesky People/Posts, Mastodon search and trending, Threads search, and Pixiv
+recommended users plus extra ranking modes.
 
-### Groups, Substack, Threads, Pixiv, Bluesky
+### Groups: quieter resets, denser plugin rows
 
-**Mark a group NSFW** and it drops under a Censored section with a blurred
-mosaic. Substack pubs can be pinned and added to groups from Substack screens.
-Threads guest feed paints sooner with progressive refresh. Pixiv bookmarks no
-longer collapse to stubs, and profiles get Follow / Unfollow. Bluesky posts keep
-links and mentions as facets, and search splits People and Posts.
+**Adding someone to a group no longer yanks the timeline back to the top.**
+Plugin feeds on the Groups tab use compact X-style rows instead of tall tiles.
 
 ---
 
-Everything from [aimdi94](https://github.com/Aimdi/XTA/releases/tag/aimdi94) is
-in here too: Substack discovery and Listen, the floating nav pill, and full
-timeline reposts.
+Everything from [aimdi95](https://github.com/Aimdi/XTA/releases/tag/aimdi95) is
+in here too: pin plugin tabs, Reddit previews, NSFW groups, Pixiv follow, and
+Bluesky facets.
 
 ---
 
