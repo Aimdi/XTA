@@ -22,6 +22,7 @@ import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/tweet/tweet.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 import 'package:xta/saved/saved_content_index.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -217,7 +218,7 @@ class _SavedScreenState extends State<SavedScreen>
     required int itemCount,
     required Widget Function(int) tileAt,
   }) {
-    return ListView.builder(
+    return FeedListView(
       controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 4),
@@ -530,35 +531,44 @@ class _SavedScreenState extends State<SavedScreen>
     );
 
     final nameOf = {for (final group in _groups) group.id: group.name};
-    final rows = <Widget>[];
+    final rows = <({String? heading, LikedTweet? like})>[];
     for (final section in sections) {
-      rows.add(
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Text(
-            section.isUngrouped
-                ? L10n.of(context).likes_without_a_group
-                : nameOf[section.groupId] ?? '',
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
-          ),
-        ),
-      );
-      rows.addAll(
-        section.items.map(
-          (like) => SavedTweetTile(
-            id: like.id,
-            tweet: model.contentOf(like.id)?.tweet,
-          ),
-        ),
-      );
+      rows.add((
+        heading: section.isUngrouped
+            ? L10n.of(context).likes_without_a_group
+            : nameOf[section.groupId] ?? '',
+        like: null,
+      ));
+      for (final like in section.items) {
+        rows.add((heading: null, like: like));
+      }
     }
 
-    return ListView(
+    return FeedListView(
       controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
-      children: rows,
+      itemCount: rows.length,
+      itemBuilder: (context, index) {
+        final row = rows[index];
+        final heading = row.heading;
+        if (heading != null) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            child: Text(
+              heading,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
+            ),
+          );
+        }
+        final like = row.like!;
+        return SavedTweetTile(
+          key: ValueKey(like.id),
+          id: like.id,
+          tweet: model.contentOf(like.id)?.tweet,
+        );
+      },
     );
   }
 

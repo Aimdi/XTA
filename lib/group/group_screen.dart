@@ -61,7 +61,8 @@ class _GroupScreenState extends State<GroupScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _current ??= ModalRoute.of(context)!.settings.arguments as GroupScreenArguments;
+    _current ??=
+        ModalRoute.of(context)!.settings.arguments as GroupScreenArguments;
   }
 
   @override
@@ -74,7 +75,9 @@ class _GroupScreenState extends State<GroupScreen> {
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(0);
     }
-    setState(() => _current = GroupScreenArguments(id: group.id, name: group.name));
+    setState(
+      () => _current = GroupScreenArguments(id: group.id, name: group.name),
+    );
   }
 
   @override
@@ -102,13 +105,20 @@ class SubscriptionGroupScreenContent extends StatefulWidget {
   final String? cacheKey;
   final bool mediaOnly;
 
-  const SubscriptionGroupScreenContent({super.key, required this.id, this.cacheKey, this.mediaOnly = false});
+  const SubscriptionGroupScreenContent({
+    super.key,
+    required this.id,
+    this.cacheKey,
+    this.mediaOnly = false,
+  });
 
   @override
-  State<SubscriptionGroupScreenContent> createState() => _SubscriptionGroupScreenContentState();
+  State<SubscriptionGroupScreenContent> createState() =>
+      _SubscriptionGroupScreenContentState();
 }
 
-class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreenContent> {
+class _SubscriptionGroupScreenContentState
+    extends State<SubscriptionGroupScreenContent> {
   // Cached tweets shown while the group's subscriptions load, so the feed
   // reveals its content instead of a full-screen spinner on cold start.
   CachedChains? _preview;
@@ -144,24 +154,37 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<GroupModel, SubscriptionGroupGet>.transition(
+    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
       store: context.read<GroupModel>(),
       onLoading: (_) => _loadingView(),
-      onError: (_, error) =>
-          ScaffoldErrorWidget(error: error, stackTrace: null, prefix: L10n.current.unable_to_load_the_group),
+      onError: (_, error) => ScaffoldErrorWidget(
+        error: error,
+        stackTrace: null,
+        prefix: L10n.current.unable_to_load_the_group,
+      ),
       onState: (_, group) {
         // TODO: This is pretty gross. Figure out how to have a "no data" state
         if (group.id.isEmpty) {
           return _loadingView();
         }
         // A group leaves each filter unset (null) to follow the global default.
-        final prefs = PrefService.of(context);
-        final includeReplies = group.includeReplies ?? prefs.get<bool>(optionGlobalIncludeReplies) ?? true;
-        final includeRetweets = group.includeRetweets ?? prefs.get<bool>(optionGlobalIncludeRetweets) ?? true;
+        final prefs = PrefService.of(context, listen: false);
+        final includeReplies =
+            group.includeReplies ??
+            prefs.get<bool>(optionGlobalIncludeReplies) ??
+            true;
+        final includeRetweets =
+            group.includeRetweets ??
+            prefs.get<bool>(optionGlobalIncludeRetweets) ??
+            true;
 
         // Split the users into chunks, oldest first, to prevent thrashing of all groups when a new user is added
-        final filteredUsers = group.id == '-1' ? group.subscriptions.where((elm) => elm.inFeed) : group.subscriptions;
-        final members = filteredUsers.sorted((a, b) => a.createdAt.compareTo(b.createdAt)).toList();
+        final filteredUsers = group.id == '-1'
+            ? group.subscriptions.where((elm) => elm.inFeed)
+            : group.subscriptions;
+        final members = filteredUsers
+            .sorted((a, b) => a.createdAt.compareTo(b.createdAt))
+            .toList();
 
         // Members belonging to a plugin are not searched on X: each source has
         // its own pagination, and leaving one in a search query puts a dangling
@@ -169,19 +192,27 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
         // downstream has to know a network by name.
         final pluginMembers = {
           for (final source in subscriptionSources)
-            if (members.where(source.owns).toList(growable: false) case final owned when owned.isNotEmpty)
+            if (members.where(source.owns).toList(growable: false)
+                case final owned when owned.isNotEmpty)
               source: owned,
         };
 
         // Named rather than subtracted: what X can search for is a closed set,
         // so the next plugin whose members join a group cannot silently end up
         // in a search query by not being on a list of exclusions.
-        final users = members.where((e) => e is UserSubscription || e is SearchSubscription).toList(growable: false);
+        final users = members
+            .where((e) => e is UserSubscription || e is SearchSubscription)
+            .toList(growable: false);
 
-        var chunks = partition(
-          users,
-          feedChunkSize,
-        ).map((e) => SubscriptionGroupFeedChunk(e, includeReplies, includeRetweets)).toList();
+        var chunks = partition(users, feedChunkSize)
+            .map(
+              (e) => SubscriptionGroupFeedChunk(
+                e,
+                includeReplies,
+                includeRetweets,
+              ),
+            )
+            .toList();
 
         return SubscriptionGroupFeed(
           group: group,
@@ -204,10 +235,15 @@ class SubscriptionGroupFeedChunk {
   final bool includeReplies;
   final bool includeRetweets;
 
-  SubscriptionGroupFeedChunk(this.users, this.includeReplies, this.includeRetweets);
+  SubscriptionGroupFeedChunk(
+    this.users,
+    this.includeReplies,
+    this.includeRetweets,
+  );
 
   String get hash {
-    var toHash = '${users.map((e) => e.id).join(', ')}$includeReplies$includeRetweets';
+    var toHash =
+        '${users.map((e) => e.id).join(', ')}$includeReplies$includeRetweets';
 
     return sha1.convert(toHash.codeUnits).toString();
   }
@@ -237,7 +273,8 @@ class SubscriptionGroupScreen extends StatefulWidget {
   });
 
   @override
-  State<SubscriptionGroupScreen> createState() => _SubscriptionGroupScreenState();
+  State<SubscriptionGroupScreen> createState() =>
+      _SubscriptionGroupScreenState();
 }
 
 class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
@@ -281,10 +318,17 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
         if (onSwitch == null) {
           return Text(widget.name);
         }
-        return GroupSwitcherTitle(name: widget.name, currentGroupId: widget.id, onSwitch: onSwitch);
+        return GroupSwitcherTitle(
+          name: widget.name,
+          currentGroupId: widget.id,
+          onSwitch: onSwitch,
+        );
       },
-      bodyBuilder: (context) =>
-          SubscriptionGroupScreenContent(id: widget.id, cacheKey: widget.cacheKey, mediaOnly: _mediaOnly),
+      bodyBuilder: (context) => SubscriptionGroupScreenContent(
+        id: widget.id,
+        cacheKey: widget.cacheKey,
+        mediaOnly: _mediaOnly,
+      ),
       actionsBuilder: (context) => [
         _mediaOnlyToggle(context),
         ...defaultGroupActions(

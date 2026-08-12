@@ -7,6 +7,7 @@ import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/tweet/threaded_conversation.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
 
 /// One Threads post and any replies the public page embeds — stays in-app.
@@ -128,23 +129,32 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
   }
 
   Widget _body(L10n l10n) {
-    return ListView(
+    final extra = _loading || _error != null
+        ? 1
+        : (_replies.isNotEmpty ? 1 + _replies.length : 1);
+
+    return FeedListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        ThreadsPostCard(
-          post: _status,
-          showSourceBadge: false,
-          openOnTap: false,
-          onAuthorTap: () => _openProfile(_status.handle),
-          onOpenBrowser: _status.url == null ? null : _openBrowser,
-        ),
-        if (_loading)
-          const Padding(
+      itemCount: 1 + extra,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return ThreadsPostCard(
+            key: ValueKey(_status.id),
+            post: _status,
+            showSourceBadge: false,
+            openOnTap: false,
+            onAuthorTap: () => _openProfile(_status.handle),
+            onOpenBrowser: _status.url == null ? null : _openBrowser,
+          );
+        }
+        if (_loading) {
+          return const Padding(
             padding: EdgeInsets.all(24),
             child: Center(child: CircularProgressIndicator()),
-          )
-        else if (_error != null)
-          Padding(
+          );
+        }
+        if (_error != null) {
+          return Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             child: FullPageErrorWidget(
               error: _error,
@@ -152,34 +162,10 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
               prefix: threadsApiErrorMessage(l10n, _error!),
               onRetry: _load,
             ),
-          )
-        else if (_replies.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-            child: Text(
-              l10n.plugin_threads_replies,
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-          for (var i = 0; i < _replies.length; i++)
-            ThreadIndent(
-              depth: 1,
-              connectTop: true,
-              connectBottom: i < _replies.length - 1,
-              child: ThreadsPostCard(
-                post: _replies[i],
-                showSourceBadge: false,
-                onOpen: () => _openPost(_replies[i]),
-                onAuthorTap: () => _openProfile(_replies[i].handle),
-                onOpenBrowser: _replies[i].url == null
-                    ? null
-                    : () => openUri(context, _replies[i].url!),
-              ),
-            ),
-        ] else ...[
-          Padding(
+          );
+        }
+        if (_replies.isEmpty) {
+          return Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
             child: Column(
               children: [
@@ -198,9 +184,36 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
                   ),
               ],
             ),
+          );
+        }
+        if (index == 1) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            child: Text(
+              l10n.plugin_threads_replies,
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          );
+        }
+        final i = index - 2;
+        return ThreadIndent(
+          depth: 1,
+          connectTop: true,
+          connectBottom: i < _replies.length - 1,
+          child: ThreadsPostCard(
+            key: ValueKey(_replies[i].id),
+            post: _replies[i],
+            showSourceBadge: false,
+            onOpen: () => _openPost(_replies[i]),
+            onAuthorTap: () => _openProfile(_replies[i].handle),
+            onOpenBrowser: _replies[i].url == null
+                ? null
+                : () => openUri(context, _replies[i].url!),
           ),
-        ],
-      ],
+        );
+      },
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 String mastodonErrorMessage(L10n l10n, Object error) {
   if (error is! MastodonException) {
@@ -58,7 +59,10 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     final prefs = PrefService.of(context, listen: false);
     final client = context.read<MastodonClient>();
     try {
-      final candidates = mastodonInstanceCandidates(widget.acct, configured: mastodonConfiguredInstances(prefs));
+      final candidates = mastodonInstanceCandidates(
+        widget.acct,
+        configured: mastodonConfiguredInstances(prefs),
+      );
       final thread = await client.profileAnywhere(candidates, widget.acct);
       if (mounted) {
         setState(() {
@@ -102,7 +106,12 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     final user = subscriptionOf(profile.toAccount());
     final groups = await groupsModel.listGroupsForUser(user.id);
     if (!mounted) return;
-    await pickUserGroups(context, user: user, followed: true, groupsForUser: groups);
+    await pickUserGroups(
+      context,
+      user: user,
+      followed: true,
+      groupsForUser: groups,
+    );
     if (mounted) setState(() {});
   }
 
@@ -137,22 +146,32 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     }
 
     final profile = _profile!;
-    final following = context.read<MastodonAccountsStore>().follows(profile.acct);
+    final following = context.read<MastodonAccountsStore>().follows(
+      profile.acct,
+    );
 
-    return ListView(
+    return FeedListView(
       padding: const EdgeInsets.only(bottom: 24),
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: MastodonProfileCard(
-            profile: profile,
-            following: following,
-            onFollowToggle: () => _toggleFollow(profile),
-            onAddToGroup: () => _addToGroup(profile),
-          ),
-        ),
-        for (final post in _posts) MastodonPostCard(key: ValueKey(post.id), post: post, showSourceBadge: false),
-      ],
+      itemCount: 1 + _posts.length,
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: MastodonProfileCard(
+              profile: profile,
+              following: following,
+              onFollowToggle: () => _toggleFollow(profile),
+              onAddToGroup: () => _addToGroup(profile),
+            ),
+          );
+        }
+        final post = _posts[index - 1];
+        return MastodonPostCard(
+          key: ValueKey(post.id),
+          post: post,
+          showSourceBadge: false,
+        );
+      },
     );
   }
 }
@@ -163,7 +182,13 @@ class MastodonProfileCard extends StatelessWidget {
   final VoidCallback? onFollowToggle;
   final VoidCallback? onAddToGroup;
 
-  const MastodonProfileCard({super.key, required this.profile, required this.following, this.onFollowToggle, this.onAddToGroup});
+  const MastodonProfileCard({
+    super.key,
+    required this.profile,
+    required this.following,
+    this.onFollowToggle,
+    this.onAddToGroup,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -190,7 +215,8 @@ class MastodonProfileCard extends StatelessWidget {
                       width: 64,
                       height: 64,
                       fit: BoxFit.cover,
-                      cacheWidth: (64 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                      cacheWidth: (64 * MediaQuery.devicePixelRatioOf(context))
+                          .ceil(),
                     ),
             ),
             const SizedBox(width: 14),
@@ -202,11 +228,15 @@ class MastodonProfileCard extends StatelessWidget {
                     profile.displayName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w700),
+                    style: theme.textTheme.titleLarge!.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   Text(
                     '@${profile.acct}',
-                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -222,8 +252,16 @@ class MastodonProfileCard extends StatelessWidget {
           spacing: 18,
           runSpacing: 6,
           children: [
-            _count(context, numbers.format(profile.followersCount), l10n.followers),
-            _count(context, numbers.format(profile.followingCount), l10n.following),
+            _count(
+              context,
+              numbers.format(profile.followersCount),
+              l10n.followers,
+            ),
+            _count(
+              context,
+              numbers.format(profile.followingCount),
+              l10n.following,
+            ),
             _count(context, numbers.format(profile.statusesCount), l10n.tweets),
           ],
         ),
@@ -236,8 +274,16 @@ class MastodonProfileCard extends StatelessWidget {
               if (onFollowToggle != null)
                 FilledButton.tonalIcon(
                   onPressed: onFollowToggle,
-                  icon: Icon(following ? Icons.person_remove_alt_1 : Icons.person_add_alt),
-                  label: Text(following ? l10n.plugin_mastodon_unfollow : l10n.plugin_mastodon_follow),
+                  icon: Icon(
+                    following
+                        ? Icons.person_remove_alt_1
+                        : Icons.person_add_alt,
+                  ),
+                  label: Text(
+                    following
+                        ? l10n.plugin_mastodon_unfollow
+                        : l10n.plugin_mastodon_follow,
+                  ),
                 ),
               if (onAddToGroup != null)
                 OutlinedButton.icon(

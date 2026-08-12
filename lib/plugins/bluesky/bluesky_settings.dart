@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -29,7 +30,8 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
   void initState() {
     super.initState();
     final prefs = PrefService.of(context, listen: false);
-    final stored = (prefs.get<String>(optionPluginBlueskyInstance) ?? '').trim();
+    final stored = (prefs.get<String>(optionPluginBlueskyInstance) ?? '')
+        .trim();
     _instance = TextEditingController(
       text: stored.isEmpty ? kBlueskyDefaultAppView : stored,
     );
@@ -42,8 +44,12 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
   }
 
   Future<void> _save() async {
-    final normalised = normaliseBlueskyAppView(_instance.text) ?? _instance.text.trim();
-    await PrefService.of(context, listen: false).set(optionPluginBlueskyInstance, normalised);
+    final normalised =
+        normaliseBlueskyAppView(_instance.text) ?? _instance.text.trim();
+    await PrefService.of(
+      context,
+      listen: false,
+    ).set(optionPluginBlueskyInstance, normalised);
     if (normalised != _instance.text) {
       _instance.text = normalised;
     }
@@ -100,13 +106,23 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
             secondary: const Icon(Icons.dynamic_feed_outlined),
             title: Text(l10n.plugin_bluesky_in_home_feed),
             subtitle: Text(l10n.plugin_bluesky_in_home_feed_description),
-            value: PrefService.of(context).get<bool>(optionPluginBlueskyInHomeFeed) == true,
+            value:
+                PrefService.of(
+                  context,
+                ).get<bool>(optionPluginBlueskyInHomeFeed) ==
+                true,
             onChanged: (value) async {
-              await PrefService.of(context, listen: false).set(optionPluginBlueskyInHomeFeed, value);
+              await PrefService.of(
+                context,
+                listen: false,
+              ).set(optionPluginBlueskyInHomeFeed, value);
               if (mounted) setState(() {});
             },
           ),
-          Text(l10n.plugin_bluesky_settings_intro, style: theme.textTheme.bodyMedium),
+          Text(
+            l10n.plugin_bluesky_settings_intro,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           Text(l10n.plugin_bluesky_instance, style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
@@ -123,7 +139,9 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
           const SizedBox(height: 8),
           Text(
             l10n.plugin_bluesky_instance_default(kBlueskyDefaultAppView),
-            style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -133,7 +151,11 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
               FilledButton.tonal(
                 onPressed: _testing ? null : _test,
                 child: _testing
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
                     : Text(l10n.plugin_bluesky_test),
               ),
               TextButton(
@@ -149,7 +171,9 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
             title: Text(l10n.plugin_bluesky_import_following),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const BlueskyImportFollowsScreen()),
+              MaterialPageRoute(
+                builder: (_) => const BlueskyImportFollowsScreen(),
+              ),
             ),
           ),
           ListTile(
@@ -158,7 +182,9 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
             title: Text(l10n.plugin_bluesky_import_list),
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const BlueskyImportListScreen()),
+              MaterialPageRoute(
+                builder: (_) => const BlueskyImportListScreen(),
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -172,7 +198,9 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
                     l10n.plugin_bluesky_no_accounts,
-                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               }
@@ -190,7 +218,19 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
                                 size: 40,
                                 accent: theme.colorScheme.primary,
                               )
-                            : Image.network(account.avatarUrl!, width: 40, height: 40, fit: BoxFit.cover),
+                            : ExtendedImage.network(
+                                account.avatarUrl!,
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                cache: true,
+                                cacheWidth:
+                                    (40 *
+                                            MediaQuery.devicePixelRatioOf(
+                                              context,
+                                            ))
+                                        .ceil(),
+                              ),
                       ),
                       title: Text(account.name),
                       subtitle: Text('@${account.handle}'),

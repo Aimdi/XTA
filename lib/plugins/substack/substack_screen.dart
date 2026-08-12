@@ -13,6 +13,7 @@ import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// Substack Home / Inbox / Notes / Library — account features as local stand-ins.
 class SubstackScreen extends StatefulWidget {
@@ -438,7 +439,7 @@ class _PostsPane extends StatelessWidget {
                         );
                       }
 
-                      return ListView.builder(
+                      return FeedListView(
                         controller: scrollController,
                         padding: const EdgeInsets.only(bottom: 24),
                         itemCount:
@@ -456,6 +457,7 @@ class _PostsPane extends StatelessWidget {
                           if (postIndex < snapshot.posts.length) {
                             final post = snapshot.posts[postIndex];
                             return SubstackPostCard(
+                              key: ValueKey(post.id),
                               post: post,
                               showSourceBadge: false,
                               logoUrl: _logoFor(publications, post),
@@ -779,14 +781,23 @@ class _LibraryPaneState extends State<_LibraryPane> {
                         final pub = visible[index];
                         final pinned = widget.pubs.isPinned(pub.id);
                         return ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: pub.logoUrl == null
-                                ? null
-                                : NetworkImage(pub.logoUrl!),
-                            child: pub.logoUrl == null
-                                ? const Icon(Icons.newspaper)
-                                : null,
-                          ),
+                          leading: pub.logoUrl == null
+                              ? const CircleAvatar(child: Icon(Icons.newspaper))
+                              : ClipOval(
+                                  child: ExtendedImage.network(
+                                    pub.logoUrl!,
+                                    width: 56,
+                                    height: 56,
+                                    fit: BoxFit.cover,
+                                    cache: true,
+                                    cacheWidth:
+                                        (56 *
+                                                MediaQuery.devicePixelRatioOf(
+                                                  context,
+                                                ))
+                                            .ceil(),
+                                  ),
+                                ),
                           title: Text(pub.name),
                           subtitle: Text(
                             Uri.tryParse(pub.baseUrl)?.host ?? pub.baseUrl,

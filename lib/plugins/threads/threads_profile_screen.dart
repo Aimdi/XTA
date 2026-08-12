@@ -16,6 +16,7 @@ import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
 
 /// What a failed Xy / guest lookup should say.
@@ -259,34 +260,37 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
 
     return RefreshIndicator(
       onRefresh: () => _load(forceRefresh: true),
-      child: ListView(
+      child: FeedListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 24),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: ThreadsProfileCard(
-              profile: profile,
-              onFollow: alreadyFollows ? null : () => _follow(profile),
-              onAddToGroup: () => _addToGroup(profile),
-            ),
-          ),
-          if (_posts.isEmpty)
-            Padding(
+        itemCount: 1 + (_posts.isEmpty ? 1 : _posts.length),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: ThreadsProfileCard(
+                profile: profile,
+                onFollow: alreadyFollows ? null : () => _follow(profile),
+                onAddToGroup: () => _addToGroup(profile),
+              ),
+            );
+          }
+          if (_posts.isEmpty) {
+            return Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
               child: Text(
                 l10n.plugin_threads_no_posts,
                 textAlign: TextAlign.center,
               ),
-            )
-          else
-            for (final post in _posts)
-              ThreadsPostCard(
-                key: ValueKey(post.id),
-                post: post,
-                showSourceBadge: false,
-              ),
-        ],
+            );
+          }
+          final post = _posts[index - 1];
+          return ThreadsPostCard(
+            key: ValueKey(post.id),
+            post: post,
+            showSourceBadge: false,
+          );
+        },
       ),
     );
   }

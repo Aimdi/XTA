@@ -44,6 +44,8 @@ class SubstackPostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
       store: context.read<SubstackReadStore>(),
+      distinct: (_) =>
+          !context.read<SubstackReadStore>().state.contains(post.id),
       onState: (context, readIds) =>
           _build(context, unread: !readIds.contains(post.id)),
     );
@@ -54,65 +56,67 @@ class SubstackPostCard extends StatelessWidget {
     final date = post.publishedAt;
     final hasCover = post.coverImage != null && post.coverImage!.isNotEmpty;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tweetFlatCard(
-          color: Theme.of(context).cardColor,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              InkWell(
-                onTap: () => _open(context),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (hasCover) _cover(context),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _header(context, date, unread: unread),
-                          const SizedBox(height: 8),
-                          Text(
-                            post.title,
-                            maxLines: hasCover ? 4 : 3,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleMedium!.copyWith(
-                              fontWeight: unread
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
-                              height: 1.25,
-                            ),
-                          ),
-                          if (post.excerpt != null) ...[
-                            const SizedBox(height: 6),
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          tweetFlatCard(
+            color: Theme.of(context).cardColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                InkWell(
+                  onTap: () => _open(context),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (hasCover) _cover(context),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _header(context, date, unread: unread),
+                            const SizedBox(height: 8),
                             Text(
-                              post.excerpt!,
-                              maxLines: hasCover ? 2 : 3,
+                              post.title,
+                              maxLines: hasCover ? 4 : 3,
                               overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                height: 1.35,
+                              style: theme.textTheme.titleMedium!.copyWith(
+                                fontWeight: unread
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                                height: 1.25,
                               ),
                             ),
+                            if (post.excerpt != null) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                post.excerpt!,
+                                maxLines: hasCover ? 2 : 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodyMedium!.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-                child: _counts(context),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                  child: _counts(context),
+                ),
+              ],
+            ),
           ),
-        ),
-        tweetHairlineDivider(context),
-      ],
+          tweetHairlineDivider(context),
+        ],
+      ),
     );
   }
 

@@ -12,6 +12,7 @@ import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 import 'package:xta/user.dart';
 
 /// What a failed Bluesky read should say.
@@ -223,30 +224,35 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
         }
         return false;
       },
-      child: ListView(
+      child: FeedListView(
         padding: const EdgeInsets.only(bottom: 24),
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: BlueskyProfileCard(
-              profile: profile,
-              following: following,
-              onFollowToggle: () => _toggleFollow(profile),
-              onAddToGroup: () => _addToGroup(profile),
-            ),
-          ),
-          for (final post in _posts)
-            BlueskyPostCard(
+        itemCount: 1 + _posts.length + (_loadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: BlueskyProfileCard(
+                profile: profile,
+                following: following,
+                onFollowToggle: () => _toggleFollow(profile),
+                onAddToGroup: () => _addToGroup(profile),
+              ),
+            );
+          }
+          final postIndex = index - 1;
+          if (postIndex < _posts.length) {
+            final post = _posts[postIndex];
+            return BlueskyPostCard(
               key: ValueKey(post.uri),
               post: post,
               showSourceBadge: false,
-            ),
-          if (_loadingMore)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-        ],
+            );
+          }
+          return const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
       ),
     );
   }
@@ -354,7 +360,9 @@ class BlueskyProfileCard extends StatelessWidget {
                 FilledButton.tonalIcon(
                   onPressed: onFollowToggle,
                   icon: Icon(
-                    following ? Icons.person_remove_alt_1 : Icons.person_add_alt,
+                    following
+                        ? Icons.person_remove_alt_1
+                        : Icons.person_add_alt,
                   ),
                   label: Text(
                     following

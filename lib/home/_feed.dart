@@ -256,7 +256,9 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final BasePrefService prefs = PrefService.of(context);
+    // Strip membership is observed separately; listening to every pref here
+    // rebuilt Following on theme, zen, and unrelated plugin writes.
+    final BasePrefService prefs = PrefService.of(context, listen: false);
     final strip = context.read<FeedStripStore>();
     // Store list is the source of truth once edited; prefs alone lag a frame.
     final available = availableFeedTabsFromIds(strip.state, prefs);

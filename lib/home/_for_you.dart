@@ -18,7 +18,11 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
 
-final UserWithExtra user = UserWithExtra.fromArguments(idStr: "1", possiblySensitive: false, screenName: "ForYou");
+final UserWithExtra user = UserWithExtra.fromArguments(
+  idStr: "1",
+  possiblySensitive: false,
+  screenName: "ForYou",
+);
 
 class ForYouTweets extends StatefulWidget {
   final TweetFeedController feed;
@@ -26,13 +30,20 @@ class ForYouTweets extends StatefulWidget {
   final bool includeReplies;
   final BasePrefService pref;
 
-  const ForYouTweets(this.feed, {super.key, required this.type, required this.includeReplies, required this.pref});
+  const ForYouTweets(
+    this.feed, {
+    super.key,
+    required this.type,
+    required this.includeReplies,
+    required this.pref,
+  });
 
   @override
   State<ForYouTweets> createState() => _ForYouTweetsState();
 }
 
-class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClientMixin<ForYouTweets> {
+class _ForYouTweetsState extends State<ForYouTweets>
+    with AutomaticKeepAliveClientMixin<ForYouTweets> {
   static const int pageSize = 20;
   int loadTweetsCounter = 0;
   @override
@@ -48,7 +59,8 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
 
   List<InterleavedItem> _interleaved = const [];
 
-  void _mergeInterleaved() => _interleaved = [for (final items in _pluginItems.values) ...items];
+  void _mergeInterleaved() =>
+      _interleaved = [for (final items in _pluginItems.values) ...items];
 
   // Reading position: boundary loaded once per mount and frozen so the
   // "You're caught up" divider never moves mid-session.
@@ -83,7 +95,10 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
   /// Read through the shared stores, so the accounts this timeline mixes in are
   /// the ones the Following feed and the plugin's own tab already fetched —
   /// swiping between them used to download each of them again.
-  Future<void> _loadPluginPosts() => Future.wait(subscriptionSources.map(_loadPostsFrom));
+  Future<void> _loadPluginPosts() {
+    final prefs = PrefService.of(context, listen: false);
+    return Future.wait(enabledSubscriptionSources(prefs).map(_loadPostsFrom));
+  }
 
   Future<void> _loadPostsFrom(SubscriptionSource source) async {
     final items = source.inHomeFeed(context)
@@ -93,7 +108,8 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
     // An empty result is assigned too, so an account the reader stopped
     // following takes its posts with it — but only when there is something to
     // clear, rather than a rebuild per mount for the readers with none.
-    if (mounted && (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
+    if (mounted &&
+        (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
       setState(() {
         _pluginItems[source] = items;
         _mergeInterleaved();
@@ -110,9 +126,11 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
     return widget.pref.get<int>(optionZenModePageCap);
   }
 
-  bool get _tracksReadPosition => widget.pref.get(optionFeedReadingPosition) == true;
+  bool get _tracksReadPosition =>
+      widget.pref.get(optionFeedReadingPosition) == true;
 
-  bool _isSeen(TweetChain chain) => _lastSeen != null && isChainSeen(chain, _lastSeen!);
+  bool _isSeen(TweetChain chain) =>
+      _lastSeen != null && isChainSeen(chain, _lastSeen!);
 
   void _maybeLoadReadPosition() {
     if (_readPositionLoadStarted || !_tracksReadPosition) {
@@ -168,14 +186,17 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
   }
 
   bool _onScrollNotification(ScrollNotification notification) {
-    if (notification is UserScrollNotification && notification.direction != ScrollDirection.idle) {
+    if (notification is UserScrollNotification &&
+        notification.direction != ScrollDirection.idle) {
       _userHasScrolled = true;
     }
     if (notification is! ScrollEndNotification) {
       return false;
     }
     final metrics = notification.metrics;
-    if (_tracksReadPosition && metrics.hasPixels && metrics.pixels <= feedReadPositionTopThresholdPx) {
+    if (_tracksReadPosition &&
+        metrics.hasPixels &&
+        metrics.pixels <= feedReadPositionTopThresholdPx) {
       final items = widget.feed.items;
       if (items != null && items.isNotEmpty) {
         _recordReadPosition(items);
@@ -194,7 +215,8 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
 
   bool get _atTop {
     final position = _scrollPosition;
-    return position == null || position.pixels <= feedReadPositionTopThresholdPx;
+    return position == null ||
+        position.pixels <= feedReadPositionTopThresholdPx;
   }
 
   void _recordReadPosition(List<TweetChain> threads) {
@@ -209,7 +231,9 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
   void _onFirstPageLoaded(List<TweetChain> threads) {
     if (!_caughtUpRestoreEvaluated) {
       _caughtUpRestoreEvaluated = true;
-      final boundary = _lastSeen == null ? null : caughtUpBoundaryIndex(threads, _lastSeen!);
+      final boundary = _lastSeen == null
+          ? null
+          : caughtUpBoundaryIndex(threads, _lastSeen!);
       if (boundary != null) {
         _scheduleCaughtUpRestore(boundary, threads.length);
         return;
@@ -223,11 +247,15 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
   void _scheduleCaughtUpRestore(int index, int itemCount, [int attempts = 0]) {
     if (_userHasScrolled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _userHasScrolled || attempts >= maxCaughtUpRestoreFrames) {
+      if (!mounted ||
+          _userHasScrolled ||
+          attempts >= maxCaughtUpRestoreFrames) {
         return;
       }
       final position = _scrollPosition;
-      if (position == null || !position.haveDimensions || !widget.feed.hasItems) {
+      if (position == null ||
+          !position.haveDimensions ||
+          !widget.feed.hasItems) {
         _scheduleCaughtUpRestore(index, itemCount, attempts + 1);
         return;
       }
@@ -240,7 +268,10 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
         _scheduleCaughtUpRestore(index, itemCount, attempts + 1);
         return;
       }
-      final estimated = (position.maxScrollExtent * index / itemCount).clamp(0.0, position.maxScrollExtent);
+      final estimated = (position.maxScrollExtent * index / itemCount).clamp(
+        0.0,
+        position.maxScrollExtent,
+      );
       position.jumpTo(estimated);
     });
   }
@@ -250,7 +281,9 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
     super.build(context);
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<TweetContextState>(create: (_) => TweetContextState.fromPrefs(PrefService.of(context))),
+        ChangeNotifierProvider<TweetContextState>(
+          create: (_) => TweetContextState.fromPrefs(PrefService.of(context)),
+        ),
       ],
       child: SensitiveMediaGate(
         sensitive: user.possiblySensitive ?? false,
@@ -270,8 +303,12 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
               unawaited(_loadPluginPosts());
             },
             firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
-            newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-            emptyMessage: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+            newPageErrorPrefix: L10n.of(
+              context,
+            ).unable_to_load_the_next_page_of_tweets,
+            emptyMessage: L10n.of(
+              context,
+            ).unable_to_load_the_tweets_for_the_feed,
             isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
             caughtUpDividerKey: _caughtUpKey,
           ),
