@@ -91,7 +91,7 @@ class TikTokPlugin extends XtaPlugin {
   Future<void> forgetLoadedData(BuildContext context) async {
     final follows = context.read<TikTokFollowsStore>();
     final likes = context.read<TikTokLikesStore>();
-    await follows.load();
-    await likes.load();
+    final history = context.read<TikTokSearchHistoryStore>();
+    await Future.wait([follows.load(), likes.load(), history.load()]);
   }
 }

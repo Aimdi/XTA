@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/plugins/account_posts.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 
@@ -222,55 +223,53 @@ class TikTokFollowingStore extends Store<List<TikTokPost>> {
   final TikTokClient client;
   final TikTokFollowsStore follows;
 
-  final Map<String, String?> _cursors = {};
-  final Map<String, bool> _more = {};
-  var _loadingMore = false;
+  final _posts = AccountPostCache<TikTokPost>(
+    dateOf: (post) => post.createdAt,
+    perAccount: 15,
+    concurrency: 2,
+  );
 
   TikTokFollowingStore(this.client, this.follows) : super(const []);
 
-  bool get hasMore => _more.values.any((v) => v);
-  bool get loadingMore => _loadingMore;
-
-  Future<void> refresh() async {
-    await execute(() async {
-      _cursors.clear();
-      _more.clear();
-      if (follows.state.isEmpty) await follows.load();
-      return _fetchRound(initial: true);
-    });
-  }
-
-  Future<void> loadMore() async {
-    if (!hasMore || _loadingMore) return;
-    _loadingMore = true;
-    try {
-      final extra = await _fetchRound(initial: false);
-      if (extra.isNotEmpty) update(_dedupe([...state, ...extra]));
-    } catch (_) {
-    } finally {
-      _loadingMore = false;
-    }
-  }
-
-  Future<List<TikTokPost>> _fetchRound({required bool initial}) async {
-    final posts = <TikTokPost>[];
-    final accounts = follows.state.take(tiktokMaxFollowsPerLoad);
-    for (final account in accounts) {
-      if (!initial && _more[account.secUid] != true) continue;
+  Future<void> refresh({bool force = false}) async {
+    if (follows.state.isEmpty) await follows.load();
+    if (state.isNotEmpty) {
       try {
-        final page = await client.creatorItems(
-          secUid: account.secUid,
-          cursor: initial ? null : _cursors[account.secUid],
-        );
-        posts.addAll(page.posts);
-        _cursors[account.secUid] = page.cursor;
-        _more[account.secUid] = page.hasMore;
+        update(await _load(force: force, onPartial: update));
       } catch (_) {
-        _more[account.secUid] = false;
+        update(state);
       }
+      return;
     }
-    posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    return _dedupe(posts);
+    await execute(() => _load(force: force, onPartial: update));
+  }
+
+  Future<List<TikTokPost>> _load({
+    required bool force,
+    void Function(List<TikTokPost>)? onPartial,
+  }) {
+    final keys = follows.state
+        .map((follow) => follow.secUid)
+        .toList(growable: false);
+    return _posts.merge(
+      keys,
+      (key) async =>
+          (await client.creatorItems(secUid: key, cursor: '0')).posts,
+      forceRefresh: force,
+      maxFetches: tiktokMaxFollowsPerLoad,
+      onPartial: onPartial,
+    );
+  }
+}
+
+class TikTokProfileStore extends Store<TikTokProfile?> {
+  final TikTokClient client;
+  final String handle;
+
+  TikTokProfileStore(this.client, this.handle) : super(null);
+
+  Future<void> load() async {
+    await execute(() => client.profile(handle));
   }
 }
 
