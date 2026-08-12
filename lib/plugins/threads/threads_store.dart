@@ -30,9 +30,15 @@ class ThreadsAccountsStore extends Store<List<ThreadsAccount>> {
 
   Future<List<ThreadsAccount>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(tableThreadsSubscription, orderBy: 'name COLLATE NOCASE');
+    final rows = await database.query(
+      tableThreadsSubscription,
+      orderBy: 'name COLLATE NOCASE',
+    );
 
-    return rows.map(ThreadsSubscription.fromMap).map(accountOf).toList(growable: false);
+    return rows
+        .map(ThreadsSubscription.fromMap)
+        .map(accountOf)
+        .toList(growable: false);
   }
 
   Future<void> add(ThreadsAccount account) async {
@@ -50,24 +56,36 @@ class ThreadsAccountsStore extends Store<List<ThreadsAccount>> {
   Future<void> remove(String handle) async {
     await execute(() async {
       final database = await Repository.writable();
-      await database.delete(tableThreadsSubscription, where: 'id = ?', whereArgs: [handle]);
+      await database.delete(
+        tableThreadsSubscription,
+        where: 'id = ?',
+        whereArgs: [handle],
+      );
       // An account that is gone should not linger as a member of a group.
-      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [handle]);
+      await database.delete(
+        tableSubscriptionGroupMember,
+        where: 'profile_id = ?',
+        whereArgs: [handle],
+      );
       return _read();
     });
   }
 }
 
-ThreadsSubscription subscriptionOf(ThreadsAccount account) => ThreadsSubscription(
-  id: account.handle,
-  name: account.name,
-  avatarUrl: account.avatarUrl,
-  createdAt: DateTime.now(),
-  inFeed: true,
-);
+ThreadsSubscription subscriptionOf(ThreadsAccount account) =>
+    ThreadsSubscription(
+      id: account.handle,
+      name: account.name,
+      avatarUrl: account.avatarUrl,
+      createdAt: DateTime.now(),
+      inFeed: true,
+    );
 
-ThreadsAccount accountOf(ThreadsSubscription subscription) =>
-    ThreadsAccount(handle: subscription.id, name: subscription.name, avatarUrl: subscription.avatarUrl);
+ThreadsAccount accountOf(ThreadsSubscription subscription) => ThreadsAccount(
+  handle: subscription.id,
+  name: subscription.name,
+  avatarUrl: subscription.avatarUrl,
+);
 
 /// The merged timeline of every followed account, newest first — or the Meta
 /// Following feed when a Bearer session is pasted.
@@ -77,7 +95,8 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
   final BasePrefService prefs;
   final ThreadsAccountsStore accounts;
 
-  ThreadsFeedStore(this.client, this.direct, this.prefs, this.accounts) : super(const []);
+  ThreadsFeedStore(this.client, this.direct, this.prefs, this.accounts)
+    : super(const []);
 
   String get _instance => prefs.get<String>(optionPluginThreadsInstance) ?? '';
 
@@ -106,7 +125,10 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
   /// How many followed handles still need a network read.
   int pending(List<String> handles) => _posts.pendingCount(handles);
 
-  Future<List<ThreadsPost>> _loadPosts({required bool force, void Function(List<ThreadsPost>)? onPartial}) async {
+  Future<List<ThreadsPost>> _loadPosts({
+    required bool force,
+    void Function(List<ThreadsPost>)? onPartial,
+  }) async {
     final handles = accounts.state.map((e) => e.handle).toList(growable: false);
 
     // Local Accounts (cookies → guest GraphQL fallback). A pasted Bearer no
@@ -125,7 +147,10 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
       // Session alone does not invent Accounts — add handles in the tab.
       return const <ThreadsPost>[];
     }
-    throw ThreadsException(ThreadsErrorKind.notConfigured, 'no accounts or session');
+    throw ThreadsException(
+      ThreadsErrorKind.notConfigured,
+      'no accounts or session',
+    );
   }
 
   /// Posts for [handles], newest first, through whichever source is configured.
@@ -145,16 +170,23 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
     }
 
     _forgetOnCredentialChange();
-    return _posts.merge(handles, _fetcher(), forceRefresh: forceRefresh, onPartial: onPartial);
+    return _posts.merge(
+      handles,
+      _fetcher(),
+      forceRefresh: forceRefresh,
+      onPartial: onPartial,
+      maxFetches: direct.useSessionApis
+          ? threadsSessionMaxAccountsPerLoad
+          : threadsMaxAccountsPerLoad,
+    );
   }
 
   /// Which route answers, given what the reader has configured.
   ///
-  /// Public guest GraphQL is always available for followed Accounts. Cookies
-  /// upgrade that when pasted; RSSHub is tried when set, then guest if it fails
-  /// or returns nothing — a dead instance must not block reading the site.
+  /// Public guest GraphQL is the default for followed Accounts. Cookie REST
+  /// only when the reader opts in; RSSHub is tried when set, then guest.
   Future<List<ThreadsPost>> Function(String handle) _fetcher() {
-    if (direct.hasCookies) {
+    if (direct.useSessionApis && direct.hasCookies) {
       return direct.fetchUserThreads;
     }
     final instance = _instance.trim();
@@ -180,7 +212,7 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
   final _posts = AccountPostCache<ThreadsPost>(
     dateOf: (post) => post.publishedAt,
     perAccount: threadsPostsPerAccount,
-    concurrency: 2,
+    concurrency: 1,
     ttl: kThreadsCacheTtl,
   );
 
@@ -193,6 +225,7 @@ class ThreadsFeedStore extends Store<List<ThreadsPost>> {
     final current = [
       prefs.get<String>(optionPluginThreadsDirectCookies) ?? '',
       prefs.get<String>(optionPluginThreadsDirectBearer) ?? '',
+      '${prefs.get<bool>(optionPluginThreadsUseSessionApis) == true}',
       _instance,
     ].join(' ');
 

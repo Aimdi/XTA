@@ -91,14 +91,20 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
   }
 
   void _openProfile(String handle) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)),
+    );
   }
 
   void _openPost(ThreadsPost post) {
     if (post.id == _status.id) {
       return;
     }
-    Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)),
+    );
   }
 
   @override
@@ -117,10 +123,7 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
             ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: _body(l10n),
-      ),
+      body: RefreshIndicator(onRefresh: _load, child: _body(l10n)),
     );
   }
 
@@ -156,8 +159,8 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
             child: Text(
               l10n.plugin_threads_replies,
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
           for (var i = 0; i < _replies.length; i++)
@@ -175,6 +178,27 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
                     : () => openUri(context, _replies[i].url!),
               ),
             ),
+        ] else ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            child: Column(
+              children: [
+                Text(
+                  l10n.plugin_threads_replies_empty,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                if (_status.url != null)
+                  TextButton.icon(
+                    onPressed: _openBrowser,
+                    icon: const Icon(Icons.open_in_new),
+                    label: Text(l10n.open_in_browser),
+                  ),
+              ],
+            ),
+          ),
         ],
       ],
     );

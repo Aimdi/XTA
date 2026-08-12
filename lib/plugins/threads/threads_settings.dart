@@ -36,11 +36,23 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
   void initState() {
     super.initState();
     final prefs = PrefService.of(context, listen: false);
-    _cookies = TextEditingController(text: prefs.get<String>(optionPluginThreadsDirectCookies) ?? '');
-    _bearer = TextEditingController(text: prefs.get<String>(optionPluginThreadsDirectBearer) ?? '');
-    _instance = TextEditingController(text: prefs.get<String>(optionPluginThreadsInstance) ?? '');
-    _apiBase = TextEditingController(text: prefs.get<String>(optionPluginThreadsApiBase) ?? kThreadsApiDefaultBase);
-    _apiToken = TextEditingController(text: prefs.get<String>(optionPluginThreadsApiToken) ?? '');
+    _cookies = TextEditingController(
+      text: prefs.get<String>(optionPluginThreadsDirectCookies) ?? '',
+    );
+    _bearer = TextEditingController(
+      text: prefs.get<String>(optionPluginThreadsDirectBearer) ?? '',
+    );
+    _instance = TextEditingController(
+      text: prefs.get<String>(optionPluginThreadsInstance) ?? '',
+    );
+    _apiBase = TextEditingController(
+      text:
+          prefs.get<String>(optionPluginThreadsApiBase) ??
+          kThreadsApiDefaultBase,
+    );
+    _apiToken = TextEditingController(
+      text: prefs.get<String>(optionPluginThreadsApiToken) ?? '',
+    );
   }
 
   @override
@@ -88,7 +100,10 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
   }
 
   Future<void> _save() async {
-    await PrefService.of(context, listen: false).set(optionPluginThreadsInstance, _instance.text.trim());
+    await PrefService.of(
+      context,
+      listen: false,
+    ).set(optionPluginThreadsInstance, _instance.text.trim());
   }
 
   Future<void> _test() async {
@@ -128,7 +143,9 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
     String message;
     try {
       final ok = await api.health(_apiBase.text.trim());
-      message = ok ? l10n.plugin_threads_api_test_ok : l10n.plugin_threads_error_unreachable;
+      message = ok
+          ? l10n.plugin_threads_api_test_ok
+          : l10n.plugin_threads_error_unreachable;
     } catch (e) {
       message = threadsApiSettingsError(l10n, e);
     }
@@ -156,19 +173,64 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(l10n.plugin_threads_settings_intro, style: theme.textTheme.bodyMedium),
+          Card(
+            child: ListTile(
+              leading: Icon(Icons.public, color: theme.colorScheme.primary),
+              title: Text(l10n.plugin_threads_guest_card),
+              subtitle: Text(l10n.plugin_threads_guest_card_body),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.plugin_threads_settings_intro,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             secondary: const Icon(Icons.dynamic_feed_outlined),
             title: Text(l10n.plugin_threads_in_home_feed),
             subtitle: Text(l10n.plugin_threads_in_home_feed_description),
-            value: PrefService.of(context).get<bool>(optionPluginThreadsInHomeFeed) == true,
+            value:
+                PrefService.of(
+                  context,
+                ).get<bool>(optionPluginThreadsInHomeFeed) ==
+                true,
             onChanged: (value) async {
-              await PrefService.of(context, listen: false).set(optionPluginThreadsInHomeFeed, value);
+              await PrefService.of(
+                context,
+                listen: false,
+              ).set(optionPluginThreadsInHomeFeed, value);
               if (mounted) setState(() {});
             },
           ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            secondary: const Icon(Icons.gpp_maybe_outlined),
+            title: Text(l10n.plugin_threads_use_session),
+            subtitle: Text(l10n.plugin_threads_use_session_description),
+            value:
+                PrefService.of(
+                  context,
+                ).get<bool>(optionPluginThreadsUseSessionApis) ==
+                true,
+            onChanged: (value) async {
+              await PrefService.of(
+                context,
+                listen: false,
+              ).set(optionPluginThreadsUseSessionApis, value);
+              if (mounted) setState(() {});
+            },
+          ),
+          if (context.read<ThreadsDirectClient>().isSessionParked)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(
+                Icons.pause_circle_outline,
+                color: theme.colorScheme.error,
+              ),
+              title: Text(l10n.plugin_threads_session_parked),
+            ),
           const Divider(height: 32),
           Text(l10n.plugin_threads_accounts, style: theme.textTheme.titleSmall),
           ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
@@ -177,7 +239,10 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
               if (accounts.isEmpty) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Text(l10n.plugin_threads_no_accounts, style: theme.textTheme.bodySmall),
+                  child: Text(
+                    l10n.plugin_threads_no_accounts,
+                    style: theme.textTheme.bodySmall,
+                  ),
                 );
               }
               return Column(
@@ -203,7 +268,15 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
             },
           ),
           const Divider(height: 32),
-          Text(l10n.plugin_threads_direct_intro, style: theme.textTheme.bodyMedium),
+          Text(
+            l10n.plugin_threads_session_section,
+            style: theme.textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.plugin_threads_direct_intro,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _cookies,
@@ -216,8 +289,11 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
               hintText: l10n.plugin_threads_direct_cookies_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
-                icon: Icon(_cookiesHidden ? Icons.visibility : Icons.visibility_off),
-                onPressed: () => setState(() => _cookiesHidden = !_cookiesHidden),
+                icon: Icon(
+                  _cookiesHidden ? Icons.visibility : Icons.visibility_off,
+                ),
+                onPressed: () =>
+                    setState(() => _cookiesHidden = !_cookiesHidden),
               ),
             ),
             onChanged: (_) => _saveDirect(),
@@ -233,7 +309,9 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
               hintText: l10n.plugin_threads_direct_bearer_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
-                icon: Icon(_bearerHidden ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                  _bearerHidden ? Icons.visibility : Icons.visibility_off,
+                ),
                 onPressed: () => setState(() => _bearerHidden = !_bearerHidden),
               ),
             ),
@@ -248,7 +326,10 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
                 onPressed: _testingDirect ? null : _testDirect,
                 child: Text(l10n.plugin_threads_direct_test),
               ),
-              TextButton(onPressed: _clearDirect, child: Text(l10n.plugin_threads_direct_clear)),
+              TextButton(
+                onPressed: _clearDirect,
+                child: Text(l10n.plugin_threads_direct_clear),
+              ),
             ],
           ),
           const Divider(height: 32),
@@ -267,16 +348,24 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
           const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerLeft,
-            child: FilledButton.tonal(onPressed: _testing ? null : _test, child: Text(l10n.plugin_threads_test)),
+            child: FilledButton.tonal(
+              onPressed: _testing ? null : _test,
+              child: Text(l10n.plugin_threads_test),
+            ),
           ),
           const Divider(height: 32),
-          Text(l10n.plugin_threads_api_intro, style: theme.textTheme.bodyMedium),
+          Text(
+            l10n.plugin_threads_api_intro,
+            style: theme.textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _apiBase,
             keyboardType: TextInputType.url,
             autocorrect: false,
-            decoration: InputDecoration(labelText: l10n.plugin_threads_api_base),
+            decoration: InputDecoration(
+              labelText: l10n.plugin_threads_api_base,
+            ),
             onChanged: (_) => _saveApi(),
           ),
           const SizedBox(height: 12),
@@ -288,7 +377,9 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
             decoration: InputDecoration(
               labelText: l10n.plugin_threads_api_token,
               suffixIcon: IconButton(
-                icon: Icon(_tokenHidden ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                  _tokenHidden ? Icons.visibility : Icons.visibility_off,
+                ),
                 onPressed: () => setState(() => _tokenHidden = !_tokenHidden),
               ),
             ),
@@ -297,7 +388,10 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
           const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerLeft,
-            child: FilledButton.tonal(onPressed: _testingApi ? null : _testApi, child: Text(l10n.plugin_threads_test)),
+            child: FilledButton.tonal(
+              onPressed: _testingApi ? null : _testApi,
+              child: Text(l10n.plugin_threads_test),
+            ),
           ),
         ],
       ),
@@ -333,6 +427,7 @@ String threadsSettingsError(L10n l10n, Object error) {
     ThreadsErrorKind.throttled => l10n.plugin_threads_error_throttled,
     ThreadsErrorKind.unreachable => l10n.plugin_threads_error_unreachable,
     ThreadsErrorKind.unauthorized => l10n.plugin_threads_error_unauthorized,
-    ThreadsErrorKind.sessionSuspended => l10n.plugin_threads_error_session_suspended,
+    ThreadsErrorKind.sessionSuspended =>
+      l10n.plugin_threads_error_session_suspended,
   };
 }

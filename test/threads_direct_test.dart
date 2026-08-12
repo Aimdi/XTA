@@ -93,7 +93,8 @@ void main() {
                     'direct_reply_count': 12,
                     'repost_count': 4,
                     'link_preview_attachment': {
-                      'url': 'https://l.threads.com/?u=https%3A%2F%2Fexample.org%2Fstory',
+                      'url':
+                          'https://l.threads.com/?u=https%3A%2F%2Fexample.org%2Fstory',
                       'title': 'A story',
                       'description': 'About something',
                       'image_url': 'https://example.org/og.jpg',
@@ -155,7 +156,10 @@ void main() {
                         },
                         'image_versions2': {
                           'candidates': [
-                            {'url': 'https://cdn.example/inner.jpg', 'width': 640},
+                            {
+                              'url': 'https://cdn.example/inner.jpg',
+                              'width': 640,
+                            },
                           ],
                         },
                       },
@@ -185,7 +189,10 @@ void main() {
       // Timing reflects when the profile reposted, not the original.
       expect(
         post.publishedAt,
-        DateTime.fromMillisecondsSinceEpoch(1700000000 * 1000, isUtc: true).toLocal(),
+        DateTime.fromMillisecondsSinceEpoch(
+          1700000000 * 1000,
+          isUtc: true,
+        ).toLocal(),
       );
     });
   });
@@ -215,7 +222,8 @@ void main() {
           ],
         ],
       });
-      final html = '<html><script type="application/json" data-sjs>$blob</script></html>';
+      final html =
+          '<html><script type="application/json" data-sjs>$blob</script></html>';
       final posts = parseThreadsSsrHtml(html, 'zuck');
       expect(posts, hasLength(1));
       expect(posts.first.text, 'from ssr');
@@ -242,7 +250,8 @@ void main() {
           },
         ],
       });
-      final html = '<html><script type="application/json" data-sjs>$blob</script></html>';
+      final html =
+          '<html><script type="application/json" data-sjs>$blob</script></html>';
       final posts = parseThreadsSsrHtml(html, 'zuck');
       expect(posts.map((p) => p.text), ['root']);
     });
@@ -282,7 +291,8 @@ void main() {
           ],
         ],
       });
-      final html = '<html><script type="application/json" data-sjs>$blob</script></html>';
+      final html =
+          '<html><script type="application/json" data-sjs>$blob</script></html>';
       final posts = parseThreadsSsrHtml(html, 'zuck');
       expect(posts, hasLength(1));
       expect(posts.first.isRepost, isTrue);
@@ -314,7 +324,8 @@ void main() {
           },
         ],
       });
-      final html = '<html><script type="application/json" data-sjs>$blob</script></html>';
+      final html =
+          '<html><script type="application/json" data-sjs>$blob</script></html>';
       final posts = parseThreadsSsrThread(html);
       expect(posts.map((p) => p.text), ['root', 'reply']);
     });
@@ -329,11 +340,14 @@ void main() {
       );
     });
 
-    test('extractThreadsUserIdFromHtml prefers props.user_id on logged-out pages', () {
-      final html =
-          r'{"props":{"initial_thread_count":4,"is_self_profile":false,"user_id":"63055343223"}}';
-      expect(extractThreadsUserIdFromHtml(html, 'zuck'), '63055343223');
-    });
+    test(
+      'extractThreadsUserIdFromHtml prefers props.user_id on logged-out pages',
+      () {
+        final html =
+            r'{"props":{"initial_thread_count":4,"is_self_profile":false,"user_id":"63055343223"}}';
+        expect(extractThreadsUserIdFromHtml(html, 'zuck'), '63055343223');
+      },
+    );
 
     test('extractThreadsUserIdFromHtml falls back to pk near username', () {
       final html = r'{"username":"zuck","full_name":"Z","pk":"63055343223"}';
@@ -341,10 +355,14 @@ void main() {
       expect(extractThreadsUserIdFromHtml(html, 'instagram'), isNull);
     });
 
-    test('extractThreadsUserIdFromHtml falls back to modal userID and ignores 0', () {
-      final html = r'{"userID":"0"}{"userID":"63404918397"}{"userID":"63404918397"}{"userID":"1"}';
-      expect(extractThreadsUserIdFromHtml(html, 'anyone'), '63404918397');
-    });
+    test(
+      'extractThreadsUserIdFromHtml falls back to modal userID and ignores 0',
+      () {
+        final html =
+            r'{"userID":"0"}{"userID":"63404918397"}{"userID":"63404918397"}{"userID":"1"}';
+        expect(extractThreadsUserIdFromHtml(html, 'anyone'), '63404918397');
+      },
+    );
 
     test('threadsProfileFromPosts builds a card when OG scrape is empty', () {
       final profile = threadsProfileFromPosts('zuck', [
@@ -363,8 +381,10 @@ void main() {
       expect(threadsProfileFromPosts('nobody', const []), isNull);
     });
 
-    test('threadsProfileFromGuestHtml reads OG title, description and image', () {
-      const html = '''
+    test(
+      'threadsProfileFromGuestHtml reads OG title, description and image',
+      () {
+        const html = '''
 <html><head>
 <meta property="og:title" content="Mark Zuckerberg (&#064;zuck) &#x2022; Threads, Say more" />
 <meta property="og:description" content="5.7M Followers &#x2022; 153 Threads &#x2022; Mostly MMA takes." />
@@ -372,16 +392,17 @@ void main() {
 <script>{"props":{"user_id":"63055343223"}}</script>
 </head></html>
 ''';
-      final profile = threadsProfileFromGuestHtml(html, 'zuck');
-      expect(profile, isNotNull);
-      expect(profile!.username, 'zuck');
-      expect(profile.fullName, 'Mark Zuckerberg');
-      expect(profile.followerCount, 5700000);
-      expect(profile.mediaCount, 153);
-      expect(profile.biography, 'Mostly MMA takes.');
-      expect(profile.profilePicUrl, 'https://example.org/a.jpg?x=1&y=2');
-      expect(profile.pk, '63055343223');
-    });
+        final profile = threadsProfileFromGuestHtml(html, 'zuck');
+        expect(profile, isNotNull);
+        expect(profile!.username, 'zuck');
+        expect(profile.fullName, 'Mark Zuckerberg');
+        expect(profile.followerCount, 5700000);
+        expect(profile.mediaCount, 153);
+        expect(profile.biography, 'Mostly MMA takes.');
+        expect(profile.profilePicUrl, 'https://example.org/a.jpg?x=1&y=2');
+        expect(profile.pk, '63055343223');
+      },
+    );
 
     test('parseThreadsCompactCount reads K/M suffixes', () {
       expect(parseThreadsCompactCount('5.7M'), 5700000);
@@ -421,11 +442,13 @@ void main() {
     late PrefServiceCache prefs;
 
     setUp(() {
-      prefs = PrefServiceCache(cache: {
-        optionPluginThreadsDirectCookies: '',
-        optionPluginThreadsDirectBearer: '',
-        optionPluginThreadsDirectDeviceId: 'device-1',
-      });
+      prefs = PrefServiceCache(
+        cache: {
+          optionPluginThreadsDirectCookies: '',
+          optionPluginThreadsDirectBearer: '',
+          optionPluginThreadsDirectDeviceId: 'device-1',
+        },
+      );
     });
 
     test('fetchFollowingTimeline sends Bearer to Instagram API', () async {
@@ -476,71 +499,96 @@ void main() {
         prefs,
         minGap: Duration.zero,
         httpClient: MockClient(
-          (_) async => http.Response('{"message":"login_required","logout_reason":8}', 403),
+          (_) async => http.Response(
+            '{"message":"login_required","logout_reason":8}',
+            403,
+          ),
         ),
       );
 
       expect(
         () => client.currentUser(),
-        throwsA(isA<ThreadsException>().having((e) => e.kind, 'kind', ThreadsErrorKind.sessionSuspended)),
+        throwsA(
+          isA<ThreadsException>().having(
+            (e) => e.kind,
+            'kind',
+            ThreadsErrorKind.sessionSuspended,
+          ),
+        ),
       );
     });
 
-    test('fetchGuestAccount uses GraphQL after reading LSD and user id from HTML', () async {
-      var sawGraphql = false;
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          if (request.method == 'GET' && request.url.path == '/@instagram') {
-            return http.Response(
-              r'<html><script>["LSD",[],{"token":"tok123"}]</script>'
-              r'<script>{"props":{"is_self_profile":false,"user_id":"63404918397"}}</script></html>',
-              200,
-              headers: {'content-type': 'text/html'},
-            );
-          }
-          if (request.method == 'POST' && request.url.path == '/api/graphql') {
-            sawGraphql = true;
-            expect(request.headers['X-FB-LSD'], 'tok123');
-            expect(request.headers['X-IG-App-ID'], '238260118697367');
-            expect(request.body, contains('doc_id=$threadsGuestProfileThreadsDocId'));
-            expect(request.body, contains('63404918397'));
-            return http.Response(
-              jsonEncode({
-                'data': {
-                  'mediaData': {
-                    'threads': [
-                      {
-                        'thread_items': [
-                          {
-                            'post': {
-                              'pk': '99',
-                              'code': 'Gg',
-                              'caption': {'text': 'guest gql post'},
-                              'user': {'username': 'instagram', 'full_name': 'Instagram'},
+    test(
+      'fetchGuestAccount uses GraphQL after reading LSD and user id from HTML',
+      () async {
+        var sawGraphql = false;
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.method == 'GET' && request.url.path == '/@instagram') {
+              return http.Response(
+                r'<html><script>["LSD",[],{"token":"tok123"}]</script>'
+                r'<script>{"props":{"is_self_profile":false,"user_id":"63404918397"}}</script></html>',
+                200,
+                headers: {'content-type': 'text/html'},
+              );
+            }
+            if (request.method == 'POST' &&
+                request.url.path == '/api/graphql') {
+              sawGraphql = true;
+              expect(request.headers['X-FB-LSD'], 'tok123');
+              expect(request.headers['X-IG-App-ID'], '238260118697367');
+              expect(
+                request.body,
+                contains('doc_id=$threadsGuestProfileThreadsDocId'),
+              );
+              expect(request.body, contains('63404918397'));
+              return http.Response(
+                jsonEncode({
+                  'data': {
+                    'mediaData': {
+                      'threads': [
+                        {
+                          'thread_items': [
+                            {
+                              'post': {
+                                'pk': '99',
+                                'code': 'Gg',
+                                'caption': {'text': 'guest gql post'},
+                                'user': {
+                                  'username': 'instagram',
+                                  'full_name': 'Instagram',
+                                },
+                              },
                             },
-                          },
-                        ],
-                      },
-                    ],
+                          ],
+                        },
+                      ],
+                    },
                   },
-                },
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
+                }),
+                200,
+                headers: {'content-type': 'application/json'},
+              );
+            }
+            return http.Response(
+              'unexpected ${request.method} ${request.url}',
+              500,
             );
-          }
-          return http.Response('unexpected ${request.method} ${request.url}', 500);
-        }),
-      );
+          }),
+        );
 
-      final posts = await client.fetchGuestAccount('instagram');
-      expect(sawGraphql, isTrue);
-      expect(posts, hasLength(1));
-      expect(posts.first.text, 'guest gql post');
-      expect(prefs.get<String>(optionPluginThreadsUserIds), contains('63404918397'));
-    });
+        final posts = await client.fetchGuestAccount('instagram');
+        expect(sawGraphql, isTrue);
+        expect(posts, hasLength(1));
+        expect(posts.first.text, 'guest gql post');
+        expect(
+          prefs.get<String>(optionPluginThreadsUserIds),
+          contains('63404918397'),
+        );
+      },
+    );
 
     test('profile + posts for one handle share a single HTML GET', () async {
       var htmlHits = 0;
@@ -572,7 +620,10 @@ void main() {
                               'pk': '1',
                               'code': 'c',
                               'caption': {'text': 'hi'},
-                              'user': {'username': 'instagram', 'full_name': 'IG'},
+                              'user': {
+                                'username': 'instagram',
+                                'full_name': 'IG',
+                              },
                             },
                           },
                         ],
@@ -594,30 +645,100 @@ void main() {
         client.fetchGuestAccount('instagram'),
       ]);
 
-      expect(htmlHits, 1, reason: 'dedupe cuts Meta traffic; it must not double it');
+      expect(
+        htmlHits,
+        1,
+        reason: 'dedupe cuts Meta traffic; it must not double it',
+      );
     });
 
-    test('fetchUserThreads falls back to guest GraphQL when cookies are refused', () async {
-      await prefs.set(
-        optionPluginThreadsDirectCookies,
-        'sessionid=s; csrftoken=c; ds_user_id=1; mid=m; ig_did=g',
-      );
-      await prefs.set(optionPluginThreadsUserIds, '{"instagram":"63404918397"}');
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          if (request.url.path.contains('/text_feed/')) {
-            return http.Response('{"message":"login_required","logout_reason":8}', 403);
-          }
-        if (request.method == 'GET' && request.url.path == '/@instagram') {
-          return http.Response(
-            r'<html><script>["LSD",[],{"token":"tok"}]</script>'
-            r'<script>{"props":{"user_id":"63404918397"}}</script></html>',
-            200,
-          );
-        }
-          if (request.method == 'POST' && request.url.path == '/api/graphql') {
+    test(
+      'fetchUserThreads falls back to guest GraphQL when cookies are refused',
+      () async {
+        await prefs.set(
+          optionPluginThreadsDirectCookies,
+          'sessionid=s; csrftoken=c; ds_user_id=1; mid=m; ig_did=g',
+        );
+        await prefs.set(optionPluginThreadsUseSessionApis, true);
+        await prefs.set(
+          optionPluginThreadsUserIds,
+          '{"instagram":"63404918397"}',
+        );
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.url.path.contains('/text_feed/')) {
+              return http.Response(
+                '{"message":"login_required","logout_reason":8}',
+                403,
+              );
+            }
+            if (request.method == 'GET' && request.url.path == '/@instagram') {
+              return http.Response(
+                r'<html><script>["LSD",[],{"token":"tok"}]</script>'
+                r'<script>{"props":{"user_id":"63404918397"}}</script></html>',
+                200,
+              );
+            }
+            if (request.method == 'POST' &&
+                request.url.path == '/api/graphql') {
+              return http.Response(
+                jsonEncode({
+                  'data': {
+                    'mediaData': {
+                      'threads': [
+                        {
+                          'thread_items': [
+                            {
+                              'post': {
+                                'pk': '5',
+                                'code': 'X',
+                                'caption': {
+                                  'text': 'via guest after cookie fail',
+                                },
+                                'user': {
+                                  'username': 'instagram',
+                                  'full_name': 'IG',
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                }),
+                200,
+              );
+            }
+            return http.Response('unexpected ${request.url}', 500);
+          }),
+        );
+
+        final posts = await client.fetchUserThreads('instagram');
+        expect(posts.first.text, 'via guest after cookie fail');
+      },
+    );
+
+    test(
+      'guest GraphQL still works while a cookie session is cooling down',
+      () async {
+        await prefs.set(
+          optionPluginThreadsDirectCooldownUntil,
+          DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
+        );
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.method == 'GET') {
+              return http.Response(
+                r'<html><script>["LSD",[],{"token":"tok"}]</script>'
+                r'<script>{"username":"zuck","pk":"63055343223"}</script></html>',
+                200,
+              );
+            }
             return http.Response(
               jsonEncode({
                 'data': {
@@ -627,10 +748,10 @@ void main() {
                         'thread_items': [
                           {
                             'post': {
-                              'pk': '5',
-                              'code': 'X',
-                              'caption': {'text': 'via guest after cookie fail'},
-                              'user': {'username': 'instagram', 'full_name': 'IG'},
+                              'pk': '3',
+                              'code': 'z',
+                              'caption': {'text': 'during cooldown'},
+                              'user': {'username': 'zuck', 'full_name': 'Z'},
                             },
                           },
                         ],
@@ -641,129 +762,204 @@ void main() {
               }),
               200,
             );
+          }),
+        );
+
+        final posts = await client.fetchGuestAccount('zuck');
+        expect(posts.first.text, 'during cooldown');
+      },
+    );
+
+    test(
+      'fetchGuestAccount falls back to SSR when GraphQL returns empty',
+      () async {
+        final blob = jsonEncode({
+          'thread_items': [
+            {
+              'post': {
+                'pk': '7',
+                'code': 'Ss',
+                'caption': {'text': 'ssr fallback'},
+                'user': {'username': 'zuck', 'full_name': 'Z'},
+              },
+            },
+          ],
+        });
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.method == 'GET') {
+              return http.Response(
+                '<html><script type="application/json" data-sjs>$blob</script>'
+                r'<script>["LSD",[],{"token":"t"}]</script>'
+                r'<script>{"username":"zuck","pk":"63055343223"}</script></html>',
+                200,
+              );
+            }
+            return http.Response(
+              jsonEncode({
+                'data': {
+                  'mediaData': {'threads': []},
+                },
+              }),
+              200,
+            );
+          }),
+        );
+
+        final posts = await client.fetchGuestAccount('zuck');
+        expect(posts.first.text, 'ssr fallback');
+      },
+    );
+
+    test(
+      'fetchGuestPostThread scrapes root and replies from a post URL',
+      () async {
+        final blob = jsonEncode({
+          'thread_items': [
+            {
+              'post': {
+                'pk': '1',
+                'code': 'Aa',
+                'caption': {'text': 'root'},
+                'user': {'username': 'zuck', 'full_name': 'Z'},
+              },
+            },
+            {
+              'post': {
+                'pk': '2',
+                'code': 'Bb',
+                'caption': {'text': 'reply'},
+                'user': {'username': 'other', 'full_name': 'O'},
+              },
+            },
+          ],
+        });
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            expect(request.url.path, '/@zuck/post/Aa');
+            return http.Response(
+              '<html><script type="application/json" data-sjs>$blob</script></html>',
+              200,
+            );
+          }),
+        );
+
+        final posts = await client.fetchGuestPostThread(
+          'https://www.threads.com/@zuck/post/Aa',
+        );
+        expect(posts.map((p) => p.text), ['root', 'reply']);
+      },
+    );
+
+    test(
+      'pasted cookies do not hit cookie REST unless the reader opts in',
+      () async {
+        await prefs.set(
+          optionPluginThreadsDirectCookies,
+          'sessionid=s; csrftoken=c; ds_user_id=1; mid=m; ig_did=g',
+        );
+        await prefs.set(
+          optionPluginThreadsUserIds,
+          '{"instagram":"63404918397"}',
+        );
+        await prefs.set(optionPluginThreadsGuestLsd, 'tok');
+        await prefs.set(
+          optionPluginThreadsGuestLsdAt,
+          DateTime.now().toIso8601String(),
+        );
+        var textFeed = false;
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.url.path.contains('/text_feed/')) {
+              textFeed = true;
+              return http.Response('{"threads":[]}', 200);
+            }
+            if (request.method == 'POST' &&
+                request.url.path == '/api/graphql') {
+              return http.Response(
+                jsonEncode({
+                  'data': {
+                    'mediaData': {
+                      'threads': [
+                        {
+                          'thread_items': [
+                            {
+                              'post': {
+                                'pk': '1',
+                                'code': 'c',
+                                'caption': {'text': 'guest'},
+                                'user': {
+                                  'username': 'instagram',
+                                  'full_name': 'IG',
+                                },
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                }),
+                200,
+              );
+            }
+            return http.Response('unexpected ${request.url}', 500);
+          }),
+        );
+
+        final posts = await client.fetchUserThreads('instagram');
+        expect(textFeed, isFalse);
+        expect(posts.first.text, 'guest');
+      },
+    );
+
+    test('cookie REST uses a browser UA, not the official app UA', () async {
+      await prefs.set(
+        optionPluginThreadsDirectCookies,
+        'sessionid=s; csrftoken=c; ds_user_id=1; mid=m; ig_did=g',
+      );
+      await prefs.set(optionPluginThreadsUseSessionApis, true);
+      await prefs.set(optionPluginThreadsUserIds, '{"instagram":"42"}');
+      String? ua;
+      final client = ThreadsDirectClient(
+        prefs,
+        minGap: Duration.zero,
+        httpClient: MockClient((request) async {
+          if (request.url.path.contains('/text_feed/')) {
+            ua = request.headers['User-Agent'];
+            return http.Response(
+              jsonEncode({
+                'threads': [
+                  {
+                    'thread_items': [
+                      {
+                        'post': {
+                          'pk': '1',
+                          'code': 'c',
+                          'caption': {'text': 'ok'},
+                          'user': {'username': 'instagram', 'full_name': 'IG'},
+                        },
+                      },
+                    ],
+                  },
+                ],
+              }),
+              200,
+            );
           }
           return http.Response('unexpected ${request.url}', 500);
         }),
       );
 
-      final posts = await client.fetchUserThreads('instagram');
-      expect(posts.first.text, 'via guest after cookie fail');
-    });
-
-    test('guest GraphQL still works while a cookie session is cooling down', () async {
-      await prefs.set(
-        optionPluginThreadsDirectCooldownUntil,
-        DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
-      );
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          if (request.method == 'GET') {
-            return http.Response(
-              r'<html><script>["LSD",[],{"token":"tok"}]</script>'
-              r'<script>{"username":"zuck","pk":"63055343223"}</script></html>',
-              200,
-            );
-          }
-          return http.Response(
-            jsonEncode({
-              'data': {
-                'mediaData': {
-                  'threads': [
-                    {
-                      'thread_items': [
-                        {
-                          'post': {
-                            'pk': '3',
-                            'code': 'z',
-                            'caption': {'text': 'during cooldown'},
-                            'user': {'username': 'zuck', 'full_name': 'Z'},
-                          },
-                        },
-                      ],
-                    },
-                  ],
-                },
-              },
-            }),
-            200,
-          );
-        }),
-      );
-
-      final posts = await client.fetchGuestAccount('zuck');
-      expect(posts.first.text, 'during cooldown');
-    });
-
-    test('fetchGuestAccount falls back to SSR when GraphQL returns empty', () async {
-      final blob = jsonEncode({
-        'thread_items': [
-          {
-            'post': {
-              'pk': '7',
-              'code': 'Ss',
-              'caption': {'text': 'ssr fallback'},
-              'user': {'username': 'zuck', 'full_name': 'Z'},
-            },
-          },
-        ],
-      });
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          if (request.method == 'GET') {
-            return http.Response(
-              '<html><script type="application/json" data-sjs>$blob</script>'
-              r'<script>["LSD",[],{"token":"t"}]</script>'
-              r'<script>{"username":"zuck","pk":"63055343223"}</script></html>',
-              200,
-            );
-          }
-          return http.Response(jsonEncode({'data': {'mediaData': {'threads': []}}}), 200);
-        }),
-      );
-
-      final posts = await client.fetchGuestAccount('zuck');
-      expect(posts.first.text, 'ssr fallback');
-    });
-
-    test('fetchGuestPostThread scrapes root and replies from a post URL', () async {
-      final blob = jsonEncode({
-        'thread_items': [
-          {
-            'post': {
-              'pk': '1',
-              'code': 'Aa',
-              'caption': {'text': 'root'},
-              'user': {'username': 'zuck', 'full_name': 'Z'},
-            },
-          },
-          {
-            'post': {
-              'pk': '2',
-              'code': 'Bb',
-              'caption': {'text': 'reply'},
-              'user': {'username': 'other', 'full_name': 'O'},
-            },
-          },
-        ],
-      });
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          expect(request.url.path, '/@zuck/post/Aa');
-          return http.Response(
-            '<html><script type="application/json" data-sjs>$blob</script></html>',
-            200,
-          );
-        }),
-      );
-
-      final posts = await client.fetchGuestPostThread('https://www.threads.com/@zuck/post/Aa');
-      expect(posts.map((p) => p.text), ['root', 'reply']);
+      await client.fetchUserThreads('instagram');
+      expect(ua, contains('Safari'));
+      expect(ua, isNot(contains('Barcelona')));
     });
   });
 }

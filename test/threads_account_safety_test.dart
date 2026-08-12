@@ -13,8 +13,11 @@ import 'package:xta/plugins/threads/threads_direct_client.dart';
 /// These are the habits that keep it looking like one person reading.
 const _cookies = 'sessionid=s; csrftoken=c; ds_user_id=1; mid=m; ig_did=g';
 
-http.Response _json(Object body, [int status = 200]) =>
-    http.Response(jsonEncode(body), status, headers: {'content-type': 'application/json'});
+http.Response _json(Object body, [int status = 200]) => http.Response(
+  jsonEncode(body),
+  status,
+  headers: {'content-type': 'application/json'},
+);
 
 Object _searchResult(String handle) => {
   'users': [
@@ -46,6 +49,7 @@ PrefServiceCache _prefs() => PrefServiceCache(
     optionPluginThreadsDirectDeviceId: 'device-1',
     optionPluginThreadsDirectCooldownUntil: '',
     optionPluginThreadsUserIds: '',
+    optionPluginThreadsUseSessionApis: true,
   },
 );
 
@@ -66,65 +70,87 @@ void main() {
           await Future<void>.delayed(const Duration(milliseconds: 20));
           inFlight--;
           return _json(
-            request.url.path.contains('search') ? _searchResult(request.url.queryParameters['q'] ?? 'a') : _feed(),
+            request.url.path.contains('search')
+                ? _searchResult(request.url.queryParameters['q'] ?? 'a')
+                : _feed(),
           );
         }),
       );
 
       // Concurrent callers are exactly what the timeline, the tab and a group
       // feed produce; the old pacing let them all fire at the same instant.
-      await Future.wait([client.fetchUserThreads('a'), client.fetchUserThreads('b')]);
+      await Future.wait([
+        client.fetchUserThreads('a'),
+        client.fetchUserThreads('b'),
+      ]);
 
       expect(maxInFlight, 1, reason: 'a burst is what gets a session flagged');
     });
   });
 
   group('an account id is asked for once', () {
-    test('a second read reuses the stored id instead of searching again', () async {
-      final prefs = _prefs();
-      var searches = 0;
+    test(
+      'a second read reuses the stored id instead of searching again',
+      () async {
+        final prefs = _prefs();
+        var searches = 0;
 
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          if (request.url.path.contains('search')) {
-            searches++;
-            return _json(_searchResult('someone'));
-          }
-          return _json(_feed());
-        }),
-      );
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.url.path.contains('search')) {
+              searches++;
+              return _json(_searchResult('someone'));
+            }
+            return _json(_feed());
+          }),
+        );
 
-      await client.fetchUserThreads('someone');
-      await client.fetchUserThreads('someone');
+        await client.fetchUserThreads('someone');
+        await client.fetchUserThreads('someone');
 
-      expect(searches, 1, reason: 'repeating an identical search is the signature of a script');
-      expect(prefs.get<String>(optionPluginThreadsUserIds), contains('42'));
-    });
+        expect(
+          searches,
+          1,
+          reason: 'repeating an identical search is the signature of a script',
+        );
+        expect(prefs.get<String>(optionPluginThreadsUserIds), contains('42'));
+      },
+    );
 
-    test('the id survives a restart, so a fresh client does not search either', () async {
-      final prefs = _prefs();
-      await prefs.set(optionPluginThreadsUserIds, jsonEncode({'someone': '42'}));
-      var searches = 0;
+    test(
+      'the id survives a restart, so a fresh client does not search either',
+      () async {
+        final prefs = _prefs();
+        await prefs.set(
+          optionPluginThreadsUserIds,
+          jsonEncode({'someone': '42'}),
+        );
+        var searches = 0;
 
-      final client = ThreadsDirectClient(
-        prefs,
-        minGap: Duration.zero,
-        httpClient: MockClient((request) async {
-          if (request.url.path.contains('search')) {
-            searches++;
-            return _json(_searchResult('someone'));
-          }
-          expect(request.url.path, contains('/42/'), reason: 'the remembered id is the one used');
-          return _json(_feed());
-        }),
-      );
+        final client = ThreadsDirectClient(
+          prefs,
+          minGap: Duration.zero,
+          httpClient: MockClient((request) async {
+            if (request.url.path.contains('search')) {
+              searches++;
+              return _json(_searchResult('someone'));
+            }
+            expect(
+              request.url.path,
+              contains('/42/'),
+              reason: 'the remembered id is the one used',
+            );
+            return _json(_feed());
+          }),
+        );
 
-      await client.fetchUserThreads('someone');
+        await client.fetchUserThreads('someone');
 
-      expect(searches, 0);
-    });
+        expect(searches, 0);
+      },
+    );
   });
 
   group('backing off when Meta says to', () {
@@ -133,14 +159,25 @@ void main() {
       final throttled = ThreadsDirectClient(
         prefs,
         minGap: Duration.zero,
-        httpClient: MockClient((_) async => http.Response('Please wait a few minutes', 429)),
+        httpClient: MockClient(
+          (_) async => http.Response('Please wait a few minutes', 429),
+        ),
       );
 
       await expectLater(
         throttled.currentUser(),
-        throwsA(isA<ThreadsException>().having((e) => e.kind, 'kind', ThreadsErrorKind.throttled)),
+        throwsA(
+          isA<ThreadsException>().having(
+            (e) => e.kind,
+            'kind',
+            ThreadsErrorKind.throttled,
+          ),
+        ),
       );
-      expect(prefs.get<String>(optionPluginThreadsDirectCooldownUntil), isNotEmpty);
+      expect(
+        prefs.get<String>(optionPluginThreadsDirectCooldownUntil),
+        isNotEmpty,
+      );
 
       // A new client is what the reader gets by force-quitting and reopening.
       // The old cooldown lived only in memory, so that was a way to carry
@@ -157,9 +194,19 @@ void main() {
 
       await expectLater(
         restarted.currentUser(),
-        throwsA(isA<ThreadsException>().having((e) => e.kind, 'kind', ThreadsErrorKind.sessionSuspended)),
+        throwsA(
+          isA<ThreadsException>().having(
+            (e) => e.kind,
+            'kind',
+            ThreadsErrorKind.sessionSuspended,
+          ),
+        ),
       );
-      expect(reached, isFalse, reason: 'nothing may reach Meta while the session is parked');
+      expect(
+        reached,
+        isFalse,
+        reason: 'nothing may reach Meta while the session is parked',
+      );
     });
 
     test('an expired cooldown lets reading resume and clears itself', () async {
@@ -180,7 +227,10 @@ void main() {
       );
 
       await client.currentUser();
-      expect(prefs.get<String>(optionPluginThreadsDirectCooldownUntil), isEmpty);
+      expect(
+        prefs.get<String>(optionPluginThreadsDirectCooldownUntil),
+        isEmpty,
+      );
     });
   });
 }

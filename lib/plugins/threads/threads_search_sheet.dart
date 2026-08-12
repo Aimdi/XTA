@@ -68,7 +68,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
     if (query.isEmpty) return;
 
     final direct = context.read<ThreadsDirectClient>();
-    if (!direct.hasCookies) {
+    if (!direct.hasCookies || !direct.useSessionApis) {
       await _openProfile(query);
       return;
     }
@@ -135,7 +135,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
                 onSubmitted: (_) => _search(),
               ),
             ),
-            if (!direct.hasCookies)
+            if (!direct.hasCookies || !direct.useSessionApis)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(

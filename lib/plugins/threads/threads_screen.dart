@@ -300,6 +300,23 @@ class _HomePane extends StatelessWidget {
 
     return Column(
       children: [
+        if (context.read<ThreadsDirectClient>().isSessionParked)
+          Material(
+            color: Theme.of(context).colorScheme.errorContainer,
+            child: ListTile(
+              dense: true,
+              leading: Icon(
+                Icons.pause_circle_outline,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+              title: Text(
+                l10n.plugin_threads_session_parked,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+              ),
+            ),
+          ),
         ThreadsFollowingStrip(onAddAccount: onAddAccount),
         Expanded(
           child: ScopedBuilder<ThreadsFeedStore, List<ThreadsPost>>.transition(
