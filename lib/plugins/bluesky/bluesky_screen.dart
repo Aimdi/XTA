@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
@@ -106,51 +107,65 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
     final l10n = L10n.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_bluesky_title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: l10n.plugin_bluesky_search,
-            onPressed: _searchPeople,
-          ),
-          IconButton(
-            icon: const Icon(Icons.person_add_alt),
-            tooltip: l10n.plugin_bluesky_add,
-            onPressed: _addAccount,
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              final page = switch (value) {
-                'following' => const BlueskyImportFollowsScreen(),
-                'list' => const BlueskyImportListScreen(),
-                _ => null,
-              };
-              if (page != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => page),
-                );
-              }
-            },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'following',
-                child: Text(l10n.plugin_bluesky_import_following),
-              ),
-              PopupMenuItem(
-                value: 'list',
-                child: Text(l10n.plugin_bluesky_import_list),
-              ),
-            ],
-          ),
-        ],
-      ),
+      primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<_BlueskyShellStore, int>(
         store: _shell,
         onState: (context, tab) => Column(
           children: [
-            _ShellTabs(selected: tab, onSelected: _shell.select),
+            PluginHomeChrome(
+              tabs: [
+                PluginHomeTab(
+                  label: l10n.plugin_bluesky_home,
+                  icon: Icons.home_outlined,
+                  selected: tab == 0,
+                  onTap: () => _shell.select(0),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_bluesky_liked,
+                  icon: Icons.favorite_border,
+                  selected: tab == 1,
+                  onTap: () => _shell.select(1),
+                ),
+              ],
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  tooltip: l10n.plugin_bluesky_search,
+                  onPressed: _searchPeople,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.person_add_alt),
+                  tooltip: l10n.plugin_bluesky_add,
+                  onPressed: _addAccount,
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    final page = switch (value) {
+                      'following' => const BlueskyImportFollowsScreen(),
+                      'list' => const BlueskyImportListScreen(),
+                      _ => null,
+                    };
+                    if (page != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => page),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'following',
+                      child: Text(l10n.plugin_bluesky_import_following),
+                    ),
+                    PopupMenuItem(
+                      value: 'list',
+                      child: Text(l10n.plugin_bluesky_import_list),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
                 index: tab,
@@ -177,80 +192,6 @@ class _BlueskyShellStore extends Store<int> {
   _BlueskyShellStore() : super(0);
 
   void select(int index) => update(index);
-}
-
-class _ShellTabs extends StatelessWidget {
-  final int selected;
-  final ValueChanged<int> onSelected;
-
-  const _ShellTabs({required this.selected, required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-        children: [
-          _ShellTab(
-            label: l10n.plugin_bluesky_home,
-            icon: Icons.home_outlined,
-            selected: selected == 0,
-            onTap: () => onSelected(0),
-          ),
-          _ShellTab(
-            label: l10n.plugin_bluesky_liked,
-            icon: Icons.favorite_border,
-            selected: selected == 1,
-            onTap: () => onSelected(1),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ShellTab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _ShellTab({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = selected
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20, color: color),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                style: theme.textTheme.labelMedium!.copyWith(color: color),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _HomePane extends StatelessWidget {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
@@ -57,29 +58,48 @@ class _TikTokScreenState extends State<TikTokScreen> {
     final l10n = L10n.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_tiktok_title),
-        actions: [
-          IconButton(
-            tooltip: l10n.plugin_tiktok_find_handle,
-            icon: const Icon(Icons.person_add_alt),
-            onPressed: _openSearch,
-          ),
-          IconButton(
-            tooltip: l10n.settings,
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const TikTokSettingsScreen()),
-            ),
-          ),
-        ],
-      ),
+      primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<_TikTokTabStore, int>(
         store: _tabs,
         onState: (context, tab) => Column(
           children: [
-            _HomeTabs(selected: tab, onSelected: _tabs.select),
+            PluginHomeChrome(
+              tabs: [
+                PluginHomeTab(
+                  label: l10n.plugin_tiktok_tab_following,
+                  icon: Icons.music_video_outlined,
+                  selected: tab == 0,
+                  onTap: () => _tabs.select(0),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_tiktok_tab_accounts,
+                  icon: Icons.people_outline,
+                  selected: tab == 1,
+                  onTap: () {
+                    _tabs.select(1);
+                    context.read<TikTokFollowsStore>().load();
+                  },
+                ),
+              ],
+              actions: [
+                IconButton(
+                  tooltip: l10n.plugin_tiktok_find_handle,
+                  icon: const Icon(Icons.person_add_alt),
+                  onPressed: _openSearch,
+                ),
+                IconButton(
+                  tooltip: l10n.settings,
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const TikTokSettingsScreen(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
                 index: tab,
@@ -123,94 +143,6 @@ class _TikTokTabStore extends Store<int> {
   _TikTokTabStore() : super(0);
 
   void select(int index) => update(index);
-}
-
-class _HomeTabs extends StatelessWidget {
-  final int selected;
-  final ValueChanged<int> onSelected;
-
-  const _HomeTabs({required this.selected, required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-        children: [
-          _HomeTab(
-            label: l10n.plugin_tiktok_tab_following,
-            icon: Icons.music_video_outlined,
-            selected: selected == 0,
-            onTap: () => onSelected(0),
-          ),
-          _HomeTab(
-            label: l10n.plugin_tiktok_tab_accounts,
-            icon: Icons.people_outline,
-            selected: selected == 1,
-            onTap: () {
-              onSelected(1);
-              context.read<TikTokFollowsStore>().load();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HomeTab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _HomeTab({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = selected
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: selected
-                    ? theme.colorScheme.primary
-                    : theme.dividerColor,
-                width: selected ? 3 : 1,
-              ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(icon, size: 18, color: color),
-                const SizedBox(width: 8),
-                Text(
-                  label,
-                  style: theme.textTheme.labelLarge?.copyWith(color: color),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _FollowingTab extends StatelessWidget {

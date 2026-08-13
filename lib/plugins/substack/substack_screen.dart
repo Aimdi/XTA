@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
@@ -105,76 +106,66 @@ class _SubstackScreenState extends State<SubstackScreen> {
     final l10n = L10n.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_substack_title),
-        actions: [
-          if (_tab == 0 || _tab == 1)
-            ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
-              store: feed,
-              onState: (context, _) {
-                final readIds = context.read<SubstackReadStore>().state;
-                final hasUnread = feed.allPosts.any(
-                  (p) => !readIds.contains(p.id),
-                );
-                if (!hasUnread) {
-                  return const SizedBox.shrink();
-                }
-                return IconButton(
-                  tooltip: l10n.plugin_substack_mark_all_read,
-                  icon: const Icon(Icons.done_all),
-                  onPressed: _markAllRead,
-                );
-              },
-            ),
-          IconButton(
-            tooltip: l10n.plugin_substack_discover,
-            icon: const Icon(Icons.explore_outlined),
-            onPressed: _openDiscover,
-          ),
-          IconButton(
-            tooltip: l10n.plugin_substack_add,
-            icon: const Icon(Icons.add),
-            onPressed: _openAdd,
-          ),
-        ],
-      ),
+      primary: !PluginEmbedded.maybeOf(context),
       body: Column(
         children: [
-          Material(
-            color: Theme.of(context).colorScheme.surface,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: IntrinsicHeight(
-                child: Row(
-                  children: [
-                    _ShellTab(
-                      selected: _tab == 0,
-                      icon: Icons.home_outlined,
-                      label: l10n.plugin_substack_home,
-                      onTap: () => _selectTab(0),
-                    ),
-                    _ShellTab(
-                      selected: _tab == 1,
-                      icon: Icons.inbox_outlined,
-                      label: l10n.plugin_substack_inbox,
-                      onTap: () => _selectTab(1),
-                    ),
-                    _ShellTab(
-                      selected: _tab == 2,
-                      icon: Icons.notes_outlined,
-                      label: l10n.plugin_substack_tab_notes,
-                      onTap: () => _selectTab(2),
-                    ),
-                    _ShellTab(
-                      selected: _tab == 3,
-                      icon: Icons.person_outline,
-                      label: l10n.plugin_substack_library,
-                      onTap: () => _selectTab(3),
-                    ),
-                  ],
-                ),
+          PluginHomeChrome(
+            tabs: [
+              PluginHomeTab(
+                selected: _tab == 0,
+                icon: Icons.home_outlined,
+                label: l10n.plugin_substack_home,
+                onTap: () => _selectTab(0),
               ),
-            ),
+              PluginHomeTab(
+                selected: _tab == 1,
+                icon: Icons.inbox_outlined,
+                label: l10n.plugin_substack_inbox,
+                onTap: () => _selectTab(1),
+              ),
+              PluginHomeTab(
+                selected: _tab == 2,
+                icon: Icons.notes_outlined,
+                label: l10n.plugin_substack_tab_notes,
+                onTap: () => _selectTab(2),
+              ),
+              PluginHomeTab(
+                selected: _tab == 3,
+                icon: Icons.person_outline,
+                label: l10n.plugin_substack_library,
+                onTap: () => _selectTab(3),
+              ),
+            ],
+            actions: [
+              if (_tab == 0 || _tab == 1)
+                ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
+                  store: feed,
+                  onState: (context, _) {
+                    final readIds = context.read<SubstackReadStore>().state;
+                    final hasUnread = feed.allPosts.any(
+                      (p) => !readIds.contains(p.id),
+                    );
+                    if (!hasUnread) {
+                      return const SizedBox.shrink();
+                    }
+                    return IconButton(
+                      tooltip: l10n.plugin_substack_mark_all_read,
+                      icon: const Icon(Icons.done_all),
+                      onPressed: _markAllRead,
+                    );
+                  },
+                ),
+              IconButton(
+                tooltip: l10n.plugin_substack_discover,
+                icon: const Icon(Icons.explore_outlined),
+                onPressed: _openDiscover,
+              ),
+              IconButton(
+                tooltip: l10n.plugin_substack_add,
+                icon: const Icon(Icons.add),
+                onPressed: _openAdd,
+              ),
+            ],
           ),
           const Divider(height: 1),
           Expanded(
@@ -207,56 +198,6 @@ class _SubstackScreenState extends State<SubstackScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ShellTab extends StatelessWidget {
-  final bool selected;
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _ShellTab({
-    required this.selected,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = selected
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: selected ? theme.colorScheme.primary : Colors.transparent,
-              width: 2,
-            ),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: color),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: theme.textTheme.titleSmall!.copyWith(
-                color: color,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -510,15 +451,18 @@ class _FilterBar extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      padding: const EdgeInsets.fromLTRB(12, 2, 12, 6),
       child: Row(
         children: [
           for (final filter in SubstackFeedFilter.values)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: ChoiceChip(
+              padding: const EdgeInsets.only(right: 6),
+              child: FilterChip(
                 label: Text(labels[filter]!),
                 selected: selected == filter,
+                showCheckmark: false,
+                visualDensity: VisualDensity.compact,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 onSelected: (_) => onSelected(filter),
               ),
             ),
@@ -1082,110 +1026,92 @@ class _PublicationStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return SizedBox(
-      height: 96,
+      height: 64,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
         itemCount: publications.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final pub = publications[index];
           final unread = _hasUnread(pub);
           final pinned = context.read<SubstackPublicationsStore>().isPinned(
             pub.id,
           );
-          return InkWell(
-            onTap: () => onOpen(pub),
-            onLongPress: () => _confirmUnfollow(context, pub),
-            borderRadius: BorderRadius.circular(12),
-            child: SizedBox(
-              width: 72,
-              child: Column(
+          return Tooltip(
+            message: pub.name,
+            child: InkWell(
+              onTap: () => onOpen(pub),
+              onLongPress: () => _confirmUnfollow(context, pub),
+              customBorder: const CircleBorder(),
+              child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 56,
-                        height: 56,
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: unread
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.outlineVariant,
-                            width: unread ? 2.5 : 1,
-                          ),
-                        ),
-                        child: ClipOval(
-                          child: pub.logoUrl == null
-                              ? ColoredBox(
-                                  color:
-                                      theme.colorScheme.surfaceContainerHighest,
-                                  child: Icon(
-                                    Icons.newspaper,
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                )
-                              : ExtendedImage.network(
-                                  pub.logoUrl!,
-                                  fit: BoxFit.cover,
-                                  cacheWidth:
-                                      (56 *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
-                                ),
-                        ),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: unread
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outlineVariant,
+                        width: unread ? 2.5 : 1,
                       ),
-                      if (unread)
-                        Positioned(
-                          right: 2,
-                          top: 2,
-                          child: Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: theme.colorScheme.surface,
-                                width: 2,
+                    ),
+                    child: ClipOval(
+                      child: pub.logoUrl == null
+                          ? ColoredBox(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.newspaper,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
+                            )
+                          : ExtendedImage.network(
+                              pub.logoUrl!,
+                              fit: BoxFit.cover,
+                              cacheWidth:
+                                  (48 * MediaQuery.devicePixelRatioOf(context))
+                                      .ceil(),
                             ),
-                          ),
-                        ),
-                      if (pinned)
-                        Positioned(
-                          left: 0,
-                          bottom: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surface,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.push_pin,
-                              size: 12,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    pub.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.labelSmall!.copyWith(
-                      fontWeight: unread ? FontWeight.w700 : FontWeight.w500,
                     ),
                   ),
+                  if (unread)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: theme.colorScheme.surface,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (pinned)
+                    Positioned(
+                      left: 0,
+                      bottom: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.push_pin,
+                          size: 10,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

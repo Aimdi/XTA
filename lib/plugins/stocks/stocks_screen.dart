@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_query.dart';
@@ -89,9 +90,13 @@ class _StocksScreenState extends State<StocksScreen> {
             onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext, controller.text.trim()),
               child: Text(l10n.ok),
             ),
           ],
@@ -106,7 +111,11 @@ class _StocksScreenState extends State<StocksScreen> {
 
     final symbol = StocksWatchlistStore.normaliseTicker(entered);
     if (symbol == null) {
-      showSnackBar(context, icon: '⚠️', message: L10n.of(context).plugin_stocks_error);
+      showSnackBar(
+        context,
+        icon: '⚠️',
+        message: L10n.of(context).plugin_stocks_error,
+      );
       return;
     }
 
@@ -180,25 +189,43 @@ class _StocksScreenState extends State<StocksScreen> {
     final store = context.read<StocksWatchlistStore>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_stocks_title),
-        actions: [
-          IconButton(tooltip: l10n.plugin_stocks_add, icon: const Icon(Icons.add), onPressed: _addSymbol),
-          IconButton(tooltip: l10n.plugin_stocks_watchlist, icon: const Icon(Icons.list), onPressed: _manageWatchlist),
-        ],
-      ),
+      primary: !PluginEmbedded.maybeOf(context),
       // Pull-to-refresh lives on the feed (PaginatedTweetList), so the watchlist
       // strip and the posts refresh together — same as StockTwits's home swipe.
-      body: ScopedBuilder<StocksWatchlistStore, List<String>>(
-        store: store,
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: l10n.plugin_stocks_watchlist,
-          onRetry: store.load,
-        ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
-        onState: (context, symbols) => symbols.isEmpty ? _empty(context, l10n) : _watchlistHome(symbols),
+      body: Column(
+        children: [
+          PluginHomeChrome(
+            actions: [
+              IconButton(
+                tooltip: l10n.plugin_stocks_add,
+                icon: const Icon(Icons.add),
+                onPressed: _addSymbol,
+              ),
+              IconButton(
+                tooltip: l10n.plugin_stocks_watchlist,
+                icon: const Icon(Icons.list),
+                onPressed: _manageWatchlist,
+              ),
+            ],
+          ),
+          const Divider(height: 1),
+          Expanded(
+            child: ScopedBuilder<StocksWatchlistStore, List<String>>(
+              store: store,
+              onError: (_, error) => FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: l10n.plugin_stocks_watchlist,
+                onRetry: store.load,
+              ),
+              onLoading: (_) =>
+                  const Center(child: CircularProgressIndicator()),
+              onState: (context, symbols) => symbols.isEmpty
+                  ? _empty(context, l10n)
+                  : _watchlistHome(symbols),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -235,7 +262,11 @@ class _StocksScreenState extends State<StocksScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
       children: [
-        Icon(Icons.show_chart, size: 48, color: Theme.of(context).colorScheme.outline),
+        Icon(
+          Icons.show_chart,
+          size: 48,
+          color: Theme.of(context).colorScheme.outline,
+        ),
         const SizedBox(height: 16),
         Text(l10n.plugin_stocks_empty, textAlign: TextAlign.center),
         const SizedBox(height: 8),
@@ -243,8 +274,8 @@ class _StocksScreenState extends State<StocksScreen> {
           l10n.plugin_stocks_feed_hint,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 16),
         Center(
@@ -265,7 +296,11 @@ class _WatchlistPostsFeed extends StatefulWidget {
   final String query;
   final Future<void> Function() onRefreshQuotes;
 
-  const _WatchlistPostsFeed({super.key, required this.query, required this.onRefreshQuotes});
+  const _WatchlistPostsFeed({
+    super.key,
+    required this.query,
+    required this.onRefreshQuotes,
+  });
 
   @override
   State<_WatchlistPostsFeed> createState() => _WatchlistPostsFeedState();
@@ -281,7 +316,11 @@ class _WatchlistPostsFeedState extends State<_WatchlistPostsFeed> {
   }
 
   Future<TweetPageResult> _loadPage(String? cursor) async {
-    final result = await Twitter.searchTweets(widget.query, true, cursor: cursor);
+    final result = await Twitter.searchTweets(
+      widget.query,
+      true,
+      cursor: cursor,
+    );
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 

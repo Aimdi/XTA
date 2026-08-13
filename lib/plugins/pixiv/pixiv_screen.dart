@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
@@ -214,39 +215,41 @@ class _PixivScreenState extends State<PixivScreen>
         .trim()
         .isNotEmpty;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_pixiv_title),
-        actions: [
-          if (hasToken)
-            IconButton(
-              icon: const Icon(Icons.search),
-              tooltip: l10n.search,
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PixivSearchScreen()),
-              ),
-            ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: l10n.settings,
-            onPressed: () async {
-              final feed = context.read<PixivFeedStore>();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const PixivSettingsScreen()),
-              );
-              if (!mounted) return;
-              await feed.refresh();
-              if (!mounted) return;
-              _ensureTabLoaded(_tabs.index);
-            },
+    final actions = <Widget>[
+      if (hasToken)
+        IconButton(
+          icon: const Icon(Icons.search),
+          tooltip: l10n.search,
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PixivSearchScreen()),
           ),
-        ],
-        bottom: hasToken
+        ),
+      IconButton(
+        icon: const Icon(Icons.settings_outlined),
+        tooltip: l10n.settings,
+        onPressed: () async {
+          final feed = context.read<PixivFeedStore>();
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PixivSettingsScreen()),
+          );
+          if (!mounted) return;
+          await feed.refresh();
+          if (!mounted) return;
+          _ensureTabLoaded(_tabs.index);
+        },
+      ),
+    ];
+
+    return Scaffold(
+      primary: !PluginEmbedded.maybeOf(context),
+      appBar: pluginHomeTabAppBar(
+        tabs: hasToken
             ? TabBar(
                 controller: _tabs,
                 isScrollable: true,
+                tabAlignment: TabAlignment.start,
                 tabs: [
                   Tab(text: l10n.plugin_pixiv_tab_following),
                   Tab(text: l10n.plugin_pixiv_tab_recommended),
@@ -254,7 +257,8 @@ class _PixivScreenState extends State<PixivScreen>
                   Tab(text: l10n.plugin_pixiv_tab_bookmarks),
                 ],
               )
-            : null,
+            : const SizedBox.shrink(),
+        actions: actions,
       ),
       body: !hasToken
           ? _signInBody(l10n)
