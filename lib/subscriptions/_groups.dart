@@ -284,7 +284,10 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (_) => _PluginFeedRoute(plugin: plugin),
+                    builder: (_) => _PluginFeedRoute(
+                      key: ValueKey('plugin-feed-route-${plugin.id}'),
+                      plugin: plugin,
+                    ),
                   ),
                 ),
               ),
@@ -297,7 +300,10 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<GroupsModel, List<SubscriptionGroup>>.transition(
+    // Plain ScopedBuilder: .transition wraps the board in AnimatedSwitcher,
+    // so the empty ListView and the board CustomScrollView both attach the
+    // same scrollController for 300ms and Flutter asserts.
+    return ScopedBuilder<GroupsModel, List<SubscriptionGroup>>(
       store: context.read<GroupsModel>(),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
@@ -468,8 +474,7 @@ class SubscriptionGroups extends StatelessWidget {
 class _PluginFeedRoute extends StatefulWidget {
   final XtaPlugin plugin;
 
-  const _PluginFeedRoute({required this.plugin})
-    : super(key: pluginFeedRouteKey);
+  const _PluginFeedRoute({super.key, required this.plugin});
 
   @override
   State<_PluginFeedRoute> createState() => _PluginFeedRouteState();

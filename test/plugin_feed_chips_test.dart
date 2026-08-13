@@ -213,4 +213,11 @@ void main() {
       lessThan(tester.getTopLeft(find.text('Ai')).dy),
     );
   });
+
+  testWidgets('the board is not wrapped in AnimatedSwitcher', (tester) async {
+    await tester.pumpWidget(_page(_prefs(_hiddenTabPlugins()), groups));
+    await tester.pump();
+
+    expect(find.byType(AnimatedSwitcher), findsNothing);
+  });
 }

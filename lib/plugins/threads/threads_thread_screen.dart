@@ -35,6 +35,7 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
   Future<void> _load() async {
     final url = _status.url?.trim();
     if (url == null || url.isEmpty) {
+      if (!mounted) return;
       setState(() {
         _loading = false;
         _error = null;
@@ -43,6 +44,7 @@ class _ThreadsThreadScreenState extends State<ThreadsThreadScreen> {
     }
 
     // Keep the seed card; only the replies strip shows a spinner.
+    if (!mounted) return;
     setState(() {
       _loading = true;
       _error = null;

@@ -253,7 +253,21 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
       );
     }
 
-    final profile = _profile!;
+    final profile = _profile;
+    if (profile == null) {
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: FullPageErrorWidget(
+          error: ThreadsException(
+            ThreadsErrorKind.noSuchFeed,
+            'profile missing',
+          ),
+          stackTrace: null,
+          prefix: l10n.plugin_threads_error_no_feed,
+          onRetry: _load,
+        ),
+      );
+    }
     final alreadyFollows = context.read<ThreadsAccountsStore>().state.any(
       (a) => a.handle == profile.username,
     );

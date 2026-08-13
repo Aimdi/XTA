@@ -17,8 +17,6 @@ List<XtaPlugin> pluginFeedsOnGroupsTab(BasePrefService prefs) => [
 
 Key pluginFeedChipKey(String pluginId) => ValueKey('plugin-feed-$pluginId');
 
-const pluginFeedRouteKey = ValueKey('plugin-feed-route');
-
 /// Compact icon+name pill for a plugin feed on the Groups tab.
 class PluginFeedChip extends StatelessWidget {
   final XtaPlugin plugin;
