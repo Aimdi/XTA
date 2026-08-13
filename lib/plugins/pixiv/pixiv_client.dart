@@ -606,14 +606,18 @@ class PixivClient {
     return illust;
   }
 
-  Future<PixivIllustPage> related(int illustId, {String? nextUrl}) async {
+  Future<PixivIllustPage> related(
+    int illustId, {
+    String? nextUrl,
+    bool? includeR18,
+  }) async {
     final json = nextUrl == null
         ? await _apiGet('/v2/illust/related', {
             'illust_id': '$illustId',
             'filter': 'for_android',
           })
         : await _apiGetUrl(nextUrl);
-    return _illustPage(json);
+    return _illustPage(json, includeR18: includeR18 ?? showR18);
   }
 
   Future<PixivUser> userDetail(int userId) async {

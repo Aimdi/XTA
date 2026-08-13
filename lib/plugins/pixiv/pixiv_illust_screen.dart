@@ -35,9 +35,12 @@ class PixivIllustScreen extends StatefulWidget {
 class _PixivIllustScreenState extends State<PixivIllustScreen> {
   late PixivIllust _illust = widget.illust;
   List<PixivIllust> _related = const [];
+  String? _relatedNext;
   Object? _error;
   var _loadingDetail = true;
+  var _loadingMoreRelated = false;
   var _pageIndex = 0;
+  var _includeRelatedR18 = false;
 
   @override
   void initState() {
@@ -54,10 +57,14 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
     final client = context.read<PixivClient>();
     final mute = context.read<PixivMuteStore>();
     try {
+      _includeRelatedR18 = pixivRelatedIncludeR18(
+        seedIsR18: _illust.isR18,
+        showR18: client.showR18,
+      );
       // Parallel — don't wait on related before painting detail enrichment.
       final results = await Future.wait([
         client.illustDetail(_illust.id),
-        client.related(_illust.id),
+        client.related(_illust.id, includeR18: _includeRelatedR18),
       ]);
       if (!mounted) return;
       final detail = results[0] as PixivIllust;
@@ -65,6 +72,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
       setState(() {
         _illust = detail;
         _related = mute.filter(related.illusts);
+        _relatedNext = related.nextUrl;
         _loadingDetail = false;
       });
     } catch (e) {
@@ -74,6 +82,35 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
         _error = e;
         _loadingDetail = false;
       });
+    }
+  }
+
+  Future<void> _loadMoreRelated() async {
+    final next = _relatedNext;
+    if (_loadingMoreRelated || next == null || next.isEmpty) {
+      return;
+    }
+    _loadingMoreRelated = true;
+    final client = context.read<PixivClient>();
+    final mute = context.read<PixivMuteStore>();
+    try {
+      final page = await client.related(
+        _illust.id,
+        nextUrl: next,
+        includeR18: _includeRelatedR18,
+      );
+      if (!mounted) return;
+      final seen = {for (final illust in _related) illust.id};
+      setState(() {
+        _related = [
+          ..._related,
+          ...mute.filter(page.illusts).where((e) => seen.add(e.id)),
+        ];
+        _relatedNext = page.nextUrl;
+        _loadingMoreRelated = false;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _loadingMoreRelated = false);
     }
   }
 
@@ -103,74 +140,95 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _load,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(child: _viewer(pages)),
-            if (pages.length > 1)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: Text(
-                    l10n.plugin_pixiv_page_of(_pageIndex + 1, pages.length),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ),
-              ),
-            SliverToBoxAdapter(child: _meta(context)),
-            if (_loadingDetail)
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-              )
-            else if (_error != null && _related.isEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: FullPageErrorWidget(
-                    error: _error,
-                    stackTrace: null,
-                    prefix: pixivErrorMessage(l10n, _error!),
-                    onRetry: _load,
-                  ),
-                ),
-              ),
-            if (_related.isNotEmpty) ...[
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: Text(
-                    l10n.plugin_pixiv_related,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.w700,
+        child: NotificationListener<ScrollNotification>(
+          onNotification: (n) {
+            if (n.metrics.pixels > n.metrics.maxScrollExtent - 1400) {
+              _loadMoreRelated();
+            }
+            return false;
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(child: _viewer(pages)),
+              if (pages.length > 1)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Text(
+                      l10n.plugin_pixiv_page_of(_pageIndex + 1, pages.length),
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
-                sliver: SliverMasonryGrid.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 4,
-                  crossAxisSpacing: 4,
-                  childCount: _related.length,
-                  itemBuilder: (context, index) =>
-                      PixivIllustTile(illust: _related[index]),
+              SliverToBoxAdapter(child: _meta(context)),
+              if (_loadingDetail)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                )
+              else if (_error != null && _related.isEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: FullPageErrorWidget(
+                      error: _error,
+                      stackTrace: null,
+                      prefix: pixivErrorMessage(l10n, _error!),
+                      onRetry: _load,
+                    ),
+                  ),
                 ),
-              ),
+              if (_related.isNotEmpty) ...[
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Text(
+                      l10n.plugin_pixiv_related,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
+                  sliver: SliverMasonryGrid.count(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 4,
+                    crossAxisSpacing: 4,
+                    childCount: _related.length,
+                    itemBuilder: (context, index) =>
+                        PixivIllustTile(illust: _related[index]),
+                  ),
+                ),
+                if (_loadingMoreRelated)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _viewer(List<String> pages) {
-    final height = MediaQuery.sizeOf(context).height * 0.55;
-    final width = MediaQuery.sizeOf(context).width;
+    final size = MediaQuery.sizeOf(context);
+    final height = pixivDetailViewerHeight(
+      screenWidth: size.width,
+      screenHeight: size.height,
+      width: _illust.width,
+      height: _illust.height,
+    );
+    final width = size.width;
     final cacheWidth = (width * MediaQuery.devicePixelRatioOf(context)).ceil();
 
     return SizedBox(
@@ -351,11 +409,13 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             const SizedBox(height: 12),
             Wrap(
               spacing: 6,
-              runSpacing: 6,
+              runSpacing: 4,
               children: [
                 for (final tag in _illust.tags)
                   ActionChip(
                     label: Text('#${tag.displayName}'),
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(

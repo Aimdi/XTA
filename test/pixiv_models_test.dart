@@ -168,6 +168,41 @@ void main() {
       expect(posts.map((p) => p.id), [2]);
     });
 
+    test(
+      'related to an R-18 seed keeps R-18 even when the home feed hides it',
+      () {
+        expect(pixivRelatedIncludeR18(seedIsR18: true, showR18: false), isTrue);
+        expect(
+          pixivRelatedIncludeR18(seedIsR18: false, showR18: false),
+          isFalse,
+        );
+        expect(pixivRelatedIncludeR18(seedIsR18: false, showR18: true), isTrue);
+      },
+    );
+
+    test('the detail viewer follows the art instead of a fixed 55% frame', () {
+      // Wide 16:9 on a 360×800 phone: ~203dp, not 440.
+      expect(
+        pixivDetailViewerHeight(
+          screenWidth: 360,
+          screenHeight: 800,
+          width: 1600,
+          height: 900,
+        ),
+        closeTo(360 * 9 / 16, 0.5),
+      );
+      // Very tall portrait is capped so similar works stay reachable.
+      expect(
+        pixivDetailViewerHeight(
+          screenWidth: 360,
+          screenHeight: 800,
+          width: 400,
+          height: 2000,
+        ),
+        560,
+      );
+    });
+
     test('a reshaped payload yields nothing rather than throwing', () {
       expect(parsePixivIllustList(null), isEmpty);
       expect(parsePixivIllustList({'illusts': 'nope'}), isEmpty);
