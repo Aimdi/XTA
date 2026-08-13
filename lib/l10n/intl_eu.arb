@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Kendu isilaraztea",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Erantzunak",
   "plugin_reddit_about_community": "Komunitate honi buruz",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Gehitu subreddita",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Aldeko botoak",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "@{name} erabiltzaileari erantzuten",
   "plugin_show_as_tab": "Erakutsi fitxa gisa",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Itzalita jarioa mantentzen du, baina beheko barran ordez Taldeen azpian jartzen du.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

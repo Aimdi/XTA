@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Batal bisukan",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Balasan",
   "plugin_reddit_about_community": "Tentang komunitas ini",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Tambah subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Vote positif",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "Membalas @{name}",
   "plugin_show_as_tab": "Tampilkan sebagai tab",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Nonaktif tetap menyimpan feed tetapi memindahkannya ke Grup, bukan bilah bawah.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

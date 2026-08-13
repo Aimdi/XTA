@@ -9,6 +9,7 @@ import 'package:xta/plugins/bluesky/bluesky_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
@@ -38,13 +39,50 @@ class BlueskyProfileScreen extends StatefulWidget {
   State<BlueskyProfileScreen> createState() => _BlueskyProfileScreenState();
 }
 
+class _TabFeed {
+  List<BlueskyPost> posts = const [];
+  String? cursor;
+  var loaded = false;
+  var loading = false;
+  var loadingMore = false;
+  var loadMoreBackedOff = false;
+}
+
 class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
   BlueskyProfile? _profile;
-  List<BlueskyPost> _posts = const [];
-  String? _cursor;
   Object? _error;
   bool _loading = true;
-  bool _loadingMore = false;
+  var _tab = PluginProfileFeedTab.posts;
+  final _feeds = {
+    for (final tab in PluginProfileFeedTab.values) tab: _TabFeed(),
+  };
+
+  String get _actor {
+    final profile = _profile;
+    if (profile == null) {
+      return widget.actor;
+    }
+    return profile.did.isNotEmpty ? profile.did : profile.handle;
+  }
+
+  String _filterFor(PluginProfileFeedTab tab) => switch (tab) {
+    PluginProfileFeedTab.posts => kBlueskyAuthorFeedPosts,
+    PluginProfileFeedTab.replies => kBlueskyAuthorFeedReplies,
+    PluginProfileFeedTab.media => kBlueskyAuthorFeedMedia,
+  };
+
+  List<BlueskyPost> _applyTabFilter(
+    PluginProfileFeedTab tab,
+    List<BlueskyPost> posts,
+  ) {
+    if (tab == PluginProfileFeedTab.replies) {
+      return [
+        for (final post in posts)
+          if (post.isReply) post,
+      ];
+    }
+    return posts;
+  }
 
   @override
   void initState() {
@@ -56,22 +94,26 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     setState(() {
       _loading = true;
       _error = null;
-      _cursor = null;
+      for (final feed in _feeds.values) {
+        feed.posts = const [];
+        feed.cursor = null;
+        feed.loaded = false;
+        feed.loading = false;
+        feed.loadingMore = false;
+        feed.loadMoreBackedOff = false;
+      }
     });
 
     final client = context.read<BlueskyClient>();
     try {
       final profile = await client.getProfile(widget.actor);
-      final feed = await client.getAuthorFeed(
-        profile.did.isNotEmpty ? profile.did : profile.handle,
-      );
+      if (!mounted) {
+        return;
+      }
+      _profile = profile;
+      await _loadTab(PluginProfileFeedTab.posts, reset: true);
       if (mounted) {
-        setState(() {
-          _profile = profile;
-          _posts = feed.posts;
-          _cursor = feed.cursor;
-          _loading = false;
-        });
+        setState(() => _loading = false);
       }
     } catch (e) {
       if (mounted) {
@@ -83,50 +125,86 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     }
   }
 
+  Future<void> _selectTab(PluginProfileFeedTab tab) async {
+    if (_tab == tab) {
+      return;
+    }
+    setState(() => _tab = tab);
+    final feed = _feeds[tab]!;
+    if (!feed.loaded && !feed.loading) {
+      await _loadTab(tab, reset: true);
+    }
+  }
+
+  Future<void> _loadTab(PluginProfileFeedTab tab, {required bool reset}) async {
+    final feed = _feeds[tab]!;
+    if (feed.loading) {
+      return;
+    }
+    setState(() => feed.loading = true);
+    final client = context.read<BlueskyClient>();
+    try {
+      final page = await client.getAuthorFeed(_actor, filter: _filterFor(tab));
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        feed.posts = _applyTabFilter(tab, page.posts);
+        feed.cursor = page.cursor;
+        feed.loaded = true;
+        feed.loading = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        feed.loading = false;
+        if (reset && !feed.loaded) {
+          _error = e;
+        }
+      });
+    }
+  }
+
   Future<void> _loadMore() async {
-    final profile = _profile;
-    final cursor = _cursor;
-    if (profile == null || cursor == null || _loadingMore) {
+    final feed = _feeds[_tab]!;
+    final cursor = feed.cursor;
+    if (cursor == null || feed.loadingMore) {
       return;
     }
 
-    setState(() => _loadingMore = true);
+    setState(() => feed.loadingMore = true);
     final client = context.read<BlueskyClient>();
     try {
-      final feed = await client.getAuthorFeed(
-        profile.did.isNotEmpty ? profile.did : profile.handle,
+      final page = await client.getAuthorFeed(
+        _actor,
         cursor: cursor,
+        filter: _filterFor(_tab),
       );
-      if (!mounted) return;
-      final seen = _posts.map((p) => p.uri).toSet();
+      if (!mounted) {
+        return;
+      }
+      final seen = feed.posts.map((p) => p.uri).toSet();
+      final extra = _applyTabFilter(_tab, page.posts);
       setState(() {
-        _posts = [
-          ..._posts,
-          for (final post in feed.posts)
+        feed.posts = [
+          ...feed.posts,
+          for (final post in extra)
             if (!seen.contains(post.uri)) post,
         ];
-        _cursor = feed.cursor;
-        _loadingMore = false;
+        feed.cursor = page.cursor;
+        feed.loadingMore = false;
       });
     } catch (_) {
-      // Stop, don't strobe: the cursor stays set on failure, and the scroll
-      // listener refires _loadMore on every notification — so one 429 became a
-      // stream of failing requests against a rate-limited host, invisible to
-      // the reader. Backing off until the next real scroll gesture ends the
-      // loop; the next deliberate scroll tries again.
       if (mounted) {
         setState(() {
-          _loadingMore = false;
-          _loadMoreBackedOff = true;
+          feed.loadingMore = false;
+          feed.loadMoreBackedOff = true;
         });
       }
     }
   }
-
-  /// Set when the last next-page fetch failed, cleared by a fresh user scroll,
-  /// so a failing endpoint is asked once per gesture rather than once per
-  /// scroll notification.
-  bool _loadMoreBackedOff = false;
 
   Future<void> _toggleFollow(BlueskyProfile profile) async {
     final accounts = context.read<BlueskyAccountsStore>();
@@ -208,16 +286,18 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     final following = context.read<BlueskyAccountsStore>().follows(
       profile.handle,
     );
-    final showMore = _cursor != null;
+    final feed = _feeds[_tab]!;
+    final posts = feed.posts;
+    final showMore = feed.cursor != null;
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is UserScrollNotification) {
-          _loadMoreBackedOff = false;
+          feed.loadMoreBackedOff = false;
         }
         if (showMore &&
-            !_loadingMore &&
-            !_loadMoreBackedOff &&
+            !feed.loadingMore &&
+            !feed.loadMoreBackedOff &&
             notification.metrics.pixels >=
                 notification.metrics.maxScrollExtent - 400) {
           _loadMore();
@@ -226,7 +306,8 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
       },
       child: FeedListView(
         padding: const EdgeInsets.only(bottom: 24),
-        itemCount: 1 + _posts.length + (_loadingMore ? 1 : 0),
+        itemCount:
+            2 + posts.length + (feed.loadingMore || feed.loading ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
@@ -239,9 +320,12 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
               ),
             );
           }
-          final postIndex = index - 1;
-          if (postIndex < _posts.length) {
-            final post = _posts[postIndex];
+          if (index == 1) {
+            return PluginProfileTabBar(selected: _tab, onSelected: _selectTab);
+          }
+          final postIndex = index - 2;
+          if (postIndex < posts.length) {
+            final post = posts[postIndex];
             return BlueskyPostCard(
               key: ValueKey(post.uri),
               post: post,

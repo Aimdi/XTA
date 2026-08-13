@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Не скрывать",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Ответы",
   "plugin_reddit_about_community": "Об этом сообществе",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Добавить сабреддит",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Голоса «за»",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "В ответ @{name}",
   "plugin_show_as_tab": "Показывать как вкладку",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Выключено — лента остаётся, но переносится в «Группы» вместо нижней панели.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

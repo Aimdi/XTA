@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Pakazvać znoŭ",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Adkazy",
   "plugin_reddit_about_community": "Pra hetu supolnasć",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Dadać sabredyt",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Hałasy «za»",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "Adkaz @{name}",
   "plugin_show_as_tab": "Pakazvać jak układku",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Vyklučana — lenta zastajecca, ale pieranosicca ŭ «Hrupy» zamiest nižniaj paneli.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

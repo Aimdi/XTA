@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Riattiva",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Risposte",
   "plugin_reddit_about_community": "Informazioni su questa community",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Aggiungi subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Voti positivi",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "In risposta a @{name}",
   "plugin_show_as_tab": "Mostra come scheda",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Disattivato mantiene il feed ma lo sposta sotto Gruppi anziché nella barra in basso.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

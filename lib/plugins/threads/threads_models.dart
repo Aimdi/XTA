@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/utils/json.dart';
 
 /// Open Graph–style link preview from Meta's `link_preview_attachment`.
@@ -61,6 +62,7 @@ class ThreadsPost {
   final String? avatarUrl;
   final String text;
   final List<String> images;
+  final List<double?> imageAspects;
   final DateTime? publishedAt;
 
   /// Where the post lives on Threads, for opening it there.
@@ -77,6 +79,8 @@ class ThreadsPost {
 
   /// Meta `user.is_verified` when the payload carried it.
   final bool isVerified;
+  final String? replyToHandle;
+  final bool isReply;
 
   const ThreadsPost({
     required this.id,
@@ -85,6 +89,7 @@ class ThreadsPost {
     required this.text,
     this.avatarUrl,
     this.images = const [],
+    this.imageAspects = const [],
     this.publishedAt,
     this.url,
     this.likeCount,
@@ -94,9 +99,14 @@ class ThreadsPost {
     this.repostedByHandle,
     this.repostedByName,
     this.isVerified = false,
+    this.replyToHandle,
+    this.isReply = false,
   });
 
   bool get hasMedia => images.isNotEmpty;
+
+  List<PluginMediaItem> get mediaItems =>
+      pluginMediaItemsFrom(urls: images, aspects: imageAspects);
 
   bool get hasEngagement =>
       likeCount != null || replyCount != null || repostCount != null;
@@ -119,6 +129,7 @@ class ThreadsPost {
     'avatarUrl': avatarUrl,
     'text': text,
     'images': images,
+    'imageAspects': imageAspects,
     'publishedAt': publishedAt?.toIso8601String(),
     'url': url,
     'likeCount': likeCount,
@@ -128,6 +139,8 @@ class ThreadsPost {
     'repostedByHandle': repostedByHandle,
     'repostedByName': repostedByName,
     'isVerified': isVerified,
+    'replyToHandle': replyToHandle,
+    'isReply': isReply,
   };
 
   factory ThreadsPost.fromSnapshot(Object? raw) {
@@ -151,6 +164,10 @@ class ThreadsPost {
             growable: false,
           ) ??
           const [],
+      imageAspects: [
+        for (final value in (json['imageAspects'] as List? ?? const []))
+          value is num ? value.toDouble() : null,
+      ],
       publishedAt: DateTime.tryParse(
         json['publishedAt'] as String? ?? '',
       )?.toLocal(),
@@ -162,6 +179,10 @@ class ThreadsPost {
       repostedByHandle: json['repostedByHandle'] as String?,
       repostedByName: json['repostedByName'] as String?,
       isVerified: json['isVerified'] as bool? ?? false,
+      replyToHandle: json['replyToHandle'] as String?,
+      isReply:
+          json['isReply'] as bool? ??
+          ((json['replyToHandle'] as String?)?.isNotEmpty ?? false),
     );
   }
 

@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "取消屏蔽",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "回复",
   "plugin_reddit_about_community": "关于此社区",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "添加 subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "赞同票",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "回复 @{name}",
   "plugin_show_as_tab": "显示为标签页",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "关闭后信息流仍保留，但移到「分组」下而不是底部栏。",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

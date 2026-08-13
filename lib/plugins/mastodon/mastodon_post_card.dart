@@ -7,6 +7,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
@@ -15,9 +17,6 @@ import 'package:xta/utils/urls.dart';
 
 /// Avatar size matching X / Reddit cards so Fediverse posts don't look smaller.
 const double kMastodonAvatarSize = 48;
-
-/// Tallest a single attached image is allowed to paint relative to its width.
-const double kMastodonMediaMaxAspectRatio = 16 / 9;
 
 final NumberFormat _mastodonCountFormat = NumberFormat.compact(locale: 'en_US');
 
@@ -104,6 +103,9 @@ class MastodonPostCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          if (post.replyToAcct != null &&
+                              post.replyToAcct!.isNotEmpty)
+                            PluginReplyingTo(name: post.replyToAcct!),
                           GestureDetector(
                             onTap: () => _openAuthor(context),
                             behavior: HitTestBehavior.opaque,
@@ -120,7 +122,7 @@ class MastodonPostCard extends StatelessWidget {
                           ],
                           if (post.hasMedia) ...[
                             const SizedBox(height: 10),
-                            _media(context),
+                            PluginPostMedia(items: post.mediaItems),
                           ],
                           if (post.linkCard != null) ...[
                             const SizedBox(height: 10),
@@ -233,45 +235,6 @@ class MastodonPostCard extends StatelessWidget {
       child: Text(label, style: theme.textTheme.labelSmall),
     );
   }
-
-  Widget _media(BuildContext context) {
-    final radius = tweetMediaRadiusOf(context);
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    if (post.images.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: AspectRatio(
-          aspectRatio: kMastodonMediaMaxAspectRatio,
-          child: ExtendedImage.network(
-            post.images.first,
-            fit: BoxFit.cover,
-            cacheWidth: (width * scale).ceil(),
-          ),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 220,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: post.images.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 6),
-        itemBuilder: (context, index) => ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: ExtendedImage.network(
-            post.images[index],
-            width: 200,
-            height: 220,
-            fit: BoxFit.cover,
-            cacheWidth: (200 * scale).ceil(),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 /// Large article / link preview from Mastodon's PreviewCard.
@@ -304,7 +267,7 @@ class _MastodonLinkPreview extends StatelessWidget {
             children: [
               if (card.hasImage)
                 AspectRatio(
-                  aspectRatio: kMastodonMediaMaxAspectRatio,
+                  aspectRatio: clampPluginMediaAspect(null),
                   child: ExtendedImage.network(
                     card.imageUrl!,
                     fit: BoxFit.cover,

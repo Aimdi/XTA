@@ -1,4 +1,5 @@
 import 'package:html/parser.dart' as html;
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/utils/json.dart';
 
 /// Open Graph–style link preview attached to a public status (`card` in the API).
@@ -30,6 +31,8 @@ class MastodonPost {
   final String? avatarUrl;
   final String text;
   final List<String> images;
+  final List<double?> imageAspects;
+  final List<bool> imageIsVideo;
   final DateTime? publishedAt;
   final String url;
 
@@ -40,6 +43,8 @@ class MastodonPost {
   final int reblogsCount;
   final int favouritesCount;
   final MastodonLinkCard? linkCard;
+  final String? replyToAcct;
+  final bool isReply;
 
   const MastodonPost({
     required this.id,
@@ -49,15 +54,25 @@ class MastodonPost {
     required this.url,
     this.avatarUrl,
     this.images = const [],
+    this.imageAspects = const [],
+    this.imageIsVideo = const [],
     this.publishedAt,
     this.boosted = false,
     this.repliesCount = 0,
     this.reblogsCount = 0,
     this.favouritesCount = 0,
     this.linkCard,
+    this.replyToAcct,
+    this.isReply = false,
   });
 
   bool get hasMedia => images.isNotEmpty;
+
+  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
+    urls: images,
+    aspects: imageAspects,
+    videos: imageIsVideo,
+  );
 }
 
 /// A Mastodon / Fediverse profile as the home instance reports it.
@@ -355,19 +370,57 @@ String mastodonHtmlToText(String? contentHtml) {
   return document.body?.text.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim() ?? '';
 }
 
-List<String> mastodonImagesOf(Json status) {
-  final urls = <String>[];
+List<PluginMediaItem> mastodonMediaOf(Json status) {
+  final items = <PluginMediaItem>[];
+  final seen = <String>{};
   for (final media in status['media_attachments'].list) {
     final type = media['type'].string ?? '';
-    if (type != 'image' && type != 'gifv') {
+    final isVideo = type == 'video' || type == 'gifv';
+    if (type != 'image' && !isVideo) {
       continue;
     }
-    final url = media['preview_url'].string ?? media['url'].string;
-    if (url != null && url.isNotEmpty && !urls.contains(url)) {
-      urls.add(url);
+    final url = isVideo
+        ? (media['preview_url'].string ?? media['url'].string)
+        : (media['url'].string ?? media['preview_url'].string);
+    if (url == null || url.isEmpty || seen.contains(url)) {
+      continue;
+    }
+    seen.add(url);
+    items.add(
+      PluginMediaItem(
+        url: url,
+        aspectRatio:
+            pluginMediaAspectFrom(media['meta']['original'].raw) ??
+            pluginMediaAspectFrom(media['meta']['small'].raw),
+        alt: media['description'].string,
+        isVideo: type == 'video',
+      ),
+    );
+  }
+  return items;
+}
+
+List<String> mastodonImagesOf(Json status) => [
+  for (final item in mastodonMediaOf(status)) item.url,
+];
+
+String? mastodonReplyToAcctOf(Json status) {
+  final replyId =
+      status['in_reply_to_account_id'].string ??
+      '${status['in_reply_to_account_id'].integer ?? ''}';
+  if (replyId.isEmpty) {
+    return null;
+  }
+  for (final mention in status['mentions'].list) {
+    final id = mention['id'].string ?? '${mention['id'].integer ?? ''}';
+    if (id == replyId) {
+      final acct = mention['acct'].string?.trim();
+      if (acct != null && acct.isNotEmpty) {
+        return acct;
+      }
     }
   }
-  return urls;
+  return null;
 }
 
 /// PreviewCard on a status, or null when Mastodon sent nothing useful.
@@ -424,7 +477,8 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     if (spoiler.isNotEmpty) spoiler,
     if (body.isNotEmpty) body,
   ].join('\n\n');
-  final images = mastodonImagesOf(status);
+  final media = mastodonMediaOf(status);
+  final images = [for (final item in media) item.url];
   final linkCard = mastodonLinkCardOf(status);
   if (text.isEmpty && images.isEmpty && linkCard == null) {
     return null;
@@ -443,6 +497,8 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     avatarUrl: author.avatarUrl,
     text: text,
     images: images,
+    imageAspects: [for (final item in media) item.aspectRatio],
+    imageIsVideo: [for (final item in media) item.isVideo],
     publishedAt: DateTime.tryParse(
       status['created_at'].string ?? '',
     )?.toLocal(),
@@ -452,6 +508,11 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     reblogsCount: status['reblogs_count'].integer ?? 0,
     favouritesCount: status['favourites_count'].integer ?? 0,
     linkCard: linkCard,
+    replyToAcct: mastodonReplyToAcctOf(status),
+    isReply:
+        (status['in_reply_to_id'].string ??
+                '${status['in_reply_to_id'].integer ?? ''}')
+            .isNotEmpty,
   );
 }
 

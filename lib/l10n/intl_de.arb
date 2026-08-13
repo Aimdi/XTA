@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Stummschaltung aufheben",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Antworten",
   "plugin_reddit_about_community": "Über diese Community",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Subreddit hinzufügen",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Upvotes",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "Antwort an @{name}",
   "plugin_show_as_tab": "Als Tab anzeigen",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Aus behält den Feed, verschiebt ihn aber unter „Gruppen“ statt in die untere Leiste.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

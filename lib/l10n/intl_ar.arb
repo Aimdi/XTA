@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "إلغاء الكتم",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "الردود",
   "plugin_reddit_about_community": "حول هذا المجتمع",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "إضافة سبريديت",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "التصويتات الإيجابية",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "ردًا على @{name}",
   "plugin_show_as_tab": "العرض كعلامة تبويب",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "الإيقاف يبقي التغذية لكن ينقلها إلى «المجموعات» بدلًا من الشريط السفلي.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

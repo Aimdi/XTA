@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Cofnij wyciszenie",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Odpowiedzi",
   "plugin_reddit_about_community": "O tej społeczności",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Dodaj subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Głosy na tak",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "W odpowiedzi do @{name}",
   "plugin_show_as_tab": "Pokaż jako kartę",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Wyłączone zachowuje kanał, ale przenosi go do Grup zamiast dolnego paska.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

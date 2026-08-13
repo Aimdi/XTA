@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Ne plus masquer",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Réponses",
   "plugin_reddit_about_community": "À propos de cette communauté",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Ajouter un subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Votes positifs",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "En réponse à @{name}",
   "plugin_show_as_tab": "Afficher comme onglet",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Désactivé conserve le flux mais le place sous Groupes au lieu de la barre du bas.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

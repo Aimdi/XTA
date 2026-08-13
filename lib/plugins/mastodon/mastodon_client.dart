@@ -160,13 +160,16 @@ class MastodonClient {
   /// A profile and its first page of posts from one instance, walked the same
   /// way — both halves must come from the same place for the id to mean
   /// anything.
-  Future<({MastodonProfile profile, List<MastodonPost> posts})> profileAnywhere(
-    List<String> instances,
-    String acct,
-  ) => firstInstanceThat(instances, (instance) async {
-    final profile = await lookup(instance, acct);
-    return (profile: profile, posts: await getStatuses(instance, profile.id));
-  });
+  Future<({MastodonProfile profile, List<MastodonPost> posts, String instance})>
+  profileAnywhere(List<String> instances, String acct) =>
+      firstInstanceThat(instances, (instance) async {
+        final profile = await lookup(instance, acct);
+        return (
+          profile: profile,
+          posts: await getStatuses(instance, profile.id),
+          instance: instance,
+        );
+      });
 
   /// Confirms the instance answers the public instance metadata endpoint.
   Future<void> verify(String instance) async {
@@ -221,12 +224,21 @@ class MastodonClient {
     String id, {
     int limit = 20,
     bool excludeReplies = true,
+    bool onlyMedia = false,
+    String? maxId,
   }) async {
+    final query = <String, String>{
+      'limit': '$limit',
+      'exclude_replies': '$excludeReplies',
+    };
+    if (onlyMedia) {
+      query['only_media'] = 'true';
+    }
+    if (maxId != null && maxId.isNotEmpty) {
+      query['max_id'] = maxId;
+    }
     final json = await _get(
-      _uri(instance, '/api/v1/accounts/$id/statuses', {
-        'limit': '$limit',
-        'exclude_replies': '$excludeReplies',
-      }),
+      _uri(instance, '/api/v1/accounts/$id/statuses', query),
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
   }

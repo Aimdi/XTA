@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Opphev demping",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Svar",
   "plugin_reddit_about_community": "Om dette fellesskapet",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Legg til subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Oppstemmer",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "Svarer @{name}",
   "plugin_show_as_tab": "Vis som fane",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Av beholder strømmen, men flytter den under Grupper i stedet for nederste linje.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

@@ -1602,6 +1602,7 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Tühista vaigistus",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Vastused",
   "plugin_reddit_about_community": "Sellest kogukonnast",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Lisa subreddit",
@@ -1742,6 +1743,7 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Poolthääled",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "Vastus kasutajale @{name}",
   "plugin_show_as_tab": "Näita vahekaardina",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Väljas hoiab voo alles, kuid liigutab selle alumise riba asemel Gruppide alla.",
@@ -2581,5 +2583,7 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_profile_replies": {},
+  "@plugin_replying_to": {}
 }

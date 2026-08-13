@@ -11,6 +11,7 @@ import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/user.dart';
@@ -55,6 +56,7 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
   List<ThreadsPost> _posts = const [];
   Object? _error;
   var _loading = true;
+  var _tab = PluginProfileFeedTab.posts;
 
   String get _handle =>
       (normaliseThreadsHandle(widget.username) ?? widget.username)
@@ -257,13 +259,14 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     final alreadyFollows = context.read<ThreadsAccountsStore>().state.any(
       (a) => a.handle == profile.username,
     );
+    final posts = _postsForTab(_tab);
 
     return RefreshIndicator(
       onRefresh: () => _load(forceRefresh: true),
       child: FeedListView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(bottom: 24),
-        itemCount: 1 + (_posts.isEmpty ? 1 : _posts.length),
+        itemCount: 2 + (posts.isEmpty ? 1 : posts.length),
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
@@ -275,16 +278,24 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
               ),
             );
           }
-          if (_posts.isEmpty) {
+          if (index == 1) {
+            return PluginProfileTabBar(
+              selected: _tab,
+              onSelected: (tab) => setState(() => _tab = tab),
+            );
+          }
+          if (posts.isEmpty) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
               child: Text(
-                l10n.plugin_threads_no_posts,
+                _tab == PluginProfileFeedTab.replies
+                    ? l10n.plugin_threads_replies_empty
+                    : l10n.plugin_threads_no_posts,
                 textAlign: TextAlign.center,
               ),
             );
           }
-          final post = _posts[index - 1];
+          final post = posts[index - 2];
           return ThreadsPostCard(
             key: ValueKey(post.id),
             post: post,
@@ -293,6 +304,23 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
         },
       ),
     );
+  }
+
+  List<ThreadsPost> _postsForTab(PluginProfileFeedTab tab) {
+    return switch (tab) {
+      PluginProfileFeedTab.posts => [
+        for (final post in _posts)
+          if (!post.isReply) post,
+      ],
+      PluginProfileFeedTab.replies => [
+        for (final post in _posts)
+          if (post.isReply) post,
+      ],
+      PluginProfileFeedTab.media => [
+        for (final post in _posts)
+          if (post.hasMedia) post,
+      ],
+    };
   }
 }
 

@@ -1,4 +1,3 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -7,6 +6,8 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
@@ -23,8 +24,13 @@ import 'package:xta/utils/urls.dart';
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
 
-/// Tallest a single image or link-preview banner is allowed relative to width.
-const double kThreadsMediaMaxAspectRatio = 16 / 9;
+Widget _threadsMediaImage(
+  BuildContext context,
+  PluginMediaItem item,
+  BoxFit fit,
+) {
+  return ThreadsNetworkImage(item.url, fit: fit);
+}
 
 final NumberFormat _threadsCountFormat = NumberFormat.compact(locale: 'en_US');
 
@@ -126,6 +132,9 @@ class ThreadsPostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (post.isRepost) _repostLine(context),
+                    if (post.replyToHandle != null &&
+                        post.replyToHandle!.isNotEmpty)
+                      PluginReplyingTo(name: post.replyToHandle!),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -154,7 +163,10 @@ class ThreadsPostCard extends StatelessWidget {
                               ],
                               if (post.hasMedia) ...[
                                 const SizedBox(height: 10),
-                                _media(context),
+                                PluginPostMedia(
+                                  items: post.mediaItems,
+                                  imageBuilder: _threadsMediaImage,
+                                ),
                               ],
                               if (post.linkCard != null) ...[
                                 const SizedBox(height: 10),
@@ -289,133 +301,6 @@ class ThreadsPostCard extends StatelessWidget {
       child: Text(label, style: theme.textTheme.labelSmall),
     );
   }
-
-  void _openImages(BuildContext context, int index) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            _ThreadsImageViewer(images: post.images, initialIndex: index),
-      ),
-    );
-  }
-
-  Widget _media(BuildContext context) {
-    final radius = tweetMediaRadiusOf(context);
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    if (post.images.length == 1) {
-      return GestureDetector(
-        onTap: () => _openImages(context, 0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: AspectRatio(
-            aspectRatio: kThreadsMediaMaxAspectRatio,
-            child: ThreadsNetworkImage(
-              post.images.first,
-              fit: BoxFit.cover,
-              cacheWidth: (width * scale).ceil(),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 240,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: post.images.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 6),
-        itemBuilder: (context, index) => GestureDetector(
-          onTap: () => _openImages(context, index),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(radius),
-            child: ThreadsNetworkImage(
-              post.images[index],
-              width: 220,
-              height: 240,
-              fit: BoxFit.cover,
-              cacheWidth: (220 * scale).ceil(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Fullscreen pager for Threads images — pinch/drag via [ExtendedImageMode.gesture].
-class _ThreadsImageViewer extends StatefulWidget {
-  final List<String> images;
-  final int initialIndex;
-
-  const _ThreadsImageViewer({required this.images, required this.initialIndex});
-
-  @override
-  State<_ThreadsImageViewer> createState() => _ThreadsImageViewerState();
-}
-
-class _ThreadsImageViewerState extends State<_ThreadsImageViewer> {
-  late final _controller = PageController(initialPage: widget.initialIndex);
-  late int _index = widget.initialIndex;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-      ),
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          PageView.builder(
-            controller: _controller,
-            itemCount: widget.images.length,
-            onPageChanged: (index) => setState(() => _index = index),
-            itemBuilder: (context, index) => ThreadsNetworkImage(
-              widget.images[index],
-              fit: BoxFit.contain,
-              mode: ExtendedImageMode.gesture,
-              initGestureConfigHandler: (_) => GestureConfig(
-                minScale: 1,
-                maxScale: 4,
-                animationMinScale: 0.8,
-              ),
-            ),
-          ),
-          if (widget.images.length > 1)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  for (var i = 0; i < widget.images.length; i++)
-                    Container(
-                      width: 6,
-                      height: 6,
-                      margin: const EdgeInsets.symmetric(horizontal: 3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: i == _index ? Colors.white : Colors.white38,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
 }
 
 /// Large article / link preview from Threads' `link_preview_attachment`.
@@ -448,7 +333,7 @@ class _ThreadsLinkPreview extends StatelessWidget {
             children: [
               if (card.hasImage)
                 AspectRatio(
-                  aspectRatio: kThreadsMediaMaxAspectRatio,
+                  aspectRatio: clampPluginMediaAspect(null),
                   child: ThreadsNetworkImage(
                     card.imageUrl!,
                     fit: BoxFit.cover,

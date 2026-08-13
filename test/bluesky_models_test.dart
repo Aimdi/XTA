@@ -4,9 +4,18 @@ import 'package:xta/plugins/bluesky/bluesky_models.dart';
 void main() {
   group('normaliseBlueskyAppView', () {
     test('accepts bare hosts and trims trailing slashes', () {
-      expect(normaliseBlueskyAppView('public.api.bsky.app'), 'https://public.api.bsky.app');
-      expect(normaliseBlueskyAppView('https://public.api.bsky.app/'), 'https://public.api.bsky.app');
-      expect(normaliseBlueskyAppView('  https://example.org  '), 'https://example.org');
+      expect(
+        normaliseBlueskyAppView('public.api.bsky.app'),
+        'https://public.api.bsky.app',
+      );
+      expect(
+        normaliseBlueskyAppView('https://public.api.bsky.app/'),
+        'https://public.api.bsky.app',
+      );
+      expect(
+        normaliseBlueskyAppView('  https://example.org  '),
+        'https://example.org',
+      );
     });
 
     test('refuses empty or non-http values', () {
@@ -19,7 +28,10 @@ void main() {
       expect(blueskyAppViewFromPrefs(null), kBlueskyDefaultAppView);
       expect(blueskyAppViewFromPrefs(''), kBlueskyDefaultAppView);
       expect(blueskyAppViewFromPrefs('ftp://nope'), kBlueskyDefaultAppView);
-      expect(blueskyAppViewFromPrefs('https://my.appview.example'), 'https://my.appview.example');
+      expect(
+        blueskyAppViewFromPrefs('https://my.appview.example'),
+        'https://my.appview.example',
+      );
     });
   });
 
@@ -27,10 +39,20 @@ void main() {
     test('accepts bare handles, @handles and profile URLs', () {
       expect(normaliseBlueskyHandle('alice.bsky.social'), 'alice.bsky.social');
       expect(normaliseBlueskyHandle('@Alice.bsky.social'), 'alice.bsky.social');
-      expect(normaliseBlueskyHandle('  @alice.bsky.social '), 'alice.bsky.social');
-      expect(normaliseBlueskyHandle('https://bsky.app/profile/alice.bsky.social'), 'alice.bsky.social');
-      expect(normaliseBlueskyHandle('https://www.bsky.app/profile/alice.bsky.social/post/abc'),
-          'alice.bsky.social');
+      expect(
+        normaliseBlueskyHandle('  @alice.bsky.social '),
+        'alice.bsky.social',
+      );
+      expect(
+        normaliseBlueskyHandle('https://bsky.app/profile/alice.bsky.social'),
+        'alice.bsky.social',
+      );
+      expect(
+        normaliseBlueskyHandle(
+          'https://www.bsky.app/profile/alice.bsky.social/post/abc',
+        ),
+        'alice.bsky.social',
+      );
     });
 
     test('keeps dotted custom handles', () {
@@ -38,10 +60,14 @@ void main() {
     });
 
     test('accepts did:plc identifiers', () {
-      expect(normaliseBlueskyHandle('did:plc:z72i7hdynmk6r22z27h6tvur'),
-          'did:plc:z72i7hdynmk6r22z27h6tvur');
-      expect(normaliseBlueskyHandle('DID:PLC:z72i7hdynmk6r22z27h6tvur'),
-          'did:plc:z72i7hdynmk6r22z27h6tvur');
+      expect(
+        normaliseBlueskyHandle('did:plc:z72i7hdynmk6r22z27h6tvur'),
+        'did:plc:z72i7hdynmk6r22z27h6tvur',
+      );
+      expect(
+        normaliseBlueskyHandle('DID:PLC:z72i7hdynmk6r22z27h6tvur'),
+        'did:plc:z72i7hdynmk6r22z27h6tvur',
+      );
     });
 
     test('refuses what is not a handle', () {
@@ -60,7 +86,8 @@ void main() {
       expect(
         blueskyWebUrl(
           handle: 'bsky.app',
-          atUri: 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mqafridzgk2e',
+          atUri:
+              'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.post/3mqafridzgk2e',
         ),
         'https://bsky.app/profile/bsky.app/post/3mqafridzgk2e',
       );
@@ -68,7 +95,13 @@ void main() {
 
     test('returns null when the URI has no rkey', () {
       expect(blueskyRkeyOf('not-an-at-uri'), isNull);
-      expect(blueskyWebUrl(handle: 'bsky.app', atUri: 'at://did:plc:x/app.bsky.feed.post'), isNull);
+      expect(
+        blueskyWebUrl(
+          handle: 'bsky.app',
+          atUri: 'at://did:plc:x/app.bsky.feed.post',
+        ),
+        isNull,
+      );
     });
   });
 
@@ -97,7 +130,7 @@ void main() {
                   {
                     'thumb': 'https://example.org/thumb.jpg',
                     'fullsize': 'https://example.org/full.jpg',
-                  }
+                  },
                 ],
               },
             },
@@ -111,7 +144,9 @@ void main() {
       expect(post.handle, 'alice.bsky.social');
       expect(post.did, 'did:plc:abc');
       expect(post.authorName, 'Alice');
-      expect(post.images, ['https://example.org/thumb.jpg']);
+      expect(post.images, ['https://example.org/full.jpg']);
+      expect(post.imageAspects, [null]);
+      expect(post.imageIsVideo, [false]);
       expect(post.url, 'https://bsky.app/profile/alice.bsky.social/post/rkey1');
       expect(post.publishedAt, isNotNull);
     });
@@ -170,7 +205,10 @@ void main() {
             'post': {
               'uri': 'at://did:plc:abc/app.bsky.feed.post/q1',
               'author': {'handle': 'alice.bsky.social', 'displayName': 'Alice'},
-              'record': {'text': 'Look', 'createdAt': '2026-08-01T09:00:00.000Z'},
+              'record': {
+                'text': 'Look',
+                'createdAt': '2026-08-01T09:00:00.000Z',
+              },
               'embed': {
                 '\$type': 'app.bsky.embed.recordWithMedia#view',
                 'record': {
@@ -178,8 +216,14 @@ void main() {
                     '\$type': 'app.bsky.embed.record#viewRecord',
                     'uri': 'at://did:plc:xyz/app.bsky.feed.post/orig',
                     'cid': 'bafy',
-                    'author': {'handle': 'carol.bsky.social', 'displayName': 'Carol'},
-                    'value': {'text': 'Quoted body', 'createdAt': '2026-08-01T08:00:00.000Z'},
+                    'author': {
+                      'handle': 'carol.bsky.social',
+                      'displayName': 'Carol',
+                    },
+                    'value': {
+                      'text': 'Quoted body',
+                      'createdAt': '2026-08-01T08:00:00.000Z',
+                    },
                   },
                 },
                 'media': {
@@ -203,6 +247,127 @@ void main() {
       expect(posts.single.linkCard?.url, 'https://example.org/story');
       expect(posts.single.linkCard?.title, 'A story');
     });
+
+    test('prefers fullsize, keeps aspect, and reads a video thumb', () {
+      final posts = parseBlueskyFeed({
+        'feed': [
+          {
+            'post': {
+              'uri': 'at://did:plc:abc/app.bsky.feed.post/vid',
+              'author': {'handle': 'alice.bsky.social'},
+              'record': {
+                'text': 'Watch',
+                'createdAt': '2026-08-01T09:00:00.000Z',
+              },
+              'embed': {
+                '\$type': 'app.bsky.embed.video#view',
+                'thumbnail': 'https://example.org/video-thumb.jpg',
+                'aspectRatio': {'width': 1920, 'height': 1080},
+              },
+            },
+          },
+          {
+            'post': {
+              'uri': 'at://did:plc:abc/app.bsky.feed.post/img',
+              'author': {'handle': 'alice.bsky.social'},
+              'record': {
+                'text': 'Pic',
+                'createdAt': '2026-08-01T09:00:00.000Z',
+              },
+              'embed': {
+                '\$type': 'app.bsky.embed.images#view',
+                'images': [
+                  {
+                    'thumb': 'https://example.org/t.jpg',
+                    'fullsize': 'https://example.org/f.jpg',
+                    'aspectRatio': {'width': 2200, 'height': 1312},
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      });
+
+      expect(posts, hasLength(2));
+      expect(posts.first.images, ['https://example.org/video-thumb.jpg']);
+      expect(posts.first.imageIsVideo.single, isTrue);
+      expect(posts.first.imageAspects.single, closeTo(1920 / 1080, 0.001));
+      expect(posts.last.images, ['https://example.org/f.jpg']);
+      expect(posts.last.imageAspects.single, closeTo(2200 / 1312, 0.001));
+    });
+
+    test('reads reply parent handle from a feed item', () {
+      final posts = parseBlueskyFeed({
+        'feed': [
+          {
+            'post': {
+              'uri': 'at://did:plc:abc/app.bsky.feed.post/r',
+              'author': {'handle': 'alice.bsky.social'},
+              'record': {
+                'text': 'yes',
+                'createdAt': '2026-08-01T09:00:00.000Z',
+                'reply': {
+                  'parent': {'uri': 'at://did:plc:xyz/app.bsky.feed.post/p'},
+                },
+              },
+            },
+            'reply': {
+              'parent': {
+                'author': {'handle': 'bob.bsky.social', 'displayName': 'Bob'},
+              },
+            },
+          },
+        ],
+      });
+
+      expect(posts.single.isReply, isTrue);
+      expect(posts.single.replyToHandle, 'bob.bsky.social');
+    });
+
+    test('quoted viewRecord keeps embeds media', () {
+      final posts = parseBlueskyFeed({
+        'feed': [
+          {
+            'post': {
+              'uri': 'at://did:plc:abc/app.bsky.feed.post/q',
+              'author': {'handle': 'alice.bsky.social'},
+              'record': {
+                'text': 'Quote',
+                'createdAt': '2026-08-01T09:00:00.000Z',
+              },
+              'embed': {
+                '\$type': 'app.bsky.embed.record#view',
+                'record': {
+                  '\$type': 'app.bsky.embed.record#viewRecord',
+                  'uri': 'at://did:plc:xyz/app.bsky.feed.post/orig',
+                  'author': {'handle': 'carol.bsky.social'},
+                  'value': {
+                    'text': 'Quoted',
+                    'createdAt': '2026-08-01T08:00:00.000Z',
+                  },
+                  'embeds': [
+                    {
+                      '\$type': 'app.bsky.embed.images#view',
+                      'images': [
+                        {
+                          'fullsize': 'https://example.org/quoted.jpg',
+                          'thumb': 'https://example.org/quoted-t.jpg',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      });
+
+      expect(posts.single.quotedPost?.images, [
+        'https://example.org/quoted.jpg',
+      ]);
+    });
   });
 
   group('parseBlueskyThread', () {
@@ -213,14 +378,20 @@ void main() {
           'post': {
             'uri': 'at://did:plc:a/app.bsky.feed.post/focal',
             'author': {'handle': 'alice.bsky.social'},
-            'record': {'text': 'focal', 'createdAt': '2026-08-01T10:00:00.000Z'},
+            'record': {
+              'text': 'focal',
+              'createdAt': '2026-08-01T10:00:00.000Z',
+            },
           },
           'parent': {
             '\$type': 'app.bsky.feed.defs#threadViewPost',
             'post': {
               'uri': 'at://did:plc:a/app.bsky.feed.post/root',
               'author': {'handle': 'alice.bsky.social'},
-              'record': {'text': 'root', 'createdAt': '2026-08-01T09:00:00.000Z'},
+              'record': {
+                'text': 'root',
+                'createdAt': '2026-08-01T09:00:00.000Z',
+              },
             },
           },
           'replies': [
@@ -229,7 +400,10 @@ void main() {
               'post': {
                 'uri': 'at://did:plc:b/app.bsky.feed.post/r1',
                 'author': {'handle': 'bob.bsky.social'},
-                'record': {'text': 'reply', 'createdAt': '2026-08-01T11:00:00.000Z'},
+                'record': {
+                  'text': 'reply',
+                  'createdAt': '2026-08-01T11:00:00.000Z',
+                },
               },
               'replies': [
                 {
@@ -237,7 +411,10 @@ void main() {
                   'post': {
                     'uri': 'at://did:plc:c/app.bsky.feed.post/r2',
                     'author': {'handle': 'carol.bsky.social'},
-                    'record': {'text': 'nested', 'createdAt': '2026-08-01T12:00:00.000Z'},
+                    'record': {
+                      'text': 'nested',
+                      'createdAt': '2026-08-01T12:00:00.000Z',
+                    },
                   },
                 },
               ],
@@ -276,13 +453,20 @@ void main() {
 
   group('parseBlueskyListRef', () {
     test('reads bsky.app list URLs and AT-URIs', () {
-      final web = parseBlueskyListRef('https://bsky.app/profile/alice.bsky.social/lists/3abc');
+      final web = parseBlueskyListRef(
+        'https://bsky.app/profile/alice.bsky.social/lists/3abc',
+      );
       expect(web?.actor, 'alice.bsky.social');
       expect(web?.rkey, '3abc');
 
-      final at = parseBlueskyListRef('at://did:plc:abc/app.bsky.graph.list/3abc');
+      final at = parseBlueskyListRef(
+        'at://did:plc:abc/app.bsky.graph.list/3abc',
+      );
       expect(at?.atUri, 'at://did:plc:abc/app.bsky.graph.list/3abc');
-      expect(parseBlueskyListRef('https://bsky.app/profile/alice.bsky.social'), isNull);
+      expect(
+        parseBlueskyListRef('https://bsky.app/profile/alice.bsky.social'),
+        isNull,
+      );
     });
   });
 
@@ -291,7 +475,11 @@ void main() {
       final page = parseBlueskyFollowsPage({
         'cursor': 'next',
         'follows': [
-          {'did': 'did:plc:1', 'handle': 'one.bsky.social', 'displayName': 'One'},
+          {
+            'did': 'did:plc:1',
+            'handle': 'one.bsky.social',
+            'displayName': 'One',
+          },
         ],
       });
       expect(page.cursor, 'next');
@@ -300,7 +488,11 @@ void main() {
 
     test('parseBlueskyListMembersPage reads subjects', () {
       final page = parseBlueskyListMembersPage({
-        'list': {'uri': 'at://did:plc:a/app.bsky.graph.list/1', 'name': 'Cool', 'listItemCount': 2},
+        'list': {
+          'uri': 'at://did:plc:a/app.bsky.graph.list/1',
+          'name': 'Cool',
+          'listItemCount': 2,
+        },
         'items': [
           {
             'subject': {'did': 'did:plc:1', 'handle': 'one.bsky.social'},
