@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Ta med i Følger og For deg",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Minst én konto må stå på",
   "image_quality": "Bildekvalitet",
   "@image_quality": {},
   "import": "Importer",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

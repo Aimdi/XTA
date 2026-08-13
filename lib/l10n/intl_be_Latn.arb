@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Uklučać u «Čytaju» i «Dla vas»",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Choć adzin ulikovy zapis musi zastacca ŭkliučanym",
   "image_quality": "Jakasć vyjaŭ",
   "@image_quality": {},
   "import": "Import",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

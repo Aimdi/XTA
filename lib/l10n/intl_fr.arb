@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Inclure dans Abonnements et Pour vous",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Au moins un compte doit rester activé",
   "image_quality": "Qualité des images",
   "@image_quality": {},
   "import": "Importer",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

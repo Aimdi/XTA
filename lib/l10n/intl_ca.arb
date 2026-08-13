@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Incloure a Seguint i Per a tu",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Cal deixar com a mínim un compte activat",
   "image_quality": "Qualitat de les imatges",
   "@image_quality": {},
   "import": "Importar",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

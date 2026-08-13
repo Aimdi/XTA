@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Включать в «Читаю» и «Для вас»",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Хотя бы один аккаунт должен остаться включённым",
   "image_quality": "Качество изображений",
   "@image_quality": {},
   "import": "Импортировать",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

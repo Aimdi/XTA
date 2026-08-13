@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "팔로잉과 추천에 포함",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "계정은 하나 이상 켜 두어야 합니다",
   "image_quality": "이미지 화질",
   "@image_quality": {},
   "import": "가져오기",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Sartu Jarraitzen eta Zuretzat-en",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Gutxienez kontu bat piztuta utzi behar da",
   "image_quality": "Irudien kalitatea",
   "@image_quality": {},
   "import": "Inportatu",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

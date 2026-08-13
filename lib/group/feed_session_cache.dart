@@ -47,7 +47,10 @@ class FeedSessionCache {
 
   TweetFeedController getOrCreateController(String key) {
     _touch(key);
-    final controller = _controllers.putIfAbsent(key, () => TweetFeedController());
+    final controller = _controllers.putIfAbsent(
+      key,
+      () => TweetFeedController(),
+    );
     _evictOldest();
 
     return controller;
@@ -77,5 +80,16 @@ class FeedSessionCache {
     _offsets.clear();
     _mediaOnly.clear();
     _order.clear();
+  }
+
+  /// Drops one feed so the next [getOrCreateController] starts empty.
+  ///
+  /// Does not dispose: a still-mounted body may hold the old controller until
+  /// it remounts, same as [invalidateAll].
+  void evict(String key) {
+    _controllers.remove(key);
+    _offsets.remove(key);
+    _mediaOnly.remove(key);
+    _order.remove(key);
   }
 }

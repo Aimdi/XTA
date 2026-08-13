@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Includi in Following e Per te",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Almeno un account deve restare attivo",
   "image_quality": "Qualità delle immagini",
   "@image_quality": {},
   "import": "Importa",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

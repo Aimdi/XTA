@@ -12,7 +12,7 @@ import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
-import 'package:xta/group/feed_refresh_controller.dart';
+import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
@@ -126,6 +126,9 @@ class _FeedScreenState extends State<FeedScreen> {
   // softRefresh alone left mid-scroll users looking at stale tiles until they
   // switched tabs (#168).
   int _forYouEpoch = 0;
+  // Bumped with the Following cache evict so toggling an account does not
+  // leave home--1 showing pages fetched with the old mix.
+  int _followingEpoch = 0;
 
   /// Bumped only when the feed is chosen from somewhere other than these tabs,
   /// so the bar is rebuilt at the new index. A tap on the bar itself leaves it
@@ -199,12 +202,23 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
     _lastDisabledAccountIds = Set<String>.from(disabled);
-    _remountForYou(scrollToTopFirst: _tab == FeedTab.foryou);
-    // Following reuses cached chunks; bump refresh so new pages skip disabled
-    // accounts instead of keeping spare-account pages on screen.
-    if (_tab == FeedTab.following) {
-      context.read<FeedRefreshController>().refresh();
+    _reloadHomeFeeds();
+  }
+
+  /// Following's [FeedRefreshController] lives *inside* [GroupFeedShell], so
+  /// this State's context cannot see it. Evict the cached pages and remount
+  /// instead — otherwise the toggle looks like it did nothing.
+  void _reloadHomeFeeds() {
+    try {
+      context.read<FeedSessionCache>().evict(homeFollowingCacheKey(widget.id));
+    } on ProviderNotFoundException {
+      // Tests and routes without a session cache still remount the tab.
     }
+    if (!mounted) {
+      return;
+    }
+    setState(() => _followingEpoch++);
+    _remountForYou(scrollToTopFirst: _tab == FeedTab.foryou);
   }
 
   @override
@@ -242,7 +256,7 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
 
-    await context.read<FeedRefreshController>().refresh();
+    _reloadHomeFeeds();
   }
 
   Widget _pluginBody(FeedTab tab) {
@@ -361,8 +375,9 @@ class _FeedScreenState extends State<FeedScreen> {
             // per-chunk fan-out. Namespaced so it never shares state with the
             // pushed route for the same group.
             return SubscriptionGroupScreenContent(
+              key: ValueKey(_followingEpoch),
               id: widget.id,
-              cacheKey: 'home-${widget.id}',
+              cacheKey: homeFollowingCacheKey(widget.id),
             );
           }
           if (tab == FeedTab.foryou) {

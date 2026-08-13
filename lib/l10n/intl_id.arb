@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Sertakan di Mengikuti dan Untuk Anda",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Setidaknya satu akun harus tetap aktif",
   "image_quality": "Kualitas gambar",
   "@image_quality": {},
   "import": "Impor",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

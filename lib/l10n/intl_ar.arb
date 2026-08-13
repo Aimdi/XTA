@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "تضمين في المتابَعون ولك",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "يجب أن يبقى حساب واحد على الأقل مفعّلاً",
   "image_quality": "جودة الصور",
   "@image_quality": {},
   "import": "استيراد",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

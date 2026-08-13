@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "In Folgt und Für dich einbeziehen",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Mindestens ein Konto muss an bleiben",
   "image_quality": "Bildqualität",
   "@image_quality": {},
   "import": "Importieren",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

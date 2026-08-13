@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Include în Urmărești și Pentru tine",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "Cel puțin un cont trebuie să rămână pornit",
   "image_quality": "Calitatea imaginilor",
   "@image_quality": {},
   "import": "Import",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }

@@ -48,8 +48,14 @@ Future<bool> _confirmDelete(BuildContext context, Account account) async {
       title: Text(l10n.are_you_sure),
       content: Text(l10n.account_delete_confirm(name)),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-        TextButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.delete)),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(l10n.delete),
+        ),
       ],
     ),
   );
@@ -74,7 +80,9 @@ class _ChromeAvatarSettingsTile extends StatelessWidget {
               leading: ChromeAvatarMark(account: snapshot.data, size: 40),
               title: Text(l10n.chrome_avatar_title),
               subtitle: Text(
-                revision > 0 ? l10n.chrome_avatar_change : l10n.chrome_avatar_description,
+                revision > 0
+                    ? l10n.chrome_avatar_change
+                    : l10n.chrome_avatar_description,
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => showChromeAvatarSheet(context),
@@ -96,67 +104,74 @@ class _SettingsAccountFragment extends State<SettingsAccountFragment> {
         title: Text(L10n.current.account),
         actions: [
           IconButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview())),
-              icon: const Icon(Icons.add))
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),
+            ),
+            icon: const Icon(Icons.add),
+          ),
         ],
       ),
       body: FutureBuilder(
-          future: getAccounts(),
-          builder: (BuildContext listContext, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const LinearProgressIndicator();
-            }
+        future: getAccounts(),
+        builder: (BuildContext listContext, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LinearProgressIndicator();
+          }
 
-            final List<Account> data = snapshot.data ?? const <Account>[];
+          final List<Account> data = snapshot.data ?? const <Account>[];
 
-            return ScopedBuilder<HomeAccountFilterStore, Set<String>>(
-              store: filter,
-              onState: (_, disabled) {
-                return ListView(
-                  children: [
-                    const _ChromeAvatarSettingsTile(),
-                    const Divider(),
-                    if (data.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(L10n.of(context).home_feed_accounts_empty),
-                      )
-                    else ...[
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                        child: Text(
-                          L10n.of(context).home_feed_accounts_description,
-                          style: TextStyle(color: Theme.of(context).disabledColor),
+          return ScopedBuilder<HomeAccountFilterStore, Set<String>>(
+            store: filter,
+            onState: (_, disabled) {
+              return ListView(
+                children: [
+                  const _ChromeAvatarSettingsTile(),
+                  const Divider(),
+                  if (data.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(L10n.of(context).home_feed_accounts_empty),
+                    )
+                  else ...[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      child: Text(
+                        L10n.of(context).home_feed_accounts_description,
+                        style: TextStyle(
+                          color: Theme.of(context).disabledColor,
                         ),
                       ),
-                      ...data.map((account) {
-                        final enabled = isHomeAccountEnabled(account.id, disabled);
-                        return Dismissible(
-                          key: ValueKey(account.id),
-                          direction: DismissDirection.endToStart,
-                          background: const _DeleteBackground(),
-                          confirmDismiss: (_) => _confirmDelete(context, account),
-                          onDismissed: (DismissDirection direction) async {
-                            await model.deleteAccount(account.id.toString());
-                            setState(() {});
-                          },
-                          child: SwitchListTile(
-                            secondary: const Icon(Icons.account_circle),
-                            title: Text(account.screenName ?? L10n.of(context).unknown_username),
-                            subtitle: Text(L10n.of(context).home_feed_include_in_for_you),
-                            value: enabled,
-                            onChanged: (value) async {
-                              await filter.setEnabled(account.id, value, accounts: data);
-                            },
+                    ),
+                    ...data.map((account) {
+                      return Dismissible(
+                        key: ValueKey(account.id),
+                        direction: DismissDirection.endToStart,
+                        background: const _DeleteBackground(),
+                        confirmDismiss: (_) => _confirmDelete(context, account),
+                        onDismissed: (DismissDirection direction) async {
+                          await model.deleteAccount(account.id.toString());
+                          setState(() {});
+                        },
+                        child: HomeAccountToggleTile(
+                          account: account,
+                          disabled: disabled,
+                          accounts: data,
+                          onChanged: (value) => filter.setEnabled(
+                            account.id,
+                            value,
+                            accounts: data,
                           ),
-                        );
-                      }),
-                    ],
+                        ),
+                      );
+                    }),
                   ],
-                );
-              },
-            );
-          }),
+                ],
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

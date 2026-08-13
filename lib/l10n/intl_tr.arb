@@ -563,6 +563,7 @@
   "@home_feed_accounts_empty": {},
   "home_feed_include_in_for_you": "Takip edilenler ve Sana özel’e dahil et",
   "@home_feed_include_in_for_you": {},
+  "home_feed_keep_one_account": "En az bir hesabın açık kalması gerekir",
   "image_quality": "Görüntü kalitesi",
   "@image_quality": {},
   "import": "İçe aktar",
@@ -2581,5 +2582,6 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@home_feed_keep_one_account": {}
 }
