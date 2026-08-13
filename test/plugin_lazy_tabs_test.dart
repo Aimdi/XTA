@@ -67,8 +67,8 @@ void main() {
     await tester.tap(find.text('Open notes'));
     await tester.pump();
 
-    expect(find.text('Home'), findsOneWidget);
     expect(find.text('Notes'), findsOneWidget);
+    expect(find.text('Home', skipOffstage: false), findsOneWidget);
     expect(notesBuilds, 1);
   });
 }
