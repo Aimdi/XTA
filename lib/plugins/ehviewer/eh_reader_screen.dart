@@ -84,7 +84,7 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         if (!mounted) return;
         await precacheImage(
           ExtendedNetworkImageProvider(
-            next.displayUrl,
+            next.displayUrl(signedIn: client.hasCookies),
             cache: true,
             headers: client.imageHeaders,
           ),
@@ -272,7 +272,9 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
               child: InteractiveViewer(
                 child: Center(
                   child: EhNetworkImage(
-                    url: _page!.displayUrl,
+                    url: _page!.displayUrl(
+                      signedIn: context.read<EhClient>().hasCookies,
+                    ),
                     fallbackUrl: _page!.imageUrl,
                     fit: BoxFit.contain,
                     filterQuality: FilterQuality.high,

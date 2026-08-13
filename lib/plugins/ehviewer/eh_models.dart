@@ -155,10 +155,14 @@ class EhImagePage {
     this.pageCount,
   });
 
-  /// Original when the page offers `fullimg`, else the (hopefully 2400px) resample.
-  String get displayUrl {
-    final original = originalImageUrl?.trim();
-    if (original != null && original.isNotEmpty) return original;
+  /// Original when the page offers `fullimg`, else the resampled `#img`.
+  ///
+  /// Guests must not use [originalImageUrl]: `fullimg` 302s to login.
+  String displayUrl({required bool signedIn}) {
+    if (signedIn) {
+      final original = originalImageUrl?.trim();
+      if (original != null && original.isNotEmpty) return original;
+    }
     return imageUrl;
   }
 }

@@ -91,12 +91,12 @@ void main() {
       final page = parseEhImagePage(html, page: 2);
       expect(page!.imageUrl, 'https://cdn.example/page.webp');
       expect(page.originalImageUrl, isNull);
-      expect(page.displayUrl, 'https://cdn.example/page.webp');
+      expect(page.displayUrl(signedIn: false), 'https://cdn.example/page.webp');
       expect(page.nextPageUrl, contains('1-3'));
       expect(page.prevPageUrl, contains('1-1'));
     });
 
-    test('prefers the original fullimg link when present', () {
+    test('reads fullimg.php and uses it only when signed in', () {
       const html = '''
 <img src="https://hath.example/h/abc/keystamp=1;xres=1280/page.jpg" id="img" />
 <div id="i7">
@@ -113,7 +113,21 @@ Download original 2000 x 3000 :: 1.2 MB</a>
         page.originalImageUrl,
         'https://e-hentai.org/fullimg.php?gid=9&page=2&key=abc',
       );
-      expect(page.displayUrl, page.originalImageUrl);
+      expect(page.displayUrl(signedIn: true), page.originalImageUrl);
+      expect(page.displayUrl(signedIn: false), page.imageUrl);
+    });
+
+    test('reads the current /fullimg/gid/page/key/file href', () {
+      const html = '''
+<img id="img" src="https://hath.example/h/abc/keystamp=1;xres=800/0001.webp" />
+<a href="https://e-hentai.org/fullimg/4116360/1/g8l82w4amxz/0001.png">Download original 1536 x 2040 2.33 MiB</a>
+''';
+      final page = parseEhImagePage(html, page: 1);
+      expect(
+        page!.originalImageUrl,
+        'https://e-hentai.org/fullimg/4116360/1/g8l82w4amxz/0001.png',
+      );
+      expect(page.displayUrl(signedIn: true), page.originalImageUrl);
     });
   });
 
