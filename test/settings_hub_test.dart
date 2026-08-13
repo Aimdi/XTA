@@ -9,7 +9,7 @@ import 'package:xta/ui/x_controls.dart';
 Widget _app() {
   return PrefService(
     service: PrefServiceCache(cache: {}),
-    child: const MaterialApp(
+    child: MaterialApp(
       localizationsDelegates: [
         L10n.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -24,6 +24,10 @@ Widget _app() {
 }
 
 Future<void> _pumpHub(WidgetTester tester) async {
+  tester.view.physicalSize = const Size(800, 2000);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(_app());
   await tester.pump();
 }
