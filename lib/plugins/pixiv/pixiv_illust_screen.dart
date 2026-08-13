@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -151,18 +152,13 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
               ),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(4, 0, 4, 24),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 4,
-                    crossAxisSpacing: 4,
-                    childAspectRatio: 0.72,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) =>
-                        PixivIllustTile(illust: _related[index]),
-                    childCount: _related.length,
-                  ),
+                sliver: SliverMasonryGrid.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 4,
+                  crossAxisSpacing: 4,
+                  childCount: _related.length,
+                  itemBuilder: (context, index) =>
+                      PixivIllustTile(illust: _related[index]),
                 ),
               ),
             ],

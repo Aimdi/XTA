@@ -101,6 +101,7 @@ class PixivIllustTile extends StatelessWidget {
           MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust)),
         ),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AspectRatio(
