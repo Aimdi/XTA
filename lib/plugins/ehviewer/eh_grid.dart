@@ -1,6 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_gallery_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 
@@ -8,14 +10,18 @@ const ehImageTimeLimit = Duration(seconds: 20);
 
 class EhNetworkImage extends StatelessWidget {
   final String url;
+  final String? fallbackUrl;
   final BoxFit fit;
   final int? cacheWidth;
+  final FilterQuality filterQuality;
 
   const EhNetworkImage({
     super.key,
     required this.url,
+    this.fallbackUrl,
     this.fit = BoxFit.cover,
     this.cacheWidth,
+    this.filterQuality = FilterQuality.medium,
   });
 
   @override
@@ -26,23 +32,55 @@ class EhNetworkImage extends StatelessWidget {
         child: const Icon(Icons.broken_image_outlined),
       );
     }
+    final headers = _ehImageHeaders(context);
     return ExtendedImage.network(
       url,
       fit: fit,
       cache: true,
       cacheWidth: cacheWidth,
+      headers: headers,
+      filterQuality: filterQuality,
       timeLimit: ehImageTimeLimit,
       retries: 1,
       loadStateChanged: (state) {
-        if (state.extendedImageLoadState == LoadState.failed) {
-          return ColoredBox(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: const Icon(Icons.broken_image_outlined),
+        if (state.extendedImageLoadState != LoadState.failed) return null;
+        final fallback = fallbackUrl;
+        if (fallback != null && fallback.isNotEmpty && fallback != url) {
+          return ExtendedImage.network(
+            fallback,
+            fit: fit,
+            cache: true,
+            cacheWidth: cacheWidth,
+            headers: headers,
+            filterQuality: filterQuality,
+            timeLimit: ehImageTimeLimit,
+            retries: 1,
+            loadStateChanged: (retry) {
+              if (retry.extendedImageLoadState == LoadState.failed) {
+                return _ehBroken(context);
+              }
+              return null;
+            },
           );
         }
-        return null;
+        return _ehBroken(context);
       },
     );
+  }
+}
+
+Widget _ehBroken(BuildContext context) {
+  return ColoredBox(
+    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+    child: const Icon(Icons.broken_image_outlined),
+  );
+}
+
+Map<String, String>? _ehImageHeaders(BuildContext context) {
+  try {
+    return context.read<EhClient>().imageHeaders;
+  } catch (_) {
+    return null;
   }
 }
 
@@ -230,10 +268,8 @@ class EhSpriteThumb extends StatelessWidget {
                 height: constraints.maxHeight,
                 fit: BoxFit.fitHeight,
                 cache: true,
-                cacheWidth:
-                    (constraints.maxWidth *
-                            MediaQuery.devicePixelRatioOf(context))
-                        .ceil(),
+                headers: _ehImageHeaders(context),
+                filterQuality: FilterQuality.medium,
                 timeLimit: ehImageTimeLimit,
                 retries: 1,
                 loadStateChanged: (state) {

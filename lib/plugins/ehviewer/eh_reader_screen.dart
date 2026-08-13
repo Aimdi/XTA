@@ -83,7 +83,11 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         );
         if (!mounted) return;
         await precacheImage(
-          ExtendedNetworkImageProvider(next.imageUrl, cache: true),
+          ExtendedNetworkImageProvider(
+            next.displayUrl,
+            cache: true,
+            headers: client.imageHeaders,
+          ),
           context,
         );
       } catch (_) {}
@@ -268,8 +272,10 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
               child: InteractiveViewer(
                 child: Center(
                   child: EhNetworkImage(
-                    url: _page!.imageUrl,
+                    url: _page!.displayUrl,
+                    fallbackUrl: _page!.imageUrl,
                     fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
               ),

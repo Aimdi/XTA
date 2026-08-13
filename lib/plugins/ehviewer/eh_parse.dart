@@ -35,6 +35,22 @@ final _previewAnchor = RegExp(
 );
 final _previewThumb = RegExp(r'url\(([^)]+)\)\s*(-?\d+)px');
 final _previewSheetLink = RegExp(r'[?&]p=(\d+)');
+final _imgSrcAfterId = RegExp(r'<img[^>]+id="img"[^>]+src="([^"]+)"');
+final _imgSrcBeforeId = RegExp(r'<img[^>]+src="([^"]+)"[^>]+id="img"');
+final _fullimgHref = RegExp(
+  r'''href=["']([^"']*fullimg[^"']+)["']''',
+  caseSensitive: false,
+);
+final _i7Href = RegExp(
+  r'''id="i7"[^>]*>.*?<a[^>]+href=["']([^"']+)["']''',
+  dotAll: true,
+);
+
+/// Largest free resample E-Hentai offers (`uconfig` key `xr`).
+const ehPreferredImageSize = '2400';
+
+/// Large gallery preview tiles (`uconfig` key `ts`).
+const ehPreferredPreviewSize = 'l';
 
 EhGalleryPage parseEhGalleryList(String html) {
   final rows = html.split(RegExp(r'<tr[^>]*>'));
@@ -198,9 +214,9 @@ List<EhPreview> parseEhPreviewSheet(String html) {
 }
 
 EhImagePage? parseEhImagePage(String html, {required int page}) {
-  final imageUrl = RegExp(
-    r'<img[^>]+id="img"[^>]+src="([^"]+)"',
-  ).firstMatch(html)?.group(1);
+  final imageUrl =
+      _imgSrcAfterId.firstMatch(html)?.group(1) ??
+      _imgSrcBeforeId.firstMatch(html)?.group(1);
   if (imageUrl == null || imageUrl.isEmpty) return null;
 
   final next = RegExp(
@@ -219,11 +235,77 @@ EhImagePage? parseEhImagePage(String html, {required int page}) {
 
   return EhImagePage(
     imageUrl: _decodeAttr(imageUrl) ?? imageUrl,
+    originalImageUrl: parseEhOriginalImageUrl(html),
     page: page,
     nextPageUrl: _decodeAttr(next),
     prevPageUrl: _decodeAttr(prev),
     pageCount: pageCount,
   );
+}
+
+/// `fullimg.php` / `#i7` "Download original" href, if the page offers one.
+String? parseEhOriginalImageUrl(String html) {
+  final fullimg = _fullimgHref.firstMatch(html)?.group(1);
+  if (fullimg != null && fullimg.isNotEmpty) return _decodeAttr(fullimg);
+  final i7 = _i7Href.firstMatch(html)?.group(1);
+  if (i7 == null || i7.isEmpty) return null;
+  return _decodeAttr(i7);
+}
+
+/// Rewrites the cookie header so `uconfig` asks for 2400px resamples + large thumbs.
+String ehRequestCookies(
+  String raw, {
+  String imageSize = ehPreferredImageSize,
+  String previewSize = ehPreferredPreviewSize,
+}) {
+  final parts = <String, String>{};
+  final order = <String>[];
+  for (final piece in raw.split(';')) {
+    final trimmed = piece.trim();
+    if (trimmed.isEmpty) continue;
+    final eq = trimmed.indexOf('=');
+    if (eq <= 0) continue;
+    final key = trimmed.substring(0, eq).trim();
+    var value = trimmed.substring(eq + 1).trim();
+    if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) {
+      value = value.substring(1, value.length - 1);
+    }
+    if (!parts.containsKey(key)) order.add(key);
+    parts[key] = value;
+  }
+  parts['uconfig'] = ehUconfigWithQuality(
+    parts['uconfig'] ?? '',
+    imageSize: imageSize,
+    previewSize: previewSize,
+  );
+  if (!order.contains('uconfig')) order.add('uconfig');
+  return [for (final key in order) '$key=${parts[key]}'].join('; ');
+}
+
+/// Sets `xr` (resample) and `ts` (preview tile size) on an existing `uconfig`.
+String ehUconfigWithQuality(
+  String raw, {
+  String imageSize = ehPreferredImageSize,
+  String previewSize = ehPreferredPreviewSize,
+}) {
+  final flags = <String, String>{};
+  final order = <String>[];
+  if (raw.isNotEmpty) {
+    for (final piece in raw.split('-')) {
+      if (piece.isEmpty) continue;
+      final us = piece.indexOf('_');
+      if (us <= 0) continue;
+      final key = piece.substring(0, us);
+      final value = piece.substring(us + 1);
+      if (!flags.containsKey(key)) order.add(key);
+      flags[key] = value;
+    }
+  }
+  flags['xr'] = imageSize;
+  flags['ts'] = previewSize;
+  if (!order.contains('xr')) order.add('xr');
+  if (!order.contains('ts')) order.add('ts');
+  return [for (final key in order) '${key}_${flags[key]}'].join('-');
 }
 
 List<EhGallery> parseEhGdata(Object? raw) {

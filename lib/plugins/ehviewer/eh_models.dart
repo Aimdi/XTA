@@ -140,6 +140,7 @@ class EhPreview {
 
 class EhImagePage {
   final String imageUrl;
+  final String? originalImageUrl;
   final String? nextPageUrl;
   final String? prevPageUrl;
   final int page;
@@ -147,9 +148,17 @@ class EhImagePage {
 
   const EhImagePage({
     required this.imageUrl,
+    this.originalImageUrl,
     required this.page,
     this.nextPageUrl,
     this.prevPageUrl,
     this.pageCount,
   });
+
+  /// Original when the page offers `fullimg`, else the (hopefully 2400px) resample.
+  String get displayUrl {
+    final original = originalImageUrl?.trim();
+    if (original != null && original.isNotEmpty) return original;
+    return imageUrl;
+  }
 }

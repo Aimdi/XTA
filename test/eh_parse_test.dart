@@ -90,8 +90,47 @@ void main() {
 ''';
       final page = parseEhImagePage(html, page: 2);
       expect(page!.imageUrl, 'https://cdn.example/page.webp');
+      expect(page.originalImageUrl, isNull);
+      expect(page.displayUrl, 'https://cdn.example/page.webp');
       expect(page.nextPageUrl, contains('1-3'));
       expect(page.prevPageUrl, contains('1-1'));
+    });
+
+    test('prefers the original fullimg link when present', () {
+      const html = '''
+<img src="https://hath.example/h/abc/keystamp=1;xres=1280/page.jpg" id="img" />
+<div id="i7">
+<a href="https://e-hentai.org/fullimg.php?gid=9&amp;page=2&amp;key=abc">
+Download original 2000 x 3000 :: 1.2 MB</a>
+</div>
+''';
+      final page = parseEhImagePage(html, page: 2);
+      expect(
+        page!.imageUrl,
+        'https://hath.example/h/abc/keystamp=1;xres=1280/page.jpg',
+      );
+      expect(
+        page.originalImageUrl,
+        'https://e-hentai.org/fullimg.php?gid=9&page=2&key=abc',
+      );
+      expect(page.displayUrl, page.originalImageUrl);
+    });
+  });
+
+  group('ehRequestCookies', () {
+    test('adds a 2400px uconfig when none is present', () {
+      expect(ehRequestCookies(''), 'uconfig=xr_2400-ts_l');
+      expect(
+        ehRequestCookies('ipb_member_id=1; ipb_pass_hash=abc'),
+        'ipb_member_id=1; ipb_pass_hash=abc; uconfig=xr_2400-ts_l',
+      );
+    });
+
+    test('upgrades a mobile-sized uconfig without dropping other flags', () {
+      expect(
+        ehRequestCookies('uconfig=dm_t-xr_780-uh_y'),
+        'uconfig=dm_t-xr_2400-uh_y-ts_l',
+      );
     });
   });
 

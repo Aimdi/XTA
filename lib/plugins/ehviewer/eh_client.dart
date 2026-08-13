@@ -37,9 +37,9 @@ class EhClient {
     : httpClient = httpClient ?? http.Client();
 
   static const _timeout = Duration(seconds: 25);
-  static const _userAgent =
-      'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 '
-      '(KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+  static const userAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
   static const apiUrl = 'https://api.e-hentai.org/api.php';
 
   bool get useExhentai => prefs.get<bool>(optionPluginEhUseExhentai) == true;
@@ -52,6 +52,16 @@ class EhClient {
   String get cookies => (prefs.get<String>(optionPluginEhCookies) ?? '').trim();
 
   bool get hasCookies => cookies.isNotEmpty;
+
+  /// Account cookies plus a `uconfig` that asks EH for 2400px resamples.
+  String get requestCookies => ehRequestCookies(cookies);
+
+  Map<String, String> get imageHeaders => {
+    'User-Agent': userAgent,
+    'Referer': '$host/',
+    'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+    if (requestCookies.isNotEmpty) 'Cookie': requestCookies,
+  };
 
   Set<EhCategory> get includedCategories {
     final raw = prefs.get<String>(optionPluginEhCategories) ?? '';
@@ -189,7 +199,7 @@ class EhClient {
           .post(
             Uri.parse(apiUrl),
             headers: {
-              'User-Agent': _userAgent,
+              'User-Agent': userAgent,
               'Content-Type': 'application/json',
               'Accept': 'application/json',
               if (hasCookies) 'Cookie': cookies,
@@ -210,10 +220,10 @@ class EhClient {
           .get(
             uri,
             headers: {
-              'User-Agent': _userAgent,
+              'User-Agent': userAgent,
               'Accept':
                   'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-              if (hasCookies) 'Cookie': cookies,
+              'Cookie': requestCookies,
             },
           )
           .timeout(_timeout);
