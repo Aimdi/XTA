@@ -178,17 +178,11 @@ class _SettingsPluginStoreFragmentState
                   onChanged: () => setState(() {}),
                 ),
             ],
-            if (sections.availableByCategory.isNotEmpty) ...[
-              _header(context, l10n.plugin_available),
-              for (final group in sections.availableByCategory) ...[
-                _header(context, group.category.label(context), nested: true),
-                for (final plugin in group.plugins)
-                  AvailablePluginRow(
-                    plugin: plugin,
-                    onInstall: () => _install(plugin),
-                  ),
-              ],
-            ],
+            if (sections.availableByCategory.isNotEmpty)
+              PluginAvailableSection(
+                groups: sections.availableByCategory,
+                onInstall: _install,
+              ),
           ],
         ),
       ),
@@ -213,6 +207,58 @@ class _SettingsPluginStoreFragmentState
                 fontWeight: FontWeight.w700,
               ),
       ),
+    );
+  }
+}
+
+/// Catalogue offers, folded so Installed stays the first thing you see.
+class PluginAvailableSection extends StatelessWidget {
+  final List<({PluginCategory category, List<XtaPlugin> plugins})> groups;
+  final Future<void> Function(XtaPlugin plugin) onInstall;
+
+  const PluginAvailableSection({
+    super.key,
+    required this.groups,
+    required this.onInstall,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    return ExpansionTile(
+      key: const Key('plugin-available'),
+      initiallyExpanded: false,
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      title: Text(
+        l10n.plugin_available,
+        style: theme.textTheme.titleSmall!.copyWith(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      children: [
+        for (final group in groups) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                group.category.label(context),
+                style: theme.textTheme.labelLarge!.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          for (final plugin in group.plugins)
+            AvailablePluginRow(
+              plugin: plugin,
+              onInstall: () => onInstall(plugin),
+            ),
+        ],
+      ],
     );
   }
 }
