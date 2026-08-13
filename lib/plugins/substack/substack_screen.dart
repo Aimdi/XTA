@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
@@ -38,16 +39,14 @@ class _SubstackScreenState extends State<SubstackScreen> {
       final pubs = context.read<SubstackPublicationsStore>();
       final feed = context.read<SubstackFeedStore>();
       final read = context.read<SubstackReadStore>();
-      final notes = context.read<SubstackNotesStore>();
       final likes = context.read<SubstackLikesStore>();
       final saved = context.read<SubstackSavedStore>();
-      await pubs.load();
-      await read.load();
-      await likes.load();
-      await saved.load();
+      if (pubs.state.isEmpty) await pubs.load();
+      if (read.state.isEmpty) await read.load();
+      if (likes.state.isEmpty) await likes.load();
+      if (saved.state.isEmpty) await saved.load();
       feed.syncReadIds(read.state);
       await feed.refresh();
-      await notes.refresh();
     });
   }
 
@@ -76,6 +75,13 @@ class _SubstackScreenState extends State<SubstackScreen> {
     if (followed == true && mounted) {
       await feed.refresh();
       await notes.refresh();
+    }
+  }
+
+  void _selectTab(int tab) {
+    setState(() => _tab = tab);
+    if (tab == 2) {
+      context.read<SubstackNotesStore>().refresh();
     }
   }
 
@@ -145,25 +151,25 @@ class _SubstackScreenState extends State<SubstackScreen> {
                       selected: _tab == 0,
                       icon: Icons.home_outlined,
                       label: l10n.plugin_substack_home,
-                      onTap: () => setState(() => _tab = 0),
+                      onTap: () => _selectTab(0),
                     ),
                     _ShellTab(
                       selected: _tab == 1,
                       icon: Icons.inbox_outlined,
                       label: l10n.plugin_substack_inbox,
-                      onTap: () => setState(() => _tab = 1),
+                      onTap: () => _selectTab(1),
                     ),
                     _ShellTab(
                       selected: _tab == 2,
                       icon: Icons.notes_outlined,
                       label: l10n.plugin_substack_tab_notes,
-                      onTap: () => setState(() => _tab = 2),
+                      onTap: () => _selectTab(2),
                     ),
                     _ShellTab(
                       selected: _tab == 3,
                       icon: Icons.person_outline,
                       label: l10n.plugin_substack_library,
-                      onTap: () => setState(() => _tab = 3),
+                      onTap: () => _selectTab(3),
                     ),
                   ],
                 ),
@@ -172,10 +178,10 @@ class _SubstackScreenState extends State<SubstackScreen> {
           ),
           const Divider(height: 1),
           Expanded(
-            child: IndexedStack(
+            child: PluginLazyTabs(
               index: _tab,
               children: [
-                _PostsPane(
+                (_) => _PostsPane(
                   scrollController: widget.scrollController,
                   pubs: pubs,
                   feed: feed,
@@ -183,16 +189,16 @@ class _SubstackScreenState extends State<SubstackScreen> {
                   onDiscover: _openDiscover,
                   onFilter: _setFilter,
                 ),
-                _InboxPane(
+                (_) => _InboxPane(
                   scrollController: _inboxScrollController,
                   feed: feed,
                   onAdd: _openAdd,
                 ),
-                _NotesPane(
+                (_) => _NotesPane(
                   scrollController: _notesScrollController,
                   notes: notes,
                 ),
-                _LibraryPane(
+                (_) => _LibraryPane(
                   scrollController: _libraryScrollController,
                   pubs: pubs,
                   onAdd: _openAdd,

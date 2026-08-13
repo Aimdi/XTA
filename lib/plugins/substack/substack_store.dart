@@ -5,6 +5,8 @@ import 'package:xta/group/deck_groups.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:xta/plugins/account_posts.dart';
+import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
@@ -39,8 +41,9 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
     return _withPins(publications);
   }
 
-  List<String> get _pinnedIds =>
-      parseDeckGroupIds(prefs.get(optionPluginSubstackPinnedPublications) as String?);
+  List<String> get _pinnedIds => parseDeckGroupIds(
+    prefs.get(optionPluginSubstackPinnedPublications) as String?,
+  );
 
   bool isPinned(String id) => _pinnedIds.contains(id);
 
@@ -267,6 +270,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   var _allPosts = const <SubstackPost>[];
   var _filter = SubstackFeedFilter.all;
   Set<String> _readIds = const {};
+  DateTime? _fetchedAt;
 
   SubstackFeedStore(this.client, this.publications)
     : super(const SubstackFeedSnapshot());
@@ -276,8 +280,24 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   /// Unfiltered merged posts (Home chips / Inbox read from this).
   List<SubstackPost> get allPosts => _allPosts;
 
-  Future<void> refresh() async {
+  /// When the home strip remounts this tab, skip a full refetch if the last
+  /// one is still inside [kAccountPostsCacheTtl]. Pull-to-refresh passes
+  /// [force].
+  Future<void> refresh({bool force = false}) async {
+    if (!force &&
+        _allPosts.isNotEmpty &&
+        pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
+      return;
+    }
     _offset = 0;
+    if (_allPosts.isNotEmpty) {
+      try {
+        update(await _fetchPage(replace: true));
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
     await execute(() => _fetchPage(replace: true));
   }
 
@@ -343,6 +363,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     final merged = replace ? pagePosts : _mergePosts(_allPosts, pagePosts);
     merged.sort((a, b) => (b.postDate ?? '').compareTo(a.postDate ?? ''));
     _allPosts = merged;
+    _fetchedAt = DateTime.now();
 
     return _snapshotFromCache(
       canLoadMore: canLoadMore,
@@ -381,13 +402,26 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
   var _notes = const <SubstackNote>[];
   String? _cursor;
   var _hostIndex = 0;
+  DateTime? _fetchedAt;
 
   SubstackNotesStore(this.client, this.publications)
     : super(const SubstackNotesPage());
 
-  Future<void> refresh() async {
-    _notes = const [];
+  Future<void> refresh({bool force = false}) async {
+    if (!force &&
+        _notes.isNotEmpty &&
+        pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
+      return;
+    }
     _cursor = null;
+    if (_notes.isNotEmpty) {
+      try {
+        update(await _fetch(replace: true));
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
     await execute(() => _fetch(replace: true));
   }
 
@@ -405,6 +439,7 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
     _cursor = page.nextCursor;
     final merged = replace ? page.notes : _mergeNotes(_notes, page.notes);
     _notes = merged;
+    _fetchedAt = DateTime.now();
     return SubstackNotesPage(notes: merged, nextCursor: page.nextCursor);
   }
 

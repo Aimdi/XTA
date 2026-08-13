@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/tiktok/tiktok_client.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/plugins/tiktok/tiktok_post_card.dart';
@@ -29,27 +29,26 @@ class _TikTokScreenState extends State<TikTokScreen> {
   @override
   void initState() {
     super.initState();
-    final client = context.read<TikTokClient>();
-    final follows = context.read<TikTokFollowsStore>();
-    _following = TikTokFollowingStore(client, follows);
+    _following = context.read<TikTokFollowingStore>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await follows.load();
+      final follows = context.read<TikTokFollowsStore>();
+      final likes = context.read<TikTokLikesStore>();
+      final history = context.read<TikTokSearchHistoryStore>();
+      if (follows.state.isEmpty) await follows.load();
       if (!mounted) return;
-      await context.read<TikTokLikesStore>().load();
+      if (likes.state.isEmpty) await likes.load();
       if (!mounted) return;
-      await context.read<TikTokSearchHistoryStore>().load();
+      if (history.state.isEmpty) await history.load();
       if (!mounted) return;
       await _following.refresh();
-      if (!mounted) return;
     });
   }
 
   @override
   void dispose() {
     _tabs.destroy();
-    _following.destroy();
     super.dispose();
   }
 
@@ -82,17 +81,17 @@ class _TikTokScreenState extends State<TikTokScreen> {
           children: [
             _HomeTabs(selected: tab, onSelected: _tabs.select),
             Expanded(
-              child: IndexedStack(
+              child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  _FollowingTab(
+                  (_) => _FollowingTab(
                     scrollController: widget.scrollController,
                     store: _following,
                     follows: context.read<TikTokFollowsStore>(),
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFollowing,
                   ),
-                  _AccountsTab(
+                  (_) => _AccountsTab(
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFollowing,
                     onUnfollow: _refreshFollowing,
