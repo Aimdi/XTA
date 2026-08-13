@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
@@ -63,8 +64,18 @@ class _EhScreenState extends State<EhScreen>
     final l10n = L10n.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_eh_title),
+      primary: !PluginEmbedded.maybeOf(context),
+      appBar: pluginHomeTabAppBar(
+        tabs: TabBar(
+          controller: _tabs,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          tabs: [
+            Tab(text: l10n.plugin_eh_tab_popular),
+            Tab(text: l10n.plugin_eh_tab_front),
+            Tab(text: l10n.plugin_eh_tab_favorites),
+          ],
+        ),
         actions: [
           IconButton(
             tooltip: l10n.search,
@@ -83,14 +94,6 @@ class _EhScreenState extends State<EhScreen>
             ),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabs,
-          tabs: [
-            Tab(text: l10n.plugin_eh_tab_popular),
-            Tab(text: l10n.plugin_eh_tab_front),
-            Tab(text: l10n.plugin_eh_tab_favorites),
-          ],
-        ),
       ),
       body: TabBarView(
         controller: _tabs,
