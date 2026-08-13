@@ -5,7 +5,13 @@ import 'package:xta/utils/json.dart';
 
 /// Shaped like old.reddit's comment area: `div.thing.comment` carrying its own
 /// `entry`, with replies inside a `.child > .sitetable`.
-String _comment(String id, String author, String body, {String score = '42 points', String replies = ''}) =>
+String _comment(
+  String id,
+  String author,
+  String body, {
+  String score = '42 points',
+  String replies = '',
+}) =>
     '''
 <div class="thing id-t1_$id comment" data-fullname="t1_$id" data-author="$author">
   <div class="entry unvoted">
@@ -64,7 +70,9 @@ void main() {
           id: 'a',
           author: 'first',
           body: 'Question',
-          replies: _listing([_t1(id: 'b', author: 'second', body: 'Answer', score: 7)]),
+          replies: _listing([
+            _t1(id: 'b', author: 'second', body: 'Answer', score: 7),
+          ]),
         ),
       ]);
 
@@ -74,7 +82,13 @@ void main() {
       expect(root.author, 'first');
       expect(root.body, 'Question');
       expect(root.score, 42);
-      expect(root.createdAt, DateTime.fromMillisecondsSinceEpoch(1769000000 * 1000, isUtc: true).toLocal());
+      expect(
+        root.createdAt,
+        DateTime.fromMillisecondsSinceEpoch(
+          1769000000 * 1000,
+          isUtc: true,
+        ).toLocal(),
+      );
       expect(root.permalink, '/r/dartlang/comments/abc/a/');
       expect(root.replies.single.id, 'b');
       expect(root.replies.single.body, 'Answer');
@@ -140,7 +154,10 @@ void main() {
         },
       ]);
 
-      final stub = commentsFromListing(Json(listing), parentPermalink: '/r/dartlang/comments/abc/').single;
+      final stub = commentsFromListing(
+        Json(listing),
+        parentPermalink: '/r/dartlang/comments/abc/',
+      ).single;
 
       expect(stub.permalink, '/r/dartlang/comments/abc/');
     });
@@ -166,94 +183,166 @@ void main() {
     });
 
     test('the submitter flag and media tokens are read', () {
-      final listing = _listing([_t1(id: 'op', isSubmitter: true, body: '![gif](giphy|l0HlvtIPzPdt2usKs|downsized)')]);
+      final listing = _listing([
+        _t1(
+          id: 'op',
+          isSubmitter: true,
+          body: '![gif](giphy|l0HlvtIPzPdt2usKs|downsized)',
+        ),
+      ]);
       final comment = commentsFromListing(Json(listing)).single;
 
       expect(comment.isSubmitter, isTrue);
-      expect(comment.mediaUrls, ['https://media.giphy.com/media/l0HlvtIPzPdt2usKs/giphy.gif']);
+      expect(comment.mediaUrls, [
+        'https://media.giphy.com/media/l0HlvtIPzPdt2usKs/giphy.gif',
+      ]);
       expect(comment.body, isEmpty);
     });
 
     test('a bare image URL becomes media and leaves no body', () {
-      final listing = _listing([_t1(id: 'pic', body: 'https://i.redd.it/abc.gif')]);
+      final listing = _listing([
+        _t1(id: 'pic', body: 'https://i.redd.it/abc.gif'),
+      ]);
       final comment = commentsFromListing(Json(listing)).single;
 
       expect(comment.mediaUrls, ['https://i.redd.it/abc.gif']);
+      expect(comment.body, isEmpty);
+    });
+
+    test('a >image> leftover next to a picture is dropped', () {
+      final listing = _listing([
+        _t1(id: 'pic', body: '>image> https://i.redd.it/abc.jpg'),
+      ]);
+      final comment = commentsFromListing(Json(listing)).single;
+
+      expect(comment.mediaUrls, ['https://i.redd.it/abc.jpg']);
       expect(comment.body, isEmpty);
     });
   });
 
   group('reading a thread', () {
     test('takes the author, body, score and time', () {
-      final comment = parseComments(_page(_comment('a', 'someone', 'Well said'))).single;
+      final comment = parseComments(
+        _page(_comment('a', 'someone', 'Well said')),
+      ).single;
 
       expect(comment.id, 'a');
       expect(comment.author, 'someone');
       expect(comment.body, 'Well said');
       expect(comment.score, 42);
-      expect(comment.createdAt, DateTime.parse('2026-07-01T10:00:00Z').toLocal());
+      expect(
+        comment.createdAt,
+        DateTime.parse('2026-07-01T10:00:00Z').toLocal(),
+      );
     });
 
     test('a picture comment shows the picture, not the URL that made it', () {
-      const link = '<a href="https://i.redd.it/abc.gif">https://i.redd.it/abc.gif</a>';
-      final comment = parseComments(_page(_comment('a', 'someone', link))).single;
+      const link =
+          '<a href="https://i.redd.it/abc.gif">https://i.redd.it/abc.gif</a>';
+      final comment = parseComments(
+        _page(_comment('a', 'someone', link)),
+      ).single;
 
       expect(comment.mediaUrls, ['https://i.redd.it/abc.gif']);
-      expect(comment.body, isEmpty, reason: 'the text was only the link the picture came from');
+      expect(
+        comment.body,
+        isEmpty,
+        reason: 'the text was only the link the picture came from',
+      );
     });
 
     test('a picture-only comment is kept rather than skipped as empty', () {
-      const link = '<a href="https://i.redd.it/abc.png">https://i.redd.it/abc.png</a>';
+      const link =
+          '<a href="https://i.redd.it/abc.png">https://i.redd.it/abc.png</a>';
 
-      expect(parseComments(_page(_comment('a', 'someone', link))), hasLength(1));
+      expect(
+        parseComments(_page(_comment('a', 'someone', link))),
+        hasLength(1),
+      );
     });
 
     test('words around a link survive', () {
-      const body = 'look at <a href="https://i.redd.it/abc.jpg">this</a> please';
-      final comment = parseComments(_page(_comment('a', 'someone', body))).single;
+      const body =
+          'look at <a href="https://i.redd.it/abc.jpg">this</a> please';
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
 
       expect(comment.mediaUrls, ['https://i.redd.it/abc.jpg']);
       expect(comment.body, 'look at this please');
     });
 
     test('a link to a page is left as text', () {
-      const body = '<a href="https://example.com/story">https://example.com/story</a>';
-      final comment = parseComments(_page(_comment('a', 'someone', body))).single;
+      const body =
+          '<a href="https://example.com/story">https://example.com/story</a>';
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
 
       expect(comment.mediaUrls, isEmpty);
       expect(comment.body, 'https://example.com/story');
     });
 
     test('the same picture linked twice is shown once', () {
-      const body = '<a href="https://i.redd.it/x.gif">a</a> <a href="https://i.redd.it/x.gif">b</a>';
+      const body =
+          '<a href="https://i.redd.it/x.gif">a</a> <a href="https://i.redd.it/x.gif">b</a>';
 
-      expect(parseComments(_page(_comment('a', 'someone', body))).single.mediaUrls, ['https://i.redd.it/x.gif']);
+      expect(
+        parseComments(_page(_comment('a', 'someone', body))).single.mediaUrls,
+        ['https://i.redd.it/x.gif'],
+      );
     });
 
     test('a Reddit GIF token becomes the GIF, and never shows as raw text', () {
       const body = '![gif](giphy|l0HlvtIPzPdt2usKs|downsized)';
-      final comment = parseComments(_page(_comment('a', 'someone', body))).single;
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
 
-      expect(comment.mediaUrls, ['https://media.giphy.com/media/l0HlvtIPzPdt2usKs/giphy.gif']);
+      expect(comment.mediaUrls, [
+        'https://media.giphy.com/media/l0HlvtIPzPdt2usKs/giphy.gif',
+      ]);
       expect(comment.body, isEmpty);
     });
 
     test('a token beside words takes only itself out of the text', () {
       const body = 'this exactly ![gif](giphy|abc123XYZ|downsized)';
-      final comment = parseComments(_page(_comment('a', 'someone', body))).single;
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
 
       expect(comment.mediaUrls, hasLength(1));
       expect(comment.body, 'this exactly');
     });
 
+    test('a >image> leftover next to an inlined picture is dropped', () {
+      const body = '>image> <img src="https://i.redd.it/inline.png">';
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
+
+      expect(comment.mediaUrls, ['https://i.redd.it/inline.png']);
+      expect(comment.body, isEmpty);
+    });
+
     test('an inlined img is picked up as well as a link', () {
       const body = '<img src="//i.redd.it/inline.png">';
 
-      expect(parseComments(_page(_comment('a', 'someone', body))).single.mediaUrls, ['https://i.redd.it/inline.png']);
+      expect(
+        parseComments(_page(_comment('a', 'someone', body))).single.mediaUrls,
+        ['https://i.redd.it/inline.png'],
+      );
     });
 
     test('replies hang off the comment they answer', () {
-      final page = _page(_comment('a', 'first', 'Question', replies: _comment('b', 'second', 'Answer')));
+      final page = _page(
+        _comment(
+          'a',
+          'first',
+          'Question',
+          replies: _comment('b', 'second', 'Answer'),
+        ),
+      );
 
       final root = parseComments(page).single;
       expect(root.replies.single.id, 'b');
@@ -261,7 +350,17 @@ void main() {
     });
 
     test('nesting goes as deep as the page does', () {
-      final deep = _comment('a', 'x', 'one', replies: _comment('b', 'y', 'two', replies: _comment('c', 'z', 'three')));
+      final deep = _comment(
+        'a',
+        'x',
+        'one',
+        replies: _comment(
+          'b',
+          'y',
+          'two',
+          replies: _comment('c', 'z', 'three'),
+        ),
+      );
 
       final root = parseComments(_page(deep)).single;
       expect(root.replies.single.replies.single.body, 'three');
@@ -270,13 +369,17 @@ void main() {
 
     test('a comment does not swallow its replies\' text', () {
       // The entry has to be read off the comment itself, not the whole subtree.
-      final page = _page(_comment('a', 'x', 'parent', replies: _comment('b', 'y', 'child')));
+      final page = _page(
+        _comment('a', 'x', 'parent', replies: _comment('b', 'y', 'child')),
+      );
 
       expect(parseComments(page).single.body, 'parent');
     });
 
     test('siblings keep their order', () {
-      final page = _page('${_comment('a', 'x', 'first')}${_comment('b', 'y', 'second')}');
+      final page = _page(
+        '${_comment('a', 'x', 'first')}${_comment('b', 'y', 'second')}',
+      );
 
       expect(parseComments(page).map((c) => c.id), ['a', 'b']);
     });
@@ -305,13 +408,20 @@ void main() {
 
   group('rows that are not comments', () {
     test('a "load more" control is skipped', () {
-      const more = '<div class="thing morechildren" data-fullname="t1_more_x"></div>';
+      const more =
+          '<div class="thing morechildren" data-fullname="t1_more_x"></div>';
 
-      expect(parseComments(_page('$more${_comment('a', 'x', 'real')}')).map((c) => c.id), ['a']);
+      expect(
+        parseComments(
+          _page('$more${_comment('a', 'x', 'real')}'),
+        ).map((c) => c.id),
+        ['a'],
+      );
     });
 
     test('a deleted comment with no body is left out', () {
-      const empty = '<div class="thing comment" data-fullname="t1_d"><div class="entry"></div></div>';
+      const empty =
+          '<div class="thing comment" data-fullname="t1_d"><div class="entry"></div></div>';
 
       expect(parseComments(_page(empty)), isEmpty);
     });
@@ -329,7 +439,8 @@ void main() {
           'a',
           'x',
           'one',
-          replies: '${_comment('b', 'y', 'two', replies: _comment('c', 'z', 'three'))}${_comment('d', 'w', 'four')}',
+          replies:
+              '${_comment('b', 'y', 'two', replies: _comment('c', 'z', 'three'))}${_comment('d', 'w', 'four')}',
         ),
       );
 
@@ -372,107 +483,141 @@ void main() {
 ''';
 
     test('the outbound link is read off the thing row', () {
-      final media = parsePostMedia(_page('', post: postThing(dataUrl: 'https://i.redd.it/abc.jpg')));
+      final media = parsePostMedia(
+        _page('', post: postThing(dataUrl: 'https://i.redd.it/abc.jpg')),
+      );
 
       expect(media.url, 'https://i.redd.it/abc.jpg');
       expect(media.images, isEmpty);
     });
 
-    test('a relative link — a self post pointing at itself — is not a link', () {
-      expect(parsePostMedia(_page('', post: postThing(dataUrl: '/r/x/comments/p1/t/'))).url, isNull);
-    });
+    test(
+      'a relative link — a self post pointing at itself — is not a link',
+      () {
+        expect(
+          parsePostMedia(
+            _page('', post: postThing(dataUrl: '/r/x/comments/p1/t/')),
+          ).url,
+          isNull,
+        );
+      },
+    );
 
-    test('an expanded gallery leaves its files on the page, in order and unescaped', () {
-      final media = parsePostMedia(
-        _page(
-          '',
-          post: postThing(
-            dataUrl: 'https://www.reddit.com/gallery/p1',
-            expando:
-                '<div class="media-gallery">'
-                '<img src="https://preview.redd.it/one.jpg?width=640&amp;s=a">'
-                '<img src="https://preview.redd.it/two.jpg?width=640&amp;s=b">'
-                '</div>',
+    test(
+      'an expanded gallery leaves its files on the page, in order and unescaped',
+      () {
+        final media = parsePostMedia(
+          _page(
+            '',
+            post: postThing(
+              dataUrl: 'https://www.reddit.com/gallery/p1',
+              expando:
+                  '<div class="media-gallery">'
+                  '<img src="https://preview.redd.it/one.jpg?width=640&amp;s=a">'
+                  '<img src="https://preview.redd.it/two.jpg?width=640&amp;s=b">'
+                  '</div>',
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(media.images, [
-        'https://preview.redd.it/one.jpg?width=640&s=a',
-        'https://preview.redd.it/two.jpg?width=640&s=b',
-      ]);
-    });
+        expect(media.images, [
+          'https://preview.redd.it/one.jpg?width=640&s=a',
+          'https://preview.redd.it/two.jpg?width=640&s=b',
+        ]);
+      },
+    );
 
-    test('only Reddit-hosted files count; tracking pixels and avatars do not', () {
-      final media = parsePostMedia(
-        _page(
-          '',
-          post: postThing(
-            dataUrl: 'https://example.com/story',
-            expando: '<img src="https://example.com/pixel.gif"><img src="https://i.redd.it/real.png">',
+    test(
+      'only Reddit-hosted files count; tracking pixels and avatars do not',
+      () {
+        final media = parsePostMedia(
+          _page(
+            '',
+            post: postThing(
+              dataUrl: 'https://example.com/story',
+              expando:
+                  '<img src="https://example.com/pixel.gif"><img src="https://i.redd.it/real.png">',
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(media.images, ['https://i.redd.it/real.png']);
-    });
+        expect(media.images, ['https://i.redd.it/real.png']);
+      },
+    );
 
     test('the same file twice is one file', () {
       final media = parsePostMedia(
-        _page('', post: postThing(expando: '<img src="https://i.redd.it/a.png"><img src="https://i.redd.it/a.png">')),
+        _page(
+          '',
+          post: postThing(
+            expando:
+                '<img src="https://i.redd.it/a.png"><img src="https://i.redd.it/a.png">',
+          ),
+        ),
       );
 
       expect(media.images, ['https://i.redd.it/a.png']);
     });
 
-    test('low and high quality of the same picture collapse to the better one', () {
-      final media = parsePostMedia(
-        _page(
-          '',
-          post: postThing(
-            dataUrl: 'https://www.reddit.com/gallery/p1',
-            expando:
-                '<div class="media-gallery">'
-                '<img src="https://preview.redd.it/a.jpg?width=320&amp;s=lo">'
-                '<img src="https://preview.redd.it/a.jpg?width=1080&amp;s=hi">'
-                '<img src="https://i.redd.it/a.jpg">'
-                '</div>',
+    test(
+      'low and high quality of the same picture collapse to the better one',
+      () {
+        final media = parsePostMedia(
+          _page(
+            '',
+            post: postThing(
+              dataUrl: 'https://www.reddit.com/gallery/p1',
+              expando:
+                  '<div class="media-gallery">'
+                  '<img src="https://preview.redd.it/a.jpg?width=320&amp;s=lo">'
+                  '<img src="https://preview.redd.it/a.jpg?width=1080&amp;s=hi">'
+                  '<img src="https://i.redd.it/a.jpg">'
+                  '</div>',
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(media.images, ['https://i.redd.it/a.jpg']);
-    });
+        expect(media.images, ['https://i.redd.it/a.jpg']);
+      },
+    );
 
-    test('the same picture at two widths is one picture, preferring the larger', () {
-      final media = parsePostMedia(
-        _page(
-          '',
-          post: postThing(
-            expando:
-                '<img src="https://preview.redd.it/abc.jpg?width=320&amp;s=a">'
-                '<img src="https://preview.redd.it/abc.jpg?width=1080&amp;s=b">',
+    test(
+      'the same picture at two widths is one picture, preferring the larger',
+      () {
+        final media = parsePostMedia(
+          _page(
+            '',
+            post: postThing(
+              expando:
+                  '<img src="https://preview.redd.it/abc.jpg?width=320&amp;s=a">'
+                  '<img src="https://preview.redd.it/abc.jpg?width=1080&amp;s=b">',
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(media.images, ['https://preview.redd.it/abc.jpg?width=1080&s=b']);
-    });
+        expect(media.images, [
+          'https://preview.redd.it/abc.jpg?width=1080&s=b',
+        ]);
+      },
+    );
 
-    test('a preview and an i.redd.it of the same file collapse to i.redd.it', () {
-      final media = parsePostMedia(
-        _page(
-          '',
-          post: postThing(
-            expando:
-                '<img src="https://preview.redd.it/abc.jpg?width=640&amp;s=a">'
-                '<img src="https://i.redd.it/abc.jpg">',
+    test(
+      'a preview and an i.redd.it of the same file collapse to i.redd.it',
+      () {
+        final media = parsePostMedia(
+          _page(
+            '',
+            post: postThing(
+              expando:
+                  '<img src="https://preview.redd.it/abc.jpg?width=640&amp;s=a">'
+                  '<img src="https://i.redd.it/abc.jpg">',
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(media.images, ['https://i.redd.it/abc.jpg']);
-    });
+        expect(media.images, ['https://i.redd.it/abc.jpg']);
+      },
+    );
 
     test('a page with no post is nothing, not a throw', () {
       final media = parsePostMedia('<html><body></body></html>');
@@ -506,7 +651,11 @@ void main() {
       expect(flat[1].comment.isStub, isTrue);
       expect(flat[1].comment.moreCount, 34);
       expect(flat[1].comment.permalink, '/r/x/comments/p/t/a/');
-      expect(flat[1].depth, 1, reason: 'the held-back replies sit under their parent');
+      expect(
+        flat[1].depth,
+        1,
+        reason: 'the held-back replies sit under their parent',
+      );
     });
 
     test('a deep-thread continuation carries its own target', () {
@@ -527,20 +676,23 @@ void main() {
       expect(flat[1].comment.permalink, '/r/x/comments/p/t/deep/');
     });
 
-    test('a control with nowhere to go is dropped rather than dead on screen', () {
-      final page = _page(
-        _comment(
-          'a',
-          'ann',
-          'Parent',
-          replies: '''
+    test(
+      'a control with nowhere to go is dropped rather than dead on screen',
+      () {
+        final page = _page(
+          _comment(
+            'a',
+            'ann',
+            'Parent',
+            replies: '''
 <div class="thing morechildren"><a href="javascript:void(0)">load more comments</a></div>
 ''',
-        ),
-      );
+          ),
+        );
 
-      expect(flattenComments(parseComments(page)), hasLength(1));
-    });
+        expect(flattenComments(parseComments(page)), hasLength(1));
+      },
+    );
   });
 
   group('folding a thread', () {
@@ -582,7 +734,10 @@ void main() {
         '<div class="thing morechildren"><a href="#">load more comments</a> (512 replies)</div>',
       );
 
-      final comments = parseComments(html, postPermalink: '/r/dartlang/comments/abc/');
+      final comments = parseComments(
+        html,
+        postPermalink: '/r/dartlang/comments/abc/',
+      );
 
       expect(comments, hasLength(2));
       expect(comments.last.isStub, isTrue);

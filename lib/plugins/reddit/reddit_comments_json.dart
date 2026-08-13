@@ -11,10 +11,15 @@ import 'package:xta/utils/json.dart';
 
 /// Comments from a Reddit JSON Listing (`kind` / `data.children`), or empty
 /// when the shape is wrong.
-List<RedditComment> commentsFromListing(Json listing, {String? parentPermalink}) {
+List<RedditComment> commentsFromListing(
+  Json listing, {
+  String? parentPermalink,
+}) {
   return [
     for (final child in listing['data']['children'].list)
-      ...?_pickComment(commentFromChild(child, parentPermalink: parentPermalink)),
+      ...?_pickComment(
+        commentFromChild(child, parentPermalink: parentPermalink),
+      ),
   ];
 }
 
@@ -49,10 +54,16 @@ RedditComment? commentFromChild(Json child, {String? parentPermalink}) {
     score: data['score'].integer,
     createdAt: created == null
         ? null
-        : DateTime.fromMillisecondsSinceEpoch((created * 1000).round(), isUtc: true).toLocal(),
+        : DateTime.fromMillisecondsSinceEpoch(
+            (created * 1000).round(),
+            isUtc: true,
+          ).toLocal(),
     isSubmitter: data['is_submitter'].boolean ?? false,
     mediaUrls: media.urls,
-    replies: _repliesFromJson(data['replies'], parentPermalink: data['permalink'].string),
+    replies: _repliesFromJson(
+      data['replies'],
+      parentPermalink: data['permalink'].string,
+    ),
     permalink: data['permalink'].string,
   );
 }
@@ -62,7 +73,12 @@ RedditComment? commentFromChild(Json child, {String? parentPermalink}) {
 RedditComment _moreStub(Json data, {String? parentPermalink}) {
   final children = data['children'].list;
   final id = data['id'].string ?? children.firstOrNull?.string ?? 'more';
-  return RedditComment(id: id, body: '', permalink: parentPermalink, moreCount: data['count'].integer ?? -1);
+  return RedditComment(
+    id: id,
+    body: '',
+    permalink: parentPermalink,
+    moreCount: data['count'].integer ?? -1,
+  );
 }
 
 List<RedditComment> _repliesFromJson(Json replies, {String? parentPermalink}) {
@@ -106,7 +122,7 @@ List<RedditComment> _repliesFromJson(Json replies, {String? parentPermalink}) {
   text = text.trim();
 
   if (text.isEmpty || urls.isEmpty) {
-    return (urls: urls, body: text);
+    return (urls: urls, body: stripRedditMediaPlaceholderTokens(text));
   }
 
   var withoutLinks = text;
@@ -116,10 +132,15 @@ List<RedditComment> _repliesFromJson(Json replies, {String? parentPermalink}) {
   for (final url in urls) {
     withoutLinks = withoutLinks.replaceAll(url, '');
   }
+  withoutLinks = stripRedditMediaPlaceholderTokens(withoutLinks);
 
-  return (urls: urls, body: withoutLinks.trim().isEmpty ? '' : text);
+  return (
+    urls: urls,
+    body: withoutLinks.isEmpty ? '' : stripRedditMediaPlaceholderTokens(text),
+  );
 }
 
 final _httpUrl = RegExp(r'https?://[^\s\]\)>]+');
 
-List<RedditComment>? _pickComment(RedditComment? comment) => comment == null ? null : [comment];
+List<RedditComment>? _pickComment(RedditComment? comment) =>
+    comment == null ? null : [comment];

@@ -157,6 +157,8 @@ void main() {
     test('common image placeholders match', () {
       for (final title in [
         '<image>',
+        '>image>',
+        '>image<',
         '[image]',
         '(image)',
         'image',
@@ -165,9 +167,21 @@ void main() {
         '<img>',
         '[pic]',
         'picture',
+        '&gt;image&gt;',
+        '>gif>',
+        '[video]',
       ]) {
         expect(isRedditMediaPlaceholderTitle(title), isTrue, reason: title);
       }
+    });
+
+    test('wrapped leftovers are stripped from a longer body', () {
+      expect(stripRedditMediaPlaceholderTokens('>image> nice one'), 'nice one');
+      expect(stripRedditMediaPlaceholderTokens('>image>'), isEmpty);
+      expect(
+        stripRedditMediaPlaceholderTokens('look at this image'),
+        'look at this image',
+      );
     });
 
     test('real titles do not match', () {

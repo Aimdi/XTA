@@ -276,6 +276,15 @@ class RedditPost {
   bool get showsTitle =>
       !(hasVisualMedia && isRedditMediaPlaceholderTitle(title));
 
+  /// Selftext that is only `>image>` next to a picture the card already shows.
+  bool get showsSelfText {
+    final text = selfText?.trim() ?? '';
+    if (text.isEmpty) {
+      return false;
+    }
+    return !(hasVisualMedia && isRedditMediaPlaceholderTitle(text));
+  }
+
   /// DASH URL for inline playback — JSON `secure_media`, or derived from a
   /// bare `v.redd.it` link when the listing was scraped as HTML.
   String? get resolvedVideoDashUrl =>

@@ -222,17 +222,51 @@ bool _preferRedditImage(String candidate, String current) {
   return candidateWidth > currentWidth;
 }
 
-/// Titles that only announce media the card already shows as a picture.
-///
-/// Meme subs often title image posts `<image>` or `[image]` because the joke
-/// is the picture — showing that label above every comic is just noise.
-final _redditMediaPlaceholderTitle = RegExp(
-  r'^[\[\(\<｛【]?\s*(?:image|img|pic|picture|foto|bild)\s*[\]\)\>｝】]?$',
+/// Words meme titles use when the joke is the picture, not the caption.
+const _redditMediaPlaceholderWord =
+    r'(?:image|img|pic|picture|photo|gif|video|media|foto|bild)';
+
+/// Brackets people wrap that word in: `<image>`, `>image>`, `[gif]`.
+final _redditMediaWrappers = RegExp(r'''[\[\]\(\)\{\}<>＜＞｛｝【】「」『』"'`]+''');
+
+final _redditMediaPlaceholderBare = RegExp(
+  '^$_redditMediaPlaceholderWord\$',
   caseSensitive: false,
 );
 
-bool isRedditMediaPlaceholderTitle(String title) =>
-    _redditMediaPlaceholderTitle.hasMatch(title.trim());
+/// A wrapped placeholder sitting in a longer body (`>image> nice one`).
+final _redditMediaPlaceholderToken = RegExp(
+  '(?:&lt;|&gt;|[<>\\[\\]\\(\\)\\{\\}｛｝【】「」『』])+\\s*'
+  '$_redditMediaPlaceholderWord'
+  '\\s*(?:&lt;|&gt;|[<>\\[\\]\\(\\)\\{\\}｛｝【】「」『』])+',
+  caseSensitive: false,
+);
+
+String _decodeRedditPlaceholderEntities(String text) =>
+    text.replaceAll('&lt;', '<').replaceAll('&gt;', '>');
+
+/// Titles that only announce media the card already shows as a picture.
+///
+/// Meme subs title image posts `<image>`, `>image>` or `[image]` because the
+/// joke is the picture — showing that label above every comic is just noise.
+bool isRedditMediaPlaceholderTitle(String title) {
+  var text = _decodeRedditPlaceholderEntities(title).trim();
+  if (text.isEmpty) {
+    return false;
+  }
+  text = text.replaceAll(_redditMediaWrappers, '').trim();
+  text = text.replaceAll(RegExp(r'[.!?,;:]+$'), '');
+  return _redditMediaPlaceholderBare.hasMatch(text);
+}
+
+/// Drops leftover `>image>` / `<gif>` tokens from a comment or selftext once
+/// the picture is already on the card.
+String stripRedditMediaPlaceholderTokens(String text) {
+  return _decodeRedditPlaceholderEntities(text)
+      .replaceAll(_redditMediaPlaceholderToken, ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+}
 
 /// Playable DASH manifest for a `v.redd.it/...` link when the listing omitted
 /// `secure_media` (old.reddit HTML scrape never carries it).

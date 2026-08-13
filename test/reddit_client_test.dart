@@ -1136,6 +1136,29 @@ void main() {
           isTrue,
           reason: 'no media — keep the title',
         );
+
+        final gtImage = RedditPost(
+          id: 'd',
+          title: '>image>',
+          subreddit: 'x',
+          permalink: '/r/x/comments/d/',
+          url: 'https://i.redd.it/abc.jpg',
+          domain: 'i.redd.it',
+        );
+        expect(gtImage.showsTitle, isFalse);
+
+        final placeholderBody = RedditPost(
+          id: 'e',
+          title: 'A real title',
+          subreddit: 'x',
+          permalink: '/r/x/comments/e/',
+          url: 'https://i.redd.it/abc.jpg',
+          domain: 'i.redd.it',
+          isSelf: true,
+          selfText: '>image>',
+        );
+        expect(placeholderBody.showsTitle, isTrue);
+        expect(placeholderBody.showsSelfText, isFalse);
       },
     );
 
