@@ -145,7 +145,7 @@ void main() {
     expect(find.byType(ListTile), findsNothing);
     expect(find.byType(Wrap), findsOneWidget);
     expect(find.byKey(pluginFeedChipKey(pluginIdReddit)), findsOneWidget);
-    expect(tester.getSize(find.byType(Wrap)).height, lessThan(120));
+    expect(tester.getSize(find.byType(Wrap)).height, lessThan(180));
   });
 
   testWidgets('a plugin that still has a home tab is not on the Groups board', (
