@@ -16,8 +16,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/plugin.dart';
-import 'package:xta/plugins/plugin_brand.dart';
-import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/subscriptions/plugin_feed_chips.dart';
 
 export 'package:xta/subscriptions/_groups_edit.dart'
     show openSubscriptionGroupDialog, SubscriptionGroupEditDialog;
@@ -264,28 +263,34 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
   /// Feeds a plugin provides, listed with the groups so they are reachable from
   /// where feeds live. Only shown once a plugin has given up its own home tab,
   /// otherwise the same feed would have two entry points.
-  List<Widget> _pluginFeedRows(BuildContext context) {
-    final prefs = PrefService.of(context);
-    final plugins = [
-      for (final plugin in builtInPlugins)
-        if (plugin.isEnabled(prefs) &&
-            !plugin.showsHomeTab(prefs) &&
-            plugin.homeTabPrefKey != null)
-          plugin,
-    ];
+  List<Widget> _pluginFeedChips(BuildContext context) {
+    final plugins = pluginFeedsOnGroupsTab(PrefService.of(context));
     if (plugins.isEmpty) {
       return const [];
     }
 
     return [
-      for (final plugin in plugins)
-        _PluginFeedTile(
-          plugin: plugin,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => _PluginFeedRoute(plugin: plugin)),
-          ),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+        child: Wrap(
+          spacing: 6,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            for (final plugin in plugins)
+              PluginFeedChip(
+                key: pluginFeedChipKey(plugin.id),
+                plugin: plugin,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) => _PluginFeedRoute(plugin: plugin),
+                  ),
+                ),
+              ),
+          ],
         ),
+      ),
       const Divider(height: 1),
     ];
   }
@@ -344,7 +349,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         // and were sliced off mid-card at the top of the viewport.
         final header = [
           if (state.length > 5) _buildSearchBar(context),
-          ..._pluginFeedRows(context),
+          ..._pluginFeedChips(context),
         ];
 
         return asList
@@ -458,54 +463,13 @@ class SubscriptionGroups extends StatelessWidget {
   }
 }
 
-/// Compact X-style drill-in row for a plugin feed on the Groups tab.
-///
-/// Default [ListTile] height left a tall stack of plugin names above the board;
-/// this matches Settings title weight with tighter padding and a small brand
-/// chip so six feeds fit without dominating the viewport.
-class _PluginFeedTile extends StatelessWidget {
-  final XtaPlugin plugin;
-  final VoidCallback onTap;
-
-  const _PluginFeedTile({required this.plugin, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final secondary = theme.colorScheme.onSurfaceVariant;
-
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            pluginBrandIcon(context, plugin, size: 28),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                plugin.title(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            Icon(Icons.chevron_right, size: 18, color: secondary),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 /// Hosts a plugin's feed screen as a pushed route, for plugins that no longer
 /// occupy a home tab. The screen brings its own app bar.
 class _PluginFeedRoute extends StatefulWidget {
   final XtaPlugin plugin;
 
-  const _PluginFeedRoute({required this.plugin});
+  const _PluginFeedRoute({required this.plugin})
+    : super(key: pluginFeedRouteKey);
 
   @override
   State<_PluginFeedRoute> createState() => _PluginFeedRouteState();
