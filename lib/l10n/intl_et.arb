@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Väljaande nimi, tunnus või URL",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Leia sarnaseid",
+  "plugin_substack_similar_empty": "Sarnast ei leitud",
+  "plugin_substack_similar_intro": "Selle autori soovitatud kirjad ja teised sarnased.",
+  "plugin_substack_similar_title": "Sarnased väljaanded",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Postitused",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

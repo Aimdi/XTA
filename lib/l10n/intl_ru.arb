@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Название, хэндл или URL издания",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Найти похожие",
+  "plugin_substack_similar_empty": "Похожего не нашлось",
+  "plugin_substack_similar_intro": "Издания, которые советует этот автор, и другие похожие.",
+  "plugin_substack_similar_title": "Похожие издания",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Посты",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

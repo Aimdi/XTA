@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Nom, identifiant ou URL de la publication",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Trouver des similaires",
+  "plugin_substack_similar_empty": "Rien de similaire n’est apparu",
+  "plugin_substack_similar_intro": "Les newsletters que cet auteur recommande, et d’autres du même genre.",
+  "plugin_substack_similar_title": "Publications similaires",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Articles",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

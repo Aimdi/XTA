@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Argitalpenaren izena, handlea edo URLa",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Antzekoak aurkitu",
+  "plugin_substack_similar_empty": "Ez da antzekorik agertu",
+  "plugin_substack_similar_intro": "Idazle honek gomendatzen dituen buletinak, eta antzekoak.",
+  "plugin_substack_similar_title": "Antzeko argitalpenak",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Sarrerak",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

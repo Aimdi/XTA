@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Tên ấn phẩm, handle hoặc URL",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Tìm tương tự",
+  "plugin_substack_similar_empty": "Không thấy ấn phẩm tương tự",
+  "plugin_substack_similar_intro": "Bản tin tác giả này giới thiệu, cùng những ấn phẩm tương tự.",
+  "plugin_substack_similar_title": "Ấn phẩm tương tự",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Bài viết",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Nomo, tenilo aŭ URL de la eldonaĵo",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Trovi similajn",
+  "plugin_substack_similar_empty": "Nenio simila aperis",
+  "plugin_substack_similar_intro": "Novaĵleteroj, kiujn ĉi tiu aŭtoro rekomendas, kaj aliaj similaj.",
+  "plugin_substack_similar_title": "Similaj eldonaĵoj",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Afiŝoj",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

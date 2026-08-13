@@ -476,6 +476,110 @@ SubstackPublication? publicationFromDiscoveryJson(Map<String, dynamic> json) {
   );
 }
 
+/// A publication the author recommends, or one search treated as similar.
+class SubstackRecommendation {
+  final SubstackPublication publication;
+  final String? blurb;
+
+  const SubstackRecommendation({required this.publication, this.blurb});
+}
+
+/// Official `/recommendations` page hydrates `window._preloads`.
+String? substackPreloadsJson(String html) {
+  final match = RegExp(
+    r'window\._preloads\s*=\s*JSON\.parse\("((?:\\.|[^"\\])*)"\)',
+  ).firstMatch(html);
+  if (match == null) {
+    return null;
+  }
+  try {
+    final decoded = jsonDecode('"${match.group(1)}"');
+    return decoded is String && decoded.isNotEmpty ? decoded : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+List<SubstackRecommendation> parseSubstackRecommendationsHtml(String html) {
+  final raw = substackPreloadsJson(html);
+  if (raw == null) {
+    return const [];
+  }
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is! Map) {
+      return const [];
+    }
+    return parseSubstackRecommendationsJson(decoded['recommendations']);
+  } catch (_) {
+    return const [];
+  }
+}
+
+List<SubstackRecommendation> parseSubstackRecommendationsJson(Object? raw) {
+  if (raw is! List) {
+    return const [];
+  }
+  final out = <SubstackRecommendation>[];
+  final seen = <String>{};
+  for (final item in raw.whereType<Map>()) {
+    final map = Map<String, dynamic>.from(item);
+    final pubRaw =
+        map['recommendedPublication'] ?? map['recommended_publication'];
+    if (pubRaw is! Map) {
+      continue;
+    }
+    final publication = publicationFromDiscoveryJson(
+      Map<String, dynamic>.from(pubRaw),
+    );
+    if (publication == null || publication.subdomain.isEmpty) {
+      continue;
+    }
+    if (seen.contains(publication.id)) {
+      continue;
+    }
+    seen.add(publication.id);
+    final blurb = (map['description'] as String?)?.trim();
+    out.add(
+      SubstackRecommendation(
+        publication: publication,
+        blurb: blurb == null || blurb.isEmpty ? null : blurb,
+      ),
+    );
+  }
+  return out;
+}
+
+/// Author recs first, then search hits, never the seed itself.
+List<SubstackRecommendation> mergeSubstackSimilar({
+  required SubstackPublication seed,
+  List<SubstackRecommendation> recommended = const [],
+  List<SubstackPublication> searched = const [],
+  int limit = 12,
+}) {
+  final seen = {seed.id};
+  final out = <SubstackRecommendation>[];
+
+  void add(SubstackRecommendation rec) {
+    if (out.length >= limit) {
+      return;
+    }
+    if (seen.contains(rec.publication.id)) {
+      return;
+    }
+    seen.add(rec.publication.id);
+    out.add(rec);
+  }
+
+  for (final rec in recommended) {
+    add(rec);
+  }
+  for (final publication in searched) {
+    add(SubstackRecommendation(publication: publication));
+  }
+  return out;
+}
+
 /// Resolve a user-entered Substack handle or URL into a base publication URL.
 Uri? resolveSubstackBase(String input) {
   final trimmed = input.trim();

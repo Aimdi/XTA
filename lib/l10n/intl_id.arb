@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Nama publikasi, handle, atau URL",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Cari yang serupa",
+  "plugin_substack_similar_empty": "Tidak ada yang serupa",
+  "plugin_substack_similar_intro": "Buletin yang direkomendasikan penulis ini, plus yang serupa.",
+  "plugin_substack_similar_title": "Publikasi serupa",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Pos",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

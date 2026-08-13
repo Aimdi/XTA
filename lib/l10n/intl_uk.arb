@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Назва, хендл або URL видання",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Знайти схожі",
+  "plugin_substack_similar_empty": "Схожого не знайшлося",
+  "plugin_substack_similar_intro": "Видання, які радить цей автор, і інші схожі.",
+  "plugin_substack_similar_title": "Схожі видання",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Пости",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

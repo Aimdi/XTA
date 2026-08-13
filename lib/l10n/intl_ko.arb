@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "발행물 이름, 핸들 또는 URL",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "비슷한 뉴스레터 찾기",
+  "plugin_substack_similar_empty": "비슷한 것을 찾지 못했습니다",
+  "plugin_substack_similar_intro": "이 작가가 추천하는 뉴스레터와 비슷한 것들입니다.",
+  "plugin_substack_similar_title": "비슷한 뉴스레터",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "글",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

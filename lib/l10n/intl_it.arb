@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Nome, handle o URL della pubblicazione",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Trova simili",
+  "plugin_substack_similar_empty": "Non è comparso nulla di simile",
+  "plugin_substack_similar_intro": "Newsletter che questo autore consiglia, e altre simili.",
+  "plugin_substack_similar_title": "Pubblicazioni simili",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Post",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

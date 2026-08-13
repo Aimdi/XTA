@@ -282,6 +282,58 @@ class SubstackClient {
         .toList();
   }
 
+  /// Publications this author recommends on their public `/recommendations` page.
+  Future<List<SubstackRecommendation>> fetchRecommendedPublications(
+    SubstackPublication publication,
+  ) async {
+    final base = Uri.parse(publication.baseUrl);
+    final uri = Uri(scheme: 'https', host: base.host, path: '/recommendations');
+    final response = await httpClient.get(
+      uri,
+      headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
+    );
+    if (response.statusCode != 200) {
+      throw SubstackClientException('HTTP ${response.statusCode} loading $uri');
+    }
+    return parseSubstackRecommendationsHtml(utf8.decode(response.bodyBytes));
+  }
+
+  /// Author recommendations, padded with name-search hits for discovery.
+  Future<List<SubstackRecommendation>> fetchSimilarPublications(
+    SubstackPublication publication,
+  ) async {
+    Object? recError;
+    var recommended = const <SubstackRecommendation>[];
+    try {
+      recommended = await fetchRecommendedPublications(publication);
+    } catch (e) {
+      recError = e;
+      log.info('Recommendations page failed for ${publication.baseUrl}: $e');
+    }
+
+    Object? searchError;
+    var searched = const <SubstackPublication>[];
+    try {
+      final query = publication.name.trim().isNotEmpty
+          ? publication.name.trim()
+          : publication.subdomain;
+      searched = await searchPublications(query);
+    } catch (e) {
+      searchError = e;
+      log.info('Similar search failed for ${publication.subdomain}: $e');
+    }
+
+    final merged = mergeSubstackSimilar(
+      seed: publication,
+      recommended: recommended,
+      searched: searched,
+    );
+    if (merged.isEmpty && recError != null && searchError != null) {
+      throw recError;
+    }
+    return merged;
+  }
+
   /// Search plus handle/URL probe — what the Discover sheet actually calls.
   Future<List<SubstackPublication>> discoverPublications(String query) async {
     final trimmed = query.trim();

@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "Назва, хэндл або URL выдання",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "Знайсці падобныя",
+  "plugin_substack_similar_empty": "Падобнага не знайшлося",
+  "plugin_substack_similar_intro": "Выданні, якія рэкамендуе гэты аўтар, і іншыя падобныя.",
+  "plugin_substack_similar_title": "Падобныя выданні",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "Пасты",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

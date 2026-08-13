@@ -1880,6 +1880,10 @@
   "@plugin_substack_search_empty": {},
   "plugin_substack_search_hint": "اسم المنشور أو المعرّف أو الرابط",
   "@plugin_substack_search_hint": {},
+  "plugin_substack_similar": "ابحث عن مشابه",
+  "plugin_substack_similar_empty": "لم يظهر شيء مشابه",
+  "plugin_substack_similar_intro": "النشرات التي يوصي بها هذا الكاتب، وأخرى تشبهها.",
+  "plugin_substack_similar_title": "منشورات مشابهة",
   "plugin_substack_tab_notes": "Notes",
   "@plugin_substack_tab_notes": {},
   "plugin_substack_tab_posts": "المنشورات",
@@ -2581,5 +2585,9 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_substack_similar": {},
+  "@plugin_substack_similar_empty": {},
+  "@plugin_substack_similar_intro": {},
+  "@plugin_substack_similar_title": {}
 }

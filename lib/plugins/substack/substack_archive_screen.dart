@@ -9,6 +9,7 @@ import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/substack/substack_group.dart';
+import 'package:xta/plugins/substack/substack_similar_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -173,6 +174,12 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                               addSubstackPublicationToGroup(context, pub),
                           icon: const Icon(Icons.group_add, size: 18),
                           label: Text(L10n.of(context).add_to_group),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () =>
+                              showSubstackSimilarSheet(context, pub),
+                          icon: const Icon(Icons.person_search, size: 18),
+                          label: Text(L10n.of(context).plugin_substack_similar),
                         ),
                       ],
                     ),
