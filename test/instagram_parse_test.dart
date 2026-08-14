@@ -89,6 +89,53 @@ void main() {
     expect(page.cursor, 'QWE');
     expect(page.hasMore, isTrue);
     expect(page.posts.single.author.username, 'instagram');
+    expect(page.posts.single.author.pk, '25025320');
+  });
+
+  test('parseInstagramMediaNode reads GraphQL sidecar slides', () {
+    final page = parseInstagramProfileMedia({
+      'data': {
+        'user': {
+          'id': '1',
+          'username': 'natgeo',
+          'full_name': 'Nat Geo',
+          'edge_owner_to_timeline_media': {
+            'edges': [
+              {
+                'node': {
+                  'id': '9',
+                  'shortcode': 'CAR',
+                  'taken_at_timestamp': 1700000000,
+                  'display_url': 'https://scontent.cdninstagram.com/a.jpg',
+                  'owner': {'username': 'natgeo', 'id': '1'},
+                  'edge_sidecar_to_children': {
+                    'edges': [
+                      {
+                        'node': {
+                          'display_url':
+                              'https://scontent.cdninstagram.com/a.jpg',
+                        },
+                      },
+                      {
+                        'node': {
+                          'display_url':
+                              'https://scontent.cdninstagram.com/b.jpg',
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+    expect(page.posts.single.carouselUrls, [
+      'https://scontent.cdninstagram.com/a.jpg',
+      'https://scontent.cdninstagram.com/b.jpg',
+    ]);
+    expect(page.posts.single.displayUrls, hasLength(2));
   });
 
   test('parseInstagramUserFeed reads items and video flags', () {
