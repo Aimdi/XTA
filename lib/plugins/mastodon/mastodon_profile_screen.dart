@@ -41,8 +41,16 @@ class MastodonProfileScreen extends StatefulWidget {
 class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
   MastodonProfile? _profile;
   List<MastodonPost> _posts = const [];
+  List<MastodonPost> _media = const [];
+  String? _instance;
   Object? _error;
-  bool _loading = true;
+  var _loading = true;
+  var _mediaTab = false;
+  var _loadingMore = false;
+  var _hasMorePosts = true;
+  var _hasMoreMedia = true;
+  var _mediaLoaded = false;
+  var _backedOff = false;
 
   @override
   void initState() {
@@ -54,6 +62,7 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      _backedOff = false;
     });
 
     final prefs = PrefService.of(context, listen: false);
@@ -63,11 +72,16 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
         widget.acct,
         configured: mastodonConfiguredInstances(prefs),
       );
-      final thread = await client.profileAnywhere(candidates, widget.acct);
+      final page = await client.profileAnywhere(candidates, widget.acct);
       if (mounted) {
         setState(() {
-          _profile = thread.profile;
-          _posts = thread.posts;
+          _profile = page.profile;
+          _posts = page.posts;
+          _instance = page.instance;
+          _hasMorePosts = page.posts.length >= 20;
+          _media = const [];
+          _mediaLoaded = false;
+          _hasMoreMedia = true;
           _loading = false;
         });
       }
@@ -76,6 +90,71 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
         setState(() {
           _error = e;
           _loading = false;
+        });
+      }
+    }
+  }
+
+  List<MastodonPost> get _visible => _mediaTab ? _media : _posts;
+
+  Future<void> _showMedia() async {
+    setState(() => _mediaTab = true);
+    if (_mediaLoaded || _profile == null || _instance == null) return;
+    final client = context.read<MastodonClient>();
+    try {
+      final posts = await client.getStatuses(
+        _instance!,
+        _profile!.id,
+        onlyMedia: true,
+      );
+      if (!mounted) return;
+      setState(() {
+        _media = posts;
+        _mediaLoaded = true;
+        _hasMoreMedia = posts.length >= 20;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _mediaLoaded = true);
+    }
+  }
+
+  Future<void> _loadMore() async {
+    final profile = _profile;
+    final instance = _instance;
+    final current = _visible;
+    if (profile == null ||
+        instance == null ||
+        _loadingMore ||
+        _backedOff ||
+        current.isEmpty) {
+      return;
+    }
+    if (_mediaTab ? !_hasMoreMedia : !_hasMorePosts) return;
+
+    setState(() => _loadingMore = true);
+    try {
+      final more = await context.read<MastodonClient>().getStatuses(
+        instance,
+        profile.id,
+        onlyMedia: _mediaTab,
+        maxId: current.last.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        if (_mediaTab) {
+          _media = appendUniqueMastodonPosts(_media, more);
+          _hasMoreMedia = more.length >= 20;
+        } else {
+          _posts = appendUniqueMastodonPosts(_posts, more);
+          _hasMorePosts = more.length >= 20;
+        }
+        _loadingMore = false;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loadingMore = false;
+          _backedOff = true;
         });
       }
     }
@@ -150,28 +229,121 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
       profile.acct,
     );
 
-    return FeedListView(
-      padding: const EdgeInsets.only(bottom: 24),
-      itemCount: 1 + _posts.length,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: MastodonProfileCard(
-              profile: profile,
-              following: following,
-              onFollowToggle: () => _toggleFollow(profile),
-              onAddToGroup: () => _addToGroup(profile),
-            ),
-          );
+    final posts = _visible;
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification is UserScrollNotification) _backedOff = false;
+        if (notification.metrics.pixels >=
+            notification.metrics.maxScrollExtent - 400) {
+          _loadMore();
         }
-        final post = _posts[index - 1];
-        return MastodonPostCard(
-          key: ValueKey(post.id),
-          post: post,
-          showSourceBadge: false,
-        );
+        return false;
       },
+      child: FeedListView(
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: 1 + posts.length + (_loadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  MastodonProfileCard(
+                    profile: profile,
+                    following: following,
+                    onFollowToggle: () => _toggleFollow(profile),
+                    onAddToGroup: () => _addToGroup(profile),
+                  ),
+                  const SizedBox(height: 12),
+                  _ProfileTabs(
+                    media: _mediaTab,
+                    onPosts: () => setState(() => _mediaTab = false),
+                    onMedia: _showMedia,
+                  ),
+                ],
+              ),
+            );
+          }
+          final postIndex = index - 1;
+          if (postIndex < posts.length) {
+            final post = posts[postIndex];
+            return MastodonPostCard(
+              key: ValueKey('${_mediaTab ? 'm' : 'p'}-${post.id}'),
+              post: post,
+              showSourceBadge: false,
+            );
+          }
+          return const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ProfileTabs extends StatelessWidget {
+  final bool media;
+  final VoidCallback onPosts;
+  final VoidCallback onMedia;
+
+  const _ProfileTabs({
+    required this.media,
+    required this.onPosts,
+    required this.onMedia,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: _TabButton(
+            label: l10n.tweets,
+            selected: !media,
+            onTap: onPosts,
+          ),
+        ),
+        Expanded(
+          child: _TabButton(label: l10n.media, selected: media, onTap: onMedia),
+        ),
+      ],
+    );
+  }
+}
+
+class _TabButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _TabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: color,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -238,6 +410,17 @@ class MastodonProfileCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  if (profile.bot)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        l10n.plugin_mastodon_bot,
+                        style: theme.textTheme.labelSmall!.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

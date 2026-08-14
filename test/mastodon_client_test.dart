@@ -425,6 +425,88 @@ void main() {
       expect(asked, contains('GET /api/v1/timelines/public'));
       expect(asked, contains('POST /api/notes/featured'));
     });
+
+    test('getPublicTimeline pages with max_id', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.queryParameters['max_id'], '3');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '2',
+                url: 'https://mastodon.social/@a/2',
+                text: 'older',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline(
+        'https://mastodon.social',
+        maxId: '3',
+      );
+      expect(posts.single.id, '2');
+    });
+
+    test('getStatuses asks only_media and max_id', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/api/v1/accounts/1/statuses');
+          expect(request.url.queryParameters['only_media'], 'true');
+          expect(request.url.queryParameters['max_id'], '9');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '8',
+                url: 'https://mastodon.social/@a/8',
+                text: 'pic',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getStatuses(
+        'https://mastodon.social',
+        '1',
+        onlyMedia: true,
+        maxId: '9',
+      );
+      expect(posts.single.text, 'pic');
+    });
+
+    test('Misskey local-timeline pages with untilId', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          if (request.url.path == '/api/v1/timelines/public') {
+            return http.Response('no', 404);
+          }
+          expect(request.url.path, '/api/notes/local-timeline');
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          expect(body['untilId'], 'mk1');
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 'mk0',
+                'text': 'older note',
+                'user': {'username': 'neo', 'host': null},
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline(
+        'https://misskey.io',
+        local: true,
+        maxId: 'mk1',
+      );
+      expect(posts.single.text, 'older note');
+    });
   });
 }
 

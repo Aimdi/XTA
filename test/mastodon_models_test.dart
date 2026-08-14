@@ -206,6 +206,7 @@ void main() {
         expect(posts.last.text, 'Boosted');
         expect(posts.last.acct, 'bob@other.social');
         expect(posts.last.boosted, isTrue);
+        expect(posts.last.boostedBy, 'Alice');
         expect(posts.last.favouritesCount, 5);
       },
     );
@@ -352,6 +353,29 @@ void main() {
       expect(posts.single.poll?.votesCount, 10);
       expect(posts.single.poll?.options.map((o) => o.title), ['Yes', 'No']);
     });
+
+    test('reads who boosted and who a reply is to', () {
+      final posts = parseMastodonStatuses([
+        {
+          'id': '9',
+          'content': '<p>hi</p>',
+          'in_reply_to_id': '8',
+          'url': 'https://mastodon.social/@a/9',
+          'mentions': [
+            {'username': 'alice', 'acct': 'alice'},
+          ],
+          'account': {
+            'id': '11',
+            'username': 'bob',
+            'acct': 'bob',
+            'display_name': 'Bob',
+            'note': '',
+            'url': 'https://mastodon.social/@bob',
+          },
+        },
+      ], homeDomain: 'mastodon.social');
+      expect(posts.single.replyToAcct, 'alice');
+    });
   });
 
   group('misskey notes', () {
@@ -384,6 +408,31 @@ void main() {
       expect(post.images, ['https://misskey.io/t.jpg']);
       expect(post.favouritesCount, 4);
       expect(post.url, 'https://misskey.io/notes/n1');
+    });
+
+    test('unwraps a pure renote onto the original author', () {
+      final post = mastodonPostFromMisskeyNote({
+        'id': 'r1',
+        'text': null,
+        'user': {'username': 'boosty', 'name': 'Boosty', 'host': null},
+        'renote': {
+          'id': 'n2',
+          'createdAt': '2026-08-01T09:00:00.000Z',
+          'text': 'original',
+          'repliesCount': 1,
+          'renoteCount': 2,
+          'reactions': {':plus:': 5},
+          'user': {'username': 'neo', 'name': 'Neo', 'host': null},
+          'files': [],
+        },
+      }, instance: 'https://misskey.io');
+      expect(post, isNotNull);
+      expect(post!.id, 'n2');
+      expect(post.acct, 'neo@misskey.io');
+      expect(post.text, 'original');
+      expect(post.boosted, isTrue);
+      expect(post.boostedBy, 'Boosty');
+      expect(post.favouritesCount, 5);
     });
   });
 }

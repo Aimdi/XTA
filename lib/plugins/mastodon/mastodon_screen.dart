@@ -363,10 +363,10 @@ class _PublicPane extends StatelessWidget {
     return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
       store: store,
       onLoading: (_) => store.state.isNotEmpty
-          ? _list(store.state, store.refresh)
+          ? _list(store.state, store)
           : const Center(child: CircularProgressIndicator()),
       onError: (_, error) => store.state.isNotEmpty
-          ? _list(store.state, store.refresh)
+          ? _list(store.state, store)
           : Padding(
               padding: const EdgeInsets.all(24),
               child: FullPageErrorWidget(
@@ -384,20 +384,37 @@ class _PublicPane extends StatelessWidget {
             onRefresh: store.refresh,
           );
         }
-        return _list(posts, store.refresh);
+        return _list(posts, store);
       },
     );
   }
 
-  Widget _list(List<MastodonPost> posts, Future<void> Function() onRefresh) {
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: FeedListView(
-        itemCount: posts.length,
-        itemBuilder: (context, index) => MastodonPostCard(
-          key: ValueKey(posts[index].id),
-          post: posts[index],
-          showSourceBadge: false,
+  Widget _list(List<MastodonPost> posts, MastodonPublicFeedStore store) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification.metrics.pixels >
+            notification.metrics.maxScrollExtent - 1200) {
+          store.loadMore();
+        }
+        return false;
+      },
+      child: RefreshIndicator(
+        onRefresh: store.refresh,
+        child: FeedListView(
+          itemCount: posts.length + (store.loadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= posts.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return MastodonPostCard(
+              key: ValueKey(posts[index].id),
+              post: posts[index],
+              showSourceBadge: false,
+            );
+          },
         ),
       ),
     );

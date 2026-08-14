@@ -60,6 +60,12 @@ class MastodonPost {
   /// True when this card shows a boosted status (reblog unwrapped).
   final bool boosted;
 
+  /// Display name of who boosted, when [boosted] is true.
+  final String? boostedBy;
+
+  /// Handle this status is a reply to, when the payload names one.
+  final String? replyToAcct;
+
   final int repliesCount;
   final int reblogsCount;
   final int favouritesCount;
@@ -78,6 +84,8 @@ class MastodonPost {
     this.images = const [],
     this.publishedAt,
     this.boosted = false,
+    this.boostedBy,
+    this.replyToAcct,
     this.repliesCount = 0,
     this.reblogsCount = 0,
     this.favouritesCount = 0,
@@ -495,12 +503,36 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     )?.toLocal(),
     url: url,
     boosted: boosted,
+    boostedBy: boosted ? _boostedByName(root, homeDomain: homeDomain) : null,
+    replyToAcct: _replyToAcct(status),
     repliesCount: status['replies_count'].integer ?? 0,
     reblogsCount: status['reblogs_count'].integer ?? 0,
     favouritesCount: status['favourites_count'].integer ?? 0,
     linkCard: linkCard,
     poll: poll,
   );
+}
+
+String? _boostedByName(Json root, {String? homeDomain}) {
+  final booster = MastodonProfile.fromJson(
+    root['account'].raw,
+    homeDomain: homeDomain,
+  );
+  final name = booster.displayName.trim();
+  return name.isEmpty ? null : name;
+}
+
+String? _replyToAcct(Json status) {
+  if (!status['in_reply_to_id'].exists &&
+      !status['in_reply_to_account_id'].exists) {
+    return null;
+  }
+  for (final mention in status['mentions'].list) {
+    final acct = (mention['acct'].string ?? mention['username'].string ?? '')
+        .trim();
+    if (acct.isNotEmpty) return acct;
+  }
+  return null;
 }
 
 MastodonPoll? mastodonPollOf(Json status) {
@@ -547,10 +579,13 @@ MastodonPost? mastodonPostFromMisskeyNote(
   required String instance,
 }) {
   final note = Json(json);
-  final id = (note['id'].string ?? '').trim();
+  final outerText = (note['text'].string ?? '').trim();
+  final isRenote = note['renote'].exists && outerText.isEmpty;
+  final source = isRenote ? note['renote'] : note;
+  final id = (source['id'].string ?? '').trim();
   if (id.isEmpty) return null;
 
-  final user = note['user'];
+  final user = source['user'];
   final username = (user['username'].string ?? '').trim();
   if (username.isEmpty) return null;
   final remote = (user['host'].string ?? '').trim().toLowerCase();
@@ -559,16 +594,15 @@ MastodonPost? mastodonPostFromMisskeyNote(
       : remote;
   final acct = host.isEmpty ? username : '$username@$host';
   final name = (user['name'].string ?? '').trim();
-  final spoiler = (note['cw'].string ?? '').trim();
-  final body = (note['text'].string ?? '').trim();
-  final images = <String>[];
-  for (final file in note['files'].list) {
-    final url = file['thumbnailUrl'].string ?? file['url'].string ?? '';
-    if (url.startsWith('http')) images.add(url);
-  }
+  final spoiler = (source['cw'].string ?? '').trim();
+  final body = (source['text'].string ?? '').trim();
+  final images = _misskeyImages(source);
   if (spoiler.isEmpty && body.isEmpty && images.isEmpty) return null;
 
   final origin = mastodonInstanceDomain(instance) ?? host;
+  final booster = isRenote ? note['user'] : const Json(null);
+  final boosterName = (booster['name'].string ?? '').trim();
+  final boosterUser = (booster['username'].string ?? '').trim();
   return MastodonPost(
     id: id,
     acct: acct,
@@ -578,13 +612,34 @@ MastodonPost? mastodonPostFromMisskeyNote(
     spoilerText: spoiler,
     sensitive: spoiler.isNotEmpty,
     images: images,
-    publishedAt: DateTime.tryParse(note['createdAt'].string ?? '')?.toLocal(),
+    publishedAt: DateTime.tryParse(source['createdAt'].string ?? '')?.toLocal(),
     url: 'https://$origin/notes/$id',
-    boosted: note['renote'].exists && body.isEmpty,
-    repliesCount: note['repliesCount'].integer ?? 0,
-    reblogsCount: note['renoteCount'].integer ?? 0,
-    favouritesCount: _misskeyReactionCount(note),
+    boosted: isRenote,
+    boostedBy: isRenote
+        ? (boosterName.isNotEmpty ? boosterName : boosterUser)
+        : null,
+    replyToAcct: _misskeyReplyTo(source),
+    repliesCount: source['repliesCount'].integer ?? 0,
+    reblogsCount: source['renoteCount'].integer ?? 0,
+    favouritesCount: _misskeyReactionCount(source),
   );
+}
+
+List<String> _misskeyImages(Json note) {
+  final images = <String>[];
+  for (final file in note['files'].list) {
+    final url = file['thumbnailUrl'].string ?? file['url'].string ?? '';
+    if (url.startsWith('http')) images.add(url);
+  }
+  return images;
+}
+
+String? _misskeyReplyTo(Json note) {
+  final user = note['reply']['user'];
+  final username = (user['username'].string ?? '').trim();
+  if (username.isEmpty) return null;
+  final host = (user['host'].string ?? '').trim();
+  return host.isEmpty ? username : '$username@$host';
 }
 
 int _misskeyReactionCount(Json note) {

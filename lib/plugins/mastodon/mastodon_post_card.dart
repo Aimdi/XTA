@@ -94,31 +94,38 @@ class MastodonPostCard extends StatelessWidget {
               onTap: openOnTap ? () => _open(context) : null,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    GestureDetector(
-                      onTap: () => _openAuthor(context),
-                      child: _avatar(context),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          GestureDetector(
-                            onTap: () => _openAuthor(context),
-                            behavior: HitTestBehavior.opaque,
-                            child: _header(context),
+                    if (post.boosted) _boostBanner(context),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _openAuthor(context),
+                          child: _avatar(context),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              GestureDetector(
+                                onTap: () => _openAuthor(context),
+                                behavior: HitTestBehavior.opaque,
+                                child: _header(context),
+                              ),
+                              if (post.replyToAcct != null) _replyLine(context),
+                              _SpoilerBody(post: post, media: _media(context)),
+                              _MastodonEngagementRow(
+                                post: post,
+                                onOpen: () => _open(context),
+                                onOpenBrowser: () => _openBrowser(context),
+                              ),
+                            ],
                           ),
-                          _SpoilerBody(post: post, media: _media(context)),
-                          _MastodonEngagementRow(
-                            post: post,
-                            onOpen: () => _open(context),
-                            onOpenBrowser: () => _openBrowser(context),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -155,6 +162,43 @@ class MastodonPostCard extends StatelessWidget {
     );
   }
 
+  Widget _boostBanner(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    final name = post.boostedBy ?? post.authorName;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      child: Row(
+        children: [
+          Icon(Icons.repeat, size: 14, color: muted),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              L10n.of(context).plugin_mastodon_boosted(name),
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _replyLine(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Text(
+        '${L10n.of(context).replying_to} @${post.replyToAcct}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall!.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
   Widget _header(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
@@ -166,10 +210,6 @@ class MastodonPostCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            if (post.boosted) ...[
-              Icon(Icons.repeat, size: 14, color: muted),
-              const SizedBox(width: 4),
-            ],
             Flexible(
               child: Text(
                 post.authorName,

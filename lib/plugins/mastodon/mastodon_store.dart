@@ -172,31 +172,97 @@ List<String> mastodonDiscoveryInstances(BasePrefService prefs) {
   ];
 }
 
-/// One public timeline (local, federated, or trending statuses).
-class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
-  final Future<List<MastodonPost>> Function() loader;
+const _publicPageSize = 30;
 
-  MastodonPublicFeedStore(this.loader) : super(const []);
+/// Posts already shown, then [more] with ids that are new.
+List<MastodonPost> appendUniqueMastodonPosts(
+  List<MastodonPost> current,
+  List<MastodonPost> more,
+) {
+  final seen = current.map((post) => post.id).toSet();
+  return [
+    ...current,
+    for (final post in more)
+      if (seen.add(post.id)) post,
+  ];
+}
+
+/// One public timeline (local or federated) that pages with `max_id`.
+class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
+  final MastodonClient client;
+  final BasePrefService prefs;
+  final bool local;
+
+  MastodonPublicFeedStore(this.client, this.prefs, {required this.local})
+    : super(const []);
+
+  String? _instance;
+  var _hasMore = true;
+  var _loadingMore = false;
+  var _backedOff = false;
+
+  bool get canLoadMore =>
+      _hasMore && !_loadingMore && !_backedOff && state.isNotEmpty;
+
+  bool get loadingMore => _loadingMore;
 
   Future<void> refresh() async {
+    _instance = null;
+    _hasMore = true;
+    _backedOff = false;
     if (state.isNotEmpty) {
       try {
-        update(await loader());
+        update(await _firstPage());
       } catch (_) {
         update(state);
       }
       return;
     }
-    await execute(loader);
+    await execute(_firstPage);
+  }
+
+  Future<void> loadMore() async {
+    final instance = _instance;
+    if (!canLoadMore || instance == null) return;
+    _loadingMore = true;
+    try {
+      final more = await client.getPublicTimeline(
+        instance,
+        local: local,
+        limit: _publicPageSize,
+        maxId: state.last.id,
+      );
+      _hasMore = more.length >= _publicPageSize;
+      update(appendUniqueMastodonPosts(state, more));
+    } catch (_) {
+      _backedOff = true;
+    } finally {
+      _loadingMore = false;
+    }
+  }
+
+  Future<List<MastodonPost>> _firstPage() async {
+    return client.firstInstanceThat(mastodonDiscoveryInstances(prefs), (
+      instance,
+    ) async {
+      final posts = await client.getPublicTimeline(
+        instance,
+        local: local,
+        limit: _publicPageSize,
+      );
+      _instance = instance;
+      _hasMore = posts.length >= _publicPageSize;
+      return posts;
+    });
   }
 }
 
 class MastodonLocalStore extends MastodonPublicFeedStore {
-  MastodonLocalStore(super.loader);
+  MastodonLocalStore(super.client, super.prefs) : super(local: true);
 }
 
 class MastodonFederatedStore extends MastodonPublicFeedStore {
-  MastodonFederatedStore(super.loader);
+  MastodonFederatedStore(super.client, super.prefs) : super(local: false);
 }
 
 class MastodonExplorePage {

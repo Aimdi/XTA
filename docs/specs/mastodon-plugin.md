@@ -55,11 +55,13 @@ instance that has already federated the author.
 
 Public statuses render with a tweet-sized layout: avatar, body text, media,
 PreviewCard link/article preview (`card`), a read-only poll, content-warning
-reveal (Tusky/Ivory CW), and a read-only engagement row
-(`replies_count` / `reblogs_count` / `favourites_count`). Tapping a post opens
-an in-app thread (status + public replies via `context`). The open-in-browser
-control and article link previews still leave the app — no write APIs.
-Profiles show the public `fields` rows.
+reveal (Tusky/Ivory CW), a “boosted by” / “replying to” line, and a read-only
+engagement row (`replies_count` / `reblogs_count` / `favourites_count`).
+Tapping a post opens an in-app thread (status + public replies via `context`).
+The open-in-browser control and article link previews still leave the app —
+no write APIs. Profiles show the public `fields` rows, a bot label, and
+Posts / Media tabs. Local, Federated, hashtag, and profile lists page with
+`max_id` (Misskey local notes use `untilId`).
 
 ## Not implemented
 

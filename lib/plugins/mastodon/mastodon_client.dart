@@ -160,13 +160,16 @@ class MastodonClient {
   /// A profile and its first page of posts from one instance, walked the same
   /// way — both halves must come from the same place for the id to mean
   /// anything.
-  Future<({MastodonProfile profile, List<MastodonPost> posts})> profileAnywhere(
-    List<String> instances,
-    String acct,
-  ) => firstInstanceThat(instances, (instance) async {
-    final profile = await lookup(instance, acct);
-    return (profile: profile, posts: await getStatuses(instance, profile.id));
-  });
+  Future<({MastodonProfile profile, List<MastodonPost> posts, String instance})>
+  profileAnywhere(List<String> instances, String acct) =>
+      firstInstanceThat(instances, (instance) async {
+        final profile = await lookup(instance, acct);
+        return (
+          profile: profile,
+          posts: await getStatuses(instance, profile.id),
+          instance: instance,
+        );
+      });
 
   /// Confirms the instance answers the public instance metadata endpoint.
   Future<void> verify(String instance) async {
@@ -221,11 +224,15 @@ class MastodonClient {
     String id, {
     int limit = 20,
     bool excludeReplies = true,
+    bool onlyMedia = false,
+    String? maxId,
   }) async {
     final json = await _get(
       _uri(instance, '/api/v1/accounts/$id/statuses', {
         'limit': '$limit',
         'exclude_replies': '$excludeReplies',
+        if (onlyMedia) 'only_media': 'true',
+        'max_id': ?maxId,
       }),
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
@@ -477,13 +484,17 @@ class MastodonClient {
     String instance,
     String tag, {
     int limit = 30,
+    String? maxId,
   }) async {
     final name = tag.replaceFirst(RegExp(r'^#'), '').trim();
     if (name.isEmpty) {
       return const [];
     }
     final json = await _get(
-      _uri(instance, '/api/v1/timelines/tag/$name', {'limit': '$limit'}),
+      _uri(instance, '/api/v1/timelines/tag/$name', {
+        'limit': '$limit',
+        'max_id': ?maxId,
+      }),
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
   }
@@ -503,19 +514,21 @@ class MastodonClient {
     String instance, {
     bool local = false,
     int limit = 30,
+    String? maxId,
   }) async {
     try {
       final json = await _get(
         _uri(instance, '/api/v1/timelines/public', {
           'limit': '$limit',
           if (local) 'local': 'true',
+          'max_id': ?maxId,
         }),
       );
       return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
     } on MastodonException catch (e) {
       if (e.kind == MastodonErrorKind.rateLimited) rethrow;
     }
-    return _misskeyPublic(instance, local: local, limit: limit);
+    return _misskeyPublic(instance, local: local, limit: limit, untilId: maxId);
   }
 
   Future<List<MastodonPost>> getPublicTimelineAnywhere(
@@ -556,18 +569,22 @@ class MastodonClient {
     String instance, {
     required bool local,
     int limit = 20,
+    String? untilId,
   }) async {
     if (local) {
       try {
         final notes = await _misskeyNotes(
           instance,
           '/api/notes/local-timeline',
-          {'limit': limit},
+          {'limit': limit, 'untilId': ?untilId},
         );
         if (notes.isNotEmpty) return notes;
       } on MastodonException catch (e) {
         if (e.kind == MastodonErrorKind.rateLimited) rethrow;
       }
+    }
+    if (untilId != null) {
+      return const [];
     }
     return _misskeyNotes(instance, '/api/notes/featured', {'limit': limit});
   }

@@ -734,16 +734,10 @@ Future<void> main() async {
       mastodonAccounts,
     );
     final mastodonExplore = MastodonExploreStore(mastodonClient, prefService);
-    final mastodonLocal = MastodonLocalStore(
-      () => mastodonClient.getPublicTimelineAnywhere(
-        mastodonDiscoveryInstances(prefService),
-        local: true,
-      ),
-    );
+    final mastodonLocal = MastodonLocalStore(mastodonClient, prefService);
     final mastodonFederated = MastodonFederatedStore(
-      () => mastodonClient.getPublicTimelineAnywhere(
-        mastodonDiscoveryInstances(prefService),
-      ),
+      mastodonClient,
+      prefService,
     );
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
