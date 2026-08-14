@@ -16,6 +16,7 @@ import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/ui/scroll_to_top.dart';
@@ -264,7 +265,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final screen = plugin?.feedStripScreen(
       scrollController: widget.scrollController,
     );
-    if (screen != null) return screen;
+    if (screen != null) return PluginEmbedded(child: screen);
     return Center(child: Text(L10n.of(context).feed_strip_unavailable));
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
@@ -114,8 +115,17 @@ class _BooruScreenState extends State<BooruScreen>
     final l10n = L10n.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_booru_title),
+      primary: !PluginEmbedded.maybeOf(context),
+      appBar: pluginHomeTabAppBar(
+        tabs: TabBar(
+          controller: _tabs,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          tabs: [
+            Tab(text: l10n.plugin_booru_tab_latest),
+            Tab(text: l10n.plugin_booru_tab_following),
+          ],
+        ),
         actions: [
           IconButton(
             tooltip: l10n.search,
@@ -134,13 +144,6 @@ class _BooruScreenState extends State<BooruScreen>
             ),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabs,
-          tabs: [
-            Tab(text: l10n.plugin_booru_tab_latest),
-            Tab(text: l10n.plugin_booru_tab_following),
-          ],
-        ),
       ),
       body: TabBarView(
         controller: _tabs,

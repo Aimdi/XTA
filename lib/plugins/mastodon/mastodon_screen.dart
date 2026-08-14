@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
@@ -82,44 +83,51 @@ class _MastodonScreenState extends State<MastodonScreen> {
     final feed = context.read<MastodonFeedStore>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_mastodon_title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            tooltip: l10n.plugin_mastodon_search,
-            onPressed: _lookUpProfile,
+      primary: !PluginEmbedded.maybeOf(context),
+      body: Column(
+        children: [
+          PluginHomeChrome(
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search),
+                tooltip: l10n.plugin_mastodon_search,
+                onPressed: _lookUpProfile,
+              ),
+              IconButton(
+                icon: const Icon(Icons.person_add_alt),
+                tooltip: l10n.plugin_mastodon_add,
+                onPressed: _addAccount,
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.person_add_alt),
-            tooltip: l10n.plugin_mastodon_add,
-            onPressed: _addAccount,
+          const Divider(height: 1),
+          Expanded(
+            child: ScopedBuilder<MastodonFeedStore, List<MastodonPost>>(
+              store: feed,
+              onLoading: (_) {
+                if (feed.state.isNotEmpty) {
+                  return _feed(context, l10n, feed.state);
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+              onError: (context, error) {
+                if (feed.state.isNotEmpty) {
+                  return _feed(context, l10n, feed.state);
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: FullPageErrorWidget(
+                    error: error,
+                    stackTrace: null,
+                    prefix: mastodonErrorMessage(l10n, error ?? Exception()),
+                    onRetry: () => context.read<MastodonFeedStore>().refresh(),
+                  ),
+                );
+              },
+              onState: (context, posts) => _feed(context, l10n, posts),
+            ),
           ),
         ],
-      ),
-      body: ScopedBuilder<MastodonFeedStore, List<MastodonPost>>(
-        store: feed,
-        onLoading: (_) {
-          if (feed.state.isNotEmpty) {
-            return _feed(context, l10n, feed.state);
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-        onError: (context, error) {
-          if (feed.state.isNotEmpty) {
-            return _feed(context, l10n, feed.state);
-          }
-          return Padding(
-            padding: const EdgeInsets.all(24),
-            child: FullPageErrorWidget(
-              error: error,
-              stackTrace: null,
-              prefix: mastodonErrorMessage(l10n, error ?? Exception()),
-              onRetry: () => context.read<MastodonFeedStore>().refresh(),
-            ),
-          );
-        },
-        onState: (context, posts) => _feed(context, l10n, posts),
       ),
     );
   }
