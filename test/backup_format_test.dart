@@ -38,6 +38,7 @@ const _keys = {
   'ehFavorites',
   'ehHistory',
   'tiktokSubscriptions',
+  'instagramSubscriptions',
 };
 
 void main() {
