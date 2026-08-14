@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -42,7 +43,9 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
     _load();
   }
 
-  Future<({List<BlueskyProfile> profiles, String? cursor})> _fetchPage(String? cursor) async {
+  Future<({List<BlueskyProfile> profiles, String? cursor})> _fetchPage(
+    String? cursor,
+  ) async {
     final client = context.read<BlueskyClient>();
     if (widget.kind == BlueskyFollowsKind.following) {
       final page = await client.getFollows(widget.actor, cursor: cursor);
@@ -111,7 +114,9 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
 
   void _append(List<BlueskyProfile> page) {
     for (final profile in page) {
-      final key = profile.did.isNotEmpty ? profile.did : profile.handle.toLowerCase();
+      final key = profile.did.isNotEmpty
+          ? profile.did
+          : profile.handle.toLowerCase();
       if (key.isEmpty || !_seen.add(key)) {
         continue;
       }
@@ -119,11 +124,25 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
     }
   }
 
-  String? _nextCursor(String? next, List<BlueskyProfile> page, {String? previous}) {
+  String? _nextCursor(
+    String? next,
+    List<BlueskyProfile> page, {
+    String? previous,
+  }) {
     if (next == null || next.isEmpty || next == previous || page.isEmpty) {
       return null;
     }
     return next;
+  }
+
+  Future<void> _toggleFollow(BlueskyProfile profile) async {
+    final accounts = context.read<BlueskyAccountsStore>();
+    if (accounts.follows(profile.handle)) {
+      await accounts.remove(profile.handle);
+    } else {
+      await accounts.add(profile.toAccount());
+    }
+    if (mounted) setState(() {});
   }
 
   Future<void> _open(BlueskyProfile profile) async {
@@ -140,7 +159,9 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final title = widget.kind == BlueskyFollowsKind.following ? l10n.following : l10n.followers;
+    final title = widget.kind == BlueskyFollowsKind.following
+        ? l10n.following
+        : l10n.followers;
 
     return Scaffold(
       appBar: AppBar(title: Text(title)),
@@ -185,10 +206,29 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
             return _footer(l10n);
           }
           final profile = _profiles[index];
+          final following = context.read<BlueskyAccountsStore>().follows(
+            profile.handle,
+          );
           return ListTile(
             leading: _avatar(context, profile),
-            title: Text(profile.displayName, maxLines: 1, overflow: TextOverflow.ellipsis),
-            subtitle: Text('@${profile.handle}', maxLines: 1, overflow: TextOverflow.ellipsis),
+            title: Text(
+              profile.displayName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            subtitle: Text(
+              '@${profile.handle}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: TextButton(
+              onPressed: () => _toggleFollow(profile),
+              child: Text(
+                following
+                    ? l10n.plugin_bluesky_unfollow
+                    : l10n.plugin_bluesky_follow,
+              ),
+            ),
             onTap: () => _open(profile),
           );
         },

@@ -1,11 +1,18 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
+import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_import_starter_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_store.dart';
+import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 enum BlueskySearchTab { people, posts }
@@ -77,12 +84,26 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
     super.dispose();
   }
 
+  Future<void> _remember(String query) async {
+    final prefs = PrefService.of(context);
+    await rememberPluginSearch(prefs, optionPluginBlueskySearchHistory, query);
+  }
+
   Future<void> _openActor(String actor) async {
     if (!mounted) return;
     Navigator.pop(context);
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)),
+    );
+  }
+
+  Future<void> _openImport(Widget page) async {
+    if (!mounted) return;
+    Navigator.pop(context);
+    await Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (_) => page),
     );
   }
 
@@ -115,10 +136,10 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
       return;
     }
 
-    // Exact handle, DID, or profile URL — open that profile without searching.
     if (_tabs.index == 0) {
       final direct = normaliseBlueskyHandle(query);
       if (direct != null) {
+        await _remember(query);
         await _openActor(direct);
         return;
       }
@@ -135,6 +156,8 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
       if (_tabs.index == 0) {
         final results = await client.searchActors(query, limit: 20);
         if (!mounted) return;
+        await _remember(query);
+        if (!mounted) return;
         setState(() {
           _people = results;
           _loading = false;
@@ -142,6 +165,8 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
       } else {
         final q = query.startsWith('#') ? query.substring(1) : query;
         final page = await client.searchPosts(q, limit: 20);
+        if (!mounted) return;
+        await _remember(query);
         if (!mounted) return;
         setState(() {
           _posts = page.posts;
@@ -162,6 +187,16 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
   Future<void> _open(BlueskyProfile profile) async {
     final actor = profile.did.isNotEmpty ? profile.did : profile.handle;
     await _openActor(actor);
+  }
+
+  Future<void> _toggleFollow(BlueskyProfile profile) async {
+    final accounts = context.read<BlueskyAccountsStore>();
+    if (accounts.follows(profile.handle)) {
+      await accounts.remove(profile.handle);
+    } else {
+      await accounts.add(profile.toAccount());
+    }
+    if (mounted) setState(() {});
   }
 
   @override
@@ -242,19 +277,80 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
           ),
         );
       }
-      if (_suggestions.isEmpty) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+      return _peopleLanding(l10n);
+    }
+
+    if (_tabs.index == 0) {
+      if (_people.isEmpty) {
+        return Center(child: Text(l10n.plugin_bluesky_no_results));
+      }
+      return ListView.separated(
+        itemCount: _people.length,
+        separatorBuilder: (_, _) => const Divider(height: 1),
+        itemBuilder: (context, index) => _personTile(_people[index], l10n),
+      );
+    }
+
+    if (_posts.isEmpty) {
+      return Center(child: Text(l10n.plugin_bluesky_no_results));
+    }
+    return ListView.builder(
+      itemCount: _posts.length,
+      itemBuilder: (context, index) => BlueskyPostCard(post: _posts[index]),
+    );
+  }
+
+  Widget _peopleLanding(L10n l10n) {
+    final recent = readPluginSearchHistory(
+      PrefService.of(context),
+      optionPluginBlueskySearchHistory,
+    );
+
+    return ListView(
+      children: [
+        if (recent.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
-              l10n.plugin_bluesky_search_hint,
-              textAlign: TextAlign.center,
+              l10n.plugin_bluesky_recent_searches,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
-        );
-      }
-      return ListView(
-        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Wrap(
+              spacing: 8,
+              children: [
+                for (final item in recent.take(8))
+                  ActionChip(
+                    label: Text(item),
+                    onPressed: () {
+                      _controller.text = item;
+                      _search();
+                    },
+                  ),
+              ],
+            ),
+          ),
+        ],
+        ListTile(
+          leading: const Icon(Icons.group_add_outlined),
+          title: Text(l10n.plugin_bluesky_import_following),
+          onTap: () => _openImport(const BlueskyImportFollowsScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.list_alt_outlined),
+          title: Text(l10n.plugin_bluesky_import_list),
+          onTap: () => _openImport(const BlueskyImportListScreen()),
+        ),
+        ListTile(
+          leading: const Icon(Icons.auto_awesome_outlined),
+          title: Text(l10n.plugin_bluesky_import_starter),
+          onTap: () => _openImport(const BlueskyImportStarterPackScreen()),
+        ),
+        if (_suggestions.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
@@ -265,59 +361,44 @@ class _BlueskySearchSheetState extends State<_BlueskySearchSheet>
             ),
           ),
           for (final profile in _suggestions) ...[
-            ListTile(
-              leading: _avatar(context, profile),
-              title: Text(
-                profile.displayName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                '@${profile.handle}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              onTap: () => _open(profile),
-            ),
+            _personTile(profile, l10n),
             const Divider(height: 1),
           ],
-        ],
-      );
-    }
-
-    if (_tabs.index == 0) {
-      if (_people.isEmpty) {
-        return Center(child: Text(l10n.plugin_bluesky_no_results));
-      }
-      return ListView.separated(
-        itemCount: _people.length,
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final profile = _people[index];
-          return ListTile(
-            leading: _avatar(context, profile),
-            title: Text(
-              profile.displayName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+        ] else
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(
+              l10n.plugin_bluesky_search_hint,
+              textAlign: TextAlign.center,
             ),
-            subtitle: Text(
-              '@${profile.handle}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            onTap: () => _open(profile),
-          );
-        },
-      );
-    }
+          ),
+      ],
+    );
+  }
 
-    if (_posts.isEmpty) {
-      return Center(child: Text(l10n.plugin_bluesky_no_results));
-    }
-    return ListView.builder(
-      itemCount: _posts.length,
-      itemBuilder: (context, index) => BlueskyPostCard(post: _posts[index]),
+  Widget _personTile(BlueskyProfile profile, L10n l10n) {
+    final following = context.read<BlueskyAccountsStore>().follows(
+      profile.handle,
+    );
+    return ListTile(
+      leading: _avatar(context, profile),
+      title: Text(
+        profile.displayName,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        '@${profile.handle}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: TextButton(
+        onPressed: () => _toggleFollow(profile),
+        child: Text(
+          following ? l10n.plugin_bluesky_unfollow : l10n.plugin_bluesky_follow,
+        ),
+      ),
+      onTap: () => _open(profile),
     );
   }
 

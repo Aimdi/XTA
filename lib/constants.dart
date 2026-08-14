@@ -208,6 +208,7 @@ const optionPluginThreadsEnabled = 'plugin.threads.enabled';
 const optionPluginThreadsShowTab = 'plugin.threads.show_tab';
 const optionPluginThreadsInstance = 'plugin.threads.instance';
 const optionPluginThreadsLikedPosts = 'plugin.threads.liked_posts';
+const optionPluginThreadsSearchHistory = 'plugin.threads.search_history';
 
 /// Whether followed Threads accounts also appear in Following and For you.
 const optionPluginThreadsInHomeFeed = 'plugin.threads.in_home_feed';
@@ -277,6 +278,7 @@ const optionPluginBlueskyInstance = 'plugin.bluesky.instance';
 
 /// Snapshots of locally liked Bluesky posts (JSON list). Ids live in SQLite.
 const optionPluginBlueskyLikedPosts = 'plugin.bluesky.liked_posts';
+const optionPluginBlueskySearchHistory = 'plugin.bluesky.search_history';
 const blueskyLikedPostsCap = 400;
 
 /// How many posts one account contributes to the merged Bluesky feed.

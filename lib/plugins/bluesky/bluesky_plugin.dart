@@ -135,6 +135,7 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
   Future<void> resetPreferences(BasePrefService prefs) async {
     await prefs.set(optionPluginBlueskyInstance, kBlueskyDefaultAppView);
     await prefs.set(optionPluginBlueskyLikedPosts, '[]');
+    await prefs.set(optionPluginBlueskySearchHistory, '[]');
   }
 
   @override

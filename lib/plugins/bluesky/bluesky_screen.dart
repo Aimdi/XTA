@@ -2,18 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
+import 'package:xta/plugins/bluesky/bluesky_discovery.dart';
 import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_import_starter_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
+import 'package:xta/plugins/plugin_feed_people.dart';
+import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -145,6 +150,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
                     final page = switch (value) {
                       'following' => const BlueskyImportFollowsScreen(),
                       'list' => const BlueskyImportListScreen(),
+                      'starter' => const BlueskyImportStarterPackScreen(),
                       _ => null,
                     };
                     if (page != null) {
@@ -162,6 +168,10 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
                     PopupMenuItem(
                       value: 'list',
                       child: Text(l10n.plugin_bluesky_import_list),
+                    ),
+                    PopupMenuItem(
+                      value: 'starter',
+                      child: Text(l10n.plugin_bluesky_import_starter),
                     ),
                   ],
                 ),
@@ -257,43 +267,135 @@ class _HomePane extends StatelessWidget {
             leading: pending > 0
                 ? _PendingAccountsNote(pending: pending)
                 : null,
-            action: accounts.isEmpty
-                ? FilledButton.icon(
-                    onPressed: () => showBlueskySearchSheet(context),
-                    icon: const Icon(Icons.explore_outlined),
-                    label: Text(l10n.plugin_bluesky_discover),
-                  )
-                : FilledButton.icon(
-                    onPressed: onRefresh,
-                    icon: const Icon(Icons.refresh),
-                    label: Text(l10n.retry),
-                  ),
+            action: _emptyActions(context, l10n, accounts.isEmpty),
           );
         },
       );
     }
 
-    final accounts = context.read<BlueskyAccountsStore>().state;
-    final pending = context.read<BlueskyFeedStore>().pending(
-      accounts.map((e) => e.actor).toList(growable: false),
+    return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
+      store: context.read<BlueskyAccountsStore>(),
+      onState: (context, accounts) {
+        final pending = context.read<BlueskyFeedStore>().pending(
+          accounts.map((e) => e.actor).toList(growable: false),
+        );
+        final people = peopleToFollowFromBluesky(
+          posts: posts,
+          alreadyFollows: context.read<BlueskyAccountsStore>().follows,
+        );
+        final peopleOffset = people.isEmpty ? 0 : 1;
+        final pendingOffset = pending > 0 ? 1 : 0;
+        return RefreshIndicator(
+          onRefresh: onRefresh,
+          child: FeedListView(
+            controller: scrollController,
+            itemCount: posts.length + peopleOffset + pendingOffset,
+            itemBuilder: (context, index) {
+              if (peopleOffset == 1 && index == 0) {
+                return PluginFeedPeopleStrip(
+                  title: l10n.plugin_bluesky_from_feed,
+                  followLabel: l10n.plugin_bluesky_follow,
+                  people: people,
+                  avatar: (person) => _feedPersonAvatar(context, person),
+                  onOpen: (person) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          BlueskyProfileScreen(actor: person.handle),
+                    ),
+                  ),
+                  onFollow: (person) =>
+                      context.read<BlueskyAccountsStore>().add(
+                        BlueskyAccount(
+                          handle: person.handle,
+                          name: person.name,
+                          avatarUrl: person.avatarUrl,
+                        ),
+                      ),
+                );
+              }
+              final afterPeople = index - peopleOffset;
+              if (pendingOffset == 1 && afterPeople == 0) {
+                return _PendingAccountsNote(pending: pending);
+              }
+              final post = posts[afterPeople - pendingOffset];
+              return BlueskyPostCard(
+                key: ValueKey(post.uri),
+                post: post,
+                showSourceBadge: false,
+              );
+            },
+          ),
+        );
+      },
     );
+  }
 
-    return RefreshIndicator(
-      onRefresh: onRefresh,
-      child: FeedListView(
-        controller: scrollController,
-        itemCount: posts.length + (pending > 0 ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (pending > 0 && index == 0) {
-            return _PendingAccountsNote(pending: pending);
-          }
-          final post = posts[index - (pending > 0 ? 1 : 0)];
-          return BlueskyPostCard(
-            key: ValueKey(post.uri),
-            post: post,
-            showSourceBadge: false,
-          );
-        },
+  Widget _emptyActions(BuildContext context, L10n l10n, bool noAccounts) {
+    Future<void> discover() async {
+      await showBlueskySearchSheet(context);
+      if (context.mounted) {
+        await context.read<BlueskyFeedStore>().refresh();
+      }
+    }
+
+    return Column(
+      children: [
+        FilledButton.icon(
+          onPressed: discover,
+          icon: const Icon(Icons.explore_outlined),
+          label: Text(l10n.plugin_bluesky_discover),
+        ),
+        if (noAccounts) ...[
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const BlueskyImportFollowsScreen(),
+              ),
+            ),
+            icon: const Icon(Icons.group_add_outlined),
+            label: Text(l10n.plugin_bluesky_import_following),
+          ),
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const BlueskyImportStarterPackScreen(),
+              ),
+            ),
+            icon: const Icon(Icons.auto_awesome_outlined),
+            label: Text(l10n.plugin_bluesky_import_starter),
+          ),
+        ] else ...[
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: onRefresh,
+            icon: const Icon(Icons.refresh),
+            label: Text(l10n.retry),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _feedPersonAvatar(BuildContext context, PluginFeedPerson person) {
+    final url = person.avatarUrl;
+    if (url == null || url.isEmpty) {
+      return FallbackAvatar(
+        seed: person.handle,
+        displayName: person.name,
+        size: 20,
+        accent: Theme.of(context).colorScheme.primary,
+      );
+    }
+    return ClipOval(
+      child: ExtendedImage.network(
+        url,
+        width: 20,
+        height: 20,
+        fit: BoxFit.cover,
       ),
     );
   }

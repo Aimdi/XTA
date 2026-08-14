@@ -315,6 +315,58 @@ void main() {
       ]);
     });
 
+    test('getStarterPack and resolveStarterPackUri', () async {
+      final paths = <String>[];
+      final client = BlueskyClient(
+        httpClient: MockClient((request) async {
+          paths.add(request.url.path);
+          if (request.url.path.endsWith('getProfile')) {
+            return http.Response(
+              jsonEncode({
+                'did': 'did:plc:alice',
+                'handle': 'alice.bsky.social',
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          if (request.url.path.endsWith('getStarterPack')) {
+            expect(
+              request.url.queryParameters['starterPack'],
+              'at://did:plc:alice/app.bsky.graph.starterpack/3abc',
+            );
+            return http.Response(
+              jsonEncode({
+                'starterPack': {
+                  'list': {'uri': 'at://did:plc:alice/app.bsky.graph.list/1'},
+                },
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          return http.Response('unexpected', 500);
+        }),
+      );
+
+      final uri = await client.resolveStarterPackUri(
+        const BlueskyStarterPackRef.web(
+          actor: 'alice.bsky.social',
+          rkey: '3abc',
+        ),
+      );
+      expect(uri, 'at://did:plc:alice/app.bsky.graph.starterpack/3abc');
+      final json = await client.getStarterPack(uri);
+      expect(
+        starterPackListUri(json),
+        'at://did:plc:alice/app.bsky.graph.list/1',
+      );
+      expect(paths, [
+        '/xrpc/app.bsky.actor.getProfile',
+        '/xrpc/app.bsky.graph.getStarterPack',
+      ]);
+    });
+
     test('getFollowers hits the graph endpoint', () async {
       final paths = <String>[];
       final client = BlueskyClient(

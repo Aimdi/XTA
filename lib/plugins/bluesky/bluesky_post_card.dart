@@ -12,6 +12,7 @@ import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
+import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
@@ -65,6 +66,17 @@ class BlueskyPostCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)),
+    );
+  }
+
+  void _openReposter(BuildContext context) {
+    final handle = post.repostedByHandle;
+    if (handle == null || handle.isEmpty) {
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: handle)),
     );
   }
 
@@ -186,18 +198,22 @@ class BlueskyPostCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 60),
-      child: Row(
-        children: [
-          Icon(Icons.repeat, size: 14, color: muted),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              L10n.of(context).plugin_bluesky_reposted(name),
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+      child: GestureDetector(
+        onTap: () => _openReposter(context),
+        behavior: HitTestBehavior.opaque,
+        child: Row(
+          children: [
+            Icon(Icons.repeat, size: 14, color: muted),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                L10n.of(context).plugin_bluesky_reposted(name),
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall!.copyWith(color: muted),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -271,9 +287,34 @@ class BlueskyPostCard extends StatelessWidget {
                 child: const BlueskyButterflyIcon(size: 14),
               ),
             ],
+            _followButton(context),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _followButton(BuildContext context) {
+    final accounts = context.read<BlueskyAccountsStore>();
+    return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
+      store: accounts,
+      distinct: (_) => accounts.follows(post.handle),
+      onState: (context, _) {
+        if (accounts.follows(post.handle)) {
+          return const SizedBox.shrink();
+        }
+        return TextButton(
+          onPressed: () => accounts.add(
+            BlueskyAccount(
+              handle: post.handle,
+              name: post.authorName,
+              avatarUrl: post.avatarUrl,
+              did: post.did.isEmpty ? null : post.did,
+            ),
+          ),
+          child: Text(L10n.of(context).plugin_bluesky_follow),
+        );
+      },
     );
   }
 }
