@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
+import 'package:xta/plugins/threads/threads_plugin.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
@@ -117,6 +118,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              accent: ThreadsPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_threads_home,

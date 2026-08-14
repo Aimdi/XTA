@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
+import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
@@ -113,6 +114,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              accent: BlueskyPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_bluesky_home,

@@ -5,6 +5,7 @@ import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
+import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_markets.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
@@ -163,6 +164,7 @@ class _StocksScreenState extends State<StocksScreen> {
       body: Column(
         children: [
           PluginHomeChrome(
+            accent: StocksPlugin().brandColor,
             tabs: [
               PluginHomeTab(
                 label: l10n.plugin_stocks_watchlist,

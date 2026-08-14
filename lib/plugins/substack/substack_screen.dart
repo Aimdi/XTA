@@ -6,6 +6,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
+import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_note_card.dart';
@@ -110,6 +111,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
       body: Column(
         children: [
           PluginHomeChrome(
+            accent: SubstackPlugin().brandColor,
             tabs: [
               PluginHomeTab(
                 selected: _tab == 0,

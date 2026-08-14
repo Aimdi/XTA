@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
+import 'package:xta/plugins/ehviewer/eh_plugin.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
@@ -97,6 +98,7 @@ class _EhScreenState extends State<EhScreen> {
       body: Column(
         children: [
           PluginHomeChrome(
+            accent: EhViewerPlugin().brandColor,
             tabs: [
               PluginHomeTab(
                 label: l10n.plugin_eh_tab_popular,

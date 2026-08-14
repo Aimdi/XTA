@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
+import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/plugins/tiktok/tiktok_post_card.dart';
 import 'package:xta/plugins/tiktok/tiktok_profile_screen.dart';
@@ -64,6 +65,7 @@ class _TikTokScreenState extends State<TikTokScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              accent: TikTokPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_tiktok_tab_following,
