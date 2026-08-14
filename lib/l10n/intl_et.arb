@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Jälgi kedagi, et see voog täituks",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Selles ajajoones pole veel midagi",
   "plugin_mastodon_error_network": "Mastodoni serveriga ei õnnestunud ühendust saada",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Seda kontot ei leitud",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Lugemine töötab ilma seadistamata: kõigepealt küsitakse konto oma serverilt, siis sinu omadelt ja lõpuks sisseehitatutelt. Ainult avalikud profiilid ja postitused — Mastodoni kontot pole vaja.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Avasta",
+  "plugin_mastodon_tab_federated": "Föderatiivne",
+  "plugin_mastodon_tab_following": "Jälgin",
+  "plugin_mastodon_tab_local": "Kohalik",
   "plugin_mastodon_test": "Testi ühendust",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Sinu server vastas",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

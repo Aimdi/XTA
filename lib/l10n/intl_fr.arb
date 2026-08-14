@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Suivez quelqu’un pour remplir ce fil",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Rien pour l’instant sur ce fil",
   "plugin_mastodon_error_network": "Impossible de joindre l’instance Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Ce compte est introuvable",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "La lecture fonctionne sans aucune configuration : l'instance du compte lui-même est interrogée d'abord, puis les vôtres, puis celles intégrées. Profils et publications publics uniquement — aucun compte Mastodon n'est nécessaire.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Explorer",
+  "plugin_mastodon_tab_federated": "Fédéré",
+  "plugin_mastodon_tab_following": "Abonnements",
+  "plugin_mastodon_tab_local": "Local",
   "plugin_mastodon_test": "Tester la connexion",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Votre instance a répondu",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

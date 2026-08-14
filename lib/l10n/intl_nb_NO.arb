@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Følg noen for å fylle denne feeden",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Ingenting på denne tidslinjen ennå",
   "plugin_mastodon_error_network": "Kunne ikke nå Mastodon-instansen",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Fant ikke den kontoen",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Lesing fungerer uten noe oppsett: kontoens egen instans spørres først, deretter dine, så de innebygde. Bare offentlige profiler og innlegg — ingen Mastodon-konto kreves.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Utforsk",
+  "plugin_mastodon_tab_federated": "Føderert",
+  "plugin_mastodon_tab_following": "Følger",
+  "plugin_mastodon_tab_local": "Lokal",
   "plugin_mastodon_test": "Test tilkobling",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Instansen din svarte",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

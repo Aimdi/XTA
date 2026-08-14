@@ -1392,6 +1392,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Follow someone to fill this feed",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Nothing on this timeline yet",
   "plugin_mastodon_error_network": "Could not reach the Mastodon instance",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "That account was not found",
@@ -1434,6 +1435,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Reading works without any setup: an account's own instance is asked first, then your instances, then the built-in ones. Public profiles and posts only — no Mastodon account is required.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Explore",
+  "plugin_mastodon_tab_federated": "Federated",
+  "plugin_mastodon_tab_following": "Following",
+  "plugin_mastodon_tab_local": "Local",
   "plugin_mastodon_test": "Test connection",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Your instance answered",
@@ -2623,5 +2628,10 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

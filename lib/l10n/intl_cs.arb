@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Sledujte někoho, aby se tento kanál naplnil",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Na této časové ose zatím nic není",
   "plugin_mastodon_error_network": "Nepodařilo se spojit s instancí Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Tento účet nebyl nalezen",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Čtení funguje bez jakéhokoli nastavení: nejdřív se ptáme instance samotného účtu, pak vašich a nakonec vestavěných. Jen veřejné profily a příspěvky — účet na Mastodonu není potřeba.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Objevovat",
+  "plugin_mastodon_tab_federated": "Federovaná",
+  "plugin_mastodon_tab_following": "Sledované",
+  "plugin_mastodon_tab_local": "Místní",
   "plugin_mastodon_test": "Otestovat připojení",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Vaše instance odpověděla",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

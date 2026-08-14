@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Folge jemandem, um diesen Feed zu füllen",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Auf dieser Timeline ist noch nichts",
   "plugin_mastodon_error_network": "Die Mastodon-Instanz konnte nicht erreicht werden",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Dieses Konto wurde nicht gefunden",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Lesen funktioniert ohne jede Einrichtung: zuerst wird die eigene Instanz des Kontos gefragt, dann deine, dann die eingebauten. Nur öffentliche Profile und Beiträge — ein Mastodon-Konto ist nicht nötig.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Entdecken",
+  "plugin_mastodon_tab_federated": "Föderiert",
+  "plugin_mastodon_tab_following": "Folge ich",
+  "plugin_mastodon_tab_local": "Lokal",
   "plugin_mastodon_test": "Verbindung testen",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Deine Instanz hat geantwortet",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Jarraitu norbait jario hau betetzeko",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Oraindik ez dago ezer denbora-lerro honetan",
   "plugin_mastodon_error_network": "Ezin izan da Mastodon instantziarekin konektatu",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Ez da kontu hori aurkitu",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Irakurketak konfiguraziorik gabe funtzionatzen du: lehenik kontuaren beraren instantziari galdetzen zaio, gero zureei eta azkenik integratuei. Profil eta argitalpen publikoak soilik — ez da Mastodon konturik behar.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Arakatu",
+  "plugin_mastodon_tab_federated": "Federatua",
+  "plugin_mastodon_tab_following": "Jarraitzen",
+  "plugin_mastodon_tab_local": "Lokala",
   "plugin_mastodon_test": "Probatu konexioa",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Zure instantziak erantzun du",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

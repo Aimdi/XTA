@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Подпишитесь на кого-нибудь, чтобы заполнить эту ленту",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "В этой ленте пока ничего нет",
   "plugin_mastodon_error_network": "Не удалось связаться с сервером Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Такой аккаунт не найден",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Чтение работает без всякой настройки: сначала спрашивается сервер самого аккаунта, затем ваши, затем встроенные. Только публичные профили и посты — аккаунт Mastodon не нужен.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Обзор",
+  "plugin_mastodon_tab_federated": "Федеративная",
+  "plugin_mastodon_tab_following": "Подписки",
+  "plugin_mastodon_tab_local": "Локальная",
   "plugin_mastodon_test": "Проверить соединение",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Ваш сервер ответил",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Sekvu iun por plenigi ĉi tiun fluon",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Ankoraŭ nenio en ĉi tiu templinio",
   "plugin_mastodon_error_network": "Ne eblis atingi la Mastodon-servilon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Tiu konto ne estis trovita",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Legado funkcias sen ajna agordo: unue oni demandas la propran nodon de la konto, poste viajn, poste la enkonstruitajn. Nur publikaj profiloj kaj afiŝoj — konto ĉe Mastodon ne necesas.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Malkovri",
+  "plugin_mastodon_tab_federated": "Federacia",
+  "plugin_mastodon_tab_following": "Sekvataj",
+  "plugin_mastodon_tab_local": "Loka",
   "plugin_mastodon_test": "Testi konekton",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Via servilo respondis",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

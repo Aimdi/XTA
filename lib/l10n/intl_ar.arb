@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "تابع شخصًا لملء هذا الخط الزمني",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "لا شيء في هذا الخط الزمني بعد",
   "plugin_mastodon_error_network": "تعذّر الوصول إلى خادم Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "لم يُعثر على ذلك الحساب",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "تعمل القراءة دون أي إعداد: يُسأل خادم الحساب نفسه أولًا، ثم خوادمك، ثم الخوادم المدمجة. الملفات والمنشورات العامة فقط — لا حاجة إلى حساب ماستودون.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "استكشف",
+  "plugin_mastodon_tab_federated": "الموحدة",
+  "plugin_mastodon_tab_following": "المتابَعون",
+  "plugin_mastodon_tab_local": "المحلي",
   "plugin_mastodon_test": "اختبار الاتصال",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "ردّ خادمك",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

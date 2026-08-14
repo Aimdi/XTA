@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Падпішыцеся на кагосьці, каб запоўніць гэту стужку",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "У гэтай стужцы пакуль нічога няма",
   "plugin_mastodon_error_network": "Не ўдалося злучыцца з серверам Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Такі ўліковы запіс не знойдзены",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Чытанне працуе без наладкі: спачатку пытаецца ўласны сервер акаўнта, потым вашы серверы, потым убудаваныя. Толькі публічныя профілі і допісы — акаўнт Mastodon не патрэбны.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Агляд",
+  "plugin_mastodon_tab_federated": "Федэратыўная",
+  "plugin_mastodon_tab_following": "Падпіскі",
+  "plugin_mastodon_tab_local": "Лакальная",
   "plugin_mastodon_test": "Праверыць злучэнне",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Ваш сервер адказаў",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

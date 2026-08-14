@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "इस फ़ीड को भरने के लिए किसी को फ़ॉलो करें",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "इस टाइमलाइन पर अभी कुछ नहीं है",
   "plugin_mastodon_error_network": "Mastodon इंस्टेंस तक पहुँच नहीं सकी",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "वह खाता नहीं मिला",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "पढ़ना बिना किसी सेटअप के काम करता है: पहले खाते के अपने इंस्टेंस से पूछा जाता है, फिर आपके इंस्टेंस से, फिर अंतर्निहित इंस्टेंस से। केवल सार्वजनिक प्रोफ़ाइल और पोस्ट — मास्टोडॉन खाते की ज़रूरत नहीं।",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "खोजें",
+  "plugin_mastodon_tab_federated": "फ़ेडरेटेड",
+  "plugin_mastodon_tab_following": "फ़ॉलोइंग",
+  "plugin_mastodon_tab_local": "स्थानीय",
   "plugin_mastodon_test": "कनेक्शन जाँचें",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "आपके इंस्टेंस ने जवाब दिया",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

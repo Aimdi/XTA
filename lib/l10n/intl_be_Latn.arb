@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Padpisyciesia na kahosci, kab zapounic hetu stuzku",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "U hetaj stužcy pakul ničoha niama",
   "plugin_mastodon_error_network": "Nie udalosia zlucycca z serveram Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Taki ulikovy zapis nie znojdzieny",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Čytannie pracuje biez naładki: spačatku pytajecca ŭłasny sierver akaŭnta, potym vašy siervery, potym ubudavanyja. Tolki publičnyja profili i dopisy — akaŭnt Mastodon nie patrebny.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Ahliad",
+  "plugin_mastodon_tab_federated": "Federatyŭnaja",
+  "plugin_mastodon_tab_following": "Padpiski",
+  "plugin_mastodon_tab_local": "Lakaĺnaja",
   "plugin_mastodon_test": "Pravieryc zlucenne",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Vas server adkaza",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

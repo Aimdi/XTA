@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "Obserwuj kogoś, aby wypełnić ten kanał",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "Na tej osi czasu nic jeszcze nie ma",
   "plugin_mastodon_error_network": "Nie udało się połączyć z instancją Mastodon",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "Nie znaleziono tego konta",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "Czytanie działa bez żadnej konfiguracji: najpierw pytana jest instancja samego konta, potem twoje, a na końcu wbudowane. Tylko publiczne profile i wpisy — konto na Mastodonie nie jest potrzebne.",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "Odkrywaj",
+  "plugin_mastodon_tab_federated": "Federacyjna",
+  "plugin_mastodon_tab_following": "Obserwowane",
+  "plugin_mastodon_tab_local": "Lokalna",
   "plugin_mastodon_test": "Przetestuj połączenie",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "Twoja instancja odpowiedziała",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }

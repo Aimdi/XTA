@@ -1386,6 +1386,7 @@
   "@plugin_mastodon_discover": {},
   "plugin_mastodon_empty": "誰かをフォローして、このフィードを埋めましょう",
   "@plugin_mastodon_empty": {},
+  "plugin_mastodon_empty_public": "このタイムラインにはまだ何もありません",
   "plugin_mastodon_error_network": "Mastodon インスタンスに接続できませんでした",
   "@plugin_mastodon_error_network": {},
   "plugin_mastodon_error_not_found": "そのアカウントは見つかりませんでした",
@@ -1428,6 +1429,10 @@
   "@plugin_mastodon_search_hint": {},
   "plugin_mastodon_settings_intro": "設定なしで読めます。まずアカウント自身のインスタンスに、次にあなたのインスタンス、最後に内蔵のインスタンスに問い合わせます。公開プロフィールと公開投稿のみで、Mastodon アカウントは不要です。",
   "@plugin_mastodon_settings_intro": {},
+  "plugin_mastodon_tab_explore": "探索",
+  "plugin_mastodon_tab_federated": "連合",
+  "plugin_mastodon_tab_following": "フォロー",
+  "plugin_mastodon_tab_local": "ローカル",
   "plugin_mastodon_test": "接続をテスト",
   "@plugin_mastodon_test": {},
   "plugin_mastodon_test_ok": "インスタンスが応答しました",
@@ -2581,5 +2586,10 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@plugin_mastodon_empty_public": {},
+  "@plugin_mastodon_tab_explore": {},
+  "@plugin_mastodon_tab_federated": {},
+  "@plugin_mastodon_tab_following": {},
+  "@plugin_mastodon_tab_local": {}
 }
