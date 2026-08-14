@@ -55,6 +55,8 @@ import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
+import 'package:xta/plugins/instagram/instagram_client.dart';
+import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/plugins/threads/threads_api.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
@@ -580,6 +582,11 @@ Future<void> main() async {
       optionPluginTiktokSearchHistory: '[]',
       optionPluginTiktokLikedPosts: '[]',
       optionPluginTiktokPreferEmbed: false,
+      optionPluginInstagramEnabled: false,
+      optionPluginInstagramShowTab: true,
+      optionPluginInstagramCookies: '',
+      optionPluginInstagramSearchHistory: '[]',
+      optionPluginInstagramLikedPosts: '[]',
       optionPluginThreadsDirectCookies: '',
       optionPluginThreadsDirectBearer: '',
       optionPluginThreadsDirectDeviceId: '',
@@ -755,6 +762,14 @@ Future<void> main() async {
     final tiktokLikes = TikTokLikesStore(prefService);
     final tiktokSearchHistory = TikTokSearchHistoryStore(prefService);
     final tiktokFollowing = TikTokFollowingStore(tiktokClient, tiktokFollows);
+    final instagramClient = InstagramClient(prefService);
+    final instagramFollows = InstagramFollowsStore();
+    final instagramLikes = InstagramLikesStore(prefService);
+    final instagramSearchHistory = InstagramSearchHistoryStore(prefService);
+    final instagramFollowing = InstagramFollowingStore(
+      instagramClient,
+      instagramFollows,
+    );
 
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
@@ -811,6 +826,11 @@ Future<void> main() async {
         tiktokFollows.load(),
         tiktokLikes.load(),
         tiktokSearchHistory.load(),
+      ],
+      if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
+        instagramFollows.load(),
+        instagramLikes.load(),
+        instagramSearchHistory.load(),
       ],
     ]);
 
@@ -911,6 +931,11 @@ Future<void> main() async {
             Provider(create: (_) => tiktokLikes),
             Provider(create: (_) => tiktokSearchHistory),
             Provider(create: (_) => tiktokFollowing),
+            Provider(create: (_) => instagramClient),
+            Provider(create: (_) => instagramFollows),
+            Provider(create: (_) => instagramLikes),
+            Provider(create: (_) => instagramSearchHistory),
+            Provider(create: (_) => instagramFollowing),
             ChangeNotifierProvider(
               create: (_) =>
                   VideoContextState(prefService.get(optionMediaDefaultMute)),

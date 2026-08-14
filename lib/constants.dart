@@ -357,6 +357,13 @@ const optionPluginTiktokSearchHistory = 'plugin.tiktok.search_history';
 const optionPluginTiktokLikedPosts = 'plugin.tiktok.liked_posts';
 const optionPluginTiktokPreferEmbed = 'plugin.tiktok.prefer_embed';
 
+const pluginIdInstagram = 'instagram';
+const optionPluginInstagramEnabled = 'plugin.instagram.enabled';
+const optionPluginInstagramShowTab = 'plugin.instagram.show_tab';
+const optionPluginInstagramCookies = 'plugin.instagram.cookies';
+const optionPluginInstagramSearchHistory = 'plugin.instagram.search_history';
+const optionPluginInstagramLikedPosts = 'plugin.instagram.liked_posts';
+
 /// When true, the plugin store also lists [XtaPlugin.isPrivate] plugins that
 /// the public catalogue holds back with `available: false`.
 const optionPluginStoreShowPrivate = 'plugin_store.show_private';
@@ -679,6 +686,7 @@ const secretPrefKeys = {
   optionPluginPixivAccessToken,
   optionPluginEhCookies,
   optionPluginTiktokCookies,
+  optionPluginInstagramCookies,
 };
 
 /// The declared keys, plus anything shaped like a credential.

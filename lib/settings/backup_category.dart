@@ -18,6 +18,7 @@ enum BackupCategory {
   ehFavorites,
   ehHistory,
   tiktokSubscriptions,
+  instagramSubscriptions,
   groups,
   groupMembers,
   savedPosts,

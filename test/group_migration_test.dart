@@ -241,4 +241,25 @@ void main() {
     expect(rows.single['id'], 'tiktok');
     await db.close();
   });
+
+  test('migration 57 creates instagram_subscription', () async {
+    await databaseFactory.deleteDatabase(databaseName);
+    await _createV34Fixture();
+
+    await Repository().migrate();
+
+    final db = await databaseFactory.openDatabase(databaseName);
+    await db.insert(tableInstagramSubscription, {
+      'id': 'instagram',
+      'pk': '25025320',
+      'name': 'Instagram',
+      'in_feed': 1,
+      'created_at': DateTime.now().toIso8601String(),
+    });
+    final rows = await db.query(tableInstagramSubscription);
+    expect(rows, hasLength(1));
+    expect(rows.single['id'], 'instagram');
+    expect(rows.single['pk'], '25025320');
+    await db.close();
+  });
 }
