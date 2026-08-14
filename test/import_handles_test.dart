@@ -12,16 +12,13 @@ void main() {
   });
 
   test('dedupes by lowercase and skips junk', () {
-    expect(parseImportHandles('@NASA nasa not a name!!'), ['NASA']);
+    expect(parseImportHandles('@NASA nasa !!! too-long-handle-name'), ['NASA']);
     expect(parseImportHandles(''), isEmpty);
     expect(parseImportHandles('https://example.com/nasa'), isEmpty);
   });
 
   test('accepts a trailing slash on a profile url', () {
-    expect(
-      importHandleFromToken('https://x.com/ grok'.replaceAll(' ', '')),
-      isNull,
-    );
+    expect(importHandleFromToken('https://x.com/i/status/1'), isNull);
     expect(importHandleFromToken('https://x.com/grok/'), 'grok');
   });
 }

@@ -35,6 +35,28 @@ String? _handleFromProfileUrl(String raw) {
   final segs = uri.pathSegments.where((s) => s.isNotEmpty).toList();
   if (segs.isEmpty) return null;
   final first = segs.first.replaceAll('@', '');
-  if (!RegExp(r'^[A-Za-z0-9_]{1,15}$').hasMatch(first)) return null;
+  if (!_isHandle(first)) return null;
   return first;
 }
+
+const _reservedPaths = {
+  'i',
+  'home',
+  'search',
+  'explore',
+  'settings',
+  'intent',
+  'compose',
+  'messages',
+  'notifications',
+  'login',
+  'signup',
+  'hashtag',
+  'share',
+  'tos',
+  'privacy',
+};
+
+bool _isHandle(String value) =>
+    RegExp(r'^[A-Za-z0-9_]{1,15}$').hasMatch(value) &&
+    !_reservedPaths.contains(value.toLowerCase());

@@ -4,7 +4,6 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/subscriptions/group_ungrouped.dart';
 import 'package:xta/subscriptions/group_ungrouped_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';

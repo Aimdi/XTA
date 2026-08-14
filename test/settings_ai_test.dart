@@ -11,7 +11,7 @@ Widget _app() {
     service: PrefServiceCache(
       cache: {optionAiBaseUrl: '', optionAiApiKey: '', optionAiModel: ''},
     ),
-    child: const MaterialApp(
+    child: MaterialApp(
       localizationsDelegates: [
         L10n.delegate,
         GlobalMaterialLocalizations.delegate,
