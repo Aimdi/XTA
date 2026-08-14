@@ -4,36 +4,44 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Private guest TikTok
+### Private Instagram, guest first
 
-**Browse TikTok without a TikTok account.** Follows and likes stay on this
-device. Feed cards are cover + play; the player tries native playback, then
-falls back to the embed.
+**Browse public Instagram without an Instagram account.** Follows stay on this
+device. **For You** and search show people to follow when you do not already
+know a handle. Paste cookies only if guest requests are blocked.
 
-### Chrome, Threads, and faster feeds
+### Mastodon like Tusky
 
-**Footers, pinned bars, and empty states** match across plugins and the main
-app. **Threads is guest-first** so a pasted session is not spent on every
-refresh — turn on “Use my session” only if you want cookie APIs. **Feeds
-scroll cheaper**: off-screen tiles stay light, images decode at tile size, and
-cached JSON is decoded off the UI isolate.
+**Explore, Local, Federated, and Following** sit on one tab. Public timelines
+page as you scroll. Cards show boosts, replies, polls, content warnings, quotes,
+and edited marks. Mentions and hashtags open the profile or tag. Profiles pin
+posts and have Posts / Media. Misskey-family hosts fall back to notes when the
+Mastodon public API is missing.
 
-### Pixiv bookmarks, sharper Booru, custom sites
+### Find people, not just handles
 
-The **Pixiv heart bookmarks on Pixiv** when you are signed in (grid and
-viewer). **Booru catalog tiles** load the sample/large image instead of the
-tiny preview. **Rule34 and Xbooru** are presets; **Add site** saves any
-Gelbooru / Danbooru / Moebooru / e621 host.
+**Threads and Bluesky** suggest accounts from the feed you are already reading.
+**Substack** can find similar publications from a profile. **TikTok** search
+looks up people without knowing the exact handle first.
 
-### Plugin store
+### Chrome, settings, and home feed
 
-**Installed plugins sit at the top** in one compact row each. Available
-plugins stay grouped by category underneath.
+Plugin screens **drop the second title bar** under the home strip. **Settings**
+is a quieter list, with advanced extras folded away. **Excluding an account**
+from Following and For you actually refreshes those feeds. **Groups** show
+plugins as chips and no longer crash when you swap boards.
+
+### Media and Reddit
+
+Bluesky, Threads, and Mastodon **show media at its real size**, with reply tabs
+on profiles. Reddit **hides leftover `>image>` text** when the picture is
+already on the card.
 
 ---
 
-Everything from [aimdi96](https://github.com/Aimdi/XTA/releases/tag/aimdi96) is
-in here too: Booru, private EH galleries, Discover, and quieter group timelines.
+Everything from [aimdi97](https://github.com/Aimdi/XTA/releases/tag/aimdi97) is
+in here too: private guest TikTok, compact plugin store, Booru custom sites, and
+faster feeds.
 
 ---
 

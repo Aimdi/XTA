@@ -1,3 +1,15 @@
+## XTA aimdi98
+
+What's new in XTA aimdi98:
+  - Private guest Instagram plugin, with For You and people-to-follow when you do not know a handle
+  - Mastodon: Explore / Local / Federated / Following, paging, CWs, polls, quotes, tappable mentions and tags
+  - Threads and Bluesky suggest people from the feed; Substack can find similar publications
+  - TikTok search; plugin screens drop the second title bar under the home strip
+  - Calmer settings hub; excluding an account from Following and For you actually works
+  - Groups: plugin chips, and the board-swap crash is gone
+  - Full-size Bluesky / Threads / Mastodon media and profile reply tabs
+  - Reddit hides leftover >image> text when the picture is already shown
+
 ## XTA aimdi97
 
 What's new in XTA aimdi97:
