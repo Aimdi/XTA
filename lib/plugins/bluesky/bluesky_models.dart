@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:xta/plugins/bluesky/bluesky_facets.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/utils/json.dart';
 
 /// A link card carried by `app.bsky.embed.external`.
@@ -49,6 +50,8 @@ class BlueskyPost {
   final String? avatarUrl;
   final String text;
   final List<String> images;
+  final List<double?> imageAspects;
+  final List<bool> imageIsVideo;
   final List<BlueskyFacet> facets;
   final DateTime? publishedAt;
 
@@ -69,6 +72,10 @@ class BlueskyPost {
 
   final BlueskyLinkCard? linkCard;
 
+  /// Handle of the parent author when this feed item is a reply.
+  final String? replyToHandle;
+  final bool isReply;
+
   const BlueskyPost({
     required this.uri,
     required this.cid,
@@ -79,6 +86,8 @@ class BlueskyPost {
     required this.url,
     this.avatarUrl,
     this.images = const [],
+    this.imageAspects = const [],
+    this.imageIsVideo = const [],
     this.facets = const [],
     this.publishedAt,
     this.replyCount = 0,
@@ -89,12 +98,20 @@ class BlueskyPost {
     this.repostedByHandle,
     this.quotedPost,
     this.linkCard,
+    this.replyToHandle,
+    this.isReply = false,
   });
 
   bool get hasMedia => images.isNotEmpty;
   bool get isRepost => repostedByHandle != null && repostedByHandle!.isNotEmpty;
   bool get hasQuote => quotedPost != null;
   bool get hasLinkCard => linkCard != null;
+
+  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
+    urls: images,
+    aspects: imageAspects,
+    videos: imageIsVideo,
+  );
 
   Map<String, dynamic> toJson() => {
     'uri': uri,
@@ -105,6 +122,8 @@ class BlueskyPost {
     'avatarUrl': avatarUrl,
     'text': text,
     'images': images,
+    'imageAspects': imageAspects,
+    'imageIsVideo': imageIsVideo,
     'facets': facets.map((f) => f.toJson()).toList(),
     'publishedAt': publishedAt?.toIso8601String(),
     'url': url,
@@ -116,6 +135,8 @@ class BlueskyPost {
     'repostedByHandle': repostedByHandle,
     'quotedPost': quotedPost?.toJson(),
     'linkCard': linkCard?.toJson(),
+    'replyToHandle': replyToHandle,
+    'isReply': isReply,
   };
 
   factory BlueskyPost.fromSnapshot(Object? raw) {
@@ -143,6 +164,8 @@ class BlueskyPost {
             growable: false,
           ) ??
           const [],
+      imageAspects: _snapshotAspects(json['imageAspects']),
+      imageIsVideo: _snapshotFlags(json['imageIsVideo']),
       facets:
           (json['facets'] as List?)
               ?.map(BlueskyFacet.fromSnapshot)
@@ -161,6 +184,10 @@ class BlueskyPost {
       repostedByHandle: json['repostedByHandle'] as String?,
       quotedPost: quoted == null || quoted.uri.isEmpty ? null : quoted,
       linkCard: linkCard == null || linkCard.url.isEmpty ? null : linkCard,
+      replyToHandle: json['replyToHandle'] as String?,
+      isReply:
+          json['isReply'] as bool? ??
+          ((json['replyToHandle'] as String?)?.isNotEmpty ?? false),
     );
   }
 
@@ -188,6 +215,20 @@ class BlueskyPost {
 }
 
 int _snapshotCount(Object? value) => value is num ? value.toInt() : 0;
+
+List<double?> _snapshotAspects(Object? raw) {
+  if (raw is! List) {
+    return const [];
+  }
+  return [for (final value in raw) value is num ? value.toDouble() : null];
+}
+
+List<bool> _snapshotFlags(Object? raw) {
+  if (raw is! List) {
+    return const [];
+  }
+  return [for (final value in raw) value == true];
+}
 
 /// Ancestors (root → parent), the focal post, and reply descendants.
 class BlueskyThread {
@@ -373,25 +414,77 @@ String? blueskyRkeyOf(String atUri) {
   return rkey.isEmpty ? null : rkey;
 }
 
-/// Images from a feed post's view embed (thumb preferred, else fullsize).
-List<String> blueskyImagesOf(Json post) {
-  final urls = <String>[];
+/// Official `getAuthorFeed` filters — Posts / Replies / Media on bsky.app.
+const kBlueskyAuthorFeedPosts = 'posts_and_author_threads';
+const kBlueskyAuthorFeedReplies = 'posts_with_replies';
+const kBlueskyAuthorFeedMedia = 'posts_with_media';
 
-  void addFrom(Json images) {
+/// Images + video thumbs from a feed post's view embed.
+///
+/// Prefers `fullsize` (official clients do). Also walks `embeds` on a
+/// `viewRecord` so quoted posts keep their media.
+List<PluginMediaItem> blueskyMediaOf(Json post) {
+  final items = <PluginMediaItem>[];
+  final seen = <String>{};
+
+  void addItem(PluginMediaItem item) {
+    if (item.url.isEmpty || seen.contains(item.url)) {
+      return;
+    }
+    seen.add(item.url);
+    items.add(item);
+  }
+
+  void addImages(Json images) {
     for (final image in images.list) {
-      final url = image['thumb'].string ?? image['fullsize'].string;
-      if (url != null && url.isNotEmpty && !urls.contains(url)) {
-        urls.add(url);
+      final url = image['fullsize'].string ?? image['thumb'].string;
+      if (url == null || url.isEmpty) {
+        continue;
+      }
+      addItem(
+        PluginMediaItem(
+          url: url,
+          aspectRatio: pluginMediaAspectFrom(image['aspectRatio'].raw),
+          alt: image['alt'].string,
+        ),
+      );
+    }
+  }
+
+  void addEmbed(Json embed) {
+    if (!embed.exists) {
+      return;
+    }
+    addImages(embed['images']);
+    final media = embed['media'];
+    if (media.exists) {
+      addEmbed(media);
+    }
+    final type = embed[r'$type'].string ?? '';
+    if (type.contains('embed.video')) {
+      final thumb = embed['thumbnail'].string;
+      if (thumb != null && thumb.isNotEmpty) {
+        addItem(
+          PluginMediaItem(
+            url: thumb,
+            aspectRatio: pluginMediaAspectFrom(embed['aspectRatio'].raw),
+            isVideo: true,
+          ),
+        );
       }
     }
   }
 
-  final embed = post['embed'];
-  addFrom(embed['images']);
-  addFrom(embed['media']['images']);
-
-  return urls;
+  addEmbed(post['embed']);
+  for (final embed in post['embeds'].list) {
+    addEmbed(embed);
+  }
+  return items;
 }
+
+List<String> blueskyImagesOf(Json post) => [
+  for (final item in blueskyMediaOf(post)) item.url,
+];
 
 BlueskyLinkCard? blueskyLinkCardOf(Json post) {
   final external = post['embed']['external'];
@@ -448,6 +541,7 @@ BlueskyPost? blueskyPostFromView(
   Object? json, {
   String? repostedByName,
   String? repostedByHandle,
+  String? replyToHandle,
   bool allowEmpty = false,
   bool parseQuote = true,
 }) {
@@ -466,9 +560,14 @@ BlueskyPost? blueskyPostFromView(
   final record = post['record'].exists ? post['record'] : post['value'];
   final text = record['text'].string?.trim() ?? '';
   final facets = blueskyFacetsOf(record);
-  final images = blueskyImagesOf(post);
+  final media = blueskyMediaOf(post);
+  final images = [for (final item in media) item.url];
   final linkCard = blueskyLinkCardOf(post);
   final quoted = parseQuote ? blueskyQuotedPostOf(post) : null;
+  final replyHandle =
+      replyToHandle ??
+      post['reply']['parent']['author']['handle'].string?.trim();
+  final replyFromRecord = record['reply']['parent']['uri'].string;
 
   if (!allowEmpty &&
       text.isEmpty &&
@@ -495,6 +594,8 @@ BlueskyPost? blueskyPostFromView(
     avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
     text: text,
     images: images,
+    imageAspects: [for (final item in media) item.aspectRatio],
+    imageIsVideo: [for (final item in media) item.isVideo],
     facets: facets,
     publishedAt: DateTime.tryParse(created ?? '')?.toLocal(),
     url: url,
@@ -506,6 +607,12 @@ BlueskyPost? blueskyPostFromView(
     repostedByHandle: repostedByHandle,
     quotedPost: quoted,
     linkCard: linkCard,
+    replyToHandle: (replyHandle != null && replyHandle.isNotEmpty)
+        ? replyHandle
+        : null,
+    isReply:
+        (replyHandle != null && replyHandle.isNotEmpty) ||
+        (replyFromRecord != null && replyFromRecord.isNotEmpty),
   );
 }
 
@@ -525,10 +632,14 @@ BlueskyPost? blueskyPostFromFeedItem(Object? item) {
     repostName = (name == null || name.isEmpty) ? repostHandle : name;
   }
 
+  final replyHandle = root['reply']['parent']['author']['handle'].string
+      ?.trim();
+
   return blueskyPostFromView(
     post.raw,
     repostedByName: repostName,
     repostedByHandle: repostHandle,
+    replyToHandle: replyHandle,
   );
 }
 
@@ -588,7 +699,7 @@ void _collectReplies(
   List<BlueskyPost> out, {
   required int depth,
 }) {
-  if (depth > 8) {
+  if (depth > 12) {
     return;
   }
   for (final reply in replies.list) {

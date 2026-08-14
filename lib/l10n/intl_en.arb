@@ -1619,6 +1619,8 @@
   "@plugin_pixiv_unfollow": {},
   "plugin_pixiv_unmute": "Unmute",
   "@plugin_pixiv_unmute": {},
+  "plugin_profile_replies": "Replies",
+  "@plugin_profile_replies": {},
   "plugin_reddit_about_community": "About this community",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Add subreddit",
@@ -1759,6 +1761,14 @@
   "@plugin_reddit_title": {},
   "plugin_reddit_upvotes": "Upvotes",
   "@plugin_reddit_upvotes": {},
+  "plugin_replying_to": "Replying to @{name}",
+  "@plugin_replying_to": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_show_as_tab": "Show as a tab",
   "@plugin_show_as_tab": {},
   "plugin_show_as_tab_description": "Off keeps the feed but moves it under Groups instead of the bottom bar.",

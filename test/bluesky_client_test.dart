@@ -78,6 +78,28 @@ void main() {
       );
     });
 
+    test('getAuthorFeed sends the official filter', () async {
+      final client = BlueskyClient(
+        httpClient: MockClient((request) async {
+          expect(
+            request.url.queryParameters['filter'],
+            kBlueskyAuthorFeedReplies,
+          );
+          return http.Response(
+            jsonEncode({'feed': []}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final page = await client.getAuthorFeed(
+        'alice.bsky.social',
+        filter: kBlueskyAuthorFeedReplies,
+      );
+      expect(page.posts, isEmpty);
+    });
+
     test(
       'searchPosts hits feed.searchPosts and parses PostView rows',
       () async {

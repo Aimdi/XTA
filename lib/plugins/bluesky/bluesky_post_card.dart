@@ -13,6 +13,8 @@ import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -21,7 +23,6 @@ import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 
 const double kBlueskyAvatarSize = 48;
-const double kBlueskyMediaMaxAspectRatio = 16 / 9;
 
 final NumberFormat _blueskyCountFormat = NumberFormat.compact(locale: 'en_US');
 
@@ -113,6 +114,9 @@ class BlueskyPostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (post.isRepost) _repostBanner(context),
+                    if (post.replyToHandle != null &&
+                        post.replyToHandle!.isNotEmpty)
+                      PluginReplyingTo(name: post.replyToHandle!),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -144,7 +148,7 @@ class BlueskyPostCard extends StatelessWidget {
                               ],
                               if (post.hasMedia) ...[
                                 const SizedBox(height: 10),
-                                _media(context, post.images),
+                                PluginPostMedia(items: post.mediaItems),
                               ],
                               if (post.quotedPost != null) ...[
                                 const SizedBox(height: 10),
@@ -272,45 +276,6 @@ class BlueskyPostCard extends StatelessWidget {
       ],
     );
   }
-
-  Widget _media(BuildContext context, List<String> images) {
-    final radius = tweetMediaRadiusOf(context);
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    if (images.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: AspectRatio(
-          aspectRatio: kBlueskyMediaMaxAspectRatio,
-          child: ExtendedImage.network(
-            images.first,
-            fit: BoxFit.cover,
-            cacheWidth: (width * scale).ceil(),
-          ),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 220,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 6),
-        itemBuilder: (context, index) => ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: ExtendedImage.network(
-            images[index],
-            width: 200,
-            height: 220,
-            fit: BoxFit.cover,
-            cacheWidth: (200 * scale).ceil(),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class _QuotedPost extends StatelessWidget {
@@ -353,6 +318,10 @@ class _QuotedPost extends StatelessWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
+              if (quote.hasMedia) ...[
+                const SizedBox(height: 8),
+                PluginPostMedia(items: quote.mediaItems),
+              ],
               if (quote.text.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 BlueskyRichText(
@@ -419,7 +388,7 @@ class _BlueskyLinkPreview extends StatelessWidget {
             children: [
               if (card.hasImage)
                 AspectRatio(
-                  aspectRatio: kBlueskyMediaMaxAspectRatio,
+                  aspectRatio: clampPluginMediaAspect(null),
                   child: ExtendedImage.network(
                     card.imageUrl!,
                     fit: BoxFit.cover,

@@ -6,6 +6,7 @@ import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/utils/json.dart';
@@ -290,6 +291,7 @@ ThreadsPost? _threadsRepostFromApi({required Json outer, required Json inner}) {
     avatarUrl: original.avatarUrl,
     text: original.text,
     images: original.images,
+    imageAspects: original.imageAspects,
     publishedAt: taken == null
         ? original.publishedAt
         : DateTime.fromMillisecondsSinceEpoch(
@@ -304,6 +306,8 @@ ThreadsPost? _threadsRepostFromApi({required Json outer, required Json inner}) {
     repostedByHandle: reposter,
     repostedByName: reposterName.isEmpty ? reposter : reposterName,
     isVerified: original.isVerified,
+    replyToHandle: original.replyToHandle,
+    isReply: original.isReply,
   );
 }
 
@@ -312,10 +316,13 @@ ThreadsPost? _threadsOriginalFromApi(Json post) {
   final user = post['user'];
   final handle = (user['username'].string ?? '').trim().toLowerCase();
   final text = (post['caption']['text'].string ?? '').trim();
-  final images = _imageUrlsOf(post);
+  final media = _threadsMediaOf(post);
+  final images = [for (final item in media) item.url];
   final linkCard = threadsLinkCardOf(post);
-  if (handle.isEmpty || (text.isEmpty && images.isEmpty && linkCard == null))
+  final replyTo = _threadsReplyToHandleOf(post);
+  if (handle.isEmpty || (text.isEmpty && images.isEmpty && linkCard == null)) {
     return null;
+  }
 
   final code = post['code'].string;
   final pk = post['pk'].string ?? post['id'].string ?? code;
@@ -334,6 +341,7 @@ ThreadsPost? _threadsOriginalFromApi(Json post) {
         user['hd_profile_pic_url_info']['url'].string,
     text: text,
     images: images,
+    imageAspects: [for (final item in media) item.aspectRatio],
     publishedAt: taken == null
         ? null
         : DateTime.fromMillisecondsSinceEpoch(
@@ -346,20 +354,79 @@ ThreadsPost? _threadsOriginalFromApi(Json post) {
     repostCount: tpi['repost_count'].integer,
     linkCard: linkCard,
     isVerified: user['is_verified'].boolean ?? false,
+    replyToHandle: replyTo,
+    isReply: replyTo != null || _threadsIsReply(post),
   );
 }
 
-List<String> _imageUrlsOf(Json post) {
-  final urls = <String>[];
-  void add(String? url) {
-    if (url != null && url.isNotEmpty && !urls.contains(url)) urls.add(url);
+String? _threadsReplyToHandleOf(Json post) {
+  final handle = post['text_post_app_info']['reply_to_author']['username']
+      .string
+      ?.trim();
+  if (handle == null || handle.isEmpty) {
+    return null;
+  }
+  return handle.toLowerCase();
+}
+
+bool _threadsIsReply(Json post) {
+  final tpi = post['text_post_app_info'];
+  return tpi['is_reply'].boolean == true || tpi['reply_to_author'].exists;
+}
+
+({String? url, double? aspect}) _bestCandidate(Json versions) {
+  String? best;
+  var bestArea = -1;
+  double? aspect;
+  for (final candidate in versions['candidates'].list) {
+    final url = candidate['url'].string;
+    if (url == null || url.isEmpty) {
+      continue;
+    }
+    final w = candidate['width'].integer ?? 0;
+    final h = candidate['height'].integer ?? 0;
+    final area = w * h;
+    if (area >= bestArea) {
+      bestArea = area;
+      best = url;
+      if (w > 0 && h > 0) {
+        aspect = w / h;
+      }
+    }
+  }
+  return (url: best, aspect: aspect);
+}
+
+List<PluginMediaItem> _threadsMediaOf(Json post) {
+  final items = <PluginMediaItem>[];
+  final seen = <String>{};
+
+  void add(Json media) {
+    final picked = _bestCandidate(media['image_versions2']);
+    final url = picked.url;
+    if (url == null || url.isEmpty || seen.contains(url)) {
+      return;
+    }
+    seen.add(url);
+    final fallback = pluginMediaAspectFrom({
+      'width':
+          media['original_width'].integer ?? post['original_width'].integer,
+      'height':
+          media['original_height'].integer ?? post['original_height'].integer,
+    });
+    items.add(
+      PluginMediaItem(url: url, aspectRatio: picked.aspect ?? fallback),
+    );
   }
 
-  add(post['image_versions2']['candidates'][0]['url'].string);
-  for (final media in post['carousel_media'].list) {
-    add(media['image_versions2']['candidates'][0]['url'].string);
+  if (post['carousel_media'].list.isNotEmpty) {
+    for (final media in post['carousel_media'].list) {
+      add(media);
+    }
+    return items;
   }
-  return urls;
+  add(post);
+  return items;
 }
 
 ThreadsProfile? threadsProfileFromUserJson(Json user) {

@@ -107,14 +107,21 @@ class BlueskyClient {
   }
 
   /// Recent posts by [actor], newest first within the page.
+  ///
+  /// [filter] is an official AppView value: `posts_and_author_threads`,
+  /// `posts_with_replies`, `posts_with_media`.
   Future<BlueskyFeedPage> getAuthorFeed(
     String actor, {
     int limit = 20,
     String? cursor,
+    String? filter,
   }) async {
     final query = <String, String>{'actor': actor, 'limit': '$limit'};
     if (cursor != null && cursor.isNotEmpty) {
       query['cursor'] = cursor;
+    }
+    if (filter != null && filter.isNotEmpty) {
+      query['filter'] = filter;
     }
 
     final json = await _get(_uri('/xrpc/app.bsky.feed.getAuthorFeed', query));
@@ -166,7 +173,7 @@ class BlueskyClient {
   /// One post and its surrounding conversation via the public AppView.
   Future<BlueskyThread> getPostThread(
     String uri, {
-    int depth = 6,
+    int depth = 10,
     int parentHeight = 80,
   }) async {
     final json = await _get(

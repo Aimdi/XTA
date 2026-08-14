@@ -73,6 +73,50 @@ void main() {
       expect(posts.first.likeCount, isNull);
     });
 
+    test('picks the largest image candidate and reply_to_author', () {
+      final posts = parseThreadsApiFeed({
+        'threads': [
+          {
+            'thread_items': [
+              {
+                'post': {
+                  'pk': '333',
+                  'code': 'ReP',
+                  'caption': {'text': 'reply pic'},
+                  'user': {'username': 'zuck', 'full_name': 'Mark'},
+                  'original_width': 1080,
+                  'original_height': 1350,
+                  'image_versions2': {
+                    'candidates': [
+                      {
+                        'url': 'https://example.org/small.jpg',
+                        'width': 320,
+                        'height': 400,
+                      },
+                      {
+                        'url': 'https://example.org/large.jpg',
+                        'width': 1080,
+                        'height': 1350,
+                      },
+                    ],
+                  },
+                  'text_post_app_info': {
+                    'reply_to_author': {'username': 'meta'},
+                    'is_reply': true,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+      expect(posts.single.images, ['https://example.org/large.jpg']);
+      expect(posts.single.imageAspects.single, closeTo(1080 / 1350, 0.001));
+      expect(posts.single.isReply, isTrue);
+      expect(posts.single.replyToHandle, 'meta');
+    });
+
     test('reads likes, replies, reposts and a link preview', () {
       final posts = parseThreadsApiFeed({
         'threads': [

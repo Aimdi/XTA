@@ -7,6 +7,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
+import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/user.dart';
@@ -38,11 +39,21 @@ class MastodonProfileScreen extends StatefulWidget {
   State<MastodonProfileScreen> createState() => _MastodonProfileScreenState();
 }
 
+class _MastodonTabFeed {
+  List<MastodonPost> posts = const [];
+  var loaded = false;
+  var loading = false;
+}
+
 class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
   MastodonProfile? _profile;
-  List<MastodonPost> _posts = const [];
+  String? _instance;
   Object? _error;
   bool _loading = true;
+  var _tab = PluginProfileFeedTab.posts;
+  final _feeds = {
+    for (final tab in PluginProfileFeedTab.values) tab: _MastodonTabFeed(),
+  };
 
   @override
   void initState() {
@@ -54,6 +65,11 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     setState(() {
       _loading = true;
       _error = null;
+      for (final feed in _feeds.values) {
+        feed.posts = const [];
+        feed.loaded = false;
+        feed.loading = false;
+      }
     });
 
     final prefs = PrefService.of(context, listen: false);
@@ -63,20 +79,72 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
         widget.acct,
         configured: mastodonConfiguredInstances(prefs),
       );
-      final thread = await client.profileAnywhere(candidates, widget.acct);
-      if (mounted) {
-        setState(() {
-          _profile = thread.profile;
-          _posts = thread.posts;
-          _loading = false;
-        });
+      final found = await client.profileAnywhere(candidates, widget.acct);
+      if (!mounted) {
+        return;
       }
+      setState(() {
+        _profile = found.profile;
+        _instance = found.instance;
+        _feeds[PluginProfileFeedTab.posts]!.posts = found.posts;
+        _feeds[PluginProfileFeedTab.posts]!.loaded = true;
+        _loading = false;
+      });
     } catch (e) {
       if (mounted) {
         setState(() {
           _error = e;
           _loading = false;
         });
+      }
+    }
+  }
+
+  Future<void> _selectTab(PluginProfileFeedTab tab) async {
+    if (_tab == tab) {
+      return;
+    }
+    setState(() => _tab = tab);
+    final feed = _feeds[tab]!;
+    if (!feed.loaded && !feed.loading) {
+      await _loadTab(tab);
+    }
+  }
+
+  Future<void> _loadTab(PluginProfileFeedTab tab) async {
+    final profile = _profile;
+    final instance = _instance;
+    if (profile == null || instance == null) {
+      return;
+    }
+    final feed = _feeds[tab]!;
+    setState(() => feed.loading = true);
+    final client = context.read<MastodonClient>();
+    try {
+      final raw = await client.getStatuses(
+        instance,
+        profile.id,
+        limit: 40,
+        excludeReplies: tab != PluginProfileFeedTab.replies,
+        onlyMedia: tab == PluginProfileFeedTab.media,
+      );
+      final posts = tab == PluginProfileFeedTab.replies
+          ? [
+              for (final post in raw)
+                if (post.isReply) post,
+            ]
+          : raw;
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        feed.posts = posts;
+        feed.loaded = true;
+        feed.loading = false;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => feed.loading = false);
       }
     }
   }
@@ -149,10 +217,12 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     final following = context.read<MastodonAccountsStore>().follows(
       profile.acct,
     );
+    final feed = _feeds[_tab]!;
+    final posts = feed.posts;
 
     return FeedListView(
       padding: const EdgeInsets.only(bottom: 24),
-      itemCount: 1 + _posts.length,
+      itemCount: 2 + posts.length + (feed.loading ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == 0) {
           return Padding(
@@ -165,11 +235,21 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
             ),
           );
         }
-        final post = _posts[index - 1];
-        return MastodonPostCard(
-          key: ValueKey(post.id),
-          post: post,
-          showSourceBadge: false,
+        if (index == 1) {
+          return PluginProfileTabBar(selected: _tab, onSelected: _selectTab);
+        }
+        final postIndex = index - 2;
+        if (postIndex < posts.length) {
+          final post = posts[postIndex];
+          return MastodonPostCard(
+            key: ValueKey(post.id),
+            post: post,
+            showSourceBadge: false,
+          );
+        }
+        return const Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(child: CircularProgressIndicator()),
         );
       },
     );
