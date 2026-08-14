@@ -158,11 +158,35 @@ InstagramPost? parseInstagramMediaNode(Json node, {InstagramAuthor? author}) {
         node['edge_media_to_comment']['count'].integer ??
         node['comment_count'].integer ??
         0,
-    carouselUrls: [
-      for (final child in node['carousel_media'].list)
-        ?_firstUrl(child['image_versions2']['candidates'][0]['url']),
-    ],
+    carouselUrls: _carouselUrls(node),
   );
+}
+
+List<String> _carouselUrls(Json node) {
+  final seen = <String>{};
+  final urls = <String>[];
+  void add(String? url) {
+    if (url == null || !seen.add(url)) return;
+    urls.add(url);
+  }
+
+  for (final child in node['carousel_media'].list) {
+    add(
+      _firstUrl(
+        child['image_versions2']['candidates'][0]['url'],
+        child['display_url'],
+      ),
+    );
+  }
+  for (final edge in node['edge_sidecar_to_children']['edges'].list) {
+    add(
+      _firstUrl(
+        edge['node']['display_url'],
+        edge['node']['image_versions2']['candidates'][0]['url'],
+      ),
+    );
+  }
+  return urls;
 }
 
 List<InstagramSearchUser> parseInstagramTopSearch(Object? json) {
@@ -255,6 +279,11 @@ InstagramAuthor _authorOf(Json user) {
     username: username,
     fullName: user['full_name'].string ?? username,
     avatarUrl: _firstUrl(user['profile_pic_url_hd'], user['profile_pic_url']),
+    pk:
+        user['id'].string ??
+        user['pk'].string ??
+        user['pk'].integer?.toString() ??
+        '',
     isVerified: user['is_verified'].boolean ?? false,
   );
 }

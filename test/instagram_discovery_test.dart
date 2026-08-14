@@ -23,6 +23,21 @@ void main() {
     expect(mixed.map((e) => e.id), ['a1', 'b1', 'c1', 'a2']);
   });
 
+  test('instagramSearchOpensHandle is guest-only for a real handle', () {
+    expect(
+      instagramSearchOpensHandle(hasSession: false, query: '@NatGeo'),
+      isTrue,
+    );
+    expect(
+      instagramSearchOpensHandle(hasSession: true, query: '@NatGeo'),
+      isFalse,
+    );
+    expect(
+      instagramSearchOpensHandle(hasSession: false, query: 'some person'),
+      isFalse,
+    );
+  });
+
   test('peopleToFollowFromInstagram skips followed authors', () {
     final people = peopleToFollowFromInstagram(
       posts: [

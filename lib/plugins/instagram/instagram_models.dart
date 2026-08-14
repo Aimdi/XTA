@@ -37,12 +37,14 @@ class InstagramAuthor {
   final String username;
   final String fullName;
   final String? avatarUrl;
+  final String pk;
   final bool isVerified;
 
   const InstagramAuthor({
     required this.username,
     required this.fullName,
     this.avatarUrl,
+    this.pk = '',
     this.isVerified = false,
   });
 
@@ -77,6 +79,12 @@ class InstagramPost {
   Uri webUri() => Uri.parse(
     'https://www.instagram.com/${isVideo ? 'reel' : 'p'}/$shortcode/',
   );
+
+  List<String> get displayUrls {
+    if (carouselUrls.isNotEmpty) return carouselUrls;
+    final cover = coverUrl;
+    return [if (cover != null && cover.isNotEmpty) cover];
+  }
 }
 
 class InstagramItemPage {

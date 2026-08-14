@@ -159,7 +159,7 @@ void main() {
     );
   });
 
-  test('private empty profile is privateAccount', () async {
+  test('private empty profile is returned for the lock screen', () async {
     final client = InstagramClient(
       prefs,
       httpClient: MockClient((request) async {
@@ -177,13 +177,33 @@ void main() {
       }),
     );
 
+    final profile = await client.profile('secret');
+    expect(profile.username, 'secret');
+    expect(profile.isPrivate, isTrue);
+  });
+
+  test('guestDiscover throws when every seed fails', () async {
+    final client = InstagramClient(
+      prefs,
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/') {
+          return http.Response(
+            '<html></html>',
+            200,
+            headers: {'set-cookie': 'csrftoken=abc; Path=/, mid=mid1; Path=/'},
+          );
+        }
+        return http.Response('', 429);
+      }),
+    );
+
     expect(
-      () => client.profile('secret'),
+      () => client.guestDiscover(),
       throwsA(
         isA<InstagramException>().having(
           (e) => e.kind,
           'kind',
-          InstagramErrorKind.privateAccount,
+          InstagramErrorKind.rateLimited,
         ),
       ),
     );

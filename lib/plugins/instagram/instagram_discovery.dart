@@ -1,4 +1,11 @@
 import 'package:xta/plugins/instagram/instagram_models.dart';
+import 'package:xta/plugins/instagram/instagram_parse.dart';
+
+/// Guests cannot people-search; a typed @handle should open the profile.
+bool instagramSearchOpensHandle({
+  required bool hasSession,
+  required String query,
+}) => !hasSession && normaliseInstagramHandle(query) != null;
 
 /// Public handles a guest For You can read without knowing anyone yet.
 const kInstagramDiscoverHandles = ['instagram', 'natgeo', 'nasa'];
