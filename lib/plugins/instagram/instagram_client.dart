@@ -200,7 +200,7 @@ class InstagramClient {
           )
           .timeout(_timeout);
       _rememberCookies(response);
-      _throwIfHttpError(response, uri);
+      _throwIfHttpError(response, uri, acceptHtml: acceptHtml);
       return response;
     } catch (e) {
       if (e is InstagramException) rethrow;
@@ -223,7 +223,11 @@ class InstagramClient {
     unawaited(_persistCookies());
   }
 
-  void _throwIfHttpError(http.Response response, Uri uri) {
+  void _throwIfHttpError(
+    http.Response response,
+    Uri uri, {
+    bool acceptHtml = false,
+  }) {
     if (response.statusCode == 404) {
       throw InstagramException(InstagramErrorKind.notFound, '$uri');
     }
@@ -239,6 +243,7 @@ class InstagramClient {
         '$uri: ${response.statusCode}',
       );
     }
+    if (acceptHtml) return;
     if (!response.body.startsWith('{') && !response.body.startsWith('[')) {
       if (response.body.contains('<html')) {
         throw InstagramException(InstagramErrorKind.loginRequired, '$uri');

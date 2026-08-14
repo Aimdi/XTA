@@ -111,6 +111,26 @@ void main() {
     );
   });
 
+  test('homepage HTML is accepted when warming the guest session', () async {
+    final client = InstagramClient(
+      prefs,
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/') {
+          return http.Response(
+            '<html><body>ok</body></html>',
+            200,
+            headers: {'set-cookie': 'csrftoken=abc; Path=/, mid=mid1; Path=/'},
+          );
+        }
+        return http.Response(jsonEncode(_profileJson()), 200);
+      }),
+    );
+
+    await client.warmGuest();
+    expect(client.cookieHeader, contains('csrftoken=abc'));
+    expect(client.cookieHeader, contains('mid=mid1'));
+  });
+
   test('HTML app shell is loginRequired, not a parse crash', () async {
     final client = InstagramClient(
       prefs,
