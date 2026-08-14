@@ -733,6 +733,18 @@ Future<void> main() async {
       prefService,
       mastodonAccounts,
     );
+    final mastodonExplore = MastodonExploreStore(mastodonClient, prefService);
+    final mastodonLocal = MastodonLocalStore(
+      () => mastodonClient.getPublicTimelineAnywhere(
+        mastodonDiscoveryInstances(prefService),
+        local: true,
+      ),
+    );
+    final mastodonFederated = MastodonFederatedStore(
+      () => mastodonClient.getPublicTimelineAnywhere(
+        mastodonDiscoveryInstances(prefService),
+      ),
+    );
     final pixivClient = PixivClient(prefService);
     final pixivMute = PixivMuteStore(prefService);
     final pixivSearchHistory = PixivSearchHistoryStore(prefService);
@@ -884,6 +896,9 @@ Future<void> main() async {
             Provider(create: (_) => mastodonClient),
             Provider(create: (_) => mastodonAccounts),
             Provider(create: (_) => mastodonFeed),
+            Provider(create: (_) => mastodonExplore),
+            Provider(create: (_) => mastodonLocal),
+            Provider(create: (_) => mastodonFederated),
             Provider(create: (_) => pixivClient),
             Provider(create: (_) => pixivMute),
             Provider(create: (_) => pixivSearchHistory),

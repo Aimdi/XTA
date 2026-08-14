@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -13,7 +15,7 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
-/// The Mastodon tab: every locally followed acct, merged newest first.
+/// The Mastodon tab: Explore / Local / Federated / Following, like Tusky.
 class MastodonScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -23,15 +25,30 @@ class MastodonScreen extends StatefulWidget {
   State<MastodonScreen> createState() => _MastodonScreenState();
 }
 
+class _MastodonTabStore extends Store<int> {
+  _MastodonTabStore() : super(0);
+
+  void select(int index) => update(index);
+}
+
 class _MastodonScreenState extends State<MastodonScreen> {
+  final _tabs = _MastodonTabStore();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        context.read<MastodonExploreStore>().refresh();
         context.read<MastodonFeedStore>().refresh();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _tabs.destroy();
+    super.dispose();
   }
 
   Future<void> _lookUpProfile() async {
@@ -79,7 +96,6 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final feed = context.read<MastodonFeedStore>();
 
     return Scaffold(
       appBar: AppBar(
@@ -97,38 +113,328 @@ class _MastodonScreenState extends State<MastodonScreen> {
           ),
         ],
       ),
-      body: ScopedBuilder<MastodonFeedStore, List<MastodonPost>>(
-        store: feed,
-        onLoading: (_) {
-          if (feed.state.isNotEmpty) {
-            return _feed(context, l10n, feed.state);
-          }
-          return const Center(child: CircularProgressIndicator());
-        },
-        onError: (context, error) {
-          if (feed.state.isNotEmpty) {
-            return _feed(context, l10n, feed.state);
-          }
-          return Padding(
-            padding: const EdgeInsets.all(24),
-            child: FullPageErrorWidget(
-              error: error,
-              stackTrace: null,
-              prefix: mastodonErrorMessage(l10n, error ?? Exception()),
-              onRetry: () => context.read<MastodonFeedStore>().refresh(),
+      body: ScopedBuilder<_MastodonTabStore, int>(
+        store: _tabs,
+        onState: (context, tab) => Column(
+          children: [
+            _MastodonTabs(selected: tab, onSelected: _onTab),
+            const Divider(height: 1),
+            Expanded(
+              child: IndexedStack(
+                index: tab,
+                children: [
+                  _ExplorePane(scrollController: widget.scrollController),
+                  _PublicPane(
+                    store: context.read<MastodonLocalStore>(),
+                    emptyIcon: Icons.home_outlined,
+                  ),
+                  _PublicPane(
+                    store: context.read<MastodonFederatedStore>(),
+                    emptyIcon: Icons.public,
+                  ),
+                  _FollowingPane(),
+                ],
+              ),
             ),
-          );
-        },
-        onState: (context, posts) => _feed(context, l10n, posts),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _feed(BuildContext context, L10n l10n, List<MastodonPost> posts) {
+  void _onTab(int index) {
+    _tabs.select(index);
+    if (!mounted) return;
+    if (index == 1) {
+      final store = context.read<MastodonLocalStore>();
+      if (store.state.isEmpty) unawaited(store.refresh());
+    }
+    if (index == 2) {
+      final store = context.read<MastodonFederatedStore>();
+      if (store.state.isEmpty) unawaited(store.refresh());
+    }
+  }
+}
+
+class _MastodonTabs extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onSelected;
+
+  const _MastodonTabs({required this.selected, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Row(
+        children: [
+          _Tab(
+            label: l10n.plugin_mastodon_tab_explore,
+            icon: Icons.explore_outlined,
+            selected: selected == 0,
+            onTap: () => onSelected(0),
+          ),
+          _Tab(
+            label: l10n.plugin_mastodon_tab_local,
+            icon: Icons.home_outlined,
+            selected: selected == 1,
+            onTap: () => onSelected(1),
+          ),
+          _Tab(
+            label: l10n.plugin_mastodon_tab_federated,
+            icon: Icons.public,
+            selected: selected == 2,
+            onTap: () => onSelected(2),
+          ),
+          _Tab(
+            label: l10n.plugin_mastodon_tab_following,
+            icon: Icons.people_outline,
+            selected: selected == 3,
+            onTap: () => onSelected(3),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tab extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _Tab({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 20, color: color),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: color,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExplorePane extends StatelessWidget {
+  final ScrollController scrollController;
+
+  const _ExplorePane({required this.scrollController});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final store = context.read<MastodonExploreStore>();
+    return ScopedBuilder<MastodonExploreStore, MastodonExplorePage>(
+      store: store,
+      onLoading: (_) =>
+          store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
+          ? _exploreBody(context, l10n, store.state)
+          : const Center(child: CircularProgressIndicator()),
+      onError: (_, error) => store.state.posts.isNotEmpty
+          ? _exploreBody(context, l10n, store.state)
+          : Padding(
+              padding: const EdgeInsets.all(24),
+              child: FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: mastodonErrorMessage(l10n, error ?? Exception()),
+                onRetry: store.refresh,
+              ),
+            ),
+      onState: (context, page) => _exploreBody(context, l10n, page),
+    );
+  }
+
+  Widget _exploreBody(
+    BuildContext context,
+    L10n l10n,
+    MastodonExplorePage page,
+  ) {
+    if (page.tags.isEmpty && page.posts.isEmpty) {
+      return EmptyPane(
+        icon: Icons.explore_outlined,
+        message: l10n.plugin_mastodon_empty_public,
+        scrollController: scrollController,
+        onRefresh: context.read<MastodonExploreStore>().refresh,
+      );
+    }
+    return RefreshIndicator(
+      onRefresh: context.read<MastodonExploreStore>().refresh,
+      child: FeedListView(
+        controller: scrollController,
+        itemCount: page.posts.length + (page.tags.isEmpty ? 0 : 1),
+        itemBuilder: (context, index) {
+          if (page.tags.isNotEmpty && index == 0) {
+            return _TrendingTags(tags: page.tags);
+          }
+          final post = page.posts[index - (page.tags.isEmpty ? 0 : 1)];
+          return MastodonPostCard(
+            key: ValueKey(post.id),
+            post: post,
+            showSourceBadge: false,
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _TrendingTags extends StatelessWidget {
+  final List<MastodonTrendingTag> tags;
+
+  const _TrendingTags({required this.tags});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.plugin_mastodon_trending,
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final tag in tags.take(12))
+                ActionChip(
+                  label: Text('#${tag.name}'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MastodonTagScreen(tag: tag.name),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PublicPane extends StatelessWidget {
+  final MastodonPublicFeedStore store;
+  final IconData emptyIcon;
+
+  const _PublicPane({required this.store, required this.emptyIcon});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
+      store: store,
+      onLoading: (_) => store.state.isNotEmpty
+          ? _list(store.state, store.refresh)
+          : const Center(child: CircularProgressIndicator()),
+      onError: (_, error) => store.state.isNotEmpty
+          ? _list(store.state, store.refresh)
+          : Padding(
+              padding: const EdgeInsets.all(24),
+              child: FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: mastodonErrorMessage(l10n, error ?? Exception()),
+                onRetry: store.refresh,
+              ),
+            ),
+      onState: (context, posts) {
+        if (posts.isEmpty) {
+          return EmptyPane(
+            icon: emptyIcon,
+            message: l10n.plugin_mastodon_empty_public,
+            onRefresh: store.refresh,
+          );
+        }
+        return _list(posts, store.refresh);
+      },
+    );
+  }
+
+  Widget _list(List<MastodonPost> posts, Future<void> Function() onRefresh) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: FeedListView(
+        itemCount: posts.length,
+        itemBuilder: (context, index) => MastodonPostCard(
+          key: ValueKey(posts[index].id),
+          post: posts[index],
+          showSourceBadge: false,
+        ),
+      ),
+    );
+  }
+}
+
+class _FollowingPane extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final feed = context.read<MastodonFeedStore>();
+    return ScopedBuilder<MastodonFeedStore, List<MastodonPost>>(
+      store: feed,
+      onLoading: (_) => feed.state.isNotEmpty
+          ? _followingList(context, l10n, feed.state)
+          : const Center(child: CircularProgressIndicator()),
+      onError: (context, error) => feed.state.isNotEmpty
+          ? _followingList(context, l10n, feed.state)
+          : Padding(
+              padding: const EdgeInsets.all(24),
+              child: FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: mastodonErrorMessage(l10n, error ?? Exception()),
+                onRetry: () => feed.refresh(),
+              ),
+            ),
+      onState: (context, posts) => _followingList(context, l10n, posts),
+    );
+  }
+
+  Widget _followingList(
+    BuildContext context,
+    L10n l10n,
+    List<MastodonPost> posts,
+  ) {
     if (posts.isEmpty) {
-      // Scrollable and refreshable even when empty: an empty batch from
-      // half-down instances is exactly when the reader reaches for the pull,
-      // and this used to be a static screen with no gesture on it at all.
       return ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
         store: context.read<MastodonAccountsStore>(),
         onState: (context, accounts) => EmptyPane(
@@ -136,7 +442,6 @@ class _MastodonScreenState extends State<MastodonScreen> {
           message: accounts.isEmpty
               ? l10n.plugin_mastodon_empty
               : l10n.plugin_mastodon_no_posts,
-          scrollController: widget.scrollController,
           onRefresh: () =>
               context.read<MastodonFeedStore>().refresh(force: true),
           action: accounts.isEmpty
@@ -154,12 +459,9 @@ class _MastodonScreenState extends State<MastodonScreen> {
         ),
       );
     }
-
     return RefreshIndicator(
-      // Past the ten-minute per-account cache: the pull is the reader asking.
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
       child: FeedListView(
-        controller: widget.scrollController,
         itemCount: posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
           key: ValueKey(posts[index].id),

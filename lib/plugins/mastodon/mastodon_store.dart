@@ -43,9 +43,15 @@ class MastodonAccountsStore extends Store<List<MastodonAccount>> {
 
   Future<List<MastodonAccount>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(tableMastodonSubscription, orderBy: 'name COLLATE NOCASE');
+    final rows = await database.query(
+      tableMastodonSubscription,
+      orderBy: 'name COLLATE NOCASE',
+    );
 
-    return rows.map(MastodonSubscription.fromMap).map(accountOf).toList(growable: false);
+    return rows
+        .map(MastodonSubscription.fromMap)
+        .map(accountOf)
+        .toList(growable: false);
   }
 
   Future<void> add(MastodonAccount account) async {
@@ -63,8 +69,16 @@ class MastodonAccountsStore extends Store<List<MastodonAccount>> {
   Future<void> remove(String acct) async {
     await execute(() async {
       final database = await Repository.writable();
-      await database.delete(tableMastodonSubscription, where: 'id = ?', whereArgs: [acct]);
-      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [acct]);
+      await database.delete(
+        tableMastodonSubscription,
+        where: 'id = ?',
+        whereArgs: [acct],
+      );
+      await database.delete(
+        tableSubscriptionGroupMember,
+        where: 'profile_id = ?',
+        whereArgs: [acct],
+      );
       return _read();
     });
   }
@@ -72,16 +86,20 @@ class MastodonAccountsStore extends Store<List<MastodonAccount>> {
   bool follows(String acct) => state.any((e) => e.acct == acct);
 }
 
-MastodonSubscription subscriptionOf(MastodonAccount account) => MastodonSubscription(
-  id: account.acct,
-  name: account.name,
-  avatarUrl: account.avatarUrl,
-  createdAt: DateTime.now(),
-  inFeed: true,
-);
+MastodonSubscription subscriptionOf(MastodonAccount account) =>
+    MastodonSubscription(
+      id: account.acct,
+      name: account.name,
+      avatarUrl: account.avatarUrl,
+      createdAt: DateTime.now(),
+      inFeed: true,
+    );
 
-MastodonAccount accountOf(MastodonSubscription subscription) =>
-    MastodonAccount(acct: subscription.id, name: subscription.name, avatarUrl: subscription.avatarUrl);
+MastodonAccount accountOf(MastodonSubscription subscription) => MastodonAccount(
+  acct: subscription.id,
+  name: subscription.name,
+  avatarUrl: subscription.avatarUrl,
+);
 
 /// Merged timeline of every followed acct, newest first.
 class MastodonFeedStore extends Store<List<MastodonPost>> {
@@ -92,7 +110,12 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   MastodonFeedStore(this.client, this.prefs, this.accounts) : super(const []);
 
   Future<void> refresh({bool force = false}) async {
-    await execute(() => postsFor(accounts.state.map((e) => e.acct).toList(growable: false), forceRefresh: force));
+    await execute(
+      () => postsFor(
+        accounts.state.map((e) => e.acct).toList(growable: false),
+        forceRefresh: force,
+      ),
+    );
   }
 
   /// Posts for [accts], newest first.
@@ -101,7 +124,10 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   /// instance first, which is the only place guaranteed to have all of it.
   /// Bounded per call for the same reason as Bluesky — these are somebody's
   /// hobby servers, and a long follow list should not arrive as a burst.
-  Future<List<MastodonPost>> postsFor(List<String> accts, {bool forceRefresh = false}) {
+  Future<List<MastodonPost>> postsFor(
+    List<String> accts, {
+    bool forceRefresh = false,
+  }) {
     final configured = mastodonConfiguredInstances(prefs);
     // A different set of instances is a different set of answers, so what was
     // cached under the old one is not an answer to the new question.
@@ -129,4 +155,92 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
     perAccount: mastodonPostsPerAccount,
     concurrency: 3,
   );
+}
+
+/// Home instance first, then extras, then the built-in defaults.
+List<String> mastodonDiscoveryInstances(BasePrefService prefs) {
+  final ordered = [
+    ...mastodonConfiguredInstances(prefs),
+    ...kMastodonDefaultInstances,
+  ];
+  final seen = <String>{};
+  return [
+    for (final candidate in ordered)
+      if (normaliseMastodonInstance(candidate) case final instance?
+          when seen.add(instance))
+        instance,
+  ];
+}
+
+/// One public timeline (local, federated, or trending statuses).
+class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
+  final Future<List<MastodonPost>> Function() loader;
+
+  MastodonPublicFeedStore(this.loader) : super(const []);
+
+  Future<void> refresh() async {
+    if (state.isNotEmpty) {
+      try {
+        update(await loader());
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
+    await execute(loader);
+  }
+}
+
+class MastodonLocalStore extends MastodonPublicFeedStore {
+  MastodonLocalStore(super.loader);
+}
+
+class MastodonFederatedStore extends MastodonPublicFeedStore {
+  MastodonFederatedStore(super.loader);
+}
+
+class MastodonExplorePage {
+  final List<MastodonTrendingTag> tags;
+  final List<MastodonPost> posts;
+
+  const MastodonExplorePage({this.tags = const [], this.posts = const []});
+}
+
+/// Trending tags + trending statuses — Phanpy / Tusky Explore.
+class MastodonExploreStore extends Store<MastodonExplorePage> {
+  final MastodonClient client;
+  final BasePrefService prefs;
+
+  MastodonExploreStore(this.client, this.prefs)
+    : super(const MastodonExplorePage());
+
+  Future<void> refresh() async {
+    if (state.posts.isNotEmpty || state.tags.isNotEmpty) {
+      try {
+        update(await _load());
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
+    await execute(_load);
+  }
+
+  Future<MastodonExplorePage> _load() async {
+    final instances = mastodonDiscoveryInstances(prefs);
+    final tags = await _soft(
+      () => client.getTrendingTagsAnywhere(instances),
+      const <MastodonTrendingTag>[],
+    );
+    final posts = await client.getTrendingStatusesAnywhere(instances);
+    return MastodonExplorePage(tags: tags, posts: posts);
+  }
+
+  Future<T> _soft<T>(Future<T> Function() read, T fallback) async {
+    try {
+      return await read();
+    } catch (_) {
+      return fallback;
+    }
+  }
 }

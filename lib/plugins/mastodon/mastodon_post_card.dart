@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -109,23 +111,7 @@ class MastodonPostCard extends StatelessWidget {
                             behavior: HitTestBehavior.opaque,
                             child: _header(context),
                           ),
-                          if (post.text.isNotEmpty) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              post.text,
-                              style: theme.textTheme.bodyLarge!.copyWith(
-                                height: 1.35,
-                              ),
-                            ),
-                          ],
-                          if (post.hasMedia) ...[
-                            const SizedBox(height: 10),
-                            _media(context),
-                          ],
-                          if (post.linkCard != null) ...[
-                            const SizedBox(height: 10),
-                            _MastodonLinkPreview(card: post.linkCard!),
-                          ],
+                          _SpoilerBody(post: post, media: _media(context)),
                           _MastodonEngagementRow(
                             post: post,
                             onOpen: () => _open(context),
@@ -423,6 +409,136 @@ class _MastodonEngagementRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SpoilerBody extends StatefulWidget {
+  final MastodonPost post;
+  final Widget media;
+
+  const _SpoilerBody({required this.post, required this.media});
+
+  @override
+  State<_SpoilerBody> createState() => _SpoilerBodyState();
+}
+
+class _SpoilerBodyState extends State<_SpoilerBody> {
+  var _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final post = widget.post;
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    if (post.hasSpoiler && !_open) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 6),
+          Text(
+            post.spoilerText,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          TextButton(
+            onPressed: () => setState(() => _open = true),
+            child: Text(l10n.show),
+          ),
+        ],
+      );
+    }
+    return _visible(theme, l10n, blur: post.sensitive && !_open);
+  }
+
+  Widget _visible(ThemeData theme, L10n l10n, {required bool blur}) {
+    final post = widget.post;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (post.hasSpoiler)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () => setState(() => _open = false),
+              child: Text(l10n.hide),
+            ),
+          ),
+        if (post.text.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            post.text,
+            style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+          ),
+        ],
+        if (post.hasMedia) ...[
+          const SizedBox(height: 10),
+          GestureDetector(
+            onTap: blur ? () => setState(() => _open = true) : null,
+            child: blur
+                ? ImageFiltered(
+                    imageFilter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    child: widget.media,
+                  )
+                : widget.media,
+          ),
+        ],
+        if (post.poll != null) ...[
+          const SizedBox(height: 10),
+          _PollBars(poll: post.poll!),
+        ],
+        if (post.linkCard != null) ...[
+          const SizedBox(height: 10),
+          _MastodonLinkPreview(card: post.linkCard!),
+        ],
+      ],
+    );
+  }
+}
+
+class _PollBars extends StatelessWidget {
+  final MastodonPoll poll;
+
+  const _PollBars({required this.poll});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final total = poll.votesCount <= 0
+        ? poll.options.fold<int>(0, (sum, o) => sum + o.votes)
+        : poll.votesCount;
+    return Column(
+      children: [
+        for (final option in poll.options)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: Text(option.title)),
+                    Text(
+                      total == 0
+                          ? '0%'
+                          : '${((option.votes / total) * 100).round()}%',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: total == 0 ? 0 : option.votes / total,
+                    minHeight: 6,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

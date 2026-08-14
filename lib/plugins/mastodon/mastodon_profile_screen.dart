@@ -247,6 +247,25 @@ class MastodonProfileCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(profile.note.trim(), style: theme.textTheme.bodyMedium),
         ],
+        if (profile.fields.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          for (final field in profile.fields)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${field.name}: ',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    TextSpan(text: field.value),
+                  ],
+                ),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
+        ],
         const SizedBox(height: 14),
         Wrap(
           spacing: 18,
