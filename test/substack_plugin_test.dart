@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -7,14 +9,25 @@ import 'package:xta/plugins/substack/substack_models.dart';
 
 void main() {
   test('resolveSubstackBase accepts handle and URL', () {
-    expect(resolveSubstackBase('astralcodexten')?.host, 'astralcodexten.substack.com');
-    expect(resolveSubstackBase('https://astralcodexten.substack.com/p/x')?.origin, 'https://astralcodexten.substack.com');
-    expect(resolveSubstackBase('www.astralcodexten.com')?.host, 'www.astralcodexten.com');
+    expect(
+      resolveSubstackBase('astralcodexten')?.host,
+      'astralcodexten.substack.com',
+    );
+    expect(
+      resolveSubstackBase('https://astralcodexten.substack.com/p/x')?.origin,
+      'https://astralcodexten.substack.com',
+    );
+    expect(
+      resolveSubstackBase('www.astralcodexten.com')?.host,
+      'www.astralcodexten.com',
+    );
     expect(resolveSubstackBase(''), isNull);
   });
 
   test('resolveSubstackPostRef parses /p/slug URLs', () {
-    final ref = resolveSubstackPostRef('https://astralcodexten.substack.com/p/hello-world?utm=1');
+    final ref = resolveSubstackPostRef(
+      'https://astralcodexten.substack.com/p/hello-world?utm=1',
+    );
     expect(ref?.base.host, 'astralcodexten.substack.com');
     expect(ref?.slug, 'hello-world');
     expect(resolveSubstackPostRef('astralcodexten'), isNull);
@@ -32,11 +45,11 @@ void main() {
                 'custom_domain': 'www.astralcodexten.com',
                 'hero_text': 'commentary',
                 'logo_url': 'https://example.com/logo.png',
-              }
-            }
-          ]
-        }
-      ]
+              },
+            },
+          ],
+        },
+      ],
     }, fallbackBase: Uri.parse('https://astralcodexten.substack.com'));
 
     expect(pub.name, 'Astral Codex Ten');
@@ -175,9 +188,66 @@ void main() {
     expect(buildSubstackSpeakText(title: 'T', bodyHtml: raw), contains('T'));
   });
 
+  test(
+    'SubstackClient.fetchSimilarPublications prefers recs then search',
+    () async {
+      final recHtml =
+          '<html><script>window._preloads = JSON.parse(${jsonEncode(jsonEncode({
+            'recommendations': [
+              {
+                'description': 'Casey',
+                'recommendedPublication': {'name': 'Big Technology', 'subdomain': 'bigtechnology'},
+              },
+            ],
+          }))});</script></html>';
+
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.path == '/recommendations') {
+            return http.Response(
+              recHtml,
+              200,
+              headers: {'content-type': 'text/html'},
+            );
+          }
+          expect(request.url.path, '/api/v1/publication/search');
+          expect(request.url.queryParameters['query'], 'Platformer');
+          return http.Response(
+            jsonEncode({
+              'results': [
+                {'name': 'Platformer', 'subdomain': 'platformer'},
+                {'name': 'User Mag', 'subdomain': 'usermag'},
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final similar = await client.fetchSimilarPublications(
+        const SubstackPublication(
+          subdomain: 'platformer',
+          baseUrl: 'https://platformer.substack.com',
+          name: 'Platformer',
+        ),
+      );
+
+      expect(similar.map((e) => e.publication.id), [
+        'bigtechnology',
+        'usermag',
+      ]);
+      expect(similar.first.blurb, 'Casey');
+    },
+  );
+
   test('SubstackPublication prefs round-trip', () {
     const pubs = [
-      SubstackPublication(subdomain: 'a', baseUrl: 'https://a.substack.com', name: 'A'),
+      SubstackPublication(
+        subdomain: 'a',
+        baseUrl: 'https://a.substack.com',
+        name: 'A',
+      ),
     ];
     final raw = SubstackPublication.listToPrefs(pubs);
     final back = SubstackPublication.listFromPrefs(raw);

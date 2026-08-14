@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/substack/substack_html.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
@@ -34,6 +36,88 @@ void main() {
 
     test('returns null when nothing identifies the publication', () {
       expect(publicationFromDiscoveryJson({'name': 'Orphan'}), isNull);
+    });
+  });
+
+  group('parseSubstackRecommendations', () {
+    test('reads recommendedPublication and blurb from _preloads HTML', () {
+      final html = _preloadsHtml({
+        'recommendations': [
+          {
+            'description': 'Why I read this',
+            'recommendedPublication': {
+              'name': 'The Power Law',
+              'subdomain': 'peterwildeford',
+              'hero_text': 'Forecasts',
+              'logo_url': 'https://example.org/l.png',
+              'custom_domain': 'blog.peterwildeford.com',
+            },
+          },
+          {
+            'recommendedPublication': {'name': 'Missing handle'},
+          },
+        ],
+      });
+
+      final recs = parseSubstackRecommendationsHtml(html);
+      expect(recs, hasLength(1));
+      expect(recs.single.publication.name, 'The Power Law');
+      expect(recs.single.publication.subdomain, 'peterwildeford');
+      expect(
+        recs.single.publication.baseUrl,
+        'https://blog.peterwildeford.com',
+      );
+      expect(recs.single.blurb, 'Why I read this');
+    });
+
+    test('returns empty on missing or reshaped HTML', () {
+      expect(parseSubstackRecommendationsHtml(''), isEmpty);
+      expect(parseSubstackRecommendationsHtml('<html></html>'), isEmpty);
+      expect(parseSubstackRecommendationsJson(null), isEmpty);
+      expect(parseSubstackRecommendationsJson('nope'), isEmpty);
+    });
+  });
+
+  group('mergeSubstackSimilar', () {
+    const seed = SubstackPublication(
+      subdomain: 'platformer',
+      baseUrl: 'https://platformer.substack.com',
+      name: 'Platformer',
+    );
+
+    test('drops the seed, prefers recs, then pads with search', () {
+      final merged = mergeSubstackSimilar(
+        seed: seed,
+        recommended: [
+          const SubstackRecommendation(
+            publication: SubstackPublication(
+              subdomain: 'bigtechnology',
+              baseUrl: 'https://bigtechnology.substack.com',
+              name: 'Big Technology',
+            ),
+            blurb: 'Casey',
+          ),
+        ],
+        searched: [
+          seed,
+          const SubstackPublication(
+            subdomain: 'bigtechnology',
+            baseUrl: 'https://bigtechnology.substack.com',
+            name: 'Big Technology',
+          ),
+          const SubstackPublication(
+            subdomain: 'user-mag',
+            baseUrl: 'https://www.usermag.co',
+            name: 'User Mag',
+          ),
+        ],
+      );
+
+      expect(merged.map((e) => e.publication.id), [
+        'bigtechnology',
+        'user-mag',
+      ]);
+      expect(merged.first.blurb, 'Casey');
     });
   });
 
@@ -80,4 +164,8 @@ void main() {
       expect(plain, contains('\n'));
     });
   });
+}
+
+String _preloadsHtml(Map<String, dynamic> preloads) {
+  return '<html><script>window._preloads = JSON.parse(${jsonEncode(jsonEncode(preloads))});</script></html>';
 }
