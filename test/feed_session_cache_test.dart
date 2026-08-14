@@ -6,7 +6,13 @@ void main() {
     test('the same key keeps the same controller', () {
       final cache = FeedSessionCache();
 
-      expect(identical(cache.getOrCreateController('a'), cache.getOrCreateController('a')), isTrue);
+      expect(
+        identical(
+          cache.getOrCreateController('a'),
+          cache.getOrCreateController('a'),
+        ),
+        isTrue,
+      );
     });
 
     test('stops growing once it is full', () {
@@ -32,9 +38,17 @@ void main() {
       expect(identical(cache.getOrCreateController('a'), a), isTrue);
       cache.getOrCreateController('c');
 
-      expect(identical(cache.getOrCreateController('a'), a), isTrue, reason: 'a was used most recently');
+      expect(
+        identical(cache.getOrCreateController('a'), a),
+        isTrue,
+        reason: 'a was used most recently',
+      );
       expect(cache.readOffset('a'), 100);
-      expect(cache.readOffset('b'), isNull, reason: 'b was the least recently used');
+      expect(
+        cache.readOffset('b'),
+        isNull,
+        reason: 'b was the least recently used',
+      );
     });
 
     test('an evicted key loses its offset and media filter too', () {
@@ -48,6 +62,20 @@ void main() {
 
       expect(cache.readOffset('a'), isNull);
       expect(cache.readMediaOnly('a'), isFalse);
+    });
+
+    test('evict drops one key so the next get is a fresh controller', () {
+      final cache = FeedSessionCache();
+      final first = cache.getOrCreateController('home--1');
+      cache.saveOffset('home--1', 80);
+      cache.saveMediaOnly('home--1', true);
+
+      cache.evict('home--1');
+
+      expect(cache.length, 0);
+      expect(cache.readOffset('home--1'), isNull);
+      expect(cache.readMediaOnly('home--1'), isFalse);
+      expect(identical(cache.getOrCreateController('home--1'), first), isFalse);
     });
 
     test('invalidateAll empties it', () {
