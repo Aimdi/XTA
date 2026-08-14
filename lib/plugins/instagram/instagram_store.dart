@@ -46,6 +46,25 @@ class InstagramFollowsStore extends Store<List<InstagramFollow>> {
     );
   }
 
+  Future<void> followAuthor(InstagramAuthor author, {String pk = ''}) async {
+    final handle = author.username.trim().toLowerCase();
+    if (handle.isEmpty) return;
+    final next = InstagramFollow(
+      id: handle,
+      pk: pk.isEmpty ? handle : pk,
+      name: author.displayName,
+      avatarUrl: author.avatarUrl,
+      createdAt: DateTime.now(),
+    );
+    update([next, ...state.where((follow) => follow.id != next.id)]);
+    final database = await Repository.writable();
+    await database.insert(
+      tableInstagramSubscription,
+      next.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
   Future<void> unfollow(String handle) async {
     final key = handle.toLowerCase();
     update(state.where((follow) => follow.id != key).toList());
@@ -273,6 +292,11 @@ class InstagramFollowingStore extends Store<List<InstagramPost>> {
       onPartial: onPartial,
     );
   }
+}
+
+class InstagramForYouStore extends InstagramFeedStore {
+  InstagramForYouStore(InstagramClient client)
+    : super(({cursor}) => client.forYou(cursor: cursor));
 }
 
 class InstagramProfileStore extends Store<InstagramProfile?> {

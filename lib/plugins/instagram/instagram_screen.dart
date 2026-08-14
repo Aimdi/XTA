@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/instagram/instagram_client.dart';
+import 'package:xta/plugins/instagram/instagram_discovery.dart';
 import 'package:xta/plugins/instagram/instagram_errors.dart';
 import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_plugin.dart';
@@ -14,7 +16,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
 
-/// Guest Instagram home: Following feed + local accounts.
+/// Guest Instagram home: For you + Following + local accounts.
 class InstagramScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -27,11 +29,13 @@ class InstagramScreen extends StatefulWidget {
 class _InstagramScreenState extends State<InstagramScreen> {
   final _tabs = _InstagramTabStore();
   late final InstagramFollowingStore _following;
+  late final InstagramForYouStore _forYou;
 
   @override
   void initState() {
     super.initState();
     _following = context.read<InstagramFollowingStore>();
+    _forYou = InstagramForYouStore(context.read<InstagramClient>());
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -44,6 +48,8 @@ class _InstagramScreenState extends State<InstagramScreen> {
       if (!mounted) return;
       if (history.state.isEmpty) await history.load();
       if (!mounted) return;
+      await _forYou.refresh();
+      if (!mounted) return;
       await _following.refresh();
     });
   }
@@ -51,6 +57,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
   @override
   void dispose() {
     _tabs.destroy();
+    _forYou.destroy();
     super.dispose();
   }
 
@@ -68,17 +75,23 @@ class _InstagramScreenState extends State<InstagramScreen> {
               accent: InstagramPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
-                  label: l10n.plugin_instagram_tab_following,
-                  icon: Icons.photo_library_outlined,
+                  label: l10n.plugin_instagram_tab_for_you,
+                  icon: Icons.explore_outlined,
                   selected: tab == 0,
                   onTap: () => _tabs.select(0),
                 ),
                 PluginHomeTab(
+                  label: l10n.plugin_instagram_tab_following,
+                  icon: Icons.photo_library_outlined,
+                  selected: tab == 1,
+                  onTap: () => _tabs.select(1),
+                ),
+                PluginHomeTab(
                   label: l10n.plugin_instagram_tab_accounts,
                   icon: Icons.people_outline,
-                  selected: tab == 1,
+                  selected: tab == 2,
                   onTap: () {
-                    _tabs.select(1);
+                    _tabs.select(2);
                     context.read<InstagramFollowsStore>().load();
                   },
                 ),
@@ -106,17 +119,23 @@ class _InstagramScreenState extends State<InstagramScreen> {
               child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  (_) => _FollowingTab(
+                  (_) => _ForYouTab(
                     scrollController: widget.scrollController,
+                    store: _forYou,
+                    follows: context.read<InstagramFollowsStore>(),
+                    onFindHandle: _openSearch,
+                    onProfileClosed: _refreshFeeds,
+                  ),
+                  (_) => _FollowingTab(
                     store: _following,
                     follows: context.read<InstagramFollowsStore>(),
                     onFindHandle: _openSearch,
-                    onProfileClosed: _refreshFollowing,
+                    onProfileClosed: _refreshFeeds,
                   ),
                   (_) => _AccountsTab(
                     onFindHandle: _openSearch,
-                    onProfileClosed: _refreshFollowing,
-                    onUnfollow: _refreshFollowing,
+                    onProfileClosed: _refreshFeeds,
+                    onUnfollow: _refreshFeeds,
                   ),
                 ],
               ),
@@ -130,12 +149,12 @@ class _InstagramScreenState extends State<InstagramScreen> {
   Future<void> _openSearch() async {
     await showInstagramSearchSheet(context);
     if (!mounted) return;
-    await _following.refresh(force: true);
+    await _refreshFeeds();
   }
 
-  Future<void> _refreshFollowing() async {
+  Future<void> _refreshFeeds() async {
     if (!mounted) return;
-    await _following.refresh(force: true);
+    await Future.wait([_forYou.refresh(), _following.refresh(force: true)]);
   }
 }
 
@@ -145,15 +164,227 @@ class _InstagramTabStore extends Store<int> {
   void select(int index) => update(index);
 }
 
-class _FollowingTab extends StatelessWidget {
+class _ForYouTab extends StatelessWidget {
   final ScrollController scrollController;
+  final InstagramForYouStore store;
+  final InstagramFollowsStore follows;
+  final Future<void> Function() onFindHandle;
+  final Future<void> Function() onProfileClosed;
+
+  const _ForYouTab({
+    required this.scrollController,
+    required this.store,
+    required this.follows,
+    required this.onFindHandle,
+    required this.onProfileClosed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<InstagramForYouStore, List<InstagramPost>>.transition(
+      store: store,
+      onLoading: (_) => store.state.isNotEmpty
+          ? _forYouList(context, l10n, store.state)
+          : const Center(child: CircularProgressIndicator()),
+      onError: (_, error) => store.state.isNotEmpty
+          ? _forYouList(context, l10n, store.state)
+          : FullPageErrorWidget(
+              error: error,
+              stackTrace: null,
+              prefix: instagramErrorMessage(l10n, error),
+              onRetry: store.refresh,
+            ),
+      onState: (context, posts) {
+        if (posts.isEmpty) {
+          return _EmptyForYou(
+            onRefresh: store.refresh,
+            onFindHandle: onFindHandle,
+          );
+        }
+        return _forYouList(context, l10n, posts);
+      },
+    );
+  }
+
+  Widget _forYouList(
+    BuildContext context,
+    L10n l10n,
+    List<InstagramPost> posts,
+  ) {
+    return ScopedBuilder<InstagramFollowsStore, List<InstagramFollow>>(
+      store: follows,
+      onState: (context, _) {
+        final people = peopleToFollowFromInstagram(
+          posts: posts,
+          alreadyFollows: follows.containsHandle,
+        );
+        return NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.extentAfter < 600) {
+              store.loadMore();
+            }
+            return false;
+          },
+          child: RefreshIndicator(
+            onRefresh: store.refresh,
+            child: ListView.builder(
+              controller: scrollController,
+              itemCount: posts.length + (people.isEmpty ? 0 : 1),
+              itemBuilder: (context, index) {
+                if (people.isNotEmpty && index == 0) {
+                  return _DiscoverPeopleStrip(
+                    people: people,
+                    onOpen: (author) async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              InstagramProfileScreen(handle: author.username),
+                        ),
+                      );
+                      if (context.mounted) await onProfileClosed();
+                    },
+                    onFollow: follows.followAuthor,
+                  );
+                }
+                final post = posts[index - (people.isEmpty ? 0 : 1)];
+                return InstagramPostCard(
+                  post: post,
+                  showFollow: true,
+                  onProfileClosed: onProfileClosed,
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DiscoverPeopleStrip extends StatelessWidget {
+  final List<InstagramAuthor> people;
+  final ValueChanged<InstagramAuthor> onOpen;
+  final ValueChanged<InstagramAuthor> onFollow;
+
+  const _DiscoverPeopleStrip({
+    required this.people,
+    required this.onOpen,
+    required this.onFollow,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 0, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.plugin_instagram_from_feed,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 48,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(right: 16),
+              itemCount: people.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final person = people[index];
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ActionChip(
+                      avatar: InstagramAvatar(
+                        url: person.avatarUrl,
+                        seed: person.username,
+                        name: person.displayName,
+                        size: 20,
+                      ),
+                      label: Text('@${person.username}'),
+                      onPressed: () => onOpen(person),
+                    ),
+                    TextButton(
+                      onPressed: () => onFollow(person),
+                      child: Text(l10n.plugin_instagram_follow),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyForYou extends StatelessWidget {
+  final Future<void> Function() onRefresh;
+  final Future<void> Function() onFindHandle;
+
+  const _EmptyForYou({required this.onRefresh, required this.onFindHandle});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
+        children: [
+          Icon(
+            Icons.explore_outlined,
+            size: 52,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.plugin_instagram_for_you_empty,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.plugin_instagram_for_you_guest_note,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Center(
+            child: FilledButton.icon(
+              onPressed: onFindHandle,
+              icon: const Icon(Icons.search),
+              label: Text(l10n.plugin_instagram_search),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FollowingTab extends StatelessWidget {
   final InstagramFollowingStore store;
   final InstagramFollowsStore follows;
   final Future<void> Function() onFindHandle;
   final Future<void> Function() onProfileClosed;
 
   const _FollowingTab({
-    required this.scrollController,
     required this.store,
     required this.follows,
     required this.onFindHandle,
@@ -170,7 +401,6 @@ class _FollowingTab extends StatelessWidget {
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _PostList(
-              scrollController: scrollController,
               posts: store.state,
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
@@ -178,7 +408,6 @@ class _FollowingTab extends StatelessWidget {
           : const Center(child: CircularProgressIndicator()),
       onError: (_, error) => store.state.isNotEmpty
           ? _PostList(
-              scrollController: scrollController,
               posts: store.state,
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
@@ -198,7 +427,6 @@ class _FollowingTab extends StatelessWidget {
           );
         }
         return _PostList(
-          scrollController: scrollController,
           posts: posts,
           onRefresh: () => store.refresh(force: true),
           onProfileClosed: onProfileClosed,
@@ -344,13 +572,11 @@ class _AccountsTab extends StatelessWidget {
 }
 
 class _PostList extends StatelessWidget {
-  final ScrollController? scrollController;
   final List<InstagramPost> posts;
   final Future<void> Function() onRefresh;
   final Future<void> Function()? onProfileClosed;
 
   const _PostList({
-    this.scrollController,
     required this.posts,
     required this.onRefresh,
     this.onProfileClosed,
@@ -361,7 +587,6 @@ class _PostList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView.builder(
-        controller: scrollController,
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return InstagramPostCard(

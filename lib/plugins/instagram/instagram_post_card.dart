@@ -21,12 +21,14 @@ final NumberFormat _igCount = NumberFormat.compact(locale: 'en_US');
 class InstagramPostCard extends StatelessWidget {
   final InstagramPost post;
   final bool openAuthor;
+  final bool showFollow;
   final Future<void> Function()? onProfileClosed;
 
   const InstagramPostCard({
     super.key,
     required this.post,
     this.openAuthor = true,
+    this.showFollow = false,
     this.onProfileClosed,
   });
 
@@ -62,6 +64,7 @@ class InstagramPostCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            trailing: showFollow ? _FollowButton(author: post.author) : null,
           ),
           if (post.caption.trim().isNotEmpty)
             Padding(
@@ -151,6 +154,30 @@ class InstagramPostCard extends StatelessWidget {
     );
     if (!context.mounted) return;
     await onProfileClosed?.call();
+  }
+}
+
+class _FollowButton extends StatelessWidget {
+  final InstagramAuthor author;
+
+  const _FollowButton({required this.author});
+
+  @override
+  Widget build(BuildContext context) {
+    final follows = context.read<InstagramFollowsStore>();
+    return ScopedBuilder<InstagramFollowsStore, List<InstagramFollow>>(
+      store: follows,
+      distinct: (_) => follows.containsHandle(author.username),
+      onState: (context, _) {
+        if (follows.containsHandle(author.username)) {
+          return const SizedBox.shrink();
+        }
+        return TextButton(
+          onPressed: () => follows.followAuthor(author),
+          child: Text(L10n.of(context).plugin_instagram_follow),
+        );
+      },
+    );
   }
 }
 
