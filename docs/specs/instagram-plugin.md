@@ -31,8 +31,8 @@ From this Cloud VM (datacenter egress):
 |---|---|
 | `GET www.instagram.com/` | 200, mints `csrftoken` + `mid`, LSD in HTML |
 | `GET www.instagram.com/{user}/` | 200 login-shell HTML, **no** profile JSON |
-| `GET i.instagram.com/api/v1/users/web_profile_info/?username=` | **429** empty (IP flagged) |
-| `GET www.instagram.com/api/v1/users/web_profile_info/` | **429** |
+| `GET i.instagram.com/api/v1/users/web_profile_info/?username=` | Often **429** from datacenter IPs; with `X-IG-App-ID` + `X-Requested-With` a later probe from this VM returned **200** JSON |
+| `GET www.instagram.com/api/v1/users/web_profile_info/` | Often **429**; used as fallback |
 | GraphQL / topsearch without a session | HTML app shell, not JSON |
 | oembed | 429 |
 
