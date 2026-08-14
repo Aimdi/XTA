@@ -10,6 +10,7 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/group/custom_feed_rules.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/group_mark_style.dart';
+import 'package:xta/subscriptions/group_ungrouped.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:sqflite/sqflite.dart';
@@ -462,6 +463,62 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
       where: 'profile_id = ?',
       whereArgs: [user],
     )).map((e) => e['group_id'] as String).toList(growable: false);
+  }
+
+  /// Places ungrouped accounts: new groups for suggestions, inserts for
+  /// existing ones. One reload. Does not replace anyone already in a group.
+  Future<int> applyUngroupedPlan(GroupUngroupedPlan plan) async {
+    final database = await Repository.writable();
+    var placed = 0;
+    placed += await _insertSuggestedGroups(database, plan.suggest);
+    placed += await _insertAssignments(database, plan.assign);
+    await reloadGroups();
+    return placed;
+  }
+
+  Future<int> _insertSuggestedGroups(
+    Database database,
+    List<SuggestedGroup> groups,
+  ) async {
+    var placed = 0;
+    for (final group in groups) {
+      if (group.accountIds.length < 2) continue;
+      final id = const Uuid().v4();
+      await database.insert(tableSubscriptionGroup, {
+        'id': id,
+        'name': group.name,
+        'icon': defaultGroupIcon,
+        'include_replies': null,
+        'include_retweets': null,
+        'mark_style': GroupMarkStyle.auto,
+      });
+      final batch = database.batch();
+      for (final profile in group.accountIds) {
+        batch.insert(tableSubscriptionGroupMember, {
+          'group_id': id,
+          'profile_id': profile,
+        });
+        placed++;
+      }
+      await batch.commit(noResult: true);
+    }
+    return placed;
+  }
+
+  Future<int> _insertAssignments(
+    Database database,
+    List<GroupAssignment> assign,
+  ) async {
+    if (assign.isEmpty) return 0;
+    final batch = database.batch();
+    for (final row in assign) {
+      batch.insert(tableSubscriptionGroupMember, {
+        'group_id': row.groupId,
+        'profile_id': row.accountId,
+      });
+    }
+    await batch.commit(noResult: true);
+    return assign.length;
   }
 
   Future saveUserGroupMembership(String user, List<String> memberships) async {

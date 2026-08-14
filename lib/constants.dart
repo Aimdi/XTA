@@ -409,6 +409,13 @@ const optionAiBaseUrl = 'ai.base_url';
 const optionAiApiKey = 'ai.api_key';
 const optionAiModel = 'ai.model';
 
+/// xAI's OpenAI-compatible root. A Grok chip in AI settings fills this in
+/// so the reader only pastes a key.
+const aiGrokBaseUrl = 'https://api.x.ai/v1';
+const aiGrokModel = 'grok-4';
+const aiOpenAiBaseUrl = 'https://api.openai.com/v1';
+const aiOpenAiModel = 'gpt-4o-mini';
+
 const optionSubscriptionGroupsOrderByAscending =
     'subscription_groups.order_by.ascending';
 const optionSubscriptionGroupsOrderByField =
