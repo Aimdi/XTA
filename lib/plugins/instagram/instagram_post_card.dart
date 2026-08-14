@@ -22,6 +22,7 @@ class InstagramPostCard extends StatelessWidget {
   final InstagramPost post;
   final bool openAuthor;
   final bool showFollow;
+  final Future<void> Function()? onFollowed;
   final Future<void> Function()? onProfileClosed;
 
   const InstagramPostCard({
@@ -29,6 +30,7 @@ class InstagramPostCard extends StatelessWidget {
     required this.post,
     this.openAuthor = true,
     this.showFollow = false,
+    this.onFollowed,
     this.onProfileClosed,
   });
 
@@ -53,53 +55,44 @@ class InstagramPostCard extends StatelessWidget {
                 name: post.author.displayName,
               ),
             ),
-            title: Text(
-              post.author.displayName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800),
+            title: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    post.author.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+                if (post.author.isVerified) ...[
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.verified,
+                    size: 16,
+                    color: theme.colorScheme.primary,
+                  ),
+                ],
+              ],
             ),
             subtitle: Text(
               '@${post.author.username} · ${createRelativeDate(post.createdAt)}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            trailing: showFollow ? _FollowButton(author: post.author) : null,
+            trailing: showFollow
+                ? _FollowButton(author: post.author, onFollowed: onFollowed)
+                : null,
           ),
           if (post.caption.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: Text(post.caption),
             ),
-          if (post.coverUrl != null)
+          if (post.displayUrls.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  tweetMediaRadiusOf(context),
-                ),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ExtendedImage.network(
-                        post.coverUrl!,
-                        fit: BoxFit.cover,
-                        cache: true,
-                      ),
-                      if (post.isVideo)
-                        const Center(
-                          child: Icon(
-                            Icons.play_circle_fill,
-                            size: 56,
-                            color: Colors.white70,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
+              child: _PostMedia(post: post),
             ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 2, 4, 4),
@@ -159,8 +152,9 @@ class InstagramPostCard extends StatelessWidget {
 
 class _FollowButton extends StatelessWidget {
   final InstagramAuthor author;
+  final Future<void> Function()? onFollowed;
 
-  const _FollowButton({required this.author});
+  const _FollowButton({required this.author, this.onFollowed});
 
   @override
   Widget build(BuildContext context) {
@@ -173,8 +167,116 @@ class _FollowButton extends StatelessWidget {
           return const SizedBox.shrink();
         }
         return TextButton(
-          onPressed: () => follows.followAuthor(author),
+          onPressed: () async {
+            await follows.followAuthor(author);
+            await onFollowed?.call();
+          },
           child: Text(L10n.of(context).plugin_instagram_follow),
+        );
+      },
+    );
+  }
+}
+
+class _PostMedia extends StatefulWidget {
+  final InstagramPost post;
+
+  const _PostMedia({required this.post});
+
+  @override
+  State<_PostMedia> createState() => _PostMediaState();
+}
+
+class _PostMediaState extends State<_PostMedia> {
+  late final PageController _pages;
+  var _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pages.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final urls = widget.post.displayUrls;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (urls.length == 1)
+              _NetworkImage(url: urls.first)
+            else
+              PageView.builder(
+                controller: _pages,
+                itemCount: urls.length,
+                onPageChanged: (index) => setState(() => _index = index),
+                itemBuilder: (_, index) => _NetworkImage(url: urls[index]),
+              ),
+            if (widget.post.isVideo)
+              const Center(
+                child: Icon(
+                  Icons.play_circle_fill,
+                  size: 56,
+                  color: Colors.white70,
+                ),
+              ),
+            if (urls.length > 1)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      '${_index + 1} / ${urls.length}',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NetworkImage extends StatelessWidget {
+  final String url;
+
+  const _NetworkImage({required this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return ExtendedImage.network(
+      url,
+      fit: BoxFit.cover,
+      cache: true,
+      loadStateChanged: (state) {
+        if (state.extendedImageLoadState != LoadState.failed) return null;
+        return ColoredBox(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: Theme.of(context).colorScheme.outline,
+          ),
         );
       },
     );
@@ -212,6 +314,15 @@ class InstagramAvatar extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
         cache: true,
+        loadStateChanged: (state) {
+          if (state.extendedImageLoadState != LoadState.failed) return null;
+          return FallbackAvatar(
+            seed: seed,
+            displayName: name,
+            size: size,
+            accent: Theme.of(context).colorScheme.primary,
+          );
+        },
       ),
     );
   }

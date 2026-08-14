@@ -105,12 +105,15 @@ class _InstagramScreenState extends State<InstagramScreen> {
                 IconButton(
                   tooltip: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const InstagramSettingsScreen(),
-                    ),
-                  ),
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const InstagramSettingsScreen(),
+                      ),
+                    );
+                    if (context.mounted) await _refreshFeeds();
+                  },
                 ),
               ],
             ),
@@ -125,6 +128,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
                     follows: context.read<InstagramFollowsStore>(),
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFeeds,
+                    onFollowingChanged: () => _following.refresh(force: true),
                   ),
                   (_) => _FollowingTab(
                     store: _following,
@@ -170,6 +174,7 @@ class _ForYouTab extends StatelessWidget {
   final InstagramFollowsStore follows;
   final Future<void> Function() onFindHandle;
   final Future<void> Function() onProfileClosed;
+  final Future<void> Function() onFollowingChanged;
 
   const _ForYouTab({
     required this.scrollController,
@@ -177,6 +182,7 @@ class _ForYouTab extends StatelessWidget {
     required this.follows,
     required this.onFindHandle,
     required this.onProfileClosed,
+    required this.onFollowingChanged,
   });
 
   @override
@@ -219,6 +225,11 @@ class _ForYouTab extends StatelessWidget {
           posts: posts,
           alreadyFollows: follows.containsHandle,
         );
+        final guest = !context.read<InstagramClient>().hasSession;
+        final extras =
+            (people.isEmpty ? 0 : 1) +
+            (store.loadingMore ? 1 : 0) +
+            (guest ? 1 : 0);
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification.metrics.extentAfter < 600) {
@@ -230,8 +241,9 @@ class _ForYouTab extends StatelessWidget {
             onRefresh: store.refresh,
             child: ListView.builder(
               controller: scrollController,
-              itemCount: posts.length + (people.isEmpty ? 0 : 1),
+              itemCount: posts.length + extras,
               itemBuilder: (context, index) {
+                final peopleOffset = people.isEmpty ? 0 : 1;
                 if (people.isNotEmpty && index == 0) {
                   return _DiscoverPeopleStrip(
                     people: people,
@@ -245,14 +257,36 @@ class _ForYouTab extends StatelessWidget {
                       );
                       if (context.mounted) await onProfileClosed();
                     },
-                    onFollow: follows.followAuthor,
+                    onFollow: (author) async {
+                      await follows.followAuthor(author);
+                      await onFollowingChanged();
+                    },
                   );
                 }
-                final post = posts[index - (people.isEmpty ? 0 : 1)];
-                return InstagramPostCard(
-                  post: post,
-                  showFollow: true,
-                  onProfileClosed: onProfileClosed,
+                final postIndex = index - peopleOffset;
+                if (postIndex < posts.length) {
+                  return InstagramPostCard(
+                    post: posts[postIndex],
+                    showFollow: true,
+                    onFollowed: onFollowingChanged,
+                    onProfileClosed: onProfileClosed,
+                  );
+                }
+                if (store.loadingMore && index == posts.length + peopleOffset) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                  child: Text(
+                    l10n.plugin_instagram_for_you_guest_note,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 );
               },
             ),
@@ -265,8 +299,8 @@ class _ForYouTab extends StatelessWidget {
 
 class _DiscoverPeopleStrip extends StatelessWidget {
   final List<InstagramAuthor> people;
-  final ValueChanged<InstagramAuthor> onOpen;
-  final ValueChanged<InstagramAuthor> onFollow;
+  final Future<void> Function(InstagramAuthor) onOpen;
+  final Future<void> Function(InstagramAuthor) onFollow;
 
   const _DiscoverPeopleStrip({
     required this.people,

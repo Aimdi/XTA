@@ -51,7 +51,7 @@ class InstagramFollowsStore extends Store<List<InstagramFollow>> {
     if (handle.isEmpty) return;
     final next = InstagramFollow(
       id: handle,
-      pk: pk.isEmpty ? handle : pk,
+      pk: pk.isNotEmpty ? pk : (author.pk.isNotEmpty ? author.pk : handle),
       name: author.displayName,
       avatarUrl: author.avatarUrl,
       createdAt: DateTime.now(),
@@ -238,16 +238,16 @@ class InstagramFeedStore extends Store<List<InstagramPost>> {
   Future<void> loadMore() async {
     if (!_hasMore || _loadingMore || _cursor == null) return;
     _loadingMore = true;
+    update(state);
     try {
       final page = await loader(cursor: _cursor);
       _cursor = page.cursor;
       _hasMore = page.hasMore;
-      if (page.posts.isNotEmpty) {
-        update(_dedupe([...state, ...page.posts]));
-      }
-    } catch (_) {
-    } finally {
       _loadingMore = false;
+      update(_dedupe([...state, ...page.posts]));
+    } catch (_) {
+      _loadingMore = false;
+      update(state);
     }
   }
 }

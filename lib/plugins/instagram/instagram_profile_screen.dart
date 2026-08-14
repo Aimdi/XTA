@@ -32,7 +32,16 @@ class _InstagramProfileScreenState extends State<InstagramProfileScreen> {
     final client = context.read<InstagramClient>();
     _profileStore = InstagramProfileStore(client, widget.handle);
     _feed = InstagramFeedStore(({cursor}) async {
-      if (cursor == null) return client.profileMedia(widget.handle);
+      if (cursor == null) {
+        final page = await client.profileMedia(widget.handle);
+        if (!client.hasSession) {
+          return InstagramItemPage(posts: page.posts, hasMore: false);
+        }
+        return page;
+      }
+      if (!client.hasSession) {
+        return const InstagramItemPage(posts: [], hasMore: false);
+      }
       final profile =
           _profileStore.state ?? await client.profile(widget.handle);
       return client.userFeed(pk: profile.id, cursor: cursor);
@@ -138,9 +147,11 @@ class _ProfileBody extends StatelessWidget {
                 ),
                 onError: (_, error) => Padding(
                   padding: const EdgeInsets.all(24),
-                  child: Text(
-                    instagramErrorMessage(L10n.of(context), error),
-                    textAlign: TextAlign.center,
+                  child: FullPageErrorWidget(
+                    error: error,
+                    stackTrace: null,
+                    prefix: instagramErrorMessage(L10n.of(context), error),
+                    onRetry: onRefresh,
                   ),
                 ),
                 onState: (context, posts) {
@@ -153,10 +164,32 @@ class _ProfileBody extends StatelessWidget {
                       ),
                     );
                   }
+                  final guest = !context.read<InstagramClient>().hasSession;
                   return Column(
                     children: [
                       for (final post in posts)
                         InstagramPostCard(post: post, openAuthor: false),
+                      if (feed.loadingMore)
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else if (guest)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                          child: Text(
+                            L10n.of(
+                              context,
+                            ).plugin_instagram_more_needs_session,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ),
                     ],
                   );
                 },
@@ -196,13 +229,27 @@ class _Header extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      profile.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            profile.displayName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        if (profile.isVerified) ...[
+                          const SizedBox(width: 6),
+                          Icon(
+                            Icons.verified,
+                            size: 20,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ],
+                      ],
                     ),
                     Text('@${profile.username}'),
                   ],
