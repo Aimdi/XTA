@@ -29,6 +29,7 @@ const String tableBooruSubscription = 'booru_subscription';
 const String tableEhFavorite = 'eh_favorite';
 const String tableEhHistory = 'eh_history';
 const String tableTiktokSubscription = 'tiktok_subscription';
+const String tableInstagramSubscription = 'instagram_subscription';
 const String tableImmichUpload = 'immich_upload';
 const String tableRedditLocalVote = 'reddit_local_vote';
 const String tableThreadsLocalLike = 'threads_local_like';
@@ -48,7 +49,7 @@ const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 
-const int databaseVersion = 56;
+const int databaseVersion = 57;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -797,6 +798,19 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       'last_page INTEGER NOT NULL DEFAULT 1, '
       'viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
       reverseSql: 'DROP TABLE $tableEhHistory',
+    ),
+  ],
+  57: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableInstagramSubscription ('
+      'id VARCHAR PRIMARY KEY, '
+      'pk VARCHAR NOT NULL, '
+      'name VARCHAR NOT NULL, '
+      'avatar_url VARCHAR, '
+      'signature VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableInstagramSubscription',
     ),
   ],
 });

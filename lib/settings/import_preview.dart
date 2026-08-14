@@ -145,6 +145,9 @@ String _label(BuildContext context, BackupCategory category) =>
       BackupCategory.tiktokSubscriptions => L10n.of(
         context,
       ).plugin_tiktok_tab_accounts,
+      BackupCategory.instagramSubscriptions => L10n.of(
+        context,
+      ).plugin_instagram_tab_accounts,
       BackupCategory.groups => L10n.of(context).groups,
       BackupCategory.groupMembers => L10n.of(context).group_members,
       BackupCategory.savedPosts => L10n.of(context).saved,

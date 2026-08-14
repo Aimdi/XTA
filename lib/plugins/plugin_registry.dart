@@ -4,6 +4,7 @@ import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/deepmarks/deepmarks_plugin.dart';
 import 'package:xta/plugins/ehviewer/eh_plugin.dart';
 import 'package:xta/plugins/immich/immich_plugin.dart';
+import 'package:xta/plugins/instagram/instagram_plugin.dart';
 import 'package:xta/plugins/karakeep/karakeep_plugin.dart';
 import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
@@ -21,6 +22,7 @@ final List<XtaPlugin> builtInPlugins = [
   BlueskyPlugin(),
   MastodonPlugin(),
   TikTokPlugin(),
+  InstagramPlugin(),
   RedditPlugin(),
   SubstackPlugin(),
   PixivPlugin(),

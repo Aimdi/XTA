@@ -23,7 +23,7 @@ void main() {
     ]);
     expect(
       groups[0].plugins.map((p) => p.id),
-      containsAll(['threads', 'bluesky', 'mastodon', 'tiktok']),
+      containsAll(['threads', 'bluesky', 'mastodon', 'tiktok', 'instagram']),
     );
     expect(groups[1].plugins.single.id, 'reddit');
     expect(groups[2].plugins.single.id, 'substack');
