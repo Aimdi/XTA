@@ -64,8 +64,8 @@ share a client instance, cooldown, or device id.
 | Piece | Detail |
 |---|---|
 | Home | **For you** (Explore when a session answers; else interleaved public seeds) · Following · Accounts |
-| Open | Exact `@handle` + people search when the session answers `topsearch` |
-| Profile | Public grid from `web_profile_info` / `feed/user/{pk}`; private accounts show a lock |
+| Open | Guest submit opens a public `@handle`; people search when the session answers `topsearch` |
+| Profile | Public grid from `web_profile_info`; `feed/user/{pk}` only with a session; private accounts show a lock (not a full-page error) |
 | Cards | Image / carousel covers; video/reel is cover + open-on-site (CDN often 403 without cookies) |
 | Settings | Show tab, paste cookies, copy Threads cookies, test `@instagram`, clear session |
 | Storage | `instagram_subscription` (migration 57) |
