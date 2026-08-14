@@ -110,16 +110,12 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   MastodonFeedStore(this.client, this.prefs, this.accounts) : super(const []);
 
   Future<void> refresh({bool force = false}) async {
-    final accts = accounts.state.map((e) => e.acct).toList(growable: false);
-    if (state.isNotEmpty) {
-      try {
-        update(await postsFor(accts, forceRefresh: force));
-      } catch (_) {
-        update(state);
-      }
-      return;
-    }
-    await execute(() => postsFor(accts, forceRefresh: force));
+    await execute(
+      () => postsFor(
+        accounts.state.map((e) => e.acct).toList(growable: false),
+        forceRefresh: force,
+      ),
+    );
   }
 
   /// Posts for [accts], newest first.
@@ -159,4 +155,158 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
     perAccount: mastodonPostsPerAccount,
     concurrency: 3,
   );
+}
+
+/// Home instance first, then extras, then the built-in defaults.
+List<String> mastodonDiscoveryInstances(BasePrefService prefs) {
+  final ordered = [
+    ...mastodonConfiguredInstances(prefs),
+    ...kMastodonDefaultInstances,
+  ];
+  final seen = <String>{};
+  return [
+    for (final candidate in ordered)
+      if (normaliseMastodonInstance(candidate) case final instance?
+          when seen.add(instance))
+        instance,
+  ];
+}
+
+const _publicPageSize = 30;
+
+/// Posts already shown, then [more] with ids that are new.
+List<MastodonPost> appendUniqueMastodonPosts(
+  List<MastodonPost> current,
+  List<MastodonPost> more,
+) {
+  final seen = current.map((post) => post.id).toSet();
+  return [
+    ...current,
+    for (final post in more)
+      if (seen.add(post.id)) post,
+  ];
+}
+
+/// One public timeline (local or federated) that pages with `max_id`.
+class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
+  final MastodonClient client;
+  final BasePrefService prefs;
+  final bool local;
+
+  MastodonPublicFeedStore(this.client, this.prefs, {required this.local})
+    : super(const []);
+
+  String? _instance;
+  var _hasMore = true;
+  var _loadingMore = false;
+  var _backedOff = false;
+
+  bool get canLoadMore =>
+      _hasMore && !_loadingMore && !_backedOff && state.isNotEmpty;
+
+  bool get loadingMore => _loadingMore;
+
+  Future<void> refresh() async {
+    _instance = null;
+    _hasMore = true;
+    _backedOff = false;
+    if (state.isNotEmpty) {
+      try {
+        update(await _firstPage());
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
+    await execute(_firstPage);
+  }
+
+  Future<void> loadMore() async {
+    final instance = _instance;
+    if (!canLoadMore || instance == null) return;
+    _loadingMore = true;
+    try {
+      final more = await client.getPublicTimeline(
+        instance,
+        local: local,
+        limit: _publicPageSize,
+        maxId: state.last.id,
+      );
+      _hasMore = more.length >= _publicPageSize;
+      update(appendUniqueMastodonPosts(state, more));
+    } catch (_) {
+      _backedOff = true;
+    } finally {
+      _loadingMore = false;
+    }
+  }
+
+  Future<List<MastodonPost>> _firstPage() async {
+    return client.firstInstanceThat(mastodonDiscoveryInstances(prefs), (
+      instance,
+    ) async {
+      final posts = await client.getPublicTimeline(
+        instance,
+        local: local,
+        limit: _publicPageSize,
+      );
+      _instance = instance;
+      _hasMore = posts.length >= _publicPageSize;
+      return posts;
+    });
+  }
+}
+
+class MastodonLocalStore extends MastodonPublicFeedStore {
+  MastodonLocalStore(super.client, super.prefs) : super(local: true);
+}
+
+class MastodonFederatedStore extends MastodonPublicFeedStore {
+  MastodonFederatedStore(super.client, super.prefs) : super(local: false);
+}
+
+class MastodonExplorePage {
+  final List<MastodonTrendingTag> tags;
+  final List<MastodonPost> posts;
+
+  const MastodonExplorePage({this.tags = const [], this.posts = const []});
+}
+
+/// Trending tags + trending statuses — Phanpy / Tusky Explore.
+class MastodonExploreStore extends Store<MastodonExplorePage> {
+  final MastodonClient client;
+  final BasePrefService prefs;
+
+  MastodonExploreStore(this.client, this.prefs)
+    : super(const MastodonExplorePage());
+
+  Future<void> refresh() async {
+    if (state.posts.isNotEmpty || state.tags.isNotEmpty) {
+      try {
+        update(await _load());
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
+    await execute(_load);
+  }
+
+  Future<MastodonExplorePage> _load() async {
+    final instances = mastodonDiscoveryInstances(prefs);
+    final tags = await _soft(
+      () => client.getTrendingTagsAnywhere(instances),
+      const <MastodonTrendingTag>[],
+    );
+    final posts = await client.getTrendingStatusesAnywhere(instances);
+    return MastodonExplorePage(tags: tags, posts: posts);
+  }
+
+  Future<T> _soft<T>(Future<T> Function() read, T fallback) async {
+    try {
+      return await read();
+    } catch (_) {
+      return fallback;
+    }
+  }
 }

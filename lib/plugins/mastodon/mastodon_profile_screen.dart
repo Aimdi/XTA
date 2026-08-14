@@ -7,7 +7,6 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
-import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/user.dart';
@@ -39,21 +38,20 @@ class MastodonProfileScreen extends StatefulWidget {
   State<MastodonProfileScreen> createState() => _MastodonProfileScreenState();
 }
 
-class _MastodonTabFeed {
-  List<MastodonPost> posts = const [];
-  var loaded = false;
-  var loading = false;
-}
-
 class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
   MastodonProfile? _profile;
+  List<MastodonPost> _posts = const [];
+  List<MastodonPost> _media = const [];
+  Set<String> _pinnedIds = const {};
   String? _instance;
   Object? _error;
-  bool _loading = true;
-  var _tab = PluginProfileFeedTab.posts;
-  final _feeds = {
-    for (final tab in PluginProfileFeedTab.values) tab: _MastodonTabFeed(),
-  };
+  var _loading = true;
+  var _mediaTab = false;
+  var _loadingMore = false;
+  var _hasMorePosts = true;
+  var _hasMoreMedia = true;
+  var _mediaLoaded = false;
+  var _backedOff = false;
 
   @override
   void initState() {
@@ -65,11 +63,7 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     setState(() {
       _loading = true;
       _error = null;
-      for (final feed in _feeds.values) {
-        feed.posts = const [];
-        feed.loaded = false;
-        feed.loading = false;
-      }
+      _backedOff = false;
     });
 
     final prefs = PrefService.of(context, listen: false);
@@ -79,17 +73,20 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
         widget.acct,
         configured: mastodonConfiguredInstances(prefs),
       );
-      final found = await client.profileAnywhere(candidates, widget.acct);
-      if (!mounted) {
-        return;
+      final page = await client.profileAnywhere(candidates, widget.acct);
+      if (mounted) {
+        setState(() {
+          _profile = page.profile;
+          _posts = page.posts;
+          _pinnedIds = page.pinnedIds;
+          _instance = page.instance;
+          _hasMorePosts = page.posts.length >= 20;
+          _media = const [];
+          _mediaLoaded = false;
+          _hasMoreMedia = true;
+          _loading = false;
+        });
       }
-      setState(() {
-        _profile = found.profile;
-        _instance = found.instance;
-        _feeds[PluginProfileFeedTab.posts]!.posts = found.posts;
-        _feeds[PluginProfileFeedTab.posts]!.loaded = true;
-        _loading = false;
-      });
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -100,51 +97,67 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     }
   }
 
-  Future<void> _selectTab(PluginProfileFeedTab tab) async {
-    if (_tab == tab) {
-      return;
-    }
-    setState(() => _tab = tab);
-    final feed = _feeds[tab]!;
-    if (!feed.loaded && !feed.loading) {
-      await _loadTab(tab);
+  List<MastodonPost> get _visible => _mediaTab ? _media : _posts;
+
+  Future<void> _showMedia() async {
+    setState(() => _mediaTab = true);
+    if (_mediaLoaded || _profile == null || _instance == null) return;
+    final client = context.read<MastodonClient>();
+    try {
+      final posts = await client.getStatuses(
+        _instance!,
+        _profile!.id,
+        onlyMedia: true,
+      );
+      if (!mounted) return;
+      setState(() {
+        _media = posts;
+        _mediaLoaded = true;
+        _hasMoreMedia = posts.length >= 20;
+      });
+    } catch (_) {
+      if (mounted) setState(() => _mediaLoaded = true);
     }
   }
 
-  Future<void> _loadTab(PluginProfileFeedTab tab) async {
+  Future<void> _loadMore() async {
     final profile = _profile;
     final instance = _instance;
-    if (profile == null || instance == null) {
+    final current = _visible;
+    if (profile == null ||
+        instance == null ||
+        _loadingMore ||
+        _backedOff ||
+        current.isEmpty) {
       return;
     }
-    final feed = _feeds[tab]!;
-    setState(() => feed.loading = true);
-    final client = context.read<MastodonClient>();
+    if (_mediaTab ? !_hasMoreMedia : !_hasMorePosts) return;
+
+    setState(() => _loadingMore = true);
     try {
-      final raw = await client.getStatuses(
+      final more = await context.read<MastodonClient>().getStatuses(
         instance,
         profile.id,
-        limit: 40,
-        excludeReplies: tab != PluginProfileFeedTab.replies,
-        onlyMedia: tab == PluginProfileFeedTab.media,
+        onlyMedia: _mediaTab,
+        maxId: current.last.id,
       );
-      final posts = tab == PluginProfileFeedTab.replies
-          ? [
-              for (final post in raw)
-                if (post.isReply) post,
-            ]
-          : raw;
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       setState(() {
-        feed.posts = posts;
-        feed.loaded = true;
-        feed.loading = false;
+        if (_mediaTab) {
+          _media = appendUniqueMastodonPosts(_media, more);
+          _hasMoreMedia = more.length >= 20;
+        } else {
+          _posts = appendUniqueMastodonPosts(_posts, more);
+          _hasMorePosts = more.length >= 20;
+        }
+        _loadingMore = false;
       });
     } catch (_) {
       if (mounted) {
-        setState(() => feed.loading = false);
+        setState(() {
+          _loadingMore = false;
+          _backedOff = true;
+        });
       }
     }
   }
@@ -217,41 +230,123 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     final following = context.read<MastodonAccountsStore>().follows(
       profile.acct,
     );
-    final feed = _feeds[_tab]!;
-    final posts = feed.posts;
 
-    return FeedListView(
-      padding: const EdgeInsets.only(bottom: 24),
-      itemCount: 2 + posts.length + (feed.loading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: MastodonProfileCard(
-              profile: profile,
-              following: following,
-              onFollowToggle: () => _toggleFollow(profile),
-              onAddToGroup: () => _addToGroup(profile),
-            ),
-          );
+    final posts = _visible;
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification is UserScrollNotification) _backedOff = false;
+        if (notification.metrics.pixels >=
+            notification.metrics.maxScrollExtent - 400) {
+          _loadMore();
         }
-        if (index == 1) {
-          return PluginProfileTabBar(selected: _tab, onSelected: _selectTab);
-        }
-        final postIndex = index - 2;
-        if (postIndex < posts.length) {
-          final post = posts[postIndex];
-          return MastodonPostCard(
-            key: ValueKey(post.id),
-            post: post,
-            showSourceBadge: false,
-          );
-        }
-        return const Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(child: CircularProgressIndicator()),
-        );
+        return false;
       },
+      child: FeedListView(
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: 1 + posts.length + (_loadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  MastodonProfileCard(
+                    profile: profile,
+                    following: following,
+                    onFollowToggle: () => _toggleFollow(profile),
+                    onAddToGroup: () => _addToGroup(profile),
+                  ),
+                  const SizedBox(height: 12),
+                  _ProfileTabs(
+                    media: _mediaTab,
+                    onPosts: () => setState(() => _mediaTab = false),
+                    onMedia: _showMedia,
+                  ),
+                ],
+              ),
+            );
+          }
+          final postIndex = index - 1;
+          if (postIndex < posts.length) {
+            final post = posts[postIndex];
+            return MastodonPostCard(
+              key: ValueKey('${_mediaTab ? 'm' : 'p'}-${post.id}'),
+              post: post,
+              showSourceBadge: false,
+              pinned: !_mediaTab && _pinnedIds.contains(post.id),
+            );
+          }
+          return const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ProfileTabs extends StatelessWidget {
+  final bool media;
+  final VoidCallback onPosts;
+  final VoidCallback onMedia;
+
+  const _ProfileTabs({
+    required this.media,
+    required this.onPosts,
+    required this.onMedia,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: _TabButton(
+            label: l10n.tweets,
+            selected: !media,
+            onTap: onPosts,
+          ),
+        ),
+        Expanded(
+          child: _TabButton(label: l10n.media, selected: media, onTap: onMedia),
+        ),
+      ],
+    );
+  }
+}
+
+class _TabButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _TabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final color = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurfaceVariant;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelLarge?.copyWith(
+            color: color,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -318,6 +413,20 @@ class MastodonProfileCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
+                  if (profile.bot || profile.locked)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        [
+                          if (profile.bot) l10n.plugin_mastodon_bot,
+                          if (profile.locked) l10n.plugin_mastodon_locked,
+                        ].join(' · '),
+                        style: theme.textTheme.labelSmall!.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -326,6 +435,25 @@ class MastodonProfileCard extends StatelessWidget {
         if (profile.note.trim().isNotEmpty) ...[
           const SizedBox(height: 14),
           Text(profile.note.trim(), style: theme.textTheme.bodyMedium),
+        ],
+        if (profile.fields.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          for (final field in profile.fields)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${field.name}: ',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    TextSpan(text: field.value),
+                  ],
+                ),
+                style: theme.textTheme.bodySmall,
+              ),
+            ),
         ],
         const SizedBox(height: 14),
         Wrap(

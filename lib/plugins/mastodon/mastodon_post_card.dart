@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,9 +8,9 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
+import 'package:xta/plugins/mastodon/mastodon_text.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
-import 'package:xta/plugins/plugin_post_media.dart';
-import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
@@ -18,12 +20,16 @@ import 'package:xta/utils/urls.dart';
 /// Avatar size matching X / Reddit cards so Fediverse posts don't look smaller.
 const double kMastodonAvatarSize = 48;
 
+/// Tallest a single attached image is allowed to paint relative to its width.
+const double kMastodonMediaMaxAspectRatio = 16 / 9;
+
 final NumberFormat _mastodonCountFormat = NumberFormat.compact(locale: 'en_US');
 
 /// A Mastodon status as a timeline card — tweet-sized layout, counts, link preview.
 class MastodonPostCard extends StatelessWidget {
   final MastodonPost post;
   final bool showSourceBadge;
+  final bool pinned;
 
   /// When false, the card body does not navigate (used for the root of a thread).
   final bool openOnTap;
@@ -41,6 +47,7 @@ class MastodonPostCard extends StatelessWidget {
     super.key,
     required this.post,
     this.showSourceBadge = true,
+    this.pinned = false,
     this.openOnTap = true,
     this.onOpen,
     this.onAuthorTap,
@@ -91,50 +98,38 @@ class MastodonPostCard extends StatelessWidget {
               onTap: openOnTap ? () => _open(context) : null,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    GestureDetector(
-                      onTap: () => _openAuthor(context),
-                      child: _avatar(context),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          if (post.replyToAcct != null &&
-                              post.replyToAcct!.isNotEmpty)
-                            PluginReplyingTo(name: post.replyToAcct!),
-                          GestureDetector(
-                            onTap: () => _openAuthor(context),
-                            behavior: HitTestBehavior.opaque,
-                            child: _header(context),
-                          ),
-                          if (post.text.isNotEmpty) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              post.text,
-                              style: theme.textTheme.bodyLarge!.copyWith(
-                                height: 1.35,
+                    if (post.boosted) _boostBanner(context),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () => _openAuthor(context),
+                          child: _avatar(context),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              GestureDetector(
+                                onTap: () => _openAuthor(context),
+                                behavior: HitTestBehavior.opaque,
+                                child: _header(context),
                               ),
-                            ),
-                          ],
-                          if (post.hasMedia) ...[
-                            const SizedBox(height: 10),
-                            PluginPostMedia(items: post.mediaItems),
-                          ],
-                          if (post.linkCard != null) ...[
-                            const SizedBox(height: 10),
-                            _MastodonLinkPreview(card: post.linkCard!),
-                          ],
-                          _MastodonEngagementRow(
-                            post: post,
-                            onOpen: () => _open(context),
-                            onOpenBrowser: () => _openBrowser(context),
+                              if (post.replyToAcct != null) _replyLine(context),
+                              _SpoilerBody(post: post, media: _media(context)),
+                              _MastodonEngagementRow(
+                                post: post,
+                                onOpen: () => _open(context),
+                                onOpenBrowser: () => _openBrowser(context),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -171,6 +166,43 @@ class MastodonPostCard extends StatelessWidget {
     );
   }
 
+  Widget _boostBanner(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    final name = post.boostedBy ?? post.authorName;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      child: Row(
+        children: [
+          Icon(Icons.repeat, size: 14, color: muted),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              L10n.of(context).plugin_mastodon_boosted(name),
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _replyLine(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Text(
+        '${L10n.of(context).replying_to} @${post.replyToAcct}',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall!.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
   Widget _header(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
@@ -182,10 +214,6 @@ class MastodonPostCard extends StatelessWidget {
       children: [
         Row(
           children: [
-            if (post.boosted) ...[
-              Icon(Icons.repeat, size: 14, color: muted),
-              const SizedBox(width: 4),
-            ],
             Flexible(
               child: Text(
                 post.authorName,
@@ -202,6 +230,13 @@ class MastodonPostCard extends StatelessWidget {
                 style: theme.textTheme.bodySmall,
               ),
             ],
+            if (post.edited) ...[
+              const SizedBox(width: 6),
+              Text(
+                '· ${l10n.plugin_mastodon_edited}',
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
           ],
         ),
         Row(
@@ -213,6 +248,10 @@ class MastodonPostCard extends StatelessWidget {
                 style: theme.textTheme.bodySmall!.copyWith(color: muted),
               ),
             ),
+            if (pinned) ...[
+              const SizedBox(width: 6),
+              _badge(context, l10n.plugin_mastodon_pinned),
+            ],
             if (showSourceBadge) ...[
               const SizedBox(width: 6),
               _badge(context, l10n.plugin_mastodon_title),
@@ -233,6 +272,45 @@ class MastodonPostCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(label, style: theme.textTheme.labelSmall),
+    );
+  }
+
+  Widget _media(BuildContext context) {
+    final radius = tweetMediaRadiusOf(context);
+    final width = MediaQuery.sizeOf(context).width;
+    final scale = MediaQuery.devicePixelRatioOf(context);
+
+    if (post.images.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: AspectRatio(
+          aspectRatio: kMastodonMediaMaxAspectRatio,
+          child: ExtendedImage.network(
+            post.images.first,
+            fit: BoxFit.cover,
+            cacheWidth: (width * scale).ceil(),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 220,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: post.images.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 6),
+        itemBuilder: (context, index) => ClipRRect(
+          borderRadius: BorderRadius.circular(radius),
+          child: ExtendedImage.network(
+            post.images[index],
+            width: 200,
+            height: 220,
+            fit: BoxFit.cover,
+            cacheWidth: (200 * scale).ceil(),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -267,7 +345,7 @@ class _MastodonLinkPreview extends StatelessWidget {
             children: [
               if (card.hasImage)
                 AspectRatio(
-                  aspectRatio: clampPluginMediaAspect(null),
+                  aspectRatio: kMastodonMediaMaxAspectRatio,
                   child: ExtendedImage.network(
                     card.imageUrl!,
                     fit: BoxFit.cover,
@@ -385,6 +463,208 @@ class _MastodonEngagementRow extends StatelessWidget {
             L10n.of(context).open_in_browser,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SpoilerBody extends StatefulWidget {
+  final MastodonPost post;
+  final Widget media;
+
+  const _SpoilerBody({required this.post, required this.media});
+
+  @override
+  State<_SpoilerBody> createState() => _SpoilerBodyState();
+}
+
+class _SpoilerBodyState extends State<_SpoilerBody> {
+  var _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final post = widget.post;
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    if (post.hasSpoiler && !_open) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 6),
+          Text(
+            post.spoilerText,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          TextButton(
+            onPressed: () => setState(() => _open = true),
+            child: Text(l10n.show),
+          ),
+        ],
+      );
+    }
+    return _visible(theme, l10n, blur: post.sensitive && !_open);
+  }
+
+  Widget _visible(ThemeData theme, L10n l10n, {required bool blur}) {
+    final post = widget.post;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (post.hasSpoiler)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              onPressed: () => setState(() => _open = false),
+              child: Text(l10n.hide),
+            ),
+          ),
+        if (post.text.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          MastodonRichText(
+            text: post.text,
+            mentionAccts: post.mentionAccts,
+            style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+            onMentionTap: (acct) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MastodonProfileScreen(acct: acct),
+              ),
+            ),
+            onTagTap: (tag) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag)),
+            ),
+          ),
+        ],
+        if (post.quote != null) ...[
+          const SizedBox(height: 10),
+          _QuoteEmbed(quote: post.quote!),
+        ],
+        if (post.hasMedia) ...[
+          const SizedBox(height: 10),
+          GestureDetector(
+            onTap: blur ? () => setState(() => _open = true) : null,
+            child: blur
+                ? ImageFiltered(
+                    imageFilter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                    child: widget.media,
+                  )
+                : widget.media,
+          ),
+        ],
+        if (post.poll != null) ...[
+          const SizedBox(height: 10),
+          _PollBars(poll: post.poll!),
+        ],
+        if (post.linkCard != null) ...[
+          const SizedBox(height: 10),
+          _MastodonLinkPreview(card: post.linkCard!),
+        ],
+      ],
+    );
+  }
+}
+
+class _PollBars extends StatelessWidget {
+  final MastodonPoll poll;
+
+  const _PollBars({required this.poll});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final total = poll.votesCount <= 0
+        ? poll.options.fold<int>(0, (sum, o) => sum + o.votes)
+        : poll.votesCount;
+    return Column(
+      children: [
+        for (final option in poll.options)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(child: Text(option.title)),
+                    Text(
+                      total == 0
+                          ? '0%'
+                          : '${((option.votes / total) * 100).round()}%',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: total == 0 ? 0 : option.votes / total,
+                    minHeight: 6,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _QuoteEmbed extends StatelessWidget {
+  final MastodonQuotedPost quote;
+
+  const _QuoteEmbed({required this.quote});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final radius = tweetMediaRadiusOf(context);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MastodonThreadScreen(post: quote.asPost),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(radius),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                quote.authorName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                '@${quote.acct}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              if (quote.text.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(quote.text, maxLines: 6, overflow: TextOverflow.ellipsis),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }

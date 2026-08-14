@@ -160,13 +160,28 @@ class MastodonClient {
   /// A profile and its first page of posts from one instance, walked the same
   /// way — both halves must come from the same place for the id to mean
   /// anything.
-  Future<({MastodonProfile profile, List<MastodonPost> posts, String instance})>
+  Future<
+    ({
+      MastodonProfile profile,
+      List<MastodonPost> posts,
+      Set<String> pinnedIds,
+      String instance,
+    })
+  >
   profileAnywhere(List<String> instances, String acct) =>
       firstInstanceThat(instances, (instance) async {
         final profile = await lookup(instance, acct);
+        final posts = await getStatuses(instance, profile.id);
+        var pinned = const <MastodonPost>[];
+        try {
+          pinned = await getStatuses(instance, profile.id, pinned: true);
+        } on MastodonException catch (e) {
+          if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+        }
         return (
           profile: profile,
-          posts: await getStatuses(instance, profile.id),
+          posts: mergeMastodonPinned(pinned, posts),
+          pinnedIds: {for (final post in pinned) post.id},
           instance: instance,
         );
       });
@@ -225,20 +240,17 @@ class MastodonClient {
     int limit = 20,
     bool excludeReplies = true,
     bool onlyMedia = false,
+    bool pinned = false,
     String? maxId,
   }) async {
-    final query = <String, String>{
-      'limit': '$limit',
-      'exclude_replies': '$excludeReplies',
-    };
-    if (onlyMedia) {
-      query['only_media'] = 'true';
-    }
-    if (maxId != null && maxId.isNotEmpty) {
-      query['max_id'] = maxId;
-    }
     final json = await _get(
-      _uri(instance, '/api/v1/accounts/$id/statuses', query),
+      _uri(instance, '/api/v1/accounts/$id/statuses', {
+        'limit': '$limit',
+        'exclude_replies': '$excludeReplies',
+        if (onlyMedia) 'only_media': 'true',
+        if (pinned) 'pinned': 'true',
+        'max_id': ?maxId,
+      }),
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
   }
@@ -449,29 +461,40 @@ class MastodonClient {
     (instance) => getTrendingTags(instance, limit: limit),
   );
 
-  /// Account search without `resolve` — works as a guest on many instances.
-  Future<List<MastodonProfile>> searchAccounts(
+  /// Guest search: accounts, statuses, and hashtags in one call.
+  Future<MastodonSearchPage> search(
     String instance,
     String q, {
     int limit = 20,
   }) async {
     final query = q.trim();
     if (query.isEmpty) {
-      return const [];
+      return const MastodonSearchPage();
     }
     final json = await _get(
-      _uri(instance, '/api/v2/search', {
-        'q': query,
-        'type': 'accounts',
-        'limit': '$limit',
-      }),
+      _uri(instance, '/api/v2/search', {'q': query, 'limit': '$limit'}),
     );
-    final root = Json(json);
-    final home = _homeDomain(instance);
-    return [
-      for (final account in root['accounts'].list)
-        MastodonProfile.fromJson(account.raw, homeDomain: home),
-    ];
+    return parseMastodonSearch(json, homeDomain: _homeDomain(instance));
+  }
+
+  /// [search] over [instances].
+  Future<MastodonSearchPage> searchAnywhere(
+    List<String> instances,
+    String q, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => search(instance, q, limit: limit),
+  );
+
+  /// Account-only search — used when a caller only wants profiles.
+  Future<List<MastodonProfile>> searchAccounts(
+    String instance,
+    String q, {
+    int limit = 20,
+  }) async {
+    final page = await search(instance, q, limit: limit);
+    return page.accounts;
   }
 
   /// [searchAccounts] over [instances].
@@ -479,23 +502,27 @@ class MastodonClient {
     List<String> instances,
     String q, {
     int limit = 20,
-  }) => firstInstanceThat(
-    instances,
-    (instance) => searchAccounts(instance, q, limit: limit),
-  );
+  }) async {
+    final page = await searchAnywhere(instances, q, limit: limit);
+    return page.accounts;
+  }
 
   /// Public hashtag timeline on [instance].
   Future<List<MastodonPost>> getTagTimeline(
     String instance,
     String tag, {
     int limit = 30,
+    String? maxId,
   }) async {
     final name = tag.replaceFirst(RegExp(r'^#'), '').trim();
     if (name.isEmpty) {
       return const [];
     }
     final json = await _get(
-      _uri(instance, '/api/v1/timelines/tag/$name', {'limit': '$limit'}),
+      _uri(instance, '/api/v1/timelines/tag/$name', {
+        'limit': '$limit',
+        'max_id': ?maxId,
+      }),
     );
     return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
   }
@@ -509,4 +536,135 @@ class MastodonClient {
     instances,
     (instance) => getTagTimeline(instance, tag, limit: limit),
   );
+
+  /// Public local or federated timeline (Tusky / Ivory / Phanpy).
+  Future<List<MastodonPost>> getPublicTimeline(
+    String instance, {
+    bool local = false,
+    int limit = 30,
+    String? maxId,
+  }) async {
+    try {
+      final json = await _get(
+        _uri(instance, '/api/v1/timelines/public', {
+          'limit': '$limit',
+          if (local) 'local': 'true',
+          'max_id': ?maxId,
+        }),
+      );
+      return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
+    } on MastodonException catch (e) {
+      if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+    }
+    return _misskeyPublic(instance, local: local, limit: limit, untilId: maxId);
+  }
+
+  Future<List<MastodonPost>> getPublicTimelineAnywhere(
+    List<String> instances, {
+    bool local = false,
+    int limit = 30,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => getPublicTimeline(instance, local: local, limit: limit),
+  );
+
+  /// Trending statuses on [instance] (public on most Mastodon hosts).
+  Future<List<MastodonPost>> getTrendingStatuses(
+    String instance, {
+    int limit = 20,
+  }) async {
+    try {
+      final json = await _get(
+        _uri(instance, '/api/v1/trends/statuses', {'limit': '$limit'}),
+      );
+      return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
+    } on MastodonException catch (e) {
+      if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+    }
+    return _misskeyPublic(instance, local: false, limit: limit);
+  }
+
+  Future<List<MastodonPost>> getTrendingStatusesAnywhere(
+    List<String> instances, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => getTrendingStatuses(instance, limit: limit),
+  );
+
+  /// Misskey-family public notes when the Mastodon API is missing or empty.
+  Future<List<MastodonPost>> _misskeyPublic(
+    String instance, {
+    required bool local,
+    int limit = 20,
+    String? untilId,
+  }) async {
+    if (local) {
+      try {
+        final notes = await _misskeyNotes(
+          instance,
+          '/api/notes/local-timeline',
+          {'limit': limit, 'untilId': ?untilId},
+        );
+        if (notes.isNotEmpty) return notes;
+      } on MastodonException catch (e) {
+        if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+      }
+    }
+    if (untilId != null) {
+      return const [];
+    }
+    return _misskeyNotes(instance, '/api/notes/featured', {'limit': limit});
+  }
+
+  Future<List<MastodonPost>> _misskeyNotes(
+    String instance,
+    String path,
+    Map<String, Object?> body,
+  ) async {
+    final json = await _post(_uri(instance, path), body);
+    return parseMisskeyNotes(json, instance: instance);
+  }
+
+  Future<Object?> _post(Uri uri, Map<String, Object?> body) async {
+    final http.Response response;
+    try {
+      response = await httpClient
+          .post(
+            uri,
+            headers: {
+              'User-Agent': userAgent,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(_timeout);
+    } catch (e) {
+      throw MastodonException(MastodonErrorKind.network, '$uri: $e');
+    }
+    if (response.statusCode == 404) {
+      throw MastodonException(MastodonErrorKind.notFound, '$uri: 404');
+    }
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      throw MastodonException(
+        MastodonErrorKind.unauthorized,
+        '$uri: ${response.statusCode}',
+      );
+    }
+    if (response.statusCode == 429) {
+      throw MastodonException(MastodonErrorKind.rateLimited, '$uri: 429');
+    }
+    if (response.statusCode != 200) {
+      throw MastodonException(
+        MastodonErrorKind.badResponse,
+        '$uri: ${response.statusCode}',
+      );
+    }
+    try {
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      throw MastodonException(MastodonErrorKind.badResponse, '$uri: $e');
+    }
+  }
 }

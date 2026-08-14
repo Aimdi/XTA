@@ -15,7 +15,8 @@ const int kMastodonInterleavedPageSize = 10;
 /// asked for: a reader who turned the plugin on wanted its tab, not a different
 /// Following feed.
 bool fediverseInHomeFeed(BasePrefService prefs) =>
-    prefs.get<bool>(optionPluginMastodonEnabled) == true && prefs.get<bool>(optionPluginMastodonInHomeFeed) == true;
+    prefs.get<bool>(optionPluginMastodonEnabled) == true &&
+    prefs.get<bool>(optionPluginMastodonInHomeFeed) == true;
 
 /// The accounts the home timeline should mix in — none unless the option is on.
 List<String> fediverseHomeIds(BuildContext context) {
@@ -23,7 +24,11 @@ List<String> fediverseHomeIds(BuildContext context) {
     return const [];
   }
 
-  return context.read<MastodonAccountsStore>().state.map((e) => e.acct).toList(growable: false);
+  return context
+      .read<MastodonAccountsStore>()
+      .state
+      .map((e) => e.acct)
+      .toList(growable: false);
 }
 
 /// One page of each account, as dated items a tweet list can slot between its

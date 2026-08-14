@@ -1,5 +1,4 @@
 import 'package:html/parser.dart' as html;
-import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/utils/json.dart';
 
 /// Open Graph–style link preview attached to a public status (`card` in the API).
@@ -23,6 +22,28 @@ class MastodonLinkCard {
   bool get hasImage => imageUrl != null && imageUrl!.isNotEmpty;
 }
 
+/// A read-only poll on a public status. Voting is not sent anywhere.
+class MastodonPollOption {
+  final String title;
+  final int votes;
+
+  const MastodonPollOption({required this.title, this.votes = 0});
+}
+
+class MastodonPoll {
+  final List<MastodonPollOption> options;
+  final int votesCount;
+  final bool expired;
+  final bool multiple;
+
+  const MastodonPoll({
+    required this.options,
+    this.votesCount = 0,
+    this.expired = false,
+    this.multiple = false,
+  });
+}
+
 /// One public Mastodon status, as much as a card needs.
 class MastodonPost {
   final String id;
@@ -30,21 +51,31 @@ class MastodonPost {
   final String authorName;
   final String? avatarUrl;
   final String text;
+  final String spoilerText;
+  final bool sensitive;
   final List<String> images;
-  final List<double?> imageAspects;
-  final List<bool> imageIsVideo;
   final DateTime? publishedAt;
   final String url;
 
   /// True when this card shows a boosted status (reblog unwrapped).
   final bool boosted;
 
+  /// Display name of who boosted, when [boosted] is true.
+  final String? boostedBy;
+
+  /// Handle this status is a reply to, when the payload names one.
+  final String? replyToAcct;
+
+  /// `acct` values from the status mentions, used to resolve `@name` taps.
+  final List<String> mentionAccts;
+
+  final DateTime? editedAt;
+  final MastodonQuotedPost? quote;
   final int repliesCount;
   final int reblogsCount;
   final int favouritesCount;
   final MastodonLinkCard? linkCard;
-  final String? replyToAcct;
-  final bool isReply;
+  final MastodonPoll? poll;
 
   const MastodonPost({
     required this.id,
@@ -53,26 +84,136 @@ class MastodonPost {
     required this.text,
     required this.url,
     this.avatarUrl,
+    this.spoilerText = '',
+    this.sensitive = false,
     this.images = const [],
-    this.imageAspects = const [],
-    this.imageIsVideo = const [],
     this.publishedAt,
     this.boosted = false,
+    this.boostedBy,
+    this.replyToAcct,
+    this.mentionAccts = const [],
+    this.editedAt,
+    this.quote,
     this.repliesCount = 0,
     this.reblogsCount = 0,
     this.favouritesCount = 0,
     this.linkCard,
-    this.replyToAcct,
-    this.isReply = false,
+    this.poll,
   });
 
   bool get hasMedia => images.isNotEmpty;
 
-  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
-    urls: images,
-    aspects: imageAspects,
-    videos: imageIsVideo,
+  bool get hasSpoiler => spoilerText.trim().isNotEmpty;
+
+  bool get edited => editedAt != null;
+}
+
+/// A quoted status shown under the card — one level, no nested quotes.
+class MastodonQuotedPost {
+  final String id;
+  final String acct;
+  final String authorName;
+  final String text;
+  final String url;
+  final List<String> images;
+
+  const MastodonQuotedPost({
+    required this.id,
+    required this.acct,
+    required this.authorName,
+    required this.text,
+    required this.url,
+    this.images = const [],
+  });
+
+  MastodonPost get asPost => MastodonPost(
+    id: id,
+    acct: acct,
+    authorName: authorName,
+    text: text,
+    url: url,
+    images: images,
   );
+}
+
+/// Guest search: accounts, statuses, and hashtags from one `/api/v2/search`.
+class MastodonSearchPage {
+  final List<MastodonProfile> accounts;
+  final List<MastodonPost> posts;
+  final List<MastodonTrendingTag> tags;
+
+  const MastodonSearchPage({
+    this.accounts = const [],
+    this.posts = const [],
+    this.tags = const [],
+  });
+
+  bool get isEmpty => accounts.isEmpty && posts.isEmpty && tags.isEmpty;
+}
+
+enum MastodonTextKind { text, mention, tag }
+
+/// One run of a status body: plain text, `@mention`, or `#tag`.
+class MastodonTextPart {
+  final MastodonTextKind kind;
+  final String text;
+  final String value;
+
+  const MastodonTextPart(this.kind, this.text, this.value);
+}
+
+final _mastodonEntity = RegExp(
+  r'(@[A-Za-z0-9_]+(?:@[A-Za-z0-9.-]+\.[A-Za-z]{2,})?|#[^\s#@]+)',
+);
+
+/// Splits [text] into tappable mentions/tags. [mentionAccts] resolve `@name`.
+List<MastodonTextPart> mastodonTextParts(
+  String text, {
+  List<String> mentionAccts = const [],
+}) {
+  if (text.isEmpty) return const [];
+  final parts = <MastodonTextPart>[];
+  var cursor = 0;
+  for (final match in _mastodonEntity.allMatches(text)) {
+    if (match.start > cursor) {
+      parts.add(
+        MastodonTextPart(
+          MastodonTextKind.text,
+          text.substring(cursor, match.start),
+          '',
+        ),
+      );
+    }
+    final raw = match.group(0)!;
+    if (raw.startsWith('#')) {
+      parts.add(MastodonTextPart(MastodonTextKind.tag, raw, raw.substring(1)));
+    } else {
+      parts.add(
+        MastodonTextPart(
+          MastodonTextKind.mention,
+          raw,
+          resolveMastodonMention(raw, mentionAccts),
+        ),
+      );
+    }
+    cursor = match.end;
+  }
+  if (cursor < text.length) {
+    parts.add(
+      MastodonTextPart(MastodonTextKind.text, text.substring(cursor), ''),
+    );
+  }
+  return parts;
+}
+
+String resolveMastodonMention(String raw, List<String> mentionAccts) {
+  final handle = raw.replaceFirst(RegExp(r'^@+'), '').toLowerCase();
+  if (handle.contains('@')) return handle;
+  for (final acct in mentionAccts) {
+    final lower = acct.toLowerCase();
+    if (lower == handle || lower.startsWith('$handle@')) return lower;
+  }
+  return handle;
 }
 
 /// A Mastodon / Fediverse profile as the home instance reports it.
@@ -89,6 +230,8 @@ class MastodonProfile {
   final int followingCount;
   final int statusesCount;
   final bool locked;
+  final bool bot;
+  final List<MastodonField> fields;
 
   const MastodonProfile({
     required this.id,
@@ -102,6 +245,8 @@ class MastodonProfile {
     this.followingCount = 0,
     this.statusesCount = 0,
     this.locked = false,
+    this.bot = false,
+    this.fields = const [],
   });
 
   factory MastodonProfile.fromJson(Object? json, {String? homeDomain}) {
@@ -126,11 +271,21 @@ class MastodonProfile {
       followingCount: data['following_count'].integer ?? 0,
       statusesCount: data['statuses_count'].integer ?? 0,
       locked: data['locked'].boolean ?? false,
+      bot: data['bot'].boolean ?? false,
+      fields: _fieldsOf(data),
     );
   }
 
   MastodonAccount toAccount() =>
       MastodonAccount(acct: acct, name: displayName, avatarUrl: avatarUrl);
+}
+
+/// A profile metadata row (`fields` in the Mastodon API).
+class MastodonField {
+  final String name;
+  final String value;
+
+  const MastodonField({required this.name, required this.value});
 }
 
 /// An account the reader follows locally — not a Mastodon follow-graph edge.
@@ -370,57 +525,19 @@ String mastodonHtmlToText(String? contentHtml) {
   return document.body?.text.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim() ?? '';
 }
 
-List<PluginMediaItem> mastodonMediaOf(Json status) {
-  final items = <PluginMediaItem>[];
-  final seen = <String>{};
+List<String> mastodonImagesOf(Json status) {
+  final urls = <String>[];
   for (final media in status['media_attachments'].list) {
     final type = media['type'].string ?? '';
-    final isVideo = type == 'video' || type == 'gifv';
-    if (type != 'image' && !isVideo) {
+    if (type != 'image' && type != 'gifv') {
       continue;
     }
-    final url = isVideo
-        ? (media['preview_url'].string ?? media['url'].string)
-        : (media['url'].string ?? media['preview_url'].string);
-    if (url == null || url.isEmpty || seen.contains(url)) {
-      continue;
-    }
-    seen.add(url);
-    items.add(
-      PluginMediaItem(
-        url: url,
-        aspectRatio:
-            pluginMediaAspectFrom(media['meta']['original'].raw) ??
-            pluginMediaAspectFrom(media['meta']['small'].raw),
-        alt: media['description'].string,
-        isVideo: type == 'video',
-      ),
-    );
-  }
-  return items;
-}
-
-List<String> mastodonImagesOf(Json status) => [
-  for (final item in mastodonMediaOf(status)) item.url,
-];
-
-String? mastodonReplyToAcctOf(Json status) {
-  final replyId =
-      status['in_reply_to_account_id'].string ??
-      '${status['in_reply_to_account_id'].integer ?? ''}';
-  if (replyId.isEmpty) {
-    return null;
-  }
-  for (final mention in status['mentions'].list) {
-    final id = mention['id'].string ?? '${mention['id'].integer ?? ''}';
-    if (id == replyId) {
-      final acct = mention['acct'].string?.trim();
-      if (acct != null && acct.isNotEmpty) {
-        return acct;
-      }
+    final url = media['preview_url'].string ?? media['url'].string;
+    if (url != null && url.isNotEmpty && !urls.contains(url)) {
+      urls.add(url);
     }
   }
-  return null;
+  return urls;
 }
 
 /// PreviewCard on a status, or null when Mastodon sent nothing useful.
@@ -456,7 +573,11 @@ MastodonLinkCard? mastodonLinkCardOf(Json status) {
 }
 
 /// One status JSON object → [MastodonPost], or null when empty.
-MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
+MastodonPost? mastodonPostFromStatus(
+  Object? json, {
+  String? homeDomain,
+  bool includeQuote = true,
+}) {
   final root = Json(json);
   // Unwrap boosts so the card shows the original public post.
   final boosted = root['reblog'].exists;
@@ -473,14 +594,14 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
   );
   final spoiler = status['spoiler_text'].string?.trim() ?? '';
   final body = mastodonHtmlToText(status['content'].string);
-  final text = [
-    if (spoiler.isNotEmpty) spoiler,
-    if (body.isNotEmpty) body,
-  ].join('\n\n');
-  final media = mastodonMediaOf(status);
-  final images = [for (final item in media) item.url];
+  final images = mastodonImagesOf(status);
   final linkCard = mastodonLinkCardOf(status);
-  if (text.isEmpty && images.isEmpty && linkCard == null) {
+  final poll = mastodonPollOf(status);
+  if (spoiler.isEmpty &&
+      body.isEmpty &&
+      images.isEmpty &&
+      linkCard == null &&
+      poll == null) {
     return null;
   }
 
@@ -495,25 +616,229 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     acct: author.acct,
     authorName: author.displayName,
     avatarUrl: author.avatarUrl,
-    text: text,
+    text: body,
+    spoilerText: spoiler,
+    sensitive: status['sensitive'].boolean ?? spoiler.isNotEmpty,
     images: images,
-    imageAspects: [for (final item in media) item.aspectRatio],
-    imageIsVideo: [for (final item in media) item.isVideo],
     publishedAt: DateTime.tryParse(
       status['created_at'].string ?? '',
     )?.toLocal(),
     url: url,
     boosted: boosted,
+    boostedBy: boosted ? _boostedByName(root, homeDomain: homeDomain) : null,
+    replyToAcct: _replyToAcct(status),
+    mentionAccts: _mentionAccts(status),
+    editedAt: DateTime.tryParse(status['edited_at'].string ?? '')?.toLocal(),
+    quote: includeQuote
+        ? mastodonQuoteOf(status, homeDomain: homeDomain)
+        : null,
     repliesCount: status['replies_count'].integer ?? 0,
     reblogsCount: status['reblogs_count'].integer ?? 0,
     favouritesCount: status['favourites_count'].integer ?? 0,
     linkCard: linkCard,
-    replyToAcct: mastodonReplyToAcctOf(status),
-    isReply:
-        (status['in_reply_to_id'].string ??
-                '${status['in_reply_to_id'].integer ?? ''}')
-            .isNotEmpty,
+    poll: poll,
   );
+}
+
+String? _boostedByName(Json root, {String? homeDomain}) {
+  final booster = MastodonProfile.fromJson(
+    root['account'].raw,
+    homeDomain: homeDomain,
+  );
+  final name = booster.displayName.trim();
+  return name.isEmpty ? null : name;
+}
+
+List<String> _mentionAccts(Json status) {
+  final accts = <String>[];
+  for (final mention in status['mentions'].list) {
+    final acct = (mention['acct'].string ?? mention['username'].string ?? '')
+        .trim();
+    if (acct.isNotEmpty) accts.add(acct);
+  }
+  return accts;
+}
+
+MastodonQuotedPost? mastodonQuoteOf(Json status, {String? homeDomain}) {
+  var quoted = status['quote']['quoted_status'];
+  if (!quoted.exists) quoted = status['quoted_status'];
+  if (!quoted.exists &&
+      status['quote']['id'].exists &&
+      status['quote']['account'].exists) {
+    quoted = status['quote'];
+  }
+  if (!quoted.exists) return null;
+  final post = mastodonPostFromStatus(
+    quoted.raw,
+    homeDomain: homeDomain,
+    includeQuote: false,
+  );
+  if (post == null) return null;
+  return MastodonQuotedPost(
+    id: post.id,
+    acct: post.acct,
+    authorName: post.authorName,
+    text: post.text,
+    url: post.url,
+    images: post.images,
+  );
+}
+
+String? _replyToAcct(Json status) {
+  if (!status['in_reply_to_id'].exists &&
+      !status['in_reply_to_account_id'].exists) {
+    return null;
+  }
+  for (final mention in status['mentions'].list) {
+    final acct = (mention['acct'].string ?? mention['username'].string ?? '')
+        .trim();
+    if (acct.isNotEmpty) return acct;
+  }
+  return null;
+}
+
+MastodonPoll? mastodonPollOf(Json status) {
+  final poll = status['poll'];
+  if (!poll.exists) return null;
+  final options = <MastodonPollOption>[];
+  for (final option in poll['options'].list) {
+    final title = (option['title'].string ?? '').trim();
+    if (title.isEmpty) continue;
+    options.add(
+      MastodonPollOption(
+        title: title,
+        votes: option['votes_count'].integer ?? 0,
+      ),
+    );
+  }
+  if (options.isEmpty) return null;
+  return MastodonPoll(
+    options: options,
+    votesCount: poll['votes_count'].integer ?? 0,
+    expired: poll['expired'].boolean ?? false,
+    multiple: poll['multiple'].boolean ?? false,
+  );
+}
+
+List<MastodonField> _fieldsOf(Json data) {
+  final fields = <MastodonField>[];
+  for (final field in data['fields'].list) {
+    final name = (field['name'].string ?? '').trim();
+    if (name.isEmpty) continue;
+    fields.add(
+      MastodonField(
+        name: name,
+        value: mastodonHtmlToText(field['value'].string),
+      ),
+    );
+  }
+  return fields;
+}
+
+/// Misskey / Sharkey `notes/*` payload → the same card model.
+MastodonPost? mastodonPostFromMisskeyNote(
+  Object? json, {
+  required String instance,
+}) {
+  final note = Json(json);
+  final outerText = (note['text'].string ?? '').trim();
+  final isRenote = note['renote'].exists && outerText.isEmpty;
+  final source = isRenote ? note['renote'] : note;
+  final id = (source['id'].string ?? '').trim();
+  if (id.isEmpty) return null;
+
+  final user = source['user'];
+  final username = (user['username'].string ?? '').trim();
+  if (username.isEmpty) return null;
+  final remote = (user['host'].string ?? '').trim().toLowerCase();
+  final host = remote.isEmpty
+      ? (mastodonInstanceDomain(instance) ?? '')
+      : remote;
+  final acct = host.isEmpty ? username : '$username@$host';
+  final name = (user['name'].string ?? '').trim();
+  final spoiler = (source['cw'].string ?? '').trim();
+  final body = (source['text'].string ?? '').trim();
+  final images = _misskeyImages(source);
+  if (spoiler.isEmpty && body.isEmpty && images.isEmpty && !isRenote) {
+    return null;
+  }
+
+  final origin = mastodonInstanceDomain(instance) ?? host;
+  final booster = isRenote ? note['user'] : const Json(null);
+  final boosterName = (booster['name'].string ?? '').trim();
+  final boosterUser = (booster['username'].string ?? '').trim();
+  final isQuote = note['renote'].exists && outerText.isNotEmpty;
+  return MastodonPost(
+    id: id,
+    acct: acct,
+    authorName: name.isEmpty ? username : name,
+    avatarUrl: user['avatarUrl'].string,
+    text: body,
+    spoilerText: spoiler,
+    sensitive: spoiler.isNotEmpty,
+    images: images,
+    publishedAt: DateTime.tryParse(source['createdAt'].string ?? '')?.toLocal(),
+    url: 'https://$origin/notes/$id',
+    boosted: isRenote,
+    boostedBy: isRenote
+        ? (boosterName.isNotEmpty ? boosterName : boosterUser)
+        : null,
+    replyToAcct: _misskeyReplyTo(source),
+    quote: isQuote ? _misskeyQuote(note['renote'], instance: instance) : null,
+    repliesCount: source['repliesCount'].integer ?? 0,
+    reblogsCount: source['renoteCount'].integer ?? 0,
+    favouritesCount: _misskeyReactionCount(source),
+  );
+}
+
+MastodonQuotedPost? _misskeyQuote(Json note, {required String instance}) {
+  final post = mastodonPostFromMisskeyNote(note.raw, instance: instance);
+  if (post == null) return null;
+  return MastodonQuotedPost(
+    id: post.id,
+    acct: post.acct,
+    authorName: post.authorName,
+    text: post.text,
+    url: post.url,
+    images: post.images,
+  );
+}
+
+List<String> _misskeyImages(Json note) {
+  final images = <String>[];
+  for (final file in note['files'].list) {
+    final url = file['thumbnailUrl'].string ?? file['url'].string ?? '';
+    if (url.startsWith('http')) images.add(url);
+  }
+  return images;
+}
+
+String? _misskeyReplyTo(Json note) {
+  final user = note['reply']['user'];
+  final username = (user['username'].string ?? '').trim();
+  if (username.isEmpty) return null;
+  final host = (user['host'].string ?? '').trim();
+  return host.isEmpty ? username : '$username@$host';
+}
+
+int _misskeyReactionCount(Json note) {
+  var total = 0;
+  final reactions = note['reactions'].raw;
+  if (reactions is Map) {
+    for (final value in reactions.values) {
+      if (value is num) total += value.toInt();
+    }
+  }
+  return total;
+}
+
+List<MastodonPost> parseMisskeyNotes(Object? json, {required String instance}) {
+  final root = Json(json);
+  final items = root.raw is List ? root.list : const <Json>[];
+  return [
+    for (final item in items)
+      ?mastodonPostFromMisskeyNote(item.raw, instance: instance),
+  ];
 }
 
 /// Pure parse of `GET /accounts/:id/statuses` JSON array.
@@ -568,4 +893,30 @@ List<MastodonTrendingTag> parseMastodonTrendingTags(Object? json) {
     );
   }
   return tags;
+}
+
+/// Pinned statuses first, then the rest without repeating an id.
+List<MastodonPost> mergeMastodonPinned(
+  List<MastodonPost> pinned,
+  List<MastodonPost> posts,
+) {
+  final ids = pinned.map((post) => post.id).toSet();
+  return [
+    ...pinned,
+    for (final post in posts)
+      if (!ids.contains(post.id)) post,
+  ];
+}
+
+/// Pure parse of `GET /api/v2/search` JSON.
+MastodonSearchPage parseMastodonSearch(Object? json, {String? homeDomain}) {
+  final root = Json(json);
+  return MastodonSearchPage(
+    accounts: [
+      for (final account in root['accounts'].list)
+        MastodonProfile.fromJson(account.raw, homeDomain: homeDomain),
+    ],
+    posts: parseMastodonStatuses(root['statuses'].raw, homeDomain: homeDomain),
+    tags: parseMastodonTrendingTags(root['hashtags'].raw),
+  );
 }

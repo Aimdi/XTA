@@ -46,7 +46,8 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   String title(BuildContext context) => L10n.of(context).plugin_mastodon_title;
 
   @override
-  String description(BuildContext context) => L10n.of(context).plugin_mastodon_description;
+  String description(BuildContext context) =>
+      L10n.of(context).plugin_mastodon_description;
 
   @override
   NavigationPage homePage(BuildContext context) {
@@ -64,7 +65,8 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   }
 
   @override
-  Widget? settingsScreen(BuildContext context) => const MastodonSettingsScreen();
+  Widget? settingsScreen(BuildContext context) =>
+      const MastodonSettingsScreen();
 
   @override
   List<String> get tables => const [tableMastodonSubscription];
@@ -73,7 +75,8 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   String get subscriptionTable => tableMastodonSubscription;
 
   @override
-  Subscription subscriptionFromMap(Map<String, Object?> row) => MastodonSubscription.fromMap(row);
+  Subscription subscriptionFromMap(Map<String, Object?> row) =>
+      MastodonSubscription.fromMap(row);
 
   @override
   bool owns(Subscription subscription) => subscription is MastodonSubscription;
@@ -83,21 +86,25 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
       () => MastodonProfileScreen(acct: subscription.id);
 
   @override
-  Future<void> reloadFromDatabase(BuildContext context) => context.read<MastodonAccountsStore>().load();
+  Future<void> reloadFromDatabase(BuildContext context) =>
+      context.read<MastodonAccountsStore>().load();
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
       context.read<MastodonAccountsStore>().remove(subscription.id);
 
   @override
-  bool inHomeFeed(BuildContext context) => fediverseInHomeFeed(PrefService.of(context, listen: false));
+  bool inHomeFeed(BuildContext context) =>
+      fediverseInHomeFeed(PrefService.of(context, listen: false));
 
   @override
   List<String> homeFeedIds(BuildContext context) => fediverseHomeIds(context);
 
   @override
-  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
-      loadMastodonInterleaved(context, ids);
+  Future<List<InterleavedItem>> interleavedPosts(
+    BuildContext context,
+    List<String> ids,
+  ) => loadMastodonInterleaved(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [
@@ -118,7 +125,15 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   Future<void> forgetLoadedData(BuildContext context) async {
     final accounts = context.read<MastodonAccountsStore>();
     final feed = context.read<MastodonFeedStore>();
+    final explore = context.read<MastodonExploreStore>();
+    final local = context.read<MastodonLocalStore>();
+    final federated = context.read<MastodonFederatedStore>();
     await accounts.load();
-    await feed.refresh();
+    await Future.wait([
+      feed.refresh(),
+      explore.refresh(),
+      local.refresh(),
+      federated.refresh(),
+    ]);
   }
 }

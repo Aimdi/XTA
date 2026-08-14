@@ -112,30 +112,6 @@ void main() {
       expect(posts.first.text, 'Hi');
     });
 
-    test('getStatuses can ask for replies and media', () async {
-      final client = MastodonClient(
-        httpClient: MockClient((request) async {
-          expect(request.url.queryParameters['exclude_replies'], 'false');
-          expect(request.url.queryParameters['only_media'], 'true');
-          expect(request.url.queryParameters['max_id'], '9');
-          return http.Response(
-            jsonEncode([]),
-            200,
-            headers: {'content-type': 'application/json'},
-          );
-        }),
-      );
-
-      final posts = await client.getStatuses(
-        'https://mastodon.social',
-        '1',
-        excludeReplies: false,
-        onlyMedia: true,
-        maxId: '9',
-      );
-      expect(posts, isEmpty);
-    });
-
     test('fetchThread resolves a status URL then loads context', () async {
       final client = MastodonClient(
         httpClient: MockClient((request) async {
@@ -395,6 +371,196 @@ void main() {
         expect(asked.any((e) => e.startsWith('open.social')), isTrue);
       },
     );
+
+    test('getPublicTimeline reads /timelines/public?local=true', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/api/v1/timelines/public');
+          expect(request.url.queryParameters['local'], 'true');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '3',
+                url: 'https://mastodon.social/@a/3',
+                text: 'local',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline(
+        'https://mastodon.social',
+        local: true,
+      );
+      expect(posts.single.text, 'local');
+    });
+
+    test('getPublicTimeline falls back to Misskey featured', () async {
+      final asked = <String>[];
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          asked.add('${request.method} ${request.url.path}');
+          if (request.url.path == '/api/v1/timelines/public') {
+            return http.Response('no', 404);
+          }
+          expect(request.method, 'POST');
+          expect(request.url.path, '/api/notes/featured');
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 'mk1',
+                'text': 'from misskey',
+                'user': {'username': 'neo', 'host': null},
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline('https://misskey.io');
+      expect(posts.single.text, 'from misskey');
+      expect(asked, contains('GET /api/v1/timelines/public'));
+      expect(asked, contains('POST /api/notes/featured'));
+    });
+
+    test('getPublicTimeline pages with max_id', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.queryParameters['max_id'], '3');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '2',
+                url: 'https://mastodon.social/@a/2',
+                text: 'older',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline(
+        'https://mastodon.social',
+        maxId: '3',
+      );
+      expect(posts.single.id, '2');
+    });
+
+    test('getStatuses asks only_media and max_id', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/api/v1/accounts/1/statuses');
+          expect(request.url.queryParameters['only_media'], 'true');
+          expect(request.url.queryParameters['max_id'], '9');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '8',
+                url: 'https://mastodon.social/@a/8',
+                text: 'pic',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getStatuses(
+        'https://mastodon.social',
+        '1',
+        onlyMedia: true,
+        maxId: '9',
+      );
+      expect(posts.single.text, 'pic');
+    });
+
+    test('Misskey local-timeline pages with untilId', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          if (request.url.path == '/api/v1/timelines/public') {
+            return http.Response('no', 404);
+          }
+          expect(request.url.path, '/api/notes/local-timeline');
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          expect(body['untilId'], 'mk1');
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 'mk0',
+                'text': 'older note',
+                'user': {'username': 'neo', 'host': null},
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline(
+        'https://misskey.io',
+        local: true,
+        maxId: 'mk1',
+      );
+      expect(posts.single.text, 'older note');
+    });
+
+    test('getStatuses asks pinned=true', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.queryParameters['pinned'], 'true');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '1',
+                url: 'https://mastodon.social/@a/1',
+                text: 'pin',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getStatuses(
+        'https://mastodon.social',
+        '1',
+        pinned: true,
+      );
+      expect(posts.single.text, 'pin');
+    });
+
+    test('search reads accounts, statuses, and hashtags', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/api/v2/search');
+          expect(request.url.queryParameters['q'], 'flutter');
+          return http.Response(
+            jsonEncode({
+              'accounts': [],
+              'statuses': [
+                _statusJson(
+                  id: '4',
+                  url: 'https://mastodon.social/@a/4',
+                  text: 'about flutter',
+                ),
+              ],
+              'hashtags': [
+                {'name': 'flutter', 'history': []},
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final page = await client.search('https://mastodon.social', 'flutter');
+      expect(page.posts.single.text, 'about flutter');
+      expect(page.tags.single.name, 'flutter');
+    });
   });
 }
 
