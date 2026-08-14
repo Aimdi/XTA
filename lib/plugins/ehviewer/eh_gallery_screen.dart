@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,6 +11,7 @@ import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_reader_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_search_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
+import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/ui/errors.dart';
 
 class EhGalleryScreen extends StatefulWidget {
@@ -107,6 +109,39 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
     );
   }
 
+  Future<void> _continueReading() async {
+    final history = context.read<EhHistoryStore>().entryFor(widget.gallery.gid);
+    final page = history?.lastPage ?? 1;
+    final existing = _previews.where((p) => p.page == page).firstOrNull;
+    if (existing != null) {
+      _openReader(existing);
+      return;
+    }
+    final client = context.read<EhClient>();
+    try {
+      final preview = await client.previewForPage(
+        gid: widget.gallery.gid,
+        token: widget.gallery.token,
+        page: page,
+      );
+      if (!mounted) return;
+      _openReader(preview ?? _previews.first);
+    } catch (_) {
+      if (_previews.isNotEmpty) _openReader(_previews.first);
+    }
+  }
+
+  void _copyLink() {
+    final host = context.read<EhClient>().host;
+    final uri = (_detail ?? widget.gallery).galleryUri(host);
+    Clipboard.setData(ClipboardData(text: uri.toString()));
+    showSnackBar(
+      context,
+      icon: '📋',
+      message: L10n.of(context).plugin_eh_link_copied,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -116,11 +151,16 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          gallery.title,
+          gallery.titleFor(preferJapanese: ehPreferJapaneseOf(context)),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         actions: [
+          IconButton(
+            tooltip: l10n.plugin_eh_copy_link,
+            icon: const Icon(Icons.link),
+            onPressed: _copyLink,
+          ),
           ScopedBuilder<EhFavoritesStore, List<EhGallery>>(
             store: favorites,
             onState: (context, _) {
@@ -169,7 +209,9 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: Text(
-                    gallery.title,
+                    gallery.titleFor(
+                      preferJapanese: ehPreferJapaneseOf(context),
+                    ),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -187,7 +229,12 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
                     spacing: 12,
                     children: [
                       if (gallery.category != null)
-                        Text(gallery.category!.label),
+                        Chip(
+                          label: Text(gallery.category!.label),
+                          backgroundColor: ehCategoryColor(gallery.category!),
+                          labelStyle: const TextStyle(color: Colors.white),
+                          visualDensity: VisualDensity.compact,
+                        ),
                       if (gallery.pageCount != null)
                         Text(l10n.plugin_eh_pages(gallery.pageCount!)),
                       if (gallery.rating != null)
@@ -204,10 +251,31 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
                 if (_previews.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: FilledButton.icon(
-                      onPressed: () => _openReader(_previews.first),
-                      icon: const Icon(Icons.menu_book_outlined),
-                      label: Text(l10n.plugin_eh_read),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: () => _openReader(_previews.first),
+                            icon: const Icon(Icons.menu_book_outlined),
+                            label: Text(l10n.plugin_eh_read),
+                          ),
+                        ),
+                        if ((context
+                                    .read<EhHistoryStore>()
+                                    .entryFor(gallery.gid)
+                                    ?.lastPage ??
+                                1) >
+                            1) ...[
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _continueReading,
+                              icon: const Icon(Icons.play_arrow),
+                              label: Text(l10n.plugin_eh_continue),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 if (gallery.tags.isNotEmpty) ...[
@@ -235,6 +303,39 @@ class _EhGalleryScreenState extends State<EhGalleryScreen> {
                       ],
                     ),
                   ),
+                ],
+                if (_detail != null) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    child: Text(
+                      l10n.plugin_eh_comments,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  if (_detail!.comments.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child: Text(l10n.plugin_eh_empty_comments),
+                    ),
+                  for (final comment in _detail!.comments.take(20))
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            [
+                              comment.author,
+                              if (comment.posted.isNotEmpty) comment.posted,
+                              if (comment.score != null) comment.score!,
+                            ].join(' · '),
+                            style: Theme.of(context).textTheme.labelSmall,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(comment.body),
+                        ],
+                      ),
+                    ),
                 ],
                 if (_previews.isNotEmpty) ...[
                   Padding(

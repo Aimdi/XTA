@@ -3,7 +3,9 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
+import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
@@ -51,7 +53,11 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
   Future<void> _loadHome({bool force = false}) async {
     final likes = context.read<BlueskyLikesStore>();
     final feed = context.read<BlueskyFeedStore>();
-    await likes.load();
+    // Startup already hydrated likes when the plugin was on. A remount from
+    // the home strip should not hit SQLite again just to paint the same list.
+    if (likes.state.isEmpty) {
+      await likes.load();
+    }
     // The pull is the reader asking for new posts, so it has to get past the
     // ten-minute per-account cache — without this the spinner ran and nothing
     // was refetched.
@@ -108,6 +114,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              accent: BlueskyPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_bluesky_home,
@@ -162,14 +169,14 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
             ),
             const Divider(height: 1),
             Expanded(
-              child: IndexedStack(
+              child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  _HomePane(
+                  (_) => _HomePane(
                     scrollController: widget.scrollController,
                     onRefresh: () => _loadHome(force: true),
                   ),
-                  _LikedPane(
+                  (_) => _LikedPane(
                     scrollController: _likedScrollController,
                     likes: context.read<BlueskyLikesStore>(),
                   ),
@@ -357,7 +364,7 @@ class _LikedPane extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
+          return FeedListView(
             controller: scrollController,
             itemCount: posts.length,
             itemBuilder: (context, index) => BlueskyPostCard(

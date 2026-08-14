@@ -39,7 +39,9 @@ const double kFooterButtonHeight = 44;
 const footerButtonStyle = ButtonStyle(
   overlayColor: WidgetStatePropertyAll(Colors.transparent),
   splashFactory: NoSplash.splashFactory,
-  padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: kFooterButtonPadding)),
+  padding: WidgetStatePropertyAll(
+    EdgeInsets.symmetric(horizontal: kFooterButtonPadding),
+  ),
   minimumSize: WidgetStatePropertyAll(Size(0, kFooterButtonHeight)),
   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
   visualDensity: VisualDensity.compact,
@@ -47,10 +49,12 @@ const footerButtonStyle = ButtonStyle(
 
 /// Fixed cost of one count action: padding, the 20dp glyph and the gap Material
 /// puts between an icon and its label.
-const double kFooterCountItemBase = kFooterButtonPadding + 20 + 8 + kFooterButtonPadding;
+const double kFooterCountItemBase =
+    kFooterButtonPadding + 20 + 8 + kFooterButtonPadding;
 
 /// One icon-only action (bookmark, share).
-const double kFooterIconItem = kFooterButtonPadding + 20 + kFooterButtonPadding + 8;
+const double kFooterIconItem =
+    kFooterButtonPadding + 20 + kFooterButtonPadding + 8;
 
 /// Gap between the counts group and the icon group.
 const double kFooterGroupGap = 8;
@@ -71,11 +75,18 @@ class FooterFit {
   /// strip down instead of letting it clip.
   final bool mustScaleDown;
 
-  const FooterFit({required this.showCounts, required this.showViews, required this.mustScaleDown});
+  const FooterFit({
+    required this.showCounts,
+    required this.showViews,
+    required this.mustScaleDown,
+  });
 }
 
 double _stripWidth(List<double> labelWidths, int iconButtons) =>
-    labelWidths.fold<double>(0, (sum, width) => sum + kFooterCountItemBase + width) +
+    labelWidths.fold<double>(
+      0,
+      (sum, width) => sum + kFooterCountItemBase + width,
+    ) +
     iconButtons * kFooterIconItem +
     kFooterGroupGap;
 
@@ -93,14 +104,27 @@ FooterFit resolveFooterFit({
   final counts = countLabelWidths.length;
 
   if (viewsLabelWidth != null &&
-      _stripWidth([...countLabelWidths, viewsLabelWidth], iconButtons) <= available) {
-    return const FooterFit(showCounts: true, showViews: true, mustScaleDown: false);
+      _stripWidth([...countLabelWidths, viewsLabelWidth], iconButtons) <=
+          available) {
+    return const FooterFit(
+      showCounts: true,
+      showViews: true,
+      mustScaleDown: false,
+    );
   }
   if (_stripWidth(countLabelWidths, iconButtons) <= available) {
-    return const FooterFit(showCounts: true, showViews: false, mustScaleDown: false);
+    return const FooterFit(
+      showCounts: true,
+      showViews: false,
+      mustScaleDown: false,
+    );
   }
   final bare = _stripWidth(List.filled(counts, 0), iconButtons);
-  return FooterFit(showCounts: false, showViews: false, mustScaleDown: bare > available);
+  return FooterFit(
+    showCounts: false,
+    showViews: false,
+    mustScaleDown: bare > available,
+  );
 }
 
 enum TranslationStatus { original, translating, translationFailed, translated }
@@ -129,28 +153,43 @@ class TweetTranslateButton extends StatelessWidget {
     if (status == TranslationStatus.translating) {
       return const Padding(
         padding: EdgeInsets.all(8),
-        child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       );
     }
 
     final theme = Theme.of(context);
     final (color, tooltip, onPressed) = switch (status) {
       TranslationStatus.translated => (
-          theme.colorScheme.primary,
-          L10n.of(context).action_show_original_post,
-          onShowOriginal
-        ),
+        theme.colorScheme.primary,
+        L10n.of(context).action_show_original_post,
+        onShowOriginal,
+      ),
       TranslationStatus.translationFailed => (
-          Colors.red.harmonizeWith(theme.colorScheme.primary),
-          L10n.of(context).action_translate_post,
-          onTranslate
-        ),
-      _ => (tweetFooterButtonsColorOf(context), L10n.of(context).action_translate_post, onTranslate),
+        Colors.red.harmonizeWith(theme.colorScheme.primary),
+        L10n.of(context).action_translate_post,
+        onTranslate,
+      ),
+      _ => (
+        tweetFooterButtonsColorOf(context),
+        L10n.of(context).action_translate_post,
+        onTranslate,
+      ),
     };
 
     return GestureDetector(
       onLongPress: onLongPress ?? onTranslate,
-      child: tweetFooterIconButton(context, Icons.translate, color, null, onPressed, tooltip),
+      child: tweetFooterIconButton(
+        context,
+        Icons.translate,
+        color,
+        null,
+        onPressed,
+        tooltip,
+      ),
     );
   }
 }
@@ -166,10 +205,17 @@ Color? tweetFooterButtonsColor(Color? base) {
     const lightnessFactorDark = 0.5;
     const lightnessFactorLight = 4.0;
     final adjustedLightness =
-        (hsl.lightness * (hsl.lightness > 0.5 ? lightnessFactorDark : lightnessFactorLight)).clamp(0.0, 1.0);
+        (hsl.lightness *
+                (hsl.lightness > 0.5
+                    ? lightnessFactorDark
+                    : lightnessFactorLight))
+            .clamp(0.0, 1.0);
     final adjustedSaturation = (hsl.saturation * 0.2).clamp(0.0, 1.0);
     _buttonsColorBase = base;
-    _buttonsColorCache = hsl.withLightness(adjustedLightness).withSaturation(adjustedSaturation).toColor();
+    _buttonsColorCache = hsl
+        .withLightness(adjustedLightness)
+        .withSaturation(adjustedSaturation)
+        .toColor();
   }
   return _buttonsColorCache;
 }
@@ -187,7 +233,8 @@ String shareableTweetText(TweetWithCard tweet, String text) {
       result = result.replaceAll(short, cleanUrl(expanded));
     }
   }
-  for (Media media in tweet.extendedEntities?.media ?? tweet.entities?.media ?? []) {
+  for (Media media
+      in tweet.extendedEntities?.media ?? tweet.entities?.media ?? []) {
     final short = media.url;
     final expanded = media.expandedUrl;
     if (short != null && expanded != null) {
@@ -203,7 +250,9 @@ void maybeShowFolderHint(BuildContext context) {
     return;
   }
   prefs.set(optionSavedFolderHintShown, true);
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).long_press_folder_hint)));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(L10n.of(context).long_press_folder_hint)),
+  );
 }
 
 void maybeShowLikeToast(BuildContext context) {
@@ -212,17 +261,25 @@ void maybeShowLikeToast(BuildContext context) {
     return;
   }
   prefs.set(optionLikedFirstToastShown, true);
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(L10n.of(context).likes_stay_on_device_notice),
-    duration: const Duration(seconds: 6),
-  ));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(L10n.of(context).likes_stay_on_device_notice),
+      duration: const Duration(seconds: 6),
+    ),
+  );
 }
 
 /// [tooltip] doubles as the button's accessibility label: an icon-only button
 /// without one is announced as an unnamed "button", which is what a screen
 /// reader used to get for every share, save and translate control in a feed.
-Widget tweetFooterIconButton(BuildContext context, IconData icon,
-    [Color? color, double? fill, VoidCallback? onPressed, String? tooltip]) {
+Widget tweetFooterIconButton(
+  BuildContext context,
+  IconData icon, [
+  Color? color,
+  double? fill,
+  VoidCallback? onPressed,
+  String? tooltip,
+]) {
   final button = IconButton(
     icon: Icon(icon, fill: fill),
     color: color ?? Theme.of(context).colorScheme.primary,
@@ -243,11 +300,19 @@ Widget tweetFooterIconButton(BuildContext context, IconData icon,
   );
 }
 
-TextButton tweetFooterTextButton(IconData icon, String label, [Color? color, VoidCallback? onPressed]) {
+TextButton tweetFooterTextButton(
+  IconData icon,
+  String label, [
+  Color? color,
+  VoidCallback? onPressed,
+]) {
   return TextButton.icon(
     icon: Icon(icon, size: 20, color: color),
     onPressed: onPressed,
-    label: Text(label, style: TextStyle(color: color, fontSize: kFooterLabelFontSize)),
+    label: Text(
+      label,
+      style: TextStyle(color: color, fontSize: kFooterLabelFontSize),
+    ),
     style: footerButtonStyle,
   );
 }
@@ -280,17 +345,17 @@ class TweetFooterBar extends StatelessWidget {
   });
 
   void _showShareSheet(BuildContext context) {
-    ListTile createSheetButton(String title, IconData icon, VoidCallback onTap) => ListTile(
-          onTap: onTap,
-          leading: Icon(icon),
-          title: Text(title),
-        );
+    ListTile createSheetButton(
+      String title,
+      IconData icon,
+      VoidCallback onTap,
+    ) => ListTile(onTap: onTap, leading: Icon(icon), title: Text(title));
 
     showModalBottomSheet(
-        context: context,
-        builder: (sheetContext) {
-          return SafeArea(
-              child: Column(
+      context: context,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               if (!isArticle)
@@ -303,36 +368,58 @@ class TweetFooterBar extends StatelessWidget {
                   },
                 ),
               createSheetButton(
-                  isArticle ? L10n.of(sheetContext).share_article_link : L10n.of(sheetContext).share_tweet_link,
-                  Icons.link, () async {
-                Share.share('$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}');
-                Navigator.pop(sheetContext);
-              }),
-              if (!isArticle)
-                createSheetButton(L10n.of(sheetContext).share_tweet_content_and_link, Icons.add_link, () async {
+                isArticle
+                    ? L10n.of(sheetContext).share_article_link
+                    : L10n.of(sheetContext).share_tweet_link,
+                Icons.link,
+                () async {
                   Share.share(
-                      '${shareableTweetText(tweet, tweetText)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}');
+                    '$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
+                  );
                   Navigator.pop(sheetContext);
-                }),
+                },
+              ),
+              if (!isArticle)
+                createSheetButton(
+                  L10n.of(sheetContext).share_tweet_content_and_link,
+                  Icons.add_link,
+                  () async {
+                    Share.share(
+                      '${shareableTweetText(tweet, tweetText)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
+                    );
+                    Navigator.pop(sheetContext);
+                  },
+                ),
               createSheetButton(
-                  isArticle ? L10n.of(sheetContext).share_article_as_image : L10n.of(sheetContext).share_tweet_as_image,
-                  Icons.screenshot, () async {
-                final imgBytes = await onCaptureImage();
-                if (imgBytes != null) {
-                  Share.shareXFiles([XFile.fromData(imgBytes, mimeType: 'image/png')]);
-                }
-                if (sheetContext.mounted) {
-                  Navigator.pop(sheetContext);
-                }
-              }),
+                isArticle
+                    ? L10n.of(sheetContext).share_article_as_image
+                    : L10n.of(sheetContext).share_tweet_as_image,
+                Icons.screenshot,
+                () async {
+                  final imgBytes = await onCaptureImage();
+                  if (imgBytes != null) {
+                    Share.shareXFiles([
+                      XFile.fromData(imgBytes, mimeType: 'image/png'),
+                    ]);
+                  }
+                  if (sheetContext.mounted) {
+                    Navigator.pop(sheetContext);
+                  }
+                },
+              ),
               if (deepmarksEnabled(PrefService.of(sheetContext, listen: false)))
                 createSheetButton(
                   L10n.of(sheetContext).plugin_deepmarks_save_action,
                   Icons.bookmarks_outlined,
                   () async {
-                    final url = '$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}';
+                    final url =
+                        '$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}';
                     Navigator.pop(sheetContext);
-                    await saveToDeepmarks(context, url: url, title: karakeepTitleFor(tweet, tweetText));
+                    await saveToDeepmarks(
+                      context,
+                      url: url,
+                      title: karakeepTitleFor(tweet, tweetText),
+                    );
                   },
                 ),
               if (karakeepEnabled(PrefService.of(sheetContext, listen: false)))
@@ -340,9 +427,14 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).plugin_karakeep_save_action,
                   Icons.bookmark_add_outlined,
                   () async {
-                    final url = '$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}';
+                    final url =
+                        '$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}';
                     Navigator.pop(sheetContext);
-                    await saveToKarakeep(context, url: url, title: karakeepTitleFor(tweet, tweetText));
+                    await saveToKarakeep(
+                      context,
+                      url: url,
+                      title: karakeepTitleFor(tweet, tweetText),
+                    );
                   },
                 ),
               const Padding(
@@ -353,16 +445,19 @@ class TweetFooterBar extends StatelessWidget {
                 L10n.of(sheetContext).cancel,
                 Icons.close,
                 () => Navigator.pop(sheetContext),
-              )
+              ),
             ],
-          ));
-        });
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts =
+        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final tint = tweetFooterButtonsColorOf(context);
     // Both stores are registered with a plain Provider, so a Consumer over them
     // would depend on a value whose identity never changes and never rebuild.
@@ -373,133 +468,194 @@ class TweetFooterBar extends StatelessWidget {
 
     return Container(
       alignment: Alignment.center,
-      margin: isArticle ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 8),
-      child: LayoutBuilder(builder: (context, constraints) {
-        final replyLabel = hideCounts || tweet.replyCount == null ? '' : numberFormat.format(tweet.replyCount);
-        // Missing either count used to hide the whole quotes control. Treat a
-        // null as zero so the button still opens QuotesScreen.
-        final repostTotal = (tweet.retweetCount ?? 0) + (tweet.quoteCount ?? 0);
-        final repostLabel = hideCounts ? '' : numberFormat.format(repostTotal);
-        final likeLabel = hideCounts || tweet.favoriteCount == null ? '' : numberFormat.format(tweet.favoriteCount);
-        final viewsLabel = !hideCounts && tweet.viewCount != null ? numberFormat.format(tweet.viewCount) : null;
+      margin: isArticle
+          ? EdgeInsets.zero
+          : const EdgeInsets.symmetric(horizontal: 8),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final replyLabel = hideCounts || tweet.replyCount == null
+              ? ''
+              : numberFormat.format(tweet.replyCount);
+          // Missing either count used to hide the whole quotes control. Treat a
+          // null as zero so the button still opens QuotesScreen.
+          final repostTotal =
+              (tweet.retweetCount ?? 0) + (tweet.quoteCount ?? 0);
+          final repostLabel = hideCounts
+              ? ''
+              : numberFormat.format(repostTotal);
+          final likeLabel = hideCounts || tweet.favoriteCount == null
+              ? ''
+              : numberFormat.format(tweet.favoriteCount);
+          // View counts are vanity on a reader; keep the fit helper for tests
+          // but do not spend strip width on them here.
+          const String? viewsLabel = null;
 
-        final measure = _LabelMeasure(context);
-        final fit = resolveFooterFit(
-          available: constraints.maxWidth,
-          countLabelWidths: [
-            measure.of(replyLabel),
-            measure.of(repostLabel),
-            measure.of(likeLabel),
-          ],
-          viewsLabelWidth: viewsLabel == null ? null : measure.of(viewsLabel),
-          // Bookmark and share. Translate used to make a third here, and now
-          // sits in the post header instead.
-          iconButtons: 2,
-        );
+          final measure = _LabelMeasure(context);
+          final fit = resolveFooterFit(
+            available: constraints.maxWidth,
+            countLabelWidths: [
+              measure.of(replyLabel),
+              measure.of(repostLabel),
+              measure.of(likeLabel),
+            ],
+            viewsLabelWidth: viewsLabel == null ? null : measure.of(viewsLabel),
+            // Bookmark and share. Translate used to make a third here, and now
+            // sits in the post header instead.
+            iconButtons: 2,
+          );
 
-        String label(String? value) => fit.showCounts ? (value ?? '') : '';
+          String label(String? value) => fit.showCounts ? (value ?? '') : '';
 
-        final actions = <Widget>[
-          GestureDetector(
-            onLongPress: () {
-              try {
-                context.read<ZenRepliesState>().reveal();
-              } catch (_) {
-                onOpenTweet();
-              }
-            },
-            child: tweetFooterTextButton(Icons.mode_comment_outlined, label(replyLabel), tint, onOpenTweet),
-          ),
-          tweetFooterTextButton(
-              Icons.repeat,
+          final actions = <Widget>[
+            GestureDetector(
+              onLongPress: () {
+                try {
+                  context.read<ZenRepliesState>().reveal();
+                } catch (_) {
+                  onOpenTweet();
+                }
+              },
+              child: tweetFooterTextButton(
+                Icons.chat_bubble_outline,
+                label(replyLabel),
+                tint,
+                onOpenTweet,
+              ),
+            ),
+            tweetFooterTextButton(
+              Icons.format_quote,
               label(repostLabel),
               (tweet.quoteCount ?? 0) > 0
-                  ? Colors.green.harmonizeWith(Theme.of(context).colorScheme.primary)
+                  ? Colors.green.harmonizeWith(
+                      Theme.of(context).colorScheme.primary,
+                    )
                   : tint,
               tweet.idStr == null
                   ? null
-                  : () => Navigator.pushNamed(context, routeQuotes,
-                      arguments: QuotesScreenArguments(id: tweet.idStr!))),
-          ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
-            store: likedModel,
-            // Every footer on screen hears every like; only the one whose own
-            // post changed has anything to redraw. Through the model's index —
-            // a map lookup — not a scan of the whole liked list per footer per
-            // emission, which is what this was.
-            distinct: (_) => tweet.idStr != null && likedModel.isLiked(tweet.idStr!),
-            onState: (context, _) {
-              final isLiked = tweet.idStr != null && likedModel.isLiked(tweet.idStr!);
+                  : () => Navigator.pushNamed(
+                      context,
+                      routeQuotes,
+                      arguments: QuotesScreenArguments(id: tweet.idStr!),
+                    ),
+            ),
+            ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
+              store: likedModel,
+              // Every footer on screen hears every like; only the one whose own
+              // post changed has anything to redraw. Through the model's index —
+              // a map lookup — not a scan of the whole liked list per footer per
+              // emission, which is what this was.
+              distinct: (_) =>
+                  tweet.idStr != null && likedModel.isLiked(tweet.idStr!),
+              onState: (context, _) {
+                final isLiked =
+                    tweet.idStr != null && likedModel.isLiked(tweet.idStr!);
 
-              return LikeButton(
-                isLiked: isLiked,
-                label: label(likeLabel),
-                color: isLiked ? Theme.of(context).colorScheme.primary : tint,
-                onPressed: () async {
-                  if (isLiked) {
-                    await likedModel.unlikeTweet(tweet.idStr!);
-                  } else {
-                    await likedModel.likeTweet(tweet.idStr!, tweet.user?.idStr, tweet.toJson());
-                  }
-                  if (!isLiked && context.mounted) {
-                    maybeShowLikeToast(context);
-                  }
-                },
-              );
-            },
-          ),
-          if (viewsLabel != null && fit.showViews)
-            tweetFooterTextButton(Icons.bar_chart, viewsLabel, tint),
-          ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
-            store: savedModel,
-            distinct: (_) => tweet.idStr != null && savedModel.isSaved(tweet.idStr!),
-            onState: (context, _) {
-              final isSaved = tweet.idStr != null && savedModel.isSaved(tweet.idStr!);
-              final button = isSaved
-                  ? tweetFooterIconButton(context, Icons.bookmark, Theme.of(context).colorScheme.primary, 1, () async {
-                      await savedModel.deleteSavedTweet(tweet.idStr!);
-                    }, L10n.of(context).action_unsave_post)
-                  : tweetFooterIconButton(context, Icons.bookmark_border, tint, 0, () async {
-                      // Goes wherever the reader last chose, when they have
-                      // asked for that to be remembered; unfiled otherwise, as
-                      // before. Routed through the shared save so a folder set
-                      // to auto-download does so on a plain tap too --
-                      // inserting the row here skipped that entirely.
-                      await fileSavedTweet(
-                        context,
-                        tweetId: tweet.idStr!,
-                        userId: tweet.user?.idStr,
-                        content: tweet.toJson(),
-                        folderId: rememberedSaveFolder(PrefService.of(context, listen: false)),
+                return LikeButton(
+                  isLiked: isLiked,
+                  label: label(likeLabel),
+                  color: isLiked ? Theme.of(context).colorScheme.primary : tint,
+                  onPressed: () async {
+                    if (isLiked) {
+                      await likedModel.unlikeTweet(tweet.idStr!);
+                    } else {
+                      await likedModel.likeTweet(
+                        tweet.idStr!,
+                        tweet.user?.idStr,
+                        tweet.toJson(),
                       );
-                      if (context.mounted) {
-                        maybeShowFolderHint(context);
-                      }
-                    }, L10n.of(context).action_save_post);
+                    }
+                    if (!isLiked && context.mounted) {
+                      maybeShowLikeToast(context);
+                    }
+                  },
+                );
+              },
+            ),
+            if (viewsLabel != null && fit.showViews)
+              tweetFooterTextButton(Icons.bar_chart, viewsLabel, tint),
+            ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+              store: savedModel,
+              distinct: (_) =>
+                  tweet.idStr != null && savedModel.isSaved(tweet.idStr!),
+              onState: (context, _) {
+                final isSaved =
+                    tweet.idStr != null && savedModel.isSaved(tweet.idStr!);
+                final button = isSaved
+                    ? tweetFooterIconButton(
+                        context,
+                        Icons.bookmark,
+                        Theme.of(context).colorScheme.primary,
+                        1,
+                        () async {
+                          await savedModel.deleteSavedTweet(tweet.idStr!);
+                        },
+                        L10n.of(context).action_unsave_post,
+                      )
+                    : tweetFooterIconButton(
+                        context,
+                        Icons.bookmark_border,
+                        tint,
+                        0,
+                        () async {
+                          // Goes wherever the reader last chose, when they have
+                          // asked for that to be remembered; unfiled otherwise, as
+                          // before. Routed through the shared save so a folder set
+                          // to auto-download does so on a plain tap too --
+                          // inserting the row here skipped that entirely.
+                          await fileSavedTweet(
+                            context,
+                            tweetId: tweet.idStr!,
+                            userId: tweet.user?.idStr,
+                            content: tweet.toJson(),
+                            folderId: rememberedSaveFolder(
+                              PrefService.of(context, listen: false),
+                            ),
+                          );
+                          if (context.mounted) {
+                            maybeShowFolderHint(context);
+                          }
+                        },
+                        L10n.of(context).action_save_post,
+                      );
 
-              return GestureDetector(
-                onLongPress: () async {
-                  await showSaveToFolderSheet(context,
-                      tweetId: tweet.idStr!, userId: tweet.user?.idStr, content: tweet.toJson());
-                },
-                child: button,
-              );
-            },
-          ),
-          tweetFooterIconButton(
-              context, Icons.share, tint, null, () => _showShareSheet(context), L10n.of(context).action_share_post),
-        ];
+                return GestureDetector(
+                  onLongPress: () async {
+                    await showSaveToFolderSheet(
+                      context,
+                      tweetId: tweet.idStr!,
+                      userId: tweet.user?.idStr,
+                      content: tweet.toJson(),
+                    );
+                  },
+                  child: button,
+                );
+              },
+            ),
+            tweetFooterIconButton(
+              context,
+              Icons.share,
+              tint,
+              null,
+              () => _showShareSheet(context),
+              L10n.of(context).action_share_post,
+            ),
+          ];
 
-        // Last resort for extreme text scales: shrink the whole strip rather
-        // than clip a digit off the end of it.
-        if (fit.mustScaleDown) {
-          return FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Row(mainAxisSize: MainAxisSize.min, children: actions),
+          // Last resort for extreme text scales: shrink the whole strip rather
+          // than clip a digit off the end of it.
+          if (fit.mustScaleDown) {
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(mainAxisSize: MainAxisSize.min, children: actions),
+            );
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: actions,
           );
-        }
-
-        return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: actions);
-      }),
+        },
+      ),
     );
   }
 }
@@ -525,15 +681,17 @@ class _LabelMeasure {
   final ui.TextDirection _direction;
 
   _LabelMeasure(BuildContext context)
-      : _scaler = MediaQuery.textScalerOf(context),
-        _direction = Directionality.of(context);
+    : _scaler = MediaQuery.textScalerOf(context),
+      _direction = Directionality.of(context);
 
   double of(String label) {
     if (label.isEmpty) {
       return 0;
     }
     final fontSize = _scaler.scale(kFooterLabelFontSize);
-    if (fontSize != _memoFontSize || _direction != _memoDirection || _widths.length > _maxEntries) {
+    if (fontSize != _memoFontSize ||
+        _direction != _memoDirection ||
+        _widths.length > _maxEntries) {
       _widths.clear();
       _memoFontSize = fontSize;
       _memoDirection = _direction;
@@ -543,7 +701,10 @@ class _LabelMeasure {
 
   double _measure(String label) {
     final painter = TextPainter(
-      text: TextSpan(text: label, style: const TextStyle(fontSize: kFooterLabelFontSize)),
+      text: TextSpan(
+        text: label,
+        style: const TextStyle(fontSize: kFooterLabelFontSize),
+      ),
       textScaler: _scaler,
       textDirection: _direction,
       maxLines: 1,

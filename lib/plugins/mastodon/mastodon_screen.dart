@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
+import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
@@ -87,6 +88,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
       body: Column(
         children: [
           PluginHomeChrome(
+            accent: MastodonPlugin().brandColor,
             actions: [
               IconButton(
                 icon: const Icon(Icons.search),

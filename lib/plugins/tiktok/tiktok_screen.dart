@@ -3,8 +3,9 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/plugins/tiktok/tiktok_client.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
+import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/plugins/tiktok/tiktok_post_card.dart';
 import 'package:xta/plugins/tiktok/tiktok_profile_screen.dart';
@@ -30,27 +31,26 @@ class _TikTokScreenState extends State<TikTokScreen> {
   @override
   void initState() {
     super.initState();
-    final client = context.read<TikTokClient>();
-    final follows = context.read<TikTokFollowsStore>();
-    _following = TikTokFollowingStore(client, follows);
+    _following = context.read<TikTokFollowingStore>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await follows.load();
+      final follows = context.read<TikTokFollowsStore>();
+      final likes = context.read<TikTokLikesStore>();
+      final history = context.read<TikTokSearchHistoryStore>();
+      if (follows.state.isEmpty) await follows.load();
       if (!mounted) return;
-      await context.read<TikTokLikesStore>().load();
+      if (likes.state.isEmpty) await likes.load();
       if (!mounted) return;
-      await context.read<TikTokSearchHistoryStore>().load();
+      if (history.state.isEmpty) await history.load();
       if (!mounted) return;
       await _following.refresh();
-      if (!mounted) return;
     });
   }
 
   @override
   void dispose() {
     _tabs.destroy();
-    _following.destroy();
     super.dispose();
   }
 
@@ -65,6 +65,7 @@ class _TikTokScreenState extends State<TikTokScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              accent: TikTokPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_tiktok_tab_following,
@@ -84,8 +85,8 @@ class _TikTokScreenState extends State<TikTokScreen> {
               ],
               actions: [
                 IconButton(
-                  tooltip: l10n.plugin_tiktok_find_handle,
-                  icon: const Icon(Icons.person_add_alt),
+                  tooltip: l10n.plugin_tiktok_search,
+                  icon: const Icon(Icons.search),
                   onPressed: _openSearch,
                 ),
                 IconButton(
@@ -102,17 +103,17 @@ class _TikTokScreenState extends State<TikTokScreen> {
             ),
             const Divider(height: 1),
             Expanded(
-              child: IndexedStack(
+              child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  _FollowingTab(
+                  (_) => _FollowingTab(
                     scrollController: widget.scrollController,
                     store: _following,
                     follows: context.read<TikTokFollowsStore>(),
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFollowing,
                   ),
-                  _AccountsTab(
+                  (_) => _AccountsTab(
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFollowing,
                     onUnfollow: _refreshFollowing,
@@ -420,18 +421,16 @@ class _EmptyFollowing extends StatelessWidget {
           Center(
             child: FilledButton.icon(
               onPressed: hasAccounts ? onRefresh : onFindHandle,
-              icon: Icon(hasAccounts ? Icons.refresh : Icons.person_add_alt),
-              label: Text(
-                hasAccounts ? l10n.retry : l10n.plugin_tiktok_find_handle,
-              ),
+              icon: Icon(hasAccounts ? Icons.refresh : Icons.search),
+              label: Text(hasAccounts ? l10n.retry : l10n.plugin_tiktok_search),
             ),
           ),
           if (hasAccounts)
             Center(
               child: TextButton.icon(
                 onPressed: onFindHandle,
-                icon: const Icon(Icons.person_add_alt),
-                label: Text(l10n.plugin_tiktok_find_handle),
+                icon: const Icon(Icons.search),
+                label: Text(l10n.plugin_tiktok_search),
               ),
             ),
         ],

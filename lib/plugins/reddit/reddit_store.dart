@@ -130,6 +130,16 @@ class RedditFeedStore extends Store<List<RedditPost>> {
   /// [force] is the pull-to-refresh: it goes past the shared cache, which is
   /// otherwise how the reader would pull down and be handed the same posts.
   Future<void> refresh({RedditSort? sort, bool force = false}) async {
+    if (state.isNotEmpty) {
+      try {
+        update(
+          await source.posts(subreddits.state, sort: sort, forceRefresh: force),
+        );
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
     await execute(
       () => source.posts(subreddits.state, sort: sort, forceRefresh: force),
     );

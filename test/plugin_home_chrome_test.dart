@@ -94,6 +94,28 @@ void main() {
     expect(find.byType(SafeArea), findsOneWidget);
   });
 
+  testWidgets('selected tab uses accent when provided', (tester) async {
+    const accent = Color(0xFF00C805);
+    await tester.pumpWidget(
+      _app(
+        PluginHomeChrome(
+          accent: accent,
+          tabs: [
+            PluginHomeTab(
+              icon: Icons.home_outlined,
+              label: 'Home',
+              selected: true,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final icon = tester.widget<Icon>(find.byIcon(Icons.home_outlined));
+    expect(icon.color, accent);
+  });
+
   testWidgets('tab AppBar has no plugin-name title', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

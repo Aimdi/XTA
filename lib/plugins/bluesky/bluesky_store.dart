@@ -17,9 +17,15 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
 
   Future<List<BlueskyAccount>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(tableBlueskySubscription, orderBy: 'name COLLATE NOCASE');
+    final rows = await database.query(
+      tableBlueskySubscription,
+      orderBy: 'name COLLATE NOCASE',
+    );
 
-    return rows.map(BlueskySubscription.fromMap).map(accountOf).toList(growable: false);
+    return rows
+        .map(BlueskySubscription.fromMap)
+        .map(accountOf)
+        .toList(growable: false);
   }
 
   Future<void> add(BlueskyAccount account) async {
@@ -38,7 +44,9 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
   ///
   /// Returns how many rows were newly written — used by the import progress UI.
   Future<int> addMany(Iterable<BlueskyAccount> accounts) async {
-    final existing = {for (final account in state) account.handle.toLowerCase()};
+    final existing = {
+      for (final account in state) account.handle.toLowerCase(),
+    };
     final fresh = <BlueskyAccount>[];
     for (final account in accounts) {
       final handle = account.handle.trim();
@@ -73,8 +81,16 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
   Future<void> remove(String handle) async {
     await execute(() async {
       final database = await Repository.writable();
-      await database.delete(tableBlueskySubscription, where: 'id = ?', whereArgs: [handle]);
-      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [handle]);
+      await database.delete(
+        tableBlueskySubscription,
+        where: 'id = ?',
+        whereArgs: [handle],
+      );
+      await database.delete(
+        tableSubscriptionGroupMember,
+        where: 'profile_id = ?',
+        whereArgs: [handle],
+      );
       return _read();
     });
   }
@@ -85,7 +101,8 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
   }
 }
 
-BlueskySubscription subscriptionOf(BlueskyAccount account) => BlueskySubscription(
+BlueskySubscription subscriptionOf(BlueskyAccount account) =>
+    BlueskySubscription(
       id: account.handle,
       name: account.name,
       avatarUrl: account.avatarUrl,
@@ -94,10 +111,10 @@ BlueskySubscription subscriptionOf(BlueskyAccount account) => BlueskySubscriptio
     );
 
 BlueskyAccount accountOf(BlueskySubscription subscription) => BlueskyAccount(
-      handle: subscription.id,
-      name: subscription.name,
-      avatarUrl: subscription.avatarUrl,
-    );
+  handle: subscription.id,
+  name: subscription.name,
+  avatarUrl: subscription.avatarUrl,
+);
 
 /// The merged timeline of every followed account, newest first.
 class BlueskyFeedStore extends Store<List<BlueskyPost>> {
@@ -108,7 +125,16 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
 
   /// Reads the followed accounts and merges them.
   Future<void> refresh({bool force = false}) async {
-    await execute(() => postsFor(accounts.state.map((e) => e.actor).toList(growable: false), forceRefresh: force));
+    final actors = accounts.state.map((e) => e.actor).toList(growable: false);
+    if (state.isNotEmpty) {
+      try {
+        update(await postsFor(actors, forceRefresh: force));
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
+    await execute(() => postsFor(actors, forceRefresh: force));
   }
 
   /// Posts for [actors], newest first — used by the Bluesky tab and by group
@@ -118,7 +144,10 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   /// per account. Bounded per call: importing somebody's following list used to
   /// mean several hundred requests on every refresh, which the AppView rate
   /// limits into an empty tab — the very thing the import was for.
-  Future<List<BlueskyPost>> postsFor(List<String> actors, {bool forceRefresh = false}) {
+  Future<List<BlueskyPost>> postsFor(
+    List<String> actors, {
+    bool forceRefresh = false,
+  }) {
     // A different AppView is a different Bluesky answering, so what was cached
     // under the old one is not an answer to the new question — Threads and
     // Mastodon already forget on a credential change; this one did not.
@@ -129,11 +158,14 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
     }
 
     return _posts.merge(
-    actors,
-    (actor) async {
-      final page = await client.getAuthorFeed(actor, limit: blueskyPostsPerAccount);
-      return page.posts;
-    },
+      actors,
+      (actor) async {
+        final page = await client.getAuthorFeed(
+          actor,
+          limit: blueskyPostsPerAccount,
+        );
+        return page.posts;
+      },
       forceRefresh: forceRefresh,
       maxFetches: blueskyMaxAccountsPerLoad,
     );

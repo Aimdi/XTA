@@ -101,6 +101,7 @@ import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
+import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 import 'package:xta/plugins/substack/podcast_store.dart';
 import 'package:xta/speech/speech_bar.dart';
@@ -403,9 +404,11 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Flutter's 100 MiB default is a lot of decoded bitmaps to hold on a phone
-  // that is also running a video player; 64 MiB still covers a few screenfuls.
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 64 * 1024 * 1024;
+  // Flutter's 100 MiB default is a lot of decoded bitmaps next to a video
+  // player. Mixed plugin feeds (Substack covers, Reddit, Bluesky) evicted
+  // tiles at 64 MiB and re-decoded them on every scroll-back; 96 MiB holds
+  // a few more screenfuls without the old 100 MiB default.
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 96 * 1024 * 1024;
 
   // The bundled Inter font ships under the SIL Open Font License, which
   // requires the licence to travel with the software.
@@ -568,6 +571,8 @@ Future<void> main() async {
       optionPluginEhUseExhentai: false,
       optionPluginEhCategories: '',
       optionPluginEhSearchHistory: '[]',
+      optionPluginEhPreferJapanese: true,
+      optionPluginEhKeepScreenOn: true,
       optionPluginTiktokEnabled: false,
       optionPluginTiktokShowTab: true,
       optionPluginTiktokCookies: '',
@@ -700,6 +705,7 @@ Future<void> main() async {
       auth: redditAuth,
     );
     final stocksWatchlist = StocksWatchlistStore();
+    final tickerQuotes = TickerQuoteCache();
     final speech = SpeechStore();
     final podcast = PodcastStore();
     final substackClient = SubstackClient();
@@ -743,10 +749,12 @@ Future<void> main() async {
     final booruMute = BooruMuteStore(prefService);
     final ehClient = EhClient(prefService);
     final ehFavorites = EhFavoritesStore();
+    final ehHistory = EhHistoryStore();
     final tiktokClient = TikTokClient(prefService);
     final tiktokFollows = TikTokFollowsStore();
     final tiktokLikes = TikTokLikesStore(prefService);
     final tiktokSearchHistory = TikTokSearchHistoryStore(prefService);
+    final tiktokFollowing = TikTokFollowingStore(tiktokClient, tiktokFollows);
 
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
@@ -795,8 +803,10 @@ Future<void> main() async {
         booruTags.load(),
         booruMute.load(),
       ],
-      if (prefService.get<bool>(optionPluginEhEnabled) == true)
+      if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
         ehFavorites.load(),
+        ehHistory.load(),
+      ],
       if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
         tiktokFollows.load(),
         tiktokLikes.load(),
@@ -838,6 +848,7 @@ Future<void> main() async {
             Provider(create: (_) => redditSubreddits),
             Provider(create: (_) => redditFeed),
             Provider(create: (_) => stocksWatchlist),
+            Provider(create: (_) => tickerQuotes),
             Provider(create: (_) => speech),
             Provider(create: (_) => CombinedGroupsStore()),
             Provider(
@@ -894,10 +905,12 @@ Future<void> main() async {
             Provider(create: (_) => booruMute),
             Provider(create: (_) => ehClient),
             Provider(create: (_) => ehFavorites),
+            Provider(create: (_) => ehHistory),
             Provider(create: (_) => tiktokClient),
             Provider(create: (_) => tiktokFollows),
             Provider(create: (_) => tiktokLikes),
             Provider(create: (_) => tiktokSearchHistory),
+            Provider(create: (_) => tiktokFollowing),
             ChangeNotifierProvider(
               create: (_) =>
                   VideoContextState(prefService.get(optionMediaDefaultMute)),

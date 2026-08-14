@@ -1,4 +1,4 @@
-/// Guest TikTok client — profile HTML + unsigned creator/item_list.
+/// Guest TikTok client — profile HTML, unsigned creator/item_list, guest search.
 library;
 
 import 'dart:async';
@@ -47,6 +47,8 @@ class TikTokClient {
   final http.Client httpClient;
   final BasePrefService prefs;
   final Map<String, String> _cookies = {};
+  List<TikTokSearchUser>? _discoverCache;
+  DateTime? _discoverCachedAt;
 
   TikTokClient(this.prefs, {http.Client? httpClient})
     : httpClient = httpClient ?? http.Client() {
@@ -133,7 +135,58 @@ class TikTokClient {
     return post;
   }
 
-  Map<String, String> _creatorQuery(String secUid, String? cursor, int count) {
+  Future<List<String>> suggestQueries(String keyword) async {
+    final q = keyword.trim();
+    if (q.isEmpty) return const [];
+    final uri = Uri.parse('$tiktokWebOrigin/api/search/general/preview/')
+        .replace(
+          queryParameters: _webQuery(fromPage: 'search', extra: {'keyword': q}),
+        );
+    final response = await _get(uri, referer: '$tiktokWebOrigin/search?q=$q');
+    return parseTikTokSuggestList(_decodeJson(response, uri));
+  }
+
+  Future<List<String>> trendingQueries() async {
+    final uri = Uri.parse(
+      '$tiktokWebOrigin/api/search/suggest/guide/',
+    ).replace(queryParameters: _webQuery(fromPage: 'search'));
+    final response = await _get(uri, referer: '$tiktokWebOrigin/search');
+    return parseTikTokSuggestList(_decodeJson(response, uri));
+  }
+
+  Future<List<TikTokSearchUser>> discoverUsers() async {
+    final cached = _discoverCache;
+    final at = _discoverCachedAt;
+    if (cached != null &&
+        at != null &&
+        DateTime.now().difference(at) < const Duration(minutes: 10)) {
+      return cached;
+    }
+    final uri = Uri.parse('$tiktokWebOrigin/node/share/discover');
+    final response = await _get(uri, referer: '$tiktokWebOrigin/');
+    final users = parseTikTokDiscoverUsers(_decodeJson(response, uri));
+    _discoverCache = users;
+    _discoverCachedAt = DateTime.now();
+    return users;
+  }
+
+  Future<TikTokSearchPage> search(String raw) async {
+    final query = raw.trim();
+    if (query.isEmpty) return const TikTokSearchPage();
+    final suggestions = await _tryStrings(() => suggestQueries(query));
+    final users = await _peopleFor(query, suggestions);
+    final posts = await _videosFor(users);
+    return TikTokSearchPage(
+      users: users,
+      posts: posts,
+      suggestions: suggestions,
+    );
+  }
+
+  Map<String, String> _webQuery({
+    required String fromPage,
+    Map<String, String> extra = const {},
+  }) {
     final msToken = _cookies['msToken'];
     return {
       'aid': '1988',
@@ -146,12 +199,10 @@ class TikTokClient {
       'browser_version': '5.0 (Windows)',
       'channel': 'tiktok_web',
       'cookie_enabled': 'true',
-      'count': '$count',
-      'cursor': cursor ?? '0',
       'device_id': deviceId,
       'device_platform': 'web_pc',
       'focus_state': 'true',
-      'from_page': 'user',
+      'from_page': fromPage,
       'history_len': '2',
       'is_fullscreen': 'false',
       'is_page_visible': 'true',
@@ -162,12 +213,23 @@ class TikTokClient {
       'region': 'US',
       'screen_height': '1080',
       'screen_width': '1920',
-      'secUid': secUid,
-      'type': '1',
       'tz_name': 'UTC',
       'webcast_language': 'en',
       if (msToken != null && msToken.isNotEmpty) 'msToken': msToken,
+      ...extra,
     };
+  }
+
+  Map<String, String> _creatorQuery(String secUid, String? cursor, int count) {
+    return _webQuery(
+      fromPage: 'user',
+      extra: {
+        'count': '$count',
+        'cursor': cursor ?? '0',
+        'secUid': secUid,
+        'type': '1',
+      },
+    );
   }
 
   Future<TikTokItemPage> _fetchCreatorItems(
@@ -181,6 +243,93 @@ class TikTokClient {
     ).replace(queryParameters: query);
     final response = await _get(uri, referer: '$tiktokWebOrigin/');
     return parseTikTokItemList(_decodeJson(response, uri));
+  }
+
+  Future<List<TikTokSearchUser>> _peopleFor(
+    String query,
+    List<String> suggestions,
+  ) async {
+    final discover = await _tryUsers(discoverUsers);
+    final handles = tiktokSearchHandleCandidates(
+      query,
+      suggestions: suggestions,
+    );
+    final fetched = await _profilesFor(handles);
+    return _mergeSearchUsers(query, fetched, discover);
+  }
+
+  Future<List<TikTokSearchUser>> _profilesFor(List<String> handles) async {
+    final found = await Future.wait(handles.take(6).map(_tryProfile));
+    return [
+      for (final profile in found)
+        if (profile != null) TikTokSearchUser.fromProfile(profile),
+    ];
+  }
+
+  Future<TikTokProfile?> _tryProfile(String handle) async {
+    try {
+      return await profile(handle);
+    } on TikTokException {
+      return null;
+    }
+  }
+
+  List<TikTokSearchUser> _mergeSearchUsers(
+    String query,
+    List<TikTokSearchUser> fetched,
+    List<TikTokSearchUser> discover,
+  ) {
+    final out = <TikTokSearchUser>[];
+    final seen = <String>{};
+    void add(TikTokSearchUser user) {
+      if (seen.add(user.uniqueId.toLowerCase())) out.add(user);
+    }
+
+    for (final user in fetched) {
+      add(user);
+    }
+    for (final user in discover) {
+      if (tiktokUserMatchesQuery(user, query)) add(user);
+    }
+    return out;
+  }
+
+  Future<List<TikTokPost>> _videosFor(List<TikTokSearchUser> users) async {
+    final posts = <TikTokPost>[];
+    for (final user
+        in users.where((u) => (u.secUid ?? '').isNotEmpty).take(2)) {
+      try {
+        posts.addAll(
+          (await creatorItems(secUid: user.secUid!, count: 8)).posts,
+        );
+      } on TikTokException {
+        continue;
+      }
+    }
+    posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final seen = <String>{};
+    return [
+      for (final post in posts)
+        if (seen.add(post.id)) post,
+    ].take(16).toList();
+  }
+
+  Future<List<String>> _tryStrings(Future<List<String>> Function() load) async {
+    try {
+      return await load();
+    } on TikTokException {
+      return const [];
+    }
+  }
+
+  Future<List<TikTokSearchUser>> _tryUsers(
+    Future<List<TikTokSearchUser>> Function() load,
+  ) async {
+    try {
+      return await load();
+    } on TikTokException {
+      return const [];
+    }
   }
 
   void _validateCreatorPage(TikTokItemPage page, String secUid) {

@@ -179,4 +179,74 @@ void main() {
     expect(formatTikTokDuration(65), '1:05');
     expect(formatTikTokDuration(0), '');
   });
+
+  test('handle candidates glue a display name into likely usernames', () {
+    expect(
+      tiktokSearchHandleCandidates("Charli D'Amelio"),
+      containsAll([
+        'charlidamelio',
+        'charli.damelio',
+        'charli_damelio',
+        'charli',
+      ]),
+    );
+    expect(tiktokSearchHandleCandidates('@NBA'), ['nba']);
+    expect(
+      tiktokSearchHandleCandidates(
+        'charli',
+        suggestions: const ['charli damelio'],
+      ),
+      contains('charlidamelio'),
+    );
+  });
+
+  test('discover cards of type 2 become search users', () {
+    final users = parseTikTokDiscoverUsers({
+      'statusCode': 0,
+      'body': [
+        {
+          'exploreList': [
+            {
+              'cardItem': {
+                'type': 2,
+                'title': 'The Rock',
+                'subTitle': '@therock',
+                'link': '/@therock',
+                'cover': 'https://p16.tiktokcdn.com/a.jpg',
+                'extraInfo': {'verified': true, 'fans': 13900000},
+              },
+            },
+            {
+              'cardItem': {'type': 3, 'title': '#cats', 'link': '/tag/cats'},
+            },
+          ],
+        },
+      ],
+    });
+    expect(users, hasLength(1));
+    expect(users.single.uniqueId, 'therock');
+    expect(users.single.nickname, 'The Rock');
+    expect(users.single.verified, isTrue);
+    expect(users.single.followerCount, 13900000);
+    expect(tiktokUserMatchesQuery(users.single, 'rock'), isTrue);
+    expect(tiktokUserMatchesQuery(users.single, 'cats'), isFalse);
+  });
+
+  test('suggest preview and guide lists are parsed together', () {
+    expect(
+      parseTikTokSuggestList({
+        'sug_list': [
+          {'content': 'cats meowing'},
+          {
+            'word_record': {'words_content': 'cats'},
+          },
+        ],
+        'data': [
+          {'word': 'NFL Preseason'},
+        ],
+      }),
+      ['cats meowing', 'cats', 'NFL Preseason'],
+    );
+    expect(parseTikTokSuggestList({'status_code': 0}), isEmpty);
+  });
 }

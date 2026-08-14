@@ -37,9 +37,9 @@ class EhClient {
     : httpClient = httpClient ?? http.Client();
 
   static const _timeout = Duration(seconds: 25);
-  static const _userAgent =
-      'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 '
-      '(KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36';
+  static const userAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
   static const apiUrl = 'https://api.e-hentai.org/api.php';
 
   bool get useExhentai => prefs.get<bool>(optionPluginEhUseExhentai) == true;
@@ -52,6 +52,16 @@ class EhClient {
   String get cookies => (prefs.get<String>(optionPluginEhCookies) ?? '').trim();
 
   bool get hasCookies => cookies.isNotEmpty;
+
+  /// Account cookies plus a `uconfig` that asks EH for 2400px resamples.
+  String get requestCookies => ehRequestCookies(cookies);
+
+  Map<String, String> get imageHeaders => {
+    'User-Agent': userAgent,
+    'Referer': '$host/',
+    'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+    if (requestCookies.isNotEmpty) 'Cookie': requestCookies,
+  };
 
   Set<EhCategory> get includedCategories {
     final raw = prefs.get<String>(optionPluginEhCategories) ?? '';
@@ -79,19 +89,28 @@ class EhClient {
     String query, {
     String? pageUrl,
     Set<EhCategory>? categories,
+    int minRating = 0,
+    String language = '',
   }) {
     if (pageUrl != null) return _list(pageUrl);
     final cats = categories ?? includedCategories;
-    final uri = Uri.parse(host).replace(
-      path: '/',
-      queryParameters: {
-        'f_search': query.trim(),
-        'f_cats': '${EhCategory.excludeMask(cats)}',
-        'f_apply': 'Apply Filter',
-      },
+    final built = ehBuildSearch(
+      query: query,
+      catMask: EhCategory.excludeMask(cats),
+      minRating: minRating,
+      language: language,
     );
+    final uri = Uri.parse(
+      host,
+    ).replace(path: '/', queryParameters: built.params);
     return _list(uri.toString());
   }
+
+  Future<EhGalleryPage> toplist(EhToplistPeriod period, {String? pageUrl}) =>
+      _list(pageUrl ?? '$host/toplist.php?tl=${period.tl}');
+
+  Future<EhGalleryPage> watched({String? pageUrl}) =>
+      _list(pageUrl ?? '$host/watched');
 
   Future<EhGalleryPage> _list(String url) async {
     final response = await _get(Uri.parse(url));
@@ -172,8 +191,15 @@ class EhClient {
     required int gid,
     required String pageToken,
     required int page,
+    String? reloadKey,
   }) async {
-    final uri = Uri.parse('$host/s/$pageToken/$gid-$page');
+    final uri = ehImagePageUri(
+      host: host,
+      pageToken: pageToken,
+      gid: gid,
+      page: page,
+      reloadKey: reloadKey,
+    );
     final response = await _get(uri);
     _throwIfBanned(response.body, uri.toString());
     final parsed = parseEhImagePage(response.body, page: page);
@@ -189,7 +215,7 @@ class EhClient {
           .post(
             Uri.parse(apiUrl),
             headers: {
-              'User-Agent': _userAgent,
+              'User-Agent': userAgent,
               'Content-Type': 'application/json',
               'Accept': 'application/json',
               if (hasCookies) 'Cookie': cookies,
@@ -210,10 +236,10 @@ class EhClient {
           .get(
             uri,
             headers: {
-              'User-Agent': _userAgent,
+              'User-Agent': userAgent,
               'Accept':
                   'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-              if (hasCookies) 'Cookie': cookies,
+              'Cookie': requestCookies,
             },
           )
           .timeout(_timeout);

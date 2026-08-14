@@ -4,22 +4,27 @@ import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
+import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
+import 'package:xta/plugins/stocks/stocks_markets.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_query.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_reel.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
+import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
+import 'package:xta/tweet/ticker/ticker_symbol.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/x_controls.dart';
 
-/// StockTwits-shaped home for the Aktien tab: a watchlist strip over a feed of
-/// posts about those tickers.
+/// Markets + watchlist + trending cashtag feed.
 ///
-/// The symbols come from [StocksWatchlistStore] — they outlive the screen. The
-/// quotes do not: they are one screen's view of a public price service, thrown
-/// away with it, so they live in [State] rather than pretending to be app state.
+/// getquin / Yahoo Finance put a tape of indices and "what's moving" above
+/// the social stream; StockTwits puts the watchlist there. This screen is
+/// all three, as tabs, still read-only.
 class StocksScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -31,82 +36,56 @@ class StocksScreen extends StatefulWidget {
 
 class _StocksScreenState extends State<StocksScreen> {
   final TickerClient _client = TickerClient();
-  final Map<String, TickerQuote> _quotes = {};
+
+  /// 0 watchlist, 1 trending, 2 markets.
+  int _tab = 0;
 
   /// Null = whole watchlist feed; otherwise posts for that one cashtag.
   String? _filterSymbol;
+
+  List<String> _trending = const [];
+
+  TickerQuoteCache get _cache => context.read<TickerQuoteCache>();
+
+  StocksWatchlistStore get _watchlist => context.read<StocksWatchlistStore>();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await context.read<StocksWatchlistStore>().load();
-      if (mounted) {
-        await _refreshQuotes();
-      }
+      await _watchlist.load();
+      if (!mounted) return;
+      await Future.wait([_refreshQuotes(), _loadTrending()]);
     });
   }
 
-  /// Every symbol at once, and a symbol that fails keeps whatever it had.
   Future<void> _refreshQuotes() async {
-    final symbols = context.read<StocksWatchlistStore>().state;
-    final fetched = await Future.wait(symbols.map(_fetchQuote));
     if (!mounted) return;
-
-    setState(() {
-      _quotes
-        ..removeWhere((symbol, _) => !symbols.contains(symbol))
-        ..addEntries(fetched.nonNulls);
-      if (_filterSymbol != null && !symbols.contains(_filterSymbol)) {
-        _filterSymbol = null;
-      }
-    });
+    await _cache.ensure([
+      ..._watchlist.state,
+      ...kMarketIndexSymbols,
+      ..._trending,
+    ]);
   }
 
-  Future<MapEntry<String, TickerQuote>?> _fetchQuote(String symbol) async {
+  Future<void> _loadTrending() async {
     try {
-      return MapEntry(symbol, await _client.fetchQuote(symbol));
+      final raw = await _client.fetchTrending();
+      if (!mounted) return;
+      setState(() {
+        _trending = [for (final symbol in raw.take(16)) spokenCashtag(symbol)];
+      });
+      await _cache.ensure(_trending);
     } on TickerException {
-      return null;
+      if (mounted && _trending.isEmpty) {
+        setState(() {});
+      }
     }
   }
 
-  Future<String?> _askForSymbol() {
-    final controller = TextEditingController();
-
-    return showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        final l10n = L10n.of(dialogContext);
-        return AlertDialog(
-          title: Text(l10n.plugin_stocks_add),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            autocorrect: false,
-            textCapitalization: TextCapitalization.characters,
-            decoration: const InputDecoration(hintText: 'AAPL'),
-            onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext, controller.text.trim()),
-              child: Text(l10n.ok),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> _addSymbol() async {
-    final entered = await _askForSymbol();
+    final entered = await showStocksAddSheet(context, client: _client);
     if (entered == null || entered.isEmpty || !mounted) return;
 
     final symbol = StocksWatchlistStore.normaliseTicker(entered);
@@ -119,21 +98,16 @@ class _StocksScreenState extends State<StocksScreen> {
       return;
     }
 
-    await context.read<StocksWatchlistStore>().add(symbol);
+    await _watchlist.add(symbol);
     if (mounted) {
-      await _refreshQuotes();
+      await _cache.ensure([symbol]);
     }
   }
 
   Future<void> _remove(String symbol) async {
-    await context.read<StocksWatchlistStore>().remove(symbol);
-    if (mounted) {
-      setState(() {
-        _quotes.remove(symbol);
-        if (_filterSymbol == symbol) {
-          _filterSymbol = null;
-        }
-      });
+    await _watchlist.remove(symbol);
+    if (mounted && _filterSymbol == symbol) {
+      setState(() => _filterSymbol = null);
     }
   }
 
@@ -178,7 +152,6 @@ class _StocksScreenState extends State<StocksScreen> {
 
   void _onChipSelected(String symbol) {
     setState(() {
-      // Tap again to clear the filter and return to the whole watchlist feed.
       _filterSymbol = _filterSymbol == symbol ? null : symbol;
     });
   }
@@ -186,13 +159,33 @@ class _StocksScreenState extends State<StocksScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final store = context.read<StocksWatchlistStore>();
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
       body: Column(
         children: [
           PluginHomeChrome(
+            accent: StocksPlugin().brandColor,
+            tabs: [
+              PluginHomeTab(
+                label: l10n.plugin_stocks_watchlist,
+                icon: Icons.star_outline,
+                selected: _tab == 0,
+                onTap: () => setState(() => _tab = 0),
+              ),
+              PluginHomeTab(
+                label: l10n.plugin_stocks_trending,
+                icon: Icons.trending_up,
+                selected: _tab == 1,
+                onTap: () => setState(() => _tab = 1),
+              ),
+              PluginHomeTab(
+                label: l10n.plugin_stocks_markets,
+                icon: Icons.public_outlined,
+                selected: _tab == 2,
+                onTap: () => setState(() => _tab = 2),
+              ),
+            ],
             actions: [
               IconButton(
                 tooltip: l10n.plugin_stocks_add,
@@ -207,31 +200,63 @@ class _StocksScreenState extends State<StocksScreen> {
             ],
           ),
           const Divider(height: 1),
-          Expanded(
-            // Pull-to-refresh lives on the feed (PaginatedTweetList), so the
-            // watchlist strip and the posts refresh together — same as
-            // StockTwits's home swipe.
-            child: ScopedBuilder<StocksWatchlistStore, List<String>>(
-              store: store,
-              onError: (_, error) => FullPageErrorWidget(
-                error: error,
-                stackTrace: null,
-                prefix: l10n.plugin_stocks_watchlist,
-                onRetry: store.load,
-              ),
-              onLoading: (_) =>
-                  const Center(child: CircularProgressIndicator()),
-              onState: (context, symbols) => symbols.isEmpty
-                  ? _empty(context, l10n)
-                  : _watchlistHome(symbols),
-            ),
-          ),
+          Expanded(child: _body(l10n)),
         ],
       ),
     );
   }
 
-  Widget _watchlistHome(List<String> symbols) {
+  Widget _body(L10n l10n) {
+    return ScopedBuilder<TickerQuoteCache, Map<String, TickerQuote>>(
+      store: _cache,
+      onState: (_, quotes) => ScopedBuilder<StocksWatchlistStore, List<String>>(
+        store: _watchlist,
+        onError: (_, error) => FullPageErrorWidget(
+          error: error,
+          stackTrace: null,
+          prefix: l10n.plugin_stocks_watchlist,
+          onRetry: _watchlist.load,
+        ),
+        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onState: (context, symbols) => _tabHome(symbols, quotes, l10n),
+      ),
+    );
+  }
+
+  Widget _tabHome(
+    List<String> symbols,
+    Map<String, TickerQuote> quotes,
+    L10n l10n,
+  ) {
+    if (_tab == 2) {
+      return StocksMarketsList(quotes: quotes);
+    }
+    if (_tab == 1) {
+      return _feedHome(
+        symbols: _trending,
+        quotes: quotes,
+        empty: _empty(context, l10n, trending: true),
+      );
+    }
+    if (symbols.isEmpty) {
+      return _empty(context, l10n, trending: false);
+    }
+    return _feedHome(
+      symbols: symbols,
+      quotes: quotes,
+      empty: _empty(context, l10n, trending: false),
+    );
+  }
+
+  Widget _feedHome({
+    required List<String> symbols,
+    required Map<String, TickerQuote> quotes,
+    required Widget empty,
+  }) {
+    if (symbols.isEmpty) {
+      return empty;
+    }
+
     final query = _filterSymbol == null
         ? watchlistCashtagQuery(symbols)
         : watchlistCashtagQuery([_filterSymbol!]);
@@ -241,7 +266,7 @@ class _StocksScreenState extends State<StocksScreen> {
       children: [
         StocksWatchlistReel(
           symbols: symbols,
-          quotes: _quotes,
+          quotes: quotes,
           selected: _filterSymbol,
           onSelected: _onChipSelected,
         ),
@@ -250,26 +275,36 @@ class _StocksScreenState extends State<StocksScreen> {
           child: _WatchlistPostsFeed(
             key: ValueKey(query),
             query: query,
-            onRefreshQuotes: _refreshQuotes,
+            onRefreshQuotes: () async {
+              await _refreshQuotes();
+              if (_tab == 1) {
+                await _loadTrending();
+              }
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _empty(BuildContext context, L10n l10n) {
+  Widget _empty(BuildContext context, L10n l10n, {required bool trending}) {
     return ListView(
       controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
       children: [
         Icon(
-          Icons.show_chart,
+          trending ? Icons.trending_up : Icons.show_chart,
           size: 48,
           color: Theme.of(context).colorScheme.outline,
         ),
         const SizedBox(height: 16),
-        Text(l10n.plugin_stocks_empty, textAlign: TextAlign.center),
+        Text(
+          trending
+              ? l10n.plugin_stocks_trending_empty
+              : l10n.plugin_stocks_empty,
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 8),
         Text(
           l10n.plugin_stocks_feed_hint,
@@ -281,11 +316,33 @@ class _StocksScreenState extends State<StocksScreen> {
         const SizedBox(height: 16),
         Center(
           child: FilledButton.icon(
+            style: xPrimaryPillStyle(context),
             onPressed: _addSymbol,
             icon: const Icon(Icons.add),
             label: Text(l10n.plugin_stocks_add),
           ),
         ),
+        if (!trending && _trending.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text(l10n.plugin_stocks_trending, textAlign: TextAlign.center),
+          const SizedBox(height: 8),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            children: [
+              for (final symbol in _trending.take(8))
+                ActionChip(
+                  label: Text('\$$symbol'),
+                  onPressed: () async {
+                    await _watchlist.add(symbol);
+                    if (mounted) {
+                      await _cache.ensure([symbol]);
+                    }
+                  },
+                ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -325,10 +382,6 @@ class _WatchlistPostsFeedState extends State<_WatchlistPostsFeed> {
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 
-  Future<void> _onRefresh() async {
-    await widget.onRefreshQuotes();
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -338,7 +391,7 @@ class _WatchlistPostsFeedState extends State<_WatchlistPostsFeed> {
         feed: _feed,
         loadPage: _loadPage,
         username: null,
-        onRefresh: _onRefresh,
+        onRefresh: widget.onRefreshQuotes,
         firstPageErrorPrefix: l10n.unable_to_load_the_tweets,
         newPageErrorPrefix: l10n.unable_to_load_the_next_page_of_tweets,
         emptyMessage: l10n.no_posts_match_your_search,

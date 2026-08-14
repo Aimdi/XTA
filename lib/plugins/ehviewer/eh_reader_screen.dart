@@ -3,13 +3,17 @@ import 'dart:async';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_parse.dart';
+import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/ui/errors.dart';
 
 class EhReaderScreen extends StatefulWidget {
@@ -35,31 +39,49 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
   Object? _error;
   var _loading = true;
   var _jumping = false;
+  var _keepAwake = false;
 
   @override
   void initState() {
     super.initState();
     _current = widget.initialPreview;
     _previews = List.of(widget.previews);
+    _keepAwake =
+        PrefService.of(
+          context,
+          listen: false,
+        ).get<bool>(optionPluginEhKeepScreenOn) !=
+        false;
+    if (_keepAwake) unawaited(WakelockPlus.enable());
     _load();
   }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    if (_keepAwake) unawaited(WakelockPlus.disable());
+    super.dispose();
+  }
+
+  Future<void> _load({String? reloadKey}) async {
     setState(() {
       _loading = true;
       _error = null;
     });
+    final client = context.read<EhClient>();
+    final history = context.read<EhHistoryStore>();
     try {
-      final page = await context.read<EhClient>().imagePage(
+      final page = await client.imagePage(
         gid: widget.gallery.gid,
         pageToken: _current.pageToken,
         page: _current.page,
+        reloadKey: reloadKey,
       );
       if (!mounted) return;
       setState(() {
         _page = page;
         _loading = false;
       });
+      unawaited(history.remember(widget.gallery, page: _current.page));
       _prefetchNext(page);
     } catch (e) {
       if (!mounted) return;
@@ -68,6 +90,15 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         _loading = false;
       });
     }
+  }
+
+  Future<void> _reloadBroken() async {
+    final key = _page?.reloadKey;
+    if (key == null || key.isEmpty) {
+      await _load();
+      return;
+    }
+    await _load(reloadKey: key);
   }
 
   void _prefetchNext(EhImagePage page) {
@@ -83,7 +114,11 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         );
         if (!mounted) return;
         await precacheImage(
-          ExtendedNetworkImageProvider(next.imageUrl, cache: true),
+          ExtendedNetworkImageProvider(
+            next.displayUrl(signedIn: client.hasCookies),
+            cache: true,
+            headers: client.imageHeaders,
+          ),
           context,
         );
       } catch (_) {}
@@ -235,6 +270,11 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
         title: Text(l10n.plugin_eh_page_of(_current.page, total)),
         actions: [
           IconButton(
+            tooltip: l10n.plugin_eh_reload_image,
+            onPressed: _loading ? null : _reloadBroken,
+            icon: const Icon(Icons.refresh),
+          ),
+          IconButton(
             tooltip: l10n.plugin_eh_jump_to_page,
             onPressed: _loading || _jumping ? null : _jumpDialog,
             icon: _jumping
@@ -265,35 +305,55 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
                   if (_canNext) _goNext();
                 }
               },
+              onLongPress: _reloadBroken,
               child: InteractiveViewer(
                 child: Center(
                   child: EhNetworkImage(
-                    url: _page!.imageUrl,
+                    url: _page!.displayUrl(
+                      signedIn: context.read<EhClient>().hasCookies,
+                    ),
+                    fallbackUrl: _page!.imageUrl,
                     fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                   ),
                 ),
               ),
             ),
       bottomNavigationBar: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              color: Colors.white,
-              onPressed: !_canPrev || _loading ? null : _goPrev,
-              icon: const Icon(Icons.chevron_left),
-            ),
-            TextButton(
-              onPressed: _loading || _jumping ? null : _jumpDialog,
-              child: Text(
-                l10n.plugin_eh_page_of(_current.page, total),
-                style: const TextStyle(color: Colors.white),
+            if (total > 1)
+              Slider(
+                min: 1,
+                max: total.toDouble(),
+                divisions: total - 1,
+                value: _current.page.clamp(1, total).toDouble(),
+                onChanged: _loading || _jumping
+                    ? null
+                    : (value) => _jumpTo(value.round()),
               ),
-            ),
-            IconButton(
-              color: Colors.white,
-              onPressed: !_canNext || _loading ? null : _goNext,
-              icon: const Icon(Icons.chevron_right),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  color: Colors.white,
+                  onPressed: !_canPrev || _loading ? null : _goPrev,
+                  icon: const Icon(Icons.chevron_left),
+                ),
+                TextButton(
+                  onPressed: _loading || _jumping ? null : _jumpDialog,
+                  child: Text(
+                    l10n.plugin_eh_page_of(_current.page, total),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+                IconButton(
+                  color: Colors.white,
+                  onPressed: !_canNext || _loading ? null : _goNext,
+                  icon: const Icon(Icons.chevron_right),
+                ),
+              ],
             ),
           ],
         ),

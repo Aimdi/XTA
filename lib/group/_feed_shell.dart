@@ -27,7 +27,7 @@ class GroupFeedShell extends StatefulWidget {
   /// here. The bar stays pinned so those tabs do not scroll away with the feed.
   final PreferredSizeWidget Function(BuildContext)? bottomBuilder;
 
-  /// X centres its logo; group names stay leading like every pushed screen.
+  /// Home uses a leading title; group names stay leading like every pushed screen.
   final bool centerTitle;
 
   /// The app bar's leading slot. The home feed puts the account avatar here (it
@@ -73,6 +73,9 @@ class _GroupFeedShellState extends State<GroupFeedShell>
 
   @override
   bool get wantKeepAlive => true;
+
+  /// The default Following feed uses group id `-1` — not a named group.
+  bool get _isHomeFeed => widget.groupId == '-1';
 
   CombinedGroupsStore? _combined;
   Set<String> _alsoRead = const {};
@@ -163,7 +166,8 @@ class _GroupFeedShellState extends State<GroupFeedShell>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _GroupIdentityRow(model: _groupModel, groupId: widget.groupId),
+          if (!_isHomeFeed)
+            _GroupIdentityRow(model: _groupModel, groupId: widget.groupId),
           ?inner,
           tweetHairlineDivider(context),
         ],
@@ -176,8 +180,11 @@ class _GroupFeedShellState extends State<GroupFeedShell>
     if (inner != null) {
       height += inner.preferredSize.height;
     }
-    // Identity row: mark + member count (hidden until group loads).
-    height += 36;
+    // Identity row: mark + member count. The home Following feed is not a
+    // named group — that row was leftover group chrome on the reader home.
+    if (!_isHomeFeed) {
+      height += 36;
+    }
     return height;
   }
 

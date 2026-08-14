@@ -77,6 +77,11 @@ Mechanism work after the tweet-module pass. Device rows above stay TBD.
 - Non-sensitive media skips the hide-sensitive `Consumer`.
 - Cached chunk JSON decodes on a background isolate; plugin interleave waits until after the first frame and skips disabled plugins.
 - Audio service bind moved to the same post-frame callback as MediaKit.
+- Home-strip remounts reuse plugin feeds inside `kAccountPostsCacheTtl` (Substack
+  included) and skip the Triple loading flash when posts are already on screen.
+  Inbox / Notes / Liked panes are built the first time they are opened
+  (`PluginLazyTabs`), not on the first home paint. TikTok's following cache
+  lives with the other plugin stores so a swipe away no longer drops it.
 
 ## Phase 2 targets (tweet module)
 

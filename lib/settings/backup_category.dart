@@ -16,6 +16,7 @@ enum BackupCategory {
   mastodon,
   booruTags,
   ehFavorites,
+  ehHistory,
   tiktokSubscriptions,
   groups,
   groupMembers,

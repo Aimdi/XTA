@@ -121,3 +121,52 @@ class TikTokItemPage {
     this.statusCode,
   });
 }
+
+/// A person from discover or a resolved profile — enough to open `@{uniqueId}`.
+class TikTokSearchUser {
+  final String uniqueId;
+  final String nickname;
+  final String? avatarUrl;
+  final String? signature;
+  final String? secUid;
+  final bool verified;
+  final int followerCount;
+
+  const TikTokSearchUser({
+    required this.uniqueId,
+    required this.nickname,
+    this.avatarUrl,
+    this.signature,
+    this.secUid,
+    this.verified = false,
+    this.followerCount = 0,
+  });
+
+  String get handle => uniqueId;
+
+  String get displayName => nickname.trim().isEmpty ? uniqueId : nickname;
+
+  factory TikTokSearchUser.fromProfile(TikTokProfile profile) {
+    return TikTokSearchUser(
+      uniqueId: profile.uniqueId,
+      nickname: profile.nickname,
+      avatarUrl: profile.avatarUrl,
+      signature: profile.signature,
+      secUid: profile.secUid,
+      verified: profile.verified,
+      followerCount: profile.followerCount,
+    );
+  }
+}
+
+class TikTokSearchPage {
+  final List<TikTokSearchUser> users;
+  final List<TikTokPost> posts;
+  final List<String> suggestions;
+
+  const TikTokSearchPage({
+    this.users = const [],
+    this.posts = const [],
+    this.suggestions = const [],
+  });
+}

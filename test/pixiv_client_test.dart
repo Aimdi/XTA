@@ -459,6 +459,63 @@ void main() {
         expect(tokenHits, 0);
       },
     );
+
+    test('related keeps R-18 when the opened illust is R-18', () async {
+      await prefs.set(optionPluginPixivAccessToken, 'access-1');
+      await prefs.set(
+        optionPluginPixivAccessExpiresAt,
+        DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
+      );
+
+      final client = PixivClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/v2/illust/related');
+          return _json({
+            'illusts': [
+              {
+                'id': 1,
+                'title': 'SFW',
+                'caption': '',
+                'type': 'illust',
+                'image_urls': {'medium': 'https://i.pximg.net/sfw.jpg'},
+                'user': {
+                  'id': 1,
+                  'name': 'A',
+                  'account': 'a',
+                  'profile_image_urls': {},
+                },
+                'x_restrict': 0,
+                'sanity_level': 2,
+              },
+              {
+                'id': 2,
+                'title': 'R18',
+                'caption': '',
+                'type': 'illust',
+                'image_urls': {'medium': 'https://i.pximg.net/r18.jpg'},
+                'user': {
+                  'id': 1,
+                  'name': 'A',
+                  'account': 'a',
+                  'profile_image_urls': {},
+                },
+                'x_restrict': 1,
+                'sanity_level': 6,
+              },
+            ],
+            'next_url': 'https://app-api.pixiv.net/v2/illust/related?offset=30',
+          }, 200);
+        }),
+      );
+
+      final hidden = await client.related(9);
+      expect(hidden.illusts.map((e) => e.id), [1]);
+
+      final kept = await client.related(9, includeR18: true);
+      expect(kept.illusts.map((e) => e.id), [1, 2]);
+      expect(kept.nextUrl, contains('offset=30'));
+    });
   });
 }
 

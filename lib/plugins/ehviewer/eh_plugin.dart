@@ -66,7 +66,7 @@ class EhViewerPlugin extends XtaPlugin {
   Widget? settingsScreen(BuildContext context) => const EhSettingsScreen();
 
   @override
-  List<String> get tables => const [tableEhFavorite];
+  List<String> get tables => const [tableEhFavorite, tableEhHistory];
 
   @override
   List<PluginBackupSection> get backupSections => [
@@ -76,6 +76,12 @@ class EhViewerPlugin extends XtaPlugin {
       category: BackupCategory.ehFavorites,
       fromMap: (row) => EhFavorite.fromMap(row),
     ),
+    PluginBackupSection(
+      jsonKey: 'ehHistory',
+      table: tableEhHistory,
+      category: BackupCategory.ehHistory,
+      fromMap: (row) => EhHistoryEntry.fromMap(row),
+    ),
   ];
 
   @override
@@ -84,11 +90,15 @@ class EhViewerPlugin extends XtaPlugin {
     await prefs.set(optionPluginEhUseExhentai, false);
     await prefs.set(optionPluginEhCategories, '');
     await prefs.set(optionPluginEhSearchHistory, '[]');
+    await prefs.set(optionPluginEhPreferJapanese, true);
+    await prefs.set(optionPluginEhKeepScreenOn, true);
   }
 
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
     final favorites = context.read<EhFavoritesStore>();
+    final history = context.read<EhHistoryStore>();
     await favorites.load();
+    await history.load();
   }
 }

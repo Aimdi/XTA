@@ -3,6 +3,19 @@ import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_parse.dart';
 
 void main() {
+  group('EhGallery.titleFor', () {
+    test('prefers Japanese only when asked', () {
+      const gallery = EhGallery(
+        gid: 1,
+        token: 't',
+        title: 'English',
+        titleJpn: '日本語',
+      );
+      expect(gallery.titleFor(preferJapanese: true), '日本語');
+      expect(gallery.titleFor(preferJapanese: false), 'English');
+    });
+  });
+
   group('EhCategory', () {
     test('parses labels and builds exclude mask', () {
       expect(EhCategory.tryParse('Doujinshi'), EhCategory.doujinshi);
@@ -90,8 +103,113 @@ void main() {
 ''';
       final page = parseEhImagePage(html, page: 2);
       expect(page!.imageUrl, 'https://cdn.example/page.webp');
+      expect(page.originalImageUrl, isNull);
+      expect(page.displayUrl(signedIn: false), 'https://cdn.example/page.webp');
       expect(page.nextPageUrl, contains('1-3'));
       expect(page.prevPageUrl, contains('1-1'));
+    });
+
+    test('reads fullimg.php and uses it only when signed in', () {
+      const html = '''
+<img src="https://hath.example/h/abc/keystamp=1;xres=1280/page.jpg" id="img" />
+<div id="i7">
+<a href="https://e-hentai.org/fullimg.php?gid=9&amp;page=2&amp;key=abc">
+Download original 2000 x 3000 :: 1.2 MB</a>
+</div>
+''';
+      final page = parseEhImagePage(html, page: 2);
+      expect(
+        page!.imageUrl,
+        'https://hath.example/h/abc/keystamp=1;xres=1280/page.jpg',
+      );
+      expect(
+        page.originalImageUrl,
+        'https://e-hentai.org/fullimg.php?gid=9&page=2&key=abc',
+      );
+      expect(page.displayUrl(signedIn: true), page.originalImageUrl);
+      expect(page.displayUrl(signedIn: false), page.imageUrl);
+    });
+
+    test('reads the current /fullimg/gid/page/key/file href', () {
+      const html = '''
+<img id="img" src="https://hath.example/h/abc/keystamp=1;xres=800/0001.webp" />
+<a href="https://e-hentai.org/fullimg/4116360/1/g8l82w4amxz/0001.png">Download original 1536 x 2040 2.33 MiB</a>
+''';
+      final page = parseEhImagePage(html, page: 1);
+      expect(
+        page!.originalImageUrl,
+        'https://e-hentai.org/fullimg/4116360/1/g8l82w4amxz/0001.png',
+      );
+      expect(page.displayUrl(signedIn: true), page.originalImageUrl);
+    });
+  });
+
+  group('ehRequestCookies', () {
+    test('adds a 2400px uconfig when none is present', () {
+      expect(ehRequestCookies(''), 'uconfig=xr_2400-ts_l-nw_1');
+      expect(
+        ehRequestCookies('ipb_member_id=1; ipb_pass_hash=abc'),
+        'ipb_member_id=1; ipb_pass_hash=abc; uconfig=xr_2400-ts_l-nw_1',
+      );
+    });
+
+    test('upgrades a mobile-sized uconfig without dropping other flags', () {
+      expect(
+        ehRequestCookies('uconfig=dm_t-xr_780-uh_y'),
+        'uconfig=dm_t-xr_2400-uh_y-ts_l-nw_1',
+      );
+    });
+  });
+
+  group('parseEhComments', () {
+    test('reads author body score and uploader flag', () {
+      const html = '''
+<div class="c1"><div class="c2"><div class="c3">Posted on 13 August 2026, 16:44 by: &nbsp; <a href="#">Alice</a></div>
+<div class="c4 nosel">Uploader Comment</div></div>
+<div class="c6" id="comment_0">Hello<br />world</div></div>
+<div class="c1"><div class="c2"><div class="c3">Posted on 13 August 2026, 16:52 by: &nbsp; <a href="#">Bob</a></div>
+<div class="c5 nosel">Score <span id="comment_score_1">+30</span></div></div>
+<div class="c6" id="comment_1">Nice</div></div>
+''';
+      final comments = parseEhComments(html);
+      expect(comments, hasLength(2));
+      expect(comments.first.author, 'Alice');
+      expect(comments.first.uploader, isTrue);
+      expect(comments.first.body, contains('Hello'));
+      expect(comments[1].author, 'Bob');
+      expect(comments[1].score, '+30');
+      expect(comments[1].uploader, isFalse);
+    });
+  });
+
+  group('ehBuildSearch', () {
+    test('adds language tag and min rating', () {
+      final built = ehBuildSearch(
+        query: 'flan',
+        catMask: 0,
+        minRating: 4,
+        language: 'english',
+      );
+      expect(built.query, 'flan language:english');
+      expect(built.params['f_sr'], 'on');
+      expect(built.params['f_srdd'], '4');
+    });
+  });
+
+  group('ehImagePageUri', () {
+    test('appends nl for a broken-image reload', () {
+      expect(
+        parseEhReloadKey('onerror="nl(\'41173-496295\')"'),
+        '41173-496295',
+      );
+      final uri = ehImagePageUri(
+        host: 'https://e-hentai.org',
+        pageToken: 'abc',
+        gid: 9,
+        page: 2,
+        reloadKey: '41173-496295',
+      );
+      expect(uri.queryParameters['nl'], '41173-496295');
     });
   });
 

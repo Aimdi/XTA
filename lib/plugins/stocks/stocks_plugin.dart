@@ -12,7 +12,7 @@ import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/stocks/stocks_screen.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 
-/// StockTwits-shaped watchlist: prices in a strip, cashtag posts in a feed.
+/// Markets tape, watchlist, trending, and cashtag posts.
 /// Read-only — quotes are shown, nothing is traded.
 class StocksPlugin extends XtaPlugin {
   StocksPlugin();
@@ -40,7 +40,8 @@ class StocksPlugin extends XtaPlugin {
   String title(BuildContext context) => L10n.of(context).plugin_stocks_title;
 
   @override
-  String description(BuildContext context) => L10n.of(context).plugin_stocks_description;
+  String description(BuildContext context) =>
+      L10n.of(context).plugin_stocks_description;
 
   @override
   NavigationPage homePage(BuildContext context) {

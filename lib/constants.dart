@@ -345,6 +345,8 @@ const optionPluginEhCookies = 'plugin.ehviewer.cookies';
 const optionPluginEhUseExhentai = 'plugin.ehviewer.use_exhentai';
 const optionPluginEhCategories = 'plugin.ehviewer.categories';
 const optionPluginEhSearchHistory = 'plugin.ehviewer.search_history';
+const optionPluginEhPreferJapanese = 'plugin.ehviewer.prefer_japanese';
+const optionPluginEhKeepScreenOn = 'plugin.ehviewer.keep_screen_on';
 
 const pluginIdTiktok = 'tiktok';
 const optionPluginTiktokEnabled = 'plugin.tiktok.enabled';

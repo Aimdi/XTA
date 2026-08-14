@@ -17,7 +17,10 @@ class StocksWatchlistStore extends Store<List<String>> {
 
   Future<List<String>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(tableStockSubscription, orderBy: 'symbol COLLATE NOCASE');
+    final rows = await database.query(
+      tableStockSubscription,
+      orderBy: 'symbol COLLATE NOCASE',
+    );
 
     return rows.map((e) => e['symbol'] as String).toList(growable: false);
   }
@@ -52,9 +55,17 @@ class StocksWatchlistStore extends Store<List<String>> {
     await execute(() async {
       final id = symbol.toLowerCase();
       final database = await Repository.writable();
-      await database.delete(tableStockSubscription, where: 'id = ?', whereArgs: [id]);
+      await database.delete(
+        tableStockSubscription,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
       // A ticker that is gone should not linger as a member of a group.
-      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [id]);
+      await database.delete(
+        tableSubscriptionGroupMember,
+        where: 'profile_id = ?',
+        whereArgs: [id],
+      );
       return _read();
     });
   }

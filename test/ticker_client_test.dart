@@ -7,22 +7,26 @@ import 'package:xta/tweet/ticker/ticker_client.dart';
 
 /// The smallest payload the parser accepts.
 String _chart(String symbol) => jsonEncode({
-      'chart': {
-        'result': [
-          {
-            'meta': {'symbol': symbol, 'currency': 'USD', 'regularMarketPrice': 20.73},
-            'timestamp': [1767225600, 1767312000],
-            'indicators': {
-              'quote': [
-                {
-                  'close': [19.0, 20.73]
-                }
-              ]
+  'chart': {
+    'result': [
+      {
+        'meta': {
+          'symbol': symbol,
+          'currency': 'USD',
+          'regularMarketPrice': 20.73,
+        },
+        'timestamp': [1767225600, 1767312000],
+        'indicators': {
+          'quote': [
+            {
+              'close': [19.0, 20.73],
             },
-          }
-        ]
-      }
-    });
+          ],
+        },
+      },
+    ],
+  },
+});
 
 void main() {
   group('the names a cashtag is tried under', () {
@@ -42,23 +46,26 @@ void main() {
   });
 
   group('fetching', () {
-    test('falls through to the pair form when the bare name is unknown', () async {
-      final asked = <String>[];
-      final client = TickerClient(
-        httpClient: MockClient((request) async {
-          asked.add(request.url.pathSegments.last);
-          if (request.url.path.endsWith('BTC-USD')) {
-            return http.Response(_chart('BTC-USD'), 200);
-          }
-          return http.Response('no', 404);
-        }),
-      );
+    test(
+      'falls through to the pair form when the bare name is unknown',
+      () async {
+        final asked = <String>[];
+        final client = TickerClient(
+          httpClient: MockClient((request) async {
+            asked.add(request.url.pathSegments.last);
+            if (request.url.path.endsWith('BTC-USD')) {
+              return http.Response(_chart('BTC-USD'), 200);
+            }
+            return http.Response('no', 404);
+          }),
+        );
 
-      final quote = await client.fetchQuote('BTC');
+        final quote = await client.fetchQuote('BTC');
 
-      expect(quote.symbol, 'BTC-USD');
-      expect(asked, ['BTC', 'BTC-USD']);
-    });
+        expect(quote.symbol, 'BTC-USD');
+        expect(asked, ['BTC', 'BTC-USD']);
+      },
+    );
 
     test('a network failure is not retried under other names', () async {
       var calls = 0;
@@ -71,17 +78,31 @@ void main() {
 
       await expectLater(
         client.fetchQuote('BTC'),
-        throwsA(isA<TickerException>().having((e) => e.kind, 'kind', TickerErrorKind.unavailable)),
+        throwsA(
+          isA<TickerException>().having(
+            (e) => e.kind,
+            'kind',
+            TickerErrorKind.unavailable,
+          ),
+        ),
       );
       expect(calls, 1, reason: 'the name was never the problem');
     });
 
     test('a name nothing answers for reports not-found', () async {
-      final client = TickerClient(httpClient: MockClient((_) async => http.Response('no', 404)));
+      final client = TickerClient(
+        httpClient: MockClient((_) async => http.Response('no', 404)),
+      );
 
       await expectLater(
         client.fetchQuote('NOPE'),
-        throwsA(isA<TickerException>().having((e) => e.kind, 'kind', TickerErrorKind.notFound)),
+        throwsA(
+          isA<TickerException>().having(
+            (e) => e.kind,
+            'kind',
+            TickerErrorKind.notFound,
+          ),
+        ),
       );
     });
 
@@ -90,6 +111,39 @@ void main() {
 
       expect(uri.queryParameters['range'], '5d');
       expect(uri.queryParameters['interval'], '30m');
+    });
+
+    test('search and trending go to the public host', () {
+      final search = TickerClient.searchUri('apple', quotes: 8, news: 2);
+      expect(search.path, '/v1/finance/search');
+      expect(search.queryParameters['q'], 'apple');
+      expect(search.queryParameters['newsCount'], '2');
+
+      expect(TickerClient.trendingUri().path, '/v1/finance/trending/US');
+    });
+
+    test('trending symbols are the ones the host listed', () async {
+      final client = TickerClient(
+        httpClient: MockClient(
+          (_) async => http.Response(
+            jsonEncode({
+              'finance': {
+                'result': [
+                  {
+                    'quotes': [
+                      {'symbol': 'NVDA'},
+                      {'symbol': 'TSLA'},
+                    ],
+                  },
+                ],
+              },
+            }),
+            200,
+          ),
+        ),
+      );
+
+      expect(await client.fetchTrending(), ['NVDA', 'TSLA']);
     });
   });
 }

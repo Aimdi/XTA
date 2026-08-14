@@ -39,11 +39,13 @@ class PluginHomeTab {
 class PluginHomeChrome extends StatelessWidget {
   final List<PluginHomeTab> tabs;
   final List<Widget> actions;
+  final Color? accent;
 
   const PluginHomeChrome({
     super.key,
     this.tabs = const [],
     this.actions = const [],
+    this.accent,
   });
 
   @override
@@ -61,7 +63,10 @@ class PluginHomeChrome extends StatelessWidget {
                   : ListView(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.symmetric(horizontal: 2),
-                      children: [for (final tab in tabs) _TabButton(tab: tab)],
+                      children: [
+                        for (final tab in tabs)
+                          _TabButton(tab: tab, accent: accent),
+                      ],
                     ),
             ),
             ...actions,
@@ -93,14 +98,16 @@ AppBar pluginHomeTabAppBar({
 
 class _TabButton extends StatelessWidget {
   final PluginHomeTab tab;
+  final Color? accent;
 
-  const _TabButton({required this.tab});
+  const _TabButton({required this.tab, this.accent});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final selectedColor = accent ?? theme.colorScheme.primary;
     final color = tab.selected
-        ? theme.colorScheme.primary
+        ? selectedColor
         : theme.colorScheme.onSurfaceVariant;
 
     return Semantics(
@@ -117,9 +124,7 @@ class _TabButton extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: tab.selected
-                        ? theme.colorScheme.primary
-                        : Colors.transparent,
+                    color: tab.selected ? selectedColor : Colors.transparent,
                     width: 2,
                   ),
                 ),

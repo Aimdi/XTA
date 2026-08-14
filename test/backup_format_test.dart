@@ -36,6 +36,7 @@ const _keys = {
   'antennas',
   'booruSubscriptions',
   'ehFavorites',
+  'ehHistory',
   'tiktokSubscriptions',
 };
 

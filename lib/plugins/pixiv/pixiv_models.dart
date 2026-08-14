@@ -334,6 +334,26 @@ class PixivTrendTag {
   const PixivTrendTag({required this.name, this.translatedName, this.illust});
 }
 
+/// Related works for an R-18 seed are themselves R-18. Hiding them left one
+/// SFW leftover under "Similar works" — the reader opened the R-18 illust
+/// on purpose (bookmarks keep those even when the home feed hides them).
+bool pixivRelatedIncludeR18({required bool seedIsR18, required bool showR18}) =>
+    showR18 || seedIsR18;
+
+/// Viewer frame for an illust: follow the art, not a fixed 55% of the screen.
+///
+/// A short landscape in a tall box left a black slab between the image and
+/// the caption, which also pushed similar works off the first screen.
+double pixivDetailViewerHeight({
+  required double screenWidth,
+  required double screenHeight,
+  required int width,
+  required int height,
+}) {
+  final ratio = (width > 0 && height > 0) ? width / height : 1.0;
+  return (screenWidth / ratio).clamp(160.0, screenHeight * 0.70);
+}
+
 /// Pure parse of a following / ranking / bookmarks / search list payload.
 List<PixivIllust> parsePixivIllustList(
   Object? json, {

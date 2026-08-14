@@ -3,7 +3,9 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
+import 'package:xta/plugins/threads/threads_plugin.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
@@ -69,8 +71,12 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     final likes = context.read<ThreadsLikesStore>();
     final feed = context.read<ThreadsFeedStore>();
     // Accounts and likes are independent; waiting on likes before the feed
-    // only delayed the first paint.
-    await Future.wait([accounts.load(), likes.load()]);
+    // only delayed the first paint. Remounts from the home strip already have
+    // both from startup (or the last visit) — don't hit SQLite again.
+    await Future.wait([
+      if (accounts.state.isEmpty) accounts.load(),
+      if (likes.state.isEmpty) likes.load(),
+    ]);
     await feed.refresh(force: force);
   }
 
@@ -112,6 +118,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              accent: ThreadsPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_threads_home,
@@ -151,16 +158,16 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
             ),
             const Divider(height: 1),
             Expanded(
-              child: IndexedStack(
+              child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  _HomePane(
+                  (_) => _HomePane(
                     scrollController: widget.scrollController,
                     onAddAccount: _addAccount,
                     onLookUpProfile: _lookUpProfile,
                     onRefresh: () => _loadHome(force: true),
                   ),
-                  _LikedPane(
+                  (_) => _LikedPane(
                     scrollController: _likedScrollController,
                     likes: context.read<ThreadsLikesStore>(),
                   ),
@@ -378,7 +385,7 @@ class _LikedPane extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
+          return FeedListView(
             controller: scrollController,
             itemCount: posts.length,
             itemBuilder: (context, index) => ThreadsPostCard(
