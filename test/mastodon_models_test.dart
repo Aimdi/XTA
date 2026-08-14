@@ -376,6 +376,118 @@ void main() {
       ], homeDomain: 'mastodon.social');
       expect(posts.single.replyToAcct, 'alice');
     });
+
+    test('reads an edited quote and mention list', () {
+      final posts = parseMastodonStatuses([
+        {
+          'id': '10',
+          'content': '<p>see this</p>',
+          'edited_at': '2026-08-02T09:00:00.000Z',
+          'url': 'https://mastodon.social/@a/10',
+          'mentions': [
+            {'username': 'bob', 'acct': 'bob@other.social'},
+          ],
+          'account': {
+            'id': '11',
+            'username': 'alice',
+            'acct': 'alice',
+            'display_name': 'Alice',
+            'note': '',
+            'url': 'https://mastodon.social/@alice',
+          },
+          'quote': {
+            'state': 'accepted',
+            'quoted_status': {
+              'id': '9',
+              'content': '<p>quoted</p>',
+              'url': 'https://mastodon.social/@b/9',
+              'account': {
+                'id': '12',
+                'username': 'bob',
+                'acct': 'bob',
+                'display_name': 'Bob',
+                'note': '',
+                'url': 'https://mastodon.social/@bob',
+              },
+            },
+          },
+        },
+      ], homeDomain: 'mastodon.social');
+      expect(posts.single.edited, isTrue);
+      expect(posts.single.mentionAccts, ['bob@other.social']);
+      expect(posts.single.quote?.text, 'quoted');
+      expect(posts.single.quote?.acct, 'bob@mastodon.social');
+    });
+  });
+
+  group('mastodonTextParts', () {
+    test('splits mentions and tags and resolves a local @name', () {
+      final parts = mastodonTextParts(
+        'hi @alice see #Flutter now',
+        mentionAccts: ['alice@mastodon.social'],
+      );
+      expect(parts.map((p) => (p.kind, p.value)), [
+        (MastodonTextKind.text, ''),
+        (MastodonTextKind.mention, 'alice@mastodon.social'),
+        (MastodonTextKind.text, ''),
+        (MastodonTextKind.tag, 'Flutter'),
+        (MastodonTextKind.text, ''),
+      ]);
+      expect(parts[1].text, '@alice');
+      expect(parts[3].text, '#Flutter');
+    });
+  });
+
+  group('parseMastodonSearch', () {
+    test('reads accounts, statuses, and hashtags', () {
+      final page = parseMastodonSearch({
+        'accounts': [
+          {
+            'id': '1',
+            'username': 'alice',
+            'acct': 'alice',
+            'display_name': 'Alice',
+            'note': '',
+            'url': 'https://mastodon.social/@alice',
+          },
+        ],
+        'statuses': [
+          {
+            'id': '2',
+            'content': '<p>hi</p>',
+            'url': 'https://mastodon.social/@alice/2',
+            'account': {
+              'id': '1',
+              'username': 'alice',
+              'acct': 'alice',
+              'display_name': 'Alice',
+              'note': '',
+              'url': 'https://mastodon.social/@alice',
+            },
+          },
+        ],
+        'hashtags': [
+          {'name': 'flutter', 'history': []},
+        ],
+      }, homeDomain: 'mastodon.social');
+      expect(page.accounts.single.acct, 'alice@mastodon.social');
+      expect(page.posts.single.text, 'hi');
+      expect(page.tags.single.name, 'flutter');
+    });
+  });
+
+  group('mergeMastodonPinned', () {
+    test('puts pinned first and drops the duplicate from the timeline', () {
+      MastodonPost post(String id) => MastodonPost(
+        id: id,
+        acct: 'a@b.social',
+        authorName: 'A',
+        text: id,
+        url: 'https://b.social/@a/$id',
+      );
+      final merged = mergeMastodonPinned([post('1')], [post('2'), post('1')]);
+      expect(merged.map((e) => e.id), ['1', '2']);
+    });
   });
 
   group('misskey notes', () {
@@ -433,6 +545,26 @@ void main() {
       expect(post.boosted, isTrue);
       expect(post.boostedBy, 'Boosty');
       expect(post.favouritesCount, 5);
+    });
+
+    test('keeps a quote-renote as the comment plus the original', () {
+      final post = mastodonPostFromMisskeyNote({
+        'id': 'q1',
+        'text': 'adding this',
+        'user': {'username': 'boosty', 'name': 'Boosty', 'host': null},
+        'renote': {
+          'id': 'n3',
+          'text': 'original',
+          'user': {'username': 'neo', 'name': 'Neo', 'host': null},
+          'files': [],
+        },
+      }, instance: 'https://misskey.io');
+      expect(post, isNotNull);
+      expect(post!.text, 'adding this');
+      expect(post.acct, 'boosty@misskey.io');
+      expect(post.boosted, isFalse);
+      expect(post.quote?.text, 'original');
+      expect(post.quote?.acct, 'neo@misskey.io');
     });
   });
 }

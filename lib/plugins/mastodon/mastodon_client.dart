@@ -160,13 +160,28 @@ class MastodonClient {
   /// A profile and its first page of posts from one instance, walked the same
   /// way — both halves must come from the same place for the id to mean
   /// anything.
-  Future<({MastodonProfile profile, List<MastodonPost> posts, String instance})>
+  Future<
+    ({
+      MastodonProfile profile,
+      List<MastodonPost> posts,
+      Set<String> pinnedIds,
+      String instance,
+    })
+  >
   profileAnywhere(List<String> instances, String acct) =>
       firstInstanceThat(instances, (instance) async {
         final profile = await lookup(instance, acct);
+        final posts = await getStatuses(instance, profile.id);
+        var pinned = const <MastodonPost>[];
+        try {
+          pinned = await getStatuses(instance, profile.id, pinned: true);
+        } on MastodonException catch (e) {
+          if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+        }
         return (
           profile: profile,
-          posts: await getStatuses(instance, profile.id),
+          posts: mergeMastodonPinned(pinned, posts),
+          pinnedIds: {for (final post in pinned) post.id},
           instance: instance,
         );
       });
@@ -225,6 +240,7 @@ class MastodonClient {
     int limit = 20,
     bool excludeReplies = true,
     bool onlyMedia = false,
+    bool pinned = false,
     String? maxId,
   }) async {
     final json = await _get(
@@ -232,6 +248,7 @@ class MastodonClient {
         'limit': '$limit',
         'exclude_replies': '$excludeReplies',
         if (onlyMedia) 'only_media': 'true',
+        if (pinned) 'pinned': 'true',
         'max_id': ?maxId,
       }),
     );
@@ -444,29 +461,40 @@ class MastodonClient {
     (instance) => getTrendingTags(instance, limit: limit),
   );
 
-  /// Account search without `resolve` — works as a guest on many instances.
-  Future<List<MastodonProfile>> searchAccounts(
+  /// Guest search: accounts, statuses, and hashtags in one call.
+  Future<MastodonSearchPage> search(
     String instance,
     String q, {
     int limit = 20,
   }) async {
     final query = q.trim();
     if (query.isEmpty) {
-      return const [];
+      return const MastodonSearchPage();
     }
     final json = await _get(
-      _uri(instance, '/api/v2/search', {
-        'q': query,
-        'type': 'accounts',
-        'limit': '$limit',
-      }),
+      _uri(instance, '/api/v2/search', {'q': query, 'limit': '$limit'}),
     );
-    final root = Json(json);
-    final home = _homeDomain(instance);
-    return [
-      for (final account in root['accounts'].list)
-        MastodonProfile.fromJson(account.raw, homeDomain: home),
-    ];
+    return parseMastodonSearch(json, homeDomain: _homeDomain(instance));
+  }
+
+  /// [search] over [instances].
+  Future<MastodonSearchPage> searchAnywhere(
+    List<String> instances,
+    String q, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => search(instance, q, limit: limit),
+  );
+
+  /// Account-only search — used when a caller only wants profiles.
+  Future<List<MastodonProfile>> searchAccounts(
+    String instance,
+    String q, {
+    int limit = 20,
+  }) async {
+    final page = await search(instance, q, limit: limit);
+    return page.accounts;
   }
 
   /// [searchAccounts] over [instances].
@@ -474,10 +502,10 @@ class MastodonClient {
     List<String> instances,
     String q, {
     int limit = 20,
-  }) => firstInstanceThat(
-    instances,
-    (instance) => searchAccounts(instance, q, limit: limit),
-  );
+  }) async {
+    final page = await searchAnywhere(instances, q, limit: limit);
+    return page.accounts;
+  }
 
   /// Public hashtag timeline on [instance].
   Future<List<MastodonPost>> getTagTimeline(

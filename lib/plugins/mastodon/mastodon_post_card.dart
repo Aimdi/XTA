@@ -8,6 +8,8 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
+import 'package:xta/plugins/mastodon/mastodon_text.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -27,6 +29,7 @@ final NumberFormat _mastodonCountFormat = NumberFormat.compact(locale: 'en_US');
 class MastodonPostCard extends StatelessWidget {
   final MastodonPost post;
   final bool showSourceBadge;
+  final bool pinned;
 
   /// When false, the card body does not navigate (used for the root of a thread).
   final bool openOnTap;
@@ -44,6 +47,7 @@ class MastodonPostCard extends StatelessWidget {
     super.key,
     required this.post,
     this.showSourceBadge = true,
+    this.pinned = false,
     this.openOnTap = true,
     this.onOpen,
     this.onAuthorTap,
@@ -226,6 +230,13 @@ class MastodonPostCard extends StatelessWidget {
                 style: theme.textTheme.bodySmall,
               ),
             ],
+            if (post.edited) ...[
+              const SizedBox(width: 6),
+              Text(
+                '· ${l10n.plugin_mastodon_edited}',
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
           ],
         ),
         Row(
@@ -237,6 +248,10 @@ class MastodonPostCard extends StatelessWidget {
                 style: theme.textTheme.bodySmall!.copyWith(color: muted),
               ),
             ),
+            if (pinned) ...[
+              const SizedBox(width: 6),
+              _badge(context, l10n.plugin_mastodon_pinned),
+            ],
             if (showSourceBadge) ...[
               const SizedBox(width: 6),
               _badge(context, l10n.plugin_mastodon_title),
@@ -507,10 +522,25 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
           ),
         if (post.text.isNotEmpty) ...[
           const SizedBox(height: 6),
-          Text(
-            post.text,
+          MastodonRichText(
+            text: post.text,
+            mentionAccts: post.mentionAccts,
             style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+            onMentionTap: (acct) => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MastodonProfileScreen(acct: acct),
+              ),
+            ),
+            onTagTap: (tag) => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag)),
+            ),
           ),
+        ],
+        if (post.quote != null) ...[
+          const SizedBox(height: 10),
+          _QuoteEmbed(quote: post.quote!),
         ],
         if (post.hasMedia) ...[
           const SizedBox(height: 10),
@@ -579,6 +609,63 @@ class _PollBars extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _QuoteEmbed extends StatelessWidget {
+  final MastodonQuotedPost quote;
+
+  const _QuoteEmbed({required this.quote});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final radius = tweetMediaRadiusOf(context);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => MastodonThreadScreen(post: quote.asPost),
+          ),
+        ),
+        borderRadius: BorderRadius.circular(radius),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                quote.authorName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                '@${quote.acct}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              if (quote.text.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(quote.text, maxLines: 6, overflow: TextOverflow.ellipsis),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

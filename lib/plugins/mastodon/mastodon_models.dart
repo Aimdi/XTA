@@ -66,6 +66,11 @@ class MastodonPost {
   /// Handle this status is a reply to, when the payload names one.
   final String? replyToAcct;
 
+  /// `acct` values from the status mentions, used to resolve `@name` taps.
+  final List<String> mentionAccts;
+
+  final DateTime? editedAt;
+  final MastodonQuotedPost? quote;
   final int repliesCount;
   final int reblogsCount;
   final int favouritesCount;
@@ -86,6 +91,9 @@ class MastodonPost {
     this.boosted = false,
     this.boostedBy,
     this.replyToAcct,
+    this.mentionAccts = const [],
+    this.editedAt,
+    this.quote,
     this.repliesCount = 0,
     this.reblogsCount = 0,
     this.favouritesCount = 0,
@@ -96,6 +104,116 @@ class MastodonPost {
   bool get hasMedia => images.isNotEmpty;
 
   bool get hasSpoiler => spoilerText.trim().isNotEmpty;
+
+  bool get edited => editedAt != null;
+}
+
+/// A quoted status shown under the card — one level, no nested quotes.
+class MastodonQuotedPost {
+  final String id;
+  final String acct;
+  final String authorName;
+  final String text;
+  final String url;
+  final List<String> images;
+
+  const MastodonQuotedPost({
+    required this.id,
+    required this.acct,
+    required this.authorName,
+    required this.text,
+    required this.url,
+    this.images = const [],
+  });
+
+  MastodonPost get asPost => MastodonPost(
+    id: id,
+    acct: acct,
+    authorName: authorName,
+    text: text,
+    url: url,
+    images: images,
+  );
+}
+
+/// Guest search: accounts, statuses, and hashtags from one `/api/v2/search`.
+class MastodonSearchPage {
+  final List<MastodonProfile> accounts;
+  final List<MastodonPost> posts;
+  final List<MastodonTrendingTag> tags;
+
+  const MastodonSearchPage({
+    this.accounts = const [],
+    this.posts = const [],
+    this.tags = const [],
+  });
+
+  bool get isEmpty => accounts.isEmpty && posts.isEmpty && tags.isEmpty;
+}
+
+enum MastodonTextKind { text, mention, tag }
+
+/// One run of a status body: plain text, `@mention`, or `#tag`.
+class MastodonTextPart {
+  final MastodonTextKind kind;
+  final String text;
+  final String value;
+
+  const MastodonTextPart(this.kind, this.text, this.value);
+}
+
+final _mastodonEntity = RegExp(
+  r'(@[A-Za-z0-9_]+(?:@[A-Za-z0-9.-]+\.[A-Za-z]{2,})?|#[^\s#@]+)',
+);
+
+/// Splits [text] into tappable mentions/tags. [mentionAccts] resolve `@name`.
+List<MastodonTextPart> mastodonTextParts(
+  String text, {
+  List<String> mentionAccts = const [],
+}) {
+  if (text.isEmpty) return const [];
+  final parts = <MastodonTextPart>[];
+  var cursor = 0;
+  for (final match in _mastodonEntity.allMatches(text)) {
+    if (match.start > cursor) {
+      parts.add(
+        MastodonTextPart(
+          MastodonTextKind.text,
+          text.substring(cursor, match.start),
+          '',
+        ),
+      );
+    }
+    final raw = match.group(0)!;
+    if (raw.startsWith('#')) {
+      parts.add(MastodonTextPart(MastodonTextKind.tag, raw, raw.substring(1)));
+    } else {
+      parts.add(
+        MastodonTextPart(
+          MastodonTextKind.mention,
+          raw,
+          resolveMastodonMention(raw, mentionAccts),
+        ),
+      );
+    }
+    cursor = match.end;
+  }
+  if (cursor < text.length) {
+    parts.add(
+      MastodonTextPart(MastodonTextKind.text, text.substring(cursor), ''),
+    );
+  }
+  return parts;
+}
+
+String resolveMastodonMention(String raw, List<String> mentionAccts) {
+  final handle = raw.replaceFirst(RegExp(r'^@+'), '').toLowerCase();
+  if (handle.contains('@')) return handle;
+  for (final acct in mentionAccts) {
+    final lower = acct.toLowerCase();
+    if (lower == handle || lower.startsWith('$handle@')) return lower;
+  }
+  return handle;
 }
 
 /// A Mastodon / Fediverse profile as the home instance reports it.
@@ -455,7 +573,11 @@ MastodonLinkCard? mastodonLinkCardOf(Json status) {
 }
 
 /// One status JSON object → [MastodonPost], or null when empty.
-MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
+MastodonPost? mastodonPostFromStatus(
+  Object? json, {
+  String? homeDomain,
+  bool includeQuote = true,
+}) {
   final root = Json(json);
   // Unwrap boosts so the card shows the original public post.
   final boosted = root['reblog'].exists;
@@ -505,6 +627,11 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     boosted: boosted,
     boostedBy: boosted ? _boostedByName(root, homeDomain: homeDomain) : null,
     replyToAcct: _replyToAcct(status),
+    mentionAccts: _mentionAccts(status),
+    editedAt: DateTime.tryParse(status['edited_at'].string ?? '')?.toLocal(),
+    quote: includeQuote
+        ? mastodonQuoteOf(status, homeDomain: homeDomain)
+        : null,
     repliesCount: status['replies_count'].integer ?? 0,
     reblogsCount: status['reblogs_count'].integer ?? 0,
     favouritesCount: status['favourites_count'].integer ?? 0,
@@ -520,6 +647,41 @@ String? _boostedByName(Json root, {String? homeDomain}) {
   );
   final name = booster.displayName.trim();
   return name.isEmpty ? null : name;
+}
+
+List<String> _mentionAccts(Json status) {
+  final accts = <String>[];
+  for (final mention in status['mentions'].list) {
+    final acct = (mention['acct'].string ?? mention['username'].string ?? '')
+        .trim();
+    if (acct.isNotEmpty) accts.add(acct);
+  }
+  return accts;
+}
+
+MastodonQuotedPost? mastodonQuoteOf(Json status, {String? homeDomain}) {
+  var quoted = status['quote']['quoted_status'];
+  if (!quoted.exists) quoted = status['quoted_status'];
+  if (!quoted.exists &&
+      status['quote']['id'].exists &&
+      status['quote']['account'].exists) {
+    quoted = status['quote'];
+  }
+  if (!quoted.exists) return null;
+  final post = mastodonPostFromStatus(
+    quoted.raw,
+    homeDomain: homeDomain,
+    includeQuote: false,
+  );
+  if (post == null) return null;
+  return MastodonQuotedPost(
+    id: post.id,
+    acct: post.acct,
+    authorName: post.authorName,
+    text: post.text,
+    url: post.url,
+    images: post.images,
+  );
 }
 
 String? _replyToAcct(Json status) {
@@ -597,12 +759,15 @@ MastodonPost? mastodonPostFromMisskeyNote(
   final spoiler = (source['cw'].string ?? '').trim();
   final body = (source['text'].string ?? '').trim();
   final images = _misskeyImages(source);
-  if (spoiler.isEmpty && body.isEmpty && images.isEmpty) return null;
+  if (spoiler.isEmpty && body.isEmpty && images.isEmpty && !isRenote) {
+    return null;
+  }
 
   final origin = mastodonInstanceDomain(instance) ?? host;
   final booster = isRenote ? note['user'] : const Json(null);
   final boosterName = (booster['name'].string ?? '').trim();
   final boosterUser = (booster['username'].string ?? '').trim();
+  final isQuote = note['renote'].exists && outerText.isNotEmpty;
   return MastodonPost(
     id: id,
     acct: acct,
@@ -619,9 +784,23 @@ MastodonPost? mastodonPostFromMisskeyNote(
         ? (boosterName.isNotEmpty ? boosterName : boosterUser)
         : null,
     replyToAcct: _misskeyReplyTo(source),
+    quote: isQuote ? _misskeyQuote(note['renote'], instance: instance) : null,
     repliesCount: source['repliesCount'].integer ?? 0,
     reblogsCount: source['renoteCount'].integer ?? 0,
     favouritesCount: _misskeyReactionCount(source),
+  );
+}
+
+MastodonQuotedPost? _misskeyQuote(Json note, {required String instance}) {
+  final post = mastodonPostFromMisskeyNote(note.raw, instance: instance);
+  if (post == null) return null;
+  return MastodonQuotedPost(
+    id: post.id,
+    acct: post.acct,
+    authorName: post.authorName,
+    text: post.text,
+    url: post.url,
+    images: post.images,
   );
 }
 
@@ -714,4 +893,30 @@ List<MastodonTrendingTag> parseMastodonTrendingTags(Object? json) {
     );
   }
   return tags;
+}
+
+/// Pinned statuses first, then the rest without repeating an id.
+List<MastodonPost> mergeMastodonPinned(
+  List<MastodonPost> pinned,
+  List<MastodonPost> posts,
+) {
+  final ids = pinned.map((post) => post.id).toSet();
+  return [
+    ...pinned,
+    for (final post in posts)
+      if (!ids.contains(post.id)) post,
+  ];
+}
+
+/// Pure parse of `GET /api/v2/search` JSON.
+MastodonSearchPage parseMastodonSearch(Object? json, {String? homeDomain}) {
+  final root = Json(json);
+  return MastodonSearchPage(
+    accounts: [
+      for (final account in root['accounts'].list)
+        MastodonProfile.fromJson(account.raw, homeDomain: homeDomain),
+    ],
+    posts: parseMastodonStatuses(root['statuses'].raw, homeDomain: homeDomain),
+    tags: parseMastodonTrendingTags(root['hashtags'].raw),
+  );
 }

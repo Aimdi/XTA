@@ -32,6 +32,8 @@ origins that 404 the Mastodon public API fall back to featured / local notes.
 | Trending statuses | `GET /api/v1/trends/statuses` |
 | Trending tags | `GET /api/v1/trends/tags` |
 | Hashtag timeline | `GET /api/v1/timelines/tag/:name` |
+| Guest search | `GET /api/v2/search` (accounts + statuses + hashtags) |
+| Pinned statuses | `GET /api/v1/accounts/:id/statuses?pinned=true` |
 | Misskey fallback | `POST /api/notes/local-timeline`, `POST /api/notes/featured` |
 | Resolve status URL (optional) | `GET /api/v2/search?q=&resolve=true&type=statuses` — often 401 without login; not required |
 
@@ -53,15 +55,13 @@ instance that has already federated the author.
 
 ## Card UI
 
-Public statuses render with a tweet-sized layout: avatar, body text, media,
+Public statuses render with a tweet-sized layout: avatar, body text with
+tappable `@mentions` and `#tags`, media, a quoted status when present,
 PreviewCard link/article preview (`card`), a read-only poll, content-warning
-reveal (Tusky/Ivory CW), a “boosted by” / “replying to” line, and a read-only
-engagement row (`replies_count` / `reblogs_count` / `favourites_count`).
-Tapping a post opens an in-app thread (status + public replies via `context`).
-The open-in-browser control and article link previews still leave the app —
-no write APIs. Profiles show the public `fields` rows, a bot label, and
-Posts / Media tabs. Local, Federated, hashtag, and profile lists page with
-`max_id` (Misskey local notes use `untilId`).
+reveal (Tusky/Ivory CW), a “boosted by” / “replying to” line, an edited mark,
+and a read-only engagement row. Tapping a post opens an in-app thread.
+Search is People / Posts / Hashtags. Profiles show `fields`, bot / locked
+labels, pinned posts, and Posts / Media tabs. Lists page with `max_id`.
 
 ## Not implemented
 

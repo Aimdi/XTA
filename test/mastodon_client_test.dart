@@ -507,6 +507,60 @@ void main() {
       );
       expect(posts.single.text, 'older note');
     });
+
+    test('getStatuses asks pinned=true', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.queryParameters['pinned'], 'true');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '1',
+                url: 'https://mastodon.social/@a/1',
+                text: 'pin',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getStatuses(
+        'https://mastodon.social',
+        '1',
+        pinned: true,
+      );
+      expect(posts.single.text, 'pin');
+    });
+
+    test('search reads accounts, statuses, and hashtags', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/api/v2/search');
+          expect(request.url.queryParameters['q'], 'flutter');
+          return http.Response(
+            jsonEncode({
+              'accounts': [],
+              'statuses': [
+                _statusJson(
+                  id: '4',
+                  url: 'https://mastodon.social/@a/4',
+                  text: 'about flutter',
+                ),
+              ],
+              'hashtags': [
+                {'name': 'flutter', 'history': []},
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final page = await client.search('https://mastodon.social', 'flutter');
+      expect(page.posts.single.text, 'about flutter');
+      expect(page.tags.single.name, 'flutter');
+    });
   });
 }
 

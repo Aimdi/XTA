@@ -45,10 +45,11 @@ class _MastodonSearchSheet extends StatefulWidget {
 class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
   final _controller = TextEditingController();
   List<MastodonTrendingTag> _tags = const [];
-  List<MastodonProfile> _accounts = const [];
+  MastodonSearchPage _results = const MastodonSearchPage();
   Object? _error;
   var _loading = false;
   var _searched = false;
+  var _tab = 0;
 
   @override
   void initState() {
@@ -112,12 +113,14 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
       _searched = true;
     });
     try {
-      final accounts = await context
-          .read<MastodonClient>()
-          .searchAccountsAnywhere(_discoveryInstances(context), query);
+      final results = await context.read<MastodonClient>().searchAnywhere(
+        _discoveryInstances(context),
+        query,
+      );
       if (!mounted) return;
       setState(() {
-        _accounts = accounts;
+        _results = results;
+        _tab = _defaultTab(query, results);
         _loading = false;
       });
     } catch (e) {
@@ -125,9 +128,17 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
       setState(() {
         _error = e;
         _loading = false;
-        _accounts = const [];
+        _results = const MastodonSearchPage();
       });
     }
+  }
+
+  int _defaultTab(String query, MastodonSearchPage results) {
+    if (query.startsWith('#') && results.tags.isNotEmpty) return 2;
+    if (results.accounts.isNotEmpty) return 0;
+    if (results.posts.isNotEmpty) return 1;
+    if (results.tags.isNotEmpty) return 2;
+    return 0;
   }
 
   Future<void> _openTag(MastodonTrendingTag tag) async {
@@ -203,29 +214,15 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
     }
 
     if (_searched) {
-      if (_accounts.isEmpty) {
-        return Center(child: Text(l10n.plugin_mastodon_no_results));
-      }
-      return ListView.separated(
-        itemCount: _accounts.length,
-        separatorBuilder: (_, _) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final profile = _accounts[index];
-          return ListTile(
-            leading: _avatar(context, profile),
-            title: Text(
-              profile.displayName.isEmpty ? profile.acct : profile.displayName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              '@${profile.acct}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            onTap: () => _openProfile(profile),
-          );
-        },
+      return Column(
+        children: [
+          _SearchTabs(
+            selected: _tab,
+            onSelected: (index) => setState(() => _tab = index),
+          ),
+          const Divider(height: 1),
+          Expanded(child: _resultsPane(l10n)),
+        ],
       );
     }
 
@@ -266,6 +263,67 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
     );
   }
 
+  Widget _resultsPane(L10n l10n) {
+    if (_tab == 1) {
+      if (_results.posts.isEmpty) {
+        return Center(child: Text(l10n.plugin_mastodon_no_posts));
+      }
+      return ListView.builder(
+        itemCount: _results.posts.length,
+        itemBuilder: (context, index) => MastodonPostCard(
+          key: ValueKey(_results.posts[index].id),
+          post: _results.posts[index],
+          showSourceBadge: false,
+        ),
+      );
+    }
+    if (_tab == 2) {
+      if (_results.tags.isEmpty) {
+        return Center(child: Text(l10n.plugin_mastodon_no_hashtags));
+      }
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final tag in _results.tags)
+                ActionChip(
+                  label: Text('#${tag.name}'),
+                  onPressed: () => _openTag(tag),
+                ),
+            ],
+          ),
+        ],
+      );
+    }
+    if (_results.accounts.isEmpty) {
+      return Center(child: Text(l10n.plugin_mastodon_no_results));
+    }
+    return ListView.separated(
+      itemCount: _results.accounts.length,
+      separatorBuilder: (_, _) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final profile = _results.accounts[index];
+        return ListTile(
+          leading: _avatar(context, profile),
+          title: Text(
+            profile.displayName.isEmpty ? profile.acct : profile.displayName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          subtitle: Text(
+            '@${profile.acct}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () => _openProfile(profile),
+        );
+      },
+    );
+  }
+
   Widget _avatar(BuildContext context, MastodonProfile profile) {
     final theme = Theme.of(context);
     final avatar = profile.avatarUrl;
@@ -284,6 +342,72 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
               fit: BoxFit.cover,
               cacheWidth: (40 * MediaQuery.devicePixelRatioOf(context)).ceil(),
             ),
+    );
+  }
+}
+
+class _SearchTabs extends StatelessWidget {
+  final int selected;
+  final ValueChanged<int> onSelected;
+
+  const _SearchTabs({required this.selected, required this.onSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Row(
+      children: [
+        _SearchTab(
+          label: l10n.plugin_mastodon_accounts,
+          selected: selected == 0,
+          onTap: () => onSelected(0),
+        ),
+        _SearchTab(
+          label: l10n.tweets,
+          selected: selected == 1,
+          onTap: () => onSelected(1),
+        ),
+        _SearchTab(
+          label: l10n.plugin_mastodon_hashtags,
+          selected: selected == 2,
+          onTap: () => onSelected(2),
+        ),
+      ],
+    );
+  }
+}
+
+class _SearchTab extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _SearchTab({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: selected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

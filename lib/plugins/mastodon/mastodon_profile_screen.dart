@@ -42,6 +42,7 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
   MastodonProfile? _profile;
   List<MastodonPost> _posts = const [];
   List<MastodonPost> _media = const [];
+  Set<String> _pinnedIds = const {};
   String? _instance;
   Object? _error;
   var _loading = true;
@@ -77,6 +78,7 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
         setState(() {
           _profile = page.profile;
           _posts = page.posts;
+          _pinnedIds = page.pinnedIds;
           _instance = page.instance;
           _hasMorePosts = page.posts.length >= 20;
           _media = const [];
@@ -271,6 +273,7 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
               key: ValueKey('${_mediaTab ? 'm' : 'p'}-${post.id}'),
               post: post,
               showSourceBadge: false,
+              pinned: !_mediaTab && _pinnedIds.contains(post.id),
             );
           }
           return const Padding(
@@ -410,11 +413,14 @@ class MastodonProfileCard extends StatelessWidget {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  if (profile.bot)
+                  if (profile.bot || profile.locked)
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
-                        l10n.plugin_mastodon_bot,
+                        [
+                          if (profile.bot) l10n.plugin_mastodon_bot,
+                          if (profile.locked) l10n.plugin_mastodon_locked,
+                        ].join(' · '),
                         style: theme.textTheme.labelSmall!.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w700,
