@@ -66,7 +66,7 @@ class RedditPostCard extends StatelessWidget {
                   if (post.flair != null) _RedditFlair(label: post.flair!),
                   // On a discussion subreddit the body is most of the post; a
                   // card that showed only the title said almost nothing.
-                  if (post.isSelf && (post.selfText?.isNotEmpty ?? false))
+                  if (post.isSelf && post.showsSelfText)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
                       child: Text(

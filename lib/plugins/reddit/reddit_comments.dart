@@ -60,7 +60,9 @@ class RedditComment {
     this.moreCount,
   });
 
-  bool get isStub => moreCount != null || (body.isEmpty && permalink != null && replies.isEmpty);
+  bool get isStub =>
+      moreCount != null ||
+      (body.isEmpty && permalink != null && replies.isEmpty);
 
   /// Reddit kept the row but took the words: the author deleted it, or a
   /// moderator removed it. The replies underneath are usually still there,
@@ -69,25 +71,36 @@ class RedditComment {
   /// Reddit says so in the body rather than in a class the old site is
   /// consistent about, so the body is what is read. A comment whose *author*
   /// is gone but whose text is intact is not this — it still says something.
-  bool get isRemoved => !isStub && redditRemovedBodies.contains(body.trim().toLowerCase());
+  bool get isRemoved =>
+      !isStub && redditRemovedBodies.contains(body.trim().toLowerCase());
 
   /// Nobody left to open a profile for: a deleted account, or a row Reddit
   /// rendered without one.
-  bool get hasAuthor => author != null && author != '[deleted]' && author!.isNotEmpty;
+  bool get hasAuthor =>
+      author != null && author != '[deleted]' && author!.isNotEmpty;
 
   /// This comment and everything under it, which is what a flat list needs.
-  int get totalCount => 1 + replies.fold<int>(0, (sum, reply) => sum + reply.totalCount);
+  int get totalCount =>
+      1 + replies.fold<int>(0, (sum, reply) => sum + reply.totalCount);
 }
 
 /// What Reddit puts in a comment's place once its text is gone.
-const redditRemovedBodies = {'[deleted]', '[removed]', '[unavailable]', '[ removed by reddit ]'};
+const redditRemovedBodies = {
+  '[deleted]',
+  '[removed]',
+  '[unavailable]',
+  '[ removed by reddit ]',
+};
 
 /// A comment flattened for display, keeping how deep it sat.
 typedef FlatComment = ({RedditComment comment, int depth});
 
 /// Walks a tree into the list a `ListView` can build, depth carried alongside
 /// so each row can be indented without nesting widgets inside widgets.
-List<FlatComment> flattenComments(List<RedditComment> comments, {int depth = 0}) {
+List<FlatComment> flattenComments(
+  List<RedditComment> comments, {
+  int depth = 0,
+}) {
   final flat = <FlatComment>[];
   for (final comment in comments) {
     flat.add((comment: comment, depth: depth));
@@ -98,7 +111,9 @@ List<FlatComment> flattenComments(List<RedditComment> comments, {int depth = 0})
 
 int? _score(Element entry) {
   // "42 points", "1 point", or "" when Reddit is hiding it.
-  final text = entry.querySelector('.score.unvoted')?.text ?? entry.querySelector('.score')?.text;
+  final text =
+      entry.querySelector('.score.unvoted')?.text ??
+      entry.querySelector('.score')?.text;
   if (text == null) {
     return null;
   }
@@ -122,7 +137,10 @@ RedditComment? _commentFrom(Element thing) {
 
   // Only this comment's own entry, never a reply's: `querySelector` searches
   // the whole subtree, so the child block has to be excluded explicitly.
-  final entry = thing.children.firstWhere((e) => e.classes.contains('entry'), orElse: () => Element.tag('div'));
+  final entry = thing.children.firstWhere(
+    (e) => e.classes.contains('entry'),
+    orElse: () => Element.tag('div'),
+  );
 
   final markdown = entry.querySelector('.usertext-body .md');
   final media = _mediaIn(markdown);
@@ -136,7 +154,9 @@ RedditComment? _commentFrom(Element thing) {
 
   return RedditComment(
     id: fullname.substring(3),
-    author: thing.attributes['data-author'] ?? entry.querySelector('a.author')?.text.trim(),
+    author:
+        thing.attributes['data-author'] ??
+        entry.querySelector('a.author')?.text.trim(),
     body: body,
     score: _score(entry),
     createdAt: _createdAt(entry),
@@ -156,7 +176,9 @@ RedditComment? _commentFrom(Element thing) {
 RedditComment? _stubFrom(Element thing, {String? parentPermalink}) {
   if (thing.classes.contains('morechildren')) {
     final text = thing.text;
-    final counted = RegExp(r'\((\d[\d,]*)').firstMatch(text.replaceAll(',', ''));
+    final counted = RegExp(
+      r'\((\d[\d,]*)',
+    ).firstMatch(text.replaceAll(',', ''));
     if (parentPermalink == null) {
       return null;
     }
@@ -172,7 +194,12 @@ RedditComment? _stubFrom(Element thing, {String? parentPermalink}) {
     if (href == null || href.isEmpty) {
       return null;
     }
-    return RedditComment(id: 'continue-$href', body: '', permalink: href, moreCount: -1);
+    return RedditComment(
+      id: 'continue-$href',
+      body: '',
+      permalink: href,
+      moreCount: -1,
+    );
   }
   return null;
 }
@@ -218,7 +245,8 @@ _CommentMedia _mediaIn(Element? markdown) {
 }
 
 /// Reddit writes protocol-relative sources; the image loader needs a scheme.
-String? _absolute(String? src) => src != null && src.startsWith('//') ? 'https:$src' : src;
+String? _absolute(String? src) =>
+    src != null && src.startsWith('//') ? 'https:$src' : src;
 
 /// The comment's words, with anything that was only an announcement removed.
 ///
@@ -233,33 +261,47 @@ String _bodyOf(Element? markdown, _CommentMedia media) {
   text = text.trim();
 
   if (text.isEmpty || media.urls.isEmpty) {
-    return text;
+    return stripRedditMediaPlaceholderTokens(text);
   }
 
   var withoutLinks = text;
   for (final url in media.urls) {
     withoutLinks = withoutLinks.replaceAll(url, '');
   }
+  withoutLinks = stripRedditMediaPlaceholderTokens(withoutLinks);
 
-  return withoutLinks.trim().isEmpty ? '' : text;
+  return withoutLinks.isEmpty ? '' : stripRedditMediaPlaceholderTokens(text);
 }
 
 /// The comments nested directly inside [thing].
 List<RedditComment> _repliesOf(Element thing) {
-  final child = thing.children.where((e) => e.classes.contains('child')).firstOrNull;
+  final child = thing.children
+      .where((e) => e.classes.contains('child'))
+      .firstOrNull;
   if (child == null) {
     return const [];
   }
 
-  final listing = child.children.where((e) => e.classes.contains('sitetable')).firstOrNull;
-  return listing == null ? const [] : _commentsIn(listing, parentPermalink: thing.attributes['data-permalink']);
+  final listing = child.children
+      .where((e) => e.classes.contains('sitetable'))
+      .firstOrNull;
+  return listing == null
+      ? const []
+      : _commentsIn(
+          listing,
+          parentPermalink: thing.attributes['data-permalink'],
+        );
 }
 
 /// Direct comment children of a listing block, in order.
 List<RedditComment> _commentsIn(Element listing, {String? parentPermalink}) {
   final comments = <RedditComment>[];
-  for (final thing in listing.children.where((e) => e.classes.contains('thing'))) {
-    final comment = _commentFrom(thing) ?? _stubFrom(thing, parentPermalink: parentPermalink);
+  for (final thing in listing.children.where(
+    (e) => e.classes.contains('thing'),
+  )) {
+    final comment =
+        _commentFrom(thing) ??
+        _stubFrom(thing, parentPermalink: parentPermalink);
     if (comment != null) {
       comments.add(comment);
     }
@@ -274,10 +316,14 @@ List<RedditComment> _commentsIn(Element listing, {String? parentPermalink}) {
 List<RedditComment> parseComments(String body, {String? postPermalink}) {
   final document = html.parse(body);
 
-  final area = document.querySelector('.commentarea .sitetable') ?? document.querySelector('.nestedlisting');
+  final area =
+      document.querySelector('.commentarea .sitetable') ??
+      document.querySelector('.nestedlisting');
   // The post's own permalink stands in as the root's parent, so a bottom-of-
   // page "load more comments (500)" keeps its row instead of vanishing.
-  return area == null ? const [] : _commentsIn(area, parentPermalink: postPermalink);
+  return area == null
+      ? const []
+      : _commentsIn(area, parentPermalink: postPermalink);
 }
 
 /// What the post itself points at, read off its own page.
@@ -295,8 +341,11 @@ List<RedditComment> parseComments(String body, {String? postPermalink}) {
   final absolute = url != null && url.startsWith('http') ? url : null;
 
   final collected = <String>[];
-  for (final img in document.querySelectorAll('#siteTable .expando img, #siteTable .media-gallery img')) {
-    final src = (img.attributes['src'] ?? img.attributes['data-lazy-src'])?.replaceAll('&amp;', '&');
+  for (final img in document.querySelectorAll(
+    '#siteTable .expando img, #siteTable .media-gallery img',
+  )) {
+    final src = (img.attributes['src'] ?? img.attributes['data-lazy-src'])
+        ?.replaceAll('&amp;', '&');
     final host = src == null ? null : Uri.tryParse(src)?.host;
     if (src != null && (host == 'preview.redd.it' || host == 'i.redd.it')) {
       collected.add(src);
@@ -311,7 +360,10 @@ List<RedditComment> parseComments(String body, {String? postPermalink}) {
 String? parseSelfText(String body) {
   final document = html.parse(body);
   final text =
-      document.querySelector('#siteTable .expando .usertext-body .md')?.text.trim() ??
+      document
+          .querySelector('#siteTable .expando .usertext-body .md')
+          ?.text
+          .trim() ??
       document.querySelector('#siteTable .usertext-body .md')?.text.trim();
 
   return text == null || text.isEmpty ? null : text;
@@ -325,7 +377,10 @@ typedef VisibleComment = ({FlatComment entry, int hidden});
 /// A collapsed comment stays as its own row, carrying how many replies it is
 /// hiding; everything under it is skipped. Pure, so the fold behaviour can be
 /// tested without a widget tree.
-List<VisibleComment> visibleComments(List<FlatComment> all, Set<String> collapsed) {
+List<VisibleComment> visibleComments(
+  List<FlatComment> all,
+  Set<String> collapsed,
+) {
   final out = <VisibleComment>[];
   var i = 0;
   while (i < all.length) {
