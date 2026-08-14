@@ -165,7 +165,8 @@ class TikTokSearchHistoryStore extends Store<List<String>> {
   }
 
   Future<void> remember(String handle) async {
-    final key = handle.toLowerCase();
+    final key = handle.trim().replaceFirst(RegExp(r'^@'), '').toLowerCase();
+    if (key.isEmpty) return;
     final next = [
       key,
       ...state.where((h) => h != key),

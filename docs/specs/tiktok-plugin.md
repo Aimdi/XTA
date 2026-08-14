@@ -31,7 +31,7 @@ Confirmed live (2026-08-12) from Dart-equivalent `http`:
 | Piece | Detail |
 |---|---|
 | Home | Following (local SQLite handles, `AccountPostCache` merge) · Accounts list |
-| Open | Exact `@handle` lookup, including `tiktok.com/@user` URLs (no fuzzy search) |
+| Open | Guest search: discover people, query suggestions, and profile-HTML handle guesses (signed `/api/search/*/full/` is empty without X-Bogus — not used) |
 | Profile | `TikTokProfileStore`; private accounts show a lock, not an error; posts paginate |
 | Cards | Cover + play overlay (never inline `TweetVideo` — CDN 403). Photos show cover only |
 | Player | Native `media_kit` with Referer + Cookie; on first-frame failure, WebView `embed/v3/{id}` with guest cookies and Android autoplay |

@@ -85,8 +85,8 @@ class _TikTokScreenState extends State<TikTokScreen> {
               ],
               actions: [
                 IconButton(
-                  tooltip: l10n.plugin_tiktok_find_handle,
-                  icon: const Icon(Icons.person_add_alt),
+                  tooltip: l10n.plugin_tiktok_search,
+                  icon: const Icon(Icons.search),
                   onPressed: _openSearch,
                 ),
                 IconButton(
@@ -421,18 +421,16 @@ class _EmptyFollowing extends StatelessWidget {
           Center(
             child: FilledButton.icon(
               onPressed: hasAccounts ? onRefresh : onFindHandle,
-              icon: Icon(hasAccounts ? Icons.refresh : Icons.person_add_alt),
-              label: Text(
-                hasAccounts ? l10n.retry : l10n.plugin_tiktok_find_handle,
-              ),
+              icon: Icon(hasAccounts ? Icons.refresh : Icons.search),
+              label: Text(hasAccounts ? l10n.retry : l10n.plugin_tiktok_search),
             ),
           ),
           if (hasAccounts)
             Center(
               child: TextButton.icon(
                 onPressed: onFindHandle,
-                icon: const Icon(Icons.person_add_alt),
-                label: Text(l10n.plugin_tiktok_find_handle),
+                icon: const Icon(Icons.search),
+                label: Text(l10n.plugin_tiktok_search),
               ),
             ),
         ],

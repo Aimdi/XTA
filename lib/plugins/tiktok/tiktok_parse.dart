@@ -252,3 +252,128 @@ String formatTikTokDuration(int seconds) {
   final s = seconds % 60;
   return '$m:${s.toString().padLeft(2, '0')}';
 }
+
+final _searchApos = RegExp(r"['\u2019]");
+final _searchJunk = RegExp(r'[^a-z0-9._\s]+');
+final _searchSpaces = RegExp(r'\s+');
+
+/// Handles worth fetching as public profile HTML for a typed query.
+List<String> tiktokSearchHandleCandidates(
+  String query, {
+  Iterable<String> suggestions = const [],
+}) {
+  final out = <String>[];
+  void add(String? raw) {
+    final handle = normaliseTikTokHandle(raw);
+    if (handle != null && !out.contains(handle)) out.add(handle);
+  }
+
+  add(query);
+  final words = tiktokSearchWords(query);
+  for (final glued in tiktokGluedHandles(words)) {
+    add(glued);
+  }
+  if (words.isNotEmpty) add(words.first);
+  for (final suggestion in suggestions.take(6)) {
+    add(suggestion);
+    for (final glued in tiktokGluedHandles(tiktokSearchWords(suggestion))) {
+      add(glued);
+    }
+    if (out.length >= 8) break;
+  }
+  return out.take(8).toList();
+}
+
+List<String> tiktokSearchWords(String raw) {
+  final cleaned = raw
+      .toLowerCase()
+      .replaceAll(_searchApos, '')
+      .replaceAll(_searchJunk, ' ')
+      .trim();
+  if (cleaned.isEmpty) return const [];
+  return [
+    for (final word in cleaned.split(_searchSpaces))
+      if (word.isNotEmpty) word,
+  ];
+}
+
+List<String> tiktokGluedHandles(List<String> words) {
+  if (words.length < 2 || words.length > 4) return const [];
+  return [words.join(), words.join('.'), words.join('_')];
+}
+
+bool tiktokUserMatchesQuery(TikTokSearchUser user, String query) {
+  final q = tiktokFoldQuery(query);
+  if (q.isEmpty) return false;
+  final glued = q.replaceAll(' ', '');
+  return tiktokFoldQuery(user.uniqueId).contains(q) ||
+      tiktokFoldQuery(user.nickname).contains(q) ||
+      user.uniqueId.toLowerCase().contains(glued);
+}
+
+String tiktokFoldQuery(String raw) {
+  return raw
+      .toLowerCase()
+      .replaceFirst(RegExp(r'^@'), '')
+      .replaceAll(_searchApos, '')
+      .replaceAll(_searchJunk, ' ')
+      .replaceAll(_searchSpaces, ' ')
+      .trim();
+}
+
+List<TikTokSearchUser> parseTikTokDiscoverUsers(Object? json) {
+  final users = <TikTokSearchUser>[];
+  final seen = <String>{};
+  for (final section in Json(json)['body'].list) {
+    for (final card in section['exploreList'].list) {
+      final user = parseTikTokDiscoverUser(card['cardItem']);
+      if (user == null || !seen.add(user.uniqueId.toLowerCase())) continue;
+      users.add(user);
+    }
+  }
+  return users;
+}
+
+TikTokSearchUser? parseTikTokDiscoverUser(Json item) {
+  if ((item['type'].integer ?? 0) != 2) return null;
+  final uniqueId = _handleFromDiscoverLink(
+    item['link'].string ?? item['subTitle'].string,
+  );
+  if (uniqueId == null) return null;
+  final extra = item['extraInfo'];
+  return TikTokSearchUser(
+    uniqueId: uniqueId,
+    nickname: item['title'].string ?? uniqueId,
+    avatarUrl: _firstUrl(item['cover']),
+    signature: item['description'].string,
+    verified: extra['verified'].boolean ?? false,
+    followerCount: extra['fans'].integer ?? extra['followerCount'].integer ?? 0,
+  );
+}
+
+List<String> parseTikTokSuggestList(Object? json) {
+  final out = <String>[];
+  final seen = <String>{};
+  void add(String? raw) {
+    final word = (raw ?? '').trim();
+    if (word.isEmpty || !seen.add(word.toLowerCase())) return;
+    out.add(word);
+  }
+
+  final root = Json(json);
+  for (final item in root['sug_list'].list) {
+    add(item['content'].string ?? item['word_record']['words_content'].string);
+  }
+  for (final item in root['data'].list) {
+    add(item['word'].string);
+  }
+  return out;
+}
+
+String? _handleFromDiscoverLink(String? raw) {
+  if (raw == null || raw.isEmpty) return null;
+  if (raw.startsWith('/')) {
+    return normaliseTikTokHandle('https://www.tiktok.com$raw');
+  }
+  return normaliseTikTokHandle(raw);
+}
