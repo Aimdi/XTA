@@ -101,6 +101,7 @@ import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
+import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 import 'package:xta/plugins/substack/podcast_store.dart';
 import 'package:xta/speech/speech_bar.dart';
@@ -704,6 +705,7 @@ Future<void> main() async {
       auth: redditAuth,
     );
     final stocksWatchlist = StocksWatchlistStore();
+    final tickerQuotes = TickerQuoteCache();
     final speech = SpeechStore();
     final podcast = PodcastStore();
     final substackClient = SubstackClient();
@@ -846,6 +848,7 @@ Future<void> main() async {
             Provider(create: (_) => redditSubreddits),
             Provider(create: (_) => redditFeed),
             Provider(create: (_) => stocksWatchlist),
+            Provider(create: (_) => tickerQuotes),
             Provider(create: (_) => speech),
             Provider(create: (_) => CombinedGroupsStore()),
             Provider(

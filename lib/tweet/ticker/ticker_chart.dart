@@ -27,7 +27,12 @@ class TickerChart extends StatefulWidget {
   /// Called with the point being touched, and null when the finger lifts.
   final ValueChanged<TickerPoint?>? onScrub;
 
-  const TickerChart({super.key, required this.quote, this.height = 200, this.onScrub});
+  const TickerChart({
+    super.key,
+    required this.quote,
+    this.height = 200,
+    this.onScrub,
+  });
 
   @override
   State<TickerChart> createState() => _TickerChartState();
@@ -72,8 +77,8 @@ class _TickerChartState extends State<TickerChart> {
     final format = span.inDays >= 200
         ? DateFormat.yMMM()
         : span.inDays >= 2
-            ? DateFormat.Md()
-            : DateFormat.Hm();
+        ? DateFormat.Md()
+        : DateFormat.Hm();
 
     return [
       format.format(points.first.at),
@@ -94,17 +99,22 @@ class _TickerChartState extends State<TickerChart> {
       child: LayoutBuilder(
         builder: (context, constraints) => GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTapDown: (d) => _updateFrom(d.localPosition.dx, constraints.maxWidth),
+          onTapDown: (d) =>
+              _updateFrom(d.localPosition.dx, constraints.maxWidth),
           onTapUp: (_) => _end(),
           onTapCancel: _end,
-          onHorizontalDragStart: (d) => _updateFrom(d.localPosition.dx, constraints.maxWidth),
-          onHorizontalDragUpdate: (d) => _updateFrom(d.localPosition.dx, constraints.maxWidth),
+          onHorizontalDragStart: (d) =>
+              _updateFrom(d.localPosition.dx, constraints.maxWidth),
+          onHorizontalDragUpdate: (d) =>
+              _updateFrom(d.localPosition.dx, constraints.maxWidth),
           onHorizontalDragEnd: (_) => _end(),
           onHorizontalDragCancel: _end,
           child: RepaintBoundary(
             child: CustomPaint(
               painter: _TickerChartPainter(
-                closes: widget.quote.points.map((p) => p.close).toList(growable: false),
+                closes: widget.quote.points
+                    .map((p) => p.close)
+                    .toList(growable: false),
                 baseline: widget.quote.previousClose,
                 line: colour,
                 grid: theme.colorScheme.outlineVariant,
@@ -154,7 +164,10 @@ class _TickerChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final plot = Size(size.width - kTickerAxisWidth, size.height - kTickerAxisHeight);
+    final plot = Size(
+      size.width - kTickerAxisWidth,
+      size.height - kTickerAxisHeight,
+    );
     if (closes.length < 2 || plot.width <= 0 || plot.height <= 0) {
       return;
     }
@@ -170,7 +183,9 @@ class _TickerChartPainter extends CustomPainter {
     }
 
     final span = high - low;
-    double yFor(double value) => span == 0 ? plot.height / 2 : plot.height - ((value - low) / span) * plot.height;
+    double yFor(double value) => span == 0
+        ? plot.height / 2
+        : plot.height - ((value - low) / span) * plot.height;
     double xFor(int i) => plot.width * (i / (closes.length - 1));
 
     _paintGrid(canvas, plot, low: low, high: high, yFor: yFor);
@@ -216,7 +231,13 @@ class _TickerChartPainter extends CustomPainter {
 
   /// Price gridlines, labelled down the right so the numbers never sit over the
   /// line itself.
-  void _paintGrid(Canvas canvas, Size plot, {required double low, required double high, required double Function(double) yFor}) {
+  void _paintGrid(
+    Canvas canvas,
+    Size plot, {
+    required double low,
+    required double high,
+    required double Function(double) yFor,
+  }) {
     final paint = Paint()
       ..color = grid.withValues(alpha: 0.4)
       ..strokeWidth = 0.5;
@@ -225,7 +246,12 @@ class _TickerChartPainter extends CustomPainter {
       final value = low + (high - low) * (i / kTickerGridLines);
       final y = yFor(value);
       canvas.drawLine(Offset(0, y), Offset(plot.width, y), paint);
-      _text(canvas, _price.format(value), Offset(plot.width + 6, y - 6), maxWidth: kTickerAxisWidth - 8);
+      _text(
+        canvas,
+        _price.format(value),
+        Offset(plot.width + 6, y - 6),
+        maxWidth: kTickerAxisWidth - 8,
+      );
     }
   }
 
@@ -236,8 +262,18 @@ class _TickerChartPainter extends CustomPainter {
 
     final y = plot.height + 4;
     _text(canvas, dateLabels[0], Offset(0, y), maxWidth: plot.width / 3);
-    _text(canvas, dateLabels[1], Offset(plot.width / 2 - 24, y), maxWidth: plot.width / 3);
-    _text(canvas, dateLabels[2], Offset(plot.width - 52, y), maxWidth: plot.width / 3);
+    _text(
+      canvas,
+      dateLabels[1],
+      Offset(plot.width / 2 - 24, y),
+      maxWidth: plot.width / 3,
+    );
+    _text(
+      canvas,
+      dateLabels[2],
+      Offset(plot.width - 52, y),
+      maxWidth: plot.width / 3,
+    );
   }
 
   /// The previous close, dashed so it never reads as part of the price line.
@@ -247,11 +283,20 @@ class _TickerChartPainter extends CustomPainter {
       ..strokeWidth = 1;
 
     for (var x = 0.0; x < plot.width; x += 8) {
-      canvas.drawLine(Offset(x, y), Offset((x + 4).clamp(0.0, plot.width), y), paint);
+      canvas.drawLine(
+        Offset(x, y),
+        Offset((x + 4).clamp(0.0, plot.width), y),
+        paint,
+      );
     }
   }
 
-  void _paintCrosshair(Canvas canvas, Size plot, {required double x, required double y}) {
+  void _paintCrosshair(
+    Canvas canvas,
+    Size plot, {
+    required double x,
+    required double y,
+  }) {
     canvas.drawLine(
       Offset(x, 0),
       Offset(x, plot.height),
@@ -273,9 +318,17 @@ class _TickerChartPainter extends CustomPainter {
     );
   }
 
-  void _text(Canvas canvas, String value, Offset at, {required double maxWidth}) {
+  void _text(
+    Canvas canvas,
+    String value,
+    Offset at, {
+    required double maxWidth,
+  }) {
     final painter = TextPainter(
-      text: TextSpan(text: value, style: TextStyle(color: label, fontSize: 10)),
+      text: TextSpan(
+        text: value,
+        style: TextStyle(color: label, fontSize: 10),
+      ),
       textDirection: TextDirection.ltr,
       textScaler: textScaler,
       maxLines: 1,

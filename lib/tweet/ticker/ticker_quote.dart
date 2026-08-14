@@ -30,6 +30,16 @@ class TickerQuote {
   final double? yearHigh;
   final double? yearLow;
 
+  /// Company or index name, day's range, and the session the last print
+  /// belongs to. All optional — the chart host only sends them for some
+  /// symbols, and pre/post prints vanish outside those sessions.
+  final String? shortName;
+  final double? dayHigh;
+  final double? dayLow;
+  final String? marketState;
+  final double? preMarketPrice;
+  final double? postMarketPrice;
+
   final List<TickerPoint> points;
 
   const TickerQuote({
@@ -41,6 +51,12 @@ class TickerQuote {
     this.volume,
     this.yearHigh,
     this.yearLow,
+    this.shortName,
+    this.dayHigh,
+    this.dayLow,
+    this.marketState,
+    this.preMarketPrice,
+    this.postMarketPrice,
   });
 
   double? get change {
@@ -68,6 +84,25 @@ class TickerQuote {
     return delta == null ? null : delta >= 0;
   }
 
+  /// The print a tape should show: pre/post when that session is live, else
+  /// the regular last, else the last close on the chart.
+  double? get displayPrice {
+    if (marketState == 'PRE' && preMarketPrice != null) {
+      return preMarketPrice;
+    }
+    if ((marketState == 'POST' || marketState == 'POSTPOST') &&
+        postMarketPrice != null) {
+      return postMarketPrice;
+    }
+    return price ?? points.lastOrNull?.close;
+  }
+
+  bool get isPreMarket => marketState == 'PRE' && preMarketPrice != null;
+
+  bool get isAfterHours =>
+      (marketState == 'POST' || marketState == 'POSTPOST') &&
+      postMarketPrice != null;
+
   /// Reads the `chart.result[0]` shape: a list of timestamps alongside a
   /// parallel list of closes, plus a `meta` block.
   ///
@@ -88,10 +123,15 @@ class TickerQuote {
       if (seconds == null || close == null) {
         continue;
       }
-      points.add(TickerPoint(
-        at: DateTime.fromMillisecondsSinceEpoch(seconds * 1000, isUtc: true).toLocal(),
-        close: close,
-      ));
+      points.add(
+        TickerPoint(
+          at: DateTime.fromMillisecondsSinceEpoch(
+            seconds * 1000,
+            isUtc: true,
+          ).toLocal(),
+          close: close,
+        ),
+      );
     }
 
     if (points.isEmpty) {
@@ -102,11 +142,18 @@ class TickerQuote {
       symbol: meta['symbol'].string ?? symbol,
       currency: meta['currency'].string,
       price: meta['regularMarketPrice'].number,
-      previousClose: meta['chartPreviousClose'].number ?? meta['previousClose'].number,
+      previousClose:
+          meta['chartPreviousClose'].number ?? meta['previousClose'].number,
       points: points,
       volume: meta['regularMarketVolume'].number,
       yearHigh: meta['fiftyTwoWeekHigh'].number,
       yearLow: meta['fiftyTwoWeekLow'].number,
+      shortName: meta['shortName'].string ?? meta['longName'].string,
+      dayHigh: meta['regularMarketDayHigh'].number,
+      dayLow: meta['regularMarketDayLow'].number,
+      marketState: meta['marketState'].string,
+      preMarketPrice: meta['preMarketPrice'].number,
+      postMarketPrice: meta['postMarketPrice'].number,
     );
   }
 }

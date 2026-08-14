@@ -77,13 +77,19 @@ class _WatchlistChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final price = quote?.price ?? quote?.points.lastOrNull?.close;
+    final price = quote?.displayPrice;
     final percent = quote?.changePercent;
-    final colour = percent == null ? theme.colorScheme.outline : stockChangeColour(quote?.isUp);
-    final outline = selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant;
+    final colour = percent == null
+        ? theme.colorScheme.outline
+        : stockChangeColour(quote?.isUp);
+    final outline = selected
+        ? theme.colorScheme.primary
+        : theme.colorScheme.outlineVariant;
 
     return Material(
-      color: selected ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest,
+      color: selected
+          ? theme.colorScheme.primaryContainer
+          : theme.colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: outline),
@@ -101,17 +107,23 @@ class _WatchlistChip extends StatelessWidget {
               Text(
                 '\$$symbol',
                 maxLines: 1,
-                style: theme.textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w800),
+                style: theme.textTheme.labelLarge!.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 2),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    price == null ? kStockPlaceholder : stockMoneyFormat.format(price),
+                    price == null
+                        ? kStockPlaceholder
+                        : stockMoneyFormat.format(price),
                     style: theme.textTheme.bodySmall!.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: price == null ? theme.colorScheme.outline : theme.colorScheme.onSurface,
+                      color: price == null
+                          ? theme.colorScheme.outline
+                          : theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: 6),
@@ -134,20 +146,26 @@ class _ChangePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = percent == null ? kStockPlaceholder : stockPercentLabel(percent!);
+    final label = percent == null
+        ? kStockPlaceholder
+        : stockPercentLabel(percent!);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
-        color: percent == null ? Theme.of(context).colorScheme.surfaceContainerHighest : colour.withValues(alpha: 0.18),
+        color: percent == null
+            ? Theme.of(context).colorScheme.surfaceContainerHighest
+            : colour.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall!.copyWith(
-              fontWeight: FontWeight.w800,
-              color: percent == null ? Theme.of(context).colorScheme.outline : colour,
-            ),
+          fontWeight: FontWeight.w800,
+          color: percent == null
+              ? Theme.of(context).colorScheme.outline
+              : colour,
+        ),
       ),
     );
   }

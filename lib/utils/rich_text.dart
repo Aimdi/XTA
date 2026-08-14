@@ -14,6 +14,7 @@ import 'package:xta/utils/urls.dart';
 import 'package:xta/utils/_entities.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/plugins/stocks/stocks_store.dart';
 
 /// Turning a post's text and its entity list into spans.
 ///
@@ -67,21 +68,82 @@ String _normalizeHashtag(String tag) => tag.startsWith('#') ? tag : '#$tag';
 
 bool _isFollowingTopic(BuildContext context, String tag) {
   final normalized = _normalizeHashtag(tag);
-  return context.read<SubscriptionsModel>().state.any((s) => s is SearchSubscription && s.id == normalized);
+  return context.read<SubscriptionsModel>().state.any(
+    (s) => s is SearchSubscription && s.id == normalized,
+  );
 }
 
 Future<void> _toggleTopicFollow(BuildContext context, String tag) async {
   final normalized = _normalizeHashtag(tag);
   final model = context.read<SubscriptionsModel>();
   final followed = _isFollowingTopic(context, normalized);
-  await model.toggleSubscribe(SearchSubscription(id: normalized, createdAt: DateTime.now()), followed);
+  await model.toggleSubscribe(
+    SearchSubscription(id: normalized, createdAt: DateTime.now()),
+    followed,
+  );
   if (!context.mounted) {
     return;
   }
   final messenger = ScaffoldMessenger.of(context);
-  messenger.showSnackBar(SnackBar(
-    content: Text(followed ? L10n.of(context).unsubscribe : L10n.of(context).topic_follow_done(normalized)),
-  ));
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text(
+        followed
+            ? L10n.of(context).unsubscribe
+            : L10n.of(context).topic_follow_done(normalized),
+      ),
+    ),
+  );
+}
+
+void _showCashtagSheet(BuildContext context, String symbol) {
+  StocksWatchlistStore? store;
+  try {
+    store = context.read<StocksWatchlistStore>();
+  } on ProviderNotFoundException {
+    store = null;
+  }
+  final watched = store?.state.contains(symbol.toUpperCase()) ?? false;
+
+  showModalBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.show_chart),
+            title: Text('\$${symbol.toUpperCase()}'),
+            onTap: () {
+              Navigator.pop(sheetContext);
+              Navigator.pushNamed(
+                context,
+                routeTicker,
+                arguments: TickerScreenArguments(symbol: symbol),
+              );
+            },
+          ),
+          if (store != null)
+            ListTile(
+              leading: Icon(watched ? Icons.star : Icons.star_outline),
+              title: Text(
+                watched
+                    ? L10n.of(sheetContext).plugin_stocks_unwatch
+                    : L10n.of(sheetContext).plugin_stocks_watch,
+              ),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                if (watched) {
+                  store!.remove(symbol);
+                } else {
+                  store!.add(symbol);
+                }
+              },
+            ),
+        ],
+      ),
+    ),
+  );
 }
 
 void _showTopicFollowSheet(BuildContext context, String tag) {
@@ -93,7 +155,11 @@ void _showTopicFollowSheet(BuildContext context, String tag) {
     builder: (sheetContext) => SafeArea(
       child: ListTile(
         leading: Icon(followed ? Icons.check : Icons.tag),
-        title: Text(followed ? L10n.of(sheetContext).topic_following : L10n.of(sheetContext).topic_follow),
+        title: Text(
+          followed
+              ? L10n.of(sheetContext).topic_following
+              : L10n.of(sheetContext).topic_follow,
+        ),
         onTap: () {
           Navigator.pop(sheetContext);
           _toggleTopicFollow(context, normalized);
@@ -123,13 +189,20 @@ InlineSpan _hashtagSpan(
 List<InlineSpan> displayRichText(List<RichTextPart> richText) {
   return [
     for (final part in richText)
-      if (part.plainText != null) TextSpan(text: part.plainText) else part.entity!,
+      if (part.plainText != null)
+        TextSpan(text: part.plainText)
+      else
+        part.entity!,
   ];
 }
 
 /// All of a post's runs, in order: the entities where X placed them, and the
 /// text between them scanned for what descriptions leave unmarked.
-List<RichTextPart> buildRichText(BuildContext context, String rawText, Object? rawEntities) {
+List<RichTextPart> buildRichText(
+  BuildContext context,
+  String rawText,
+  Object? rawEntities,
+) {
   final runes = rawText.runes.toList(growable: false);
 
   final recognizers = <GestureRecognizer>[];
@@ -149,7 +222,12 @@ List<RichTextPart> buildRichText(BuildContext context, String rawText, Object? r
 
   var index = 0;
   for (final entity in entities) {
-    _addTextRuns(context, parts, spanContext, _runesToText(runes, index, entity.getEntityStart()));
+    _addTextRuns(
+      context,
+      parts,
+      spanContext,
+      _runesToText(runes, index, entity.getEntityStart()),
+    );
     parts.add(RichTextPart(entity.getContent(spanContext), null));
     index = entity.getEntityEnd();
   }
@@ -161,48 +239,74 @@ List<RichTextPart> buildRichText(BuildContext context, String rawText, Object? r
 
 /// Splits [text] around the mentions and hashtags descriptions carry without
 /// entities, adding a run per piece.
-void _addTextRuns(BuildContext context, List<RichTextPart> parts, EntitySpanContext spanContext, String? text) {
+void _addTextRuns(
+  BuildContext context,
+  List<RichTextPart> parts,
+  EntitySpanContext spanContext,
+  String? text,
+) {
   if (text == null) {
     return;
   }
 
-  text.splitMapJoin(_mentionOrHashtag, onMatch: (match) {
-    final full = match.group(0);
-    final kind = match.group(1);
-    if (kind == null || full == null) {
-      return '';
-    }
-    if (kind == '#') {
-      parts.add(RichTextPart(
-        _hashtagSpan(
-          spanContext,
-          full,
-          () => Navigator.pushNamed(context, routeSearch,
-              arguments: SearchArguments(1, focusInputOnOpen: false, query: full)),
-          () => _showTopicFollowSheet(context, full),
-        ),
-        null,
-      ));
-    } else {
-      parts.add(RichTextPart(
-        TextSpan(
-          text: full,
-          style: spanContext.linkStyle,
-          recognizer: spanContext.recognizer(() {
-            Navigator.pushNamed(context, routeProfile,
-                arguments: ProfileScreenArguments.fromScreenName(full.substring(1), null));
-          }),
-        ),
-        null,
-      ));
-    }
-    return kind;
-  }, onNonMatch: (piece) {
-    if (piece.isNotEmpty) {
-      parts.add(RichTextPart(null, piece));
-    }
-    return piece;
-  });
+  text.splitMapJoin(
+    _mentionOrHashtag,
+    onMatch: (match) {
+      final full = match.group(0);
+      final kind = match.group(1);
+      if (kind == null || full == null) {
+        return '';
+      }
+      if (kind == '#') {
+        parts.add(
+          RichTextPart(
+            _hashtagSpan(
+              spanContext,
+              full,
+              () => Navigator.pushNamed(
+                context,
+                routeSearch,
+                arguments: SearchArguments(
+                  1,
+                  focusInputOnOpen: false,
+                  query: full,
+                ),
+              ),
+              () => _showTopicFollowSheet(context, full),
+            ),
+            null,
+          ),
+        );
+      } else {
+        parts.add(
+          RichTextPart(
+            TextSpan(
+              text: full,
+              style: spanContext.linkStyle,
+              recognizer: spanContext.recognizer(() {
+                Navigator.pushNamed(
+                  context,
+                  routeProfile,
+                  arguments: ProfileScreenArguments.fromScreenName(
+                    full.substring(1),
+                    null,
+                  ),
+                );
+              }),
+            ),
+            null,
+          ),
+        );
+      }
+      return kind;
+    },
+    onNonMatch: (piece) {
+      if (piece.isNotEmpty) {
+        parts.add(RichTextPart(null, piece));
+      }
+      return piece;
+    },
+  );
 }
 
 String? _runesToText(List<int> runes, int start, [int? end]) {
@@ -223,7 +327,9 @@ List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
   }
 
   // The translation API hands entities back as raw JSON rather than the model.
-  final parsed = rawEntities is Map<String, dynamic> ? Entities.fromJson(rawEntities) : rawEntities;
+  final parsed = rawEntities is Map<String, dynamic>
+      ? Entities.fromJson(rawEntities)
+      : rawEntities;
   if (parsed is! Entities && parsed is! UserEntityUrl) {
     return const [];
   }
@@ -238,11 +344,21 @@ List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
     }
 
     for (final hashtag in parsed.hashtags ?? const <Hashtag>[]) {
-      entities.add(HashtagEntity(
+      entities.add(
+        HashtagEntity(
           hashtag,
-          () => Navigator.pushNamed(context, routeSearch,
-              arguments: SearchArguments(1, focusInputOnOpen: false, query: '#${hashtag.text}')),
-          () => _showTopicFollowSheet(context, '#${hashtag.text}')));
+          () => Navigator.pushNamed(
+            context,
+            routeSearch,
+            arguments: SearchArguments(
+              1,
+              focusInputOnOpen: false,
+              query: '#${hashtag.text}',
+            ),
+          ),
+          () => _showTopicFollowSheet(context, '#${hashtag.text}'),
+        ),
+      );
     }
 
     // A ticker opens its own screen: the chart, and the posts about it.
@@ -251,37 +367,58 @@ List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
       if (text == null || text.isEmpty) {
         continue;
       }
-      entities.add(SymbolEntity(
+      entities.add(
+        SymbolEntity(
           text: text,
           indices: symbol.indices,
-          onTap: () =>
-              Navigator.pushNamed(context, routeTicker, arguments: TickerScreenArguments(symbol: text))));
+          onTap: () => Navigator.pushNamed(
+            context,
+            routeTicker,
+            arguments: TickerScreenArguments(symbol: text),
+          ),
+          onLongPress: () => _showCashtagSheet(context, text),
+        ),
+      );
     }
 
     for (final mention in parsed.userMentions ?? const <UserMention>[]) {
-      entities.add(UserMentionEntity(
+      entities.add(
+        UserMentionEntity(
           mention,
-          () => Navigator.pushNamed(context, routeProfile,
-              arguments: ProfileScreenArguments(mention.idStr, mention.screenName, null))));
+          () => Navigator.pushNamed(
+            context,
+            routeProfile,
+            arguments: ProfileScreenArguments(
+              mention.idStr,
+              mention.screenName,
+              null,
+            ),
+          ),
+        ),
+      );
     }
   }
 
-  final urls = parsed is Entities ? parsed.urls : (parsed as UserEntityUrl).urls;
+  final urls = parsed is Entities
+      ? parsed.urls
+      : (parsed as UserEntityUrl).urls;
   for (final url in urls ?? const <Url>[]) {
-    entities.add(UrlEntity(url, () async {
-      final uri = url.expandedUrl;
-      if (uri == null ||
-          uri.startsWith('https://twitter.com/i/web/status/') ||
-          uri.startsWith('https://x.com/i/web/status/')) {
-        return;
-      }
-      // A plugin may be able to read this link in-app (Substack posts); only
-      // hand it to the browser when none claims it.
-      if (!context.mounted) return;
-      if (await openWithPlugins(context, uri)) return;
-      if (!context.mounted) return;
-      await openUri(context, uri);
-    }));
+    entities.add(
+      UrlEntity(url, () async {
+        final uri = url.expandedUrl;
+        if (uri == null ||
+            uri.startsWith('https://twitter.com/i/web/status/') ||
+            uri.startsWith('https://x.com/i/web/status/')) {
+          return;
+        }
+        // A plugin may be able to read this link in-app (Substack posts); only
+        // hand it to the browser when none claims it.
+        if (!context.mounted) return;
+        if (await openWithPlugins(context, uri)) return;
+        if (!context.mounted) return;
+        await openUri(context, uri);
+      }),
+    );
   }
 
   entities.sort((a, b) => a.getEntityStart().compareTo(b.getEntityStart()));

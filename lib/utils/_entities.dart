@@ -35,7 +35,8 @@ class HashtagEntity extends Entity {
   final VoidCallback onTap;
   final VoidCallback onLongPress;
 
-  HashtagEntity(this.hashtag, this.onTap, this.onLongPress) : super(hashtag.indices);
+  HashtagEntity(this.hashtag, this.onTap, this.onLongPress)
+    : super(hashtag.indices);
 
   @override
   InlineSpan getContent(EntitySpanContext context) {
@@ -58,12 +59,26 @@ class HashtagEntity extends Entity {
 class SymbolEntity extends Entity {
   final String text;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
-  SymbolEntity({required this.text, required List<int>? indices, required this.onTap}) : super(indices);
+  SymbolEntity({
+    required this.text,
+    required List<int>? indices,
+    required this.onTap,
+    this.onLongPress,
+  }) : super(indices);
 
   @override
   InlineSpan getContent(EntitySpanContext context) {
-    return TextSpan(text: '\$$text', style: context.linkStyle, recognizer: context.recognizer(onTap));
+    return WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
+      child: GestureDetector(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Text('\$$text', style: context.linkStyle),
+      ),
+    );
   }
 }
 
@@ -76,7 +91,10 @@ class UserMentionEntity extends Entity {
   @override
   InlineSpan getContent(EntitySpanContext context) {
     return TextSpan(
-        text: '@${mention.screenName}', style: context.linkStyle, recognizer: context.recognizer(onTap));
+      text: '@${mention.screenName}',
+      style: context.linkStyle,
+      recognizer: context.recognizer(onTap),
+    );
   }
 }
 
@@ -94,7 +112,11 @@ class UrlEntity extends Entity {
       return const TextSpan(text: '');
     }
 
-    return TextSpan(text: url.displayUrl, style: context.linkStyle, recognizer: context.recognizer(onTap));
+    return TextSpan(
+      text: url.displayUrl,
+      style: context.linkStyle,
+      recognizer: context.recognizer(onTap),
+    );
   }
 }
 
