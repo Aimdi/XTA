@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
+import 'package:xta/plugins/instagram/instagram_discovery.dart';
 
 Map<String, Object?> _profileJson({
   String username = 'instagram',
@@ -210,6 +211,130 @@ void main() {
         prefs.get<String>(optionPluginInstagramCookies),
         contains('sessionid=s1'),
       );
+    },
+  );
+
+  test('forYou uses explore_grid when the session answers', () async {
+    await prefs.set(
+      optionPluginInstagramCookies,
+      'sessionid=s1; csrftoken=c1; ds_user_id=9; mid=m1; ig_did=d1',
+    );
+    final requested = <String>[];
+    final client = InstagramClient(
+      prefs,
+      httpClient: MockClient((request) async {
+        requested.add(request.url.path);
+        if (request.url.path.endsWith('/discover/web/explore_grid/')) {
+          return http.Response(
+            jsonEncode({
+              'more_available': false,
+              'sectional_items': [
+                {
+                  'layout_content': {
+                    'medias': [
+                      {
+                        'media': {
+                          'id': '99',
+                          'code': 'EXP',
+                          'taken_at': 1700000000,
+                          'user': {
+                            'username': 'natgeo',
+                            'full_name': 'Nat Geo',
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('no', 404);
+      }),
+    );
+
+    final page = await client.forYou();
+    expect(page.posts.single.shortcode, 'EXP');
+    expect(requested, contains('/api/v1/discover/web/explore_grid/'));
+  });
+
+  test('forYou skips Explore without a session', () async {
+    final requested = <String>[];
+    final client = InstagramClient(
+      prefs,
+      httpClient: MockClient((request) async {
+        requested.add(request.url.path);
+        if (request.url.path == '/') {
+          return http.Response(
+            '<html></html>',
+            200,
+            headers: {
+              'set-cookie': 'csrftoken=abc; Path=/, mid=mid1; Path=/',
+              'content-type': 'text/html',
+            },
+          );
+        }
+        if (request.url.path.contains('explore')) {
+          return http.Response('should not hit explore', 500);
+        }
+        if (request.url.path == '/api/v1/users/web_profile_info/') {
+          final user = request.url.queryParameters['username'] ?? 'x';
+          return http.Response(jsonEncode(_profileJson(username: user)), 200);
+        }
+        return http.Response('no', 404);
+      }),
+    );
+
+    final page = await client.forYou();
+    expect(page.posts, isNotEmpty);
+    expect(
+      page.posts.every(
+        (p) => kInstagramDiscoverHandles.contains(p.author.username),
+      ),
+      isTrue,
+    );
+    expect(requested.any((p) => p.contains('explore')), isFalse);
+    expect(requested.any((p) => p.contains('web_profile_info')), isTrue);
+  });
+
+  test(
+    'forYou falls back to public seeds when Explore needs a login',
+    () async {
+      await prefs.set(
+        optionPluginInstagramCookies,
+        'sessionid=s1; csrftoken=c1; ds_user_id=9; mid=m1; ig_did=d1',
+      );
+      final requested = <String>[];
+      final client = InstagramClient(
+        prefs,
+        httpClient: MockClient((request) async {
+          requested.add(request.url.path);
+          if (request.url.path.contains('explore')) {
+            return http.Response(
+              jsonEncode({'status': 'fail', 'message': 'login_required'}),
+              200,
+            );
+          }
+          if (request.url.path == '/api/v1/users/web_profile_info/') {
+            final user = request.url.queryParameters['username'] ?? 'x';
+            return http.Response(jsonEncode(_profileJson(username: user)), 200);
+          }
+          return http.Response('no', 404);
+        }),
+      );
+
+      final page = await client.forYou();
+      expect(page.posts, isNotEmpty);
+      expect(
+        page.posts.every(
+          (p) => kInstagramDiscoverHandles.contains(p.author.username),
+        ),
+        isTrue,
+      );
+      expect(requested.any((p) => p.contains('explore')), isTrue);
+      expect(requested.any((p) => p.contains('web_profile_info')), isTrue);
     },
   );
 

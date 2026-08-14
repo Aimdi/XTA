@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/instagram/instagram_discovery.dart';
 import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_parse.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
@@ -128,6 +129,80 @@ class InstagramClient {
     ).replace(queryParameters: query);
     final response = await _get(uri, referer: '$instagramWebOrigin/');
     return parseInstagramUserFeed(_decodeJson(response, uri));
+  }
+
+  /// Instagram's own Explore mix when a session answers; else public seeds.
+  Future<InstagramItemPage> forYou({String? cursor}) async {
+    if (hasSession) {
+      try {
+        final page = await exploreFeed(cursor: cursor);
+        if (page.posts.isNotEmpty) return page;
+      } on InstagramException catch (e) {
+        if (e.kind != InstagramErrorKind.loginRequired &&
+            e.kind != InstagramErrorKind.rateLimited &&
+            e.kind != InstagramErrorKind.badResponse) {
+          rethrow;
+        }
+      }
+    }
+    if (cursor != null && cursor.isNotEmpty) {
+      return const InstagramItemPage(posts: [], hasMore: false);
+    }
+    return guestDiscover();
+  }
+
+  /// Session Explore grid (`discover/web/explore_grid`, then topical_explore).
+  Future<InstagramItemPage> exploreFeed({String? cursor}) async {
+    await warmGuest();
+    final query = {
+      'is_prefetch': 'false',
+      'omit_cover_media': 'false',
+      'module': 'explore_popular',
+      if (cursor != null && cursor.isNotEmpty) 'max_id': cursor,
+    };
+    try {
+      final uri = Uri.parse(
+        '$instagramWebOrigin/api/v1/discover/web/explore_grid/',
+      ).replace(queryParameters: query);
+      final response = await _get(uri, referer: '$instagramWebOrigin/explore/');
+      return parseInstagramExplore(_decodeJson(response, uri));
+    } on InstagramException catch (e) {
+      if (e.kind != InstagramErrorKind.rateLimited &&
+          e.kind != InstagramErrorKind.loginRequired &&
+          e.kind != InstagramErrorKind.badResponse) {
+        rethrow;
+      }
+    }
+    final uri = Uri.parse(
+      '$instagramApiOrigin/api/v1/discover/topical_explore/',
+    ).replace(queryParameters: query);
+    final response = await _get(uri, referer: '$instagramWebOrigin/explore/');
+    return parseInstagramExplore(_decodeJson(response, uri));
+  }
+
+  /// Guest For You: recent public posts from well-known accounts, interleaved.
+  Future<InstagramItemPage> guestDiscover({int perAccount = 4}) async {
+    await warmGuest();
+    final pages = await Future.wait([
+      for (final handle in kInstagramDiscoverHandles)
+        _profileMediaOrEmpty(handle, perAccount),
+    ]);
+    return InstagramItemPage(
+      posts: interleaveInstagramDiscover(pages),
+      hasMore: false,
+    );
+  }
+
+  Future<List<InstagramPost>> _profileMediaOrEmpty(
+    String handle,
+    int cap,
+  ) async {
+    try {
+      final page = await profileMedia(handle);
+      return page.posts.take(cap).toList(growable: false);
+    } catch (_) {
+      return const [];
+    }
   }
 
   Future<List<InstagramSearchUser>> searchUsers(String raw) async {

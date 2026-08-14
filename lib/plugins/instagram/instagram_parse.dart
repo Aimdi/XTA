@@ -192,6 +192,56 @@ List<InstagramSearchUser> parseInstagramTopSearch(Object? json) {
   return users;
 }
 
+/// Explore / topical_explore sectional payload — media can sit a few maps deep.
+InstagramItemPage parseInstagramExplore(Object? json) {
+  final posts = <InstagramPost>[];
+  final seen = <String>{};
+
+  void walk(Object? raw, [int depth = 0]) {
+    if (raw == null || depth > 14) return;
+    if (raw is List) {
+      for (final item in raw) {
+        walk(item, depth + 1);
+      }
+      return;
+    }
+    if (raw is! Map) return;
+
+    final node = Json(raw);
+    final hasCode =
+        (node['shortcode'].string ?? node['code'].string ?? '').isNotEmpty;
+    final hasId =
+        (node['id'].string ??
+                node['pk'].string ??
+                node['pk'].integer?.toString() ??
+                '')
+            .isNotEmpty;
+    if (hasCode && hasId) {
+      final post = parseInstagramMediaNode(
+        node['media'].exists ? node['media'] : node,
+      );
+      if (post != null && seen.add(post.id)) {
+        posts.add(post);
+      }
+    }
+    for (final value in raw.values) {
+      walk(value, depth + 1);
+    }
+  }
+
+  walk(json);
+  final root = Json(json);
+  final cursor =
+      root['next_max_id'].string ??
+      root['max_id'].string ??
+      root['next_max_id'].integer?.toString();
+  return InstagramItemPage(
+    posts: posts,
+    cursor: cursor,
+    hasMore: root['more_available'].boolean ?? (cursor?.isNotEmpty == true),
+  );
+}
+
 bool instagramLoginRequired(Object? json) {
   final root = Json(json);
   final message = (root['message'].string ?? '').toLowerCase();
