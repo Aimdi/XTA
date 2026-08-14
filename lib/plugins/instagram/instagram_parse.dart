@@ -158,11 +158,35 @@ InstagramPost? parseInstagramMediaNode(Json node, {InstagramAuthor? author}) {
         node['edge_media_to_comment']['count'].integer ??
         node['comment_count'].integer ??
         0,
-    carouselUrls: [
-      for (final child in node['carousel_media'].list)
-        ?_firstUrl(child['image_versions2']['candidates'][0]['url']),
-    ],
+    carouselUrls: _carouselUrls(node),
   );
+}
+
+List<String> _carouselUrls(Json node) {
+  final seen = <String>{};
+  final urls = <String>[];
+  void add(String? url) {
+    if (url == null || !seen.add(url)) return;
+    urls.add(url);
+  }
+
+  for (final child in node['carousel_media'].list) {
+    add(
+      _firstUrl(
+        child['image_versions2']['candidates'][0]['url'],
+        child['display_url'],
+      ),
+    );
+  }
+  for (final edge in node['edge_sidecar_to_children']['edges'].list) {
+    add(
+      _firstUrl(
+        edge['node']['display_url'],
+        edge['node']['image_versions2']['candidates'][0]['url'],
+      ),
+    );
+  }
+  return urls;
 }
 
 List<InstagramSearchUser> parseInstagramTopSearch(Object? json) {
@@ -192,6 +216,56 @@ List<InstagramSearchUser> parseInstagramTopSearch(Object? json) {
   return users;
 }
 
+/// Explore / topical_explore sectional payload — media can sit a few maps deep.
+InstagramItemPage parseInstagramExplore(Object? json) {
+  final posts = <InstagramPost>[];
+  final seen = <String>{};
+
+  void walk(Object? raw, [int depth = 0]) {
+    if (raw == null || depth > 14) return;
+    if (raw is List) {
+      for (final item in raw) {
+        walk(item, depth + 1);
+      }
+      return;
+    }
+    if (raw is! Map) return;
+
+    final node = Json(raw);
+    final hasCode =
+        (node['shortcode'].string ?? node['code'].string ?? '').isNotEmpty;
+    final hasId =
+        (node['id'].string ??
+                node['pk'].string ??
+                node['pk'].integer?.toString() ??
+                '')
+            .isNotEmpty;
+    if (hasCode && hasId) {
+      final post = parseInstagramMediaNode(
+        node['media'].exists ? node['media'] : node,
+      );
+      if (post != null && seen.add(post.id)) {
+        posts.add(post);
+      }
+    }
+    for (final value in raw.values) {
+      walk(value, depth + 1);
+    }
+  }
+
+  walk(json);
+  final root = Json(json);
+  final cursor =
+      root['next_max_id'].string ??
+      root['max_id'].string ??
+      root['next_max_id'].integer?.toString();
+  return InstagramItemPage(
+    posts: posts,
+    cursor: cursor,
+    hasMore: root['more_available'].boolean ?? (cursor?.isNotEmpty == true),
+  );
+}
+
 bool instagramLoginRequired(Object? json) {
   final root = Json(json);
   final message = (root['message'].string ?? '').toLowerCase();
@@ -205,6 +279,11 @@ InstagramAuthor _authorOf(Json user) {
     username: username,
     fullName: user['full_name'].string ?? username,
     avatarUrl: _firstUrl(user['profile_pic_url_hd'], user['profile_pic_url']),
+    pk:
+        user['id'].string ??
+        user['pk'].string ??
+        user['pk'].integer?.toString() ??
+        '',
     isVerified: user['is_verified'].boolean ?? false,
   );
 }

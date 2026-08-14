@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/instagram/instagram_discovery.dart';
 import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_parse.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
@@ -99,9 +100,6 @@ class InstagramClient {
     if (profile == null) {
       throw InstagramException(InstagramErrorKind.notFound, '@$key');
     }
-    if (profile.isPrivate && profile.mediaCount == 0) {
-      throw InstagramException(InstagramErrorKind.privateAccount, '@$key');
-    }
     return profile;
   }
 
@@ -128,6 +126,96 @@ class InstagramClient {
     ).replace(queryParameters: query);
     final response = await _get(uri, referer: '$instagramWebOrigin/');
     return parseInstagramUserFeed(_decodeJson(response, uri));
+  }
+
+  /// Instagram's own Explore mix when a session answers; else public seeds.
+  Future<InstagramItemPage> forYou({String? cursor}) async {
+    if (hasSession) {
+      try {
+        final page = await exploreFeed(cursor: cursor);
+        if (page.posts.isNotEmpty) return page;
+      } on InstagramException catch (e) {
+        if (e.kind != InstagramErrorKind.loginRequired &&
+            e.kind != InstagramErrorKind.rateLimited &&
+            e.kind != InstagramErrorKind.badResponse) {
+          rethrow;
+        }
+      }
+    }
+    if (cursor != null && cursor.isNotEmpty) {
+      return const InstagramItemPage(posts: [], hasMore: false);
+    }
+    return guestDiscover();
+  }
+
+  /// Session Explore grid (`discover/web/explore_grid`, then topical_explore).
+  Future<InstagramItemPage> exploreFeed({String? cursor}) async {
+    await warmGuest();
+    final query = {
+      'is_prefetch': 'false',
+      'omit_cover_media': 'false',
+      'module': 'explore_popular',
+      if (cursor != null && cursor.isNotEmpty) 'max_id': cursor,
+    };
+    try {
+      final uri = Uri.parse(
+        '$instagramWebOrigin/api/v1/discover/web/explore_grid/',
+      ).replace(queryParameters: query);
+      final response = await _get(uri, referer: '$instagramWebOrigin/explore/');
+      return parseInstagramExplore(_decodeJson(response, uri));
+    } on InstagramException catch (e) {
+      if (e.kind != InstagramErrorKind.rateLimited &&
+          e.kind != InstagramErrorKind.loginRequired &&
+          e.kind != InstagramErrorKind.badResponse) {
+        rethrow;
+      }
+    }
+    final uri = Uri.parse(
+      '$instagramApiOrigin/api/v1/discover/topical_explore/',
+    ).replace(queryParameters: query);
+    final response = await _get(uri, referer: '$instagramWebOrigin/explore/');
+    return parseInstagramExplore(_decodeJson(response, uri));
+  }
+
+  /// Guest For You: recent public posts from well-known accounts, interleaved.
+  Future<InstagramItemPage> guestDiscover({int perAccount = 4}) async {
+    await warmGuest();
+    final errors = <Object>[];
+    final pages = await Future.wait([
+      for (final handle in kInstagramDiscoverHandles)
+        _profileMediaOrEmpty(handle, perAccount, errors),
+    ]);
+    final posts = interleaveInstagramDiscover(pages);
+    if (posts.isEmpty && errors.isNotEmpty) {
+      throw _preferredDiscoverError(errors);
+    }
+    return InstagramItemPage(posts: posts, hasMore: false);
+  }
+
+  Future<List<InstagramPost>> _profileMediaOrEmpty(
+    String handle,
+    int cap,
+    List<Object> errors,
+  ) async {
+    try {
+      final page = await profileMedia(handle);
+      return page.posts.take(cap).toList(growable: false);
+    } catch (e) {
+      errors.add(e);
+      return const [];
+    }
+  }
+
+  InstagramException _preferredDiscoverError(List<Object> errors) {
+    for (final error in errors) {
+      if (error is InstagramException &&
+          error.kind == InstagramErrorKind.rateLimited) {
+        return error;
+      }
+    }
+    final error = errors.first;
+    if (error is InstagramException) return error;
+    return InstagramException(InstagramErrorKind.network, '$error');
   }
 
   Future<List<InstagramSearchUser>> searchUsers(String raw) async {

@@ -63,9 +63,9 @@ share a client instance, cooldown, or device id.
 
 | Piece | Detail |
 |---|---|
-| Home | Following (local SQLite usernames, `AccountPostCache` merge) · Accounts |
-| Open | Exact `@handle` + people search when the session answers `topsearch` |
-| Profile | Public grid from `web_profile_info` / `feed/user/{pk}`; private accounts show a lock |
+| Home | **For you** (Explore when a session answers; else interleaved public seeds) · Following · Accounts |
+| Open | Guest submit opens a public `@handle`; people search when the session answers `topsearch` |
+| Profile | Public grid from `web_profile_info`; `feed/user/{pk}` only with a session; private accounts show a lock (not a full-page error) |
 | Cards | Image / carousel covers; video/reel is cover + open-on-site (CDN often 403 without cookies) |
 | Settings | Show tab, paste cookies, copy Threads cookies, test `@instagram`, clear session |
 | Storage | `instagram_subscription` (migration 57) |
@@ -80,6 +80,9 @@ share a client instance, cooldown, or device id.
 | `GET /api/v1/users/web_profile_info/?username=` | Guest or session |
 | `GET /api/v1/feed/user/{pk}/` | Session; guest may 401 |
 | `GET /api/v1/web/search/topsearch/?query=` | Usually session |
+| `GET /api/v1/discover/web/explore_grid/` | Session Explore / For you |
+| `GET /api/v1/discover/topical_explore/` | Session fallback for For you |
+| Guest For you | `web_profile_info` for `instagram`, `natgeo`, `nasa`, interleaved |
 | `GET /api/v1/media/{id}/info/` | Session; later |
 
 `X-IG-App-ID` is the public web id `936619743392459`. Referer/Origin
