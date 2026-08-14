@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/plugins/threads/threads_discovery.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
+import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 String _threadsSearchError(L10n l10n, Object error) {
@@ -48,6 +53,8 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
   var _loading = false;
   var _searched = false;
 
+  bool get _canSearchUsers => context.read<ThreadsDirectClient>().hasCookies;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -63,13 +70,22 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
     );
   }
 
+  Future<void> _remember(String query) async {
+    final prefs = PrefService.of(context);
+    await rememberPluginSearch(prefs, optionPluginThreadsSearchHistory, query);
+  }
+
   Future<void> _search() async {
-    final query = _controller.text.trim().replaceFirst(RegExp(r'^@'), '');
+    final query = _controller.text.trim();
     if (query.isEmpty) return;
 
+    final handle = normaliseThreadsHandle(query);
     final direct = context.read<ThreadsDirectClient>();
-    if (!direct.hasCookies || !direct.useSessionApis) {
-      await _openProfile(query);
+    if (!_canSearchUsers) {
+      if (handle != null) {
+        await _remember(handle);
+        await _openProfile(handle);
+      }
       return;
     }
 
@@ -81,35 +97,47 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
     try {
       final users = await direct.searchUsers(query);
       if (!mounted) return;
-      if (users.length == 1) {
-        await _openProfile(users.first.username);
-        return;
-      }
+      await _remember(query);
+      if (!mounted) return;
       setState(() {
         _results = users;
         _loading = false;
       });
     } catch (e) {
       if (!mounted) return;
-      // Fall back to exact guest/profile open when search fails.
-      try {
-        await _openProfile(query);
-      } catch (_) {
-        if (!mounted) return;
-        setState(() {
-          _error = e;
-          _loading = false;
-          _results = const [];
-        });
+      if (handle != null) {
+        await _remember(handle);
+        await _openProfile(handle);
+        return;
       }
+      setState(() {
+        _error = e;
+        _loading = false;
+        _results = const [];
+      });
     }
+  }
+
+  Future<void> _toggleFollow(ThreadsProfile profile) async {
+    final accounts = context.read<ThreadsAccountsStore>();
+    if (accounts.follows(profile.username)) {
+      await accounts.remove(profile.username);
+    } else {
+      await accounts.add(profile.toAccount());
+    }
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final direct = context.read<ThreadsDirectClient>();
+    final prefs = PrefService.of(context);
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    final typedHandle = normaliseThreadsHandle(_controller.text);
+    final recent = readPluginSearchHistory(
+      prefs,
+      optionPluginThreadsSearchHistory,
+    );
 
     return Padding(
       padding: EdgeInsets.only(bottom: bottom),
@@ -129,13 +157,14 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.arrow_forward),
                     tooltip: l10n.plugin_threads_search,
-                    onPressed: _search,
+                    onPressed: _loading ? null : _search,
                   ),
                 ),
+                onChanged: (_) => setState(() {}),
                 onSubmitted: (_) => _search(),
               ),
             ),
-            if (!direct.hasCookies || !direct.useSessionApis)
+            if (!_canSearchUsers)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(
@@ -145,14 +174,14 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
                   ),
                 ),
               ),
-            Expanded(child: _body(l10n)),
+            Expanded(child: _body(l10n, typedHandle, recent)),
           ],
         ),
       ),
     );
   }
 
-  Widget _body(L10n l10n) {
+  Widget _body(L10n l10n, String? typedHandle, List<String> recent) {
     if (_loading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -168,19 +197,67 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
       );
     }
     if (!_searched) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            l10n.plugin_threads_search_hint,
-            textAlign: TextAlign.center,
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        children: [
+          if (typedHandle != null)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.alternate_email),
+              title: Text(l10n.plugin_threads_open_handle(typedHandle)),
+              onTap: () async {
+                await _remember(typedHandle);
+                await _openProfile(typedHandle);
+              },
+            ),
+          if (recent.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.plugin_threads_recent_searches,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final item in recent.take(8))
+                  ActionChip(
+                    label: Text(item),
+                    onPressed: () {
+                      _controller.text = item;
+                      _search();
+                    },
+                  ),
+              ],
+            ),
+          ],
+          const SizedBox(height: 12),
+          Text(
+            l10n.plugin_threads_try_public,
+            style: Theme.of(context).textTheme.titleSmall,
           ),
-        ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final handle in kThreadsStarterHandles)
+                ActionChip(
+                  avatar: const Icon(Icons.person_outline, size: 16),
+                  label: Text('@$handle'),
+                  onPressed: () async {
+                    await _remember(handle);
+                    await _openProfile(handle);
+                  },
+                ),
+            ],
+          ),
+        ],
       );
     }
     if (_results.isEmpty) {
       return Center(child: Text(l10n.plugin_threads_no_results));
     }
+    final accounts = context.read<ThreadsAccountsStore>();
     return ListView.separated(
       itemCount: _results.length,
       separatorBuilder: (_, _) => const Divider(height: 1),
@@ -189,7 +266,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
         return ListTile(
           leading: _avatar(context, profile),
           title: Text(
-            profile.fullName.isEmpty ? profile.username : profile.fullName,
+            profile.displayName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -197,6 +274,14 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
             '@${profile.username}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+          ),
+          trailing: TextButton(
+            onPressed: () => _toggleFollow(profile),
+            child: Text(
+              accounts.follows(profile.username)
+                  ? l10n.plugin_threads_unfollow
+                  : l10n.plugin_threads_follow,
+            ),
           ),
           onTap: () => _openProfile(profile.username),
         );
@@ -211,7 +296,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
       child: url.isEmpty
           ? FallbackAvatar(
               seed: profile.username,
-              displayName: profile.fullName,
+              displayName: profile.displayName,
               size: 40,
               accent: theme.colorScheme.primary,
             )

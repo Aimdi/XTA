@@ -10,6 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
+import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/plugins/threads/threads_rich_text.dart';
 import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
@@ -266,6 +267,7 @@ class ThreadsPostCard extends StatelessWidget {
               const SizedBox(width: 6),
               _badge(context, L10n.of(context).plugin_threads_title),
             ],
+            _followButton(context),
           ],
         ),
         Text(
@@ -274,6 +276,29 @@ class ThreadsPostCard extends StatelessWidget {
           style: metaStyle,
         ),
       ],
+    );
+  }
+
+  Widget _followButton(BuildContext context) {
+    final accounts = context.read<ThreadsAccountsStore>();
+    return ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
+      store: accounts,
+      distinct: (_) => accounts.follows(post.handle),
+      onState: (context, _) {
+        if (accounts.follows(post.handle)) {
+          return const SizedBox.shrink();
+        }
+        return TextButton(
+          onPressed: () => accounts.add(
+            ThreadsAccount(
+              handle: post.handle,
+              name: post.authorName,
+              avatarUrl: post.avatarUrl,
+            ),
+          ),
+          child: Text(L10n.of(context).plugin_threads_follow),
+        );
+      },
     );
   }
 

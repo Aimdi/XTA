@@ -53,6 +53,11 @@ class ThreadsAccountsStore extends Store<List<ThreadsAccount>> {
     });
   }
 
+  bool follows(String handle) {
+    final key = handle.trim().toLowerCase();
+    return state.any((e) => e.handle.toLowerCase() == key);
+  }
+
   Future<void> remove(String handle) async {
     await execute(() async {
       final database = await Repository.writable();

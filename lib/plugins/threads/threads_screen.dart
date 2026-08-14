@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_people.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/plugins/threads/threads_discovery.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
@@ -274,23 +276,73 @@ class _HomePane extends StatelessWidget {
       return _empty(context, pending: pending);
     }
 
-    return RefreshIndicator(
-      // The reader pulled: that is the one moment worth going past the cache.
-      onRefresh: onRefresh,
-      child: FeedListView(
-        controller: scrollController,
-        itemCount: posts.length + (pending > 0 ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= posts.length) {
-            return _PendingAccountsNote(pending: pending);
-          }
-          return ThreadsPostCard(
-            key: ValueKey(posts[index].id),
-            post: posts[index],
-            showSourceBadge: false,
-          );
-        },
-      ),
+    return ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
+      store: context.read<ThreadsAccountsStore>(),
+      onState: (context, _) {
+        final accounts = context.read<ThreadsAccountsStore>();
+        final people = peopleToFollowFromThreads(
+          posts: posts,
+          alreadyFollows: accounts.follows,
+        );
+        final peopleOffset = people.isEmpty ? 0 : 1;
+        final pendingOffset = pending > 0 ? 1 : 0;
+        return RefreshIndicator(
+          // The reader pulled: that is the one moment worth going past the cache.
+          onRefresh: onRefresh,
+          child: FeedListView(
+            controller: scrollController,
+            itemCount: posts.length + peopleOffset + pendingOffset,
+            itemBuilder: (context, index) {
+              if (peopleOffset == 1 && index == 0) {
+                return PluginFeedPeopleStrip(
+                  title: l10n.plugin_threads_from_feed,
+                  followLabel: l10n.plugin_threads_follow,
+                  people: people,
+                  avatar: (person) => _feedPersonAvatar(context, person),
+                  onOpen: (person) => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          ThreadsProfileScreen(username: person.handle),
+                    ),
+                  ),
+                  onFollow: (person) => accounts.add(
+                    ThreadsAccount(
+                      handle: person.handle,
+                      name: person.name,
+                      avatarUrl: person.avatarUrl,
+                    ),
+                  ),
+                );
+              }
+              final postIndex = index - peopleOffset;
+              if (postIndex >= posts.length) {
+                return _PendingAccountsNote(pending: pending);
+              }
+              return ThreadsPostCard(
+                key: ValueKey(posts[postIndex].id),
+                post: posts[postIndex],
+                showSourceBadge: false,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _feedPersonAvatar(BuildContext context, PluginFeedPerson person) {
+    final url = person.avatarUrl;
+    if (url == null || url.isEmpty) {
+      return FallbackAvatar(
+        seed: person.handle,
+        displayName: person.name,
+        size: 20,
+        accent: Theme.of(context).colorScheme.primary,
+      );
+    }
+    return ClipOval(
+      child: ThreadsNetworkImage(url, width: 20, height: 20, fit: BoxFit.cover),
     );
   }
 

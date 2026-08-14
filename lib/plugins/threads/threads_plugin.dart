@@ -134,6 +134,7 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginThreadsLikedPosts, '[]');
     await prefs.set(optionPluginThreadsGuestLsd, '');
     await prefs.set(optionPluginThreadsGuestLsdAt, '');
+    await prefs.set(optionPluginThreadsSearchHistory, '[]');
   }
 
   @override
