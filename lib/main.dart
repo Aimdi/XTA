@@ -570,6 +570,8 @@ Future<void> main() async {
       optionPluginEhUseExhentai: false,
       optionPluginEhCategories: '',
       optionPluginEhSearchHistory: '[]',
+      optionPluginEhPreferJapanese: true,
+      optionPluginEhKeepScreenOn: true,
       optionPluginTiktokEnabled: false,
       optionPluginTiktokShowTab: true,
       optionPluginTiktokCookies: '',
@@ -745,6 +747,7 @@ Future<void> main() async {
     final booruMute = BooruMuteStore(prefService);
     final ehClient = EhClient(prefService);
     final ehFavorites = EhFavoritesStore();
+    final ehHistory = EhHistoryStore();
     final tiktokClient = TikTokClient(prefService);
     final tiktokFollows = TikTokFollowsStore();
     final tiktokLikes = TikTokLikesStore(prefService);
@@ -798,8 +801,10 @@ Future<void> main() async {
         booruTags.load(),
         booruMute.load(),
       ],
-      if (prefService.get<bool>(optionPluginEhEnabled) == true)
+      if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
         ehFavorites.load(),
+        ehHistory.load(),
+      ],
       if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
         tiktokFollows.load(),
         tiktokLikes.load(),
@@ -897,6 +902,7 @@ Future<void> main() async {
             Provider(create: (_) => booruMute),
             Provider(create: (_) => ehClient),
             Provider(create: (_) => ehFavorites),
+            Provider(create: (_) => ehHistory),
             Provider(create: (_) => tiktokClient),
             Provider(create: (_) => tiktokFollows),
             Provider(create: (_) => tiktokLikes),

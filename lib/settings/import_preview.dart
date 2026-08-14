@@ -141,6 +141,7 @@ String _label(BuildContext context, BackupCategory category) =>
       BackupCategory.mastodon => L10n.of(context).plugin_mastodon_title,
       BackupCategory.booruTags => L10n.of(context).plugin_booru_followed_tags,
       BackupCategory.ehFavorites => L10n.of(context).plugin_eh_tab_favorites,
+      BackupCategory.ehHistory => L10n.of(context).plugin_eh_tab_history,
       BackupCategory.tiktokSubscriptions => L10n.of(
         context,
       ).plugin_tiktok_tab_accounts,

@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_gallery_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
+import 'package:xta/plugins/ehviewer/eh_ui.dart';
 
 const ehImageTimeLimit = Duration(seconds: 20);
 
@@ -188,9 +189,7 @@ class EhGalleryTile extends StatelessWidget {
                           top: 6,
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surface.withValues(
-                                alpha: 0.85,
-                              ),
+                              color: ehCategoryColor(gallery.category!),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Padding(
@@ -200,7 +199,9 @@ class EhGalleryTile extends StatelessWidget {
                               ),
                               child: Text(
                                 gallery.category!.label,
-                                style: theme.textTheme.labelSmall,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -216,7 +217,9 @@ class EhGalleryTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    gallery.title,
+                    gallery.titleFor(
+                      preferJapanese: ehPreferJapaneseOf(context),
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodySmall,

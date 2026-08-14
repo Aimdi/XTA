@@ -78,8 +78,15 @@ class EhGallery {
 
   String get id => '$gid/$token';
 
-  String get displayTitle =>
-      (titleJpn != null && titleJpn!.trim().isNotEmpty) ? titleJpn! : title;
+  String get displayTitle => titleFor(preferJapanese: true);
+
+  String titleFor({required bool preferJapanese}) {
+    if (preferJapanese) {
+      final jpn = titleJpn?.trim();
+      if (jpn != null && jpn.isNotEmpty) return jpn;
+    }
+    return title;
+  }
 
   Uri galleryUri(String host) => Uri.parse('$host/g/$gid/$token/');
 
@@ -101,6 +108,7 @@ class EhGalleryPage {
 
 class EhGalleryDetail extends EhGallery {
   final List<EhPreview> previews;
+  final List<EhComment> comments;
   final int? fileSizeBytes;
   final int previewSheetIndex;
   final int previewSheetCount;
@@ -118,10 +126,52 @@ class EhGalleryDetail extends EhGallery {
     super.rating,
     super.tags = const [],
     this.previews = const [],
+    this.comments = const [],
     this.fileSizeBytes,
     this.previewSheetIndex = 0,
     this.previewSheetCount = 1,
   });
+}
+
+class EhComment {
+  final String author;
+  final String posted;
+  final String body;
+  final String? score;
+  final bool uploader;
+
+  const EhComment({
+    required this.author,
+    required this.posted,
+    required this.body,
+    this.score,
+    this.uploader = false,
+  });
+}
+
+/// Site toplist windows (`toplist.php?tl=`).
+enum EhToplistPeriod {
+  yesterday(11),
+  month(12),
+  year(13),
+  allTime(15);
+
+  final int tl;
+  const EhToplistPeriod(this.tl);
+}
+
+/// Language filter appended as `language:{tag}` on search.
+enum EhSearchLanguage {
+  any(''),
+  english('english'),
+  japanese('japanese'),
+  chinese('chinese'),
+  korean('korean'),
+  spanish('spanish'),
+  french('french');
+
+  final String tag;
+  const EhSearchLanguage(this.tag);
 }
 
 class EhPreview {
@@ -141,6 +191,7 @@ class EhPreview {
 class EhImagePage {
   final String imageUrl;
   final String? originalImageUrl;
+  final String? reloadKey;
   final String? nextPageUrl;
   final String? prevPageUrl;
   final int page;
@@ -149,6 +200,7 @@ class EhImagePage {
   const EhImagePage({
     required this.imageUrl,
     this.originalImageUrl,
+    this.reloadKey,
     required this.page,
     this.nextPageUrl,
     this.prevPageUrl,

@@ -158,6 +158,7 @@ EhGalleryDetail? parseEhGalleryDetail(
     rating: rating,
     tags: tags,
     previews: previews,
+    comments: parseEhComments(html),
     previewSheetIndex: sheetMeta.index,
     previewSheetCount: sheetMeta.count,
   );
@@ -236,12 +237,103 @@ EhImagePage? parseEhImagePage(String html, {required int page}) {
   return EhImagePage(
     imageUrl: _decodeAttr(imageUrl) ?? imageUrl,
     originalImageUrl: parseEhOriginalImageUrl(html),
+    reloadKey: parseEhReloadKey(html),
     page: page,
     nextPageUrl: _decodeAttr(next),
     prevPageUrl: _decodeAttr(prev),
     pageCount: pageCount,
   );
 }
+
+/// `nl('code')` from "Click here if the image fails loading".
+String? parseEhReloadKey(String html) {
+  return RegExp(r"""nl\(['"]([^'"]+)['"]\)""").firstMatch(html)?.group(1);
+}
+
+/// Image-page URI, optionally forcing a different H@H node via `nl`.
+Uri ehImagePageUri({
+  required String host,
+  required String pageToken,
+  required int gid,
+  required int page,
+  String? reloadKey,
+}) {
+  final uri = Uri.parse('$host/s/$pageToken/$gid-$page');
+  if (reloadKey == null || reloadKey.isEmpty) return uri;
+  return uri.replace(queryParameters: {'nl': reloadKey});
+}
+
+/// Search query + `f_*` params (min rating, language tag).
+({String query, Map<String, String> params}) ehBuildSearch({
+  required String query,
+  required int catMask,
+  int minRating = 0,
+  String language = '',
+}) {
+  var q = query.trim();
+  final lang = language.trim();
+  if (lang.isNotEmpty) q = '$q language:$lang'.trim();
+  return (
+    query: q,
+    params: {
+      'f_search': q,
+      'f_cats': '$catMask',
+      'f_apply': 'Apply Filter',
+      if (minRating >= 2) 'f_sr': 'on',
+      if (minRating >= 2) 'f_srdd': '$minRating',
+    },
+  );
+}
+
+List<EhComment> parseEhComments(String html) {
+  final chunks = html.split(RegExp(r'<div class="c1">'));
+  if (chunks.length < 2) return const [];
+  return [for (final chunk in chunks.skip(1)) ?_commentOne(chunk)];
+}
+
+EhComment? _commentOne(String chunk) {
+  final author = _decode(
+    RegExp(
+          r'class="c3">.*?by:.*?<a[^>]*>([^<]+)</a>',
+          dotAll: true,
+        ).firstMatch(chunk)?.group(1) ??
+        '',
+  );
+  final posted = _decode(
+    RegExp(
+          r'class="c3">Posted on\s+([^<]+?)\s+by:',
+        ).firstMatch(chunk)?.group(1) ??
+        '',
+  );
+  final rawBody =
+      RegExp(
+        r'<div class="c6"[^>]*>(.*?)</div>',
+        dotAll: true,
+      ).firstMatch(chunk)?.group(1) ??
+      '';
+  final body = _stripHtml(rawBody);
+  if (author.isEmpty && body.isEmpty) return null;
+  final score = RegExp(
+    r'id="comment_score_[^"]*"[^>]*>([^<]+)',
+  ).firstMatch(chunk)?.group(1);
+  return EhComment(
+    author: author,
+    posted: posted,
+    body: body,
+    score: score?.trim(),
+    uploader: chunk.contains('Uploader Comment'),
+  );
+}
+
+String _stripHtml(String raw) =>
+    _decode(
+          raw
+              .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+              .replaceAll(RegExp(r'<[^>]+>'), ' '),
+        )
+        .replaceAll(RegExp(r'\s+\n'), '\n')
+        .replaceAll(RegExp(r'[ \t]{2,}'), ' ')
+        .trim();
 
 /// `fullimg.php` / `#i7` "Download original" href, if the page offers one.
 String? parseEhOriginalImageUrl(String html) {
@@ -303,8 +395,10 @@ String ehUconfigWithQuality(
   }
   flags['xr'] = imageSize;
   flags['ts'] = previewSize;
+  flags['nw'] = '1';
   if (!order.contains('xr')) order.add('xr');
   if (!order.contains('ts')) order.add('ts');
+  if (!order.contains('nw')) order.add('nw');
   return [for (final key in order) '${key}_${flags[key]}'].join('-');
 }
 

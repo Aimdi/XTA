@@ -8,6 +8,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
+import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/ui/errors.dart';
 
 class EhSettingsScreen extends StatefulWidget {
@@ -130,6 +131,25 @@ class _EhSettingsScreenState extends State<EhSettingsScreen> {
                   ),
               ],
             ),
+          ),
+          PrefTitle(title: Text(l10n.plugin_eh_section_reading)),
+          PrefSwitch(
+            title: Text(l10n.plugin_eh_prefer_japanese),
+            subtitle: Text(l10n.plugin_eh_prefer_japanese_description),
+            pref: optionPluginEhPreferJapanese,
+          ),
+          PrefSwitch(
+            title: Text(l10n.plugin_eh_keep_screen_on),
+            subtitle: Text(l10n.plugin_eh_keep_screen_on_description),
+            pref: optionPluginEhKeepScreenOn,
+          ),
+          ListTile(
+            title: Text(l10n.plugin_eh_clear_history),
+            onTap: () async {
+              final history = context.read<EhHistoryStore>();
+              await history.clear();
+              if (mounted) setState(() {});
+            },
           ),
           PrefSwitch(
             title: Text(l10n.plugin_eh_show_tab),

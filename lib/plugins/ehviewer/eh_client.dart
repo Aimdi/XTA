@@ -89,19 +89,28 @@ class EhClient {
     String query, {
     String? pageUrl,
     Set<EhCategory>? categories,
+    int minRating = 0,
+    String language = '',
   }) {
     if (pageUrl != null) return _list(pageUrl);
     final cats = categories ?? includedCategories;
-    final uri = Uri.parse(host).replace(
-      path: '/',
-      queryParameters: {
-        'f_search': query.trim(),
-        'f_cats': '${EhCategory.excludeMask(cats)}',
-        'f_apply': 'Apply Filter',
-      },
+    final built = ehBuildSearch(
+      query: query,
+      catMask: EhCategory.excludeMask(cats),
+      minRating: minRating,
+      language: language,
     );
+    final uri = Uri.parse(
+      host,
+    ).replace(path: '/', queryParameters: built.params);
     return _list(uri.toString());
   }
+
+  Future<EhGalleryPage> toplist(EhToplistPeriod period, {String? pageUrl}) =>
+      _list(pageUrl ?? '$host/toplist.php?tl=${period.tl}');
+
+  Future<EhGalleryPage> watched({String? pageUrl}) =>
+      _list(pageUrl ?? '$host/watched');
 
   Future<EhGalleryPage> _list(String url) async {
     final response = await _get(Uri.parse(url));
@@ -182,8 +191,15 @@ class EhClient {
     required int gid,
     required String pageToken,
     required int page,
+    String? reloadKey,
   }) async {
-    final uri = Uri.parse('$host/s/$pageToken/$gid-$page');
+    final uri = ehImagePageUri(
+      host: host,
+      pageToken: pageToken,
+      gid: gid,
+      page: page,
+      reloadKey: reloadKey,
+    );
     final response = await _get(uri);
     _throwIfBanned(response.body, uri.toString());
     final parsed = parseEhImagePage(response.body, page: page);

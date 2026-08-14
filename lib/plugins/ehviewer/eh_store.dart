@@ -56,6 +56,83 @@ class EhFavoritesStore extends Store<List<EhGallery>> {
   }
 }
 
+/// Device-local reading history with last page.
+class EhHistoryStore extends Store<List<EhHistoryEntry>> {
+  EhHistoryStore() : super(const []);
+
+  Future<void> load() async {
+    await execute(_read);
+  }
+
+  Future<List<EhHistoryEntry>> _read() async {
+    final database = await Repository.readOnly();
+    final rows = await database.query(
+      tableEhHistory,
+      orderBy: 'viewed_at DESC',
+    );
+    return rows.map(EhHistoryEntry.fromMap).toList();
+  }
+
+  EhHistoryEntry? entryFor(int gid) {
+    for (final entry in state) {
+      if (entry.gallery.gid == gid) return entry;
+    }
+    return null;
+  }
+
+  Future<void> remember(EhGallery gallery, {required int page}) async {
+    final database = await Repository.writable();
+    await database.insert(
+      tableEhHistory,
+      EhHistoryEntry(
+        gallery: gallery,
+        lastPage: page < 1 ? 1 : page,
+        viewedAt: DateTime.now(),
+      ).toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    update(await _read());
+  }
+
+  Future<void> clear() async {
+    await execute(() async {
+      final database = await Repository.writable();
+      await database.delete(tableEhHistory);
+      return const <EhHistoryEntry>[];
+    });
+  }
+}
+
+class EhHistoryEntry with ToMappable {
+  final EhGallery gallery;
+  final int lastPage;
+  final DateTime viewedAt;
+
+  EhHistoryEntry({
+    required this.gallery,
+    required this.lastPage,
+    required this.viewedAt,
+  });
+
+  factory EhHistoryEntry.fromMap(Map<String, Object?> map) {
+    return EhHistoryEntry(
+      gallery: EhFavorite.fromMap(map).gallery,
+      lastPage: (map['last_page'] as int?) ?? 1,
+      viewedAt: map['viewed_at'] == null
+          ? DateTime.now()
+          : DateTime.tryParse(map['viewed_at'] as String) ?? DateTime.now(),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() => {
+    ...EhFavorite(gallery: gallery, favoritedAt: viewedAt).toMap()
+      ..remove('favorited_at'),
+    'last_page': lastPage,
+    'viewed_at': viewedAt.toIso8601String(),
+  };
+}
+
 /// Paginated gallery list for Popular / Front / Search.
 class EhFeedStore extends Store<List<EhGallery>> {
   final Future<EhGalleryPage> Function({String? pageUrl}) loader;

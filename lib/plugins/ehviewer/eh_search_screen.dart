@@ -11,6 +11,7 @@ import 'package:xta/plugins/ehviewer/eh_errors.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
+import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/ui/errors.dart';
 
 class EhSearchScreen extends StatefulWidget {
@@ -27,6 +28,8 @@ class _EhSearchScreenState extends State<EhSearchScreen> {
   EhFeedStore? _results;
   var _submitted = false;
   late Set<EhCategory> _categories;
+  var _minRating = 0;
+  var _language = EhSearchLanguage.any;
 
   @override
   void initState() {
@@ -51,8 +54,13 @@ class _EhSearchScreenState extends State<EhSearchScreen> {
     final client = context.read<EhClient>();
     _results?.destroy();
     final store = EhFeedStore(
-      ({pageUrl}) =>
-          client.search(query, pageUrl: pageUrl, categories: _categories),
+      ({pageUrl}) => client.search(
+        query,
+        pageUrl: pageUrl,
+        categories: _categories,
+        minRating: _minRating,
+        language: _language.tag,
+      ),
     );
     setState(() {
       _results = store;
@@ -135,6 +143,43 @@ class _EhSearchScreenState extends State<EhSearchScreen> {
                           }
                         });
                       },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 44,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: FilterChip(
+                    label: Text(l10n.plugin_eh_min_rating),
+                    selected: _minRating >= 2,
+                    onSelected: (_) {
+                      setState(() {
+                        _minRating = _minRating >= 4
+                            ? 0
+                            : (_minRating < 2 ? 2 : _minRating + 1);
+                      });
+                    },
+                  ),
+                ),
+                if (_minRating >= 2)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Chip(label: Text('$_minRating+')),
+                  ),
+                for (final language in EhSearchLanguage.values)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: FilterChip(
+                      label: Text(ehLanguageLabel(l10n, language)),
+                      selected: _language == language,
+                      onSelected: (_) => setState(() => _language = language),
                     ),
                   ),
               ],
