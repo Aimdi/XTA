@@ -13,8 +13,11 @@ void main() {
         httpClient: MockClient((request) async {
           expect(request.url.path, '/api/v2/instance');
           expect(request.url.host, 'mastodon.social');
-          return http.Response(jsonEncode({'domain': 'mastodon.social'}), 200,
-              headers: {'content-type': 'application/json'});
+          return http.Response(
+            jsonEncode({'domain': 'mastodon.social'}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
         }),
       );
 
@@ -30,8 +33,11 @@ void main() {
             return http.Response('missing', 404);
           }
           expect(request.url.path, '/api/v1/instance');
-          return http.Response(jsonEncode({'uri': 'https://old.example'}), 200,
-              headers: {'content-type': 'application/json'});
+          return http.Response(
+            jsonEncode({'uri': 'https://old.example'}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
         }),
       );
 
@@ -89,7 +95,7 @@ void main() {
                   'url': 'https://mastodon.social/@a',
                 },
                 'media_attachments': [],
-              }
+              },
             ]),
             200,
             headers: {'content-type': 'application/json'},
@@ -97,7 +103,11 @@ void main() {
         }),
       );
 
-      final posts = await client.getStatuses('https://mastodon.social', '1', limit: 5);
+      final posts = await client.getStatuses(
+        'https://mastodon.social',
+        '1',
+        limit: 5,
+      );
       expect(posts, hasLength(1));
       expect(posts.first.text, 'Hi');
     });
@@ -107,7 +117,10 @@ void main() {
         httpClient: MockClient((request) async {
           final path = request.url.path;
           if (path == '/api/v2/search') {
-            expect(request.url.queryParameters['q'], 'https://other.social/@b/22');
+            expect(
+              request.url.queryParameters['q'],
+              'https://other.social/@b/22',
+            );
             expect(request.url.queryParameters['resolve'], 'true');
             return http.Response(
               jsonEncode({
@@ -127,7 +140,7 @@ void main() {
                       'url': 'https://other.social/@b',
                     },
                     'media_attachments': [],
-                  }
+                  },
                 ],
               }),
               200,
@@ -153,7 +166,7 @@ void main() {
                       'url': 'https://other.social/@c',
                     },
                     'media_attachments': [],
-                  }
+                  },
                 ],
               }),
               200,
@@ -183,7 +196,13 @@ void main() {
       );
       await expectLater(
         notFound.lookup('https://mastodon.social', 'nobody'),
-        throwsA(isA<MastodonException>().having((e) => e.kind, 'kind', MastodonErrorKind.notFound)),
+        throwsA(
+          isA<MastodonException>().having(
+            (e) => e.kind,
+            'kind',
+            MastodonErrorKind.notFound,
+          ),
+        ),
       );
 
       final limited = MastodonClient(
@@ -191,125 +210,220 @@ void main() {
       );
       await expectLater(
         limited.getStatuses('https://mastodon.social', '1'),
-        throwsA(isA<MastodonException>().having((e) => e.kind, 'kind', MastodonErrorKind.rateLimited)),
+        throwsA(
+          isA<MastodonException>().having(
+            (e) => e.kind,
+            'kind',
+            MastodonErrorKind.rateLimited,
+          ),
+        ),
       );
     });
 
-    test('fetchThread on origin skips a search 401 and uses the URL snowflake', () async {
-      final client = MastodonClient(
-        httpClient: MockClient((request) async {
-          final path = request.url.path;
-          if (path == '/api/v2/search') {
-            return http.Response('{"error":"Search queries that resolve remote resources are not allowed"}', 401);
-          }
-          if (path == '/api/v1/statuses/22') {
-            return http.Response(jsonEncode(_statusJson(id: '22', url: 'https://other.social/@b/22', text: 'Root')), 200,
-                headers: {'content-type': 'application/json'});
-          }
-          if (path == '/api/v1/statuses/22/context') {
-            return http.Response(
-              jsonEncode({
-                'ancestors': [],
-                'descendants': [_statusJson(id: '23', url: 'https://other.social/@c/23', text: 'Reply', username: 'c')],
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
-            );
-          }
-          return http.Response('unexpected ${request.url}', 500);
-        }),
-      );
+    test(
+      'fetchThread on origin skips a search 401 and uses the URL snowflake',
+      () async {
+        final client = MastodonClient(
+          httpClient: MockClient((request) async {
+            final path = request.url.path;
+            if (path == '/api/v2/search') {
+              return http.Response(
+                '{"error":"Search queries that resolve remote resources are not allowed"}',
+                401,
+              );
+            }
+            if (path == '/api/v1/statuses/22') {
+              return http.Response(
+                jsonEncode(
+                  _statusJson(
+                    id: '22',
+                    url: 'https://other.social/@b/22',
+                    text: 'Root',
+                  ),
+                ),
+                200,
+                headers: {'content-type': 'application/json'},
+              );
+            }
+            if (path == '/api/v1/statuses/22/context') {
+              return http.Response(
+                jsonEncode({
+                  'ancestors': [],
+                  'descendants': [
+                    _statusJson(
+                      id: '23',
+                      url: 'https://other.social/@c/23',
+                      text: 'Reply',
+                      username: 'c',
+                    ),
+                  ],
+                }),
+                200,
+                headers: {'content-type': 'application/json'},
+              );
+            }
+            return http.Response('unexpected ${request.url}', 500);
+          }),
+        );
 
-      // Card id is from a *different* host; the public URL still carries origin's id.
-      final seed = MastodonPost(
-        id: '999',
-        acct: 'b@other.social',
-        authorName: 'B',
-        text: 'Root',
-        url: 'https://other.social/@b/22',
-      );
-      final thread = await client.fetchThread('https://other.social', seed);
-      expect(thread.status.id, '22');
-      expect(thread.descendants.single.text, 'Reply');
-    });
+        // Card id is from a *different* host; the public URL still carries origin's id.
+        final seed = MastodonPost(
+          id: '999',
+          acct: 'b@other.social',
+          authorName: 'B',
+          text: 'Root',
+          url: 'https://other.social/@b/22',
+        );
+        final thread = await client.fetchThread('https://other.social', seed);
+        expect(thread.status.id, '22');
+        expect(thread.descendants.single.text, 'Reply');
+      },
+    );
 
-    test('fetchThreadAnywhere rediscovers a remote post via account statuses when search is closed', () async {
-      final asked = <String>[];
-      final client = MastodonClient(
-        httpClient: MockClient((request) async {
-          asked.add('${request.url.host}${request.url.path}');
-          final host = request.url.host;
-          final path = request.url.path;
+    test(
+      'fetchThreadAnywhere rediscovers a remote post via account statuses when search is closed',
+      () async {
+        final asked = <String>[];
+        final client = MastodonClient(
+          httpClient: MockClient((request) async {
+            asked.add('${request.url.host}${request.url.path}');
+            final host = request.url.host;
+            final path = request.url.path;
 
-          if (host == 'closed.social') {
+            if (host == 'closed.social') {
+              if (path == '/api/v2/search') {
+                return http.Response('nope', 401);
+              }
+              return http.Response('gone', 404);
+            }
+
             if (path == '/api/v2/search') {
               return http.Response('nope', 401);
             }
-            return http.Response('gone', 404);
-          }
+            if (path == '/api/v1/accounts/lookup') {
+              return http.Response(
+                jsonEncode({
+                  'id': '7',
+                  'username': 'b',
+                  'acct': 'b@closed.social',
+                  'display_name': 'B',
+                  'note': '',
+                  'url': 'https://closed.social/@b',
+                }),
+                200,
+                headers: {'content-type': 'application/json'},
+              );
+            }
+            if (path == '/api/v1/accounts/7/statuses') {
+              return http.Response(
+                jsonEncode([
+                  _statusJson(
+                    id: '100',
+                    url: 'https://closed.social/@b/22',
+                    text: 'Root',
+                    acct: 'b@closed.social',
+                  ),
+                ]),
+                200,
+                headers: {'content-type': 'application/json'},
+              );
+            }
+            if (path == '/api/v1/statuses/100/context') {
+              return http.Response(
+                jsonEncode({
+                  'ancestors': [],
+                  'descendants': [
+                    _statusJson(
+                      id: '101',
+                      url: 'https://closed.social/@c/101',
+                      text: 'Via open',
+                      username: 'c',
+                    ),
+                  ],
+                }),
+                200,
+                headers: {'content-type': 'application/json'},
+              );
+            }
+            // Direct status ids from the seed are meaningless on the proxy.
+            if (path.startsWith('/api/v1/statuses/')) {
+              return http.Response('missing', 404);
+            }
+            return http.Response('unexpected ${request.url}', 500);
+          }),
+        );
 
-          if (path == '/api/v2/search') {
-            return http.Response('nope', 401);
-          }
-          if (path == '/api/v1/accounts/lookup') {
-            return http.Response(
-              jsonEncode({
-                'id': '7',
-                'username': 'b',
-                'acct': 'b@closed.social',
-                'display_name': 'B',
-                'note': '',
-                'url': 'https://closed.social/@b',
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
-            );
-          }
-          if (path == '/api/v1/accounts/7/statuses') {
-            return http.Response(
-              jsonEncode([
-                _statusJson(id: '100', url: 'https://closed.social/@b/22', text: 'Root', acct: 'b@closed.social'),
-              ]),
-              200,
-              headers: {'content-type': 'application/json'},
-            );
-          }
-          if (path == '/api/v1/statuses/100/context') {
-            return http.Response(
-              jsonEncode({
-                'ancestors': [],
-                'descendants': [
-                  _statusJson(id: '101', url: 'https://closed.social/@c/101', text: 'Via open', username: 'c'),
-                ],
-              }),
-              200,
-              headers: {'content-type': 'application/json'},
-            );
-          }
-          // Direct status ids from the seed are meaningless on the proxy.
-          if (path.startsWith('/api/v1/statuses/')) {
-            return http.Response('missing', 404);
-          }
-          return http.Response('unexpected ${request.url}', 500);
+        final seed = MastodonPost(
+          id: '22',
+          acct: 'b@closed.social',
+          authorName: 'B',
+          text: 'Root',
+          url: 'https://closed.social/@b/22',
+        );
+        final thread = await client.fetchThreadAnywhere([
+          'https://closed.social',
+          'https://open.social',
+        ], seed);
+
+        expect(thread.status.id, '100');
+        expect(thread.descendants.single.text, 'Via open');
+        expect(asked.any((e) => e.startsWith('closed.social')), isTrue);
+        expect(asked.any((e) => e.startsWith('open.social')), isTrue);
+      },
+    );
+
+    test('getPublicTimeline reads /timelines/public?local=true', () async {
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          expect(request.url.path, '/api/v1/timelines/public');
+          expect(request.url.queryParameters['local'], 'true');
+          return http.Response(
+            jsonEncode([
+              _statusJson(
+                id: '3',
+                url: 'https://mastodon.social/@a/3',
+                text: 'local',
+              ),
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
         }),
       );
-
-      final seed = MastodonPost(
-        id: '22',
-        acct: 'b@closed.social',
-        authorName: 'B',
-        text: 'Root',
-        url: 'https://closed.social/@b/22',
+      final posts = await client.getPublicTimeline(
+        'https://mastodon.social',
+        local: true,
       );
-      final thread = await client.fetchThreadAnywhere([
-        'https://closed.social',
-        'https://open.social',
-      ], seed);
+      expect(posts.single.text, 'local');
+    });
 
-      expect(thread.status.id, '100');
-      expect(thread.descendants.single.text, 'Via open');
-      expect(asked.any((e) => e.startsWith('closed.social')), isTrue);
-      expect(asked.any((e) => e.startsWith('open.social')), isTrue);
+    test('getPublicTimeline falls back to Misskey featured', () async {
+      final asked = <String>[];
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          asked.add('${request.method} ${request.url.path}');
+          if (request.url.path == '/api/v1/timelines/public') {
+            return http.Response('no', 404);
+          }
+          expect(request.method, 'POST');
+          expect(request.url.path, '/api/notes/featured');
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 'mk1',
+                'text': 'from misskey',
+                'user': {'username': 'neo', 'host': null},
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      final posts = await client.getPublicTimeline('https://misskey.io');
+      expect(posts.single.text, 'from misskey');
+      expect(asked, contains('GET /api/v1/timelines/public'));
+      expect(asked, contains('POST /api/notes/featured'));
     });
   });
 }

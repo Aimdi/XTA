@@ -22,6 +22,28 @@ class MastodonLinkCard {
   bool get hasImage => imageUrl != null && imageUrl!.isNotEmpty;
 }
 
+/// A read-only poll on a public status. Voting is not sent anywhere.
+class MastodonPollOption {
+  final String title;
+  final int votes;
+
+  const MastodonPollOption({required this.title, this.votes = 0});
+}
+
+class MastodonPoll {
+  final List<MastodonPollOption> options;
+  final int votesCount;
+  final bool expired;
+  final bool multiple;
+
+  const MastodonPoll({
+    required this.options,
+    this.votesCount = 0,
+    this.expired = false,
+    this.multiple = false,
+  });
+}
+
 /// One public Mastodon status, as much as a card needs.
 class MastodonPost {
   final String id;
@@ -29,6 +51,8 @@ class MastodonPost {
   final String authorName;
   final String? avatarUrl;
   final String text;
+  final String spoilerText;
+  final bool sensitive;
   final List<String> images;
   final DateTime? publishedAt;
   final String url;
@@ -40,6 +64,7 @@ class MastodonPost {
   final int reblogsCount;
   final int favouritesCount;
   final MastodonLinkCard? linkCard;
+  final MastodonPoll? poll;
 
   const MastodonPost({
     required this.id,
@@ -48,6 +73,8 @@ class MastodonPost {
     required this.text,
     required this.url,
     this.avatarUrl,
+    this.spoilerText = '',
+    this.sensitive = false,
     this.images = const [],
     this.publishedAt,
     this.boosted = false,
@@ -55,9 +82,12 @@ class MastodonPost {
     this.reblogsCount = 0,
     this.favouritesCount = 0,
     this.linkCard,
+    this.poll,
   });
 
   bool get hasMedia => images.isNotEmpty;
+
+  bool get hasSpoiler => spoilerText.trim().isNotEmpty;
 }
 
 /// A Mastodon / Fediverse profile as the home instance reports it.
@@ -74,6 +104,8 @@ class MastodonProfile {
   final int followingCount;
   final int statusesCount;
   final bool locked;
+  final bool bot;
+  final List<MastodonField> fields;
 
   const MastodonProfile({
     required this.id,
@@ -87,6 +119,8 @@ class MastodonProfile {
     this.followingCount = 0,
     this.statusesCount = 0,
     this.locked = false,
+    this.bot = false,
+    this.fields = const [],
   });
 
   factory MastodonProfile.fromJson(Object? json, {String? homeDomain}) {
@@ -111,11 +145,21 @@ class MastodonProfile {
       followingCount: data['following_count'].integer ?? 0,
       statusesCount: data['statuses_count'].integer ?? 0,
       locked: data['locked'].boolean ?? false,
+      bot: data['bot'].boolean ?? false,
+      fields: _fieldsOf(data),
     );
   }
 
   MastodonAccount toAccount() =>
       MastodonAccount(acct: acct, name: displayName, avatarUrl: avatarUrl);
+}
+
+/// A profile metadata row (`fields` in the Mastodon API).
+class MastodonField {
+  final String name;
+  final String value;
+
+  const MastodonField({required this.name, required this.value});
 }
 
 /// An account the reader follows locally — not a Mastodon follow-graph edge.
@@ -420,13 +464,14 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
   );
   final spoiler = status['spoiler_text'].string?.trim() ?? '';
   final body = mastodonHtmlToText(status['content'].string);
-  final text = [
-    if (spoiler.isNotEmpty) spoiler,
-    if (body.isNotEmpty) body,
-  ].join('\n\n');
   final images = mastodonImagesOf(status);
   final linkCard = mastodonLinkCardOf(status);
-  if (text.isEmpty && images.isEmpty && linkCard == null) {
+  final poll = mastodonPollOf(status);
+  if (spoiler.isEmpty &&
+      body.isEmpty &&
+      images.isEmpty &&
+      linkCard == null &&
+      poll == null) {
     return null;
   }
 
@@ -441,7 +486,9 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     acct: author.acct,
     authorName: author.displayName,
     avatarUrl: author.avatarUrl,
-    text: text,
+    text: body,
+    spoilerText: spoiler,
+    sensitive: status['sensitive'].boolean ?? spoiler.isNotEmpty,
     images: images,
     publishedAt: DateTime.tryParse(
       status['created_at'].string ?? '',
@@ -452,7 +499,112 @@ MastodonPost? mastodonPostFromStatus(Object? json, {String? homeDomain}) {
     reblogsCount: status['reblogs_count'].integer ?? 0,
     favouritesCount: status['favourites_count'].integer ?? 0,
     linkCard: linkCard,
+    poll: poll,
   );
+}
+
+MastodonPoll? mastodonPollOf(Json status) {
+  final poll = status['poll'];
+  if (!poll.exists) return null;
+  final options = <MastodonPollOption>[];
+  for (final option in poll['options'].list) {
+    final title = (option['title'].string ?? '').trim();
+    if (title.isEmpty) continue;
+    options.add(
+      MastodonPollOption(
+        title: title,
+        votes: option['votes_count'].integer ?? 0,
+      ),
+    );
+  }
+  if (options.isEmpty) return null;
+  return MastodonPoll(
+    options: options,
+    votesCount: poll['votes_count'].integer ?? 0,
+    expired: poll['expired'].boolean ?? false,
+    multiple: poll['multiple'].boolean ?? false,
+  );
+}
+
+List<MastodonField> _fieldsOf(Json data) {
+  final fields = <MastodonField>[];
+  for (final field in data['fields'].list) {
+    final name = (field['name'].string ?? '').trim();
+    if (name.isEmpty) continue;
+    fields.add(
+      MastodonField(
+        name: name,
+        value: mastodonHtmlToText(field['value'].string),
+      ),
+    );
+  }
+  return fields;
+}
+
+/// Misskey / Sharkey `notes/*` payload → the same card model.
+MastodonPost? mastodonPostFromMisskeyNote(
+  Object? json, {
+  required String instance,
+}) {
+  final note = Json(json);
+  final id = (note['id'].string ?? '').trim();
+  if (id.isEmpty) return null;
+
+  final user = note['user'];
+  final username = (user['username'].string ?? '').trim();
+  if (username.isEmpty) return null;
+  final remote = (user['host'].string ?? '').trim().toLowerCase();
+  final host = remote.isEmpty
+      ? (mastodonInstanceDomain(instance) ?? '')
+      : remote;
+  final acct = host.isEmpty ? username : '$username@$host';
+  final name = (user['name'].string ?? '').trim();
+  final spoiler = (note['cw'].string ?? '').trim();
+  final body = (note['text'].string ?? '').trim();
+  final images = <String>[];
+  for (final file in note['files'].list) {
+    final url = file['thumbnailUrl'].string ?? file['url'].string ?? '';
+    if (url.startsWith('http')) images.add(url);
+  }
+  if (spoiler.isEmpty && body.isEmpty && images.isEmpty) return null;
+
+  final origin = mastodonInstanceDomain(instance) ?? host;
+  return MastodonPost(
+    id: id,
+    acct: acct,
+    authorName: name.isEmpty ? username : name,
+    avatarUrl: user['avatarUrl'].string,
+    text: body,
+    spoilerText: spoiler,
+    sensitive: spoiler.isNotEmpty,
+    images: images,
+    publishedAt: DateTime.tryParse(note['createdAt'].string ?? '')?.toLocal(),
+    url: 'https://$origin/notes/$id',
+    boosted: note['renote'].exists && body.isEmpty,
+    repliesCount: note['repliesCount'].integer ?? 0,
+    reblogsCount: note['renoteCount'].integer ?? 0,
+    favouritesCount: _misskeyReactionCount(note),
+  );
+}
+
+int _misskeyReactionCount(Json note) {
+  var total = 0;
+  final reactions = note['reactions'].raw;
+  if (reactions is Map) {
+    for (final value in reactions.values) {
+      if (value is num) total += value.toInt();
+    }
+  }
+  return total;
+}
+
+List<MastodonPost> parseMisskeyNotes(Object? json, {required String instance}) {
+  final root = Json(json);
+  final items = root.raw is List ? root.list : const <Json>[];
+  return [
+    for (final item in items)
+      ?mastodonPostFromMisskeyNote(item.raw, instance: instance),
+  ];
 }
 
 /// Pure parse of `GET /accounts/:id/statuses` JSON array.

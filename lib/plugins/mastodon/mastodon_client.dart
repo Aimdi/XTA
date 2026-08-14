@@ -497,4 +497,129 @@ class MastodonClient {
     instances,
     (instance) => getTagTimeline(instance, tag, limit: limit),
   );
+
+  /// Public local or federated timeline (Tusky / Ivory / Phanpy).
+  Future<List<MastodonPost>> getPublicTimeline(
+    String instance, {
+    bool local = false,
+    int limit = 30,
+  }) async {
+    try {
+      final json = await _get(
+        _uri(instance, '/api/v1/timelines/public', {
+          'limit': '$limit',
+          if (local) 'local': 'true',
+        }),
+      );
+      return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
+    } on MastodonException catch (e) {
+      if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+    }
+    return _misskeyPublic(instance, local: local, limit: limit);
+  }
+
+  Future<List<MastodonPost>> getPublicTimelineAnywhere(
+    List<String> instances, {
+    bool local = false,
+    int limit = 30,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => getPublicTimeline(instance, local: local, limit: limit),
+  );
+
+  /// Trending statuses on [instance] (public on most Mastodon hosts).
+  Future<List<MastodonPost>> getTrendingStatuses(
+    String instance, {
+    int limit = 20,
+  }) async {
+    try {
+      final json = await _get(
+        _uri(instance, '/api/v1/trends/statuses', {'limit': '$limit'}),
+      );
+      return parseMastodonStatuses(json, homeDomain: _homeDomain(instance));
+    } on MastodonException catch (e) {
+      if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+    }
+    return _misskeyPublic(instance, local: false, limit: limit);
+  }
+
+  Future<List<MastodonPost>> getTrendingStatusesAnywhere(
+    List<String> instances, {
+    int limit = 20,
+  }) => firstInstanceThat(
+    instances,
+    (instance) => getTrendingStatuses(instance, limit: limit),
+  );
+
+  /// Misskey-family public notes when the Mastodon API is missing or empty.
+  Future<List<MastodonPost>> _misskeyPublic(
+    String instance, {
+    required bool local,
+    int limit = 20,
+  }) async {
+    if (local) {
+      try {
+        final notes = await _misskeyNotes(
+          instance,
+          '/api/notes/local-timeline',
+          {'limit': limit},
+        );
+        if (notes.isNotEmpty) return notes;
+      } on MastodonException catch (e) {
+        if (e.kind == MastodonErrorKind.rateLimited) rethrow;
+      }
+    }
+    return _misskeyNotes(instance, '/api/notes/featured', {'limit': limit});
+  }
+
+  Future<List<MastodonPost>> _misskeyNotes(
+    String instance,
+    String path,
+    Map<String, Object?> body,
+  ) async {
+    final json = await _post(_uri(instance, path), body);
+    return parseMisskeyNotes(json, instance: instance);
+  }
+
+  Future<Object?> _post(Uri uri, Map<String, Object?> body) async {
+    final http.Response response;
+    try {
+      response = await httpClient
+          .post(
+            uri,
+            headers: {
+              'User-Agent': userAgent,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(_timeout);
+    } catch (e) {
+      throw MastodonException(MastodonErrorKind.network, '$uri: $e');
+    }
+    if (response.statusCode == 404) {
+      throw MastodonException(MastodonErrorKind.notFound, '$uri: 404');
+    }
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      throw MastodonException(
+        MastodonErrorKind.unauthorized,
+        '$uri: ${response.statusCode}',
+      );
+    }
+    if (response.statusCode == 429) {
+      throw MastodonException(MastodonErrorKind.rateLimited, '$uri: 429');
+    }
+    if (response.statusCode != 200) {
+      throw MastodonException(
+        MastodonErrorKind.badResponse,
+        '$uri: ${response.statusCode}',
+      );
+    }
+    try {
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      throw MastodonException(MastodonErrorKind.badResponse, '$uri: $e');
+    }
+  }
 }
