@@ -267,4 +267,39 @@ class BlueskyClient {
     }
     return 'at://${profile.did}/app.bsky.graph.list/$rkey';
   }
+
+  /// One public starter pack (`app.bsky.graph.getStarterPack`).
+  Future<Object?> getStarterPack(String starterPack) async {
+    final json = await _get(
+      _uri('/xrpc/app.bsky.graph.getStarterPack', {'starterPack': starterPack}),
+    );
+    return json.raw;
+  }
+
+  /// Resolves a web starter-pack URL or AT-URI into
+  /// `at://…/app.bsky.graph.starterpack/…`.
+  Future<String> resolveStarterPackUri(BlueskyStarterPackRef ref) async {
+    final atUri = ref.atUri?.trim();
+    if (atUri != null && atUri.isNotEmpty) {
+      return atUri;
+    }
+
+    final actor = ref.actor?.trim();
+    final rkey = ref.rkey?.trim();
+    if (actor == null || actor.isEmpty || rkey == null || rkey.isEmpty) {
+      throw BlueskyException(
+        BlueskyErrorKind.badResponse,
+        'incomplete starter pack reference',
+      );
+    }
+
+    final profile = await getProfile(actor);
+    if (profile.did.isEmpty) {
+      throw BlueskyException(
+        BlueskyErrorKind.notFound,
+        'starter pack owner missing did: $actor',
+      );
+    }
+    return 'at://${profile.did}/app.bsky.graph.starterpack/$rkey';
+  }
 }

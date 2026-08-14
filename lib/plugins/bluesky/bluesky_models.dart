@@ -698,6 +698,56 @@ BlueskyListRef? parseBlueskyListRef(String input) {
   return null;
 }
 
+/// A starter pack identified by AT-URI, or by handle + rkey from a bsky.app URL.
+class BlueskyStarterPackRef {
+  final String? atUri;
+  final String? actor;
+  final String? rkey;
+
+  const BlueskyStarterPackRef.atUri(this.atUri) : actor = null, rkey = null;
+
+  const BlueskyStarterPackRef.web({required this.actor, required this.rkey})
+    : atUri = null;
+}
+
+/// Parses a public starter-pack URL or `at://…/app.bsky.graph.starterpack/…`.
+///
+/// Short `go.bsky.app` links are skipped — they need a redirect we do not follow.
+BlueskyStarterPackRef? parseBlueskyStarterPackRef(String input) {
+  final value = input.trim();
+  if (value.isEmpty) {
+    return null;
+  }
+
+  if (value.startsWith('at://') &&
+      value.contains('/app.bsky.graph.starterpack/')) {
+    return BlueskyStarterPackRef.atUri(value);
+  }
+
+  final uri = Uri.tryParse(value);
+  if (uri == null || (uri.host != 'bsky.app' && uri.host != 'www.bsky.app')) {
+    return null;
+  }
+
+  final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
+  if (segments.length >= 3 && segments[0] == 'starter-pack') {
+    final actor = segments[1].trim();
+    final rkey = segments[2].trim();
+    if (actor.isEmpty || rkey.isEmpty) {
+      return null;
+    }
+    return BlueskyStarterPackRef.web(actor: actor, rkey: rkey);
+  }
+  return null;
+}
+
+/// List AT-URI a starter pack points at, if the AppView included one.
+String? starterPackListUri(Object? json) {
+  final pack = Json(json)['starterPack'];
+  final list = pack['list'];
+  return list.string ?? list['uri'].string ?? pack['record']['list'].string;
+}
+
 BlueskyFollowsPage parseBlueskyFollowsPage(Object? json) {
   final root = Json(json);
   return BlueskyFollowsPage(
