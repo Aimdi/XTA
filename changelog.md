@@ -1,3 +1,10 @@
+## XTA aimdi99
+
+What's new in XTA aimdi99:
+  - Paste a Grok (xAI) key in Settings → Advanced → AI provider; an OpenAI chip is there too
+  - Import the public following of one or more accounts as local subscriptions
+  - Sort ungrouped subscriptions into similar groups, or suggest new ones when none fit
+
 ## XTA aimdi98
 
 What's new in XTA aimdi98:
