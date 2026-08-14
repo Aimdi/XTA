@@ -3,8 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/threads/threads_plugin.dart';
 import 'package:xta/settings/_plugin_row.dart';
+import 'package:xta/settings/_plugin_store.dart';
 
 Widget _wrap(Widget child, {BasePrefService? prefs}) {
   return PrefService(
@@ -55,5 +57,24 @@ void main() {
     expect(find.byTooltip('Show as a tab'), findsOneWidget);
     expect(find.byTooltip('Settings'), findsOneWidget);
     expect(find.byType(PopupMenuButton<String>), findsOneWidget);
+  });
+
+  testWidgets('available plugins start collapsed under one tile', (
+    tester,
+  ) async {
+    final groups = groupPluginsByCategory([ThreadsPlugin()]);
+    await tester.pumpWidget(
+      _wrap(PluginAvailableSection(groups: groups, onInstall: (_) async {})),
+    );
+    await tester.pump();
+
+    expect(find.text('Available'), findsOneWidget);
+    expect(find.text('Install'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('plugin-available')));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Install'), findsOneWidget);
   });
 }

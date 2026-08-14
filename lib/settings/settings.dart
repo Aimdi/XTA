@@ -13,6 +13,7 @@ import 'package:xta/settings/_plugin_store.dart';
 import 'package:xta/settings/_posts.dart';
 import 'package:xta/settings/_theme.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
+import 'package:xta/ui/x_controls.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -30,76 +31,92 @@ class _SettingsEntry {
   final String description;
   final WidgetBuilder builder;
 
-  const _SettingsEntry(
-      {required this.icon, required this.title, required this.description, required this.builder});
+  const _SettingsEntry({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.builder,
+  });
 
   bool matches(String query) =>
-      title.toLowerCase().contains(query) || description.toLowerCase().contains(query);
+      title.toLowerCase().contains(query) ||
+      description.toLowerCase().contains(query);
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  PackageInfo _packageInfo = PackageInfo(appName: '', packageName: '', version: '', buildNumber: '');
+  PackageInfo _packageInfo = PackageInfo(
+    appName: '',
+    packageName: '',
+    version: '',
+    buildNumber: '',
+  );
   String _query = '';
+  late final TextEditingController _searchController;
 
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
 
     Future.microtask(() async {
-      var packageInfo = await PackageInfo.fromPlatform();
-
-      setState(() {
-        _packageInfo = packageInfo;
-      });
+      try {
+        var packageInfo = await PackageInfo.fromPlatform();
+        if (mounted) setState(() => _packageInfo = packageInfo);
+      } catch (_) {
+        // Tests and headless runs have no platform channel for the version.
+      }
     });
   }
 
-  List<_SettingsEntry> _entries(BuildContext context, Key key) {
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<_SettingsEntry> _everydayEntries(BuildContext context, Key key) {
     final l10n = L10n.of(context);
     return [
       _SettingsEntry(
         icon: Icons.miscellaneous_services,
         title: l10n.general,
-        description:
-            "${l10n.language}, ${l10n.should_check_for_updates_label}, ${l10n.disable_screenshots}, ${l10n.default_tab}, ${l10n.share_base_url}, ${l10n.crash_reports_enabled}",
+        description: l10n.settings_general_hint,
         builder: (context) => const SettingsGeneralFragment(),
       ),
       _SettingsEntry(
         icon: Icons.article,
         title: l10n.tweets,
-        description:
-            "${l10n.use_absolute_timestamp}, ${l10n.hide_sensitive_tweets}, ${l10n.always_show_full_tweet_contents}, ${l10n.activate_non_confirmation_bias_mode_label}",
+        description: l10n.settings_posts_hint,
         builder: (context) => const SettingsPostsFragment(),
       ),
       _SettingsEntry(
         icon: Icons.perm_media,
         title: l10n.media,
-        description: "${l10n.image_quality}, ${l10n.video_quality}, ${l10n.mute_videos}, ${l10n.download_handling}",
+        description: l10n.settings_media_hint,
         builder: (context) => const SettingsMediaFragment(),
       ),
       _SettingsEntry(
         icon: Icons.account_circle,
         title: l10n.account,
-        description: l10n.account,
+        description: l10n.settings_account_hint,
         builder: (context) => SettingsAccountFragment(key: key),
       ),
       _SettingsEntry(
         icon: Icons.home,
         title: l10n.home,
-        description: "${l10n.reset_home_pages}, ${l10n.home}",
+        description: l10n.settings_home_hint,
         builder: (context) => const SettingsHomeFragment(),
       ),
       _SettingsEntry(
         icon: Icons.palette,
         title: l10n.theme,
-        description:
-            "${l10n.theme_mode}, ${l10n.theme}, ${l10n.true_black}, ${l10n.true_black_tweet_cards} ${l10n.show_navigation_labels}",
+        description: l10n.settings_theme_hint,
         builder: (context) => const SettingsThemeFragment(),
       ),
       _SettingsEntry(
         icon: Icons.settings_accessibility,
         title: l10n.accessibility,
-        description: "${l10n.text_scale_factor}, ${l10n.disable_animations}",
+        description: l10n.settings_accessibility_hint,
         builder: (context) => const SettingsAccessibilityFragment(),
       ),
       _SettingsEntry(
@@ -108,6 +125,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
         description: l10n.plugin_store_description,
         builder: (context) => const SettingsPluginStoreFragment(),
       ),
+    ];
+  }
+
+  _SettingsEntry _dataEntry(BuildContext context) {
+    final l10n = L10n.of(context);
+    return _SettingsEntry(
+      icon: Icons.import_export,
+      title: l10n.data,
+      description: l10n.settings_data_hint,
+      builder: (context) => Scaffold(
+        appBar: AppBar(title: Text(L10n.of(context).data)),
+        body: ListView(children: const [SettingsDataFragment()]),
+      ),
+    );
+  }
+
+  List<_SettingsEntry> _advancedEntries(BuildContext context) {
+    final l10n = L10n.of(context);
+    return [
       _SettingsEntry(
         icon: Icons.auto_awesome_outlined,
         title: l10n.ai_provider,
@@ -127,12 +163,50 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final theme = Theme.of(context);
     return ListTile(
       leading: Icon(entry.icon, color: theme.colorScheme.onSurfaceVariant),
-      title: Text(entry.title, style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700)),
-      subtitle: Text(entry.description,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: entry.builder)),
+      title: Text(
+        entry.title,
+        style: theme.textTheme.titleMedium!.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      subtitle: Text(
+        entry.description,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall!.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      onTap: () =>
+          Navigator.push(context, MaterialPageRoute(builder: entry.builder)),
+    );
+  }
+
+  Widget _searchField(L10n l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: XSearchField(
+        controller: _searchController,
+        hintText: l10n.search_settings,
+        onChanged: (value) => setState(() => _query = value),
+      ),
+    );
+  }
+
+  Widget _advancedTile(BuildContext context, List<_SettingsEntry> advanced) {
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    return ExpansionTile(
+      key: const Key('settings-advanced'),
+      initiallyExpanded: false,
+      leading: Icon(Icons.tune, color: theme.colorScheme.onSurfaceVariant),
+      title: Text(
+        l10n.settings_section_advanced,
+        style: theme.textTheme.titleMedium!.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      children: [for (final entry in advanced) _entryTile(context, entry)],
     );
   }
 
@@ -142,31 +216,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var key = widget.key ?? const Key("Settings");
     var appVersion = 'v${_packageInfo.version}+${_packageInfo.buildNumber}';
     final query = _query.trim().toLowerCase();
-    final entries = _entries(context, key).where((e) => query.isEmpty || e.matches(query)).toList();
+    final everyday = _everydayEntries(context, key);
+    final data = _dataEntry(context);
+    final advanced = _advancedEntries(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
       body: ListView(
-        padding: EdgeInsets.only(bottom: 16.0 + MediaQuery.of(context).padding.bottom),
+        padding: EdgeInsets.only(
+          bottom: 16.0 + MediaQuery.of(context).padding.bottom,
+        ),
         children: [
-          // X puts a search field at the top of Settings; here it filters the
-          // sections by title or by what each one contains.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: TextField(
-              onChanged: (value) => setState(() => _query = value),
-              decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: l10n.search_settings,
-                isDense: true,
-              ),
-            ),
-          ),
-          for (final entry in entries) _entryTile(context, entry),
-          if (query.isEmpty) ...[
-            const Divider(),
-            _SectionLabel(l10n.data),
-            SettingsDataFragment(),
+          _searchField(l10n),
+          if (query.isNotEmpty)
+            for (final entry in [
+              ...everyday,
+              data,
+              ...advanced,
+            ].where((e) => e.matches(query)))
+              _entryTile(context, entry)
+          else ...[
+            for (final entry in everyday) _entryTile(context, entry),
+            _entryTile(context, data),
+            _advancedTile(context, advanced),
             const Divider(),
             _SectionLabel(l10n.app_info),
             SettingsAboutFragment(appVersion: appVersion),
@@ -187,8 +259,12 @@ class _SectionLabel extends StatelessWidget {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(label,
-          style: theme.textTheme.titleSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+      child: Text(
+        label,
+        style: theme.textTheme.titleSmall!.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 }
