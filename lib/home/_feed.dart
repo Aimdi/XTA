@@ -281,9 +281,9 @@ class _FeedScreenState extends State<FeedScreen> {
       child: GroupFeedShell(
         scrollController: widget.scrollController,
         groupId: widget.id,
-        centerTitle: true,
+        centerTitle: false,
         leading: const DrawerAvatarButton(),
-        titleBuilder: (context) => Text(L10n.of(context).fritter),
+        titleBuilder: (context) => Text(L10n.of(context).home),
         bottomBuilder: (context) => PreferredSize(
           preferredSize: const Size.fromHeight(46),
           child: Row(

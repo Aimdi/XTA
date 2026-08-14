@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -435,9 +434,7 @@ class _ScaffoldWithBottomNavigationState
     final Color pillBorder;
     final Color accent;
     if (tokens != null) {
-      pillFill = xLookFloatingSurface(
-        tokens,
-      ).withValues(alpha: isDark ? 0.92 : 0.94);
+      pillFill = xLookFloatingSurface(tokens);
       pillBorder = tokens.border.withValues(alpha: isDark ? 0.55 : 0.9);
       accent = tokens.accent;
     } else {
@@ -491,83 +488,79 @@ class _ScaffoldWithBottomNavigationState
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(radius),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: pillFill,
-                    borderRadius: BorderRadius.circular(radius),
-                    border: Border.all(color: pillBorder, width: 0.5),
-                  ),
-                  child: NavigationBar(
-                    selectedIndex: _currentPage,
-                    labelBehavior: showLabels
-                        ? NavigationDestinationLabelBehavior.alwaysShow
-                        : NavigationDestinationLabelBehavior.alwaysHide,
-                    shadowColor: Colors.transparent,
-                    backgroundColor: Colors.transparent,
-                    surfaceTintColor: Colors.transparent,
-                    // Accent lives on the icon / label (theme), not a tinted stadium.
-                    indicatorColor: Colors.transparent,
-                    overlayColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.pressed) ||
-                          states.contains(WidgetState.focused)) {
-                        return accent.withValues(alpha: 0.08);
-                      }
-                      if (states.contains(WidgetState.hovered)) {
-                        return accent.withValues(alpha: 0.04);
-                      }
-                      return Colors.transparent;
-                    }),
-                    height: barHeight,
-                    destinations: widget.pages.asMap().entries.map((e) {
-                      final index = e.key;
-                      final page = e.value;
-                      final isSelected = _currentPage == index;
-                      // Subtle lift only when labels are off — with labels the
-                      // bold weight + accent colour already mark the tab.
-                      final scale =
-                          (!showLabels && isSelected && tokens != null)
-                          ? 1.05
-                          : 1.0;
-                      return NavigationDestination(
-                        icon: AnimatedScale(
-                          scale: scale,
-                          duration: Duration(
-                            milliseconds: tokens != null ? 200 : 0,
-                          ),
-                          curve: Curves.easeOutCubic,
-                          child: page.icon,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: pillFill,
+                  borderRadius: BorderRadius.circular(radius),
+                  border: Border.all(color: pillBorder, width: 0.5),
+                ),
+                child: NavigationBar(
+                  selectedIndex: _currentPage,
+                  labelBehavior: showLabels
+                      ? NavigationDestinationLabelBehavior.alwaysShow
+                      : NavigationDestinationLabelBehavior.alwaysHide,
+                  shadowColor: Colors.transparent,
+                  backgroundColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  // Accent lives on the icon / label (theme), not a tinted stadium.
+                  indicatorColor: Colors.transparent,
+                  overlayColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.pressed) ||
+                        states.contains(WidgetState.focused)) {
+                      return accent.withValues(alpha: 0.08);
+                    }
+                    if (states.contains(WidgetState.hovered)) {
+                      return accent.withValues(alpha: 0.04);
+                    }
+                    return Colors.transparent;
+                  }),
+                  height: barHeight,
+                  destinations: widget.pages.asMap().entries.map((e) {
+                    final index = e.key;
+                    final page = e.value;
+                    final isSelected = _currentPage == index;
+                    // Subtle lift only when labels are off — with labels the
+                    // bold weight + accent colour already mark the tab.
+                    final scale = (!showLabels && isSelected && tokens != null)
+                        ? 1.05
+                        : 1.0;
+                    return NavigationDestination(
+                      icon: AnimatedScale(
+                        scale: scale,
+                        duration: Duration(
+                          milliseconds: tokens != null ? 200 : 0,
                         ),
-                        selectedIcon: AnimatedScale(
-                          scale: scale,
-                          duration: Duration(
-                            milliseconds: tokens != null ? 200 : 0,
-                          ),
-                          curve: Curves.easeOutCubic,
-                          child: page.selectedIcon,
+                        curve: Curves.easeOutCubic,
+                        child: page.icon,
+                      ),
+                      selectedIcon: AnimatedScale(
+                        scale: scale,
+                        duration: Duration(
+                          milliseconds: tokens != null ? 200 : 0,
                         ),
-                        label: page.titleBuilder(context),
-                      );
-                    }).toList(),
-                    onDestinationSelected: (index) async {
-                      if (index == _currentPage) {
-                        final controller = _scrollControllers[_currentPage];
-                        final atTop =
-                            controller == null ||
-                            !controller.hasClients ||
-                            controller.offset <= 0;
-                        if (!atTop) {
-                          await scrollToTop(context, controller);
-                        } else if (widget.pages[index].id == 'trending') {
-                          _focusNodes[_currentPage]?.requestFocus();
-                        }
-                        return;
+                        curve: Curves.easeOutCubic,
+                        child: page.selectedIcon,
+                      ),
+                      label: page.titleBuilder(context),
+                    );
+                  }).toList(),
+                  onDestinationSelected: (index) async {
+                    if (index == _currentPage) {
+                      final controller = _scrollControllers[_currentPage];
+                      final atTop =
+                          controller == null ||
+                          !controller.hasClients ||
+                          controller.offset <= 0;
+                      if (!atTop) {
+                        await scrollToTop(context, controller);
+                      } else if (widget.pages[index].id == 'trending') {
+                        _focusNodes[_currentPage]?.requestFocus();
                       }
-                      unfocusPages();
-                      _pageController.jumpToPage(index);
-                    },
-                  ),
+                      return;
+                    }
+                    unfocusPages();
+                    _pageController.jumpToPage(index);
+                  },
                 ),
               ),
             ),

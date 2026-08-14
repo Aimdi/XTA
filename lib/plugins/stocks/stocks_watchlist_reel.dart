@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
+import 'package:xta/ui/x_controls.dart';
 
 /// Height of the StockTwits-style watchlist strip above the feed.
 const double kStockWatchlistStripHeight = 72;
@@ -89,11 +90,8 @@ class _WatchlistChip extends StatelessWidget {
     return Material(
       color: selected
           ? theme.colorScheme.primaryContainer
-          : theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: outline),
-      ),
+          : xControlFill(context),
+      shape: StadiumBorder(side: BorderSide(color: outline)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,

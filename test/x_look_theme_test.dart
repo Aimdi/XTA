@@ -18,6 +18,18 @@ void main() {
     expect(theme.textTheme.bodyLarge?.fontFamily, 'Inter');
   });
 
+  test(
+    'buttons share the stadium pill, including leftover ElevatedButtons',
+    () {
+      final theme = xLookLightTheme(null);
+      final filled = theme.filledButtonTheme.style?.shape?.resolve({});
+      final elevated = theme.elevatedButtonTheme.style?.shape?.resolve({});
+      expect(filled, isA<StadiumBorder>());
+      expect(elevated, isA<StadiumBorder>());
+      expect(theme.elevatedButtonTheme.style?.elevation?.resolve({}), 0);
+    },
+  );
+
   test('isXLookPreset recognizes the three presets', () {
     expect(isXLookPreset('x_look_light'), isTrue);
     expect(isXLookPreset('x_look_dim'), isTrue);
@@ -30,10 +42,12 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookDimTheme(null),
-        home: Builder(builder: (context) {
-          read = XLookTokens.of(context);
-          return const SizedBox.shrink();
-        }),
+        home: Builder(
+          builder: (context) {
+            read = XLookTokens.of(context);
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
     expect(read.background, const Color(0xFF15202B));

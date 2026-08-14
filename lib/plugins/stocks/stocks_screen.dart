@@ -18,6 +18,7 @@ import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/x_controls.dart';
 
 /// Markets + watchlist + trending cashtag feed.
 ///
@@ -315,6 +316,7 @@ class _StocksScreenState extends State<StocksScreen> {
         const SizedBox(height: 16),
         Center(
           child: FilledButton.icon(
+            style: xPrimaryPillStyle(context),
             onPressed: _addSymbol,
             icon: const Icon(Icons.add),
             label: Text(l10n.plugin_stocks_add),
