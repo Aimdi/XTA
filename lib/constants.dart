@@ -309,9 +309,12 @@ const optionPluginMastodonInstances = 'plugin.mastodon.instances';
 /// How many statuses one account contributes to the merged Mastodon feed.
 const mastodonPostsPerAccount = 20;
 
-/// The same cap for the Fediverse, and for the same reason: one request per
-/// followed account, against instances that are somebody's hobby server.
-const mastodonMaxAccountsPerLoad = 30;
+/// First wave of followed accounts asked on one Following / home-feed load.
+///
+/// Each acct is a lookup plus statuses, and a miss walks another instance.
+/// Thirty of those used to stall the rest of the app; the cache fills the
+/// rest on the next refresh.
+const mastodonMaxAccountsPerLoad = 12;
 
 /// Pixiv — private reading plugin. Refresh-token auth; no write actions.
 const pluginIdPixiv = 'pixiv';

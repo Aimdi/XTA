@@ -129,11 +129,12 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
     final local = context.read<MastodonLocalStore>();
     final federated = context.read<MastodonFederatedStore>();
     await accounts.load();
-    await Future.wait([
-      feed.refresh(),
-      explore.refresh(),
-      local.refresh(),
-      federated.refresh(),
-    ]);
+    // Do not refetch every public timeline here — that fan-out is what made
+    // uninstall / reinstall hitch the rest of the app. The screens load
+    // themselves the next time they are opened.
+    feed.forget();
+    explore.forget();
+    local.forget();
+    federated.forget();
   }
 }

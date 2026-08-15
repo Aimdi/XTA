@@ -98,6 +98,43 @@ void main() {
     });
   });
 
+  group('mastodonFeedInstanceCandidates', () {
+    test('keeps the origin and at most one built-in default', () {
+      final candidates = mastodonFeedInstanceCandidates(
+        'reader@example.social',
+      );
+
+      expect(candidates.first, 'https://example.social');
+      expect(
+        candidates.where(kMastodonDefaultInstances.contains),
+        hasLength(1),
+        reason: 'a following load must not walk every default host',
+      );
+    });
+
+    test('keeps every instance the reader configured', () {
+      final candidates = mastodonFeedInstanceCandidates(
+        'reader@example.social',
+        configured: ['https://my.home', 'https://second.place'],
+      );
+
+      expect(candidates, [
+        'https://example.social',
+        'https://my.home',
+        'https://second.place',
+        kMastodonDefaultInstances.first,
+      ]);
+    });
+
+    test('an origin that is already a default is not asked twice', () {
+      final candidates = mastodonFeedInstanceCandidates(
+        'reader@mastodon.social',
+      );
+
+      expect(candidates, ['https://mastodon.social']);
+    });
+  });
+
   group('firstInstanceThat', () {
     test(
       'a miss on one instance moves to the next, and the winner\'s answer is returned',
@@ -165,6 +202,59 @@ void main() {
         ),
       );
     });
+
+    test('a hanging first instance fails over instead of blocking', () async {
+      final asked = <String>[];
+      final client = MastodonClient(
+        timeout: const Duration(milliseconds: 40),
+        fallbackTimeout: const Duration(milliseconds: 20),
+        httpClient: MockClient((request) async {
+          asked.add(request.url.host);
+          if (request.url.host == 'slow.social') {
+            await Future<void>.delayed(const Duration(milliseconds: 200));
+            return _json(_profile('reader@slow.social'));
+          }
+          return _json(_profile('reader@slow.social'));
+        }),
+      );
+
+      final profile = await client.lookupAnywhere([
+        'https://slow.social',
+        'https://ok.social',
+      ], 'reader@slow.social');
+
+      expect(profile.acct, 'reader@slow.social');
+      expect(asked, contains('ok.social'));
+    });
+
+    test(
+      'a later load asks the instance that already answered first',
+      () async {
+        final asked = <String>[];
+        final client = MastodonClient(
+          httpClient: MockClient((request) async {
+            asked.add(request.url.host);
+            if (request.url.host == 'miss.social') {
+              return http.Response('', 404);
+            }
+            return _json(_profile('reader@miss.social'));
+          }),
+        );
+
+        await client.lookupAnywhere([
+          'https://miss.social',
+          'https://ok.social',
+        ], 'reader@miss.social');
+        asked.clear();
+        await client.lookupAnywhere([
+          'https://miss.social',
+          'https://ok.social',
+        ], 'reader@miss.social');
+
+        expect(asked.first, 'ok.social');
+        expect(asked, isNot(contains('miss.social')));
+      },
+    );
   });
 
   group('mastodonConfiguredInstances', () {

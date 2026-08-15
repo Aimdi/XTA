@@ -182,12 +182,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // already-empty slot is not a change, and each source lands on its own
     // frame — without this guard a group with no plugin members still took one
     // whole-list rebuild per registered source. Same guard as the For-you feed.
-    if (mounted &&
-        (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
-      setState(() {
-        _pluginItems[source] = items;
-        _mergeInterleaved();
-      });
+    if (mounted && replacePluginSlot(_pluginItems, source, items)) {
+      setState(_mergeInterleaved);
     }
   }
 

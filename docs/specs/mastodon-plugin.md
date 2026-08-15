@@ -18,6 +18,12 @@ public tabs, the way Tusky / Ivory / Phanpy / Misskey web do it: **Explore**
 (merged newest-first timeline of every locally followed acct). Misskey-family
 origins that 404 the Mastodon public API fall back to featured / local notes.
 
+Opening the tab loads Explore only. Following / Local / Federated start when
+that pane is selected. A following or home-feed load asks the account origin
+and the reader’s instances, plus at most one built-in default — not the whole
+fallback list per acct. The first host gets 8s; later ones 4s. The instance
+that answered is remembered so the next refresh does not walk again.
+
 ## Endpoints used
 
 | Call | Path |

@@ -365,6 +365,30 @@ List<String> mastodonInstanceCandidates(
   ];
 }
 
+/// Instances worth asking when filling a following / home-feed page.
+///
+/// Profile and search still walk the full list. The merged feed used to try
+/// every default after a slow or Misskey origin — five sequential timeouts
+/// per followed account — and that is what froze the rest of XTA. Origin and
+/// the reader's instances stay; at most one built-in default is kept as a
+/// Misskey-origin fallback.
+List<String> mastodonFeedInstanceCandidates(
+  String acct, {
+  List<String> configured = const [],
+}) {
+  final all = mastodonInstanceCandidates(acct, configured: configured);
+  final defaults = {
+    for (final instance in kMastodonDefaultInstances)
+      if (normaliseMastodonInstance(instance) case final normalised?)
+        normalised,
+  };
+  var extraDefaults = 0;
+  return [
+    for (final instance in all)
+      if (!defaults.contains(instance) || extraDefaults++ < 1) instance,
+  ];
+}
+
 /// Strip scheme/trailing slash; require http(s). Null when unusable.
 String? normaliseMastodonInstance(String input) {
   var value = input.trim();

@@ -112,6 +112,45 @@ void main() {
       expect(posts.first.text, 'Hi');
     });
 
+    test('fetchAccount reuses the looked-up id on the next page', () async {
+      final paths = <String>[];
+      final client = MastodonClient(
+        httpClient: MockClient((request) async {
+          paths.add(request.url.path);
+          if (request.url.path == '/api/v1/accounts/lookup') {
+            return http.Response(
+              jsonEncode({
+                'id': '1',
+                'username': 'a',
+                'acct': 'a',
+                'display_name': 'A',
+                'note': '',
+                'url': 'https://mastodon.social/@a',
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          return http.Response(
+            jsonEncode(const []),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await client.fetchAccount('https://mastodon.social', 'a');
+      await client.fetchAccount('https://mastodon.social', 'a');
+      expect(
+        paths.where((path) => path == '/api/v1/accounts/lookup'),
+        hasLength(1),
+      );
+      expect(
+        paths.where((path) => path == '/api/v1/accounts/1/statuses'),
+        hasLength(2),
+      );
+    });
+
     test('fetchThread resolves a status URL then loads context', () async {
       final client = MastodonClient(
         httpClient: MockClient((request) async {

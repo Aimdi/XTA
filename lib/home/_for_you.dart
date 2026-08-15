@@ -108,12 +108,8 @@ class _ForYouTweetsState extends State<ForYouTweets>
     // An empty result is assigned too, so an account the reader stopped
     // following takes its posts with it — but only when there is something to
     // clear, rather than a rebuild per mount for the readers with none.
-    if (mounted &&
-        (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
-      setState(() {
-        _pluginItems[source] = items;
-        _mergeInterleaved();
-      });
+    if (mounted && replacePluginSlot(_pluginItems, source, items)) {
+      setState(_mergeInterleaved);
     }
   }
 
