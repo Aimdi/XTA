@@ -10,7 +10,6 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/subscriptions/users_model.dart';
-import 'package:xta/utils/urls.dart';
 import 'package:xta/utils/_entities.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';
@@ -414,9 +413,7 @@ List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
         // A plugin may be able to read this link in-app (Substack posts); only
         // hand it to the browser when none claims it.
         if (!context.mounted) return;
-        if (await openWithPlugins(context, uri)) return;
-        if (!context.mounted) return;
-        await openUri(context, uri);
+        await openLink(context, uri);
       }),
     );
   }

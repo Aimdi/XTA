@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_feed_list.dart';
-import 'package:xta/plugins/reddit/reddit_listing_body.dart';
-import 'package:xta/plugins/reddit/reddit_saved_screen.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
+import 'package:xta/plugins/reddit/reddit_listing_body.dart';
+import 'package:xta/plugins/reddit/reddit_plugin.dart';
+import 'package:xta/plugins/reddit/reddit_saved_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -76,20 +78,21 @@ class _RedditScreenState extends State<RedditScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const RedditFeedTitle(),
-        actions: [
-          IconButton(
-            tooltip: L10n.of(context).saved,
-            icon: const Icon(Icons.bookmark_border),
-            onPressed: _openSaved,
-          ),
-          RedditFeedActions(onRefresh: _refreshCurrent),
-        ],
-      ),
+      primary: !PluginEmbedded.maybeOf(context),
       body: Column(
         children: [
-          _ShellTabs(current: _mode, onSelected: _setMode),
+          RedditHomeChrome(
+            mode: _mode,
+            onMode: _setMode,
+            actions: [
+              IconButton(
+                tooltip: L10n.of(context).saved,
+                icon: const Icon(Icons.bookmark_border),
+                onPressed: _openSaved,
+              ),
+              RedditFeedActions(onRefresh: _refreshCurrent),
+            ],
+          ),
           Expanded(child: _body()),
         ],
       ),
@@ -115,122 +118,45 @@ class _RedditScreenState extends State<RedditScreen> {
   };
 }
 
-class _ShellTabs extends StatelessWidget {
-  final RedditFeedMode current;
-  final ValueChanged<RedditFeedMode> onSelected;
+/// Icon tabs for Following / Popular / All — same chrome as the other plugins.
+class RedditHomeChrome extends StatelessWidget {
+  final RedditFeedMode mode;
+  final ValueChanged<RedditFeedMode> onMode;
+  final List<Widget> actions;
 
-  const _ShellTabs({required this.current, required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-        child: Row(
-          children: [
-            for (final mode in RedditFeedMode.values)
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  child: _ShellTab(
-                    label: _feedModeLabel(context, mode),
-                    selected: mode == current,
-                    onTap: () => onSelected(mode),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _feedModeLabel(BuildContext context, RedditFeedMode mode) {
-    final l10n = L10n.of(context);
-    return switch (mode) {
-      RedditFeedMode.following => l10n.plugin_reddit_feed_following,
-      RedditFeedMode.popular => l10n.plugin_reddit_feed_popular,
-      RedditFeedMode.all => l10n.plugin_reddit_feed_all,
-    };
-  }
-}
-
-class _ShellTab extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _ShellTab({
-    required this.label,
-    required this.selected,
-    required this.onTap,
+  const RedditHomeChrome({
+    super.key,
+    required this.mode,
+    required this.onMode,
+    this.actions = const [],
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: selected ? null : onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 9),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: selected
-              ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surfaceContainerHighest,
+    final l10n = L10n.of(context);
+    return PluginHomeChrome(
+      accent: RedditPlugin().brandColor,
+      tabs: [
+        PluginHomeTab(
+          icon: Icons.home_outlined,
+          label: l10n.plugin_reddit_feed_following,
+          selected: mode == RedditFeedMode.following,
+          onTap: () => onMode(RedditFeedMode.following),
         ),
-        child: Text(
-          label,
-          style: theme.textTheme.labelLarge!.copyWith(
-            color: selected
-                ? theme.colorScheme.onPrimaryContainer
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: selected ? FontWeight.w700 : null,
-          ),
+        PluginHomeTab(
+          icon: Icons.whatshot_outlined,
+          label: l10n.plugin_reddit_feed_popular,
+          selected: mode == RedditFeedMode.popular,
+          onTap: () => onMode(RedditFeedMode.popular),
         ),
-      ),
-    );
-  }
-}
-
-/// "Reddit", and underneath it the order the feed is actually in.
-///
-/// The sort is one stored choice that every listing obeys, and it was visible
-/// only inside the sheet that sets it — so a reader who had once chosen Top had
-/// nothing on screen telling them why their feed looked the way it did.
-class RedditFeedTitle extends StatelessWidget {
-  const RedditFeedTitle({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final prefs = PrefService.of(context);
-    final sort = redditSortTitle(
-      context,
-      storedRedditSort(prefs),
-      storedRedditTimeFilter(prefs),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          L10n.of(context).plugin_reddit_title,
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          sort,
-          style: theme.textTheme.labelSmall!.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          overflow: TextOverflow.ellipsis,
+        PluginHomeTab(
+          icon: Icons.public_outlined,
+          label: l10n.plugin_reddit_feed_all,
+          selected: mode == RedditFeedMode.all,
+          onTap: () => onMode(RedditFeedMode.all),
         ),
       ],
+      actions: actions,
     );
   }
 }

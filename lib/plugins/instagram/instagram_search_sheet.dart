@@ -11,13 +11,17 @@ import 'package:xta/plugins/instagram/instagram_post_card.dart';
 import 'package:xta/plugins/instagram/instagram_profile_screen.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
 
-Future<void> showInstagramSearchSheet(BuildContext context) async {
+Future<void> showInstagramSearchSheet(
+  BuildContext context, {
+  String? initialQuery,
+}) async {
   final handle = await showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
     builder: (sheetContext) => InstagramSearchSheet(
+      initialQuery: initialQuery,
       onOpenProfile: (username) => Navigator.pop(sheetContext, username),
     ),
   );
@@ -29,16 +33,21 @@ Future<void> showInstagramSearchSheet(BuildContext context) async {
 }
 
 class InstagramSearchSheet extends StatefulWidget {
-  const InstagramSearchSheet({super.key, required this.onOpenProfile});
+  const InstagramSearchSheet({
+    super.key,
+    required this.onOpenProfile,
+    this.initialQuery,
+  });
 
   final ValueChanged<String> onOpenProfile;
+  final String? initialQuery;
 
   @override
   State<InstagramSearchSheet> createState() => _InstagramSearchSheetState();
 }
 
 class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
   var _searching = false;
   String? _error;
   List<InstagramSearchUser> _results = const [];
@@ -46,9 +55,13 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController(text: widget.initialQuery ?? '');
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<InstagramSearchHistoryStore>().load();
+      if ((widget.initialQuery ?? '').trim().isNotEmpty) {
+        _runSearch();
+      }
     });
   }
 
@@ -116,7 +129,7 @@ class _InstagramSearchSheetState extends State<InstagramSearchSheet> {
             children: [
               TextField(
                 controller: _controller,
-                autofocus: true,
+                autofocus: (widget.initialQuery ?? '').trim().isEmpty,
                 textInputAction: TextInputAction.search,
                 onChanged: (_) => setState(() {}),
                 onSubmitted: (_) => _runSearch(),

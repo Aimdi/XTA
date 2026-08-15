@@ -30,30 +30,46 @@ String _threadsSearchError(L10n l10n, Object error) {
 
 /// Discover Threads accounts — multi-result search when cookies are set;
 /// exact `@handle` open when browsing as a guest.
-Future<void> showThreadsSearchSheet(BuildContext context) {
+Future<void> showThreadsSearchSheet(
+  BuildContext context, {
+  String? initialQuery,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => const _ThreadsSearchSheet(),
+    builder: (_) => _ThreadsSearchSheet(initialQuery: initialQuery),
   );
 }
 
 class _ThreadsSearchSheet extends StatefulWidget {
-  const _ThreadsSearchSheet();
+  final String? initialQuery;
+
+  const _ThreadsSearchSheet({this.initialQuery});
 
   @override
   State<_ThreadsSearchSheet> createState() => _ThreadsSearchSheetState();
 }
 
 class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
   List<ThreadsProfile> _results = const [];
   Object? _error;
   var _loading = false;
   var _searched = false;
 
   bool get _canSearchUsers => context.read<ThreadsDirectClient>().hasCookies;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialQuery ?? '');
+    if ((widget.initialQuery ?? '').trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _search();
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -149,7 +165,7 @@ class _ThreadsSearchSheetState extends State<_ThreadsSearchSheet> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: TextField(
                 controller: _controller,
-                autofocus: true,
+                autofocus: (widget.initialQuery ?? '').trim().isEmpty,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
                   hintText: l10n.plugin_threads_search_hint,

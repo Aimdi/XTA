@@ -21,6 +21,7 @@ import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
 
 const double kBlueskyAvatarSize = 48;
@@ -91,7 +92,7 @@ class BlueskyPostCard extends StatelessWidget {
   void _onFacet(BuildContext context, BlueskyFacet facet) {
     switch (facet.kind) {
       case BlueskyFacetKind.link:
-        openUri(context, facet.value);
+        openLink(context, facet.value);
       case BlueskyFacetKind.mention:
         Navigator.push(
           context,
@@ -373,7 +374,7 @@ class _QuotedPost extends StatelessWidget {
                   onFacetTap: (facet) {
                     switch (facet.kind) {
                       case BlueskyFacetKind.link:
-                        openUri(context, facet.value);
+                        openLink(context, facet.value);
                       case BlueskyFacetKind.mention:
                         Navigator.push(
                           context,
@@ -416,7 +417,7 @@ class _BlueskyLinkPreview extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => openUri(context, card.url),
+        onTap: () => openLink(context, card.url),
         borderRadius: BorderRadius.circular(radius),
         child: Container(
           decoration: BoxDecoration(
