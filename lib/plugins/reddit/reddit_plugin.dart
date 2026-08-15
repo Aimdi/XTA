@@ -19,6 +19,7 @@ import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_feed_list.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart';
+import 'package:xta/plugins/reddit/reddit_search_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/reddit/reddit_settings_screen.dart';
 import 'package:xta/plugins/reddit/reddit_votes_store.dart';
@@ -84,6 +85,19 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   Widget? settingsScreen(BuildContext context) => const RedditSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RedditSearchScreen(initialQuery: initialQuery),
+      ),
+    );
+  }
 
   @override
   List<String> get tables => const [

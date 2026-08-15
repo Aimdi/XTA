@@ -9,6 +9,7 @@ import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_settings.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/database/entities.dart';
@@ -72,6 +73,15 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   Widget? settingsScreen(BuildContext context) => const BlueskySettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showBlueskySearchSheet(context, initialQuery: initialQuery);
+  }
+
 
   @override
   List<String> get tables => const [

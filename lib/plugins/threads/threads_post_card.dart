@@ -20,6 +20,7 @@ import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Avatar size matching X / Reddit / Mastodon cards.
@@ -345,7 +346,7 @@ class _ThreadsLinkPreview extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => openUri(context, card.url),
+        onTap: () => openLink(context, card.url),
         borderRadius: BorderRadius.circular(radius),
         child: Container(
           decoration: BoxDecoration(

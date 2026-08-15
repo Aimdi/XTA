@@ -70,6 +70,19 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
   Widget? settingsScreen(BuildContext context) => const BooruSettingsScreen();
 
   @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BooruSearchScreen(initialQuery: initialQuery),
+      ),
+    );
+  }
+
+  @override
   List<String> get tables => const [tableBooruSubscription];
 
   @override

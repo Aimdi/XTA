@@ -12,24 +12,29 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 /// Discover and follow Substack publications — search by name/handle, or browse
 /// category leaderboards (no Substack account required).
-Future<bool?> showSubstackSearchSheet(BuildContext context) {
+Future<bool?> showSubstackSearchSheet(
+  BuildContext context, {
+  String? initialQuery,
+}) {
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => const _SubstackSearchSheet(),
+    builder: (_) => _SubstackSearchSheet(initialQuery: initialQuery),
   );
 }
 
 class _SubstackSearchSheet extends StatefulWidget {
-  const _SubstackSearchSheet();
+  final String? initialQuery;
+
+  const _SubstackSearchSheet({this.initialQuery});
 
   @override
   State<_SubstackSearchSheet> createState() => _SubstackSearchSheetState();
 }
 
 class _SubstackSearchSheetState extends State<_SubstackSearchSheet> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
   List<SubstackCategory> _categories = const [];
   List<SubstackPublication> _results = const [];
   SubstackCategory? _category;
@@ -41,7 +46,15 @@ class _SubstackSearchSheetState extends State<_SubstackSearchSheet> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadCategories());
+    _controller = TextEditingController(text: widget.initialQuery ?? '');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if ((widget.initialQuery ?? '').trim().isNotEmpty) {
+        _search();
+      } else {
+        _loadCategories();
+      }
+    });
   }
 
   @override

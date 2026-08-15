@@ -6,6 +6,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/instagram/instagram_screen.dart';
+import 'package:xta/plugins/instagram/instagram_search_sheet.dart';
 import 'package:xta/plugins/instagram/instagram_settings.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/plugins/plugin.dart';
@@ -63,6 +64,14 @@ class InstagramPlugin extends XtaPlugin {
   @override
   Widget? settingsScreen(BuildContext context) =>
       const InstagramSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showInstagramSearchSheet(context, initialQuery: initialQuery);
+  }
 
   @override
   List<String> get tables => const [tableInstagramSubscription];

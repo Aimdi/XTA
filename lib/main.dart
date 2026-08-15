@@ -66,8 +66,10 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_folders_screen.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/search/search_model.dart';
+import 'package:xta/search/search_scope.dart';
 import 'package:xta/settings/_data.dart';
 import 'package:xta/settings/_home.dart';
 import 'package:xta/settings/settings.dart';
@@ -886,6 +888,7 @@ Future<void> main() async {
                 ),
               ),
             ),
+            Provider(create: (_) => SearchScopeStore()),
             Provider(create: (_) => FeedStripStore(prefService)),
             Provider(create: (_) => HomeAccountFilterStore(prefService)),
             Provider(create: (_) => ChromeAvatarStore(prefService)),
@@ -1229,6 +1232,12 @@ class _DefaultPageState extends State<DefaultPage> {
   StreamSubscription<Uri>? _sub;
 
   void handleInitialLink(Uri link) async {
+    if (await openWithPlugins(context, link.toString())) {
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
     final parsed = await parseUri(link);
     if (!mounted) {
       return;
