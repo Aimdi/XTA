@@ -188,7 +188,7 @@ class _ForYouTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return ScopedBuilder<InstagramForYouStore, List<InstagramPost>>.transition(
+    return ScopedBuilder<InstagramForYouStore, List<InstagramPost>>(
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _forYouList(context, l10n, store.state)
@@ -428,10 +428,7 @@ class _FollowingTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return ScopedBuilder<
-      InstagramFollowingStore,
-      List<InstagramPost>
-    >.transition(
+    return ScopedBuilder<InstagramFollowingStore, List<InstagramPost>>(
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _PostList(
