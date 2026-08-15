@@ -100,7 +100,7 @@ class AccountPostCache<T> {
       final batches = await mapWithConcurrency(keys, concurrency, (key) async {
         if (!forceRefresh) {
           if (_fresh(key) case final cached?) {
-            _deliver(done, cached, partial);
+            _deliver(done, cached, partial.call);
             return cached;
           }
         } else if (onPartial != null) {
@@ -119,7 +119,7 @@ class AccountPostCache<T> {
         // must not collapse the timeline to the first batch.
         if (remaining <= 0) {
           final held = _entries[key]?.posts ?? <T>[];
-          _deliver(done, held, partial);
+          _deliver(done, held, partial.call);
           return held;
         }
         remaining--;
@@ -127,7 +127,7 @@ class AccountPostCache<T> {
         try {
           final posts = await fetch(key);
           _entries[key] = (at: DateTime.now(), posts: posts);
-          _deliver(done, posts, partial);
+          _deliver(done, posts, partial.call);
           return posts;
         } catch (e) {
           lastError = e;

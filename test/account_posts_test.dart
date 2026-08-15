@@ -4,12 +4,16 @@ import 'package:xta/plugins/account_posts.dart';
 
 typedef _Post = ({String from, DateTime? at});
 
-AccountPostCache<_Post> _cache({int perAccount = 10, Duration? ttl}) =>
-    AccountPostCache<_Post>(
-      dateOf: (post) => post.at,
-      perAccount: perAccount,
-      ttl: ttl ?? kAccountPostsCacheTtl,
-    );
+AccountPostCache<_Post> _cache({
+  int perAccount = 10,
+  int concurrency = 2,
+  Duration? ttl,
+}) => AccountPostCache<_Post>(
+  dateOf: (post) => post.at,
+  perAccount: perAccount,
+  concurrency: concurrency,
+  ttl: ttl ?? kAccountPostsCacheTtl,
+);
 
 DateTime _at(int day) => DateTime.utc(2026, 1, day);
 
