@@ -20,6 +20,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/user.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/rich_text.dart';
+import 'package:xta/utils/urls.dart';
 import 'package:intl/intl.dart';
 import 'package:measure_size/measure_size.dart';
 import 'package:pref/pref.dart';
