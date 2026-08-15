@@ -151,6 +151,9 @@ PluginLink? parseThreadsLink(String url) {
   if (segments.isEmpty) {
     return null;
   }
+  if (segments[0].toLowerCase() == 't') {
+    return null;
+  }
   final handle = _atHandle(segments[0]);
   if (handle == null) {
     return null;
