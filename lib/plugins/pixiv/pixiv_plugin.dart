@@ -6,6 +6,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/plugins/plugin.dart';
@@ -63,6 +64,19 @@ class PixivPlugin extends XtaPlugin {
 
   @override
   Widget? settingsScreen(BuildContext context) => const PixivSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PixivSearchScreen(initialQuery: initialQuery),
+      ),
+    );
+  }
 
   @override
   Future<void> resetPreferences(BasePrefService prefs) async {

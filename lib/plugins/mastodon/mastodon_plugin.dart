@@ -6,6 +6,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_settings.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/database/entities.dart';
@@ -67,6 +68,14 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   @override
   Widget? settingsScreen(BuildContext context) =>
       const MastodonSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showMastodonSearchSheet(context, initialQuery: initialQuery);
+  }
 
   @override
   List<String> get tables => const [tableMastodonSubscription];

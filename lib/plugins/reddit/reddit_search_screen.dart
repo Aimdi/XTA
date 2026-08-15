@@ -17,19 +17,28 @@ import 'package:xta/ui/errors.dart';
 class RedditSearchScreen extends StatefulWidget {
   /// When set, the post search is scoped to this community (`restrict_sr`).
   final String? subreddit;
+  final String? initialQuery;
 
-  const RedditSearchScreen({super.key, this.subreddit});
+  const RedditSearchScreen({super.key, this.subreddit, this.initialQuery});
 
   @override
   State<RedditSearchScreen> createState() => _RedditSearchScreenState();
 }
 
 class _RedditSearchScreenState extends State<RedditSearchScreen> {
-  final _controller = TextEditingController();
-  String _query = '';
+  late final TextEditingController _controller;
+  late String _query;
   String _searchSort = 'relevance';
 
   static const _searchSorts = ['relevance', 'top', 'new', 'comments'];
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = (widget.initialQuery ?? '').trim();
+    _controller = TextEditingController(text: initial);
+    _query = initial;
+  }
 
   @override
   void dispose() {
@@ -54,7 +63,7 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
         appBar: AppBar(
           title: TextField(
             controller: _controller,
-            autofocus: true,
+            autofocus: (widget.initialQuery ?? '').trim().isEmpty,
             textInputAction: TextInputAction.search,
             decoration: InputDecoration(
               border: InputBorder.none,

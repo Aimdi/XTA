@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/article/article_parser.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/profile/profile.dart';
-import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_links.dart';
 
 class Article {
   final String title;
@@ -99,7 +99,7 @@ class ArticleWidget extends StatelessWidget {
     if (!url.startsWith('https://') && !url.startsWith('http://')) {
       url = 'https://$url';
     }
-    return _tapSpan(context, text: text, style: style, onTap: () => openUri(context, url));
+    return _tapSpan(context, text: text, style: style, onTap: () => openLink(context, url));
   }
 
   TextSpan _mentionSpan(

@@ -18,6 +18,7 @@ import 'package:xta/home/_saved.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/search/search.dart';
+import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
 import 'package:xta/trends/trends_screen.dart';
 import 'package:xta/ui/errors.dart';
@@ -459,9 +460,11 @@ class _ScaffoldWithBottomNavigationState
         // with the pager for the same finger.
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (page) {
+          final previous = _currentPage;
           setState(() {
             _currentPage = page;
           });
+          _adoptSearchScope(previous, page);
         },
         children: widget.builder(_scrollControllers, _focusNodes),
       ),
@@ -568,6 +571,23 @@ class _ScaffoldWithBottomNavigationState
         ),
       ),
     );
+  }
+
+  void _adoptSearchScope(int from, int to) {
+    if (to < 0 || to >= widget.pages.length) {
+      return;
+    }
+    if (widget.pages[to].id != 'trending') {
+      return;
+    }
+    if (from < 0 || from >= widget.pages.length) {
+      return;
+    }
+    final plugin = pluginById(widget.pages[from].id);
+    if (plugin == null || !plugin.supportsSearch) {
+      return;
+    }
+    context.read<SearchScopeStore>().select(plugin.id);
   }
 
   void _swipeNavigationBar(double velocity, double distance) {
