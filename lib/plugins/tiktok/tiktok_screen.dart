@@ -165,7 +165,7 @@ class _FollowingTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return ScopedBuilder<TikTokFollowingStore, List<TikTokPost>>.transition(
+    return ScopedBuilder<TikTokFollowingStore, List<TikTokPost>>(
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _PostList(

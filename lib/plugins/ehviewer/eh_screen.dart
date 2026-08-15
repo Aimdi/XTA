@@ -211,9 +211,17 @@ class _FeedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return ScopedBuilder<EhFeedStore, List<EhGallery>>.transition(
+    return ScopedBuilder<EhFeedStore, List<EhGallery>>(
       store: store,
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      onLoading: (_) => store.state.isNotEmpty
+          ? EhGalleryGrid(
+              galleries: store.state,
+              scrollController: scrollController,
+              onRefresh: store.refresh,
+              loadingMore: store.loadingMore,
+              onNearEnd: store.loadMore,
+            )
+          : const Center(child: CircularProgressIndicator()),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
         stackTrace: null,

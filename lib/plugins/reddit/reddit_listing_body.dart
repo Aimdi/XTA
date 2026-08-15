@@ -188,10 +188,16 @@ class RedditListingBodyState extends State<RedditListingBody>
     final l10n = L10n.of(context);
     return RefreshIndicator(
       onRefresh: store.refresh,
-      child: ScopedBuilder<RedditListingStore, RedditListingState>.transition(
+      child: ScopedBuilder<RedditListingStore, RedditListingState>(
         store: store,
         onError: (_, error) => _error(context, l10n, store, error!),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) {
+          final posts = store.state.posts;
+          if (posts != null && posts.isNotEmpty) {
+            return _body(context, l10n, store, store.state);
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
         onState: (_, state) => _body(context, l10n, store, state),
       ),
     );
