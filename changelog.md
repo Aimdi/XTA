@@ -1,3 +1,11 @@
+## XTA aimdi100
+
+What's new in XTA aimdi100:
+  - Plugin links (Bluesky, Threads, Instagram, TikTok, Reddit, Mastodon, Pixiv, Substack) open in-app
+  - The Search tab can search enabled plugins, not only X
+  - Reddit uses the same icon chrome as the other plugins
+  - The timeline stays put while plugin sources and accounts load
+
 ## XTA aimdi99
 
 What's new in XTA aimdi99:
