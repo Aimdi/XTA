@@ -10,7 +10,6 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/subscriptions/users_model.dart';
-import 'package:xta/utils/urls.dart';
 import 'package:xta/utils/_entities.dart';
 import 'package:xta/tweet/ticker_screen.dart';
 import 'package:xta/plugins/plugin_links.dart';

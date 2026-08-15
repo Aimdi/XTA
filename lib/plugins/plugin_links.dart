@@ -44,6 +44,9 @@ Future<bool> openWithPlugins(BuildContext context, String url) async {
   if (await _openSubstack(context, url)) {
     return true;
   }
+  if (!context.mounted) {
+    return false;
+  }
   return _openParsed(context, url);
 }
 

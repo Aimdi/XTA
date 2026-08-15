@@ -12,7 +12,6 @@ import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
-import 'package:xta/utils/urls.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
