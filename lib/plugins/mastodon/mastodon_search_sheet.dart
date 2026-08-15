@@ -12,12 +12,15 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/feed_list.dart';
 
 /// Discover Mastodon accounts and trending tags on the reader's instances.
-Future<void> showMastodonSearchSheet(BuildContext context) {
+Future<void> showMastodonSearchSheet(
+  BuildContext context, {
+  String? initialQuery,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => const _MastodonSearchSheet(),
+    builder: (_) => _MastodonSearchSheet(initialQuery: initialQuery),
   );
 }
 
@@ -36,14 +39,16 @@ List<String> _discoveryInstances(BuildContext context) {
 }
 
 class _MastodonSearchSheet extends StatefulWidget {
-  const _MastodonSearchSheet();
+  final String? initialQuery;
+
+  const _MastodonSearchSheet({this.initialQuery});
 
   @override
   State<_MastodonSearchSheet> createState() => _MastodonSearchSheetState();
 }
 
 class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
   List<MastodonTrendingTag> _tags = const [];
   MastodonSearchPage _results = const MastodonSearchPage();
   Object? _error;
@@ -54,8 +59,14 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController(text: widget.initialQuery ?? '');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _loadTrends();
+      if (!mounted) return;
+      if ((widget.initialQuery ?? '').trim().isNotEmpty) {
+        _search();
+      } else {
+        _loadTrends();
+      }
     });
   }
 
@@ -176,7 +187,7 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: TextField(
                 controller: _controller,
-                autofocus: true,
+                autofocus: (widget.initialQuery ?? '').trim().isEmpty,
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
                   hintText: l10n.plugin_mastodon_search_hint,

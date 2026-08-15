@@ -1,9 +1,8 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/search/search.dart';
+import 'package:xta/search/search_scope.dart';
 import 'package:xta/trends/trends_model.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:intl/intl.dart';
@@ -75,9 +74,9 @@ class _TrendsListState extends State<TrendsList> {
                               numberFormat.format(trend.tweetVolume),
                             ),
                           ),
-                    onTap: () => Navigator.pushNamed(context, routeSearch,
-                        arguments: SearchArguments(0,
-                            focusInputOnOpen: false, query: Uri.decodeQueryComponent(trend.query!))));
+                    onTap: () => submitScopedSearch(
+                          context,
+                          Uri.decodeQueryComponent(trend.query!)));
               },
             ));
       },

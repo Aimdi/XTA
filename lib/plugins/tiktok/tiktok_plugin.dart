@@ -9,6 +9,7 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/tiktok/tiktok_screen.dart';
+import 'package:xta/plugins/tiktok/tiktok_search_sheet.dart';
 import 'package:xta/plugins/tiktok/tiktok_settings.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/settings/backup_category.dart';
@@ -64,6 +65,14 @@ class TikTokPlugin extends XtaPlugin {
 
   @override
   Widget? settingsScreen(BuildContext context) => const TikTokSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showTikTokSearchSheet(context, initialQuery: initialQuery);
+  }
 
   @override
   List<String> get tables => const [tableTiktokSubscription];

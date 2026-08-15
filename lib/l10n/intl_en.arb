@@ -2537,6 +2537,8 @@
   "@saved_tweet_too_large": {},
   "search": "Search",
   "@search": {},
+  "search_in_plugin": "Search {name}",
+  "@search_in_plugin": {},
   "search_saved_posts": "Search saved posts",
   "@search_saved_posts": {},
   "search_settings": "Search settings",

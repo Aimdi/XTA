@@ -16,6 +16,7 @@ import 'package:xta/plugins/threads/threads_profile_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/threads/threads_screen.dart';
+import 'package:xta/plugins/threads/threads_search_sheet.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 
@@ -64,6 +65,14 @@ class ThreadsPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   Widget? settingsScreen(BuildContext context) => const ThreadsSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showThreadsSearchSheet(context, initialQuery: initialQuery);
+  }
 
   @override
   List<String> get tables => const [

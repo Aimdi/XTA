@@ -18,7 +18,7 @@ import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/user.dart';
-import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/rich_text.dart';
 import 'package:intl/intl.dart';
 import 'package:measure_size/measure_size.dart';
@@ -454,7 +454,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                                                                   color: Theme.of(context)
                                                                                       .colorScheme
                                                                                       .primary)),
-                                                                          onTap: () => openUri(context, expandedUrl),
+                                                                          onTap: () => openLink(context, expandedUrl),
                                                                         );
                                                                       }),
                                                                       const SizedBox(

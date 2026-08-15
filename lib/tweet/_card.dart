@@ -92,11 +92,7 @@ class _TweetCardState extends State<TweetCard> {
         if (url == null) {
           return;
         }
-        // A Substack card opens in the in-app reader when the plugin is on.
-        if (await openWithPlugins(context, url) || !context.mounted) {
-          return;
-        }
-        await openUri(context, url);
+        await openLink(context, url);
       },
     );
   }
