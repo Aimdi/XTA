@@ -6,6 +6,8 @@ import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/group/feed_read_position.dart';
+import 'package:xta/group/group_unread_store.dart';
+import 'package:xta/home/home_feed_unread.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/subscription_source.dart';
@@ -95,26 +97,29 @@ class _ForYouTweetsState extends State<ForYouTweets>
   /// Read through the shared stores, so the accounts this timeline mixes in are
   /// the ones the Following feed and the plugin's own tab already fetched —
   /// swiping between them used to download each of them again.
-  Future<void> _loadPluginPosts() {
+  ///
+  /// Sources finish on their own clocks; painting each one used to rebuild the
+  /// whole X list. Collect first, then one [setState].
+  Future<void> _loadPluginPosts() async {
     final prefs = PrefService.of(context, listen: false);
-    return Future.wait(enabledSubscriptionSources(prefs).map(_loadPostsFrom));
+    var dirty = false;
+    await Future.wait(
+      enabledSubscriptionSources(prefs).map((source) async {
+        if (await _collectPostsFrom(source)) {
+          dirty = true;
+        }
+      }),
+    );
+    if (mounted && dirty) {
+      setState(_mergeInterleaved);
+    }
   }
 
-  Future<void> _loadPostsFrom(SubscriptionSource source) async {
+  Future<bool> _collectPostsFrom(SubscriptionSource source) async {
     final items = source.inHomeFeed(context)
         ? await source.interleavedPosts(context, source.homeFeedIds(context))
         : const <InterleavedItem>[];
-
-    // An empty result is assigned too, so an account the reader stopped
-    // following takes its posts with it — but only when there is something to
-    // clear, rather than a rebuild per mount for the readers with none.
-    if (mounted &&
-        (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
-      setState(() {
-        _pluginItems[source] = items;
-        _mergeInterleaved();
-      });
-    }
+    return mounted && replacePluginSlot(_pluginItems, source, items);
   }
 
   // In zen mode the feed is finite: pagination pauses after this many pages
@@ -229,6 +234,13 @@ class _ForYouTweetsState extends State<ForYouTweets>
   }
 
   void _onFirstPageLoaded(List<TweetChain> threads) {
+    unawaited(
+      rememberForYouNewestCached(widget.pref).then((_) {
+        if (mounted) {
+          maybeGroupUnreadStore(context)?.reload();
+        }
+      }),
+    );
     if (!_caughtUpRestoreEvaluated) {
       _caughtUpRestoreEvaluated = true;
       final boundary = _lastSeen == null

@@ -15,7 +15,10 @@ import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
+import 'package:xta/group/feed_read_position.dart';
+import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
+import 'package:xta/home/feed_strip_tab.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
@@ -260,6 +263,16 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadHomeFeeds();
   }
 
+  String _unreadKeyFor(FeedTab tab) {
+    if (tab == FeedTab.following) {
+      return feedKeyFollowing;
+    }
+    if (tab == FeedTab.foryou) {
+      return feedKeyForYou;
+    }
+    return tab.id;
+  }
+
   Widget _pluginBody(FeedTab tab) {
     final plugin = pluginById(tab.id);
     final screen = plugin?.feedStripScreen(
@@ -303,22 +316,33 @@ class _FeedScreenState extends State<FeedScreen> {
           child: Row(
             children: [
               Expanded(
-                child: TabBar(
-                  // The shell draws the bar's hairline; the TabBar's own divider on top
-                  // of it would double the line.
-                  dividerHeight: 0,
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  tabs: available
-                      .map((e) => Tab(text: e.titleBuilder(context)))
-                      .toList(),
-                  onTap: (index) => setState(() {
-                    _tab = available[index].id;
-                    // Kept in step so a switcher opened elsewhere marks the right feed.
-                    // The observer sees the value it already holds and does nothing, so
-                    // this does not bump the epoch and the indicator keeps sliding.
-                    _tabStore?.select(_tab!);
-                  }),
+                child: GroupUnreadScope(
+                  builder: (context, unreadIds) => TabBar(
+                    // The shell draws the bar's hairline; the TabBar's own divider on top
+                    // of it would double the line.
+                    dividerHeight: 0,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    tabs: [
+                      for (final e in available)
+                        Tab(
+                          child: FeedStripTab(
+                            title: e.titleBuilder(context),
+                            unread: unreadIds.contains(_unreadKeyFor(e.id)),
+                          ),
+                        ),
+                    ],
+                    onTap: (index) {
+                      setState(() {
+                        _tab = available[index].id;
+                        // Kept in step so a switcher opened elsewhere marks the right feed.
+                        // The observer sees the value it already holds and does nothing, so
+                        // this does not bump the epoch and the indicator keeps sliding.
+                        _tabStore?.select(_tab!);
+                      });
+                      maybeGroupUnreadStore(context)?.reload();
+                    },
+                  ),
                 ),
               ),
               IconButton(

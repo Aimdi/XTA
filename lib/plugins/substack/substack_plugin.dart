@@ -15,6 +15,7 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/substack/substack_screen.dart';
+import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 
 class SubstackPlugin extends XtaPlugin with SubscriptionSource {
@@ -57,6 +58,14 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   @override
   Widget homeScreen({required ScrollController scrollController}) {
     return SubstackScreen(scrollController: scrollController);
+  }
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showSubstackSearchSheet(context, initialQuery: initialQuery);
   }
 
   @override

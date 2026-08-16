@@ -9,6 +9,8 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
+import 'package:xta/group/group_unread_store.dart';
+import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
 import 'package:xta/home/_account_avatar.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/subscriptions/group_identity.dart';
@@ -18,6 +20,7 @@ import 'package:xta/home/_saved.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/search/search.dart';
+import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
 import 'package:xta/trends/trends_screen.dart';
 import 'package:xta/ui/errors.dart';
@@ -50,7 +53,7 @@ final List<NavigationPage> defaultHomePages = [
   ),
   NavigationPage(
     'trending',
-    (c) => L10n.of(c).search,
+    (c) => L10n.of(c).discover,
     const Icon(Icons.search_outlined),
     const Icon(Icons.search),
   ),
@@ -309,9 +312,16 @@ class _ScaffoldWithBottomNavigationState
 
   /// Closes the drawer before going: navigating from an open drawer left it
   /// sitting open under the pushed route, waiting behind the Back button.
-  void _goFromDrawer(BuildContext context, String route, {Object? arguments}) {
+  Future<void> _goFromDrawer(
+    BuildContext context,
+    String route, {
+    Object? arguments,
+  }) async {
     Navigator.pop(context);
-    Navigator.pushNamed(context, route, arguments: arguments);
+    await Navigator.pushNamed(context, route, arguments: arguments);
+    if (context.mounted) {
+      await maybeGroupUnreadStore(context)?.reload();
+    }
   }
 
   /// What X keeps in its drawer, translated to this app: the account at the
@@ -322,37 +332,39 @@ class _ScaffoldWithBottomNavigationState
       child: SafeArea(
         child: ScopedBuilder<GroupsModel, List<SubscriptionGroup>>(
           store: context.read<GroupsModel>(),
-          onState: (context, groups) => ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              _drawerAccountHeader(context, l10n),
-              ListTile(
-                leading: const Icon(Icons.search),
-                title: Text(l10n.search),
-                onTap: () => _goFromDrawer(
-                  context,
-                  routeSearch,
-                  arguments: SearchArguments(0, focusInputOnOpen: true),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: Text(l10n.settings),
-                onTap: () => _goFromDrawer(context, routeSettings),
-              ),
-              if (groups.isNotEmpty) ...[
-                const Divider(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: Text(
-                    l10n.groups,
-                    style: Theme.of(context).textTheme.bodySmall,
+          onState: (context, groups) => GroupUnreadScope(
+            builder: (context, unreadIds) => ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                _drawerAccountHeader(context, l10n),
+                ListTile(
+                  leading: const Icon(Icons.search),
+                  title: Text(l10n.search),
+                  onTap: () => _goFromDrawer(
+                    context,
+                    routeSearch,
+                    arguments: SearchArguments(0, focusInputOnOpen: true),
                   ),
                 ),
-                for (final group in groups)
-                  _drawerGroupTile(context, l10n, group),
+                ListTile(
+                  leading: const Icon(Icons.settings),
+                  title: Text(l10n.settings),
+                  onTap: () => _goFromDrawer(context, routeSettings),
+                ),
+                if (groups.isNotEmpty) ...[
+                  const Divider(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    child: Text(
+                      l10n.groups,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                  for (final group in groups)
+                    _drawerGroupTile(context, l10n, group, unreadIds),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -400,11 +412,31 @@ class _ScaffoldWithBottomNavigationState
     BuildContext context,
     L10n l10n,
     SubscriptionGroup group,
+    Set<String> unreadIds,
   ) {
     final theme = Theme.of(context);
+    final unread = unreadIds.contains(group.id);
     return ListTile(
-      leading: GroupMark.forGroup(group, size: 36),
-      title: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      leading: GroupUnreadBadge(
+        unread: unread,
+        child: GroupMark.forGroup(group, size: 36),
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              group.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (unread)
+            Semantics(
+              label: l10n.group_has_unread,
+              child: const SizedBox.shrink(),
+            ),
+        ],
+      ),
       subtitle: Text(
         l10n.subscription_group_member_count(group.numberOfMembers),
         maxLines: 1,
@@ -459,9 +491,11 @@ class _ScaffoldWithBottomNavigationState
         // with the pager for the same finger.
         physics: const NeverScrollableScrollPhysics(),
         onPageChanged: (page) {
+          final previous = _currentPage;
           setState(() {
             _currentPage = page;
           });
+          _adoptSearchScope(previous, page);
         },
         children: widget.builder(_scrollControllers, _focusNodes),
       ),
@@ -568,6 +602,23 @@ class _ScaffoldWithBottomNavigationState
         ),
       ),
     );
+  }
+
+  void _adoptSearchScope(int from, int to) {
+    if (to < 0 || to >= widget.pages.length) {
+      return;
+    }
+    if (widget.pages[to].id != 'trending') {
+      return;
+    }
+    if (from < 0 || from >= widget.pages.length) {
+      return;
+    }
+    final plugin = pluginById(widget.pages[from].id);
+    if (plugin == null || !plugin.supportsSearch) {
+      return;
+    }
+    context.read<SearchScopeStore>().select(plugin.id);
   }
 
   void _swipeNavigationBar(double velocity, double distance) {

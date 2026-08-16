@@ -27,11 +27,17 @@ class MastodonException implements Exception {
 /// Reads public Mastodon / Fediverse data through a home instance — no login.
 class MastodonClient {
   final http.Client httpClient;
+  final Duration timeout;
+  final Duration fallbackTimeout;
+  final Map<String, String> _instanceByAcct = {};
+  final Map<String, String> _idByAcctInstance = {};
 
-  MastodonClient({http.Client? httpClient})
-    : httpClient = httpClient ?? http.Client();
+  MastodonClient({
+    http.Client? httpClient,
+    this.timeout = const Duration(seconds: 8),
+    this.fallbackTimeout = const Duration(seconds: 4),
+  }) : httpClient = httpClient ?? http.Client();
 
-  static const _timeout = Duration(seconds: 20);
   static const userAgent = 'XTA Mastodon plugin';
 
   Uri _uri(String instance, String path, [Map<String, String>? query]) {
@@ -52,7 +58,7 @@ class MastodonClient {
     );
   }
 
-  Future<Object?> _get(Uri uri) async {
+  Future<Object?> _get(Uri uri, {Duration? timeout}) async {
     final http.Response response;
     try {
       response = await httpClient
@@ -60,7 +66,7 @@ class MastodonClient {
             uri,
             headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
           )
-          .timeout(_timeout);
+          .timeout(timeout ?? _walkTimeout ?? this.timeout);
     } catch (e) {
       throw MastodonException(MastodonErrorKind.network, '$uri: $e');
     }
@@ -111,16 +117,23 @@ class MastodonClient {
     }
 
     MastodonException? worst;
+    var attempt = 0;
     for (final instance in instances) {
+      _walkTimeout = attempt == 0 ? timeout : fallbackTimeout;
       try {
         return await read(instance);
       } on MastodonException catch (e) {
         worst = _moreTelling(worst, e);
+      } finally {
+        attempt++;
+        _walkTimeout = null;
       }
     }
 
     throw worst!;
   }
+
+  Duration? _walkTimeout;
 
   static MastodonException? _moreTelling(
     MastodonException? a,
@@ -141,7 +154,11 @@ class MastodonClient {
   /// [lookup] over [instances]: the profile from the first instance that knows
   /// the account.
   Future<MastodonProfile> lookupAnywhere(List<String> instances, String acct) =>
-      firstInstanceThat(instances, (instance) => lookup(instance, acct));
+      firstInstanceThat(_preferResolved(acct, instances), (instance) async {
+        final profile = await lookup(instance, acct);
+        _rememberInstance(acct, instance);
+        return profile;
+      });
 
   /// [fetchAccount] over [instances].
   ///
@@ -152,10 +169,29 @@ class MastodonClient {
     List<String> instances,
     String acct, {
     int limit = 20,
-  }) => firstInstanceThat(
-    instances,
-    (instance) => fetchAccount(instance, acct, limit: limit),
-  );
+  }) => firstInstanceThat(_preferResolved(acct, instances), (instance) async {
+    final posts = await fetchAccount(instance, acct, limit: limit);
+    _rememberInstance(acct, instance);
+    return posts;
+  });
+
+  List<String> _preferResolved(String acct, List<String> instances) {
+    final known = _instanceByAcct[_acctKey(acct)];
+    if (known == null || !instances.contains(known)) {
+      return instances;
+    }
+    return [known, ...instances.where((instance) => instance != known)];
+  }
+
+  void _rememberInstance(String acct, String instance) {
+    _instanceByAcct[_acctKey(acct)] = instance;
+  }
+
+  String _acctKey(String acct) =>
+      (normaliseMastodonAcct(acct) ?? acct.trim()).toLowerCase();
+
+  String _idKey(String instance, String acct) =>
+      '${normaliseMastodonInstance(instance) ?? instance}\u0000${_acctKey(acct)}';
 
   /// A profile and its first page of posts from one instance, walked the same
   /// way — both halves must come from the same place for the id to mean
@@ -169,8 +205,10 @@ class MastodonClient {
     })
   >
   profileAnywhere(List<String> instances, String acct) =>
-      firstInstanceThat(instances, (instance) async {
+      firstInstanceThat(_preferResolved(acct, instances), (instance) async {
         final profile = await lookup(instance, acct);
+        _idByAcctInstance[_idKey(instance, acct)] = profile.id;
+        _rememberInstance(acct, instance);
         final posts = await getStatuses(instance, profile.id);
         var pinned = const <MastodonPost>[];
         try {
@@ -261,7 +299,12 @@ class MastodonClient {
     String acct, {
     int limit = 20,
   }) async {
+    final cachedId = _idByAcctInstance[_idKey(instance, acct)];
+    if (cachedId != null) {
+      return getStatuses(instance, cachedId, limit: limit);
+    }
     final profile = await lookup(instance, acct);
+    _idByAcctInstance[_idKey(instance, acct)] = profile.id;
     return getStatuses(instance, profile.id, limit: limit);
   }
 
@@ -639,7 +682,7 @@ class MastodonClient {
             },
             body: jsonEncode(body),
           )
-          .timeout(_timeout);
+          .timeout(_walkTimeout ?? timeout);
     } catch (e) {
       throw MastodonException(MastodonErrorKind.network, '$uri: $e');
     }

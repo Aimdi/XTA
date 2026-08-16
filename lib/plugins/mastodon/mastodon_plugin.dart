@@ -6,6 +6,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_settings.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/database/entities.dart';
@@ -69,6 +70,14 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
       const MastodonSettingsScreen();
 
   @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return showMastodonSearchSheet(context, initialQuery: initialQuery);
+  }
+
+  @override
   List<String> get tables => const [tableMastodonSubscription];
 
   @override
@@ -129,11 +138,12 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
     final local = context.read<MastodonLocalStore>();
     final federated = context.read<MastodonFederatedStore>();
     await accounts.load();
-    await Future.wait([
-      feed.refresh(),
-      explore.refresh(),
-      local.refresh(),
-      federated.refresh(),
-    ]);
+    // Do not refetch every public timeline here — that fan-out is what made
+    // uninstall / reinstall hitch the rest of the app. The screens load
+    // themselves the next time they are opened.
+    feed.forget();
+    explore.forget();
+    local.forget();
+    federated.forget();
   }
 }

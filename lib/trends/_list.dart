@@ -1,11 +1,13 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/search/search.dart';
+import 'package:xta/search/search_scope.dart';
+import 'package:xta/trends/_settings.dart';
 import 'package:xta/trends/trends_model.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/x_controls.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -25,61 +27,82 @@ class _TrendsListState extends State<TrendsList> {
 
     return ScopedBuilder<TrendsModel, List<Trends>>.transition(
       store: model,
-      onError: (context, e) => TripleBuilder<UserTrendLocationModel, UserTrendLocations>(
-        store: context.read<UserTrendLocationModel>(),
-        builder: (context, triple) {
-          return FullPageErrorWidget(
-            error: e,
-            stackTrace: null,
-            prefix: L10n.of(context).unable_to_load_the_trends_for_widget_place_name(""),
-            // triple.state.name!,
-            onRetry: () => model.loadTrends(),
-          );
-        },
-      ),
+      onError: (context, e) =>
+          TripleBuilder<UserTrendLocationModel, UserTrendLocations>(
+            store: context.read<UserTrendLocationModel>(),
+            builder: (context, triple) {
+              return FullPageErrorWidget(
+                error: e,
+                stackTrace: null,
+                prefix: L10n.of(
+                  context,
+                ).unable_to_load_the_trends_for_widget_place_name(""),
+                // triple.state.name!,
+                onRetry: () => model.loadTrends(),
+              );
+            },
+          ),
       onLoading: (context) => const Center(child: CircularProgressIndicator()),
       onState: (context, state) {
         if (state.isEmpty) {
-          // TODO: Empty state
-          return Container();
+          return EmptyPane(
+            icon: Icons.trending_up,
+            message: L10n.of(context).discover_trends_empty,
+            scrollController: widget.scrollController,
+            onRefresh: () async => model.loadTrends(),
+            action: FilledButton.icon(
+              style: xPrimaryPillStyle(context),
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                builder: (context) => const TrendsSettings(),
+              ),
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: Text(L10n.of(context).discover_add_location),
+            ),
+          );
         }
 
         var trends = state[0].trends;
         if (trends == null) {
           return Text(
-            L10n.of(context).there_were_no_trends_returned_this_is_unexpected_please_report_as_a_bug_if_possible,
+            L10n.of(
+              context,
+            ).there_were_no_trends_returned_this_is_unexpected_please_report_as_a_bug_if_possible,
           );
         }
 
         var numberFormat = NumberFormat.compact();
 
         return RefreshIndicator(
-            onRefresh: () async {
-              model.loadTrends();
-            },
-            child: ListView.builder(
-              controller: widget.scrollController,
-              itemCount: trends.length,
-              itemBuilder: (context, index) {
-                var trend = trends[index];
+          onRefresh: () async {
+            model.loadTrends();
+          },
+          child: ListView.builder(
+            controller: widget.scrollController,
+            itemCount: trends.length,
+            itemBuilder: (context, index) {
+              var trend = trends[index];
 
-                return ListTile(
-                    dense: true,
-                    leading: Text('${++index}'),
-                    title: Text(trend.name!),
-                    subtitle: trend.tweetVolume == null
-                        ? null
-                        : Text(
-                            L10n.of(context).tweets_number(
-                              trend.tweetVolume!,
-                              numberFormat.format(trend.tweetVolume),
-                            ),
-                          ),
-                    onTap: () => Navigator.pushNamed(context, routeSearch,
-                        arguments: SearchArguments(0,
-                            focusInputOnOpen: false, query: Uri.decodeQueryComponent(trend.query!))));
-              },
-            ));
+              return ListTile(
+                dense: true,
+                leading: Text('${++index}'),
+                title: Text(trend.name!),
+                subtitle: trend.tweetVolume == null
+                    ? null
+                    : Text(
+                        L10n.of(context).tweets_number(
+                          trend.tweetVolume!,
+                          numberFormat.format(trend.tweetVolume),
+                        ),
+                      ),
+                onTap: () => submitScopedSearch(
+                  context,
+                  Uri.decodeQueryComponent(trend.query!),
+                ),
+              );
+            },
+          ),
+        );
       },
     );
   }

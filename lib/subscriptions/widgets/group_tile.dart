@@ -5,6 +5,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/widgets/avatar_mosaic.dart';
+import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
 import 'package:xta/ui/group_board_tokens.dart';
 
 /// One group on the board: a flat, hairline-bordered card whose identity is a
@@ -21,12 +22,16 @@ class GroupTile extends StatefulWidget {
   /// Suppresses the press animation for the reduce-animations preference.
   final bool animate;
 
+  /// Newer cached posts than the last-read mark. Tests omit this.
+  final bool unread;
+
   const GroupTile({
     super.key,
     required this.group,
     required this.onTap,
     this.onLongPress,
     this.animate = true,
+    this.unread = false,
   });
 
   @override
@@ -188,7 +193,9 @@ class _GroupTileState extends State<GroupTile> {
       // Composed from the already-translated count string rather than a new
       // compound key: "Name, 3 subscriptions" is grammatical in every locale,
       // and Semantics.button already announces the role.
-      label: '${group.name}, $countLabel',
+      label: widget.unread
+          ? '${group.name}, $countLabel, ${l10n.group_has_unread}'
+          : '${group.name}, $countLabel',
       button: true,
       child: ExcludeSemantics(
         child: RepaintBoundary(
@@ -207,7 +214,11 @@ class _GroupTileState extends State<GroupTile> {
                 opacity: _pressed ? 0.85 : 1.0,
                 duration: Duration(milliseconds: _pressed ? 120 : 160),
                 curve: Curves.easeOut,
-                child: tile,
+                child: GroupUnreadBadge(
+                  unread: widget.unread,
+                  inset: 8,
+                  child: tile,
+                ),
               ),
             ),
           ),

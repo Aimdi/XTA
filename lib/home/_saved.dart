@@ -23,6 +23,7 @@ import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/tweet/tweet.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/saved/library_on_device.dart';
 import 'package:xta/saved/saved_content_index.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -135,26 +136,8 @@ class _SavedScreenState extends State<SavedScreen>
   }
 
   Widget _buildEmptyState() {
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: Center(
-            child: Text(
-              _query.isNotEmpty
-                  ? L10n.of(context).no_posts_match_your_search
-                  : switch (_filter) {
-                      savedTabAll => L10n.of(
-                        context,
-                      ).you_have_not_saved_any_tweets_yet,
-                      savedTabFavorites => L10n.of(context).no_liked_posts_yet,
-                      _ => L10n.of(context).folder_is_empty,
-                    },
-            ),
-          ),
-        ),
-      ),
+    return SavedLibraryEmpty(
+      kind: savedLibraryEmptyKind(query: _query, filter: _filter),
     );
   }
 
@@ -699,6 +682,7 @@ class _SavedScreenState extends State<SavedScreen>
         child: Column(
           children: [
             _buildFolderStrip(),
+            SavedLibraryOnDeviceNotice(likes: _filter == savedTabFavorites),
             if (_searching) _buildSearchField(),
             Expanded(
               child: _filter == savedTabFavorites

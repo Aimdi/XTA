@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/ticker/ticker_search.dart';
-import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_links.dart';
 
 /// Headlines for a symbol, read-only — tap opens the article, nothing is posted.
 class TickerNewsList extends StatelessWidget {
@@ -42,7 +42,7 @@ class TickerNewsList extends StatelessWidget {
               subtitle: item.publisher == null ? null : Text(item.publisher!),
               onTap: item.url == null
                   ? null
-                  : () => openUri(context, item.url!),
+                  : () => openLink(context, item.url!),
             ),
         ],
       ),

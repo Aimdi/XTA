@@ -4,29 +4,41 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Grok, import followings, sort groups
+### Plugins stay in the app
 
-**Paste a Grok key** in Settings → Advanced → AI provider. The Grok chip fills
-xAI's server and model so you only paste the key from console.x.ai. An OpenAI
-chip is there too. Empty fields keep AI off. The key stays on this device.
+**Tap a plugin link** and you stay in XTA. Bluesky, Threads, Instagram, TikTok,
+Reddit, Mastodon, Pixiv, and Substack URLs from the feed, a card, a profile
+site, or a deep link open the native screen when that plugin is on. “Open on
+site” still leaves for the website.
 
-**Import followings** from one or more public accounts: paste `@handles`, names,
-or x.com links. Each account's public following becomes local subscriptions.
-Nothing is followed on X.
+**Search** the Discover tab for an enabled plugin, not only X. Switching
+there from a plugin tab preselects that plugin. Find people and Antennas
+are chips on the hub; empty trends offer a location instead of a blank page.
 
-**Sort ungrouped** looks at subscriptions that are not in any group, puts them
-with similar accounts, and suggests a new group when none of yours fit. With a
-key it asks Grok first; without one it uses names only.
+**Reddit** uses the same icon chrome as Threads and the rest — Following,
+Popular, and All on one row, no second title bar.
 
-### Still in from aimdi98
+### A timeline that does not hitch
 
-Private guest Instagram (For You and people-to-follow), Mastodon Explore /
-Local / Federated / Following, Threads and Bluesky suggestions, TikTok search,
-calmer settings, and group plugin chips.
+When a plugin account answers or a source finishes, the list you are already
+reading stays on screen. Partials land in batches instead of rebuilding the
+whole feed on every arrival. Groups, Following, and For You show a dot when
+cached posts are newer than your last read. Mastodon no longer refetches
+every public timeline just because you installed or removed the plugin.
+
+### Likes and saves stay here
+
+Hearts and bookmarks are local. The Saved library says so on the empty
+states and under the folder strip. X cannot see them.
+
+### Still in from aimdi99
+
+Paste a Grok key in Settings → Advanced → AI provider, import public followings
+as local subscriptions, and sort ungrouped accounts into groups.
 
 ---
 
-Everything from [aimdi98](https://github.com/Aimdi/XTA/releases/tag/aimdi98) is
+Everything from [aimdi99](https://github.com/Aimdi/XTA/releases/tag/aimdi99) is
 in here too.
 
 ---

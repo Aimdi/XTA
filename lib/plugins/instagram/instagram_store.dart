@@ -238,7 +238,6 @@ class InstagramFeedStore extends Store<List<InstagramPost>> {
   Future<void> loadMore() async {
     if (!_hasMore || _loadingMore || _cursor == null) return;
     _loadingMore = true;
-    update(state);
     try {
       final page = await loader(cursor: _cursor);
       _cursor = page.cursor;

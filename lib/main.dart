@@ -24,6 +24,7 @@ import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
@@ -66,8 +67,10 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_folders_screen.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/search/search_model.dart';
+import 'package:xta/search/search_scope.dart';
 import 'package:xta/settings/_data.dart';
 import 'package:xta/settings/_home.dart';
 import 'package:xta/settings/settings.dart';
@@ -464,7 +467,7 @@ Future<void> main() async {
       optionFeedLanguages: '',
       optionFeedLanguageAction: 'off',
       optionDeckGroupIds: '',
-      optionFeedReadingPosition: false,
+      optionFeedReadingPosition: true,
       optionGlobalIncludeReplies: true,
       optionGlobalIncludeRetweets: true,
       optionThreadedReplies: true,
@@ -686,14 +689,21 @@ Future<void> main() async {
     // first still keeps a later remount or revisit from reusing a controller
     // built for the old member set. LinkedHashMap iterates in insertion order,
     // and registering here (before any shell exists) guarantees we win.
+    var groupUnreadStore = GroupUnreadStore(prefService);
     groupsModel.addReloadListener(
       'FeedSessionCache',
       feedSessionCache.invalidateAll,
     );
+    groupsModel.addReloadListener('GroupUnreadStore', () {
+      unawaited(groupUnreadStore.reload());
+    });
     subscriptionsModel.addReloadListener(
       'FeedSessionCache',
       feedSessionCache.invalidateAll,
     );
+    subscriptionsModel.addReloadListener('GroupUnreadStore', () {
+      unawaited(groupUnreadStore.reload());
+    });
 
     var trendLocationModel = UserTrendLocationModel(prefService);
 
@@ -800,6 +810,7 @@ Future<void> main() async {
     await Future.wait([
       homeModel.loadPages(),
       subscriptionsModel.reloadSubscriptions(),
+      groupUnreadStore.reload(),
       if (prefService.get<bool>(optionPluginSubstackEnabled) == true) ...[
         substackPublications.load(),
         substackRead.load(),
@@ -848,6 +859,7 @@ Future<void> main() async {
         child: MultiProvider(
           providers: [
             Provider(create: (context) => groupsModel),
+            Provider(create: (context) => groupUnreadStore),
             Provider(create: (context) => feedSessionCache),
             Provider(
               create: (context) => VideoControllerPool(maxSize: kVideoPoolSize),
@@ -886,6 +898,7 @@ Future<void> main() async {
                 ),
               ),
             ),
+            Provider(create: (_) => SearchScopeStore()),
             Provider(create: (_) => FeedStripStore(prefService)),
             Provider(create: (_) => HomeAccountFilterStore(prefService)),
             Provider(create: (_) => ChromeAvatarStore(prefService)),
@@ -1229,6 +1242,12 @@ class _DefaultPageState extends State<DefaultPage> {
   StreamSubscription<Uri>? _sub;
 
   void handleInitialLink(Uri link) async {
+    if (await openWithPlugins(context, link.toString())) {
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
     final parsed = await parseUri(link);
     if (!mounted) {
       return;

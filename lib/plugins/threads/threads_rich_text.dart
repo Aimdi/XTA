@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_profile_screen.dart';
-import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_links.dart';
 
 final _threadsMention = RegExp(r'(?<![A-Za-z0-9_])@([A-Za-z0-9._]{1,30})');
 final _threadsUrl = RegExp(r'https?://[^\s<>]+', caseSensitive: false);
@@ -86,7 +86,7 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
     return TextSpan(
       text: label,
       style: linkStyle,
-      recognizer: _tap(() => openUri(context, hit.value)),
+      recognizer: _tap(() => openLink(context, hit.value)),
     );
   }
 }

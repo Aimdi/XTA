@@ -116,4 +116,10 @@ abstract class XtaPlugin {
   /// The stores outlive the screens, so without this, installing again in the
   /// same session brings back a list that has just been deleted.
   Future<void> forgetLoadedData(BuildContext context) async {}
+
+  /// Whether the Search tab can hand a query to this plugin.
+  bool get supportsSearch => false;
+
+  /// Opens this plugin's search UI, optionally with a query already filled in.
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) async {}
 }

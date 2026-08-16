@@ -12,7 +12,6 @@ import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
-import 'package:xta/utils/urls.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
@@ -92,11 +91,7 @@ class _TweetCardState extends State<TweetCard> {
         if (url == null) {
           return;
         }
-        // A Substack card opens in the in-app reader when the plugin is on.
-        if (await openWithPlugins(context, url) || !context.mounted) {
-          return;
-        }
-        await openUri(context, url);
+        await openLink(context, url);
       },
     );
   }

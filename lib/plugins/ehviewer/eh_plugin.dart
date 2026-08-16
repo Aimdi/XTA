@@ -6,6 +6,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_screen.dart';
+import 'package:xta/plugins/ehviewer/eh_search_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_settings.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/plugins/plugin.dart';
@@ -64,6 +65,19 @@ class EhViewerPlugin extends XtaPlugin {
 
   @override
   Widget? settingsScreen(BuildContext context) => const EhSettingsScreen();
+
+  @override
+  bool get supportsSearch => true;
+
+  @override
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EhSearchScreen(initialQuery: initialQuery),
+      ),
+    );
+  }
 
   @override
   List<String> get tables => const [tableEhFavorite, tableEhHistory];
