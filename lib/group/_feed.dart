@@ -153,14 +153,24 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Every registered source, not only the ones this group has members for: a
   /// source whose last member was just removed still has to be asked, or its
   /// posts stay in the feed after the account that brought them is gone.
-  Future<void> _loadPluginPosts() {
+  Future<void> _loadPluginPosts() async {
     final prefs = PrefService.of(context, listen: false);
-    return Future.wait(enabledSubscriptionSources(prefs).map(_loadPostsFrom));
+    var dirty = false;
+    await Future.wait(
+      enabledSubscriptionSources(prefs).map((source) async {
+        if (await _collectPostsFrom(source)) {
+          dirty = true;
+        }
+      }),
+    );
+    if (mounted && dirty) {
+      setState(_mergeInterleaved);
+    }
   }
 
-  Future<void> _loadPostsFrom(SubscriptionSource source) async {
+  Future<bool> _collectPostsFrom(SubscriptionSource source) async {
     if (widget.mediaOnly) {
-      return;
+      return false;
     }
 
     final isCombined = widget.group.id == legacyFeedKeyFollowing;
@@ -177,18 +187,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     );
 
     final items = await source.interleavedPosts(context, ids);
-    // Assigned whatever came back, empty included: a member taken out of the
-    // group has to take its posts with it. But an empty answer replacing an
-    // already-empty slot is not a change, and each source lands on its own
-    // frame — without this guard a group with no plugin members still took one
-    // whole-list rebuild per registered source. Same guard as the For-you feed.
-    if (mounted &&
-        (items.isNotEmpty || (_pluginItems[source]?.isNotEmpty ?? false))) {
-      setState(() {
-        _pluginItems[source] = items;
-        _mergeInterleaved();
-      });
-    }
+    return mounted && replacePluginSlot(_pluginItems, source, items);
   }
 
   // Chronological feeds only: in popular order a "seen up to" boundary is
@@ -699,6 +698,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           where: 'hash = ?',
           whereArgs: [hash],
           orderBy: 'created_at DESC',
+          limit: maxCachedChunkRows,
         );
 
         // Make sure we load any existing stored tweets from the chunk

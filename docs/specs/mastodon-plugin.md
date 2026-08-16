@@ -18,6 +18,12 @@ public tabs, the way Tusky / Ivory / Phanpy / Misskey web do it: **Explore**
 (merged newest-first timeline of every locally followed acct). Misskey-family
 origins that 404 the Mastodon public API fall back to featured / local notes.
 
+Opening the tab loads Explore only. Following / Local / Federated start when
+that pane is selected. A following load asks a first wave of accounts
+(`mastodonMaxAccountsPerLoad`); the cache fills the rest on the next refresh.
+Partial answers paint as they arrive, throttled so the list does not rebuild
+once per account.
+
 ## Endpoints used
 
 | Call | Path |

@@ -68,6 +68,26 @@ These landed before this baseline doc and are **not** double-counted as Phase 2 
 - Avatar `cacheWidth` decode cap (`9dc41c4`)
 - Reverted feed `cacheExtent` bump — GIF tiles spin native players on build (`d66b60b`)
 
+## App-wide pass (feeds / plugins / tiles)
+
+Mechanism work after the tweet-module pass. Device rows above stay TBD.
+
+- Group first-page cache reads cap at `maxCachedChunkRows` (same as the
+  preview path) so a heavy group does not decode every stored page before
+  paint.
+- Plugin interleave on For You / groups batches into one `setState` and skips
+  empty-for-empty slot writes (`replacePluginSlot`).
+- `AccountPostCache.onPartial` paints the first account immediately, then
+  coalesces later paints (`kAccountPostsPartialThrottle`).
+- Mastodon / Bluesky following feeds paint progressively; Mastodon tabs are
+  lazy; first-wave account caps are 12 / 16.
+- Feed tiles drop the unused ticker mixin; Community Notes in the feed use
+  `Text.rich`; long posts stay capped in the feed even when “always show
+  full” is on (the pref still applies on the opened status).
+- Boost-run lengths are remembered per items list, not walked per tile.
+- Instagram / TikTok post lists use `FeedListView`; Instagram images decode
+  at paint size.
+
 ## Later pass (feeds / plugins / startup)
 
 Mechanism work after the tweet-module pass. Device rows above stay TBD.
