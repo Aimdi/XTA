@@ -7,7 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/group/group_screen.dart';
+import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/_group_list_item.dart';
 import 'package:xta/subscriptions/_groups_edit.dart';
@@ -100,6 +100,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     List<SubscriptionGroup> groups, {
     required List<Widget> header,
     required bool animate,
+    required Set<String> unreadIds,
   }) {
     final prefs = PrefService.of(context);
     final columns = (prefs.get<int>(optionSubscriptionGroupsColumns) ?? 2)
@@ -132,10 +133,11 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
             key: ValueKey(group.id),
             group: group,
             animate: animate,
-            onTap: () => Navigator.pushNamed(
+            unread: unreadIds.contains(group.id),
+            onTap: () => openGroupAndRefreshUnread(
               context,
-              routeGroup,
-              arguments: GroupScreenArguments(id: group.id, name: group.name),
+              id: group.id,
+              name: group.name,
             ),
             onLongPress: () => openSubscriptionGroupDialog(
               context,
@@ -188,6 +190,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     List<SubscriptionGroup> groups, {
     required List<Widget> header,
     required bool canReorder,
+    required Set<String> unreadIds,
     Map<String, int> depths = const {},
   }) {
     final parts = partitionNsfwGroups(groups, (g) => g.nsfw);
@@ -214,6 +217,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         return GroupListItem(
           key: ValueKey(group.id),
           group: group,
+          unread: unreadIds.contains(group.id),
           depth: depths[group.id] ?? 0,
           // Drag only within the same NSFW bucket so a pull cannot lift a
           // censored group above the section header.
@@ -358,15 +362,24 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
           ..._pluginFeedChips(context),
         ];
 
-        return asList
-            ? _buildReorderableList(
-                context,
-                groups,
-                header: header,
-                canReorder: canReorder,
-                depths: depths,
-              )
-            : _buildBoard(context, groups, header: header, animate: animate);
+        return GroupUnreadScope(
+          builder: (context, unreadIds) => asList
+              ? _buildReorderableList(
+                  context,
+                  groups,
+                  header: header,
+                  canReorder: canReorder,
+                  unreadIds: unreadIds,
+                  depths: depths,
+                )
+              : _buildBoard(
+                  context,
+                  groups,
+                  header: header,
+                  animate: animate,
+                  unreadIds: unreadIds,
+                ),
+        );
       },
     );
   }

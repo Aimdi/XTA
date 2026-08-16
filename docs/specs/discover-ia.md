@@ -15,8 +15,16 @@ trends behind a search icon and left an empty trends list as a blank
 4. Heart / bookmark names say they stay on this device. Still local-only;
    still no write to X.
 
+5. Group tiles, the groups list, and the drawer show an unread dot when
+   reading position is on (new installs default on) and a group's cached
+   chunks are newer than `feed_read_position.updated_at`. Hashing matches
+   the live feed (`feed_chunk_hash.dart`) so parent groups include nested
+   members. Existing installs keep their stored off default.
+
 ## Non-goals
 
 - Renaming the stored page id to `discover`
-- Unread dots on groups (cache rows are keyed by chunk hash, not group id)
+- Unread dots on Following / For You
+- Decoding tweet timestamps from chunk JSON (chunk write time is the heuristic)
+- Forcing reading-position on for existing installs
 - Posting, compose, or like-on-X

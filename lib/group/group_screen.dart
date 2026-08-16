@@ -1,4 +1,3 @@
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -10,6 +9,7 @@ import 'package:xta/group/_feed.dart';
 import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_session_cache.dart';
+import 'package:xta/group/feed_chunk_hash.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/group/group_switcher.dart';
@@ -21,9 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:quiver/iterables.dart';
 
-/// Users per X search query. Search queries are capped at ~512 characters;
-/// 16 screen names stay under that, while 32 does not (upstream #165).
-const int feedChunkSize = 16;
+export 'package:xta/group/feed_chunk_hash.dart' show feedChunkSize;
 
 class GroupScreenArguments {
   final String id;
@@ -241,12 +239,11 @@ class SubscriptionGroupFeedChunk {
     this.includeRetweets,
   );
 
-  String get hash {
-    var toHash =
-        '${users.map((e) => e.id).join(', ')}$includeReplies$includeRetweets';
-
-    return sha1.convert(toHash.codeUnits).toString();
-  }
+  String get hash => feedChunkHash(
+    users.map((e) => e.id).toList(),
+    includeReplies: includeReplies,
+    includeRetweets: includeRetweets,
+  );
 }
 
 class SubscriptionGroupScreen extends StatefulWidget {

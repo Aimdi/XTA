@@ -1,12 +1,12 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/group/group_screen.dart';
+import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
 import 'package:xta/user.dart';
 import 'package:provider/provider.dart';
 
@@ -28,12 +28,16 @@ class GroupListItem extends StatelessWidget {
   // handle bound to this index.
   final int? reorderIndex;
 
+  /// Newer cached posts than the last-read mark. Tests omit this.
+  final bool unread;
+
   const GroupListItem({
     super.key,
     required this.group,
     this.onLongPress,
     this.reorderIndex,
     this.depth = 0,
+    this.unread = false,
   });
 
   Widget _buildTrailing(BuildContext context) {
@@ -88,21 +92,24 @@ class GroupListItem extends StatelessWidget {
         left: 16 + kGroupNestIndent * depth,
         right: 8,
       ),
-      leading: CircleAvatar(
-        radius: 20,
-        backgroundColor: fill,
-        child: group.icon == defaultGroupIcon
-            ? Text(
-                group.name.isEmpty
-                    ? '?'
-                    : group.name.characters.first.toUpperCase(),
-                style: TextStyle(
-                  color: onFill,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
-              )
-            : Icon(group.iconData, size: 20, color: onFill),
+      leading: GroupUnreadBadge(
+        unread: unread,
+        child: CircleAvatar(
+          radius: 20,
+          backgroundColor: fill,
+          child: group.icon == defaultGroupIcon
+              ? Text(
+                  group.name.isEmpty
+                      ? '?'
+                      : group.name.characters.first.toUpperCase(),
+                  style: TextStyle(
+                    color: onFill,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                )
+              : Icon(group.iconData, size: 20, color: onFill),
+        ),
       ),
       title: Row(
         children: [
@@ -121,6 +128,11 @@ class GroupListItem extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          if (unread)
+            Semantics(
+              label: L10n.of(context).group_has_unread,
+              child: const SizedBox.shrink(),
+            ),
         ],
       ),
       subtitle: Row(
@@ -147,11 +159,8 @@ class GroupListItem extends StatelessWidget {
         ],
       ),
       trailing: _buildTrailing(context),
-      onTap: () => Navigator.pushNamed(
-        context,
-        routeGroup,
-        arguments: GroupScreenArguments(id: group.id, name: group.name),
-      ),
+      onTap: () =>
+          openGroupAndRefreshUnread(context, id: group.id, name: group.name),
       onLongPress: onLongPress,
     );
   }

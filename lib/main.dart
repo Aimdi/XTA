@@ -24,6 +24,7 @@ import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
@@ -464,7 +465,7 @@ Future<void> main() async {
       optionFeedLanguages: '',
       optionFeedLanguageAction: 'off',
       optionDeckGroupIds: '',
-      optionFeedReadingPosition: false,
+      optionFeedReadingPosition: true,
       optionGlobalIncludeReplies: true,
       optionGlobalIncludeRetweets: true,
       optionThreadedReplies: true,
@@ -686,10 +687,14 @@ Future<void> main() async {
     // first still keeps a later remount or revisit from reusing a controller
     // built for the old member set. LinkedHashMap iterates in insertion order,
     // and registering here (before any shell exists) guarantees we win.
+    var groupUnreadStore = GroupUnreadStore(prefService);
     groupsModel.addReloadListener(
       'FeedSessionCache',
       feedSessionCache.invalidateAll,
     );
+    groupsModel.addReloadListener('GroupUnreadStore', () {
+      unawaited(groupUnreadStore.reload());
+    });
     subscriptionsModel.addReloadListener(
       'FeedSessionCache',
       feedSessionCache.invalidateAll,
@@ -800,6 +805,7 @@ Future<void> main() async {
     await Future.wait([
       homeModel.loadPages(),
       subscriptionsModel.reloadSubscriptions(),
+      groupUnreadStore.reload(),
       if (prefService.get<bool>(optionPluginSubstackEnabled) == true) ...[
         substackPublications.load(),
         substackRead.load(),
@@ -848,6 +854,7 @@ Future<void> main() async {
         child: MultiProvider(
           providers: [
             Provider(create: (context) => groupsModel),
+            Provider(create: (context) => groupUnreadStore),
             Provider(create: (context) => feedSessionCache),
             Provider(
               create: (context) => VideoControllerPool(maxSize: kVideoPoolSize),
