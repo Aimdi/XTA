@@ -190,6 +190,22 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return mounted && replacePluginSlot(_pluginItems, source, items);
   }
 
+  Future<void> _reloadPluginSources(
+    Iterable<SubscriptionSource> sources,
+  ) async {
+    var dirty = false;
+    await Future.wait(
+      sources.map((source) async {
+        if (await _collectPostsFrom(source)) {
+          dirty = true;
+        }
+      }),
+    );
+    if (mounted && dirty) {
+      setState(_mergeInterleaved);
+    }
+  }
+
   // Chronological feeds only: in popular order a "seen up to" boundary is
   // meaningless, and the media grid shares this loader but shows no divider.
   bool get _supportsReadPosition => !widget.group.popular && !widget.mediaOnly;
@@ -510,12 +526,14 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // again afterwards. Fetching them only in initState therefore asked for the
     // posts of an empty list and never asked again — which is why a group with
     // a subreddit in it stayed empty of Reddit posts however long you waited.
-    for (final source in sourcesNeedingReload(
-      before: oldWidget.pluginMembers,
-      after: widget.pluginMembers,
-    )) {
-      _loadPostsFrom(source);
-    }
+    unawaited(
+      _reloadPluginSources(
+        sourcesNeedingReload(
+          before: oldWidget.pluginMembers,
+          after: widget.pluginMembers,
+        ),
+      ),
+    );
 
     if (oldWidget.includeReplies != widget.includeReplies ||
         oldWidget.includeRetweets != widget.includeRetweets ||
