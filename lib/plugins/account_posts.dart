@@ -145,14 +145,11 @@ class AccountPostCache<T> {
   void _deliver(
     List<List<T>> done,
     List<T> posts,
-    void Function(List<T>)? onPartial,
+    _ThrottledPartial<T> partial,
   ) {
-    if (onPartial == null) {
-      return;
-    }
     done.add(posts);
     if (posts.isNotEmpty) {
-      onPartial(_merged(done));
+      partial(_merged(done));
     }
   }
 
