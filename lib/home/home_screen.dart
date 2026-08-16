@@ -50,7 +50,7 @@ final List<NavigationPage> defaultHomePages = [
   ),
   NavigationPage(
     'trending',
-    (c) => L10n.of(c).search,
+    (c) => L10n.of(c).discover,
     const Icon(Icons.search_outlined),
     const Icon(Icons.search),
   ),

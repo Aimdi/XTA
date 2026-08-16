@@ -5,18 +5,24 @@ import 'package:xta/search/search.dart';
 import 'package:xta/trends/_list.dart';
 import 'package:xta/trends/_settings.dart';
 import 'package:xta/trends/_tabs.dart';
+import 'package:xta/trends/discover_shortcuts.dart';
 
 class TrendsScreen extends StatefulWidget {
   final ScrollController scrollController;
   final FocusNode focusNode;
 
-  const TrendsScreen({super.key, required this.scrollController, required this.focusNode});
+  const TrendsScreen({
+    super.key,
+    required this.scrollController,
+    required this.focusNode,
+  });
 
   @override
   State<TrendsScreen> createState() => _TrendsScreenState();
 }
 
-class _TrendsScreenState extends State<TrendsScreen> with AutomaticKeepAliveClientMixin<TrendsScreen> {
+class _TrendsScreenState extends State<TrendsScreen>
+    with AutomaticKeepAliveClientMixin<TrendsScreen> {
   @override
   bool get wantKeepAlive => true;
   final TextEditingController _queryController = TextEditingController();
@@ -28,7 +34,11 @@ class _TrendsScreenState extends State<TrendsScreen> with AutomaticKeepAliveClie
       widget.focusNode.requestFocus();
       return;
     }
-    Navigator.pushNamed(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: false, query: query));
+    Navigator.pushNamed(
+      context,
+      routeSearch,
+      arguments: SearchArguments(0, focusInputOnOpen: false, query: query),
+    );
   }
 
   @override
@@ -41,7 +51,12 @@ class _TrendsScreenState extends State<TrendsScreen> with AutomaticKeepAliveClie
         flexibleSpace: Padding(
           // flexibleSpace is not inset for the status bar; the hardcoded 36 it
           // had rode under taller ones.
-          padding: EdgeInsets.fromLTRB(8, MediaQuery.paddingOf(context).top + 4, 8, 8),
+          padding: EdgeInsets.fromLTRB(
+            8,
+            MediaQuery.paddingOf(context).top + 4,
+            8,
+            8,
+          ),
           child: SearchBar(
             controller: _queryController,
             focusNode: widget.focusNode,
@@ -60,13 +75,20 @@ class _TrendsScreenState extends State<TrendsScreen> with AutomaticKeepAliveClie
         bottom: TrendsTabBar(),
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () async => showModalBottomSheet(
-                context: context,
-                builder: (context) => const TrendsSettings(),
-              )),
-      body: TrendsList(
-        scrollController: widget.scrollController,
+        child: const Icon(Icons.add),
+        onPressed: () async => showModalBottomSheet(
+          context: context,
+          builder: (context) => const TrendsSettings(),
+        ),
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const DiscoverShortcuts(),
+          Expanded(
+            child: TrendsList(scrollController: widget.scrollController),
+          ),
+        ],
       ),
     );
   }
