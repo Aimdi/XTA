@@ -387,7 +387,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                                               : Colors.black),
                                                       children: displayRichText(descParts)
                                                   ),
-                                                  minLines: 1,
                                                   maxLines: 5)),
                                         ),
                                       MeasureSize(
