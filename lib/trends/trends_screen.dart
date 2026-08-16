@@ -7,6 +7,7 @@ import 'package:xta/trends/_list.dart';
 import 'package:xta/trends/_search_scope.dart';
 import 'package:xta/trends/_settings.dart';
 import 'package:xta/trends/_tabs.dart';
+import 'package:xta/trends/discover_shortcuts.dart';
 
 class TrendsScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -83,7 +84,9 @@ class _TrendsScreenState extends State<TrendsScreen>
         ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const DiscoverShortcuts(),
           const SearchScopeChips(),
           Expanded(
             child: TrendsList(scrollController: widget.scrollController),

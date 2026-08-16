@@ -6,6 +6,8 @@ import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/group/feed_read_position.dart';
+import 'package:xta/group/group_unread_store.dart';
+import 'package:xta/home/home_feed_unread.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/subscription_source.dart';
@@ -232,6 +234,13 @@ class _ForYouTweetsState extends State<ForYouTweets>
   }
 
   void _onFirstPageLoaded(List<TweetChain> threads) {
+    unawaited(
+      rememberForYouNewestCached(widget.pref).then((_) {
+        if (mounted) {
+          maybeGroupUnreadStore(context)?.reload();
+        }
+      }),
+    );
     if (!_caughtUpRestoreEvaluated) {
       _caughtUpRestoreEvaluated = true;
       final boundary = _lastSeen == null

@@ -554,6 +554,9 @@ class TweetFooterBar extends StatelessWidget {
                   isLiked: isLiked,
                   label: label(likeLabel),
                   color: isLiked ? Theme.of(context).colorScheme.primary : tint,
+                  tooltip: isLiked
+                      ? L10n.of(context).unlike_on_this_device
+                      : L10n.of(context).like_on_this_device,
                   onPressed: () async {
                     if (isLiked) {
                       await likedModel.unlikeTweet(tweet.idStr!);
@@ -589,7 +592,7 @@ class TweetFooterBar extends StatelessWidget {
                         () async {
                           await savedModel.deleteSavedTweet(tweet.idStr!);
                         },
-                        L10n.of(context).action_unsave_post,
+                        L10n.of(context).unsave_from_this_device,
                       )
                     : tweetFooterIconButton(
                         context,
@@ -615,7 +618,7 @@ class TweetFooterBar extends StatelessWidget {
                             maybeShowFolderHint(context);
                           }
                         },
-                        L10n.of(context).action_save_post,
+                        L10n.of(context).save_on_this_device,
                       );
 
                 return GestureDetector(

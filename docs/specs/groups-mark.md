@@ -101,8 +101,16 @@ Keys: `group_mark_style_label`, `group_mark_style_auto`,
 
 - Optional Concept A ("Minimal", no chip) style toggle
 - `material_symbols_icons` / FILLED axes
-- Unread Badge from `feed_read_position`
 - Dropping `flutter_iconpicker` entirely (needs a local deserializer)
+
+## Phase 5 — unread dots (shipped)
+
+A small accent dot on the board tile, list row, and drawer shortcut when
+`groupHasUnread` is true: reading position (or per-group catch-up) is on,
+the group has cached X chunks, and the newest `feed_group_chunk.created_at`
+is after `feed_read_position.updated_at` (or there is no position yet).
+Popular feeds do not track. Hashes come from `feed_chunk_hash.dart` so they
+cannot drift from `SubscriptionGroupFeedChunk.hash`. No new migration.
 
 ## Out of scope
 

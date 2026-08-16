@@ -14,6 +14,7 @@ class LikeButton extends StatefulWidget {
   final String label;
   final Color? color;
   final VoidCallback onPressed;
+  final String? tooltip;
 
   const LikeButton({
     super.key,
@@ -21,6 +22,7 @@ class LikeButton extends StatefulWidget {
     required this.label,
     required this.color,
     required this.onPressed,
+    this.tooltip,
   });
 
   @override
@@ -85,7 +87,7 @@ class _LikeButtonState extends State<LikeButton>
         ? (widget.color ?? scheme.primary)
         : widget.color;
 
-    return TextButton.icon(
+    final button = TextButton.icon(
       onPressed: _handleTap,
       style: footerButtonStyle,
       icon: SizedBox(
@@ -124,6 +126,17 @@ class _LikeButtonState extends State<LikeButton>
         widget.label,
         style: TextStyle(color: widget.color, fontSize: 14),
       ),
+    );
+
+    final tooltip = widget.tooltip;
+    if (tooltip == null || tooltip.isEmpty) {
+      return button;
+    }
+    final count = widget.label.trim();
+    return Semantics(
+      button: true,
+      label: count.isEmpty ? tooltip : '$tooltip, $count',
+      child: ExcludeSemantics(child: button),
     );
   }
 }
