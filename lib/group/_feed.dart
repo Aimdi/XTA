@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
@@ -766,7 +765,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           'hash': hash,
           'cursor_top': result.cursorTop,
           'cursor_bottom': result.cursorBottom,
-          'response': jsonEncode(result.chains.map((e) => e.toJson()).toList()),
+          'response': await encodeChunkBlob(
+            result.chains.map((e) => e.toJson()).toList(),
+          ),
         });
       }
 
@@ -797,7 +798,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             'hash': hash,
             'cursor_top': page.cursorTop,
             'cursor_bottom': page.cursorBottom,
-            'response': jsonEncode(page.chains.map((e) => e.toJson()).toList()),
+            'response': await encodeChunkBlob(
+              page.chains.map((e) => e.toJson()).toList(),
+            ),
           });
         }
       }
@@ -857,11 +860,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       priorFolds: rulesOutcome.foldReasons,
     );
     threads = languageOutcome.chains;
-    if (mounted) {
-      setState(() {
-        _foldReasons = {..._foldReasons, ...languageOutcome.foldReasons};
-      });
-    }
+    // Paging already rebuilds the list when this page returns; a setState
+    // here was a second rebuild of the same frame's work.
+    _foldReasons = {..._foldReasons, ...languageOutcome.foldReasons};
 
     if (prefs.get(optionZenMode) == true) {
       threads = _applyZenMode(threads);

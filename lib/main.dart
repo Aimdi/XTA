@@ -806,8 +806,6 @@ Future<void> main() async {
         substackLikes.load(),
         substackSaved.load(),
       ],
-      if (prefService.get<bool>(optionPluginStocksEnabled) == true)
-        stocksWatchlist.load(),
       if (prefService.get<bool>(optionPluginThreadsEnabled) == true) ...[
         threadsAccounts.load(),
         threadsLikes.load(),
@@ -818,29 +816,40 @@ Future<void> main() async {
       ],
       if (prefService.get<bool>(optionPluginMastodonEnabled) == true)
         mastodonAccounts.load(),
-      if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
-        pixivMute.load(),
-        pixivSearchHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
-        booruTags.load(),
-        booruMute.load(),
-      ],
-      if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
-        ehFavorites.load(),
-        ehHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
-        tiktokFollows.load(),
-        tiktokLikes.load(),
-        tiktokSearchHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
-        instagramFollows.load(),
-        instagramLikes.load(),
-        instagramSearchHistory.load(),
-      ],
     ]);
+
+    // Private / heavy plugin stores are not on For You. Starting them after
+    // the blocking wait lets the first frame race the disk reads instead of
+    // waiting on them. Reddit stays above — it migrates follows into the
+    // subscription table that reloadSubscriptions just read.
+    unawaited(
+      Future.wait([
+        if (prefService.get<bool>(optionPluginStocksEnabled) == true)
+          stocksWatchlist.load(),
+        if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
+          pixivMute.load(),
+          pixivSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
+          booruTags.load(),
+          booruMute.load(),
+        ],
+        if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
+          ehFavorites.load(),
+          ehHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
+          tiktokFollows.load(),
+          tiktokLikes.load(),
+          tiktokSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
+          instagramFollows.load(),
+          instagramLikes.load(),
+          instagramSearchHistory.load(),
+        ],
+      ]),
+    );
 
     runApp(
       PrefService(
@@ -991,10 +1000,15 @@ class _FritterAppState extends State<FritterApp> {
   bool _isSecure = false;
   double _textScaleFactor = 1.0;
   Locale? _locale;
+  bool _prefsBound = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (_prefsBound) {
+      return;
+    }
+    _prefsBound = true;
 
     var prefService = PrefService.of(context);
 

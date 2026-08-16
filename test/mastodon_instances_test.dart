@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,27 @@ Map<String, dynamic> _profile(String acct) => {
   'display_name': 'Reader',
   'url': 'https://example.social/@${acct.split('@').first}',
 };
+
+/// First host never answers; the walk timeout must move on.
+class _HangingThenOkClient extends http.BaseClient {
+  _HangingThenOkClient(this.asked);
+
+  final List<String> asked;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    asked.add(request.url.host);
+    if (request.url.host == 'slow.place') {
+      return Completer<http.StreamedResponse>().future;
+    }
+    final body = utf8.encode(jsonEncode(_profile('reader@fallback.place')));
+    return http.StreamedResponse(
+      Stream<List<int>>.value(body),
+      200,
+      headers: {'content-type': 'application/json'},
+    );
+  }
+}
 
 void main() {
   group('mastodonInstanceCandidates', () {
@@ -146,6 +168,26 @@ void main() {
             ),
           ),
         );
+      },
+    );
+
+    test(
+      'a hanging first instance gives up on the walk timeout and asks the next',
+      () async {
+        final asked = <String>[];
+        final client = MastodonClient(
+          firstWalkTimeout: const Duration(milliseconds: 40),
+          fallbackWalkTimeout: const Duration(milliseconds: 40),
+          httpClient: _HangingThenOkClient(asked),
+        );
+
+        final profile = await client.lookupAnywhere([
+          'https://slow.place',
+          'https://fallback.place',
+        ], 'reader@fallback.place');
+
+        expect(asked, ['slow.place', 'fallback.place']);
+        expect(profile.acct, 'reader@fallback.place');
       },
     );
 

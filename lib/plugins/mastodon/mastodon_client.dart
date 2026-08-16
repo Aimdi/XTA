@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -27,12 +28,22 @@ class MastodonException implements Exception {
 /// Reads public Mastodon / Fediverse data through a home instance — no login.
 class MastodonClient {
   final http.Client httpClient;
+  final Duration requestTimeout;
+  final Duration firstWalkTimeout;
+  final Duration fallbackWalkTimeout;
 
-  MastodonClient({http.Client? httpClient})
-    : httpClient = httpClient ?? http.Client();
+  MastodonClient({
+    http.Client? httpClient,
+    this.requestTimeout = const Duration(seconds: 20),
+    this.firstWalkTimeout = const Duration(seconds: 8),
+    this.fallbackWalkTimeout = const Duration(seconds: 4),
+  }) : httpClient = httpClient ?? http.Client();
 
-  static const _timeout = Duration(seconds: 20);
   static const userAgent = 'XTA Mastodon plugin';
+  static const _walkTimeoutKey = #mastodonWalkTimeout;
+
+  Duration get _effectiveTimeout =>
+      Zone.current[_walkTimeoutKey] as Duration? ?? requestTimeout;
 
   Uri _uri(String instance, String path, [Map<String, String>? query]) {
     final base = normaliseMastodonInstance(instance);
@@ -60,7 +71,7 @@ class MastodonClient {
             uri,
             headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
           )
-          .timeout(_timeout);
+          .timeout(_effectiveTimeout);
     } catch (e) {
       throw MastodonException(MastodonErrorKind.network, '$uri: $e');
     }
@@ -111,9 +122,14 @@ class MastodonClient {
     }
 
     MastodonException? worst;
-    for (final instance in instances) {
+    for (var i = 0; i < instances.length; i++) {
+      final instance = instances[i];
+      final timeout = i == 0 ? firstWalkTimeout : fallbackWalkTimeout;
       try {
-        return await read(instance);
+        return await runZoned(
+          () => read(instance),
+          zoneValues: {_walkTimeoutKey: timeout},
+        );
       } on MastodonException catch (e) {
         worst = _moreTelling(worst, e);
       }
@@ -639,7 +655,7 @@ class MastodonClient {
             },
             body: jsonEncode(body),
           )
-          .timeout(_timeout);
+          .timeout(_effectiveTimeout);
     } catch (e) {
       throw MastodonException(MastodonErrorKind.network, '$uri: $e');
     }

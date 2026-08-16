@@ -268,7 +268,7 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
       if (_results.posts.isEmpty) {
         return Center(child: Text(l10n.plugin_mastodon_no_posts));
       }
-      return ListView.builder(
+      return FeedListView(
         itemCount: _results.posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
           key: ValueKey(_results.posts[index].id),

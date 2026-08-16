@@ -88,6 +88,27 @@ Mechanism work after the tweet-module pass. Device rows above stay TBD.
 - Instagram / TikTok post lists use `FeedListView`; Instagram images decode
   at paint size.
 
+## Second wave (startup / lists / isolates)
+
+- Cached chunk **encode** (`jsonEncode` of `toJson()` maps) runs on a
+  background isolate, matching the existing decode path.
+- Home tabs are built per index (`PageView.builder`); unused destinations
+  are not constructed on first paint.
+- Pref listeners on `FritterApp` bind once; `didChangeDependencies` no
+  longer re-registers them.
+- Private / heavy plugin stores (Pixiv, Booru, EhViewer, TikTok, Instagram,
+  Stocks) load after the blocking startup wait so they race the first frame.
+  Reddit / Substack / Threads / Bluesky / Mastodon stay awaited — For You
+  reads those stores after the first frame.
+- Pixiv keep-alive is the visible tab only.
+- TikTok covers and shared plugin media tiles decode at paint width.
+- Reddit saved / thread, Substack archive / inbox, and Mastodon search
+  posts use `FeedListView`.
+- Profile bio is `Text.rich`; `MeasureSize` ignores sub-pixel height noise.
+- Language-fold reasons update without an extra `setState`.
+- Mastodon instance walks use 8s on the first host and 4s on fallbacks
+  (20s remains the default for a single request).
+
 ## Later pass (feeds / plugins / startup)
 
 Mechanism work after the tweet-module pass. Device rows above stay TBD.

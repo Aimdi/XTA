@@ -38,9 +38,7 @@ Widget _scaffold({int pages = 4, bool disableAnimations = false}) {
           ],
           prefs: prefs,
           initialPage: 0,
-          builder: (_, _) => [
-            for (var i = 0; i < pages; i++) Center(child: Text('body$i')),
-          ],
+          builder: (index, _, _) => Center(child: Text('body$index')),
         ),
       ),
     ),
@@ -102,6 +100,7 @@ void main() {
       await tester.pumpWidget(_scaffold());
       await tester.pumpAndSettle();
       expect(find.text('body0'), findsOneWidget);
+      expect(find.text('body1'), findsNothing);
 
       await _swipeBar(tester, const Offset(-300, 0));
       expect(find.text('body1'), findsOneWidget);

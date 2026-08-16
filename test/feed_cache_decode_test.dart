@@ -22,4 +22,14 @@ void main() {
   test('an empty store is nothing to decode', () async {
     expect(await chainsFromStoredChunksAsync(const []), isEmpty);
   });
+
+  test('async chunk encode matches jsonEncode of the same maps', () async {
+    final chains = [
+      {'id': 'c1', 'isPinned': false, 'tweets': <Map<String, dynamic>>[]},
+      {'id': 'c2', 'isPinned': true, 'tweets': <Map<String, dynamic>>[]},
+    ];
+
+    expect(await encodeChunkBlob(chains), jsonEncode(chains));
+    expect(await encodeChunkBlob(const []), '[]');
+  });
 }
