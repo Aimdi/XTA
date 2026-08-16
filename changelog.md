@@ -2,9 +2,12 @@
 
 What's new in XTA aimdi100:
   - Plugin links (Bluesky, Threads, Instagram, TikTok, Reddit, Mastodon, Pixiv, Substack) open in-app
-  - The Search tab can search enabled plugins, not only X
+  - Discover can search enabled plugins, not only X, and has Find people / Antennas chips
   - Reddit uses the same icon chrome as the other plugins
   - The timeline stays put while plugin sources and accounts load
+  - Unread dots on groups, Following, and For You when cached posts are newer
+  - Saved library says likes and saves stay on this device
+  - Mastodon no longer refetches every public timeline on install or uninstall
 
 ## XTA aimdi99
 

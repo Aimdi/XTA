@@ -11,8 +11,9 @@ Reddit, Mastodon, Pixiv, and Substack URLs from the feed, a card, a profile
 site, or a deep link open the native screen when that plugin is on. “Open on
 site” still leaves for the website.
 
-**Search** the magnifying-glass tab for an enabled plugin, not only X. Switching
-to Search from a plugin tab preselects that plugin.
+**Search** the Discover tab for an enabled plugin, not only X. Switching
+there from a plugin tab preselects that plugin. Find people and Antennas
+are chips on the hub; empty trends offer a location instead of a blank page.
 
 **Reddit** uses the same icon chrome as Threads and the rest — Following,
 Popular, and All on one row, no second title bar.
@@ -21,7 +22,14 @@ Popular, and All on one row, no second title bar.
 
 When a plugin account answers or a source finishes, the list you are already
 reading stays on screen. Partials land in batches instead of rebuilding the
-whole feed on every arrival.
+whole feed on every arrival. Groups, Following, and For You show a dot when
+cached posts are newer than your last read. Mastodon no longer refetches
+every public timeline just because you installed or removed the plugin.
+
+### Likes and saves stay here
+
+Hearts and bookmarks are local. The Saved library says so on the empty
+states and under the folder strip. X cannot see them.
 
 ### Still in from aimdi99
 
