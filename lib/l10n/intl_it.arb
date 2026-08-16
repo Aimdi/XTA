@@ -536,6 +536,7 @@
   "group_combined_count": "Altri {count} letti insieme",
   "@group_combined_count": {},
   "group_has_unread": "Non letto",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emoji",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Tutte le tue iscrizioni esistono ancora.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Non hai ancora messo Mi piace a nessun post!",
+  "no_liked_posts_yet": "Nessun post piaciuto per ora — i cuori restano su questo dispositivo",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Nessun altro gruppo per ora",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Non è stato possibile visualizzare questo tweet salvato, poiché è troppo grande per essere caricato. Si prega di segnalarlo agli sviluppatori.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "I salvati restano su questo dispositivo. X non può vederli.",
   "search": "Ricerca",
   "@search": {},
   "search_saved_posts": "Cerca nei post salvati",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Si, grazie",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Non hai ancora salvato un tweet!",
+  "you_have_not_saved_any_tweets_yet": "Nessun post salvato — i segnalibri restano su questo dispositivo",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Devi avere almeno due pagine nella home",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

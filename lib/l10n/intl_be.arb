@@ -536,6 +536,7 @@
   "group_combined_count": "Разам чытаецца яшчэ: {count}",
   "@group_combined_count": {},
   "group_has_unread": "Непрачытанае",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Аўта",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Эмодзі",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Усе вашы падпіскі ўсё яшчэ існуюць.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Вы яшчэ не ўпадабалі ніводнага паста!",
+  "no_liked_posts_yet": "Пакуль няма ўпадабаных допісаў — сэрцайкі застаюцца на гэтай прыладзе",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Іншых груп пакуль няма",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Захаваны твіт занадта вялікі",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Захаванае застаецца толькі на гэтай прыладзе. X яго не бачыць.",
   "search": "Пошук",
   "@search": {},
   "search_saved_posts": "Пошук у захаваных пастах",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Так, калі ласка",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Вы яшчэ не захавалі ніводнага твіту!",
+  "you_have_not_saved_any_tweets_yet": "Пакуль няма захаваных пастоў — закладкі на гэтай прыладзе",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Вы павінны ўсталяваць як мінімум дзве старонкі для галоўнага экрана",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

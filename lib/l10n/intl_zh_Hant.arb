@@ -536,6 +536,7 @@
   "group_combined_count": "正在一起閱讀另外 {count} 個",
   "@group_combined_count": {},
   "group_has_unread": "未讀",
+  "@group_has_unread": {},
   "group_mark_style_auto": "自動",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "表情",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "你的所有訂閱都仍然存在。",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "您還沒有喜歡任何貼文！",
+  "no_liked_posts_yet": "還沒有喜歡的貼文 — 愛心會留在這台裝置上",
   "@no_liked_posts_yet": {},
   "no_other_groups": "還沒有其他群組",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "此已儲存的推文因過大無法載入而無法顯示。請向開發人員回報。",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "收藏僅儲存在此裝置上，X 無法看到。",
   "search": "搜尋",
   "@search": {},
   "search_saved_posts": "搜尋已儲存的貼文",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "是的，請",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "您尚未儲存任何推文！",
+  "you_have_not_saved_any_tweets_yet": "還沒有儲存的文章——書籤只保存在本機",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "您必須至少有 2 個主畫面頁面",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

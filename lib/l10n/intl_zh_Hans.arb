@@ -536,6 +536,7 @@
   "group_combined_count": "正在一起阅读另外 {count} 个",
   "@group_combined_count": {},
   "group_has_unread": "未读",
+  "@group_has_unread": {},
   "group_mark_style_auto": "自动",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "表情",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "你的所有订阅都仍然存在。",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "您还没有喜欢任何帖子！",
+  "no_liked_posts_yet": "还没有喜欢的帖子 — 爱心会保留在此设备上",
   "@no_liked_posts_yet": {},
   "no_other_groups": "还没有其他分组",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "无法显示这条已保存的推文，因其太大导致难以加载。请将它报告给开发者。",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "收藏仅保存在此设备上，X 无法看到。",
   "search": "搜索",
   "@search": {},
   "search_saved_posts": "搜索已保存的帖子",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "是，请让我看",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "您尚未保存任何推文！",
+  "you_have_not_saved_any_tweets_yet": "还没有保存的文章——书签只保存在本机",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "必须至少有 2 个主屏幕页面",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

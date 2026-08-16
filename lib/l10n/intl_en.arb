@@ -741,7 +741,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "All of your subscriptions still exist.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "You haven't liked any posts yet!",
+  "no_liked_posts_yet": "No liked posts yet — hearts stay on this device",
   "@no_liked_posts_yet": {},
   "no_other_groups": "No other groups yet",
   "@no_other_groups": {},
@@ -2549,6 +2549,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "This saved post could not be displayed, as it's too big to load. Please report it to the developers.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Saves stay on this device. X can't see them.",
   "search": "Search",
   "@search": {},
   "search_saved_posts": "Search saved posts",
@@ -2956,7 +2957,7 @@
   "@yes": {},
   "yes_please": "Yes, please",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "You haven't saved any posts yet!",
+  "you_have_not_saved_any_tweets_yet": "No saved posts yet — bookmarks stay on this device",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "You must have at least 2 home screen pages",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2975,5 +2976,6 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@saves_stay_on_device_notice": {}
 }

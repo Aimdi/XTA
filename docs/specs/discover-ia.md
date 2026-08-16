@@ -24,6 +24,9 @@ trends behind a search icon and left an empty trends list as a blank
    Following hashes in-feed accounts the way the live `-1` feed does.
    For You compares `feed.for_you_newest_cached_at` (last first page) to
    `for_you`'s last-read time — there is no chunk table for that tab.
+7. The Saved library says likes and saves stay on this device: a caption
+   under the folder strip, and empty states that match the plugin wording
+   (not “You haven't liked any posts yet!”). Still local SQLite only.
 
 ## Non-goals
 

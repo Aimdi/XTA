@@ -536,6 +536,7 @@
   "group_combined_count": "{count} और साथ में पढ़े जा रहे हैं",
   "@group_combined_count": {},
   "group_has_unread": "अपठित",
+  "@group_has_unread": {},
   "group_mark_style_auto": "स्वतः",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "इमोजी",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "आपकी सभी सदस्यताएँ अब भी मौजूद हैं।",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "आपने अभी तक किसी पोस्ट को लाइक नहीं किया है!",
+  "no_liked_posts_yet": "अभी तक कोई पसंद की गई पोस्ट नहीं — हार्ट इसी डिवाइस पर रहते हैं",
   "@no_liked_posts_yet": {},
   "no_other_groups": "अभी तक कोई अन्य समूह नहीं",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "यह सहेजी गई पोस्ट प्रदर्शित नहीं की जा सकी, क्योंकि यह लोड करने के लिए बहुत बड़ी है। कृपया डेवलपर्स को रिपोर्ट करें।",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "सेव इसी डिवाइस पर रहते हैं। X उन्हें नहीं देख सकता।",
   "search": "खोजें",
   "@search": {},
   "search_saved_posts": "सहेजी गई पोस्ट में खोजें",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "हाँ, कृपया",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "आपने अभी तक कोई पोस्ट सहेजी नहीं है!",
+  "you_have_not_saved_any_tweets_yet": "अभी कुछ सहेजा नहीं — बुकमार्क इस डिवाइस पर रहते हैं",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "आपके पास कम से कम 2 होम स्क्रीन पृष्ठ होने चाहिए",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

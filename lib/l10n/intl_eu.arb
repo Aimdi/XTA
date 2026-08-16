@@ -536,6 +536,7 @@
   "group_combined_count": "Beste {count} batera irakurtzen",
   "@group_combined_count": {},
   "group_has_unread": "Irakurri gabe",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emoji",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Zure harpidetza guztiek existitzen jarraitzen dute.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Oraindik ez duzu argitalpenik gogoko egin!",
+  "no_liked_posts_yet": "Oraindik ez dago gogoko mezurik — bihotzak gailu honetan geratzen dira",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Oraindik ez dago beste talderik",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Gordetako txioa handiegia da",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Gordetakoak gailu honetan gelditzen dira. X-ek ezin ditu ikusi.",
   "search": "Bilatu",
   "@search": {},
   "search_saved_posts": "Bilatu gordetako argitalpenetan",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Bai, mesedez",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Oraindik ez duzu txiorik gorde!",
+  "you_have_not_saved_any_tweets_yet": "Oraindik ez dago gordetakorik — laster-markak gailu honetan geratzen dira",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Hasierako 2 orrialde izan behar ditu gutxienez",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

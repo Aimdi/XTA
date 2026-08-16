@@ -536,6 +536,7 @@
   "group_combined_count": "Kune legiĝas ankoraŭ {count}",
   "@group_combined_count": {},
   "group_has_unread": "Nelegita",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Aŭtomata",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emociko",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Ĉiuj viaj abonoj ankoraŭ ekzistas.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Vi ankoraŭ ne ŝatis iun ajn afiŝon!",
+  "no_liked_posts_yet": "Ankoraŭ neniuj ŝatitaj afiŝoj — koroj restas sur ĉi tiu aparato",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Ankoraŭ neniuj aliaj grupoj",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Tiu ĉi pepo konservita ne eblas vidiĝi, pro ĝi estas tro granda por ŝarĝi. Bonvolu raporti al la programistoj.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Konservitaĵoj restas en ĉi tiu aparato. X ne povas vidi ilin.",
   "search": "Serĉi",
   "@search": {},
   "search_saved_posts": "Serĉi en konservitaj afiŝoj",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Jes, bonvolu",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Vi ne konservis iujn ajn pepojn ankoraŭ!",
+  "you_have_not_saved_any_tweets_yet": "Ankoraŭ neniuj konservitaj — legosignoj restas en ĉi tiu aparato",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Vi devas havi malpleje 2 paĝojn de hejmekrano",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

@@ -536,6 +536,7 @@
   "group_combined_count": "Leser {count} til samtidig",
   "@group_combined_count": {},
   "group_has_unread": "Ulest",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emoji",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Alle abonnementene dine finnes fortsatt.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Du har ikke likt noen innlegg ennå!",
+  "no_liked_posts_yet": "Ingen likte innlegg ennå — hjerter blir på denne enheten",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Ingen andre grupper ennå",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Lagret innlegg er for stort",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Lagrede innlegg blir på denne enheten. X kan ikke se dem.",
   "search": "Søk",
   "@search": {},
   "search_saved_posts": "Søk i lagrede innlegg",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Ja",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Du har ikke lagret noen tweets ennå!",
+  "you_have_not_saved_any_tweets_yet": "Ingen lagrede innlegg ennå — bokmerker blir på denne enheten",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Du må ha minst 2 startsider",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

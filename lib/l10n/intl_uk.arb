@@ -536,6 +536,7 @@
   "group_combined_count": "Разом читається ще: {count}",
   "@group_combined_count": {},
   "group_has_unread": "Непрочитане",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Авто",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Емодзі",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Усі ваші підписки досі існують.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Ви ще не вподобали жодного допису!",
+  "no_liked_posts_yet": "Вподобаних дописів поки немає — сердечка залишаються на цьому пристрої",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Інших груп поки немає",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Ця збережена публікація не може бути відображена, оскільки вона надто велика для завантаження. Будь ласка, повідомте розробників.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Збережене залишається на цьому пристрої. X його не бачить.",
   "search": "Пошук",
   "@search": {},
   "search_saved_posts": "Пошук у збережених дописах",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Так, будь ласка",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Ви ще не зберегли жодного твіту!",
+  "you_have_not_saved_any_tweets_yet": "Поки немає збережених — закладки лишаються на цьому пристрої",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Потрібно мати щонайменше 2 сторінки головного екрана",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

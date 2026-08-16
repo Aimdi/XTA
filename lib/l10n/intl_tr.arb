@@ -536,6 +536,7 @@
   "group_combined_count": "{count} grup daha birlikte okunuyor",
   "@group_combined_count": {},
   "group_has_unread": "Okunmamış",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Otomatik",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emoji",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Tüm aboneliklerin hâlâ mevcut.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Henüz hiçbir gönderiyi beğenmediniz!",
+  "no_liked_posts_yet": "Henüz beğenilen gönderi yok — kalpler bu cihazda kalır",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Henüz başka grup yok",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Kaydedilen bu tweet, yüklenemeyecek kadar büyük olduğu için görüntülenemedi. Lütfen bunu geliştiricilere bildirin.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Kayıtlar bu cihazda kalır. X bunları göremez.",
   "search": "Ara",
   "@search": {},
   "search_saved_posts": "Kaydedilen gönderilerde ara",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Evet, lütfen",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Henüz tweet kaydetmediniz!",
+  "you_have_not_saved_any_tweets_yet": "Henüz kayıt yok — yer işaretleri bu cihazda kalır",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "En az 2 ana ekran sayfanız olmalıdır",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

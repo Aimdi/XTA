@@ -536,6 +536,7 @@
   "group_combined_count": "Đang đọc thêm {count} nhóm cùng lúc",
   "@group_combined_count": {},
   "group_has_unread": "Chưa đọc",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Tự động",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emoji",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Tất cả các lượt theo dõi của bạn vẫn tồn tại.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Bạn chưa thích bài viết nào cả!",
+  "no_liked_posts_yet": "Chưa có bài viết đã thích — trái tim chỉ ở trên thiết bị này",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Chưa có nhóm nào khác",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "Bài viết đã lưu này không thể xem, có thể nó quá lớn.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Bài đã lưu được giữ trên thiết bị này. X không thể thấy chúng.",
   "search": "Tìm kiếm",
   "@search": {},
   "search_saved_posts": "Tìm trong bài đăng đã lưu",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "CÓ",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Bạn đã không lưu bài viết nào cả!",
+  "you_have_not_saved_any_tweets_yet": "Chưa có bài lưu — dấu trang ở lại trên thiết bị này",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Bạn phải để 2 trang trên màn hình chính",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

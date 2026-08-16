@@ -536,6 +536,7 @@
   "group_combined_count": "{count}개를 함께 보는 중",
   "@group_combined_count": {},
   "group_has_unread": "읽지 않음",
+  "@group_has_unread": {},
   "group_mark_style_auto": "자동",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "이모지",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "모든 구독 계정이 아직 존재합니다.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "아직 좋아요를 누른 게시물이 없습니다!",
+  "no_liked_posts_yet": "아직 좋아요한 게시물이 없습니다 — 하트는 이 기기에만 저장됩니다",
   "@no_liked_posts_yet": {},
   "no_other_groups": "다른 그룹이 아직 없습니다",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "이 저장된 게시물은 너무 커서 표시할 수 없습니다. 개발자에게 신고해 주세요.",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "저장 항목은 이 기기에만 남으며 X는 볼 수 없습니다.",
   "search": "검색",
   "@search": {},
   "search_saved_posts": "저장된 게시물 검색",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "네, 원합니다",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "아무 트윗도 저장하지 않았습니다!",
+  "you_have_not_saved_any_tweets_yet": "아직 저장된 글이 없습니다 — 북마크는 이 기기에 남습니다",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "홈 화면 페이지가 최소 2개 있어야 합니다",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }

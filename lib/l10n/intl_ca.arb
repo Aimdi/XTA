@@ -536,6 +536,7 @@
   "group_combined_count": "Llegint-ne {count} més alhora",
   "@group_combined_count": {},
   "group_has_unread": "No llegit",
+  "@group_has_unread": {},
   "group_mark_style_auto": "Auto",
   "@group_mark_style_auto": {},
   "group_mark_style_emoji": "Emoji",
@@ -734,7 +735,7 @@
   "@no_broken_bookmarks_found": {},
   "no_broken_subscriptions_found": "Totes les vostres subscripcions encara existeixen.",
   "@no_broken_subscriptions_found": {},
-  "no_liked_posts_yet": "Encara no has fet m'agrada a cap publicació!",
+  "no_liked_posts_yet": "Encara no hi ha publicacions que t’agradin — els cors es queden en aquest dispositiu",
   "@no_liked_posts_yet": {},
   "no_other_groups": "Encara no hi ha altres grups",
   "@no_other_groups": {},
@@ -2509,6 +2510,7 @@
   "@saved_to_folder": {},
   "saved_tweet_too_large": "El tuit desat és massa gran",
   "@saved_tweet_too_large": {},
+  "saves_stay_on_device_notice": "Els desats es queden en aquest dispositiu. X no els pot veure.",
   "search": "Cerca",
   "@search": {},
   "search_saved_posts": "Cerca a les publicacions desades",
@@ -2901,7 +2903,7 @@
   "@yes": {},
   "yes_please": "Sí, si us plau",
   "@yes_please": {},
-  "you_have_not_saved_any_tweets_yet": "Encara no has desat cap tweet!",
+  "you_have_not_saved_any_tweets_yet": "Encara no hi ha publicacions desades — les adreces d’interès es queden aquí",
   "@you_have_not_saved_any_tweets_yet": {},
   "you_must_have_at_least_2_home_screen_pages": "Heu de tenir almenys 2 pàgines de pantalla d'inici",
   "@you_must_have_at_least_2_home_screen_pages": {},
@@ -2921,5 +2923,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
   "@zen_mode_page_cap_description": {},
-  "@group_has_unread": {}
+  "@saves_stay_on_device_notice": {}
 }
