@@ -109,13 +109,21 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
 
   MastodonFeedStore(this.client, this.prefs, this.accounts) : super(const []);
 
+  void forget() {
+    _posts.clear();
+    update(const []);
+  }
+
   Future<void> refresh({bool force = false}) async {
-    await execute(
-      () => postsFor(
-        accounts.state.map((e) => e.acct).toList(growable: false),
-        forceRefresh: force,
-      ),
-    );
+    if (state.isNotEmpty) {
+      try {
+        update(await _load(forceRefresh: force, onPartial: update));
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
+    await execute(() => _load(forceRefresh: force, onPartial: update));
   }
 
   /// Posts for [accts], newest first.
@@ -127,7 +135,25 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   Future<List<MastodonPost>> postsFor(
     List<String> accts, {
     bool forceRefresh = false,
+    void Function(List<MastodonPost>)? onPartial,
   }) {
+    return _load(
+      accts: accts,
+      forceRefresh: forceRefresh,
+      onPartial: (posts) {
+        update(posts);
+        onPartial?.call(posts);
+      },
+    );
+  }
+
+  Future<List<MastodonPost>> _load({
+    List<String>? accts,
+    required bool forceRefresh,
+    void Function(List<MastodonPost>)? onPartial,
+  }) {
+    final keys =
+        accts ?? accounts.state.map((e) => e.acct).toList(growable: false);
     final configured = mastodonConfiguredInstances(prefs);
     // A different set of instances is a different set of answers, so what was
     // cached under the old one is not an answer to the new question.
@@ -137,14 +163,15 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
     }
 
     return _posts.merge(
-      accts,
+      keys,
       (acct) => client.fetchAccountAnywhere(
-        mastodonInstanceCandidates(acct, configured: configured),
+        mastodonFeedInstanceCandidates(acct, configured: configured),
         acct,
         limit: mastodonPostsPerAccount,
       ),
       forceRefresh: forceRefresh,
       maxFetches: mastodonMaxAccountsPerLoad,
+      onPartial: onPartial,
     );
   }
 
@@ -153,7 +180,7 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   final _posts = AccountPostCache<MastodonPost>(
     dateOf: (post) => post.publishedAt,
     perAccount: mastodonPostsPerAccount,
-    concurrency: 3,
+    concurrency: 2,
   );
 }
 
@@ -205,6 +232,13 @@ class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
       _hasMore && !_loadingMore && !_backedOff && state.isNotEmpty;
 
   bool get loadingMore => _loadingMore;
+
+  void forget() {
+    _instance = null;
+    _hasMore = true;
+    _backedOff = false;
+    update(const []);
+  }
 
   Future<void> refresh() async {
     _instance = null;
@@ -280,6 +314,8 @@ class MastodonExploreStore extends Store<MastodonExplorePage> {
   MastodonExploreStore(this.client, this.prefs)
     : super(const MastodonExplorePage());
 
+  void forget() => update(const MastodonExplorePage());
+
   Future<void> refresh() async {
     if (state.posts.isNotEmpty || state.tags.isNotEmpty) {
       try {
@@ -294,12 +330,15 @@ class MastodonExploreStore extends Store<MastodonExplorePage> {
 
   Future<MastodonExplorePage> _load() async {
     final instances = mastodonDiscoveryInstances(prefs);
-    final tags = await _soft(
+    final tagsFuture = _soft(
       () => client.getTrendingTagsAnywhere(instances),
       const <MastodonTrendingTag>[],
     );
-    final posts = await client.getTrendingStatusesAnywhere(instances);
-    return MastodonExplorePage(tags: tags, posts: posts);
+    final postsFuture = client.getTrendingStatusesAnywhere(instances);
+    return MastodonExplorePage(
+      tags: await tagsFuture,
+      posts: await postsFuture,
+    );
   }
 
   Future<T> _soft<T>(Future<T> Function() read, T fallback) async {

@@ -13,6 +13,7 @@ import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -41,8 +42,10 @@ class _MastodonScreenState extends State<MastodonScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
+        // Explore only. Following used to start the same frame and fan out
+        // every followed acct across several instances — that is what made
+        // opening the tab stall the rest of the app.
         context.read<MastodonExploreStore>().refresh();
-        context.read<MastodonFeedStore>().refresh();
       }
     });
   }
@@ -123,19 +126,20 @@ class _MastodonScreenState extends State<MastodonScreen> {
             _MastodonTabs(selected: tab, onSelected: _onTab),
             const Divider(height: 1),
             Expanded(
-              child: IndexedStack(
+              child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  _ExplorePane(scrollController: widget.scrollController),
-                  _PublicPane(
+                  (_) =>
+                      _ExplorePane(scrollController: widget.scrollController),
+                  (_) => _PublicPane(
                     store: context.read<MastodonLocalStore>(),
                     emptyIcon: Icons.home_outlined,
                   ),
-                  _PublicPane(
+                  (_) => _PublicPane(
                     store: context.read<MastodonFederatedStore>(),
                     emptyIcon: Icons.public,
                   ),
-                  _FollowingPane(),
+                  (_) => _FollowingPane(),
                 ],
               ),
             ),
@@ -155,6 +159,10 @@ class _MastodonScreenState extends State<MastodonScreen> {
     if (index == 2) {
       final store = context.read<MastodonFederatedStore>();
       if (store.state.isEmpty) unawaited(store.refresh());
+    }
+    if (index == 3) {
+      final feed = context.read<MastodonFeedStore>();
+      if (feed.state.isEmpty) unawaited(feed.refresh());
     }
   }
 }
