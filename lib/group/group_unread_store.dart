@@ -122,11 +122,7 @@ Future<Map<String, DateTime>> _lastReadByGroup(Database database) async {
     tableFeedReadPosition,
     columns: ['group_id', 'updated_at'],
   );
-  return {
-    for (final row in rows)
-      if (parseChunkTimestamp(row['updated_at']) case final at?)
-        row['group_id'] as String: at,
-  };
+  return _timesBy(rows, 'group_id', 'updated_at');
 }
 
 Future<Map<String, DateTime>> _newestByHash(Database database) async {
@@ -134,11 +130,22 @@ Future<Map<String, DateTime>> _newestByHash(Database database) async {
     'SELECT hash, MAX(created_at) AS newest FROM $tableFeedGroupChunk '
     'GROUP BY hash',
   );
-  return {
-    for (final row in rows)
-      if (parseChunkTimestamp(row['newest']) case final at?)
-        row['hash'] as String: at,
-  };
+  return _timesBy(rows, 'hash', 'newest');
+}
+
+Map<String, DateTime> _timesBy(
+  Iterable<Map<String, Object?>> rows,
+  String key,
+  String time,
+) {
+  final out = <String, DateTime>{};
+  for (final row in rows) {
+    final at = parseChunkTimestamp(row[time]);
+    if (at != null) {
+      out[row[key] as String] = at;
+    }
+  }
+  return out;
 }
 
 /// Rebuilds [builder] when unread ids change. Missing store → no dots.
