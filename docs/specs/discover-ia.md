@@ -20,11 +20,15 @@ trends behind a search icon and left an empty trends list as a blank
    chunks are newer than `feed_read_position.updated_at`. Hashing matches
    the live feed (`feed_chunk_hash.dart`) so parent groups include nested
    members. Existing installs keep their stored off default.
+6. Following and For You on the home strip use the same unread dot.
+   Following hashes in-feed accounts the way the live `-1` feed does.
+   For You compares `feed.for_you_newest_cached_at` (last first page) to
+   `for_you`'s last-read time — there is no chunk table for that tab.
 
 ## Non-goals
 
 - Renaming the stored page id to `discover`
-- Unread dots on Following / For You
+- Unread dots on pinned plugin strip tabs
 - Decoding tweet timestamps from chunk JSON (chunk write time is the heuristic)
 - Forcing reading-position on for existing installs
 - Posting, compose, or like-on-X

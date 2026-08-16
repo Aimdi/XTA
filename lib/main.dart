@@ -699,6 +699,9 @@ Future<void> main() async {
       'FeedSessionCache',
       feedSessionCache.invalidateAll,
     );
+    subscriptionsModel.addReloadListener('GroupUnreadStore', () {
+      unawaited(groupUnreadStore.reload());
+    });
 
     var trendLocationModel = UserTrendLocationModel(prefService);
 

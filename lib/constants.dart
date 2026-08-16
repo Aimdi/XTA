@@ -536,6 +536,10 @@ const optionFeedLanguageAction = 'feed.language_action';
 /// CSV of group ids pinned as deck columns on wide screens.
 const optionDeckGroupIds = 'home.deck_group_ids';
 const optionFeedReadingPosition = 'feed.reading_position';
+
+/// When For You last cached a first page (ISO-8601). Compared to
+/// `feed_read_position.updated_at` for the home-strip unread dot.
+const optionForYouNewestCachedAt = 'feed.for_you_newest_cached_at';
 // Catch-up ("finish the feed") mode is per feed: the group id is appended to
 // this prefix by `feedCatchUpModeKey`. Off unless a feed opts in.
 const optionFeedCatchUpModePrefix = 'feed.catch_up_mode.';
