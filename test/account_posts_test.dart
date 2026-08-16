@@ -4,8 +4,16 @@ import 'package:xta/plugins/account_posts.dart';
 
 typedef _Post = ({String from, DateTime? at});
 
-AccountPostCache<_Post> _cache({int perAccount = 10, Duration? ttl}) =>
-    AccountPostCache<_Post>(dateOf: (post) => post.at, perAccount: perAccount, ttl: ttl ?? kAccountPostsCacheTtl);
+AccountPostCache<_Post> _cache({
+  int perAccount = 10,
+  Duration? ttl,
+  int concurrency = 2,
+}) => AccountPostCache<_Post>(
+  dateOf: (post) => post.at,
+  perAccount: perAccount,
+  concurrency: concurrency,
+  ttl: ttl ?? kAccountPostsCacheTtl,
+);
 
 DateTime _at(int day) => DateTime.utc(2026, 1, day);
 
@@ -23,15 +31,23 @@ void main() {
     });
 
     test('merges every account newest first', () async {
-      final posts = await _cache().merge(['a', 'b'], (key) async => [(from: key, at: key == 'a' ? _at(1) : _at(5))]);
+      final posts = await _cache().merge([
+        'a',
+        'b',
+      ], (key) async => [(from: key, at: key == 'a' ? _at(1) : _at(5))]);
 
       expect(posts.map((e) => e.from), ['b', 'a']);
     });
 
     test('takes only a page of each account', () async {
-      final posts = await _cache(
-        perAccount: 2,
-      ).merge(['a'], (key) async => [(from: key, at: _at(3)), (from: key, at: _at(2)), (from: key, at: _at(1))]);
+      final posts = await _cache(perAccount: 2).merge(
+        ['a'],
+        (key) async => [
+          (from: key, at: _at(3)),
+          (from: key, at: _at(2)),
+          (from: key, at: _at(1)),
+        ],
+      );
 
       expect(posts, hasLength(2));
     });
@@ -46,7 +62,10 @@ void main() {
     });
 
     test('the error surfaces only when nothing at all could be read', () async {
-      expect(_cache().merge(['bad'], (_) async => throw StateError('down')), throwsA(isA<StateError>()));
+      expect(
+        _cache().merge(['bad'], (_) async => throw StateError('down')),
+        throwsA(isA<StateError>()),
+      );
     });
 
     test('a second read inside the window does not ask again', () async {
@@ -126,7 +145,11 @@ void main() {
       }
 
       await cache.merge(['a', 'b', 'c', 'd'], fetch, maxFetches: 2);
-      final second = await cache.merge(['a', 'b', 'c', 'd'], fetch, maxFetches: 2);
+      final second = await cache.merge(
+        ['a', 'b', 'c', 'd'],
+        fetch,
+        maxFetches: 2,
+      );
 
       expect(asked.toSet(), {'a', 'b', 'c', 'd'});
       // The first two came back from the cache rather than the network.
@@ -152,15 +175,25 @@ void main() {
     // past the fetch budget returned nothing even though the cache held fresh
     // posts — a pull-to-refresh with more follows than the cap would collapse
     // the timeline to the first batch.
-    test('a forced refresh past the budget keeps what the cache holds', () async {
-      final cache = _cache();
-      Future<List<_Post>> fetch(String key) async => [(from: key, at: _at(1))];
+    test(
+      'a forced refresh past the budget keeps what the cache holds',
+      () async {
+        final cache = _cache();
+        Future<List<_Post>> fetch(String key) async => [
+          (from: key, at: _at(1)),
+        ];
 
-      await cache.merge(['a', 'b'], fetch);
-      final refreshed = await cache.merge(['a', 'b'], fetch, forceRefresh: true, maxFetches: 1);
+        await cache.merge(['a', 'b'], fetch);
+        final refreshed = await cache.merge(
+          ['a', 'b'],
+          fetch,
+          forceRefresh: true,
+          maxFetches: 1,
+        );
 
-      expect(refreshed.map((e) => e.from).toSet(), {'a', 'b'});
-    });
+        expect(refreshed.map((e) => e.from).toSet(), {'a', 'b'});
+      },
+    );
 
     test('a forced refresh still refetches inside the budget', () async {
       final cache = _cache();
@@ -183,7 +216,6 @@ void main() {
       expect(cache.pendingCount(['a', 'b', 'c']), 2);
     });
 
-
     test('forceRefresh with onPartial paints stale posts first', () async {
       final cache = _cache();
       await cache.merge(['a'], (_) async => [(from: 'old', at: _at(1))]);
@@ -203,17 +235,65 @@ void main() {
       for (var i = 0; i < 40 && seen.isEmpty; i++) {
         await Future<void>.delayed(const Duration(milliseconds: 5));
       }
-      expect(seen, isNotEmpty, reason: 'stale must paint before the network returns');
+      expect(
+        seen,
+        isNotEmpty,
+        reason: 'stale must paint before the network returns',
+      );
       expect(seen.first.single.from, 'old');
 
       slow.complete();
       final posts = await future;
       expect(posts.single.from, 'new');
     });
+    test('onPartial paints the first account immediately', () async {
+      final seen = <int>[];
+      final slow = Completer<void>();
+      final future = _cache(concurrency: 1).merge(['a', 'b'], (key) async {
+        if (key == 'b') await slow.future;
+        return [(from: key, at: _at(1))];
+      }, onPartial: (posts) => seen.add(posts.length));
+
+      for (var i = 0; i < 40 && seen.isEmpty; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(
+        seen,
+        isNotEmpty,
+        reason: 'first account must paint before the rest',
+      );
+      expect(seen.first, 1);
+
+      slow.complete();
+      await future;
+      expect(seen.last, 2);
+    });
+
+    test('onPartial later paints share a throttle window', () async {
+      final seen = <int>[];
+      await _cache(concurrency: 3).merge(
+        ['a', 'b', 'c', 'd'],
+        (key) async => [(from: key, at: _at(1))],
+        onPartial: (posts) => seen.add(posts.length),
+      );
+
+      expect(seen.first, 1);
+      expect(seen.last, 4);
+      expect(
+        seen.length,
+        lessThan(5),
+        reason: 'later accounts must not each rebuild the list',
+      );
+    });
+
     test('a post with no date sorts last rather than being dropped', () async {
-      final posts = await _cache().merge([
-        'a',
-      ], (key) async => [(from: 'undated', at: null), (from: 'dated', at: _at(1))]);
+      final posts = await _cache().merge(
+        ['a'],
+        (key) async => [
+          (from: 'undated', at: null),
+          (from: 'dated', at: _at(1)),
+        ],
+      );
 
       expect(posts.map((e) => e.from), ['dated', 'undated']);
     });

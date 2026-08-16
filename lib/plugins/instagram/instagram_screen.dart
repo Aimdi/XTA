@@ -15,6 +15,7 @@ import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// Guest Instagram home: For you + Following + local accounts.
 class InstagramScreen extends StatefulWidget {
@@ -239,7 +240,7 @@ class _ForYouTab extends StatelessWidget {
           },
           child: RefreshIndicator(
             onRefresh: store.refresh,
-            child: ListView.builder(
+            child: FeedListView(
               controller: scrollController,
               itemCount: posts.length + extras,
               itemBuilder: (context, index) {
@@ -620,7 +621,7 @@ class _PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ListView.builder(
+      child: FeedListView(
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return InstagramPostCard(

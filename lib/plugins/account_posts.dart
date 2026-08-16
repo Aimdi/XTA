@@ -10,6 +10,8 @@
 /// turned out to be asking Meta the same question three times over.
 library;
 
+import 'dart:async';
+
 import 'package:xta/group/future_pool.dart';
 
 /// How long an account's posts are reused before its network is asked again.
@@ -19,6 +21,12 @@ import 'package:xta/group/future_pool.dart';
 /// time — which costs the reader rate limit at best and, on a network that
 /// watches for scripted behaviour, the account at worst.
 const Duration kAccountPostsCacheTtl = Duration(minutes: 10);
+
+/// How often a growing merge may tell the UI it has more posts.
+///
+/// Each account answering used to call [Store.update] immediately. Twenty
+/// followed handles meant twenty full list rebuilds on the same frame window.
+const Duration kAccountPostsPartialThrottle = Duration(milliseconds: 200);
 
 /// Merges per-account pages into one timeline, remembering them briefly.
 ///
@@ -86,10 +94,11 @@ class AccountPostCache<T> {
     var remaining = maxFetches ?? keys.length;
     Object? lastError;
     final done = <List<T>>[];
+    final partial = _ThrottledPartial<T>(onPartial);
     final batches = await mapWithConcurrency(keys, concurrency, (key) async {
       if (!forceRefresh) {
         if (_fresh(key) case final cached?) {
-          _deliver(done, cached, onPartial);
+          _deliver(done, cached, partial);
           return cached;
         }
       } else if (onPartial != null) {
@@ -99,7 +108,7 @@ class AccountPostCache<T> {
         // and recording both would duplicate the account in the merge.
         final stale = _entries[key]?.posts;
         if (stale != null && stale.isNotEmpty) {
-          onPartial(_merged([...done, stale]));
+          partial(_merged([...done, stale]));
         }
       }
       // Decremented before the await, so concurrent workers cannot each see the
@@ -108,7 +117,7 @@ class AccountPostCache<T> {
       // must not collapse the timeline to the first batch.
       if (remaining <= 0) {
         final held = _entries[key]?.posts ?? <T>[];
-        _deliver(done, held, onPartial);
+        _deliver(done, held, partial);
         return held;
       }
       remaining--;
@@ -116,7 +125,7 @@ class AccountPostCache<T> {
       try {
         final posts = await fetch(key);
         _entries[key] = (at: DateTime.now(), posts: posts);
-        _deliver(done, posts, onPartial);
+        _deliver(done, posts, partial);
         return posts;
       } catch (e) {
         lastError = e;
@@ -124,6 +133,7 @@ class AccountPostCache<T> {
       }
     });
 
+    partial.flush();
     final posts = _merged(batches);
     if (posts.isEmpty && lastError != null) {
       throw lastError!;
@@ -132,23 +142,76 @@ class AccountPostCache<T> {
     return posts;
   }
 
-  void _deliver(List<List<T>> done, List<T> posts, void Function(List<T>)? onPartial) {
-    if (onPartial == null) {
-      return;
-    }
+  void _deliver(
+    List<List<T>> done,
+    List<T> posts,
+    _ThrottledPartial<T> partial,
+  ) {
     done.add(posts);
     if (posts.isNotEmpty) {
-      onPartial(_merged(done));
+      partial(_merged(done));
     }
   }
 
   List<T> _merged(List<List<T>> batches) {
     final posts = batches.expand((e) => e.take(perAccount)).toList();
-    posts.sort((a, b) => (dateOf(b) ?? DateTime(0)).compareTo(dateOf(a) ?? DateTime(0)));
+    posts.sort(
+      (a, b) => (dateOf(b) ?? DateTime(0)).compareTo(dateOf(a) ?? DateTime(0)),
+    );
     return posts;
   }
 
   /// How many of [keys] would have to be fetched right now — what the cache
   /// cannot already answer. The tab uses it to say that more is still coming.
-  int pendingCount(List<String> keys) => keys.where((key) => _fresh(key) == null).length;
+  int pendingCount(List<String> keys) =>
+      keys.where((key) => _fresh(key) == null).length;
+}
+
+/// First paint is immediate; later ones share a frame window.
+class _ThrottledPartial<T> {
+  _ThrottledPartial(this._emit);
+
+  final void Function(List<T>)? _emit;
+  List<T>? _pending;
+  DateTime? _last;
+  Timer? _timer;
+  var _opened = false;
+
+  void call(List<T> posts) {
+    if (_emit == null) {
+      return;
+    }
+    if (!_opened) {
+      _opened = true;
+      _send(posts);
+      return;
+    }
+    _pending = posts;
+    final wait = _last == null
+        ? Duration.zero
+        : kAccountPostsPartialThrottle - DateTime.now().difference(_last!);
+    if (wait <= Duration.zero) {
+      _send(posts);
+      return;
+    }
+    _timer ??= Timer(wait, flush);
+  }
+
+  void flush() {
+    _timer?.cancel();
+    _timer = null;
+    final posts = _pending;
+    _pending = null;
+    if (posts != null) {
+      _send(posts);
+    }
+  }
+
+  void _send(List<T> posts) {
+    _pending = null;
+    _timer?.cancel();
+    _timer = null;
+    _last = DateTime.now();
+    _emit!(posts);
+  }
 }

@@ -195,10 +195,20 @@ class _Cover extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (post.coverUrl != null)
-                  ExtendedImage.network(
-                    post.coverUrl!,
-                    fit: BoxFit.cover,
-                    cache: true,
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxW = constraints.maxWidth;
+                      final cacheWidth = maxW.isFinite && maxW > 0
+                          ? (maxW * MediaQuery.devicePixelRatioOf(context))
+                                .ceil()
+                          : null;
+                      return ExtendedImage.network(
+                        post.coverUrl!,
+                        fit: BoxFit.cover,
+                        cache: true,
+                        cacheWidth: cacheWidth,
+                      );
+                    },
                   ),
                 if (!post.isPhoto)
                   Center(

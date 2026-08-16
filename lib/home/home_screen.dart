@@ -133,44 +133,40 @@ class _HomeScreenState extends State<_HomeScreen> {
           pages: _pages,
           prefs: widget.prefs,
           initialPage: _initialPage,
-          builder: (scrollControllers, focusNodes) {
-            return List.generate(_pages.length, (index) {
-              final page = _pages[index];
-              if (page.id.startsWith('group-')) {
-                return SubscriptionGroupScreen(
+          builder: (index, scrollControllers, focusNodes) {
+            final page = _pages[index];
+            if (page.id.startsWith('group-')) {
+              return SubscriptionGroupScreen(
+                scrollController: scrollControllers[index]!,
+                id: page.id.replaceAll('group-', ''),
+                name: '',
+              );
+            }
+            switch (page.id) {
+              case 'feed':
+                return FeedScreen(
                   scrollController: scrollControllers[index]!,
-                  id: page.id.replaceAll('group-', ''),
-                  name: '',
+                  id: '-1',
+                  name: L10n.current.feed,
                 );
-              }
-              switch (page.id) {
-                case 'feed':
-                  return FeedScreen(
-                    scrollController: scrollControllers[index]!,
-                    id: '-1',
-                    name: L10n.current.feed,
-                  );
-                case 'subscriptions':
-                  return SubscriptionsScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
-                case 'trending':
-                  return TrendsScreen(
-                    scrollController: scrollControllers[index]!,
-                    focusNode: focusNodes[index]!,
-                  );
-                case 'saved':
-                  return SavedScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
-                default:
-                  final plugin = pluginById(page.id);
-                  final screen = plugin?.homeScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
-                  return screen ?? const MissingScreen();
-              }
-            });
+              case 'subscriptions':
+                return SubscriptionsScreen(
+                  scrollController: scrollControllers[index]!,
+                );
+              case 'trending':
+                return TrendsScreen(
+                  scrollController: scrollControllers[index]!,
+                  focusNode: focusNodes[index]!,
+                );
+              case 'saved':
+                return SavedScreen(scrollController: scrollControllers[index]!);
+              default:
+                final plugin = pluginById(page.id);
+                final screen = plugin?.homeScreen(
+                  scrollController: scrollControllers[index]!,
+                );
+                return screen ?? const MissingScreen();
+            }
           },
         );
       },
@@ -182,11 +178,12 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   final List<NavigationPage> pages;
   final BasePrefService prefs;
   final int initialPage;
-  final List<Widget> Function(
+  final Widget Function(
+    int index,
     Map<int, ScrollController> scrollControllers,
     Map<int, FocusNode> focusNodes,
   )
-  builder; // changed here
+  builder;
 
   const ScaffoldWithBottomNavigation({
     super.key,
@@ -451,8 +448,9 @@ class _ScaffoldWithBottomNavigationState
     return Scaffold(
       extendBody: true,
       drawer: _buildDrawer(context, l10n),
-      body: PageView(
+      body: PageView.builder(
         controller: _pageController,
+        itemCount: widget.pages.length,
         // Tabs change from the bar and nowhere else. A drag anywhere in a page
         // used to change them too, which meant every horizontal gesture in the
         // app — a media carousel, a nested tab view, a slider — was competing
@@ -463,7 +461,8 @@ class _ScaffoldWithBottomNavigationState
             _currentPage = page;
           });
         },
-        children: widget.builder(_scrollControllers, _focusNodes),
+        itemBuilder: (context, index) =>
+            widget.builder(index, _scrollControllers, _focusNodes),
       ),
       // Floating capsule: swipe still changes tab; the page itself never does.
       bottomNavigationBar: SafeArea(

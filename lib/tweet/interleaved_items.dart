@@ -33,8 +33,15 @@ DateTime? newestDateOf(TweetChain chain) {
 /// Items older than the oldest loaded chain deliberately land in the trailing
 /// bucket rather than being dropped — the feed has simply not paged down to
 /// them yet, and they move up as it does.
-List<List<InterleavedItem>> placeInterleaved(List<TweetChain> chains, List<InterleavedItem> items) {
-  final buckets = List.generate(chains.length + 1, (_) => <InterleavedItem>[], growable: false);
+List<List<InterleavedItem>> placeInterleaved(
+  List<TweetChain> chains,
+  List<InterleavedItem> items,
+) {
+  final buckets = List.generate(
+    chains.length + 1,
+    (_) => <InterleavedItem>[],
+    growable: false,
+  );
   if (items.isEmpty) {
     return buckets;
   }
@@ -70,5 +77,24 @@ List<List<InterleavedItem>> placeInterleaved(List<TweetChain> chains, List<Inter
 ///
 /// [chains] is null while the first page is still loading, which is neither
 /// case.
-bool onlyInterleavedToShow({required List<TweetChain>? chains, required List<InterleavedItem> items}) =>
-    chains != null && chains.isEmpty && items.isNotEmpty;
+bool onlyInterleavedToShow({
+  required List<TweetChain>? chains,
+  required List<InterleavedItem> items,
+}) => chains != null && chains.isEmpty && items.isNotEmpty;
+
+/// Writes [items] into [slots] when the visible mix would change.
+///
+/// An empty answer still replaces a filled slot — a member taken out of the
+/// group has to take its posts with it — but an empty-for-empty write is not a
+/// change, so a feed with no plugin members does not rebuild once per source.
+bool replacePluginSlot<S>(
+  Map<S, List<InterleavedItem>> slots,
+  S source,
+  List<InterleavedItem> items,
+) {
+  if (items.isEmpty && !(slots[source]?.isNotEmpty ?? false)) {
+    return false;
+  }
+  slots[source] = items;
+  return true;
+}

@@ -43,6 +43,18 @@ List<dynamic> _decodeChunkBlobs(List<String> blobs) {
   ];
 }
 
+/// [TweetChain.toJson] stays on the UI isolate (same reason as decode);
+/// [jsonEncode] of the already-built maps runs in the background.
+Future<String> encodeChunkBlob(List<Map<String, dynamic>> chains) {
+  if (chains.isEmpty) {
+    return Future.value('[]');
+  }
+  return compute(_encodeChunkBlob, chains);
+}
+
+String _encodeChunkBlob(List<Map<String, dynamic>> chains) =>
+    jsonEncode(chains);
+
 /// Keeps only the first occurrence of each chain id, and of each leading tweet
 /// id when present. Stored chunk rows and successive search windows overlap at
 /// their boundaries, so the same chain (or the same post under two chain ids)

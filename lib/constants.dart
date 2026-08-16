@@ -284,14 +284,12 @@ const blueskyLikedPostsCap = 400;
 /// How many posts one account contributes to the merged Bluesky feed.
 const blueskyPostsPerAccount = 20;
 
-/// How many followed accounts one Bluesky timeline load reads.
+/// First wave of followed accounts asked on one Bluesky timeline load.
 ///
 /// There is no "your following feed" to ask the public AppView for, so a
-/// timeline is one author-feed request per account. That was fine while a
-/// reader added accounts by hand and ruinous the moment they imported somebody
-/// else's following list: several hundred requests per refresh, rate limited
-/// into an empty tab. The newest follows are read and the rest wait their turn.
-const blueskyMaxAccountsPerLoad = 30;
+/// timeline is one author-feed request per account. Thirty of those used to
+/// stall the rest of the app; the cache fills the rest on the next refresh.
+const blueskyMaxAccountsPerLoad = 16;
 
 /// Mastodon / Fediverse, read through a home instance's public REST API.
 ///
@@ -309,9 +307,12 @@ const optionPluginMastodonInstances = 'plugin.mastodon.instances';
 /// How many statuses one account contributes to the merged Mastodon feed.
 const mastodonPostsPerAccount = 20;
 
-/// The same cap for the Fediverse, and for the same reason: one request per
-/// followed account, against instances that are somebody's hobby server.
-const mastodonMaxAccountsPerLoad = 30;
+/// First wave of followed accounts asked on one Following / home-feed load.
+///
+/// Each acct is a lookup plus statuses, and a miss walks another instance.
+/// Thirty of those used to stall the rest of the app; the cache fills the
+/// rest on the next refresh.
+const mastodonMaxAccountsPerLoad = 12;
 
 /// Pixiv — private reading plugin. Refresh-token auth; no write actions.
 const pluginIdPixiv = 'pixiv';

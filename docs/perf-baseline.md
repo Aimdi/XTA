@@ -68,6 +68,47 @@ These landed before this baseline doc and are **not** double-counted as Phase 2 
 - Avatar `cacheWidth` decode cap (`9dc41c4`)
 - Reverted feed `cacheExtent` bump — GIF tiles spin native players on build (`d66b60b`)
 
+## App-wide pass (feeds / plugins / tiles)
+
+Mechanism work after the tweet-module pass. Device rows above stay TBD.
+
+- Group first-page cache reads cap at `maxCachedChunkRows` (same as the
+  preview path) so a heavy group does not decode every stored page before
+  paint.
+- Plugin interleave on For You / groups batches into one `setState` and skips
+  empty-for-empty slot writes (`replacePluginSlot`).
+- `AccountPostCache.onPartial` paints the first account immediately, then
+  coalesces later paints (`kAccountPostsPartialThrottle`).
+- Mastodon / Bluesky following feeds paint progressively; Mastodon tabs are
+  lazy; first-wave account caps are 12 / 16.
+- Feed tiles drop the unused ticker mixin; Community Notes in the feed use
+  `Text.rich`; long posts stay capped in the feed even when “always show
+  full” is on (the pref still applies on the opened status).
+- Boost-run lengths are remembered per items list, not walked per tile.
+- Instagram / TikTok post lists use `FeedListView`; Instagram images decode
+  at paint size.
+
+## Second wave (startup / lists / isolates)
+
+- Cached chunk **encode** (`jsonEncode` of `toJson()` maps) runs on a
+  background isolate, matching the existing decode path.
+- Home tabs are built per index (`PageView.builder`); unused destinations
+  are not constructed on first paint.
+- Pref listeners on `FritterApp` bind once; `didChangeDependencies` no
+  longer re-registers them.
+- Private / heavy plugin stores (Pixiv, Booru, EhViewer, TikTok, Instagram,
+  Stocks) load after the blocking startup wait so they race the first frame.
+  Reddit / Substack / Threads / Bluesky / Mastodon stay awaited — For You
+  reads those stores after the first frame.
+- Pixiv keep-alive is the visible tab only.
+- TikTok covers and shared plugin media tiles decode at paint width.
+- Reddit saved / thread, Substack archive / inbox, and Mastodon search
+  posts use `FeedListView`.
+- Profile bio is `Text.rich`; `MeasureSize` ignores sub-pixel height noise.
+- Language-fold reasons update without an extra `setState`.
+- Mastodon instance walks use 8s on the first host and 4s on fallbacks
+  (20s remains the default for a single request).
+
 ## Later pass (feeds / plugins / startup)
 
 Mechanism work after the tweet-module pass. Device rows above stay TBD.

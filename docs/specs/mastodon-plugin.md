@@ -18,6 +18,12 @@ public tabs, the way Tusky / Ivory / Phanpy / Misskey web do it: **Explore**
 (merged newest-first timeline of every locally followed acct). Misskey-family
 origins that 404 the Mastodon public API fall back to featured / local notes.
 
+Opening the tab loads Explore only. Following / Local / Federated start when
+that pane is selected. A following load asks a first wave of accounts
+(`mastodonMaxAccountsPerLoad`); the cache fills the rest on the next refresh.
+Partial answers paint as they arrive, throttled so the list does not rebuild
+once per account.
+
 ## Endpoints used
 
 | Call | Path |
@@ -42,7 +48,9 @@ No OAuth app registration. No write methods.
 ## Thread / replies without search
 
 Opening a post walks [mastodonInstanceCandidates] (origin → reader’s instances →
-built-in defaults). On each candidate the client locates the status without
+built-in defaults). The first host is given 8s; later hosts 4s, so a hung
+origin does not sit on the 20s single-request budget for every candidate.
+On each candidate the client locates the status without
 depending on authenticated search:
 
 1. `GET /statuses/:id` using the snowflake in the public URL (and the card’s id)

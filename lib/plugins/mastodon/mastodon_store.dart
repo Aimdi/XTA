@@ -110,10 +110,25 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   MastodonFeedStore(this.client, this.prefs, this.accounts) : super(const []);
 
   Future<void> refresh({bool force = false}) async {
+    if (state.isNotEmpty) {
+      try {
+        update(
+          await postsFor(
+            accounts.state.map((e) => e.acct).toList(growable: false),
+            forceRefresh: force,
+            onPartial: update,
+          ),
+        );
+      } catch (_) {
+        update(state);
+      }
+      return;
+    }
     await execute(
       () => postsFor(
         accounts.state.map((e) => e.acct).toList(growable: false),
         forceRefresh: force,
+        onPartial: update,
       ),
     );
   }
@@ -127,6 +142,7 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   Future<List<MastodonPost>> postsFor(
     List<String> accts, {
     bool forceRefresh = false,
+    void Function(List<MastodonPost>)? onPartial,
   }) {
     final configured = mastodonConfiguredInstances(prefs);
     // A different set of instances is a different set of answers, so what was
@@ -145,6 +161,7 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
       ),
       forceRefresh: forceRefresh,
       maxFetches: mastodonMaxAccountsPerLoad,
+      onPartial: onPartial,
     );
   }
 
@@ -153,7 +170,7 @@ class MastodonFeedStore extends Store<List<MastodonPost>> {
   final _posts = AccountPostCache<MastodonPost>(
     dateOf: (post) => post.publishedAt,
     perAccount: mastodonPostsPerAccount,
-    concurrency: 3,
+    concurrency: 2,
   );
 }
 

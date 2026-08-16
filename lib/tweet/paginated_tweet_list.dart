@@ -368,7 +368,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return _buildChain(context, loaded[index]);
     }
 
-    final runLength = boostRunLengthAt(loaded, index);
+    final runLength = _boostRunLengthAt(loaded, index);
     if (runLength > 0) {
       return BoostRunCarousel(
         chains: loaded.sublist(index, index + runLength),
@@ -387,6 +387,22 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   List<TweetChain>? _placementItems;
   List<InterleavedItem>? _placementInterleaved;
   (int?, List<List<InterleavedItem>>) _placement = (null, const []);
+  List<TweetChain>? _boostItems;
+  List<int>? _boostRunLengths;
+
+  /// Length of a boost run starting at [index], remembered per items list.
+  ///
+  /// [boostRunLengthAt] walks forward from the index. The list builder used
+  /// to do that on every visible tile of every fling frame.
+  int _boostRunLengthAt(List<TweetChain> loaded, int index) {
+    if (!identical(_boostItems, loaded)) {
+      _boostItems = loaded;
+      _boostRunLengths = [
+        for (var i = 0; i < loaded.length; i++) boostRunLengthAt(loaded, i),
+      ];
+    }
+    return _boostRunLengths![index];
+  }
 
   (int?, List<List<InterleavedItem>>) _placementFor(List<TweetChain> loaded) {
     if (identical(_placementItems, loaded) &&

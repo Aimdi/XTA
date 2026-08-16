@@ -367,6 +367,10 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                       if (user.description != null && user.description!.isNotEmpty)
                                         MeasureSize(
                                           onChange: (size) {
+                                            if (descriptionResized &&
+                                                (size.height - descriptionHeight).abs() <= 1) {
+                                              return;
+                                            }
                                             setState(() {
                                               descriptionHeight = size.height;
                                               descriptionResized = true;
@@ -374,9 +378,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                           },
                                           child: Container(
                                               margin: const EdgeInsets.only(bottom: 8),
-                                              child: SelectableText.rich(
-                                                  minLines: 1,
-                                                  maxLines: 5,
+                                              child: Text.rich(
                                                   TextSpan(
                                                       style: TextStyle(
                                                           height: 1.4,
@@ -384,10 +386,15 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                                               ? Colors.white
                                                               : Colors.black),
                                                       children: displayRichText(descParts)
-                                                  ))),
+                                                  ),
+                                                  maxLines: 5)),
                                         ),
                                       MeasureSize(
                                           onChange: (size) {
+                                            if (metadataResized &&
+                                                (size.height - metadataHeight).abs() <= 1) {
+                                              return;
+                                            }
                                             setState(() {
                                               metadataHeight = size.height;
                                               metadataResized = true;
