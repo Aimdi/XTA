@@ -817,8 +817,6 @@ Future<void> main() async {
         substackLikes.load(),
         substackSaved.load(),
       ],
-      if (prefService.get<bool>(optionPluginStocksEnabled) == true)
-        stocksWatchlist.load(),
       if (prefService.get<bool>(optionPluginThreadsEnabled) == true) ...[
         threadsAccounts.load(),
         threadsLikes.load(),
@@ -829,29 +827,38 @@ Future<void> main() async {
       ],
       if (prefService.get<bool>(optionPluginMastodonEnabled) == true)
         mastodonAccounts.load(),
-      if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
-        pixivMute.load(),
-        pixivSearchHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
-        booruTags.load(),
-        booruMute.load(),
-      ],
-      if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
-        ehFavorites.load(),
-        ehHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
-        tiktokFollows.load(),
-        tiktokLikes.load(),
-        tiktokSearchHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
-        instagramFollows.load(),
-        instagramLikes.load(),
-        instagramSearchHistory.load(),
-      ],
     ]);
+
+    // Gallery / media plugins are not on For You's first paint. Let them race
+    // the first frame instead of holding startup for mute lists and watches.
+    unawaited(
+      Future.wait([
+        if (prefService.get<bool>(optionPluginStocksEnabled) == true)
+          stocksWatchlist.load(),
+        if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
+          pixivMute.load(),
+          pixivSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
+          booruTags.load(),
+          booruMute.load(),
+        ],
+        if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
+          ehFavorites.load(),
+          ehHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
+          tiktokFollows.load(),
+          tiktokLikes.load(),
+          tiktokSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
+          instagramFollows.load(),
+          instagramLikes.load(),
+          instagramSearchHistory.load(),
+        ],
+      ]),
+    );
 
     runApp(
       PrefService(
@@ -995,6 +1002,7 @@ class _FritterAppState extends State<FritterApp> {
   final GlobalKey<NavigatorState> _navigatorKey =
       GlobalKey<NavigatorState>(); // NEW: Navigator key
 
+  var _prefsListening = false;
   String _xLookBackground = xLookBackgroundSystem;
   String _xLookAccent = xLookAccentBlue;
   bool _disableAnimations = false;
@@ -1075,6 +1083,11 @@ class _FritterAppState extends State<FritterApp> {
       _isSecure = prefService.get(optionDisableScreenshots);
       _textScaleFactor = prefService.get(optionTextScaleFactor);
     });
+
+    if (_prefsListening) {
+      return;
+    }
+    _prefsListening = true;
 
     prefService.addKeyListener(optionShouldCheckForUpdates, () {
       // Re-read rather than only rebuild: the value is held in a field, so a

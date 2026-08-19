@@ -82,6 +82,13 @@ Mechanism work after the tweet-module pass. Device rows above stay TBD.
   Inbox / Notes / Liked panes are built the first time they are opened
   (`PluginLazyTabs`), not on the first home paint. TikTok's following cache
   lives with the other plugin stores so a swipe away no longer drops it.
+- Home destinations use `PageView.builder` and a page-index notifier, so unused
+  groups / plugins are not constructed on first paint and a tab change does
+  not rebuild the visible feed. Feed tiles drop an unused ticker; long posts
+  stay capped in the feed; boost-run lengths are remembered per list.
+- Feed chunk JSON encodes off the UI isolate. Gallery plugin stores race the
+  first frame. Pref listeners register once. Plugin media / Instagram / TikTok
+  decode at paint size. Pixiv keeps only the visible masonry grid alive.
 
 ## Phase 2 targets (tweet module)
 
