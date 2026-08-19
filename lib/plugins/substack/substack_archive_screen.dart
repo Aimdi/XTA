@@ -12,6 +12,7 @@ import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/plugins/substack/substack_similar_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class SubstackArchiveScreen extends StatefulWidget {
   final SubstackPublication publication;
@@ -266,7 +267,7 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                       }
                       return RefreshIndicator(
                         onRefresh: store.refresh,
-                        child: ListView.builder(
+                        child: FeedListView(
                           padding: const EdgeInsets.only(bottom: 24),
                           itemCount:
                               snapshot.posts.length +
