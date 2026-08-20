@@ -12,6 +12,8 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 
 /// Guest Hacker News reader. No login, vote, comment, or submit.
+const hackerNewsBrand = Color(0xFFFF6600);
+
 class HackerNewsPlugin extends XtaPlugin {
   HackerNewsPlugin();
 
@@ -31,7 +33,7 @@ class HackerNewsPlugin extends XtaPlugin {
   PluginCategory get category => PluginCategory.communities;
 
   @override
-  Color get brandColor => const Color(0xFFFF6600);
+  Color get brandColor => hackerNewsBrand;
 
   @override
   String title(BuildContext context) => L10n.of(context).plugin_hn_title;

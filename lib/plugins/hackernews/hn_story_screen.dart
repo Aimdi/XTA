@@ -10,6 +10,7 @@ import 'package:xta/plugins/hackernews/hn_story_card.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class HnStoryScreen extends StatefulWidget {
   final HnStory story;
@@ -53,7 +54,7 @@ class _HnStoryScreenState extends State<HnStoryScreen> {
             ),
         ],
       ),
-      body: ScopedBuilder<_HnThreadStore, _HnThread>.transition(
+      body: ScopedBuilder<_HnThreadStore, _HnThread>(
         store: _thread,
         onLoading: (_) => const Center(child: CircularProgressIndicator()),
         onError: (_, error) => FullPageErrorWidget(
@@ -62,36 +63,55 @@ class _HnStoryScreenState extends State<HnStoryScreen> {
           prefix: error.toString(),
           onRetry: _thread.refresh,
         ),
-        onState: (_, thread) => RefreshIndicator(
-          onRefresh: _thread.refresh,
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 32),
-            children: [
-              _StoryHeader(story: thread.story),
-              const Divider(height: 1),
-              if (thread.story.text != null && thread.story.text!.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: Text(thread.story.text!),
-                ),
-              ScopedBuilder<HnCollapseStore, Set<int>>(
-                store: _collapse,
-                onState: (_, collapsed) => Column(
-                  children: [
-                    for (final comment in thread.comments)
-                      _CommentTile(
-                        comment: comment,
-                        depth: 0,
-                        collapsed: collapsed,
-                        onToggle: _collapse.toggle,
-                      ),
-                  ],
-                ),
+        onState: (_, thread) => ScopedBuilder<HnCollapseStore, Set<int>>(
+          store: _collapse,
+          onState: (_, collapsed) {
+            final rows = visibleHnComments(thread.comments, collapsed);
+            return RefreshIndicator(
+              onRefresh: _thread.refresh,
+              child: FeedListView(
+                padding: const EdgeInsets.only(bottom: 32),
+                itemCount: 1 + rows.length,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _ThreadLead(story: thread.story);
+                  }
+                  final row = rows[index - 1];
+                  return _CommentTile(
+                    comment: row.$1,
+                    depth: row.$2,
+                    collapsed: collapsed.contains(row.$1.id),
+                    hiddenCount: row.$1.children.length,
+                    onToggle: _collapse.toggle,
+                  );
+                },
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
+    );
+  }
+}
+
+class _ThreadLead extends StatelessWidget {
+  final HnStory story;
+
+  const _ThreadLead({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _StoryHeader(story: story),
+        const Divider(height: 1),
+        if (story.text != null && story.text!.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Text(story.text!),
+          ),
+      ],
     );
   }
 }
@@ -130,7 +150,7 @@ class _StoryHeader extends StatelessWidget {
                   onTap: () => openHnUser(context, story.author!),
                   child: Text(
                     l10n.plugin_hn_by(story.author!),
-                    style: TextStyle(color: HackerNewsPlugin().brandColor),
+                    style: const TextStyle(color: hackerNewsBrand),
                   ),
                 ),
               if (story.createdAt != null)
@@ -146,13 +166,15 @@ class _StoryHeader extends StatelessWidget {
 class _CommentTile extends StatelessWidget {
   final HnComment comment;
   final int depth;
-  final Set<int> collapsed;
+  final bool collapsed;
+  final int hiddenCount;
   final void Function(int id) onToggle;
 
   const _CommentTile({
     required this.comment,
     required this.depth,
     required this.collapsed,
+    required this.hiddenCount,
     required this.onToggle,
   });
 
@@ -160,61 +182,47 @@ class _CommentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    final closed = collapsed.contains(comment.id);
     final indent = 12.0 + depth * 14.0;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InkWell(
-          onTap: () => onToggle(comment.id),
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(
-                  color: HackerNewsPlugin().brandColor.withValues(
-                    alpha: 0.35 + (depth % 4) * 0.12,
-                  ),
-                  width: 2,
-                ),
+    return InkWell(
+      onTap: () => onToggle(comment.id),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(
+              color: hackerNewsBrand.withValues(
+                alpha: 0.35 + (depth % 4) * 0.12,
               ),
-            ),
-            padding: EdgeInsets.fromLTRB(indent, 8, 16, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  [
-                    comment.deleted
-                        ? l10n.plugin_hn_deleted
-                        : (comment.author ?? l10n.plugin_hn_deleted),
-                    if (comment.createdAt != null)
-                      createCompactDate(comment.createdAt!),
-                    if (closed && comment.children.isNotEmpty)
-                      l10n.plugin_hn_comment_count(comment.children.length),
-                  ].join(' · '),
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.hintColor,
-                  ),
-                ),
-                if (!closed &&
-                    !comment.deleted &&
-                    (comment.text ?? '').isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(comment.text!),
-                ],
-              ],
+              width: 2,
             ),
           ),
         ),
-        if (!closed)
-          for (final child in comment.children)
-            _CommentTile(
-              comment: child,
-              depth: depth + 1,
-              collapsed: collapsed,
-              onToggle: onToggle,
+        padding: EdgeInsets.fromLTRB(indent, 8, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              [
+                comment.deleted
+                    ? l10n.plugin_hn_deleted
+                    : (comment.author ?? l10n.plugin_hn_deleted),
+                if (comment.createdAt != null)
+                  createCompactDate(comment.createdAt!),
+                if (collapsed && hiddenCount > 0)
+                  l10n.plugin_hn_comment_count(hiddenCount),
+              ].join(' · '),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.hintColor,
+              ),
             ),
-      ],
+            if (!collapsed &&
+                !comment.deleted &&
+                (comment.text ?? '').isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(comment.text!),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

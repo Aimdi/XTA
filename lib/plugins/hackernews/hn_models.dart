@@ -63,6 +63,28 @@ class HnStory {
   }
 }
 
+/// Depth-first comments still visible after a collapse tap.
+List<(HnComment comment, int depth)> visibleHnComments(
+  Iterable<HnComment> comments,
+  Set<int> collapsed,
+) {
+  final out = <(HnComment, int)>[];
+  void walk(HnComment comment, int depth) {
+    out.add((comment, depth));
+    if (collapsed.contains(comment.id)) {
+      return;
+    }
+    for (final child in comment.children) {
+      walk(child, depth + 1);
+    }
+  }
+
+  for (final comment in comments) {
+    walk(comment, 0);
+  }
+  return out;
+}
+
 class HnComment {
   final int id;
   final String? author;

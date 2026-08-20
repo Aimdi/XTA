@@ -155,4 +155,36 @@ void main() {
     expect(copy.host, 'example.com');
     expect(copy.hnUrl, 'https://news.ycombinator.com/item?id=7');
   });
+
+  test('collapsed comments hide their children from the list', () {
+    const tree = [
+      HnComment(
+        id: 1,
+        author: 'a',
+        text: 'top',
+        children: [
+          HnComment(id: 2, author: 'b', text: 'child'),
+          HnComment(
+            id: 3,
+            author: 'c',
+            text: 'branch',
+            children: [HnComment(id: 4, author: 'd', text: 'leaf')],
+          ),
+        ],
+      ),
+    ];
+
+    expect(visibleHnComments(tree, const {}).map((row) => row.$1.id), [
+      1,
+      2,
+      3,
+      4,
+    ]);
+    expect(visibleHnComments(tree, const {3}).map((row) => row.$1.id), [
+      1,
+      2,
+      3,
+    ]);
+    expect(visibleHnComments(tree, const {1}).map((row) => row.$1.id), [1]);
+  });
 }

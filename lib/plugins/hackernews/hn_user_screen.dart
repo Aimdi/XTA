@@ -8,6 +8,7 @@ import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class HnUserScreen extends StatefulWidget {
   final String userId;
@@ -40,7 +41,7 @@ class _HnUserScreenState extends State<HnUserScreen> {
     final follows = context.read<HnFollowsStore>();
     return Scaffold(
       appBar: AppBar(title: Text(widget.userId)),
-      body: ScopedBuilder<_HnUserStore, _HnUserPage>.transition(
+      body: ScopedBuilder<_HnUserStore, _HnUserPage>(
         store: _store,
         onLoading: (_) => const Center(child: CircularProgressIndicator()),
         onError: (_, error) => FullPageErrorWidget(
@@ -51,44 +52,65 @@ class _HnUserScreenState extends State<HnUserScreen> {
         ),
         onState: (_, page) => RefreshIndicator(
           onRefresh: _store.refresh,
-          child: ListView(
+          child: FeedListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            children: [
-              ListTile(
-                title: Text(page.user.id),
-                subtitle: Text(l10n.plugin_hn_user_karma(page.user.karma)),
-                trailing: ScopedBuilder<HnFollowsStore, List<String>>(
-                  store: follows,
-                  onState: (_, _) => TextButton(
-                    onPressed: () => follows.toggle(page.user.id),
-                    child: Text(
-                      follows.isFollowing(page.user.id)
-                          ? l10n.plugin_hn_unfollow
-                          : l10n.plugin_hn_follow,
-                    ),
-                  ),
-                ),
-              ),
-              if ((page.user.about ?? '').isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                  child: Text(page.user.about!),
-                ),
-              const Divider(height: 1),
-              if (page.stories.isEmpty)
-                Padding(
+            itemCount: 1 + (page.stories.isEmpty ? 1 : page.stories.length),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _UserLead(user: page.user, follows: follows);
+              }
+              if (page.stories.isEmpty) {
+                return Padding(
                   padding: const EdgeInsets.only(top: 48),
                   child: EmptyPane(
                     icon: Icons.person_outline,
                     message: l10n.plugin_hn_user_empty,
                   ),
-                )
-              else
-                for (final story in page.stories) HnStoryCard(story: story),
-            ],
+                );
+              }
+              return HnStoryCard(story: page.stories[index - 1]);
+            },
           ),
         ),
       ),
+    );
+  }
+}
+
+class _UserLead extends StatelessWidget {
+  final HnUser user;
+  final HnFollowsStore follows;
+
+  const _UserLead({required this.user, required this.follows});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListTile(
+          title: Text(user.id),
+          subtitle: Text(l10n.plugin_hn_user_karma(user.karma)),
+          trailing: ScopedBuilder<HnFollowsStore, List<String>>(
+            store: follows,
+            onState: (_, _) => TextButton(
+              onPressed: () => follows.toggle(user.id),
+              child: Text(
+                follows.isFollowing(user.id)
+                    ? l10n.plugin_hn_unfollow
+                    : l10n.plugin_hn_follow,
+              ),
+            ),
+          ),
+        ),
+        if ((user.about ?? '').isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Text(user.about!),
+          ),
+        const Divider(height: 1),
+      ],
     );
   }
 }

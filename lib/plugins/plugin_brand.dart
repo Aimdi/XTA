@@ -30,7 +30,17 @@ bool pluginMatchesStoreQuery({
   if (q.isEmpty) {
     return true;
   }
-  return id.toLowerCase().contains(q) ||
+  final compact = q.replaceAll(RegExp(r'\s+'), '');
+  final idLower = id.toLowerCase();
+  final initials = title
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .map((word) => word[0].toLowerCase())
+      .join();
+  return idLower.contains(q) ||
+      idLower.contains(compact) ||
+      initials == q ||
       title.toLowerCase().contains(q) ||
       description.toLowerCase().contains(q) ||
       category.toLowerCase().contains(q);

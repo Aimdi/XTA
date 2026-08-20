@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin.dart';

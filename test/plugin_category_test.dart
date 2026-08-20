@@ -87,6 +87,16 @@ void main() {
     );
     expect(
       pluginMatchesStoreQuery(
+        query: 'hacker news',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isTrue,
+    );
+    expect(
+      pluginMatchesStoreQuery(
         query: 'pixiv',
         id: 'hackernews',
         title: 'Hacker News',

@@ -71,7 +71,7 @@ class _HnScreenState extends State<HnScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
-              accent: HackerNewsPlugin().brandColor,
+              accent: hackerNewsBrand,
               tabs: [
                 _tab(l10n.plugin_hn_tab_top, Icons.whatshot_outlined, 0),
                 _tab(l10n.plugin_hn_tab_new, Icons.schedule_outlined, 1),

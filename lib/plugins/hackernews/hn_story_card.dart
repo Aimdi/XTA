@@ -42,7 +42,7 @@ class HnStoryCard extends StatelessWidget {
                         '$rank',
                         textAlign: TextAlign.right,
                         style: theme.textTheme.labelLarge?.copyWith(
-                          color: HackerNewsPlugin().brandColor,
+                          color: hackerNewsBrand,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
