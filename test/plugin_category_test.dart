@@ -25,7 +25,7 @@ void main() {
       groups[0].plugins.map((p) => p.id),
       containsAll(['threads', 'bluesky', 'mastodon', 'tiktok', 'instagram']),
     );
-    expect(groups[1].plugins.single.id, 'reddit');
+    expect(groups[1].plugins.map((p) => p.id), ['reddit', 'hackernews']);
     expect(groups[2].plugins.single.id, 'substack');
     expect(groups[3].plugins.map((p) => p.id), ['pixiv', 'booru', 'ehviewer']);
     expect(groups[4].plugins.single.id, 'stocks');
@@ -41,6 +41,7 @@ void main() {
     expect(sections.installed.map((p) => p.id), ['reddit', 'pixiv']);
     expect(sections.availableByCategory.map((g) => g.category), [
       PluginCategory.social,
+      PluginCategory.communities,
       PluginCategory.newsletters,
       PluginCategory.art,
       PluginCategory.markets,
@@ -55,10 +56,11 @@ void main() {
       ['booru', 'ehviewer'],
     );
     expect(
-      sections.availableByCategory.any(
-        (g) => g.category == PluginCategory.communities,
-      ),
-      isFalse,
+      sections.availableByCategory
+          .firstWhere((g) => g.category == PluginCategory.communities)
+          .plugins
+          .map((p) => p.id),
+      ['hackernews'],
     );
   });
 }
