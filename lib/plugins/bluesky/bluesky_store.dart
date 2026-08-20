@@ -128,13 +128,15 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
     final actors = accounts.state.map((e) => e.actor).toList(growable: false);
     if (state.isNotEmpty) {
       try {
-        update(await postsFor(actors, forceRefresh: force));
+        update(await postsFor(actors, forceRefresh: force, onPartial: update));
       } catch (_) {
         update(state);
       }
       return;
     }
-    await execute(() => postsFor(actors, forceRefresh: force));
+    await execute(
+      () => postsFor(actors, forceRefresh: force, onPartial: update),
+    );
   }
 
   /// Posts for [actors], newest first — used by the Bluesky tab and by group
@@ -147,6 +149,7 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   Future<List<BlueskyPost>> postsFor(
     List<String> actors, {
     bool forceRefresh = false,
+    void Function(List<BlueskyPost>)? onPartial,
   }) {
     // A different AppView is a different Bluesky answering, so what was cached
     // under the old one is not an answer to the new question — Threads and
@@ -168,6 +171,7 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
       },
       forceRefresh: forceRefresh,
       maxFetches: blueskyMaxAccountsPerLoad,
+      onPartial: onPartial,
     );
   }
 
@@ -180,6 +184,6 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   final _posts = AccountPostCache<BlueskyPost>(
     dateOf: (post) => post.publishedAt,
     perAccount: blueskyPostsPerAccount,
-    concurrency: 3,
+    concurrency: 2,
   );
 }
