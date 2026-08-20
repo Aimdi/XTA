@@ -13,6 +13,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class HnScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -197,7 +198,7 @@ class _FeedTabState extends State<_FeedTab> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<HnFeedStore, List<HnStory>>.transition(
+    return ScopedBuilder<HnFeedStore, List<HnStory>>(
       store: widget.store,
       onLoading: (_) => widget.store.state.isNotEmpty
           ? _StoryList(
@@ -299,7 +300,7 @@ class _FollowingTabState extends State<_FollowingTab> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final follows = context.read<HnFollowsStore>();
-    return ScopedBuilder<HnFollowingStore, List<HnStory>>.transition(
+    return ScopedBuilder<HnFollowingStore, List<HnStory>>(
       store: widget.store,
       onLoading: (_) => const Center(child: CircularProgressIndicator()),
       onError: (_, error) => FullPageErrorWidget(
@@ -363,11 +364,10 @@ class _StoryList extends StatelessWidget {
           }
           return false;
         },
-        child: ListView.separated(
+        child: FeedListView(
           controller: scrollController,
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: stories.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
           itemBuilder: (context, index) => HnStoryCard(
             story: stories[index],
             rank: ranked ? index + 1 : null,

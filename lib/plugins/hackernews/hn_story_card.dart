@@ -22,94 +22,101 @@ class HnStoryCard extends StatelessWidget {
     final likes = context.read<HnLikesStore>();
     final saved = context.read<HnSavedStore>();
 
-    return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => HnStoryScreen(story: story)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (rank != null)
-              SizedBox(
-                width: 28,
-                child: Text(
-                  '$rank',
-                  textAlign: TextAlign.right,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: HackerNewsPlugin().brandColor,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            if (rank != null) const SizedBox(width: 10),
-            Expanded(
-              child: Column(
+    return RepaintBoundary(
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => HnStoryScreen(story: story)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    story.title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (story.host != null) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      story.host!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.hintColor,
+                  if (rank != null)
+                    SizedBox(
+                      width: 28,
+                      child: Text(
+                        '$rank',
+                        textAlign: TextAlign.right,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: HackerNewsPlugin().brandColor,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 4),
-                  Text(
-                    _meta(l10n, story),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.hintColor,
+                  if (rank != null) const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          story.title,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (story.host != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            story.host!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.hintColor,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 4),
+                        Text(
+                          _meta(l10n, story),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.hintColor,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  Column(
+                    children: [
+                      ScopedBuilder<HnLikesStore, Set<String>>(
+                        store: likes,
+                        onState: (_, _) => IconButton(
+                          tooltip: likes.isLiked(story.id)
+                              ? l10n.unlike_on_this_device
+                              : l10n.like_on_this_device,
+                          icon: Icon(
+                            likes.isLiked(story.id)
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 20,
+                          ),
+                          onPressed: () => likes.toggle(story.id),
+                        ),
+                      ),
+                      ScopedBuilder<HnSavedStore, List<HnStory>>(
+                        store: saved,
+                        onState: (_, _) => IconButton(
+                          tooltip: saved.isSaved(story.id)
+                              ? l10n.unsave_from_this_device
+                              : l10n.save_on_this_device,
+                          icon: Icon(
+                            saved.isSaved(story.id)
+                                ? Icons.bookmark
+                                : Icons.bookmark_border,
+                            size: 20,
+                          ),
+                          onPressed: () => saved.toggle(story),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            Column(
-              children: [
-                ScopedBuilder<HnLikesStore, Set<String>>(
-                  store: likes,
-                  onState: (_, _) => IconButton(
-                    tooltip: likes.isLiked(story.id)
-                        ? l10n.unlike_on_this_device
-                        : l10n.like_on_this_device,
-                    icon: Icon(
-                      likes.isLiked(story.id)
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      size: 20,
-                    ),
-                    onPressed: () => likes.toggle(story.id),
-                  ),
-                ),
-                ScopedBuilder<HnSavedStore, List<HnStory>>(
-                  store: saved,
-                  onState: (_, _) => IconButton(
-                    tooltip: saved.isSaved(story.id)
-                        ? l10n.unsave_from_this_device
-                        : l10n.save_on_this_device,
-                    icon: Icon(
-                      saved.isSaved(story.id)
-                          ? Icons.bookmark
-                          : Icons.bookmark_border,
-                      size: 20,
-                    ),
-                    onPressed: () => saved.toggle(story),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          const Divider(height: 1),
+        ],
       ),
     );
   }

@@ -7,6 +7,7 @@ import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
 import 'package:xta/ui/empty_pane.dart';
+import 'package:xta/ui/feed_list.dart';
 
 Future<void> showHnSearchSheet(BuildContext context, {String? initialQuery}) {
   return showModalBottomSheet<void>(
@@ -74,7 +75,7 @@ class _HnSearchSheetState extends State<HnSearchSheet> {
             ),
           ),
           Expanded(
-            child: ScopedBuilder<_HnSearchStore, List<HnStory>>.transition(
+            child: ScopedBuilder<_HnSearchStore, List<HnStory>>(
               store: _store,
               onLoading: (_) =>
                   const Center(child: CircularProgressIndicator()),
@@ -104,9 +105,8 @@ class _HnSearchSheetState extends State<HnSearchSheet> {
                     message: l10n.plugin_hn_search_empty,
                   );
                 }
-                return ListView.separated(
+                return FeedListView(
                   itemCount: stories.length,
-                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) =>
                       HnStoryCard(story: stories[index]),
                 );

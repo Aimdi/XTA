@@ -63,4 +63,37 @@ void main() {
       ['hackernews'],
     );
   });
+
+  test('store search finds Hacker News by name or id', () {
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'hacker',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isTrue,
+    );
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'hn',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isTrue,
+    );
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'pixiv',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isFalse,
+    );
+  });
 }

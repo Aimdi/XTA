@@ -516,7 +516,7 @@ class _ScaffoldWithBottomNavigationState
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
-                  blurRadius: 16,
+                  blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
               ],
