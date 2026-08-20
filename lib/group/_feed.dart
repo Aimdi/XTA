@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
@@ -38,6 +37,7 @@ import 'package:xta/group/held_refresh.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
+import 'package:xta/group/group_media_page.dart';
 
 /// One chunk's contribution to a feed page: its chains, whether its gap-fill
 /// ran out of allowance, and whether X answered with posts from outside the
@@ -126,6 +126,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   String? _lastRecordedChainId;
   final GlobalKey _caughtUpKey = GlobalKey();
   Timer? _chunkRefreshDebounce;
+  final _firstPage = SharedAsyncLoad<TweetPageResult>();
 
   bool get _usesCache => widget.cacheKey != null;
 
@@ -171,12 +172,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
   }
 
-  Future<void> _loadPostsFrom(SubscriptionSource source) async {
-    if (await _collectPostsFrom(source) && mounted) {
-      setState(_mergeInterleaved);
-    }
-  }
-
   Future<bool> _collectPostsFrom(SubscriptionSource source) async {
     if (widget.mediaOnly) {
       return false;
@@ -197,6 +192,22 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
     final items = await source.interleavedPosts(context, ids);
     return mounted && replacePluginSlot(_pluginItems, source, items);
+  }
+
+  Future<void> _reloadPluginSources(
+    Iterable<SubscriptionSource> sources,
+  ) async {
+    var dirty = false;
+    await Future.wait(
+      sources.map((source) async {
+        if (await _collectPostsFrom(source)) {
+          dirty = true;
+        }
+      }),
+    );
+    if (mounted && dirty) {
+      setState(_mergeInterleaved);
+    }
   }
 
   // Chronological feeds only: in popular order a "seen up to" boundary is
@@ -519,12 +530,14 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // again afterwards. Fetching them only in initState therefore asked for the
     // posts of an empty list and never asked again — which is why a group with
     // a subreddit in it stayed empty of Reddit posts however long you waited.
-    for (final source in sourcesNeedingReload(
-      before: oldWidget.pluginMembers,
-      after: widget.pluginMembers,
-    )) {
-      _loadPostsFrom(source);
-    }
+    unawaited(
+      _reloadPluginSources(
+        sourcesNeedingReload(
+          before: oldWidget.pluginMembers,
+          after: widget.pluginMembers,
+        ),
+      ),
+    );
 
     if (oldWidget.includeReplies != widget.includeReplies ||
         oldWidget.includeRetweets != widget.includeRetweets ||
@@ -558,6 +571,15 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   void _applyChunkRefresh() {
     _feedController.controller.refresh();
     _mediaPaging?.pagingController.refresh();
+  }
+
+  /// The tweet list and the image tab share one first-page Search. Opening
+  /// the grid used to start a second per-chunk fan-out and 429 the endpoint.
+  Future<TweetPageResult> _listTweetsShared(String? cursor) {
+    if (cursor != null) {
+      return _listTweets(cursor);
+    }
+    return _firstPage.load(() => _listTweets(null));
   }
 
   final _heldRefresh = HeldRefresh();
@@ -707,6 +729,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           where: 'hash = ?',
           whereArgs: [hash],
           orderBy: 'created_at DESC',
+          limit: maxCachedChunkRows,
         );
 
         // Make sure we load any existing stored tweets from the chunk
@@ -756,7 +779,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           'hash': hash,
           'cursor_top': result.cursorTop,
           'cursor_bottom': result.cursorBottom,
-          'response': jsonEncode(result.chains.map((e) => e.toJson()).toList()),
+          'response': await encodeChunkBlob(
+            result.chains.map((e) => e.toJson()).toList(),
+          ),
         });
       }
 
@@ -787,7 +812,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             'hash': hash,
             'cursor_top': page.cursorTop,
             'cursor_bottom': page.cursorBottom,
-            'response': jsonEncode(page.chains.map((e) => e.toJson()).toList()),
+            'response': await encodeChunkBlob(
+              page.chains.map((e) => e.toJson()).toList(),
+            ),
           });
         }
       }
@@ -847,11 +874,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       priorFolds: rulesOutcome.foldReasons,
     );
     threads = languageOutcome.chains;
-    if (mounted) {
-      setState(() {
-        _foldReasons = {..._foldReasons, ...languageOutcome.foldReasons};
-      });
-    }
+    // Paging already rebuilds the list when this page returns; a setState
+    // here was a second rebuild of the same frame's work.
+    _foldReasons = {..._foldReasons, ...languageOutcome.foldReasons};
 
     if (prefs.get(optionZenMode) == true) {
       threads = _applyZenMode(threads);
@@ -929,8 +954,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return kept;
   }
 
-  /// Loads a page for the media grid: same pages as the tweet list, mapped to
-  /// their media entries.
+  /// Loads a page for the media grid: tweets already on the list first, then
+  /// the same pages as the tweet list, mapped to their media entries.
   Future<CursorPage<String, MediaGridItem>> _loadMediaPage(
     String? cursor,
   ) async {
@@ -938,15 +963,13 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       _seenMediaKeys.clear();
     }
 
-    // A profile's lookahead costs one request per page; here every page is the
-    // whole per-chunk fan-out, so the default of four turns one screenful of
-    // thumbnails into five fan-outs. A media-sparse group shows an emptier
-    // first grid in exchange, and fills as the reader scrolls.
-    return mediaPageWithLookahead(
-      cursor,
-      _listTweets,
-      _unseenMediaItems,
-      maxLookahead: 1,
+    return groupMediaPage(
+      cursor: cursor,
+      loadedChains: _feedController.items,
+      previewChains: _cachedPreview,
+      feedNextCursor: _feedController.nextCursor,
+      fetch: _listTweetsShared,
+      itemsOf: _unseenMediaItems,
     );
   }
 
@@ -999,7 +1022,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           onNotification: _onScrollNotification,
           child: PaginatedTweetList(
             feed: _feedController,
-            loadPage: _listTweets,
+            loadPage: _listTweetsShared,
             username: null,
             firstPagePreview: _cachedPreview,
             firstPagePreviewCachedAt: _cachedPreviewAt,

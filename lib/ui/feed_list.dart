@@ -31,6 +31,7 @@ class FeedListView extends StatelessWidget {
       itemCount: itemCount,
       scrollCacheExtent: const ScrollCacheExtent.pixels(kFeedListCacheExtent),
       addAutomaticKeepAlives: false,
+      clipBehavior: Clip.none,
       itemBuilder: itemBuilder,
     );
   }
