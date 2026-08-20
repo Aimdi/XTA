@@ -82,6 +82,10 @@ class TweetFeedController {
   /// The chains loaded so far, or `null` before the first page.
   List<TweetChain>? get items => _paging.items;
 
+  /// Where the tweet list will page from next. The image tab reuses this so
+  /// it does not start a second first-page Search fan-out.
+  String? get nextCursor => _paging.nextCursor;
+
   FeedPause? get pauseReason => _pausedBy;
 
   /// Whether there is anything left to show past the pause. A feed that stopped

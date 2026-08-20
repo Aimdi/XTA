@@ -37,6 +37,7 @@ import 'package:xta/group/held_refresh.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
+import 'package:xta/group/group_media_page.dart';
 
 /// One chunk's contribution to a feed page: its chains, whether its gap-fill
 /// ran out of allowance, and whether X answered with posts from outside the
@@ -125,6 +126,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   String? _lastRecordedChainId;
   final GlobalKey _caughtUpKey = GlobalKey();
   Timer? _chunkRefreshDebounce;
+  final _firstPage = SharedAsyncLoad<TweetPageResult>();
 
   bool get _usesCache => widget.cacheKey != null;
 
@@ -571,6 +573,15 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     _mediaPaging?.pagingController.refresh();
   }
 
+  /// The tweet list and the image tab share one first-page Search. Opening
+  /// the grid used to start a second per-chunk fan-out and 429 the endpoint.
+  Future<TweetPageResult> _listTweetsShared(String? cursor) {
+    if (cursor != null) {
+      return _listTweets(cursor);
+    }
+    return _firstPage.load(() => _listTweets(null));
+  }
+
   final _heldRefresh = HeldRefresh();
 
   bool _chunksMatch(
@@ -943,8 +954,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return kept;
   }
 
-  /// Loads a page for the media grid: same pages as the tweet list, mapped to
-  /// their media entries.
+  /// Loads a page for the media grid: tweets already on the list first, then
+  /// the same pages as the tweet list, mapped to their media entries.
   Future<CursorPage<String, MediaGridItem>> _loadMediaPage(
     String? cursor,
   ) async {
@@ -952,15 +963,13 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       _seenMediaKeys.clear();
     }
 
-    // A profile's lookahead costs one request per page; here every page is the
-    // whole per-chunk fan-out, so the default of four turns one screenful of
-    // thumbnails into five fan-outs. A media-sparse group shows an emptier
-    // first grid in exchange, and fills as the reader scrolls.
-    return mediaPageWithLookahead(
-      cursor,
-      _listTweets,
-      _unseenMediaItems,
-      maxLookahead: 1,
+    return groupMediaPage(
+      cursor: cursor,
+      loadedChains: _feedController.items,
+      previewChains: _cachedPreview,
+      feedNextCursor: _feedController.nextCursor,
+      fetch: _listTweetsShared,
+      itemsOf: _unseenMediaItems,
     );
   }
 
@@ -1013,7 +1022,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           onNotification: _onScrollNotification,
           child: PaginatedTweetList(
             feed: _feedController,
-            loadPage: _listTweets,
+            loadPage: _listTweetsShared,
             username: null,
             firstPagePreview: _cachedPreview,
             firstPagePreviewCachedAt: _cachedPreviewAt,
