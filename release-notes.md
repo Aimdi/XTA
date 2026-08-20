@@ -4,41 +4,29 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Plugins stay in the app
+### Hacker News
 
-**Tap a plugin link** and you stay in XTA. Bluesky, Threads, Instagram, TikTok,
-Reddit, Mastodon, Pixiv, and Substack URLs from the feed, a card, a profile
-site, or a deep link open the native screen when that plugin is on. “Open on
-site” still leaves for the website.
+A guest reader inspired by Harmonic: Top, New, Best, Ask, Show, Jobs, search,
+and profiles. Hearts, bookmarks, and follows stay on this device. There is no
+HN login, vote, comment, or submit. Enable it from the Plugin store; it is
+off by default.
 
-**Search** the Discover tab for an enabled plugin, not only X. Switching
-there from a plugin tab preselects that plugin. Find people and Antennas
-are chips on the hub; empty trends offer a location instead of a blank page.
+### Smoother tabs and feeds
 
-**Reddit** uses the same icon chrome as Threads and the rest — Following,
-Popular, and All on one row, no second title bar.
+Home destinations build when you open them, so unused groups and plugins are
+not constructed on first paint. Changing tabs no longer rebuilds the timeline
+you are looking at. Tweet tiles drop unused work; long posts stay capped in
+the feed. Plugin photos decode at the size they are painted. Feed-cache JSON
+encodes off the UI isolate. Gallery plugin stores start after the first frame.
 
-### A timeline that does not hitch
+### Still in from aimdi100
 
-When a plugin account answers or a source finishes, the list you are already
-reading stays on screen. Partials land in batches instead of rebuilding the
-whole feed on every arrival. Groups, Following, and For You show a dot when
-cached posts are newer than your last read. Mastodon no longer refetches
-every public timeline just because you installed or removed the plugin.
-
-### Likes and saves stay here
-
-Hearts and bookmarks are local. The Saved library says so on the empty
-states and under the folder strip. X cannot see them.
-
-### Still in from aimdi99
-
-Paste a Grok key in Settings → Advanced → AI provider, import public followings
-as local subscriptions, and sort ungrouped accounts into groups.
+Plugin links open in-app. Discover can search enabled plugins. Unread dots on
+groups, Following, and For You. Likes and saves stay on this device.
 
 ---
 
-Everything from [aimdi99](https://github.com/Aimdi/XTA/releases/tag/aimdi99) is
+Everything from [aimdi100](https://github.com/Aimdi/XTA/releases/tag/aimdi100) is
 in here too.
 
 ---

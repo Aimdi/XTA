@@ -1,3 +1,10 @@
+## XTA aimdi101
+
+What's new in XTA aimdi101:
+  - Guest Hacker News plugin (Top / New / Best / Ask / Show / Jobs, search, threads, local likes and follows)
+  - Home tabs build on demand; switching tabs no longer rebuilds the feed you are reading
+  - Cheaper tweet tiles, paint-size plugin images, and feed-cache JSON encode off the UI isolate
+
 ## XTA aimdi100
 
 What's new in XTA aimdi100:
