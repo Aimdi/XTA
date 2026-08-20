@@ -167,19 +167,30 @@ class _PluginMediaTile extends StatelessWidget {
     final radius = tweetMediaRadiusOf(context);
     final image =
         imageBuilder?.call(context, item, BoxFit.cover) ??
-        ExtendedImage.network(
-          item.url,
-          fit: BoxFit.cover,
-          cache: true,
-          timeLimit: const Duration(seconds: 12),
-          retries: 1,
-          loadStateChanged: (state) {
-            if (state.extendedImageLoadState == LoadState.failed) {
-              return ColoredBox(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              );
-            }
-            return null;
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final maxW = constraints.maxWidth;
+            final cacheWidth = maxW.isFinite && maxW > 0
+                ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+                : null;
+            return ExtendedImage.network(
+              item.url,
+              fit: BoxFit.cover,
+              cache: true,
+              cacheWidth: cacheWidth,
+              timeLimit: const Duration(seconds: 12),
+              retries: 1,
+              loadStateChanged: (state) {
+                if (state.extendedImageLoadState == LoadState.failed) {
+                  return ColoredBox(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
+                  );
+                }
+                return null;
+              },
+            );
           },
         );
 
