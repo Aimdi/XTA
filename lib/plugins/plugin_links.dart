@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/plugins/hackernews/hn_models.dart';
+import 'package:xta/plugins/hackernews/hn_story_screen.dart';
+import 'package:xta/plugins/hackernews/hn_user_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
@@ -107,6 +110,13 @@ Future<bool> _pushLink(BuildContext context, PluginLink link) {
       MastodonThreadScreen(post: _mastodonStub(link)),
     ),
     PixivWebLink() => _openPixiv(context, link.ref),
+    HnStoryLink() => _push(
+      context,
+      HnStoryScreen(
+        story: HnStory(id: link.id, title: ''),
+      ),
+    ),
+    HnUserLink() => _push(context, HnUserScreen(userId: link.id)),
   };
 }
 
@@ -216,6 +226,7 @@ bool _enabledFor(BasePrefService prefs, PluginLink link) {
     MastodonProfileLink() ||
     MastodonStatusLink() => optionPluginMastodonEnabled,
     PixivWebLink() => optionPluginPixivEnabled,
+    HnStoryLink() || HnUserLink() => optionPluginHnEnabled,
   };
   return prefs.get(key) == true;
 }

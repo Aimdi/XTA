@@ -3,6 +3,7 @@ import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/deepmarks/deepmarks_plugin.dart';
 import 'package:xta/plugins/ehviewer/eh_plugin.dart';
+import 'package:xta/plugins/hackernews/hn_plugin.dart';
 import 'package:xta/plugins/immich/immich_plugin.dart';
 import 'package:xta/plugins/instagram/instagram_plugin.dart';
 import 'package:xta/plugins/karakeep/karakeep_plugin.dart';
@@ -24,6 +25,7 @@ final List<XtaPlugin> builtInPlugins = [
   TikTokPlugin(),
   InstagramPlugin(),
   RedditPlugin(),
+  HackerNewsPlugin(),
   SubstackPlugin(),
   PixivPlugin(),
   BooruPlugin(),
