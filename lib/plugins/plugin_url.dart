@@ -103,6 +103,18 @@ class PixivWebLink extends PluginLink {
   const PixivWebLink(this.ref);
 }
 
+class HnStoryLink extends PluginLink {
+  final int id;
+
+  const HnStoryLink(this.id);
+}
+
+class HnUserLink extends PluginLink {
+  final String id;
+
+  const HnUserLink(this.id);
+}
+
 /// Hosts XTA will treat as Mastodon when opening a `/@user` link.
 Set<String> mastodonLinkHosts(Iterable<String> instances) => {
   for (final instance in instances)
@@ -119,6 +131,7 @@ PluginLink? parsePluginLink(
       parseInstagramLink(url) ??
       parseTikTokLink(url) ??
       parseRedditLink(url) ??
+      parseHackerNewsLink(url) ??
       parsePixivWebLink(url) ??
       parseMastodonLink(url, knownHosts: mastodonHosts);
 }
@@ -282,6 +295,37 @@ PluginLink? parseMastodonLink(String url, {required Set<String> knownHosts}) {
     return null;
   }
   return _mastodonFromSegments(uri, host, segments);
+}
+
+PluginLink? parseHackerNewsLink(String url) {
+  final uri = httpUri(url);
+  if (uri == null || !_isHackerNewsHost(uri.host)) {
+    return null;
+  }
+  final segments = pathSegments(uri);
+  if (segments.isEmpty) {
+    return null;
+  }
+  final id = uri.queryParameters['id']?.trim() ?? '';
+  if (id.isEmpty) {
+    return null;
+  }
+  if (segments.first == 'item') {
+    final storyId = int.tryParse(id);
+    return storyId == null ? null : HnStoryLink(storyId);
+  }
+  if (segments.first == 'user') {
+    return HnUserLink(id);
+  }
+  return null;
+}
+
+bool _isHackerNewsHost(String host) {
+  final normalised = host.toLowerCase();
+  final bare = normalised.startsWith('www.')
+      ? normalised.substring(4)
+      : normalised;
+  return bare == 'news.ycombinator.com';
 }
 
 Uri? httpUri(String input) {
