@@ -4,29 +4,27 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Hacker News
+### Hacker News is in the store
 
-A guest reader inspired by Harmonic: Top, New, Best, Ask, Show, Jobs, search,
-and profiles. Hearts, bookmarks, and follows stay on this device. There is no
-HN login, vote, comment, or submit. Enable it from the Plugin store; it is
-off by default.
+The Plugin store used to hide compiled-in plugins that `main`'s catalogue had
+not named yet, which is why Hacker News vanished after the first refresh. This
+build keeps any plugin this APK already contains unless the catalogue names it
+and marks it unavailable. Search the store by name, initials, or id (`hn`,
+`hacker news`). Available starts open.
 
-### Smoother tabs and feeds
+### Faster HN threads
 
-Home destinations build when you open them, so unused groups and plugins are
-not constructed on first paint. Changing tabs no longer rebuilds the timeline
-you are looking at. Tweet tiles drop unused work; long posts stay capped in
-the feed. Plugin photos decode at the size they are painted. Feed-cache JSON
-encodes off the UI isolate. Gallery plugin stores start after the first frame.
+Story lists, comment trees, and user pages use the same lazy list as the X
+feed. Collapsing a comment skips its children instead of building them.
 
-### Still in from aimdi100
+### Still in from aimdi101
 
-Plugin links open in-app. Discover can search enabled plugins. Unread dots on
-groups, Following, and For You. Likes and saves stay on this device.
+Guest Hacker News (Top / New / Best / Ask / Show / Jobs, search, local likes).
+Home tabs build on demand. Cheaper tweet tiles and paint-size plugin images.
 
 ---
 
-Everything from [aimdi100](https://github.com/Aimdi/XTA/releases/tag/aimdi100) is
+Everything from [aimdi101](https://github.com/Aimdi/XTA/releases/tag/aimdi101) is
 in here too.
 
 ---

@@ -1,3 +1,11 @@
+## XTA aimdi102
+
+What's new in XTA aimdi102:
+  - Hacker News stays in the Plugin store even when `main`'s catalogue is stale
+  - Search plugins by name, initials, or id (`hn`, `hacker news`)
+  - Available plugins start open so Communities is not hidden
+  - HN threads and user pages build comment and story rows on demand
+
 ## XTA aimdi101
 
 What's new in XTA aimdi101:
