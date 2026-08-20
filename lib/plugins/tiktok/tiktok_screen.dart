@@ -13,6 +13,7 @@ import 'package:xta/plugins/tiktok/tiktok_search_sheet.dart';
 import 'package:xta/plugins/tiktok/tiktok_settings.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// Guest TikTok home: Following feed + local accounts.
 class TikTokScreen extends StatefulWidget {
@@ -359,7 +360,7 @@ class _PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ListView.builder(
+      child: FeedListView(
         controller: scrollController,
         itemCount: posts.length,
         itemBuilder: (context, index) {
