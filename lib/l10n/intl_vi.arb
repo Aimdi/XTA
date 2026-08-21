@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Hiển thị dưới dạng tab",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Tắt vẫn giữ nguồn nhưng chuyển nó vào Nhóm thay vì thanh dưới.",
+  "plugin_show_as_tab_description": "Tắt vẫn giữ nguồn nhưng ghim nó trên dải trang chủ thay vì thanh dưới.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Thêm mã cổ phiếu",
   "@plugin_stocks_add": {},

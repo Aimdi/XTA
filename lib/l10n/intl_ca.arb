@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Mostra com a pestanya",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Desactivat manté el canal però el mou a Grups en lloc de la barra inferior.",
+  "plugin_show_as_tab_description": "Desactivat manté el canal però el fixa a la franja d’inici en lloc de la barra inferior.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Afegeix un ticker",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Cercar connectors",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Mostra connectors privats",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Afegeix una publicació",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

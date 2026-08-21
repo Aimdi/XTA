@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Показывать как вкладку",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Выключено — лента остаётся, но переносится в «Группы» вместо нижней панели.",
+  "plugin_show_as_tab_description": "Выключено — лента остаётся, но закрепляется на домашней полоске вместо нижней панели.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Добавить тикер",
   "@plugin_stocks_add": {},

@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Паказваць як укладку",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Выключана — лента застаецца, але пераносіцца ў «Групы» замест ніжняй панэлі.",
+  "plugin_show_as_tab_description": "Выключана — стужка застаецца, але замацоўваецца на хатняй палосцы замест ніжняй панэлі.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Дадаць тыкер",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Search plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Паказваць прыватныя плагіны",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Дадаць выданне",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

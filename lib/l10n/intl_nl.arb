@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Als tabblad weergeven",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Uit houdt de feed maar zet hem onder Groepen in plaats van in de onderste balk.",
+  "plugin_show_as_tab_description": "Uit houdt de feed maar zet hem op de startstrook in plaats van in de onderste balk.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Ticker toevoegen",
   "@plugin_stocks_add": {},

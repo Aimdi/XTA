@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "टैब के रूप में दिखाएँ",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "बंद करने पर फ़ीड बनी रहती है, पर नीचे की पट्टी के बजाय समूह में चली जाती है।",
+  "plugin_show_as_tab_description": "बंद करने पर फ़ीड बनी रहती है, पर नीचे की पट्टी के बजाय होम पट्टी पर पिन हो जाती है।",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "टिकर जोड़ें",
   "@plugin_stocks_add": {},

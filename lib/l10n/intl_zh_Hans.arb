@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "显示为标签页",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "关闭后信息流仍保留，但移到「分组」下而不是底部栏。",
+  "plugin_show_as_tab_description": "关闭后信息流仍保留，但固定到主页顶栏而不是底部栏。",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "添加股票代码",
   "@plugin_stocks_add": {},

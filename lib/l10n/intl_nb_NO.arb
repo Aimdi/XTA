@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Vis som fane",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Av beholder strømmen, men flytter den under Grupper i stedet for nederste linje.",
+  "plugin_show_as_tab_description": "Av beholder strømmen, men fester den på startfeltet i stedet for nederste linje.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Legg til ticker",
   "@plugin_stocks_add": {},

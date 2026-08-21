@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Pokaż jako kartę",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Wyłączone zachowuje kanał, ale przenosi go do Grup zamiast dolnego paska.",
+  "plugin_show_as_tab_description": "Wyłączone zachowuje kanał, ale przypina go do paska na stronie głównej zamiast dolnego paska.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Dodaj ticker",
   "@plugin_stocks_add": {},

@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Mostrar como separador",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Desligado mantém o feed, mas move-o para Grupos em vez da barra inferior.",
+  "plugin_show_as_tab_description": "Desligado mantém o feed, mas afixa-o na faixa inicial em vez da barra inferior.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Adicionar ticker",
   "@plugin_stocks_add": {},

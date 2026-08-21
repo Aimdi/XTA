@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "タブとして表示",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "オフにしてもフィードは残り、下部バーではなく「グループ」に移動します。",
+  "plugin_show_as_tab_description": "オフにしてもフィードは残り、下部バーではなくホームのストリップに固定されます。",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "ティッカーを追加",
   "@plugin_stocks_add": {},

@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Zobrazit jako kartu",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Vypnuto kanál zachová, ale přesune ho pod Skupiny místo dolního panelu.",
+  "plugin_show_as_tab_description": "Vypnuto kanál zachová, ale připne ho na domácí lištu místo dolního panelu.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Přidat ticker",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Hledat pluginy",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Zobrazit soukromé pluginy",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Přidat publikaci",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

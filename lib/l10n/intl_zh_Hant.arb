@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "顯示為分頁",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "關閉後資訊流仍保留，但移到「群組」下而非底部列。",
+  "plugin_show_as_tab_description": "關閉後資訊流仍保留，但釘在首頁列而非底部列。",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "新增股票代號",
   "@plugin_stocks_add": {},

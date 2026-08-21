@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Als Tab anzeigen",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Aus behält den Feed, verschiebt ihn aber unter „Gruppen“ statt in die untere Leiste.",
+  "plugin_show_as_tab_description": "Aus behält den Feed, heftet ihn aber an die Startleiste statt in die untere Leiste.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Ticker hinzufügen",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Optionale Plugins durchsuchen und verwalten",
   "@plugin_store_description": {},
   "plugin_store_search": "Plugins suchen",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Private Plugins anzeigen",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Publikation hinzufügen",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

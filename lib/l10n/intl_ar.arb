@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "العرض كعلامة تبويب",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "الإيقاف يبقي التغذية لكن ينقلها إلى «المجموعات» بدلًا من الشريط السفلي.",
+  "plugin_show_as_tab_description": "الإيقاف يبقي التغذية لكن يثبّتها على شريط الصفحة الرئيسية بدلًا من الشريط السفلي.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "إضافة رمز سهم",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "تصفح الإضافات الاختيارية وإدارتها",
   "@plugin_store_description": {},
   "plugin_store_search": "البحث في الإضافات",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "إظهار الإضافات الخاصة",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "إضافة منشور",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

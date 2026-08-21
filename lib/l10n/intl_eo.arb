@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Montri kiel langeton",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Malŝaltita konservas la fluon sed movas ĝin sub Grupoj anstataŭ la malsupran breton.",
+  "plugin_show_as_tab_description": "Malŝaltita konservas la fluon sed alpinglas ĝin sur la hejman strion anstataŭ la malsupran breton.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Aldoni tikeron",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Search plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Montri privatajn kromaĵojn",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Aldoni eldonaĵon",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

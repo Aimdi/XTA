@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Erakutsi fitxa gisa",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Itzalita jarioa mantentzen du, baina beheko barran ordez Taldeen azpian jartzen du.",
+  "plugin_show_as_tab_description": "Itzalita jarioa mantentzen du, baina beheko barran ordez hasierako zerrendan finkatzen du.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Gehitu tickerra",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Search plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Erakutsi plugin pribatuak",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Gehitu argitalpena",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

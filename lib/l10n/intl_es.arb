@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Mostrar como pestaña",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Desactivado mantiene el feed pero lo mueve a Grupos en lugar de la barra inferior.",
+  "plugin_show_as_tab_description": "Desactivado mantiene el feed pero lo fija en la tira de inicio en lugar de la barra inferior.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Añadir ticker",
   "@plugin_stocks_add": {},
@@ -2087,6 +2087,7 @@
   "plugin_store_description": "Explora y gestiona plugins opcionales",
   "@plugin_store_description": {},
   "plugin_store_search": "Buscar plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Mostrar complementos privados",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Añadir publicación",
@@ -2980,6 +2981,5 @@
   "zen_mode_page_cap": "Longitud del feed en modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Cuántas páginas carga el feed en modo zen antes de hacer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

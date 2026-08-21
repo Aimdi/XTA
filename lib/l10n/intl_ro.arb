@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Afișează ca filă",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Oprit păstrează fluxul, dar îl mută în Grupuri în loc de bara de jos.",
+  "plugin_show_as_tab_description": "Oprit păstrează fluxul, dar îl fixează pe banda de start în loc de bara de jos.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Adaugă simbol",
   "@plugin_stocks_add": {},

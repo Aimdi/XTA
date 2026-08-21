@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Mostra come scheda",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Disattivato mantiene il feed ma lo sposta sotto Gruppi anziché nella barra in basso.",
+  "plugin_show_as_tab_description": "Disattivato mantiene il feed ma lo fissa sulla striscia Home invece che nella barra in basso.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Aggiungi ticker",
   "@plugin_stocks_add": {},

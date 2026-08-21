@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Показувати як вкладку",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Вимкнено — лента залишається, але переходить до «Груп» замість нижньої панелі.",
+  "plugin_show_as_tab_description": "Вимкнено — стрічка залишається, але закріплюється на домашній смужці замість нижньої панелі.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Додати тікер",
   "@plugin_stocks_add": {},

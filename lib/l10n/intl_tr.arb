@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "Sekme olarak göster",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "Kapalı olduğunda akış kalır ama alt çubuk yerine Gruplar altına taşınır.",
+  "plugin_show_as_tab_description": "Kapalı olduğunda akış kalır ama alt çubuk yerine ana sayfa şeridine sabitlenir.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "Sembol ekle",
   "@plugin_stocks_add": {},

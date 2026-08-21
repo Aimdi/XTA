@@ -2032,7 +2032,7 @@
   "@plugin_replying_to": {},
   "plugin_show_as_tab": "탭으로 표시",
   "@plugin_show_as_tab": {},
-  "plugin_show_as_tab_description": "끄면 피드는 유지되고 하단 바 대신 그룹 아래로 이동합니다.",
+  "plugin_show_as_tab_description": "끄면 피드는 유지되고 하단 바 대신 홈 스트립에 고정됩니다.",
   "@plugin_show_as_tab_description": {},
   "plugin_stocks_add": "티커 추가",
   "@plugin_stocks_add": {},
