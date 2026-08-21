@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/icon_label.dart';
 
 /// Label for a home-strip [Tab], with an unread dot when that feed is newer.
 class FeedStripTab extends StatelessWidget {
   final String title;
+  final IconData? icon;
   final bool unread;
 
-  const FeedStripTab({super.key, required this.title, this.unread = false});
+  const FeedStripTab({
+    super.key,
+    required this.title,
+    this.icon,
+    this.unread = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,11 @@ class FeedStripTab extends StatelessWidget {
       child: Badge(
         isLabelVisible: unread,
         smallSize: 8,
-        child: ExcludeSemantics(child: Text(title)),
+        child: ExcludeSemantics(
+          child: icon == null
+              ? Text(title)
+              : IconLabel(icon: icon!, label: title),
+        ),
       ),
     );
   }

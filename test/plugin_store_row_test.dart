@@ -54,12 +54,19 @@ void main() {
 
     expect(find.byType(SwitchListTile), findsNothing);
     expect(find.text('Show as a tab'), findsNothing);
-    expect(find.byTooltip('Show as a tab'), findsOneWidget);
+    expect(
+      find.byTooltip(
+        L10n.of(
+          tester.element(find.byType(Scaffold)),
+        ).plugin_show_as_tab_description,
+      ),
+      findsOneWidget,
+    );
     expect(find.byTooltip('Settings'), findsOneWidget);
     expect(find.byType(PopupMenuButton<String>), findsOneWidget);
   });
 
-  testWidgets('available plugins start collapsed under one tile', (
+  testWidgets('available plugins start open so a new plugin is visible', (
     tester,
   ) async {
     final groups = groupPluginsByCategory([ThreadsPlugin()]);
@@ -69,12 +76,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Available'), findsOneWidget);
-    expect(find.text('Install'), findsNothing);
-
-    await tester.tap(find.byKey(const Key('plugin-available')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
     expect(find.text('Install'), findsOneWidget);
   });
 }

@@ -6,6 +6,7 @@ import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -80,7 +81,8 @@ class _RedditFeedListState extends State<RedditFeedList>
 
   Widget _list(List<RedditPost> posts) {
     return FeedListView(
-      controller: widget.scrollController,
+      controller: pluginInnerScrollController(context, widget.scrollController),
+      padding: pluginFeedPadding(context),
       itemCount: posts.length,
       itemBuilder: (context, index) => RedditPostCard(
         key: ValueKey(posts[index].id),

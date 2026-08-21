@@ -4,41 +4,64 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Plugins stay in the app
+### Crash on the first home frame
 
-**Tap a plugin link** and you stay in XTA. Bluesky, Threads, Instagram, TikTok,
-Reddit, Mastodon, Pixiv, and Substack URLs from the feed, a card, a profile
-site, or a deep link open the native screen when that plugin is on. “Open on
-site” still leaves for the website.
+**Install this build, not aimdi103.** The first home frame after aimdi103
+could crash: a missing `rss_subscription` table after a swallowed migrate,
+empty or restored `home.pages`, and string-list prefs stored as JSON. This
+build creates the table if it is still missing, keeps the default Home /
+Subscriptions / Discover / Saved tabs when nothing usable is selected,
+reads those prefs without assuming the stored type, and hardens IconLabel,
+Networks → Add timeline, RSS enable, and the feed strip.
 
-**Search** the Discover tab for an enabled plugin, not only X. Switching
-there from a plugin tab preselects that plugin. Find people and Antennas
-are chips on the hub; empty trends offer a location instead of a blank page.
+Existing databases keep working. No settings reset.
 
-**Reddit** uses the same icon chrome as Threads and the rest — Following,
-Popular, and All on one row, no second title bar.
+### RSS, groups, and Substack leftovers
 
-### A timeline that does not hitch
+**RSS** is in the Plugin store (search `rss`). Paste a site or feed URL; XTA
+finds the public RSS or Atom feed. Home merges items newest-first with an
+unread chip. Follows stay on this device and can be added to a group.
 
-When a plugin account answers or a source finishes, the list you are already
-reading stays on screen. Partials land in batches instead of rebuilding the
-whole feed on every arrival. Groups, Following, and For You show a dot when
-cached posts are newer than your last read. Mastodon no longer refetches
-every public timeline just because you installed or removed the plugin.
+**Group feeds** now show those plugin posts next to X. Add a Reddit community,
+Substack publication, or RSS feed to a group and they appear in that group's
+timeline instead of an X-only list.
 
-### Likes and saves stay here
+**Substack** custom-domain follows (garbageday and other leftover hosts) load
+again. Tap the publication name or logo on a card to open the profile, not
+only the article.
 
-Hearts and bookmarks are local. The Saved library says so on the empty
-states and under the folder strip. X cannot see them.
+**Sherpa** is an explicit on-device engine under Settings → Read aloud. Install
+the Sherpa ONNX TTS Engine app, then choose Sherpa when you listen to an
+article.
 
-### Still in from aimdi99
+### Bluesky lists and custom feeds
 
-Paste a Grok key in Settings → Advanced → AI provider, import public followings
-as local subscriptions, and sort ungrouped accounts into groups.
+Bluesky now has **Following**, **Discover**, **Lists**, and **Liked**. Discover
+opens custom feeds (algos); Lists opens list timelines. Paste a feed or list
+AT-URI or bsky.app link. Following no longer rebuilds from the first account
+when you swipe away and back.
+
+The group **image** tab reuses tweets already on the list instead of firing a
+second Search, which was 429ing larger groups.
+
+Reddit home can switch among the communities you follow without leaving the
+tab. Discover plugin chips own the search results for that plugin.
+
+### Home strip, not Groups
+
+Switching networks lives on the home strip. The globe opens **Networks** for
+plugins that are not pinned. Hiding a plugin tab pins it there; it is not a
+Groups-board chip. Plugin and section icons sit beside the labels.
+
+### Still in from aimdi102
+
+Hacker News is in the Plugin store — search `hn` or `hacker news`. A stale
+catalogue on `main` cannot hide a plugin this APK already contains. Available
+starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi99](https://github.com/Aimdi/XTA/releases/tag/aimdi99) is
+Everything from [aimdi103](https://github.com/Aimdi/XTA/releases/tag/aimdi103) is
 in here too.
 
 ---

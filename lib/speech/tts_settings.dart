@@ -3,6 +3,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/speech/tts_engines.dart';
+import 'package:xta/utils/urls.dart';
 
 /// Which speech engine and voice reading aloud uses.
 ///
@@ -21,19 +23,31 @@ class TtsChoice {
 
   final double rate;
 
-  const TtsChoice({this.engine, this.voiceName, this.voiceLocale, this.rate = 0.45});
+  const TtsChoice({
+    this.engine,
+    this.voiceName,
+    this.voiceLocale,
+    this.rate = 0.45,
+  });
 
   bool get hasVoice => voiceName != null && voiceLocale != null;
 }
 
 TtsChoice readTtsChoice(BasePrefService prefs) => TtsChoice(
-      engine: _orNull(prefs.get<String>(optionTtsEngine)),
-      voiceName: _orNull(prefs.get<String>(optionTtsVoiceName)),
-      voiceLocale: _orNull(prefs.get<String>(optionTtsVoiceLocale)),
-      rate: prefs.get<double>(optionTtsRate) ?? 0.45,
-    );
+  engine: _orNull(prefs.get<String>(optionTtsEngine)),
+  voiceName: _orNull(prefs.get<String>(optionTtsVoiceName)),
+  voiceLocale: _orNull(prefs.get<String>(optionTtsVoiceLocale)),
+  rate: prefs.get<double>(optionTtsRate) ?? 0.45,
+);
 
 String? _orNull(String? value) => value == null || value.isEmpty ? null : value;
+
+/// Stores Sherpa as the engine and clears a voice that belonged to another one.
+Future<void> preferSherpaTts(BasePrefService prefs) async {
+  await prefs.set(optionTtsEngine, sherpaOnnxTtsEngine);
+  await prefs.set(optionTtsVoiceName, '');
+  await prefs.set(optionTtsVoiceLocale, '');
+}
 
 /// Applies [choice] to [tts]. Returns false when the chosen engine is gone —
 /// uninstalled since, say — so the caller can fall back rather than sit mute.
@@ -44,7 +58,10 @@ Future<bool> applyTtsChoice(FlutterTts tts, TtsChoice choice) async {
       await tts.setEngine(engine);
     }
     if (choice.hasVoice) {
-      await tts.setVoice({'name': choice.voiceName!, 'locale': choice.voiceLocale!});
+      await tts.setVoice({
+        'name': choice.voiceName!,
+        'locale': choice.voiceLocale!,
+      });
     }
     await tts.setSpeechRate(choice.rate);
     return true;
@@ -54,7 +71,10 @@ Future<bool> applyTtsChoice(FlutterTts tts, TtsChoice choice) async {
 }
 
 /// Everything the platform will tell us about what can speak.
-typedef TtsOptions = ({List<String> engines, List<({String name, String locale})> voices});
+typedef TtsOptions = ({
+  List<String> engines,
+  List<({String name, String locale})> voices,
+});
 
 Future<TtsOptions> loadTtsOptions(FlutterTts tts) async {
   final engines = <String>[];
@@ -113,11 +133,54 @@ Future<bool> openTtsSettings(BuildContext context, FlutterTts tts) async {
   return changed ?? false;
 }
 
+/// Settings hub page — same controls as the reader sheet, with an app bar.
+class TtsSettingsScreen extends StatefulWidget {
+  const TtsSettingsScreen({super.key, this.tts});
+
+  final FlutterTts? tts;
+
+  @override
+  State<TtsSettingsScreen> createState() => _TtsSettingsScreenState();
+}
+
+class _TtsSettingsScreenState extends State<TtsSettingsScreen> {
+  late final FlutterTts _tts = widget.tts ?? FlutterTts();
+  TtsOptions? _options;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final options = await loadTtsOptions(_tts);
+    if (!mounted) return;
+    setState(() => _options = options);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final options = _options;
+    return Scaffold(
+      appBar: AppBar(title: Text(L10n.of(context).settings_speech)),
+      body: options == null
+          ? const Center(child: CircularProgressIndicator())
+          : _TtsSettingsSheet(options: options, tts: _tts, asPage: true),
+    );
+  }
+}
+
 class _TtsSettingsSheet extends StatefulWidget {
   final TtsOptions options;
   final FlutterTts tts;
+  final bool asPage;
 
-  const _TtsSettingsSheet({required this.options, required this.tts});
+  const _TtsSettingsSheet({
+    required this.options,
+    required this.tts,
+    this.asPage = false,
+  });
 
   @override
   State<_TtsSettingsSheet> createState() => _TtsSettingsSheetState();
@@ -130,6 +193,9 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
   /// Voices of the engine currently chosen. Switching engine re-reads them:
   /// the list the platform hands back is whatever engine is loaded.
   late List<({String name, String locale})> _voices = widget.options.voices;
+
+  String? get _engineGroup =>
+      isSherpaEngine(_choice.engine) ? sherpaOnnxTtsEngine : _choice.engine;
 
   @override
   void initState() {
@@ -161,6 +227,9 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
     });
   }
 
+  Future<void> _pickSherpa() =>
+      _setEngine(resolveSherpaEngineId(widget.options.engines));
+
   Future<void> _setVoice(({String name, String locale})? voice) async {
     final prefs = PrefService.of(context, listen: false);
     await prefs.set(optionTtsVoiceName, voice?.name ?? '');
@@ -189,34 +258,50 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Text(l10n.plugin_substack_tts_settings, style: Theme.of(context).textTheme.titleLarge),
-        ),
+        if (!widget.asPage)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              l10n.settings_speech,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
         Expanded(
           child: ListView(
             children: [
-              if (engines.isEmpty && _voices.isEmpty)
+              _header(context, l10n.plugin_substack_tts_engine),
+              RadioListTile<String?>(
+                value: null,
+                groupValue: _engineGroup,
+                title: Text(l10n.plugin_substack_tts_default),
+                onChanged: _setEngine,
+              ),
+              RadioListTile<String?>(
+                value: sherpaOnnxTtsEngine,
+                groupValue: _engineGroup,
+                title: Text(l10n.tts_engine_sherpa),
+                subtitle: Text(l10n.tts_engine_sherpa_description),
+                onChanged: (_) => _pickSherpa(),
+              ),
+              if (!sherpaIsInstalled(engines))
                 Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(l10n.plugin_substack_tts_unavailable, textAlign: TextAlign.center),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      onPressed: () => openUri(context, sherpaTtsInstallUrl),
+                      icon: const Icon(Icons.download_outlined),
+                      label: Text(l10n.tts_sherpa_install),
+                    ),
+                  ),
                 ),
-              if (engines.isNotEmpty) ...[
-                _header(context, l10n.plugin_substack_tts_engine),
+              for (final engine in nonSherpaEngines(engines))
                 RadioListTile<String?>(
-                  value: null,
-                  groupValue: _choice.engine,
-                  title: Text(l10n.plugin_substack_tts_default),
+                  value: engine,
+                  groupValue: _engineGroup,
+                  title: Text(engine),
                   onChanged: _setEngine,
                 ),
-                for (final engine in engines)
-                  RadioListTile<String?>(
-                    value: engine,
-                    groupValue: _choice.engine,
-                    title: Text(engine),
-                    onChanged: _setEngine,
-                  ),
-              ],
               if (_voices.isNotEmpty) ...[
                 _header(context, l10n.plugin_substack_tts_voice),
                 RadioListTile<String?>(
@@ -241,33 +326,36 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
                 max: 1.0,
                 divisions: 8,
                 label: _choice.rate.toStringAsFixed(2),
-                onChanged: (value) => setState(() => _choice = TtsChoice(
-                      engine: _choice.engine,
-                      voiceName: _choice.voiceName,
-                      voiceLocale: _choice.voiceLocale,
-                      rate: value,
-                    )),
+                onChanged: (value) => setState(
+                  () => _choice = TtsChoice(
+                    engine: _choice.engine,
+                    voiceName: _choice.voiceName,
+                    voiceLocale: _choice.voiceLocale,
+                    rate: value,
+                  ),
+                ),
                 onChangeEnd: _setRate,
               ),
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => Navigator.pop(context, _changed),
-              child: Text(l10n.ok),
+        if (!widget.asPage)
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Navigator.pop(context, _changed),
+                child: Text(l10n.ok),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
 
   Widget _header(BuildContext context, String text) => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-        child: Text(text, style: Theme.of(context).textTheme.labelLarge),
-      );
+    padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+    child: Text(text, style: Theme.of(context).textTheme.labelLarge),
+  );
 }

@@ -1,10 +1,15 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/utils/download_directory.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -126,6 +131,18 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
         ),
         actions: [
           PixivBookmarkButton(illust: _illust),
+          IconButton(
+            tooltip: l10n.plugin_pixiv_bookmark_folder,
+            onPressed: _bookmarkIntoFolder,
+            icon: const Icon(Icons.create_new_folder_outlined),
+          ),
+          IconButton(
+            tooltip: l10n.download,
+            onPressed: pages.isEmpty
+                ? null
+                : () => _downloadPage(pages[_pageIndex]),
+            icon: const Icon(Icons.download_outlined),
+          ),
           IconButton(
             tooltip: l10n.plugin_pixiv_open_on_pixiv,
             onPressed: () => openUri(context, _illust.url),
@@ -445,6 +462,102 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
         ),
       ],
     );
+  }
+
+  Future<void> _downloadPage(String url) async {
+    final l10n = L10n.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final prefs = PrefService.of(context, listen: false);
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: pixivImageHeaders,
+      );
+      if (response.statusCode != 200) {
+        throw Exception(response.statusCode);
+      }
+      const ext = 'jpg';
+      final name = 'pixiv_${_illust.id}_p$_pageIndex.$ext';
+      final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
+      final downloadType = prefs.get(optionDownloadType);
+      if (downloadType == optionDownloadTypeAsk || treeUri.isEmpty) {
+        await FlutterFileDialog.saveFile(
+          params: SaveFileDialogParams(
+            fileName: name,
+            data: response.bodyBytes,
+          ),
+        );
+      } else {
+        await DownloadDirectory.save(
+          treeUri: treeUri,
+          fileName: name,
+          bytes: response.bodyBytes,
+        );
+      }
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(l10n.download)));
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
+  }
+
+  Future<void> _bookmarkIntoFolder() async {
+    final l10n = L10n.of(context);
+    final client = context.read<PixivClient>();
+    final store = context.read<PixivBookmarkStore>();
+    final messenger = ScaffoldMessenger.of(context);
+    List<String> folders;
+    try {
+      folders = await client.bookmarkFolders();
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(pixivErrorMessage(l10n, e))),
+      );
+      return;
+    }
+    if (!mounted) return;
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              ListTile(title: Text(l10n.plugin_pixiv_bookmark_folder)),
+              ListTile(
+                leading: const Icon(Icons.bookmark_border),
+                title: Text(l10n.plugin_pixiv_bookmarks_public),
+                onTap: () => Navigator.pop(sheetContext, ''),
+              ),
+              for (final folder in folders)
+                ListTile(
+                  leading: const Icon(Icons.folder_outlined),
+                  title: Text(folder),
+                  onTap: () => Navigator.pop(sheetContext, folder),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+    if (chosen == null || !mounted) return;
+    try {
+      await client.addBookmark(
+        _illust.id,
+        folder: chosen.isEmpty ? null : chosen,
+      );
+      store.update({...store.state, _illust.id: true});
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text(pixivErrorMessage(l10n, e))),
+        );
+      }
+    }
   }
 
   Future<void> _showMuteSheet() {
