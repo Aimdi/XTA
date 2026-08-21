@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Găsește persoane",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Caută pe {name} postări, persoane și comunități.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Nicio tendință pentru acest loc. Caută mai sus sau adaugă altă locație.",
   "@discover_trends_empty": {},
   "dismiss": "Închide",

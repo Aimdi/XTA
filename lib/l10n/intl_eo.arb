@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Trovi homojn",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Serĉu ĉe {name} afiŝojn, homojn kaj komunumojn.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Ankoraŭ neniuj tendencoj por ĉi tiu loko. Serĉu supre, aŭ aldonu alian lokon.",
   "@discover_trends_empty": {},
   "dismiss": "Fermi",

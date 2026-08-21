@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
+import 'package:xta/plugins/reddit/reddit_search_json.dart';
 
 /// old.reddit's search page: `.search-result-*` blocks, not the `div.thing` a
 /// subreddit listing uses.
@@ -141,6 +142,80 @@ void main() {
     test('a page with no users yields none rather than throwing', () {
       expect(parseUserResults(_page('')), isEmpty);
       expect(parseUserResults('junk'), isEmpty);
+    });
+  });
+
+  group('JSON search listings', () {
+    test('posts are read from t3 children', () {
+      final posts = parseSearchPostsJson({
+        'kind': 'Listing',
+        'data': {
+          'children': [
+            {
+              'kind': 't3',
+              'data': {
+                'id': 'abc123',
+                'title': 'Hu Tao build',
+                'subreddit': 'Genshin_Impact',
+                'permalink': '/r/Genshin_Impact/comments/abc123/hu_tao/',
+                'author': 'someone',
+                'score': 12,
+                'num_comments': 4,
+              },
+            },
+          ],
+        },
+      });
+
+      expect(posts.single.id, 'abc123');
+      expect(posts.single.title, 'Hu Tao build');
+      expect(posts.single.subreddit, 'Genshin_Impact');
+      expect(posts.single.commentCount, 4);
+    });
+
+    test('subreddits are read from t5 children', () {
+      final results = parseSubredditResultsJson({
+        'kind': 'Listing',
+        'data': {
+          'children': [
+            {
+              'kind': 't5',
+              'data': {
+                'display_name': 'HuTaoMains',
+                'public_description': 'For Hu Tao',
+                'subscribers': 12000,
+              },
+            },
+          ],
+        },
+      });
+
+      expect(results.single.name, 'HuTaoMains');
+      expect(results.single.subscribers, 12000);
+      expect(results.single.description, 'For Hu Tao');
+    });
+
+    test('users are read from t2 children', () {
+      final results = parseUserResultsJson({
+        'kind': 'Listing',
+        'data': {
+          'children': [
+            {
+              'kind': 't2',
+              'data': {'name': 'hutao', 'total_karma': 321},
+            },
+          ],
+        },
+      });
+
+      expect(results.single.name, 'hutao');
+      expect(results.single.karma, 321);
+    });
+
+    test('a missing listing yields none rather than throwing', () {
+      expect(parseSearchPostsJson(null), isEmpty);
+      expect(parseSubredditResultsJson('nope'), isEmpty);
+      expect(parseUserResultsJson(<String, Object?>{}), isEmpty);
     });
   });
 }

@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Cari orang",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Cari postingan, orang, dan komunitas di {name}.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Belum ada tren untuk tempat ini. Cari di atas, atau tambahkan lokasi lain.",
   "@discover_trends_empty": {},
   "dismiss": "Tutup",

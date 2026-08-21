@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Find people",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Search {name} for posts, people, and communities.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Nothing trending for this place yet. Search above, or add another location.",
   "@discover_trends_empty": {},
   "dismiss": "Dismiss",

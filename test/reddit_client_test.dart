@@ -1557,6 +1557,73 @@ void main() {
       expect(result.comments.single.body, 'Hello');
     });
 
+    test('an empty scrape falls back to public JSON comments', () async {
+      const emptyThread = '''
+<!doctype html><html><body>
+  <div id="siteTable"></div>
+  <div class="commentarea"></div>
+</body></html>
+''';
+      final hosts = <String>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          hosts.add(request.url.host);
+          if (request.url.path.endsWith('.json')) {
+            return _json([
+              {
+                'kind': 'Listing',
+                'data': {
+                  'children': [
+                    {
+                      'kind': 't3',
+                      'data': {
+                        'id': 'abc123',
+                        'title': 'Dart 4 is out',
+                        'subreddit': 'dartlang',
+                        'permalink': permalink,
+                        'selftext': 'Body',
+                        'url': 'https://dart.dev/blog',
+                        'is_self': true,
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                'kind': 'Listing',
+                'data': {
+                  'children': [
+                    {
+                      'kind': 't1',
+                      'data': {
+                        'id': 'c1',
+                        'author': 'someone',
+                        'body': 'From JSON',
+                        'score': 3,
+                        'created_utc': 1769000000,
+                        'permalink': '${permalink}c1/',
+                        'replies': '',
+                      },
+                    },
+                  ],
+                },
+              },
+            ], 200);
+          }
+          return http.Response(
+            emptyThread,
+            200,
+            headers: {'content-type': 'text/html'},
+          );
+        }),
+      );
+
+      final result = await client.fetchComments(permalink, clientId: '');
+      expect(hosts.first, 'old.reddit.com');
+      expect(hosts, contains('www.reddit.com'));
+      expect(result.comments.single.body, 'From JSON');
+    });
+
     test('preferPublic scrapes even when a token is sitting there', () async {
       final hosts = <String>[];
       final client = RedditClient(
