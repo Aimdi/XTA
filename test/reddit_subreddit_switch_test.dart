@@ -80,14 +80,14 @@ void main() {
       store.destroy();
     });
 
-    test('an unfollowed persisted community falls back to the rail', () {
+    test('an unfollowed persisted community falls back to the rail', () async {
       final prefs = PrefServiceCache(
         cache: {optionPluginRedditSelectedSubreddit: 'gone'},
       );
       final store = RedditHomeStore(prefs);
 
       expect(redditHomeFeedKey(store.state), 'r/gone');
-      store.reconcileFollowed(['foo', 'bar']);
+      await store.reconcileFollowed(['foo', 'bar']);
       expect(store.state.subreddit, isNull);
       expect(redditHomeFeedKey(store.state), 'following');
 

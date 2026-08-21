@@ -54,7 +54,7 @@ class _RedditScreenState extends State<RedditScreen> {
       await subs.load();
     }
     if (mounted) {
-      home.reconcileFollowed(subs.state);
+      await home.reconcileFollowed(subs.state);
     }
   }
 

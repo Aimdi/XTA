@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -74,7 +72,7 @@ class RedditHomeStore extends Store<RedditHomeSource> {
   }
 
   /// A persisted community that is no longer followed should not reopen.
-  void reconcileFollowed(Iterable<String> followed) {
+  Future<void> reconcileFollowed(Iterable<String> followed) async {
     final current = state.subreddit;
     if (current == null) {
       return;
@@ -82,7 +80,7 @@ class RedditHomeStore extends Store<RedditHomeSource> {
     if (followed.any((name) => name.toLowerCase() == current.toLowerCase())) {
       return;
     }
+    await prefs.set(optionPluginRedditSelectedSubreddit, '');
     update(RedditHomeSource(mode: state.mode));
-    unawaited(prefs.set(optionPluginRedditSelectedSubreddit, ''));
   }
 }
