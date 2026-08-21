@@ -9,6 +9,7 @@ import 'package:xta/plugins/hackernews/hn_search_sheet.dart';
 import 'package:xta/plugins/hackernews/hn_settings.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
@@ -365,7 +366,8 @@ class _StoryList extends StatelessWidget {
           return false;
         },
         child: FeedListView(
-          controller: scrollController,
+          controller: pluginInnerScrollController(context, scrollController),
+          padding: pluginFeedPadding(context),
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: stories.length,
           itemBuilder: (context, index) => HnStoryCard(

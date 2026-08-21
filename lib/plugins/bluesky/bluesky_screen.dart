@@ -3,10 +3,12 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_discovery.dart';
+import 'package:xta/plugins/bluesky/bluesky_feeds_pane.dart';
 import 'package:xta/plugins/bluesky/bluesky_feed.dart';
 import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
@@ -135,10 +137,16 @@ class _BlueskyScreenState extends State<BlueskyScreen>
                   onTap: () => _shell.select(0),
                 ),
                 PluginHomeTab(
-                  label: l10n.plugin_bluesky_liked,
-                  icon: Icons.favorite_border,
+                  label: l10n.plugin_bluesky_feeds,
+                  icon: Icons.auto_awesome_outlined,
                   selected: tab == 1,
                   onTap: () => _shell.select(1),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_bluesky_liked,
+                  icon: Icons.favorite_border,
+                  selected: tab == 2,
+                  onTap: () => _shell.select(2),
                 ),
               ],
               actions: [
@@ -192,6 +200,9 @@ class _BlueskyScreenState extends State<BlueskyScreen>
                   (_) => _HomePane(
                     scrollController: widget.scrollController,
                     onRefresh: () => _loadHome(force: true),
+                  ),
+                  (_) => BlueskyFeedsPane(
+                    scrollController: widget.scrollController,
                   ),
                   (_) => _LikedPane(
                     scrollController: _likedScrollController,
@@ -297,7 +308,8 @@ class _HomePane extends StatelessWidget {
           onRefresh: onRefresh,
           child: FeedListView(
             key: const PageStorageKey<String>('bluesky-home-feed'),
-            controller: scrollController,
+            controller: pluginInnerScrollController(context, scrollController),
+            padding: pluginFeedPadding(context),
             itemCount: posts.length + peopleOffset + pendingOffset,
             itemBuilder: (context, index) {
               if (peopleOffset == 1 && index == 0) {
@@ -476,7 +488,8 @@ class _LikedPane extends StatelessWidget {
           }
 
           return FeedListView(
-            controller: scrollController,
+            controller: pluginInnerScrollController(context, scrollController),
+            padding: pluginFeedPadding(context),
             itemCount: posts.length,
             itemBuilder: (context, index) => BlueskyPostCard(
               key: ValueKey('liked-${posts[index].uri}'),
