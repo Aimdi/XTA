@@ -925,6 +925,19 @@ Future<void> _dropGroupParentColumn(Database db) async {
   }
 }
 
+Future<void> _ensureRssSubscriptionTable(Database db) async {
+  try {
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS $tableRssSubscription ('
+      'id VARCHAR PRIMARY KEY, feed_url VARCHAR NOT NULL, name VARCHAR NOT NULL, '
+      'site_url VARCHAR, icon_url VARCHAR, in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not ensure $tableRssSubscription: $e');
+  }
+}
+
 Future<void> _createIndexes(Database db) async {
   for (final entry in _indexes.entries) {
     try {
@@ -1050,6 +1063,15 @@ class Repository {
       onCreate: myMigrationPlan.call,
       onDowngrade: myMigrationPlan.call,
     );
+
+    // 58 adds rss_subscription, and group/subscription reloads query every
+    // source table on launch. If the plan was skipped or only half-applied,
+    // create the table here rather than let those reads take the process down.
+    try {
+      await _ensureRssSubscriptionTable(await writable());
+    } catch (e) {
+      log.warning('Could not ensure $tableRssSubscription after migrate: $e');
+    }
 
     // The weekly cache cleanup walks the largest tables in the schema, and it
     // used to be awaited here — twice, since migrate() runs twice per launch —

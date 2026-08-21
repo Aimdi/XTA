@@ -100,28 +100,39 @@ class _HomeScreenState extends State<_HomeScreen> {
   void initState() {
     super.initState();
 
-    _buildPages(widget.model.state);
-    widget.model.observer(onState: _buildPages);
+    _pages = _selectedPages(widget.model.state);
+    _initialPage = _initialPageOf(_pages);
+    widget.model.observer(onState: _onPages);
   }
 
-  void _buildPages(List<HomePage> state) {
-    var pages = state
-        .where((element) => element.selected)
-        .map((e) => e.page)
-        .toList();
+  List<NavigationPage> _selectedPages(List<HomePage> state) {
+    final pages = [
+      for (final element in state)
+        if (element.selected) element.page,
+    ];
+    return pages.isEmpty ? List<NavigationPage>.from(defaultHomePages) : pages;
+  }
 
-    if (widget.prefs.getKeys().contains(optionHomeInitialTab)) {
-      _initialPage = max(
-        0,
-        pages.indexWhere(
-          (element) => element.id == widget.prefs.get(optionHomeInitialTab),
-        ),
-      );
+  int _initialPageOf(List<NavigationPage> pages) {
+    if (!widget.prefs.getKeys().contains(optionHomeInitialTab)) {
+      return 0;
     }
+    return max(
+      0,
+      pages.indexWhere(
+        (element) => element.id == widget.prefs.get(optionHomeInitialTab),
+      ),
+    );
+  }
 
-    setState(() {
+  void _onPages(List<HomePage> state) {
+    final pages = _selectedPages(state);
+    _initialPage = _initialPageOf(pages);
+    if (!mounted) {
       _pages = pages;
-    });
+      return;
+    }
+    setState(() => _pages = pages);
   }
 
   @override
@@ -258,6 +269,9 @@ class _ScaffoldWithBottomNavigationState
   /// How far the current drag across the navigation bar has travelled.
   double _dragDistance = 0;
 
+  List<NavigationPage> get _barPages =>
+      widget.pages.isEmpty ? defaultHomePages : widget.pages;
+
   /// Drops focus everywhere before a tab change.
   ///
   /// Sparing the page being left kept its search field focused, and tabs are
@@ -273,9 +287,13 @@ class _ScaffoldWithBottomNavigationState
   @override
   void initState() {
     super.initState();
-    _pageIndex = ValueNotifier(widget.initialPage);
-    _pageController = PageController(initialPage: widget.initialPage);
-    for (int i = 0; i < widget.pages.length; i++) {
+    final pageCount = _barPages.length;
+    final initial = widget.pages.isEmpty
+        ? 0
+        : widget.initialPage.clamp(0, _barPages.length - 1);
+    _pageIndex = ValueNotifier(initial);
+    _pageController = PageController(initialPage: initial);
+    for (int i = 0; i < pageCount; i++) {
       _scrollControllers[i] = ScrollController();
       _focusNodes[i] = FocusNode();
     }
@@ -284,23 +302,26 @@ class _ScaffoldWithBottomNavigationState
   @override
   void didUpdateWidget(covariant ScaffoldWithBottomNavigation oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.pages.length != oldWidget.pages.length) {
+    if (_barPages.length !=
+        (oldWidget.pages.isEmpty
+            ? defaultHomePages.length
+            : oldWidget.pages.length)) {
       // Dispose controllers that are no longer needed.
       _scrollControllers.keys
-          .where((k) => k >= widget.pages.length)
+          .where((k) => k >= _barPages.length)
           .toList()
           .forEach((k) {
             _scrollControllers[k]?.dispose();
             _scrollControllers.remove(k);
           });
-      _focusNodes.keys.where((k) => k >= widget.pages.length).toList().forEach((
+      _focusNodes.keys.where((k) => k >= _barPages.length).toList().forEach((
         k,
       ) {
         _focusNodes[k]?.dispose();
         _focusNodes.remove(k);
       });
       // Create controllers for new pages.
-      for (int i = 0; i < widget.pages.length; i++) {
+      for (int i = 0; i < _barPages.length; i++) {
         _scrollControllers.putIfAbsent(i, () => ScrollController());
         _focusNodes.putIfAbsent(i, () => FocusNode());
       }
@@ -336,6 +357,7 @@ class _ScaffoldWithBottomNavigationState
       child: SafeArea(
         child: ScopedBuilder<GroupsModel, List<SubscriptionGroup>>(
           store: context.read<GroupsModel>(),
+          onError: (context, _) => const SizedBox.shrink(),
           onState: (context, groups) => GroupUnreadScope(
             builder: (context, unreadIds) => ListView(
               padding: EdgeInsets.zero,
@@ -492,7 +514,7 @@ class _ScaffoldWithBottomNavigationState
         // app — a media carousel, a nested tab view, a slider — was competing
         // with the pager for the same finger.
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: widget.pages.length,
+        itemCount: _barPages.length,
         onPageChanged: (page) {
           final previous = _pageIndex.value;
           _pageIndex.value = page;
@@ -500,7 +522,7 @@ class _ScaffoldWithBottomNavigationState
         },
         itemBuilder: (context, index) {
           return KeyedSubtree(
-            key: PageStorageKey<String>(widget.pages[index].id),
+            key: PageStorageKey<String>(_barPages[index].id),
             child: widget.builder(index, _scrollControllers, _focusNodes),
           );
         },
@@ -604,16 +626,16 @@ class _ScaffoldWithBottomNavigationState
   }
 
   void _adoptSearchScope(int from, int to) {
-    if (to < 0 || to >= widget.pages.length) {
+    if (to < 0 || to >= _barPages.length) {
       return;
     }
-    if (widget.pages[to].id != 'trending') {
+    if (_barPages[to].id != 'trending') {
       return;
     }
-    if (from < 0 || from >= widget.pages.length) {
+    if (from < 0 || from >= _barPages.length) {
       return;
     }
-    final plugin = pluginById(widget.pages[from].id);
+    final plugin = pluginById(_barPages[from].id);
     if (plugin == null || !plugin.supportsSearch) {
       return;
     }
@@ -625,13 +647,13 @@ class _ScaffoldWithBottomNavigationState
     try {
       final recents = context.read<NetworkRecentsStore>().state;
       recentPluginId = recents
-          .where((id) => widget.pages.any((page) => page.id == id))
+          .where((id) => _barPages.any((page) => page.id == id))
           .firstOrNull;
     } on ProviderNotFoundException {
       recentPluginId = null;
     }
     return layoutBottomBar([
-      for (final page in widget.pages) page.id,
+      for (final page in _barPages) page.id,
     ], recentPluginId: recentPluginId);
   }
 
@@ -650,7 +672,7 @@ class _ScaffoldWithBottomNavigationState
       );
     }
     final index = slot.pageIndex!;
-    final page = widget.pages[index];
+    final page = _barPages[index];
     final isSelected = currentPage == index;
     final scale = (!showLabels && isSelected && tokens != null) ? 1.05 : 1.0;
     final duration = Duration(milliseconds: tokens != null ? 200 : 0);
@@ -691,7 +713,7 @@ class _ScaffoldWithBottomNavigationState
           controller.offset <= 0;
       if (!atTop) {
         await scrollToTop(context, controller);
-      } else if (widget.pages[pageIndex].id == 'trending') {
+      } else if (_barPages[pageIndex].id == 'trending') {
         _focusNodes[currentPage]?.requestFocus();
       }
       return;
@@ -702,7 +724,7 @@ class _ScaffoldWithBottomNavigationState
 
   Future<void> _openBarNetworks(BuildContext context) async {
     final pluginPages = [
-      for (final page in widget.pages)
+      for (final page in _barPages)
         if (pluginById(page.id) != null) pluginById(page.id)!,
     ];
     if (pluginPages.isEmpty) return;
@@ -712,7 +734,7 @@ class _ScaffoldWithBottomNavigationState
     } on ProviderNotFoundException {
       recent = const [];
     }
-    final currentId = widget.pages[_pageIndex.value].id;
+    final currentId = _barPages[_pageIndex.value].id;
     final picked = await showNetworkSwitcherSheet(
       context,
       plugins: pluginPages,
@@ -720,7 +742,7 @@ class _ScaffoldWithBottomNavigationState
       recentIds: recent,
     );
     if (!mounted || !context.mounted || picked == null) return;
-    final pageIndex = widget.pages.indexWhere((page) => page.id == picked);
+    final pageIndex = _barPages.indexWhere((page) => page.id == picked);
     if (pageIndex < 0) return;
     await rememberNetwork(context, picked);
     if (!mounted) return;
@@ -731,7 +753,7 @@ class _ScaffoldWithBottomNavigationState
   void _swipeNavigationBar(double velocity, double distance) {
     final target = pageAfterNavigationSwipe(
       current: _pageIndex.value,
-      pageCount: widget.pages.length,
+      pageCount: _barPages.length,
       velocity: velocity,
       distance: distance,
     );

@@ -209,6 +209,41 @@ void main() {
       expect(find.text('body1'), findsOneWidget);
     });
 
+    testWidgets('an empty page list still builds the default tabs', (
+      tester,
+    ) async {
+      final prefs = PrefServiceCache(
+        cache: {optionShowNavigationLabels: false},
+      );
+      await tester.pumpWidget(
+        PrefService(
+          service: prefs,
+          child: MaterialApp(
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: Provider<GroupsModel>(
+              create: (_) => GroupsModel(prefs),
+              child: ScaffoldWithBottomNavigation(
+                pages: const [],
+                prefs: prefs,
+                initialPage: 0,
+                builder: (index, _, _) => Center(child: Text('fallback$index')),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.text('fallback0'), findsOneWidget);
+    });
+
     testWidgets('tapping a destination still works', (tester) async {
       await tester.pumpWidget(_scaffold());
       await tester.pumpAndSettle();

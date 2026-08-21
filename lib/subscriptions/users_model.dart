@@ -6,6 +6,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:logging/logging.dart';
@@ -38,9 +39,12 @@ class SubscriptionsModel extends Store<List<Subscription>> {
     await execute(() async {
       var database = await Repository.readOnly();
 
-      String orderCustom = prefs.get(optionSubscriptionOrderCustom);
-      bool orderByAscending = prefs.get(optionSubscriptionOrderByAscending);
-      String orderByField = prefs.get(optionSubscriptionOrderByField);
+      String orderCustom =
+          prefs.get<String>(optionSubscriptionOrderCustom) ?? '';
+      bool orderByAscending =
+          prefs.get<bool>(optionSubscriptionOrderByAscending) ?? true;
+      String orderByField =
+          prefs.get<String>(optionSubscriptionOrderByField) ?? 'name';
 
       // The X tables, then every plugin that says its followed accounts are
       // subscriptions. Read from the registry rather than listed here: a
@@ -51,13 +55,15 @@ class SubscriptionsModel extends Store<List<Subscription>> {
       final rows = await Future.wait([
         database.query(tableSubscription),
         database.query(tableSearchSubscription),
-        for (final source in sources) database.query(source.subscriptionTable),
+        for (final source in sources)
+          querySourceTable(database, source.subscriptionTable),
       ]);
 
       List<Subscription> lst = [
         ...rows[0].map(UserSubscription.fromMap),
         ...rows[1].map(SearchSubscription.fromMap),
-        for (final (index, source) in sources.indexed) ...rows[index + 2].map(source.subscriptionFromMap),
+        for (final (index, source) in sources.indexed)
+          ...rows[index + 2].map(source.subscriptionFromMap),
       ];
       if (orderCustom.isEmpty) {
         return lst.sorted((a, b) {
@@ -68,7 +74,9 @@ class SubscriptionsModel extends Store<List<Subscription>> {
             case 'name':
               return one.name.toLowerCase().compareTo(two.name.toLowerCase());
             case 'screen_name':
-              return one.screenName.toLowerCase().compareTo(two.screenName.toLowerCase());
+              return one.screenName.toLowerCase().compareTo(
+                two.screenName.toLowerCase(),
+              );
             case 'created_at':
               return one.createdAt.compareTo(two.createdAt);
             default:
@@ -78,7 +86,9 @@ class SubscriptionsModel extends Store<List<Subscription>> {
       } else {
         List<Subscription> newLst = [];
         for (String screenName in orderCustom.split(',')) {
-          Subscription? s = lst.firstWhereOrNull((e) => e.screenName == screenName);
+          Subscription? s = lst.firstWhereOrNull(
+            (e) => e.screenName == screenName,
+          );
           if (s != null) {
             lst.removeWhere((e) => e.screenName == screenName);
             newLst.add(s);
@@ -104,13 +114,24 @@ class SubscriptionsModel extends Store<List<Subscription>> {
     }
   }
 
-  Future<void> _toggleSearchSubscribe(SearchSubscription user, bool currentlyFollowed) async {
+  Future<void> _toggleSearchSubscribe(
+    SearchSubscription user,
+    bool currentlyFollowed,
+  ) async {
     var database = await Repository.writable();
 
     await execute(() async {
       if (currentlyFollowed) {
-        await database.delete(tableSearchSubscription, where: 'id = ?', whereArgs: [user.id]);
-        await database.delete(tableSearchSubscriptionGroupMember, where: 'search_id = ?', whereArgs: [user.id]);
+        await database.delete(
+          tableSearchSubscription,
+          where: 'id = ?',
+          whereArgs: [user.id],
+        );
+        await database.delete(
+          tableSearchSubscriptionGroupMember,
+          where: 'search_id = ?',
+          whereArgs: [user.id],
+        );
 
         state.removeWhere((e) => e.id == user.id);
       } else {
@@ -126,13 +147,24 @@ class SubscriptionsModel extends Store<List<Subscription>> {
     });
   }
 
-  Future<void> _toggleUserSubscribe(UserSubscription user, bool currentlyFollowed) async {
+  Future<void> _toggleUserSubscribe(
+    UserSubscription user,
+    bool currentlyFollowed,
+  ) async {
     var database = await Repository.writable();
 
     await execute(() async {
       if (currentlyFollowed) {
-        await database.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
-        await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
+        await database.delete(
+          tableSubscription,
+          where: 'id = ?',
+          whereArgs: [user.id],
+        );
+        await database.delete(
+          tableSubscriptionGroupMember,
+          where: 'profile_id = ?',
+          whereArgs: [user.id],
+        );
 
         state.removeWhere((e) => e.id == user.id);
       } else {
@@ -156,7 +188,10 @@ class SubscriptionsModel extends Store<List<Subscription>> {
 
   /// Refreshes a stored subscription whose account was renamed, using the
   /// fresh profile data. The caller reloads the list when it is done.
-  Future<void> repairSubscription(UserSubscription user, UserWithExtra fresh) async {
+  Future<void> repairSubscription(
+    UserSubscription user,
+    UserWithExtra fresh,
+  ) async {
     var database = await Repository.writable();
 
     await database.update(
@@ -177,8 +212,16 @@ class SubscriptionsModel extends Store<List<Subscription>> {
 
     await execute(() async {
       for (final user in users) {
-        await database.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
-        await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
+        await database.delete(
+          tableSubscription,
+          where: 'id = ?',
+          whereArgs: [user.id],
+        );
+        await database.delete(
+          tableSubscriptionGroupMember,
+          where: 'profile_id = ?',
+          whereArgs: [user.id],
+        );
       }
 
       await reloadSubscriptions();
@@ -189,7 +232,10 @@ class SubscriptionsModel extends Store<List<Subscription>> {
     await groupModel.reloadGroups();
   }
 
-  Future<void> toggleSubscribe(Subscription user, bool currentlyFollowed) async {
+  Future<void> toggleSubscribe(
+    Subscription user,
+    bool currentlyFollowed,
+  ) async {
     if (user is UserSubscription) {
       await _toggleUserSubscribe(user, currentlyFollowed);
     } else if (user is SearchSubscription) {
@@ -202,7 +248,12 @@ class SubscriptionsModel extends Store<List<Subscription>> {
   Future<void> toggleInFeed(Subscription user, bool wasInFeed) async {
     var database = await Repository.writable();
     await execute(() async {
-      await database.update(tableSubscription, {'in_feed': wasInFeed ? 0 : 1}, where: 'id = ?', whereArgs: [user.id]);
+      await database.update(
+        tableSubscription,
+        {'in_feed': wasInFeed ? 0 : 1},
+        where: 'id = ?',
+        whereArgs: [user.id],
+      );
 
       await reloadSubscriptions();
 
@@ -223,7 +274,10 @@ class SubscriptionsModel extends Store<List<Subscription>> {
   Future<void> toggleOrderSubscriptionsAscending() async {
     await execute(() async {
       await prefs.set(optionSubscriptionOrderCustom, '');
-      await prefs.set(optionSubscriptionOrderByAscending, !prefs.get(optionSubscriptionOrderByAscending));
+      await prefs.set(
+        optionSubscriptionOrderByAscending,
+        !prefs.get(optionSubscriptionOrderByAscending),
+      );
       await reloadSubscriptions(notifyReload: false);
 
       return state;

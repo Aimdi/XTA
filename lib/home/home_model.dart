@@ -7,6 +7,7 @@ import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/utils/iterables.dart';
+import 'package:xta/utils/pref_lists.dart';
 import 'package:pref/pref.dart';
 
 class HomePage {
@@ -39,7 +40,7 @@ class HomeModel extends Store<List<HomePage>> {
 
   Future<void> loadPages() async {
     await execute(() async {
-      var saved = prefs.getStringList(optionHomePages) ?? [];
+      var saved = stringListPref(prefs, optionHomePages) ?? [];
 
       final pluginPages = <NavigationPage>[
         for (final plugin in builtInPlugins)
@@ -82,7 +83,7 @@ class HomeModel extends Store<List<HomePage>> {
       // Seeded once, and remembered: a tab the reader then removes has to stay
       // removed rather than coming back on the next launch.
       final seeded =
-          prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
+          stringListPref(prefs, optionSeededPluginTabs) ?? const <String>[];
       final newlySeeded = <String>[];
 
       for (var page in available) {
@@ -104,6 +105,17 @@ class HomeModel extends Store<List<HomePage>> {
 
       if (newlySeeded.isNotEmpty) {
         await prefs.set(optionSeededPluginTabs, [...seeded, ...newlySeeded]);
+      }
+
+      // An empty saved list (or a restore that dropped every known id) used
+      // to leave no selected tabs. The bottom bar then built with zero
+      // destinations and the first frame threw.
+      if (pages.every((e) => !e.selected)) {
+        for (final page in pages) {
+          if (defaultHomePages.any((e) => e.id == page.id)) {
+            page.selected = true;
+          }
+        }
       }
 
       // Enabling a plugin also pins it on the home strip. The bottom bar is

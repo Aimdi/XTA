@@ -1,13 +1,14 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/utils/pref_lists.dart';
 
 /// How many recent ids we keep. The strip only shows a few; the rest stay
 /// behind the networks switcher in this order.
 const kNetworkRecentsLimit = 12;
 
 List<String> homeRecentNetworkIds(BasePrefService prefs) => List<String>.from(
-  prefs.getStringList(optionHomeRecentNetworks) ?? const [],
+  stringListPref(prefs, optionHomeRecentNetworks) ?? const [],
 );
 
 /// Plugin ids opened on the home strip, newest first.

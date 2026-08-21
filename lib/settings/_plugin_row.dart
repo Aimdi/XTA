@@ -8,6 +8,7 @@ import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_storage.dart';
+import 'package:xta/utils/pref_lists.dart';
 
 /// A plugin on offer but not installed: one line of what it does, and Install.
 class AvailablePluginRow extends StatelessWidget {
@@ -137,7 +138,7 @@ class InstalledPluginRow extends StatelessWidget {
     // here or the switch would turn on and nothing appear.
     if (next) {
       final seeded =
-          prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
+          stringListPref(prefs, optionSeededPluginTabs) ?? const <String>[];
       await prefs.set(
         optionSeededPluginTabs,
         seeded.where((e) => e != plugin.id).toList(),

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/utils/pref_lists.dart';
 
 /// Enabled plugins that can sit next to Following / For you.
 List<String> enabledStripPluginIds(BasePrefService prefs) => [
@@ -39,7 +40,7 @@ List<String> feedStripVisibleIds(BasePrefService prefs, List<String> pinned) {
 /// reader removed every plugin pin on purpose — except plugins that hid
 /// their bottom-nav tab, which stay here so they remain reachable.
 List<String> feedStripPluginIds(BasePrefService prefs) {
-  final raw = prefs.getStringList(optionHomeFeedStripPlugins);
+  final raw = stringListPref(prefs, optionHomeFeedStripPlugins);
   final pinned = raw != null
       ? List<String>.from(raw)
       : enabledStripPluginIds(prefs);
@@ -51,7 +52,7 @@ List<String> feedStripPluginIds(BasePrefService prefs) {
 Future<List<String>> seedFeedStripPlugins(BasePrefService prefs) async {
   final current = feedStripPluginIds(prefs);
   final seeded =
-      prefs.getStringList(optionSeededStripPlugins) ?? const <String>[];
+      stringListPref(prefs, optionSeededStripPlugins) ?? const <String>[];
   final next = List<String>.from(current);
   final newly = <String>[];
 
@@ -62,7 +63,7 @@ Future<List<String>> seedFeedStripPlugins(BasePrefService prefs) async {
   }
 
   if (newly.isEmpty &&
-      prefs.getStringList(optionHomeFeedStripPlugins) != null) {
+      stringListPref(prefs, optionHomeFeedStripPlugins) != null) {
     return current;
   }
 
@@ -77,14 +78,14 @@ Future<void> forgetFeedStripPlugin(
   BasePrefService prefs,
   String pluginId,
 ) async {
-  final pinned = prefs.getStringList(optionHomeFeedStripPlugins);
+  final pinned = stringListPref(prefs, optionHomeFeedStripPlugins);
   if (pinned != null && pinned.contains(pluginId)) {
     await prefs.set(
       optionHomeFeedStripPlugins,
       pinned.where((id) => id != pluginId).toList(),
     );
   }
-  final seeded = prefs.getStringList(optionSeededStripPlugins);
+  final seeded = stringListPref(prefs, optionSeededStripPlugins);
   if (seeded != null && seeded.contains(pluginId)) {
     await prefs.set(
       optionSeededStripPlugins,
@@ -116,7 +117,7 @@ Future<void> pinPluginOnFeedStrip(
   final plugin = pluginById(pluginId);
   if (plugin == null || !plugin.supportsFeedStrip) return;
 
-  final raw = prefs.getStringList(optionHomeFeedStripPlugins);
+  final raw = stringListPref(prefs, optionHomeFeedStripPlugins);
   final pinned = raw ?? feedStripPluginIds(prefs);
   if (pinned.contains(pluginId)) {
     if (raw == null) {
@@ -194,7 +195,7 @@ class FeedStripStore extends Store<List<String>> {
 
   /// Persist the implied list the first time the reader edits the strip.
   Future<void> ensurePersisted() async {
-    if (prefs.getStringList(optionHomeFeedStripPlugins) != null) return;
+    if (stringListPref(prefs, optionHomeFeedStripPlugins) != null) return;
     await prefs.set(optionHomeFeedStripPlugins, List<String>.from(state));
   }
 
