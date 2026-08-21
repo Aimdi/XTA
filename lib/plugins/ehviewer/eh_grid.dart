@@ -271,6 +271,12 @@ class EhSpriteThumb extends StatelessWidget {
                 height: constraints.maxHeight,
                 fit: BoxFit.fitHeight,
                 cache: true,
+                cacheHeight:
+                    constraints.maxHeight.isFinite && constraints.maxHeight > 0
+                    ? (constraints.maxHeight *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil()
+                    : null,
                 headers: _ehImageHeaders(context),
                 filterQuality: FilterQuality.medium,
                 timeLimit: ehImageTimeLimit,

@@ -86,6 +86,11 @@ Mechanism work after the tweet-module pass. Device rows above stay TBD.
   groups / plugins are not constructed on first paint and a tab change does
   not rebuild the visible feed. Feed tiles drop an unused ticker; long posts
   stay capped in the feed; boost-run lengths are remembered per list.
+- Home no longer rebuilds keep-alive feeds on unrelated pref writes (nav-bar
+  labels listen locally). Plugin panes unmount when left. Feed
+  `ScopedBuilder.transition` AnimatedSwitchers are gone. Instagram / TikTok
+  cards isolate paints; remaining 20–40px plugin avatars decode at paint size.
+  Home-strip unread scans debounce 200ms.
 - Feed chunk JSON encodes off the UI isolate. Gallery plugin stores race the
   first frame. Pref listeners register once. Plugin media / Instagram / TikTok
   decode at paint size. Pixiv keeps only the visible masonry grid alive.

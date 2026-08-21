@@ -5,7 +5,11 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 
 bool ehPreferJapaneseOf(BuildContext context) =>
-    PrefService.of(context).get<bool>(optionPluginEhPreferJapanese) != false;
+    PrefService.of(
+      context,
+      listen: false,
+    ).get<bool>(optionPluginEhPreferJapanese) !=
+    false;
 
 Color ehCategoryColor(EhCategory category) => switch (category) {
   EhCategory.misc => const Color(0xFF777777),

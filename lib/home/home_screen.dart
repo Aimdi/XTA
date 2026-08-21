@@ -70,7 +70,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var prefs = PrefService.of(context);
+    // listen: false — a theme / zen / plugin pref write used to rebuild the
+    // whole home (and every keep-alive'd feed) because this ancestor subscribed
+    // to every key. The nav bar reads the labels pref itself.
+    var prefs = PrefService.of(context, listen: false);
     var model = context.read<HomeModel>();
 
     return _HomeScreen(prefs: prefs, model: model);
@@ -121,7 +124,9 @@ class _HomeScreenState extends State<_HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<HomeModel, List<HomePage>>.transition(
+    // Plain ScopedBuilder: .transition wraps the pager in AnimatedSwitcher,
+    // which remounts every keep-alive'd feed when a group tab is added.
+    return ScopedBuilder<HomeModel, List<HomePage>>(
       store: widget.model,
       onError: (_, e) => ScaffoldErrorWidget(
         prefix: L10n.current.unable_to_load_home_pages,
@@ -453,7 +458,6 @@ class _ScaffoldWithBottomNavigationState
   Widget _buildScaffold(BuildContext context, L10n l10n) {
     final theme = Theme.of(context);
     final tokens = XLookTokens.maybeOf(context);
-    final showLabels = widget.prefs.get(optionShowNavigationLabels) == true;
     final isDark = theme.brightness == Brightness.dark;
 
     // X chrome: tight capsule, hairline edge, accent on the glyph — not a
@@ -475,7 +479,6 @@ class _ScaffoldWithBottomNavigationState
     }
 
     const radius = 24.0;
-    final barHeight = showLabels ? 60.0 : 56.0;
 
     return Scaffold(
       extendBody: true,
@@ -501,110 +504,122 @@ class _ScaffoldWithBottomNavigationState
         },
       ),
       // Floating capsule: swipe still changes tab; the page itself never does.
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onHorizontalDragStart: (_) => _dragDistance = 0,
-          onHorizontalDragUpdate: (details) =>
-              _dragDistance += details.primaryDelta ?? 0,
-          onHorizontalDragEnd: (details) =>
-              _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radius),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(radius),
+      // Labels pref is read here so a Settings toggle does not rebuild feeds.
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          final showLabels =
+              PrefService.of(context).get(optionShowNavigationLabels) == true;
+          final barHeight = showLabels ? 60.0 : 56.0;
+          return SafeArea(
+            minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragStart: (_) => _dragDistance = 0,
+              onHorizontalDragUpdate: (details) =>
+                  _dragDistance += details.primaryDelta ?? 0,
+              onHorizontalDragEnd: (details) => _swipeNavigationBar(
+                details.primaryVelocity ?? 0,
+                _dragDistance,
+              ),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: pillFill,
                   borderRadius: BorderRadius.circular(radius),
-                  border: Border.all(color: pillBorder, width: 0.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.28 : 0.08,
+                      ),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: ValueListenableBuilder<int>(
-                  valueListenable: _pageIndex,
-                  builder: (context, currentPage, _) => NavigationBar(
-                    selectedIndex: currentPage,
-                    labelBehavior: showLabels
-                        ? NavigationDestinationLabelBehavior.alwaysShow
-                        : NavigationDestinationLabelBehavior.alwaysHide,
-                    shadowColor: Colors.transparent,
-                    backgroundColor: Colors.transparent,
-                    surfaceTintColor: Colors.transparent,
-                    // Accent lives on the icon / label (theme), not a tinted stadium.
-                    indicatorColor: Colors.transparent,
-                    overlayColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.pressed) ||
-                          states.contains(WidgetState.focused)) {
-                        return accent.withValues(alpha: 0.08);
-                      }
-                      if (states.contains(WidgetState.hovered)) {
-                        return accent.withValues(alpha: 0.04);
-                      }
-                      return Colors.transparent;
-                    }),
-                    height: barHeight,
-                    destinations: widget.pages.asMap().entries.map((e) {
-                      final index = e.key;
-                      final page = e.value;
-                      final isSelected = currentPage == index;
-                      // Subtle lift only when labels are off — with labels the
-                      // bold weight + accent colour already mark the tab.
-                      final scale =
-                          (!showLabels && isSelected && tokens != null)
-                          ? 1.05
-                          : 1.0;
-                      return NavigationDestination(
-                        icon: AnimatedScale(
-                          scale: scale,
-                          duration: Duration(
-                            milliseconds: tokens != null ? 200 : 0,
-                          ),
-                          curve: Curves.easeOutCubic,
-                          child: page.icon,
-                        ),
-                        selectedIcon: AnimatedScale(
-                          scale: scale,
-                          duration: Duration(
-                            milliseconds: tokens != null ? 200 : 0,
-                          ),
-                          curve: Curves.easeOutCubic,
-                          child: page.selectedIcon,
-                        ),
-                        label: page.titleBuilder(context),
-                      );
-                    }).toList(),
-                    onDestinationSelected: (index) async {
-                      if (index == currentPage) {
-                        final controller = _scrollControllers[currentPage];
-                        final atTop =
-                            controller == null ||
-                            !controller.hasClients ||
-                            controller.offset <= 0;
-                        if (!atTop) {
-                          await scrollToTop(context, controller);
-                        } else if (widget.pages[index].id == 'trending') {
-                          _focusNodes[currentPage]?.requestFocus();
-                        }
-                        return;
-                      }
-                      unfocusPages();
-                      _pageController.jumpToPage(index);
-                    },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: pillFill,
+                      borderRadius: BorderRadius.circular(radius),
+                      border: Border.all(color: pillBorder, width: 0.5),
+                    ),
+                    child: ValueListenableBuilder<int>(
+                      valueListenable: _pageIndex,
+                      builder: (context, currentPage, _) => NavigationBar(
+                        selectedIndex: currentPage,
+                        labelBehavior: showLabels
+                            ? NavigationDestinationLabelBehavior.alwaysShow
+                            : NavigationDestinationLabelBehavior.alwaysHide,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        surfaceTintColor: Colors.transparent,
+                        // Accent lives on the icon / label (theme), not a tinted stadium.
+                        indicatorColor: Colors.transparent,
+                        overlayColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.pressed) ||
+                              states.contains(WidgetState.focused)) {
+                            return accent.withValues(alpha: 0.08);
+                          }
+                          if (states.contains(WidgetState.hovered)) {
+                            return accent.withValues(alpha: 0.04);
+                          }
+                          return Colors.transparent;
+                        }),
+                        height: barHeight,
+                        destinations: widget.pages.asMap().entries.map((e) {
+                          final index = e.key;
+                          final page = e.value;
+                          final isSelected = currentPage == index;
+                          // Subtle lift only when labels are off — with labels the
+                          // bold weight + accent colour already mark the tab.
+                          final scale =
+                              (!showLabels && isSelected && tokens != null)
+                              ? 1.05
+                              : 1.0;
+                          return NavigationDestination(
+                            icon: AnimatedScale(
+                              scale: scale,
+                              duration: Duration(
+                                milliseconds: tokens != null ? 200 : 0,
+                              ),
+                              curve: Curves.easeOutCubic,
+                              child: page.icon,
+                            ),
+                            selectedIcon: AnimatedScale(
+                              scale: scale,
+                              duration: Duration(
+                                milliseconds: tokens != null ? 200 : 0,
+                              ),
+                              curve: Curves.easeOutCubic,
+                              child: page.selectedIcon,
+                            ),
+                            label: page.titleBuilder(context),
+                          );
+                        }).toList(),
+                        onDestinationSelected: (index) async {
+                          if (index == currentPage) {
+                            final controller = _scrollControllers[currentPage];
+                            final atTop =
+                                controller == null ||
+                                !controller.hasClients ||
+                                controller.offset <= 0;
+                            if (!atTop) {
+                              await scrollToTop(context, controller);
+                            } else if (widget.pages[index].id == 'trending') {
+                              _focusNodes[currentPage]?.requestFocus();
+                            }
+                            return;
+                          }
+                          unfocusPages();
+                          _pageController.jumpToPage(index);
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

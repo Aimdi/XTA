@@ -417,6 +417,7 @@ class _HomePane extends StatelessWidget {
         width: 20,
         height: 20,
         fit: BoxFit.cover,
+        cacheWidth: (20 * MediaQuery.devicePixelRatioOf(context)).ceil(),
       ),
     );
   }

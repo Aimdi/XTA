@@ -282,7 +282,13 @@ class _HomePane extends StatelessWidget {
       );
     }
     return ClipOval(
-      child: ThreadsNetworkImage(url, width: 20, height: 20, fit: BoxFit.cover),
+      child: ThreadsNetworkImage(
+        url,
+        width: 20,
+        height: 20,
+        fit: BoxFit.cover,
+        cacheWidth: (20 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+      ),
     );
   }
 
