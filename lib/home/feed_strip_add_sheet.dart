@@ -54,7 +54,7 @@ class _FeedStripAddSheet extends StatelessWidget {
                 store: strip,
                 onState: (context, pinned) {
                   final candidates = feedStripCandidates(prefs, pinned);
-                  final pinnedPlugins = pinned
+                  final pinnedPlugins = feedStripVisibleIds(prefs, pinned)
                       .map(pluginById)
                       .whereType<XtaPlugin>()
                       .where((p) => p.isEnabled(prefs) && p.supportsFeedStrip)
@@ -109,14 +109,18 @@ class _FeedStripAddSheet extends StatelessWidget {
                               color: plugin.brandColor,
                             ),
                             title: Text(plugin.title(context)),
-                            trailing: IconButton(
-                              tooltip: l10n.feed_strip_remove,
-                              icon: const Icon(Icons.remove_circle_outline),
-                              onPressed: () async {
-                                await strip.ensurePersisted();
-                                await strip.remove(plugin.id);
-                              },
-                            ),
+                            trailing: plugin.showsHomeTab(prefs)
+                                ? IconButton(
+                                    tooltip: l10n.feed_strip_remove,
+                                    icon: const Icon(
+                                      Icons.remove_circle_outline,
+                                    ),
+                                    onPressed: () async {
+                                      await strip.ensurePersisted();
+                                      await strip.remove(plugin.id);
+                                    },
+                                  )
+                                : null,
                           ),
                         const Divider(height: 1),
                       ],

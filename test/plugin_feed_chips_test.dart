@@ -78,7 +78,7 @@ Widget _page(BasePrefService prefs, List<SubscriptionGroup> groups) {
 void main() {
   final groups = [_group('a', 'Ai'), _group('b', 'Ai Art')];
 
-  testWidgets('enabled plugins are not listed on the Groups board', (
+  testWidgets('hidden-tab plugins are not site-switcher chips on Groups', (
     tester,
   ) async {
     await tester.pumpWidget(_page(_prefs(_enabledPluginsHiddenTabs()), groups));
@@ -99,6 +99,25 @@ void main() {
     expect(find.byType(Wrap), findsNothing);
     expect(find.text('Ai'), findsOneWidget);
     expect(find.text('Ai Art'), findsOneWidget);
+  });
+
+  testWidgets('a plugin that still has a home tab is not on the Groups board', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _page(
+        _prefs({
+          optionPluginRedditEnabled: true,
+          optionPluginRedditShowTab: true,
+        }),
+        groups,
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Reddit'), findsNothing);
+    expect(find.byType(Wrap), findsNothing);
+    expect(find.text('Ai'), findsOneWidget);
   });
 
   testWidgets('the board is not wrapped in AnimatedSwitcher', (tester) async {

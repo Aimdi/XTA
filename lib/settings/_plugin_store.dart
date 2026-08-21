@@ -107,6 +107,8 @@ class _SettingsPluginStoreFragmentState
     final prefs = PrefService.of(context, listen: false);
     await plugin.setEnabled(prefs, true);
     if (!mounted) return;
+    await pinPluginOnFeedStripIn(context, plugin.id);
+    if (!mounted) return;
     await context.read<HomeModel>().loadPages();
     if (!mounted) return;
     await context.read<FeedStripStore>().seedEnabled();

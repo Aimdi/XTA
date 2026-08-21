@@ -110,7 +110,7 @@ List<FeedTabOption> availableFeedTabsFromIds(
       icon: Icons.auto_awesome_outlined,
     ),
   ];
-  for (final pluginId in pluginIds) {
+  for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
     final plugin = pluginById(pluginId);
     if (plugin == null ||
         !plugin.isEnabled(prefs) ||
@@ -239,6 +239,9 @@ class _FeedScreenState extends State<FeedScreen> {
       _lastStripPlugins = List<String>.from(strip.state);
       strip.observer(onState: _onStripChanged);
       strip.seedEnabled();
+      // Hidden-tab plugins used to live as Groups chips. Pin them here so
+      // switching sites stays on the home strip.
+      strip.pinHiddenTabs();
     }
 
     try {

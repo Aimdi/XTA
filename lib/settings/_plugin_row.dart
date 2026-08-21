@@ -79,7 +79,7 @@ class InstalledPluginRow extends StatelessWidget {
         children: [
           if (tabPref != null)
             _PluginIconButton(
-              tooltip: l10n.plugin_show_as_tab,
+              tooltip: l10n.plugin_show_as_tab_description,
               icon: plugin.showsHomeTab(prefs)
                   ? Icons.tab
                   : Icons.tab_unselected,
@@ -130,9 +130,6 @@ class InstalledPluginRow extends StatelessWidget {
   ) async {
     final next = !plugin.showsHomeTab(prefs);
     final home = context.read<HomeModel>();
-    final strip = plugin.supportsFeedStrip
-        ? context.read<FeedStripStore>()
-        : null;
     await prefs.set(tabPref, next);
 
     // Asking for the tab back has to actually bring it back: the page list only
@@ -145,9 +142,9 @@ class InstalledPluginRow extends StatelessWidget {
         optionSeededPluginTabs,
         seeded.where((e) => e != plugin.id).toList(),
       );
-    } else if (strip != null) {
-      await strip.ensurePersisted();
-      await strip.add(plugin.id);
+    } else if (context.mounted) {
+      // Off the bottom bar → home strip, not a Groups chip.
+      await pinPluginOnFeedStripIn(context, plugin.id);
     }
 
     if (!context.mounted) return;

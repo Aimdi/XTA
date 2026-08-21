@@ -4,6 +4,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
@@ -296,6 +297,11 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
             title: Text(l10n.plugin_booru_show_tab),
             subtitle: Text(l10n.plugin_booru_show_tab_description),
             pref: optionPluginBooruShowTab,
+            onChange: (show) async {
+              if (!show) {
+                await pinPluginOnFeedStripIn(context, pluginIdBooru);
+              }
+            },
           ),
           PrefTitle(title: Text(l10n.plugin_booru_mute_section)),
           Padding(
