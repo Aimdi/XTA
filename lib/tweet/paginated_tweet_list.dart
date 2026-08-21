@@ -461,7 +461,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return null;
     }
 
-    final list = CachedTweetList(preview!, username: widget.username);
+    final list = CachedTweetList(
+      preview!,
+      username: widget.username,
+      interleaved: widget.interleaved,
+    );
     if (_staleBannerDismissed) {
       return list;
     }
@@ -554,6 +558,31 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     );
   }
 
+  /// Plugin cards plus a compact explanation of why the X side is empty.
+  ///
+  /// Must not ride in [PagedListView]'s error slot: that slot is a
+  /// [SliverFillRemaining] one viewport tall, which is how a plugin-only
+  /// group used to show two posts and then a wall of empty space.
+  Widget _pluginPostsWithXError(
+    BuildContext context, {
+    required List<InterleavedItem> items,
+    required Object? error,
+    required VoidCallback onRetry,
+  }) {
+    return Column(
+      children: [
+        if (!_staleBannerDismissed)
+          StaleFeedBanner(
+            reason: staleFeedReasonOf(error),
+            cachedAt: widget.firstPagePreviewCachedAt,
+            onRetry: onRetry,
+            onDismiss: () => setState(() => _staleBannerDismissed = true),
+          ),
+        Expanded(child: _interleavedOnlyList(context, items, null)),
+      ],
+    );
+  }
+
   // The PagedListView normally kicks off the first page when it mounts. While
   // the preview replaces it, nothing does — so trigger the load ourselves once.
   void _maybeStartFirstLoad() {
@@ -602,7 +631,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     if (_showingPreview) {
       _maybeStartFirstLoad();
       return _wrapWithRefresh(
-        CachedTweetList(widget.firstPagePreview!, username: widget.username),
+        CachedTweetList(
+          widget.firstPagePreview!,
+          username: widget.username,
+          interleaved: widget.interleaved,
+        ),
       );
     }
 
@@ -630,6 +663,21 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           items: widget.interleaved,
         )) {
           return _interleavedOnlyList(context, buckets.last, endCard);
+        }
+        // X's first page failed and there is no cached tweet list to fall
+        // back on. The plugin cards are still worth showing — a rate-limited
+        // search must not hide the subreddit that is actually in this group.
+        if (showInterleavedOnXFailure(
+              chains: state.items,
+              items: widget.interleaved,
+            ) &&
+            (pagingErrorOf(state)?.error ?? state.error) != null) {
+          return _pluginPostsWithXError(
+            context,
+            items: buckets.last.isNotEmpty ? buckets.last : widget.interleaved,
+            error: pagingErrorOf(state)?.error ?? state.error,
+            onRetry: fetchNextPage,
+          );
         }
         return PagedListView<int, TweetChain>(
           // paddingOf, not of(): the whole-list builder must not take a
