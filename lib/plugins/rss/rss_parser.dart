@@ -27,9 +27,7 @@ RssChannel _parseRss2(
   final feedTitle = title?.trim().isNotEmpty == true ? title!.trim() : feedId;
   final items = [
     for (final item in _allTags(channel, 'item'))
-      if (_itemFromRss(item, feedId: feedId, feedTitle: feedTitle)
-          case final parsed?)
-        parsed,
+      ?_itemFromRss(item, feedId: feedId, feedTitle: feedTitle),
   ];
   return RssChannel(
     title: title?.trim(),
@@ -50,9 +48,7 @@ RssChannel _parseAtom(
   final feedTitle = title?.trim().isNotEmpty == true ? title!.trim() : feedId;
   final items = [
     for (final entry in _allTags(feed, 'entry'))
-      if (_itemFromAtom(entry, feedId: feedId, feedTitle: feedTitle)
-          case final parsed?)
-        parsed,
+      ?_itemFromAtom(entry, feedId: feedId, feedTitle: feedTitle),
   ];
   return RssChannel(
     title: title?.trim(),

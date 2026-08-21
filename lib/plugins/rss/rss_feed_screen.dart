@@ -6,7 +6,6 @@ import 'package:xta/plugins/rss/rss_card.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_group.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
-import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
