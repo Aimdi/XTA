@@ -265,18 +265,27 @@ class _NetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedImage.network(
-      url,
-      fit: BoxFit.cover,
-      cache: true,
-      loadStateChanged: (state) {
-        if (state.extendedImageLoadState != LoadState.failed) return null;
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: Icon(
-            Icons.broken_image_outlined,
-            color: Theme.of(context).colorScheme.outline,
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth;
+        final cacheWidth = maxW.isFinite && maxW > 0
+            ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+            : null;
+        return ExtendedImage.network(
+          url,
+          fit: BoxFit.cover,
+          cache: true,
+          cacheWidth: cacheWidth,
+          loadStateChanged: (state) {
+            if (state.extendedImageLoadState != LoadState.failed) return null;
+            return ColoredBox(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            );
+          },
         );
       },
     );
@@ -307,6 +316,7 @@ class InstagramAvatar extends StatelessWidget {
         accent: Theme.of(context).colorScheme.primary,
       );
     }
+    final cache = (size * MediaQuery.devicePixelRatioOf(context)).ceil();
     return ClipOval(
       child: ExtendedImage.network(
         url!,
@@ -314,6 +324,8 @@ class InstagramAvatar extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
         cache: true,
+        cacheWidth: cache,
+        cacheHeight: cache,
         loadStateChanged: (state) {
           if (state.extendedImageLoadState != LoadState.failed) return null;
           return FallbackAvatar(
