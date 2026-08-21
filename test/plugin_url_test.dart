@@ -199,6 +199,24 @@ void main() {
     });
   });
 
+  group('parseHackerNewsLink', () {
+    test('parses a story and a user', () {
+      expect(
+        parseHackerNewsLink('https://news.ycombinator.com/item?id=8863'),
+        isA<HnStoryLink>().having((link) => link.id, 'id', 8863),
+      );
+      expect(
+        parseHackerNewsLink('https://www.news.ycombinator.com/user?id=pg'),
+        isA<HnUserLink>().having((link) => link.id, 'id', 'pg'),
+      );
+    });
+
+    test('ignores the front page and other hosts', () {
+      expect(parseHackerNewsLink('https://news.ycombinator.com/'), isNull);
+      expect(parseHackerNewsLink('https://example.com/item?id=1'), isNull);
+    });
+  });
+
   test('parsePluginLink tries networks in order', () {
     expect(
       parsePluginLink('https://bsky.app/profile/alice.bsky.social'),
