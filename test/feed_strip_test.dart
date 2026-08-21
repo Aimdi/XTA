@@ -7,13 +7,19 @@ import 'package:xta/home/feed_strip_store.dart';
 void main() {
   group('feedStripPluginIds', () {
     test(
-      'legacy Reddit tab appears when the plugin is on and strip is unset',
+      'an unset strip lists every enabled network, not only Reddit',
       () {
         final prefs = PrefServiceCache(
-          cache: {optionPluginRedditEnabled: true},
+          cache: {
+            optionPluginRedditEnabled: true,
+            optionPluginMastodonEnabled: true,
+          },
         );
 
-        expect(feedStripPluginIds(prefs), [pluginIdReddit]);
+        expect(
+          feedStripPluginIds(prefs),
+          containsAll([pluginIdReddit, pluginIdMastodon]),
+        );
       },
     );
 
