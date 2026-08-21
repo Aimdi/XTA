@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Kişi bul",
   "@discover_find_people": {},
+  "discover_plugin_empty": "{name} içinde gönderi, kişi ve topluluk ara.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Bu yer için henüz bir gündem yok. Yukarıdan arayın veya başka bir konum ekleyin.",
   "@discover_trends_empty": {},
   "dismiss": "Kapat",

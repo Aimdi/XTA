@@ -899,6 +899,7 @@ Future<void> main() async {
               ),
             ),
             Provider(create: (_) => SearchScopeStore()),
+            Provider(create: (_) => DiscoverQueryStore()),
             Provider(create: (_) => FeedStripStore(prefService)),
             Provider(create: (_) => HomeAccountFilterStore(prefService)),
             Provider(create: (_) => ChromeAvatarStore(prefService)),

@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "사람 찾기",
   "@discover_find_people": {},
+  "discover_plugin_empty": "{name}에서 게시물, 사람, 커뮤니티를 검색하세요.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "이 지역의 트렌드가 아직 없습니다. 위에서 검색하거나 다른 위치를 추가하세요.",
   "@discover_trends_empty": {},
   "dismiss": "닫기",

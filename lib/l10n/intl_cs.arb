@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Najít lidi",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Hledejte v {name} příspěvky, lidi a komunity.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Pro toto místo zatím nejsou žádné trendy. Hledejte nahoře nebo přidejte jiné místo.",
   "@discover_trends_empty": {},
   "dismiss": "Zavřít",

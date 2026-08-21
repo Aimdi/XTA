@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Найти людей",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Ищите в {name} посты, людей и сообщества.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Пока нет трендов для этого места. Ищите выше или добавьте другую локацию.",
   "@discover_trends_empty": {},
   "dismiss": "Закрыть",

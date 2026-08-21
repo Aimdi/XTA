@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "लोग खोजें",
   "@discover_find_people": {},
+  "discover_plugin_empty": "{name} पर पोस्ट, लोग और कम्युनिटी खोजें।",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "इस जगह के लिए अभी कोई ट्रेंड नहीं है। ऊपर खोजें, या कोई और स्थान जोड़ें।",
   "@discover_trends_empty": {},
   "dismiss": "बंद करें",
