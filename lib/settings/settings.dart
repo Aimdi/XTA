@@ -13,6 +13,7 @@ import 'package:xta/settings/_plugin_store.dart';
 import 'package:xta/settings/_posts.dart';
 import 'package:xta/settings/_theme.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
+import 'package:xta/speech/tts_settings.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -118,6 +119,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: l10n.accessibility,
         description: l10n.settings_accessibility_hint,
         builder: (context) => const SettingsAccessibilityFragment(),
+      ),
+      _SettingsEntry(
+        icon: Icons.record_voice_over_outlined,
+        title: l10n.settings_speech,
+        description: l10n.settings_speech_description,
+        builder: (context) => const TtsSettingsScreen(),
       ),
       _SettingsEntry(
         icon: Icons.extension_outlined,

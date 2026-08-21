@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_account.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_search_screen.dart';
 import 'package:xta/plugins/reddit/reddit_settings_screen.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
@@ -235,6 +236,63 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
   Future<void> _refreshActive() =>
       widget.onRefresh?.call() ?? context.read<RedditFeedStore>().refresh();
+}
+
+/// Opens a followed community without leaving the Reddit home chrome.
+class RedditCommunitySwitcher extends StatelessWidget {
+  const RedditCommunitySwitcher({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ScopedBuilder<RedditSubredditsStore, List<String>>(
+      store: context.read<RedditSubredditsStore>(),
+      onState: (context, names) {
+        return IconButton(
+          tooltip: l10n.plugin_reddit_communities,
+          icon: const Icon(Icons.forum_outlined),
+          onPressed: () => _open(context, names),
+        );
+      },
+    );
+  }
+
+  Future<void> _open(BuildContext context, List<String> names) async {
+    final l10n = L10n.of(context);
+    if (names.isEmpty) {
+      await addRedditSubreddit(context);
+      return;
+    }
+
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              ListTile(title: Text(l10n.plugin_reddit_communities)),
+              for (final name in names)
+                ListTile(
+                  leading: const Icon(Icons.tag),
+                  title: Text('r/$name'),
+                  onTap: () => Navigator.pop(sheetContext, name),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (chosen == null || !context.mounted) {
+      return;
+    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => RedditListingScreen.subreddit(chosen)),
+    );
+  }
 }
 
 /// Asks for a subreddit and follows it.

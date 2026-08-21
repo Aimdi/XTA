@@ -31,6 +31,8 @@ class FeedListView extends StatelessWidget {
       itemCount: itemCount,
       scrollCacheExtent: const ScrollCacheExtent.pixels(kFeedListCacheExtent),
       addAutomaticKeepAlives: false,
+      // Clip so a card cannot paint under a sibling chrome row (plugin home).
+      clipBehavior: Clip.hardEdge,
       itemBuilder: itemBuilder,
     );
   }

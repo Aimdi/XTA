@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_home_source.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart';
 
 Widget _app(Widget child) {
@@ -27,7 +28,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         RedditHomeChrome(
-          mode: mode,
+          source: RedditHomeSource(mode: mode),
           onMode: (next) => mode = next,
           actions: [
             IconButton(
@@ -55,12 +56,33 @@ void main() {
     await tester.pumpWidget(
       _app(
         PluginEmbedded(
-          child: RedditHomeChrome(mode: RedditFeedMode.all, onMode: (_) {}),
+          child: RedditHomeChrome(
+            source: const RedditHomeSource(mode: RedditFeedMode.all),
+            onMode: (_) {},
+          ),
         ),
       ),
     );
 
     expect(find.byType(SafeArea), findsNothing);
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);
+  });
+
+  testWidgets('a followed community deselects Home/Popular/All', (
+    tester,
+  ) async {
+    const source = RedditHomeSource(
+      mode: RedditFeedMode.following,
+      subreddit: 'foo',
+    );
+    expect(redditHomeRailSelected(source, RedditFeedMode.following), isFalse);
+    expect(redditHomeRailSelected(source, RedditFeedMode.popular), isFalse);
+    expect(redditHomeRailSelected(source, RedditFeedMode.all), isFalse);
+
+    await tester.pumpWidget(
+      _app(RedditHomeChrome(source: source, onMode: (_) {})),
+    );
+
+    expect(find.byType(PluginHomeChrome), findsOneWidget);
   });
 }

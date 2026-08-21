@@ -82,6 +82,16 @@ bool onlyInterleavedToShow({
   required List<InterleavedItem> items,
 }) => chains != null && chains.isEmpty && items.isNotEmpty;
 
+/// Whether plugin posts should fill the list when X has no usable page.
+///
+/// A first-page error used to replace the whole list, so a mixed group whose
+/// X search was rate-limited looked like it had no Reddit or Substack posts
+/// at all. The plugin cards are already in hand; they stay on screen.
+bool showInterleavedOnXFailure({
+  required List<TweetChain>? chains,
+  required List<InterleavedItem> items,
+}) => items.isNotEmpty && (chains == null || chains.isEmpty);
+
 /// Writes [items] into [slots] when the visible mix would change.
 ///
 /// An empty answer still replaces a filled slot — a member taken out of the

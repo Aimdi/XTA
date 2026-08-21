@@ -8,7 +8,9 @@ import 'package:xta/search/search_scope.dart';
 
 /// Horizontal chips that pick which network the Search tab queries.
 class SearchScopeChips extends StatelessWidget {
-  const SearchScopeChips({super.key});
+  final ValueChanged<String>? onSelected;
+
+  const SearchScopeChips({super.key, this.onSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,8 @@ class SearchScopeChips extends StatelessWidget {
       child: ChoiceChip(
         label: Text(label),
         selected: selected,
-        onSelected: (_) => context.read<SearchScopeStore>().select(id),
+        onSelected: (_) =>
+            (onSelected ?? context.read<SearchScopeStore>().select)(id),
       ),
     );
   }

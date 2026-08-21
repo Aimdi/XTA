@@ -200,7 +200,7 @@ class _EhSearchScreenState extends State<EhSearchScreen> {
                         ),
                     ],
                   )
-                : ScopedBuilder<EhFeedStore, List<EhGallery>>.transition(
+                : ScopedBuilder<EhFeedStore, List<EhGallery>>(
                     store: _results!,
                     onLoading: (_) =>
                         const Center(child: CircularProgressIndicator()),

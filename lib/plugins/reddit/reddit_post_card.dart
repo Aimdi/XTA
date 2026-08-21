@@ -188,7 +188,10 @@ class _RedditPostHeader extends StatelessWidget {
       style: theme.textTheme.bodySmall!.copyWith(
         color: theme.colorScheme.onSurfaceVariant,
       ),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 0,
+        runSpacing: 2,
         children: [
           // A deleted account has no name to show; the row simply starts with
           // the badge rather than announcing the absence.
