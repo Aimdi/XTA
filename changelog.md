@@ -1,3 +1,18 @@
+## XTA aimdi102
+
+What's new in XTA aimdi102:
+  - Hacker News stays in the Plugin store even when `main`'s catalogue is stale
+  - Search plugins by name, initials, or id (`hn`, `hacker news`)
+  - Available plugins start open so Communities is not hidden
+  - HN threads and user pages build comment and story rows on demand
+
+## XTA aimdi101
+
+What's new in XTA aimdi101:
+  - Guest Hacker News plugin (Top / New / Best / Ask / Show / Jobs, search, threads, local likes and follows)
+  - Home tabs build on demand; switching tabs no longer rebuilds the feed you are reading
+  - Cheaper tweet tiles, paint-size plugin images, and feed-cache JSON encode off the UI isolate
+
 ## XTA aimdi100
 
 What's new in XTA aimdi100:

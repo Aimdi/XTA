@@ -70,7 +70,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var prefs = PrefService.of(context);
+    // listen: false — a theme / zen / plugin pref write used to rebuild the
+    // whole home (and every keep-alive'd feed) because this ancestor subscribed
+    // to every key. The nav bar reads the labels pref itself.
+    var prefs = PrefService.of(context, listen: false);
     var model = context.read<HomeModel>();
 
     return _HomeScreen(prefs: prefs, model: model);
@@ -121,7 +124,9 @@ class _HomeScreenState extends State<_HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<HomeModel, List<HomePage>>.transition(
+    // Plain ScopedBuilder: .transition wraps the pager in AnimatedSwitcher,
+    // which remounts every keep-alive'd feed when a group tab is added.
+    return ScopedBuilder<HomeModel, List<HomePage>>(
       store: widget.model,
       onError: (_, e) => ScaffoldErrorWidget(
         prefix: L10n.current.unable_to_load_home_pages,
@@ -136,44 +141,40 @@ class _HomeScreenState extends State<_HomeScreen> {
           pages: _pages,
           prefs: widget.prefs,
           initialPage: _initialPage,
-          builder: (scrollControllers, focusNodes) {
-            return List.generate(_pages.length, (index) {
-              final page = _pages[index];
-              if (page.id.startsWith('group-')) {
-                return SubscriptionGroupScreen(
+          builder: (index, scrollControllers, focusNodes) {
+            final page = _pages[index];
+            if (page.id.startsWith('group-')) {
+              return SubscriptionGroupScreen(
+                scrollController: scrollControllers[index]!,
+                id: page.id.replaceAll('group-', ''),
+                name: '',
+              );
+            }
+            switch (page.id) {
+              case 'feed':
+                return FeedScreen(
                   scrollController: scrollControllers[index]!,
-                  id: page.id.replaceAll('group-', ''),
-                  name: '',
+                  id: '-1',
+                  name: L10n.current.feed,
                 );
-              }
-              switch (page.id) {
-                case 'feed':
-                  return FeedScreen(
-                    scrollController: scrollControllers[index]!,
-                    id: '-1',
-                    name: L10n.current.feed,
-                  );
-                case 'subscriptions':
-                  return SubscriptionsScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
-                case 'trending':
-                  return TrendsScreen(
-                    scrollController: scrollControllers[index]!,
-                    focusNode: focusNodes[index]!,
-                  );
-                case 'saved':
-                  return SavedScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
-                default:
-                  final plugin = pluginById(page.id);
-                  final screen = plugin?.homeScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
-                  return screen ?? const MissingScreen();
-              }
-            });
+              case 'subscriptions':
+                return SubscriptionsScreen(
+                  scrollController: scrollControllers[index]!,
+                );
+              case 'trending':
+                return TrendsScreen(
+                  scrollController: scrollControllers[index]!,
+                  focusNode: focusNodes[index]!,
+                );
+              case 'saved':
+                return SavedScreen(scrollController: scrollControllers[index]!);
+              default:
+                final plugin = pluginById(page.id);
+                final screen = plugin?.homeScreen(
+                  scrollController: scrollControllers[index]!,
+                );
+                return screen ?? const MissingScreen();
+            }
           },
         );
       },
@@ -185,11 +186,12 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   final List<NavigationPage> pages;
   final BasePrefService prefs;
   final int initialPage;
-  final List<Widget> Function(
+  final Widget Function(
+    int index,
     Map<int, ScrollController> scrollControllers,
     Map<int, FocusNode> focusNodes,
   )
-  builder; // changed here
+  builder;
 
   const ScaffoldWithBottomNavigation({
     super.key,
@@ -247,7 +249,7 @@ int pageAfterNavigationSwipe({
 class _ScaffoldWithBottomNavigationState
     extends State<ScaffoldWithBottomNavigation> {
   late PageController _pageController;
-  late int _currentPage;
+  late final ValueNotifier<int> _pageIndex;
   final Map<int, ScrollController> _scrollControllers = {};
   final Map<int, FocusNode> _focusNodes = {};
 
@@ -269,7 +271,7 @@ class _ScaffoldWithBottomNavigationState
   @override
   void initState() {
     super.initState();
-    _currentPage = widget.initialPage;
+    _pageIndex = ValueNotifier(widget.initialPage);
     _pageController = PageController(initialPage: widget.initialPage);
     for (int i = 0; i < widget.pages.length; i++) {
       _scrollControllers[i] = ScrollController();
@@ -456,7 +458,6 @@ class _ScaffoldWithBottomNavigationState
   Widget _buildScaffold(BuildContext context, L10n l10n) {
     final theme = Theme.of(context);
     final tokens = XLookTokens.maybeOf(context);
-    final showLabels = widget.prefs.get(optionShowNavigationLabels) == true;
     final isDark = theme.brightness == Brightness.dark;
 
     // X chrome: tight capsule, hairline edge, accent on the glyph — not a
@@ -478,128 +479,147 @@ class _ScaffoldWithBottomNavigationState
     }
 
     const radius = 24.0;
-    final barHeight = showLabels ? 60.0 : 56.0;
 
     return Scaffold(
       extendBody: true,
       drawer: _buildDrawer(context, l10n),
-      body: PageView(
+      body: PageView.builder(
         controller: _pageController,
         // Tabs change from the bar and nowhere else. A drag anywhere in a page
         // used to change them too, which meant every horizontal gesture in the
         // app — a media carousel, a nested tab view, a slider — was competing
         // with the pager for the same finger.
         physics: const NeverScrollableScrollPhysics(),
+        itemCount: widget.pages.length,
         onPageChanged: (page) {
-          final previous = _currentPage;
-          setState(() {
-            _currentPage = page;
-          });
+          final previous = _pageIndex.value;
+          _pageIndex.value = page;
           _adoptSearchScope(previous, page);
         },
-        children: widget.builder(_scrollControllers, _focusNodes),
+        itemBuilder: (context, index) {
+          return KeyedSubtree(
+            key: PageStorageKey<String>(widget.pages[index].id),
+            child: widget.builder(index, _scrollControllers, _focusNodes),
+          );
+        },
       ),
       // Floating capsule: swipe still changes tab; the page itself never does.
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onHorizontalDragStart: (_) => _dragDistance = 0,
-          onHorizontalDragUpdate: (details) =>
-              _dragDistance += details.primaryDelta ?? 0,
-          onHorizontalDragEnd: (details) =>
-              _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(radius),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(radius),
+      // Labels pref is read here so a Settings toggle does not rebuild feeds.
+      bottomNavigationBar: Builder(
+        builder: (context) {
+          final showLabels =
+              PrefService.of(context).get(optionShowNavigationLabels) == true;
+          final barHeight = showLabels ? 60.0 : 56.0;
+          return SafeArea(
+            minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragStart: (_) => _dragDistance = 0,
+              onHorizontalDragUpdate: (details) =>
+                  _dragDistance += details.primaryDelta ?? 0,
+              onHorizontalDragEnd: (details) => _swipeNavigationBar(
+                details.primaryVelocity ?? 0,
+                _dragDistance,
+              ),
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: pillFill,
                   borderRadius: BorderRadius.circular(radius),
-                  border: Border.all(color: pillBorder, width: 0.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: isDark ? 0.28 : 0.08,
+                      ),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: NavigationBar(
-                  selectedIndex: _currentPage,
-                  labelBehavior: showLabels
-                      ? NavigationDestinationLabelBehavior.alwaysShow
-                      : NavigationDestinationLabelBehavior.alwaysHide,
-                  shadowColor: Colors.transparent,
-                  backgroundColor: Colors.transparent,
-                  surfaceTintColor: Colors.transparent,
-                  // Accent lives on the icon / label (theme), not a tinted stadium.
-                  indicatorColor: Colors.transparent,
-                  overlayColor: WidgetStateProperty.resolveWith((states) {
-                    if (states.contains(WidgetState.pressed) ||
-                        states.contains(WidgetState.focused)) {
-                      return accent.withValues(alpha: 0.08);
-                    }
-                    if (states.contains(WidgetState.hovered)) {
-                      return accent.withValues(alpha: 0.04);
-                    }
-                    return Colors.transparent;
-                  }),
-                  height: barHeight,
-                  destinations: widget.pages.asMap().entries.map((e) {
-                    final index = e.key;
-                    final page = e.value;
-                    final isSelected = _currentPage == index;
-                    // Subtle lift only when labels are off — with labels the
-                    // bold weight + accent colour already mark the tab.
-                    final scale = (!showLabels && isSelected && tokens != null)
-                        ? 1.05
-                        : 1.0;
-                    return NavigationDestination(
-                      icon: AnimatedScale(
-                        scale: scale,
-                        duration: Duration(
-                          milliseconds: tokens != null ? 200 : 0,
-                        ),
-                        curve: Curves.easeOutCubic,
-                        child: page.icon,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: pillFill,
+                      borderRadius: BorderRadius.circular(radius),
+                      border: Border.all(color: pillBorder, width: 0.5),
+                    ),
+                    child: ValueListenableBuilder<int>(
+                      valueListenable: _pageIndex,
+                      builder: (context, currentPage, _) => NavigationBar(
+                        selectedIndex: currentPage,
+                        labelBehavior: showLabels
+                            ? NavigationDestinationLabelBehavior.alwaysShow
+                            : NavigationDestinationLabelBehavior.alwaysHide,
+                        shadowColor: Colors.transparent,
+                        backgroundColor: Colors.transparent,
+                        surfaceTintColor: Colors.transparent,
+                        // Accent lives on the icon / label (theme), not a tinted stadium.
+                        indicatorColor: Colors.transparent,
+                        overlayColor: WidgetStateProperty.resolveWith((states) {
+                          if (states.contains(WidgetState.pressed) ||
+                              states.contains(WidgetState.focused)) {
+                            return accent.withValues(alpha: 0.08);
+                          }
+                          if (states.contains(WidgetState.hovered)) {
+                            return accent.withValues(alpha: 0.04);
+                          }
+                          return Colors.transparent;
+                        }),
+                        height: barHeight,
+                        destinations: widget.pages.asMap().entries.map((e) {
+                          final index = e.key;
+                          final page = e.value;
+                          final isSelected = currentPage == index;
+                          // Subtle lift only when labels are off — with labels the
+                          // bold weight + accent colour already mark the tab.
+                          final scale =
+                              (!showLabels && isSelected && tokens != null)
+                              ? 1.05
+                              : 1.0;
+                          return NavigationDestination(
+                            icon: AnimatedScale(
+                              scale: scale,
+                              duration: Duration(
+                                milliseconds: tokens != null ? 200 : 0,
+                              ),
+                              curve: Curves.easeOutCubic,
+                              child: page.icon,
+                            ),
+                            selectedIcon: AnimatedScale(
+                              scale: scale,
+                              duration: Duration(
+                                milliseconds: tokens != null ? 200 : 0,
+                              ),
+                              curve: Curves.easeOutCubic,
+                              child: page.selectedIcon,
+                            ),
+                            label: page.titleBuilder(context),
+                          );
+                        }).toList(),
+                        onDestinationSelected: (index) async {
+                          if (index == currentPage) {
+                            final controller = _scrollControllers[currentPage];
+                            final atTop =
+                                controller == null ||
+                                !controller.hasClients ||
+                                controller.offset <= 0;
+                            if (!atTop) {
+                              await scrollToTop(context, controller);
+                            } else if (widget.pages[index].id == 'trending') {
+                              _focusNodes[currentPage]?.requestFocus();
+                            }
+                            return;
+                          }
+                          unfocusPages();
+                          _pageController.jumpToPage(index);
+                        },
                       ),
-                      selectedIcon: AnimatedScale(
-                        scale: scale,
-                        duration: Duration(
-                          milliseconds: tokens != null ? 200 : 0,
-                        ),
-                        curve: Curves.easeOutCubic,
-                        child: page.selectedIcon,
-                      ),
-                      label: page.titleBuilder(context),
-                    );
-                  }).toList(),
-                  onDestinationSelected: (index) async {
-                    if (index == _currentPage) {
-                      final controller = _scrollControllers[_currentPage];
-                      final atTop =
-                          controller == null ||
-                          !controller.hasClients ||
-                          controller.offset <= 0;
-                      if (!atTop) {
-                        await scrollToTop(context, controller);
-                      } else if (widget.pages[index].id == 'trending') {
-                        _focusNodes[_currentPage]?.requestFocus();
-                      }
-                      return;
-                    }
-                    unfocusPages();
-                    _pageController.jumpToPage(index);
-                  },
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -623,12 +643,12 @@ class _ScaffoldWithBottomNavigationState
 
   void _swipeNavigationBar(double velocity, double distance) {
     final target = pageAfterNavigationSwipe(
-      current: _currentPage,
+      current: _pageIndex.value,
       pageCount: widget.pages.length,
       velocity: velocity,
       distance: distance,
     );
-    if (target == _currentPage) {
+    if (target == _pageIndex.value) {
       return;
     }
 
@@ -646,6 +666,7 @@ class _ScaffoldWithBottomNavigationState
 
   @override
   void dispose() {
+    _pageIndex.dispose();
     _pageController.dispose();
     for (final controller in _scrollControllers.values) {
       controller.dispose();

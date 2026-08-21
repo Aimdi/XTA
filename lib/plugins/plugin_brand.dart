@@ -18,6 +18,34 @@ groupPluginsByCategory(Iterable<XtaPlugin> plugins) {
   ];
 }
 
+/// Whether a store row matches what the reader typed.
+bool pluginMatchesStoreQuery({
+  required String query,
+  required String id,
+  required String title,
+  required String description,
+  required String category,
+}) {
+  final q = query.trim().toLowerCase();
+  if (q.isEmpty) {
+    return true;
+  }
+  final compact = q.replaceAll(RegExp(r'\s+'), '');
+  final idLower = id.toLowerCase();
+  final initials = title
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((word) => word.isNotEmpty)
+      .map((word) => word[0].toLowerCase())
+      .join();
+  return idLower.contains(q) ||
+      idLower.contains(compact) ||
+      initials == q ||
+      title.toLowerCase().contains(q) ||
+      description.toLowerCase().contains(q) ||
+      category.toLowerCase().contains(q);
+}
+
 /// Store layout: what is already on the device, then the rest by category.
 ({
   List<XtaPlugin> installed,
