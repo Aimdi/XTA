@@ -54,7 +54,14 @@ void main() {
 
     expect(find.byType(SwitchListTile), findsNothing);
     expect(find.text('Show as a tab'), findsNothing);
-    expect(find.byTooltip('Show as a tab'), findsOneWidget);
+    expect(
+      find.byTooltip(
+        L10n.of(
+          tester.element(find.byType(Scaffold)),
+        ).plugin_show_as_tab_description,
+      ),
+      findsOneWidget,
+    );
     expect(find.byTooltip('Settings'), findsOneWidget);
     expect(find.byType(PopupMenuButton<String>), findsOneWidget);
   });
