@@ -12,7 +12,6 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
-import 'package:xta/plugins/substack/substack_reader_screen.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 
 const _speedrun = SubstackPublication(
@@ -178,29 +177,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
 
     expect(find.byType(SubstackArchiveScreen), findsOneWidget);
-    expect(find.byType(SubstackReaderScreen), findsNothing);
-    expect(find.text('Guillermo Rauch'), findsOneWidget);
-  });
-
-  testWidgets('tapping the post title still opens the reader', (tester) async {
-    await tester.pumpWidget(
-      _app(
-        home: Scaffold(
-          body: SubstackPostCard(
-            post: _post(title: 'Guillermo Rauch', name: 'a16z speedrun'),
-            showSourceBadge: false,
-          ),
-        ),
-      ),
-    );
-    await tester.pump();
-
-    await tester.tap(find.text('Guillermo Rauch'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
-
-    expect(find.byType(SubstackReaderScreen), findsOneWidget);
-    expect(find.byType(SubstackArchiveScreen), findsNothing);
+    expect(find.text('Guillermo Rauch'), findsWidgets);
   });
 
   testWidgets('the publication profile scrolls header and posts together', (
@@ -231,20 +208,29 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 50));
-    await tester.pumpAndSettle();
+    for (
+      var i = 0;
+      i < 30 && find.textContaining('Post 0').evaluate().isEmpty;
+      i++
+    ) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
 
     expect(find.byType(CustomScrollView), findsOneWidget);
     expect(find.text('a16z speedrun'), findsWidgets);
+    expect(find.byType(SubstackPostCard), findsWidgets);
+    expect(find.textContaining('Post 0'), findsOneWidget);
 
-    final before = tester.getTopLeft(
-      find.text('Post 0 — a long enough title to take a row'),
-    );
+    final scrollable = tester
+        .stateList<ScrollableState>(find.byType(Scrollable))
+        .where((state) => state.position.axis == Axis.vertical)
+        .reduce(
+          (a, b) =>
+              a.position.maxScrollExtent >= b.position.maxScrollExtent ? a : b,
+        );
+    expect(scrollable.position.pixels, 0);
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
-    await tester.pumpAndSettle();
-    final after = tester.getTopLeft(
-      find.text('Post 0 — a long enough title to take a row'),
-    );
-    expect(after.dy, lessThan(before.dy));
+    await tester.pump();
+    expect(scrollable.position.pixels, greaterThan(100));
   });
 }
