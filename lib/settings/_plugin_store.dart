@@ -139,16 +139,21 @@ class _SettingsPluginStoreFragmentState
 
     if (confirmed != true || !mounted) return;
 
+    final strip = context.read<FeedStripStore>();
+    final home = context.read<HomeModel>();
+    NetworkRecentsStore? recents;
+    try {
+      recents = context.read<NetworkRecentsStore>();
+    } on ProviderNotFoundException {
+      recents = null;
+    }
+
     await plugin.uninstall(context);
     if (!mounted) return;
-    await context.read<FeedStripStore>().forget(plugin.id);
-    try {
-      await context.read<NetworkRecentsStore>().forget(plugin.id);
-    } on ProviderNotFoundException {
-      // Store tests and the settings route still uninstall.
-    }
+    await strip.forget(plugin.id);
+    await recents?.forget(plugin.id);
     if (!mounted) return;
-    await context.read<HomeModel>().loadPages();
+    await home.loadPages();
     if (mounted) setState(() {});
   }
 

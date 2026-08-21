@@ -129,6 +129,10 @@ class InstalledPluginRow extends StatelessWidget {
     String tabPref,
   ) async {
     final next = !plugin.showsHomeTab(prefs);
+    final home = context.read<HomeModel>();
+    final strip = plugin.supportsFeedStrip
+        ? context.read<FeedStripStore>()
+        : null;
     await prefs.set(tabPref, next);
 
     // Asking for the tab back has to actually bring it back: the page list only
@@ -141,14 +145,13 @@ class InstalledPluginRow extends StatelessWidget {
         optionSeededPluginTabs,
         seeded.where((e) => e != plugin.id).toList(),
       );
-    } else if (plugin.supportsFeedStrip) {
-      final strip = context.read<FeedStripStore>();
+    } else if (strip != null) {
       await strip.ensurePersisted();
       await strip.add(plugin.id);
     }
 
     if (!context.mounted) return;
-    await context.read<HomeModel>().loadPages();
+    await home.loadPages();
     onChanged();
   }
 }

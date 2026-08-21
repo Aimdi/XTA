@@ -698,10 +698,11 @@ class _ScaffoldWithBottomNavigationState
       currentId: pluginById(currentId)?.id,
       recentIds: recent,
     );
-    if (!mounted || picked == null) return;
+    if (!mounted || !context.mounted || picked == null) return;
     final pageIndex = widget.pages.indexWhere((page) => page.id == picked);
     if (pageIndex < 0) return;
     await rememberNetwork(context, picked);
+    if (!mounted) return;
     unfocusPages();
     _pageController.jumpToPage(pageIndex);
   }
