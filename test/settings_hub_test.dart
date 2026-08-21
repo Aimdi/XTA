@@ -46,6 +46,7 @@ void main() {
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Theme'), findsOneWidget);
     expect(find.text('Accessibility'), findsOneWidget);
+    expect(find.text('Read aloud'), findsOneWidget);
     expect(find.text('Plugin store'), findsOneWidget);
     expect(find.text('Data'), findsOneWidget);
     expect(find.text('Language, updates, and sharing'), findsOneWidget);
@@ -81,6 +82,16 @@ void main() {
 
     expect(find.text('Posts'), findsOneWidget);
     expect(find.text('always_show_full_tweet_contents'), findsNothing);
+  });
+
+  testWidgets('search finds read-aloud by Sherpa', (tester) async {
+    await _pumpHub(tester);
+
+    await tester.enterText(find.byType(TextField), 'sherpa');
+    await tester.pump();
+
+    expect(find.text('Read aloud'), findsOneWidget);
+    expect(find.text('General'), findsNothing);
   });
 
   testWidgets('Data is one tile that opens import, export, and sync', (

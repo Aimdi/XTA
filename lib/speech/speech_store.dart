@@ -2,6 +2,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
+import 'package:xta/speech/tts_engines.dart';
 import 'package:xta/speech/tts_settings.dart';
 
 /// What is being read aloud, if anything.
@@ -88,7 +89,9 @@ class SpeechStore extends Store<SpeechPlayback> {
       // Desktop / older engines may not expose this.
     }
 
-    await _applyVoice(choice);
+    if (!await _applyVoice(choice)) {
+      return false;
+    }
 
     final generation = ++_generation;
     // The media session is what keeps speech alive past the foreground and
@@ -144,9 +147,14 @@ class SpeechStore extends Store<SpeechPlayback> {
 
   /// The reader's chosen engine and voice, falling back to the app's language
   /// when they have not chosen one — or when what they chose has gone.
-  Future<void> _applyVoice(TtsChoice choice) async {
-    if (await applyTtsChoice(_tts, choice) && choice.hasVoice) {
-      return;
+  Future<bool> _applyVoice(TtsChoice choice) async {
+    final resolved = await _resolveChoice(choice);
+    final applied = await applyTtsChoice(_tts, resolved);
+    if (applied && (resolved.hasVoice || isSherpaEngine(resolved.engine))) {
+      return true;
+    }
+    if (isSherpaEngine(choice.engine) && !applied) {
+      return false;
     }
 
     try {
@@ -155,6 +163,27 @@ class SpeechStore extends Store<SpeechPlayback> {
       await _tts.setLanguage('en-US');
     }
     await _tts.setSpeechRate(choice.rate);
+    return true;
+  }
+
+  Future<TtsChoice> _resolveChoice(TtsChoice choice) async {
+    if (!isSherpaEngine(choice.engine)) return choice;
+    try {
+      final options = await loadTtsOptions(_tts);
+      return TtsChoice(
+        engine: resolveSherpaEngineId(options.engines),
+        voiceName: choice.voiceName,
+        voiceLocale: choice.voiceLocale,
+        rate: choice.rate,
+      );
+    } catch (_) {
+      return TtsChoice(
+        engine: sherpaOnnxTtsEngine,
+        voiceName: choice.voiceName,
+        voiceLocale: choice.voiceLocale,
+        rate: choice.rate,
+      );
+    }
   }
 }
 
