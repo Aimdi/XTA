@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Comunitats seguides",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Mostra a la cronologia principal",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Barreja les publicacions dels subreddits que segueixes a «Seguint» i «Per a tu»",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Cercar connectors",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Mostra connectors privats",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Afegeix una publicació",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

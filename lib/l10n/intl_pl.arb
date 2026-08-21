@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popularne",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Obserwowane społeczności",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Pokazuj na osi czasu",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Dodaje wpisy z obserwowanych subredditów do zakładek „Obserwowane” i „Dla Ciebie”",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Przeglądaj i zarządzaj opcjonalnymi wtyczkami",
   "@plugin_store_description": {},
   "plugin_store_search": "Szukaj wtyczek",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Pokaż prywatne wtyczki",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Dodaj publikację",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

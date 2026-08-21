@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Comunidades seguidas",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Mostrar na cronologia principal",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Mistura as publicações dos subreddits que segue em «A seguir» e «Para si»",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Explorar e gerir plugins opcionais",
   "@plugin_store_description": {},
   "plugin_store_search": "Pesquisar plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Mostrar complementos privados",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Adicionar publicação",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Comprimento do feed no modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantas páginas o feed carrega no modo zen antes de fazer uma pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

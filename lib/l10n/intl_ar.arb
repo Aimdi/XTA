@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "الشائع",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "المجتمعات المتابَعة",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "إظهار في الصفحة الرئيسية",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "يدمج منشورات السَبريديتس التي تتابعها في \"المتابَعون\" و\"لك\"",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "تصفح الإضافات الاختيارية وإدارتها",
   "@plugin_store_description": {},
   "plugin_store_search": "البحث في الإضافات",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "إظهار الإضافات الخاصة",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "إضافة منشور",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

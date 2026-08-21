@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Папулярнае",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Адсочваныя суполкі",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Паказваць у галоўнай стужцы",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Дадае запісы з сабрэдытаў, на якія вы падпісаны, у «Падпіскі» і «Для вас»",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Search plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Паказваць прыватныя плагіны",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Дадаць выданне",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

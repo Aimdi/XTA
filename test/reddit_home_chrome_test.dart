@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_home_source.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart';
 
 Widget _app(Widget child) {
@@ -27,7 +29,7 @@ void main() {
     await tester.pumpWidget(
       _app(
         RedditHomeChrome(
-          mode: mode,
+          source: RedditHomeSource(mode: mode),
           onMode: (next) => mode = next,
           actions: [
             IconButton(
@@ -55,12 +57,36 @@ void main() {
     await tester.pumpWidget(
       _app(
         PluginEmbedded(
-          child: RedditHomeChrome(mode: RedditFeedMode.all, onMode: (_) {}),
+          child: RedditHomeChrome(
+            source: const RedditHomeSource(mode: RedditFeedMode.all),
+            onMode: (_) {},
+          ),
         ),
       ),
     );
 
     expect(find.byType(SafeArea), findsNothing);
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);
+  });
+
+  testWidgets('a followed community deselects Home/Popular/All', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        RedditHomeChrome(
+          source: const RedditHomeSource(
+            mode: RedditFeedMode.following,
+            subreddit: 'foo',
+          ),
+          onMode: (_) {},
+        ),
+      ),
+    );
+
+    for (final label in ['Following', 'Popular', 'All']) {
+      final semantics = tester.getSemantics(find.byTooltip(label));
+      expect(semantics.hasFlag(SemanticsFlag.isSelected), isFalse);
+    }
   });
 }

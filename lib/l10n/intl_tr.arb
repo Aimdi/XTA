@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popüler",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Takip edilen topluluklar",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Ana akışta göster",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Takip ettiğin subredditlerin gönderilerini Takip ve Sana Özel akışlarına karıştırır",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "İsteğe bağlı eklentilere göz atın ve yönetin",
   "@plugin_store_description": {},
   "plugin_store_search": "Eklenti ara",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Özel eklentileri göster",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Yayın ekle",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

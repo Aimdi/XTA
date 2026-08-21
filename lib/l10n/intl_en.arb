@@ -1943,6 +1943,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Followed communities",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Show in the home timeline",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Mixes posts from the subreddits you follow into Following and For you",
@@ -2114,6 +2116,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Search plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Show private plugins",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Add publication",
@@ -3034,6 +3037,5 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

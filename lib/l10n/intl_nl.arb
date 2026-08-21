@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Populair",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Gevolgde communities",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Weergeven in de hoofdtijdlijn",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Mengt berichten uit de subreddits die je volgt in Volgend en Voor jou",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Optionele plugins bekijken en beheren",
   "@plugin_store_description": {},
   "plugin_store_search": "Plugins zoeken",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Privéplugins tonen",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Publicatie toevoegen",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Comunități urmărite",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Afișează în cronologia principală",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Adaugă postările din subredditurile urmărite în „Urmăriți” și „Pentru tine”",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Search plugins",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Afișează pluginuri private",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Adaugă publicație",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

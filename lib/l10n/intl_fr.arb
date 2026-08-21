@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Populaire",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Communautés suivies",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Afficher dans le fil principal",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Intègre les publications des subreddits que vous suivez dans « Abonnements » et « Pour vous »",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Parcourir et gérer les extensions optionnelles",
   "@plugin_store_description": {},
   "plugin_store_search": "Rechercher des extensions",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Afficher les greffons privés",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Ajouter une publication",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

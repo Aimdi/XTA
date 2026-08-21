@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Популярное",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Отслеживаемые сообщества",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Показывать в главной ленте",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Добавляет записи из сабреддитов, на которые вы подписаны, в «Подписки» и «Для вас»",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Просмотр и управление дополнительными плагинами",
   "@plugin_store_description": {},
   "plugin_store_search": "Искать плагины",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Показывать частные плагины",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Добавить издание",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

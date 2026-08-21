@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Fulgte fellesskap",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Vis i hovedstrømmen",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Blander innlegg fra subredditene du følger inn i Følger og For deg",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Søk etter tillegg",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Vis private programtillegg",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Legg til publikasjon",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

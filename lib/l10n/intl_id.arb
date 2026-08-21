@@ -1922,6 +1922,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Komunitas yang diikuti",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Tampilkan di lini masa beranda",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Menggabungkan kiriman dari subreddit yang Anda ikuti ke Mengikuti dan Untuk Anda",
@@ -2087,6 +2089,7 @@
   "plugin_store_description": "Browse and manage optional plugins",
   "@plugin_store_description": {},
   "plugin_store_search": "Cari plugin",
+  "@plugin_store_search": {},
   "plugin_store_show_private": "Tampilkan plugin privat",
   "@plugin_store_show_private": {},
   "plugin_substack_add": "Tambah publikasi",
@@ -2980,6 +2983,5 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@zen_mode_page_cap_description": {}
 }

@@ -173,6 +173,9 @@ const optionPluginRedditTimeFilter = 'plugin.reddit.time_filter';
 /// The selected Reddit discovery section.
 const optionPluginRedditFeedMode = 'plugin.reddit.feed_mode';
 
+/// The followed subreddit open in the Reddit tab, or empty for a discovery rail.
+const optionPluginRedditSelectedSubreddit = 'plugin.reddit.selected_subreddit';
+
 /// Whether over-18 Reddit posts are hidden, tap-gated, or shown.
 const optionPluginRedditNsfwMode = 'plugin.reddit.nsfw_mode';
 
