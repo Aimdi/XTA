@@ -28,6 +28,7 @@ import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_model.dart';
@@ -513,6 +514,8 @@ Future<void> main() async {
       optionPluginKarakeepServerUrl: '',
       optionPluginKarakeepApiKey: '',
       optionSeededPluginTabs: <String>[],
+      optionSeededStripPlugins: <String>[],
+      optionHomeRecentNetworks: <String>[],
       optionPluginHnEnabled: false,
       optionPluginHnShowTab: true,
       optionPluginHnLikedPosts: '[]',
@@ -926,6 +929,7 @@ Future<void> main() async {
             ),
             Provider(create: (_) => SearchScopeStore()),
             Provider(create: (_) => FeedStripStore(prefService)),
+            Provider(create: (_) => NetworkRecentsStore(prefService)),
             Provider(create: (_) => HomeAccountFilterStore(prefService)),
             Provider(create: (_) => ChromeAvatarStore(prefService)),
             Provider(create: (_) => substackClient),

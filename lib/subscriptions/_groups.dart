@@ -15,8 +15,6 @@ import 'package:xta/subscriptions/widgets/group_tile.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/plugins/plugin.dart';
-import 'package:xta/subscriptions/plugin_feed_chips.dart';
 
 export 'package:xta/subscriptions/_groups_edit.dart'
     show openSubscriptionGroupDialog, SubscriptionGroupEditDialog;
@@ -264,44 +262,6 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     );
   }
 
-  /// Feeds a plugin provides, listed with the groups so they are reachable from
-  /// where feeds live. Only shown once a plugin has given up its own home tab,
-  /// otherwise the same feed would have two entry points.
-  List<Widget> _pluginFeedChips(BuildContext context) {
-    final plugins = pluginFeedsOnGroupsTab(PrefService.of(context));
-    if (plugins.isEmpty) {
-      return const [];
-    }
-
-    return [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
-        child: Wrap(
-          spacing: 6,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            for (final plugin in plugins)
-              PluginFeedChip(
-                key: pluginFeedChipKey(plugin.id),
-                plugin: plugin,
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => _PluginFeedRoute(
-                      key: ValueKey('plugin-feed-route-${plugin.id}'),
-                      plugin: plugin,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-      const Divider(height: 1),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     // Plain ScopedBuilder: .transition wraps the board in AnimatedSwitcher,
@@ -353,13 +313,12 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         // How far each group is indented, so a nested one reads as nested.
         final depths = {for (final g in groups) g.id: depthOf(g.id, parents)};
 
-        // The search field and the plugin feeds scroll away with the groups
-        // rather than sitting above them. They used to be fixed children of a
-        // Column with the grid in an Expanded below, so tiles slid under them
-        // and were sliced off mid-card at the top of the viewport.
+        // The search field scrolls away with the groups rather than sitting
+        // above them. It used to be a fixed child of a Column with the grid
+        // in an Expanded below, so tiles slid under it and were sliced off
+        // mid-card at the top of the viewport.
         final header = [
           if (state.length > 5) _buildSearchBar(context),
-          ..._pluginFeedChips(context),
         ];
 
         return GroupUnreadScope(
@@ -479,32 +438,5 @@ class SubscriptionGroups extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubscriptionGroupsPage(scrollController: scrollController);
-  }
-}
-
-/// Hosts a plugin's feed screen as a pushed route, for plugins that no longer
-/// occupy a home tab. The screen brings its own app bar.
-class _PluginFeedRoute extends StatefulWidget {
-  final XtaPlugin plugin;
-
-  const _PluginFeedRoute({super.key, required this.plugin});
-
-  @override
-  State<_PluginFeedRoute> createState() => _PluginFeedRouteState();
-}
-
-class _PluginFeedRouteState extends State<_PluginFeedRoute> {
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.plugin.homeScreen(scrollController: _scrollController) ??
-        const SizedBox.shrink();
   }
 }

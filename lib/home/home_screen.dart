@@ -18,6 +18,8 @@ import 'package:xta/home/_feed.dart';
 import 'package:xta/home/_missing.dart';
 import 'package:xta/home/_saved.dart';
 import 'package:xta/home/home_model.dart';
+import 'package:xta/home/network_recents_store.dart';
+import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/search/search_scope.dart';
@@ -531,75 +533,46 @@ class _ScaffoldWithBottomNavigationState
                 ),
                 child: ValueListenableBuilder<int>(
                   valueListenable: _pageIndex,
-                  builder: (context, currentPage, _) => NavigationBar(
-                    selectedIndex: currentPage,
-                    labelBehavior: showLabels
-                        ? NavigationDestinationLabelBehavior.alwaysShow
-                        : NavigationDestinationLabelBehavior.alwaysHide,
-                    shadowColor: Colors.transparent,
-                    backgroundColor: Colors.transparent,
-                    surfaceTintColor: Colors.transparent,
-                    // Accent lives on the icon / label (theme), not a tinted stadium.
-                    indicatorColor: Colors.transparent,
-                    overlayColor: WidgetStateProperty.resolveWith((states) {
-                      if (states.contains(WidgetState.pressed) ||
-                          states.contains(WidgetState.focused)) {
-                        return accent.withValues(alpha: 0.08);
-                      }
-                      if (states.contains(WidgetState.hovered)) {
-                        return accent.withValues(alpha: 0.04);
-                      }
-                      return Colors.transparent;
-                    }),
-                    height: barHeight,
-                    destinations: widget.pages.asMap().entries.map((e) {
-                      final index = e.key;
-                      final page = e.value;
-                      final isSelected = currentPage == index;
-                      // Subtle lift only when labels are off — with labels the
-                      // bold weight + accent colour already mark the tab.
-                      final scale =
-                          (!showLabels && isSelected && tokens != null)
-                          ? 1.05
-                          : 1.0;
-                      return NavigationDestination(
-                        icon: AnimatedScale(
-                          scale: scale,
-                          duration: Duration(
-                            milliseconds: tokens != null ? 200 : 0,
-                          ),
-                          curve: Curves.easeOutCubic,
-                          child: page.icon,
-                        ),
-                        selectedIcon: AnimatedScale(
-                          scale: scale,
-                          duration: Duration(
-                            milliseconds: tokens != null ? 200 : 0,
-                          ),
-                          curve: Curves.easeOutCubic,
-                          child: page.selectedIcon,
-                        ),
-                        label: page.titleBuilder(context),
-                      );
-                    }).toList(),
-                    onDestinationSelected: (index) async {
-                      if (index == currentPage) {
-                        final controller = _scrollControllers[currentPage];
-                        final atTop =
-                            controller == null ||
-                            !controller.hasClients ||
-                            controller.offset <= 0;
-                        if (!atTop) {
-                          await scrollToTop(context, controller);
-                        } else if (widget.pages[index].id == 'trending') {
-                          _focusNodes[currentPage]?.requestFocus();
+                  builder: (context, currentPage, _) {
+                    final slots = _bottomBarSlots(context);
+                    final selectedDest = destinationIndexForPage(
+                      slots,
+                      currentPage,
+                    );
+                    return NavigationBar(
+                      selectedIndex: selectedDest,
+                      labelBehavior: showLabels
+                          ? NavigationDestinationLabelBehavior.alwaysShow
+                          : NavigationDestinationLabelBehavior.alwaysHide,
+                      shadowColor: Colors.transparent,
+                      backgroundColor: Colors.transparent,
+                      surfaceTintColor: Colors.transparent,
+                      indicatorColor: Colors.transparent,
+                      overlayColor: WidgetStateProperty.resolveWith((states) {
+                        if (states.contains(WidgetState.pressed) ||
+                            states.contains(WidgetState.focused)) {
+                          return accent.withValues(alpha: 0.08);
                         }
-                        return;
-                      }
-                      unfocusPages();
-                      _pageController.jumpToPage(index);
-                    },
-                  ),
+                        if (states.contains(WidgetState.hovered)) {
+                          return accent.withValues(alpha: 0.04);
+                        }
+                        return Colors.transparent;
+                      }),
+                      height: barHeight,
+                      destinations: [
+                        for (final slot in slots)
+                          _destinationForSlot(
+                            context,
+                            slot: slot,
+                            currentPage: currentPage,
+                            showLabels: showLabels,
+                            tokens: tokens,
+                          ),
+                      ],
+                      onDestinationSelected: (index) =>
+                          _onBarDestination(context, slots, index, currentPage),
+                    );
+                  },
                 ),
               ),
             ),
@@ -624,6 +597,114 @@ class _ScaffoldWithBottomNavigationState
       return;
     }
     context.read<SearchScopeStore>().select(plugin.id);
+  }
+
+  List<BottomBarSlot> _bottomBarSlots(BuildContext context) {
+    String? recentPluginId;
+    try {
+      final recents = context.read<NetworkRecentsStore>().state;
+      recentPluginId = recents
+          .where((id) => widget.pages.any((page) => page.id == id))
+          .firstOrNull;
+    } on ProviderNotFoundException {
+      recentPluginId = null;
+    }
+    return layoutBottomBar(
+      [for (final page in widget.pages) page.id],
+      recentPluginId: recentPluginId,
+    );
+  }
+
+  NavigationDestination _destinationForSlot(
+    BuildContext context, {
+    required BottomBarSlot slot,
+    required int currentPage,
+    required bool showLabels,
+    required XLookTokens? tokens,
+  }) {
+    if (slot.isOverflow) {
+      return NavigationDestination(
+        icon: const Icon(Icons.public_outlined),
+        selectedIcon: const Icon(Icons.public),
+        label: L10n.of(context).home_networks,
+      );
+    }
+    final index = slot.pageIndex!;
+    final page = widget.pages[index];
+    final isSelected = currentPage == index;
+    final scale = (!showLabels && isSelected && tokens != null) ? 1.05 : 1.0;
+    final duration = Duration(milliseconds: tokens != null ? 200 : 0);
+    return NavigationDestination(
+      icon: AnimatedScale(
+        scale: scale,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+        child: page.icon,
+      ),
+      selectedIcon: AnimatedScale(
+        scale: scale,
+        duration: duration,
+        curve: Curves.easeOutCubic,
+        child: page.selectedIcon,
+      ),
+      label: page.titleBuilder(context),
+    );
+  }
+
+  Future<void> _onBarDestination(
+    BuildContext context,
+    List<BottomBarSlot> slots,
+    int index,
+    int currentPage,
+  ) async {
+    final slot = slots[index];
+    if (slot.isOverflow) {
+      await _openBarNetworks(context);
+      return;
+    }
+    final pageIndex = slot.pageIndex!;
+    if (pageIndex == currentPage) {
+      final controller = _scrollControllers[currentPage];
+      final atTop =
+          controller == null ||
+          !controller.hasClients ||
+          controller.offset <= 0;
+      if (!atTop) {
+        await scrollToTop(context, controller);
+      } else if (widget.pages[pageIndex].id == 'trending') {
+        _focusNodes[currentPage]?.requestFocus();
+      }
+      return;
+    }
+    unfocusPages();
+    _pageController.jumpToPage(pageIndex);
+  }
+
+  Future<void> _openBarNetworks(BuildContext context) async {
+    final pluginPages = [
+      for (final page in widget.pages)
+        if (pluginById(page.id) != null) pluginById(page.id)!,
+    ];
+    if (pluginPages.isEmpty) return;
+    List<String> recent = const [];
+    try {
+      recent = context.read<NetworkRecentsStore>().state;
+    } on ProviderNotFoundException {
+      recent = const [];
+    }
+    final currentId = widget.pages[_pageIndex.value].id;
+    final picked = await showNetworkSwitcherSheet(
+      context,
+      plugins: pluginPages,
+      currentId: pluginById(currentId)?.id,
+      recentIds: recent,
+    );
+    if (!mounted || picked == null) return;
+    final pageIndex = widget.pages.indexWhere((page) => page.id == picked);
+    if (pageIndex < 0) return;
+    await rememberNetwork(context, picked);
+    unfocusPages();
+    _pageController.jumpToPage(pageIndex);
   }
 
   void _swipeNavigationBar(double velocity, double distance) {

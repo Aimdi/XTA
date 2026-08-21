@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -140,6 +141,10 @@ class InstalledPluginRow extends StatelessWidget {
         optionSeededPluginTabs,
         seeded.where((e) => e != plugin.id).toList(),
       );
+    } else if (plugin.supportsFeedStrip) {
+      final strip = context.read<FeedStripStore>();
+      await strip.ensurePersisted();
+      await strip.add(plugin.id);
     }
 
     if (!context.mounted) return;

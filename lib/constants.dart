@@ -12,10 +12,16 @@ const optionHomeDefaultFeedTab = 'home.default_feed_tab';
 
 /// Plugin ids pinned next to Following / For you on the home feed strip.
 ///
-/// Null means “never configured” — then Reddit still appears when its plugin
-/// is on, matching the old hard-coded tab. An empty list means the reader
-/// cleared every plugin tab on purpose.
+/// Null means “never configured” — every enabled network that can sit on the
+/// strip is offered. An empty list means the reader cleared every plugin tab
+/// on purpose.
 const optionHomeFeedStripPlugins = 'home.feed_strip_plugins';
+
+/// Plugin ids already offered a home-strip pin, so removing one sticks.
+const optionSeededStripPlugins = 'home.seeded_strip_plugins';
+
+/// Plugin ids used most recently on the home strip, newest first.
+const optionHomeRecentNetworks = 'home.recent_networks';
 
 /// Login accounts excluded from the merged For you timeline (JSON string list).
 /// Empty means every saved account participates. New accounts stay included
