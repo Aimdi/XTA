@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/utils/iterables.dart';
@@ -21,9 +22,11 @@ class HomeModel extends Store<List<HomePage>> {
   final GroupsModel groupsModel;
 
   HomeModel(this.prefs, this.groupsModel) : super([]) {
-    groupsModel.observer(onState: (state) async {
-      await loadPages();
-    });
+    groupsModel.observer(
+      onState: (state) async {
+        await loadPages();
+      },
+    );
   }
 
   Future<void> resetPages() async {
@@ -52,8 +55,14 @@ class HomeModel extends Store<List<HomePage>> {
       var available = [
         ...defaultHomePages,
         ...pluginPages,
-        ...groupsModel.state.map((e) =>
-            NavigationPage('group-${e.id}', (c) => L10n.of(c).group_name(e.name), Icon(e.iconData), Icon(e.iconData))),
+        ...groupsModel.state.map(
+          (e) => NavigationPage(
+            'group-${e.id}',
+            (c) => L10n.of(c).group_name(e.name),
+            Icon(e.iconData),
+            Icon(e.iconData),
+          ),
+        ),
       ];
 
       var pages = <HomePage>[];
@@ -72,7 +81,8 @@ class HomeModel extends Store<List<HomePage>> {
       //
       // Seeded once, and remembered: a tab the reader then removes has to stay
       // removed rather than coming back on the next launch.
-      final seeded = prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
+      final seeded =
+          prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
       final newlySeeded = <String>[];
 
       for (var page in available) {
@@ -83,7 +93,8 @@ class HomeModel extends Store<List<HomePage>> {
         // `available` only carries plugin pages for plugins that are enabled
         // and want a tab, so being a plugin at all is enough here. Groups are
         // deliberately excluded: they are not tabs the reader asked for.
-        final autoSelect = pluginById(page.id) != null && !seeded.contains(page.id);
+        final autoSelect =
+            pluginById(page.id) != null && !seeded.contains(page.id);
         if (autoSelect) {
           newlySeeded.add(page.id);
         }
@@ -95,8 +106,16 @@ class HomeModel extends Store<List<HomePage>> {
         await prefs.set(optionSeededPluginTabs, [...seeded, ...newlySeeded]);
       }
 
-      final selectedIds = pages.where((e) => e.selected).map((e) => e.id).toList();
-      if (selectedIds.length != saved.length || !selectedIds.every(saved.contains)) {
+      // Enabling a plugin also pins it on the home strip. The bottom bar is
+      // optional; the strip is where networks belong next to Following.
+      await seedFeedStripPlugins(prefs);
+
+      final selectedIds = pages
+          .where((e) => e.selected)
+          .map((e) => e.id)
+          .toList();
+      if (selectedIds.length != saved.length ||
+          !selectedIds.every(saved.contains)) {
         await prefs.set(optionHomePages, selectedIds);
       }
 

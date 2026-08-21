@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/plugins/plugin_category.dart';
@@ -99,6 +100,21 @@ abstract class XtaPlugin {
     await erasePluginStorage(tables: tables, caches: caches);
     await resetPreferences(prefs);
     await setEnabled(prefs, false);
+
+    final pinned = prefs.getStringList(optionHomeFeedStripPlugins);
+    if (pinned != null && pinned.contains(id)) {
+      await prefs.set(
+        optionHomeFeedStripPlugins,
+        pinned.where((e) => e != id).toList(),
+      );
+    }
+    final seeded = prefs.getStringList(optionSeededStripPlugins);
+    if (seeded != null && seeded.contains(id)) {
+      await prefs.set(
+        optionSeededStripPlugins,
+        seeded.where((e) => e != id).toList(),
+      );
+    }
 
     final tab = homeTabPrefKey;
     if (tab != null) {

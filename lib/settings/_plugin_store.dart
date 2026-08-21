@@ -3,7 +3,9 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_model.dart';
+import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_catalogue.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -106,6 +108,8 @@ class _SettingsPluginStoreFragmentState
     await plugin.setEnabled(prefs, true);
     if (!mounted) return;
     await context.read<HomeModel>().loadPages();
+    if (!mounted) return;
+    await context.read<FeedStripStore>().seedEnabled();
     if (mounted) setState(() {});
   }
 
@@ -135,9 +139,21 @@ class _SettingsPluginStoreFragmentState
 
     if (confirmed != true || !mounted) return;
 
+    final strip = context.read<FeedStripStore>();
+    final home = context.read<HomeModel>();
+    NetworkRecentsStore? recents;
+    try {
+      recents = context.read<NetworkRecentsStore>();
+    } on ProviderNotFoundException {
+      recents = null;
+    }
+
     await plugin.uninstall(context);
     if (!mounted) return;
-    await context.read<HomeModel>().loadPages();
+    await strip.forget(plugin.id);
+    await recents?.forget(plugin.id);
+    if (!mounted) return;
+    await home.loadPages();
     if (mounted) setState(() {});
   }
 

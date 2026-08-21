@@ -20,6 +20,8 @@ import 'package:xta/group/feed_read_position.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_tab.dart';
+import 'package:xta/home/network_recents_store.dart';
+import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
@@ -115,6 +117,46 @@ List<FeedTabOption> availableFeedTabsFromIds(
   return List.unmodifiable(options);
 }
 
+/// Following / For you first, then the recent plugin pins.
+List<FeedTabOption> visibleFeedTabs({
+  required List<FeedTabOption> available,
+  required List<String> recent,
+  required FeedTab current,
+  int pluginLimit = kHomeStripRecentLimit,
+}) {
+  final xTabs = [
+    for (final e in available)
+      if (!e.id.isPlugin) e,
+  ];
+  final plugins = [
+    for (final e in available)
+      if (e.id.isPlugin) e,
+  ];
+  final visibleIds = recentPluginTabIds(
+    pinned: [for (final e in plugins) e.id.id],
+    recent: recent,
+    currentPluginId: current.isPlugin ? current.id : null,
+    limit: pluginLimit,
+  );
+  final byId = {for (final e in plugins) e.id.id: e};
+  return [
+    ...xTabs,
+    for (final id in visibleIds)
+      if (byId[id] != null) byId[id]!,
+  ];
+}
+
+List<FeedTabOption> overflowFeedTabs({
+  required List<FeedTabOption> available,
+  required List<FeedTabOption> visible,
+}) {
+  final shown = {for (final e in visible) e.id.id};
+  return [
+    for (final e in available)
+      if (e.id.isPlugin && !shown.contains(e.id.id)) e,
+  ];
+}
+
 FeedTab feedTabFromId(String? id) {
   if (id == null || id.isEmpty) return FeedTab.following;
   return FeedTab(id);
@@ -164,6 +206,7 @@ class _FeedScreenState extends State<FeedScreen> {
   int _externalTabEpoch = 0;
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
+  NetworkRecentsStore? _recents;
   HomeAccountFilterStore? _accountFilter;
   Timer? _unreadReloadDebounce;
   Set<String> _lastDisabledAccountIds = const {};
@@ -184,6 +227,16 @@ class _FeedScreenState extends State<FeedScreen> {
       _stripStore = strip;
       _lastStripPlugins = List<String>.from(strip.state);
       strip.observer(onState: _onStripChanged);
+      strip.seedEnabled();
+    }
+
+    try {
+      final recents = context.read<NetworkRecentsStore>();
+      if (!identical(recents, _recents)) {
+        _recents = recents;
+      }
+    } on ProviderNotFoundException {
+      _recents = null;
     }
 
     final filter = context.read<HomeAccountFilterStore>();
@@ -284,6 +337,36 @@ class _FeedScreenState extends State<FeedScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
   }
 
+  void _selectStripTab(FeedTab tab) {
+    setState(() {
+      _tab = tab;
+      _tabStore?.select(tab);
+    });
+    if (tab.isPlugin) {
+      rememberNetwork(context, tab.id);
+    }
+    _reloadUnreadSoon();
+  }
+
+  Future<void> _openNetworks(
+    BuildContext context,
+    List<FeedTabOption> available,
+    FeedTab current,
+  ) async {
+    final plugins = pluginsForSwitcher([
+      for (final e in available)
+        if (e.id.isPlugin) e.id.id,
+    ]);
+    final picked = await showNetworkSwitcherSheet(
+      context,
+      plugins: plugins,
+      currentId: current.isPlugin ? current.id : null,
+      recentIds: _recents?.state ?? const [],
+    );
+    if (!mounted || picked == null) return;
+    _selectStripTab(FeedTab(picked));
+  }
+
   Future<void> _refreshActiveTab(FeedTab tab) async {
     await scrollToTop(context, widget.scrollController);
     if (!mounted) {
@@ -333,13 +416,22 @@ class _FeedScreenState extends State<FeedScreen> {
       tab = _tab = FeedTab.following;
     }
 
-    // Keyed by strip contents so adding/removing a plugin remounts the controller.
+    final recent = _recents?.state ?? const <String>[];
+    final visible = visibleFeedTabs(
+      available: available,
+      recent: recent,
+      current: tab,
+    );
+    final overflow = overflowFeedTabs(available: available, visible: visible);
+
+    // Keyed by the visible row so overflow picks remount the controller, but
+    // switching among already-visible tabs does not rebuild Following.
     return DefaultTabController(
       key: ValueKey(
-        '${available.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
+        '${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
       ),
-      length: available.length,
-      initialIndex: max(0, available.indexWhere((e) => e.id == tab)),
+      length: visible.length,
+      initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
       child: GroupFeedShell(
         scrollController: widget.scrollController,
         groupId: widget.id,
@@ -359,7 +451,7 @@ class _FeedScreenState extends State<FeedScreen> {
                     isScrollable: true,
                     tabAlignment: TabAlignment.start,
                     tabs: [
-                      for (final e in available)
+                      for (final e in visible)
                         Tab(
                           child: FeedStripTab(
                             title: e.titleBuilder(context),
@@ -369,18 +461,18 @@ class _FeedScreenState extends State<FeedScreen> {
                         ),
                     ],
                     onTap: (index) {
-                      setState(() {
-                        _tab = available[index].id;
-                        // Kept in step so a switcher opened elsewhere marks the right feed.
-                        // The observer sees the value it already holds and does nothing, so
-                        // this does not bump the epoch and the indicator keeps sliding.
-                        _tabStore?.select(_tab!);
-                      });
-                      _reloadUnreadSoon();
+                      _selectStripTab(visible[index].id);
                     },
                   ),
                 ),
               ),
+              if (overflow.isNotEmpty)
+                IconButton(
+                  key: homeNetworksButtonKey,
+                  tooltip: L10n.of(context).home_networks_more,
+                  icon: const Icon(Icons.public),
+                  onPressed: () => _openNetworks(context, available, tab),
+                ),
               IconButton(
                 tooltip: L10n.of(context).feed_strip_add,
                 icon: const Icon(Icons.add),
