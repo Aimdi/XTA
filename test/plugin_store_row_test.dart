@@ -59,7 +59,7 @@ void main() {
     expect(find.byType(PopupMenuButton<String>), findsOneWidget);
   });
 
-  testWidgets('available plugins start collapsed under one tile', (
+  testWidgets('available plugins start open so a new plugin is visible', (
     tester,
   ) async {
     final groups = groupPluginsByCategory([ThreadsPlugin()]);
@@ -69,12 +69,6 @@ void main() {
     await tester.pump();
 
     expect(find.text('Available'), findsOneWidget);
-    expect(find.text('Install'), findsNothing);
-
-    await tester.tap(find.byKey(const Key('plugin-available')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-
     expect(find.text('Install'), findsOneWidget);
   });
 }
