@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Publikation konnte nicht hinzugefügt werden",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Substack-Handle, Publikations-URL oder Beitragslink eingeben",
+  "plugin_substack_add_hint": "Substack-Handle, @-Profil, Publikations-URL oder Beitragslink eingeben",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten oder https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@Handle, name.substack.com oder ein Beitragslink",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Kommentare",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Das ist keine Substack-Publikation. Wenn sie es einmal war, versuche die Adresse name.substack.com oder das @-Handle der Autorin oder des Autors."
 }

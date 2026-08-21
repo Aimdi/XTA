@@ -507,16 +507,17 @@ class SubstackAddPublicationStore extends Store<SubstackPublication?> {
   SubstackAddPublicationStore(this.client) : super(null);
 
   Future<SubstackPublication> lookup(String input) async {
-    final base = resolveSubstackBase(input);
-    if (base == null) {
+    if (input.trim().isEmpty) {
       final error = SubstackClientException('Invalid Substack URL or handle');
       setError(error);
       throw error;
     }
-    await execute(() => client.fetchPublication(base));
+    await execute(() => client.resolvePublication(input));
     final result = state;
     if (result == null) {
-      throw SubstackClientException('Publication not found');
+      final error = SubstackNotPublicationException();
+      setError(error);
+      throw error;
     }
     return result;
   }

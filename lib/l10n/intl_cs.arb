@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Publikaci se nepodařilo přidat",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Zadejte identifikátor Substack, URL publikace nebo odkaz na příspěvek",
+  "plugin_substack_add_hint": "Zadejte identifikátor Substack, profil @, URL publikace nebo odkaz na příspěvek",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten nebo https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@identifikátor, name.substack.com nebo odkaz na příspěvek",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Komentáře",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Toto není publikace na Substacku. Pokud dříve byla, zkuste adresu name.substack.com nebo @identifikátor autora."
 }

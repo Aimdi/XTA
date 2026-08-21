@@ -42,7 +42,11 @@ String enabledOptionOfSource(GroupAddSource source) => switch (source) {
 
 /// Something the reader could follow: which network, the value that network
 /// wants, and how to show it in a row.
-typedef GroupAddCandidate = ({GroupAddSource source, String value, String label});
+typedef GroupAddCandidate = ({
+  GroupAddSource source,
+  String value,
+  String label,
+});
 
 /// What [raw] could be, on the networks in [enabled], best guess first.
 ///
@@ -50,13 +54,18 @@ typedef GroupAddCandidate = ({GroupAddSource source, String value, String label}
 /// bare word could be a subreddit, a Threads handle or a newsletter, so it
 /// yields all three and lets the reader say which they meant — guessing one
 /// and being wrong costs more than a list of three.
-List<GroupAddCandidate> groupAddCandidates(String raw, {required Set<GroupAddSource> enabled}) {
+List<GroupAddCandidate> groupAddCandidates(
+  String raw, {
+  required Set<GroupAddSource> enabled,
+}) {
   final query = raw.trim();
   if (query.isEmpty) {
     return const [];
   }
 
-  final found = _hostOf(query) == null ? _fromTypedName(query) : _fromAddress(query);
+  final found = _hostOf(query) == null
+      ? _fromTypedName(query)
+      : _fromAddress(query);
 
   return [
     for (final candidate in found)
@@ -81,7 +90,9 @@ String? _hostOf(String query) {
 List<GroupAddCandidate> _fromAddress(String query) {
   final host = _hostOf(query)!;
   final uri = Uri.parse(query);
-  final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList(growable: false);
+  final segments = uri.pathSegments
+      .where((e) => e.isNotEmpty)
+      .toList(growable: false);
 
   if (host.contains('reddit.')) {
     return _reddit(query);
@@ -89,12 +100,23 @@ List<GroupAddCandidate> _fromAddress(String query) {
   if (host.contains('threads.')) {
     return _threads(query);
   }
-  if (host == 'bsky.app' || host == 'www.bsky.app' || host.endsWith('.bsky.social')) {
+  if (host == 'bsky.app' ||
+      host == 'www.bsky.app' ||
+      host.endsWith('.bsky.social')) {
     return _bluesky(query);
+  }
+  // Substack profiles live at substack.com/@handle — that leading @ is not a
+  // Fediverse address, and must not be sent to Mastodon.
+  if (isSubstackServiceHost(host) || host.endsWith('.substack.com')) {
+    return _substack(query);
+  }
+  if (isObviousNonSubstackHost(host)) {
+    return const [];
   }
   // Every Mastodon-compatible instance has its own domain, so a profile is
   // recognised by its path rather than its host.
-  if (segments.isNotEmpty && (segments.first.startsWith('@') || segments.first == 'users')) {
+  if (segments.isNotEmpty &&
+      (segments.first.startsWith('@') || segments.first == 'users')) {
     return _mastodon(query);
   }
   // Anything else with a domain: a newsletter on its own address.
@@ -123,22 +145,30 @@ List<GroupAddCandidate> _fromTypedName(String query) {
 
 List<GroupAddCandidate> _reddit(String query) {
   final name = normaliseSubreddit(query);
-  return name == null ? const [] : [(source: GroupAddSource.reddit, value: name, label: 'r/$name')];
+  return name == null
+      ? const []
+      : [(source: GroupAddSource.reddit, value: name, label: 'r/$name')];
 }
 
 List<GroupAddCandidate> _threads(String query) {
   final handle = normaliseThreadsHandle(query);
-  return handle == null ? const [] : [(source: GroupAddSource.threads, value: handle, label: '@$handle')];
+  return handle == null
+      ? const []
+      : [(source: GroupAddSource.threads, value: handle, label: '@$handle')];
 }
 
 List<GroupAddCandidate> _bluesky(String query) {
   final handle = normaliseBlueskyHandle(query);
-  return handle == null ? const [] : [(source: GroupAddSource.bluesky, value: handle, label: '@$handle')];
+  return handle == null
+      ? const []
+      : [(source: GroupAddSource.bluesky, value: handle, label: '@$handle')];
 }
 
 List<GroupAddCandidate> _mastodon(String query) {
   final acct = normaliseMastodonAcct(query);
-  return acct == null ? const [] : [(source: GroupAddSource.mastodon, value: acct, label: '@$acct')];
+  return acct == null
+      ? const []
+      : [(source: GroupAddSource.mastodon, value: acct, label: '@$acct')];
 }
 
 List<GroupAddCandidate> _substack(String query) {
@@ -147,5 +177,13 @@ List<GroupAddCandidate> _substack(String query) {
     return const [];
   }
   final name = subdomainOf(base);
-  return name.isEmpty ? const [] : [(source: GroupAddSource.substack, value: query.trim(), label: base.host)];
+  return name.isEmpty
+      ? const []
+      : [
+          (
+            source: GroupAddSource.substack,
+            value: query.trim(),
+            label: base.host,
+          ),
+        ];
 }

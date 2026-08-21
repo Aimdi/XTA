@@ -99,7 +99,9 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
                   >(
                     store: addStore,
                     onError: (_, error) => FullPageErrorWidget(
-                      error: error,
+                      error: error is SubstackNotPublicationException
+                          ? L10n.of(context).plugin_substack_not_publication
+                          : error,
                       stackTrace: null,
                       prefix: L10n.of(context).plugin_substack_add_error,
                       onRetry: _submit,

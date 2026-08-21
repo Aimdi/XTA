@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "해당 발행물을 추가할 수 없습니다",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Substack 핸들, 발행물 URL 또는 글 링크를 입력하세요",
+  "plugin_substack_add_hint": "Substack 핸들, @프로필, 발행물 URL 또는 글 링크를 입력하세요",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten 또는 https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@핸들, name.substack.com 또는 글 링크",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "댓글",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Substack 발행물이 아닙니다. 예전에는 그랬다면 name.substack.com 주소나 작성자의 @핸들을 시도해 보세요."
 }

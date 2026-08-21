@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "その出版物を追加できませんでした",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Substack のハンドル、刊行物 URL、または記事リンクを入力",
+  "plugin_substack_add_hint": "Substack のハンドル、@プロフィール、刊行物 URL、または記事リンクを入力",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten または https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@ハンドル、name.substack.com、または記事リンク",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "コメント",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "これは Substack の刊行物ではありません。以前そうだった場合は、name.substack.com か著者の @ハンドルを試してください。"
 }

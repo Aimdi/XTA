@@ -261,7 +261,12 @@ class _SubstackSearchSheetState extends State<_SubstackSearchSheet> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('$_error', textAlign: TextAlign.center),
+              Text(
+                _error is SubstackNotPublicationException
+                    ? l10n.plugin_substack_not_publication
+                    : '$_error',
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 12),
               FilledButton(
                 onPressed: () {

@@ -18,6 +18,20 @@ class SubstackPublication {
 
   String get id => subdomain.toLowerCase();
 
+  /// Custom-domain follows can land on `www`; never show that as the title.
+  String get displayName {
+    final trimmed = name.trim();
+    if (trimmed.isNotEmpty && trimmed.toLowerCase() != 'www') return trimmed;
+    final sub = subdomain.trim();
+    if (sub.isNotEmpty && sub.toLowerCase() != 'www') return sub;
+    final parsed = Uri.tryParse(baseUrl);
+    if (parsed != null) {
+      final fromHost = subdomainOf(parsed);
+      if (fromHost.isNotEmpty && fromHost != 'www') return fromHost;
+    }
+    return trimmed.isNotEmpty ? trimmed : sub;
+  }
+
   Map<String, dynamic> toJson() => {
     'subdomain': subdomain,
     'baseUrl': baseUrl,
@@ -431,6 +445,30 @@ class SubstackCategory {
   }
 }
 
+/// Primary publication on a public profile (`/api/v1/user/{handle}/public_profile`).
+SubstackPublication? publicationFromProfileJson(Map<String, dynamic> json) {
+  final primary = json['primaryPublication'];
+  if (primary is Map) {
+    final publication = publicationFromDiscoveryJson(
+      Map<String, dynamic>.from(primary),
+    );
+    if (publication != null) return publication;
+  }
+
+  final users = json['publicationUsers'];
+  if (users is List) {
+    for (final user in users.whereType<Map>()) {
+      final nested = user['publication'];
+      if (nested is! Map) continue;
+      final publication = publicationFromDiscoveryJson(
+        Map<String, dynamic>.from(nested),
+      );
+      if (publication != null) return publication;
+    }
+  }
+  return null;
+}
+
 /// Map a Substack API publication object (search / category / reader) into our model.
 SubstackPublication? publicationFromDiscoveryJson(Map<String, dynamic> json) {
   final subdomain = (json['subdomain'] as String?)?.trim() ?? '';
@@ -580,23 +618,187 @@ List<SubstackRecommendation> mergeSubstackSimilar({
   return out;
 }
 
+/// Hosts that are Substack itself, not a publication.
+const substackServiceHosts = {
+  'substack.com',
+  'www.substack.com',
+  'open.substack.com',
+};
+
+/// Sites that look like a newsletter but are never Substack-hosted.
+bool isObviousNonSubstackHost(String host) {
+  final h = host.toLowerCase();
+  const exact = {
+    'medium.com',
+    'www.medium.com',
+    'x.com',
+    'www.x.com',
+    'twitter.com',
+    'www.twitter.com',
+    'ghost.org',
+    'www.ghost.org',
+    'beehiiv.com',
+    'www.beehiiv.com',
+    'buttondown.com',
+    'www.buttondown.com',
+  };
+  if (exact.contains(h)) return true;
+  return h.endsWith('.medium.com') ||
+      h.endsWith('.beehiiv.com') ||
+      h.endsWith('.ghost.io') ||
+      h.endsWith('.buttondown.com');
+}
+
+bool isSubstackPublicationHost(String host) {
+  final h = host.toLowerCase();
+  return h.endsWith('.substack.com') && !substackServiceHosts.contains(h);
+}
+
+bool isSubstackServiceHost(String host) =>
+    substackServiceHosts.contains(host.toLowerCase());
+
+/// Hosts that differ only by a `www.` prefix count as the same publication.
+bool sameSubstackHost(String a, String b) {
+  String norm(String host) {
+    final h = host.toLowerCase();
+    return h.startsWith('www.') ? h.substring(4) : h;
+  }
+
+  return norm(a) == norm(b);
+}
+
+/// First label of a custom domain (`www.platformer.news` → `platformer`).
+String? registrableLabel(String host) {
+  var h = host.toLowerCase();
+  if (h.startsWith('www.')) h = h.substring(4);
+  final parts = h.split('.').where((e) => e.isNotEmpty).toList();
+  if (parts.length < 2) return null;
+  return parts.first;
+}
+
+/// A leftover www/host label, never a real publication title.
+bool publicationNameLooksGeneric(String name) {
+  final n = name.trim().toLowerCase();
+  return n.isEmpty || n == 'www' || n == 'www2';
+}
+
+String? _metaContent(String html, String property) {
+  final named = RegExp(
+    'property=["\']$property["\'][^>]*content=["\']([^"\']+)["\']',
+    caseSensitive: false,
+  ).firstMatch(html);
+  if (named != null) return named.group(1)?.trim();
+  final reversed = RegExp(
+    'content=["\']([^"\']+)["\'][^>]*property=["\']$property["\']',
+    caseSensitive: false,
+  ).firstMatch(html);
+  return reversed?.group(1)?.trim();
+}
+
+String? _htmlTitle(String html) {
+  return RegExp(
+    r'<title[^>]*>([^<]+)</title>',
+    caseSensitive: false,
+  ).firstMatch(html)?.group(1)?.trim();
+}
+
+String? _titleFromHtmlBits(String? siteName, String? title) {
+  if (siteName != null &&
+      siteName.isNotEmpty &&
+      siteName.toLowerCase() != 'substack') {
+    return siteName;
+  }
+  final raw = title?.trim();
+  if (raw == null || raw.isEmpty) return null;
+  final parts = raw
+      .split('|')
+      .map((e) => e.trim())
+      .where((e) => e.isNotEmpty)
+      .where((e) {
+        final lower = e.toLowerCase();
+        return lower != 'home' && lower != 'substack';
+      })
+      .toList();
+  if (parts.isNotEmpty) return parts.first;
+  return publicationNameLooksGeneric(raw) ? null : raw;
+}
+
+/// Homepage OG tags when a custom domain no longer serves Substack JSON.
+SubstackPublication? publicationFromHomepageHtml(String html, Uri base) {
+  final name = _titleFromHtmlBits(
+    _metaContent(html, 'og:site_name'),
+    _metaContent(html, 'og:title') ?? _htmlTitle(html),
+  );
+  if (name == null || publicationNameLooksGeneric(name)) return null;
+  final image = _metaContent(html, 'og:image');
+  return SubstackPublication(
+    subdomain: subdomainOf(base),
+    baseUrl: base.origin,
+    name: name,
+    logoUrl: image == null || image.isEmpty ? null : image,
+  );
+}
+
+/// `@casey` / `substack.com/@casey` — a profile, not a publication host.
+String? resolveSubstackProfileHandle(String input) {
+  final trimmed = input.trim();
+  if (trimmed.isEmpty) return null;
+
+  if (trimmed.startsWith('@') &&
+      !trimmed.substring(1).contains('/') &&
+      !trimmed.substring(1).contains('.')) {
+    final handle = trimmed.substring(1).trim();
+    return _isHandle(handle) ? handle : null;
+  }
+
+  final uri = _parseUserUri(trimmed);
+  if (uri == null) return null;
+  if (!isSubstackServiceHost(uri.host) ||
+      uri.host.toLowerCase() == 'open.substack.com') {
+    return null;
+  }
+  final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
+  if (segments.isEmpty || !segments.first.startsWith('@')) return null;
+  final handle = segments.first.substring(1);
+  return _isHandle(handle) ? handle : null;
+}
+
 /// Resolve a user-entered Substack handle or URL into a base publication URL.
+///
+/// Share links (`open.substack.com/pub/foo`) and profile handles (`@foo`,
+/// `substack.com/@foo`) become `foo.substack.com`. Service hosts with no
+/// publication in the path are rejected. Custom domains are returned as-is so
+/// the client can probe whether they are still Substack-hosted.
 Uri? resolveSubstackBase(String input) {
   final trimmed = input.trim();
   if (trimmed.isEmpty) return null;
 
-  var raw = trimmed;
-  if (!raw.contains('://')) {
-    if (raw.contains('.')) {
-      raw = 'https://$raw';
-    } else {
-      raw = 'https://$raw.substack.com';
-    }
+  final handle = resolveSubstackProfileHandle(trimmed);
+  if (handle != null) {
+    return Uri(scheme: 'https', host: '$handle.substack.com');
   }
 
-  final uri = Uri.tryParse(raw);
+  final uri = _parseUserUri(trimmed);
   if (uri == null || uri.host.isEmpty) return null;
-  return Uri(scheme: 'https', host: uri.host);
+  if (isObviousNonSubstackHost(uri.host)) return null;
+
+  final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
+  final host = uri.host.toLowerCase();
+
+  if (host == 'open.substack.com') {
+    if (segments.length >= 2 &&
+        segments[0] == 'pub' &&
+        _isHandle(segments[1])) {
+      return Uri(scheme: 'https', host: '${segments[1]}.substack.com');
+    }
+    return null;
+  }
+
+  if (isSubstackServiceHost(host)) {
+    return null;
+  }
+
+  return Uri(scheme: 'https', host: host);
 }
 
 /// Parse a Substack post URL into publication base + slug.
@@ -604,24 +806,114 @@ Uri? resolveSubstackBase(String input) {
   final trimmed = input.trim();
   if (trimmed.isEmpty) return null;
 
-  var raw = trimmed;
-  if (!raw.contains('://')) raw = 'https://$raw';
-  final uri = Uri.tryParse(raw);
+  final uri = _parseUserUri(trimmed);
   if (uri == null || uri.host.isEmpty) return null;
 
   final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
-  if (segments.length < 2 || segments.first != 'p') return null;
-  final slug = segments[1];
-  if (slug.isEmpty) return null;
-  return (base: Uri(scheme: 'https', host: uri.host), slug: slug);
+  final host = uri.host.toLowerCase();
+
+  if (host == 'open.substack.com') {
+    if (segments.length >= 4 &&
+        segments[0] == 'pub' &&
+        segments[2] == 'p' &&
+        _isHandle(segments[1]) &&
+        _isPostSlug(segments[3])) {
+      return (
+        base: Uri(scheme: 'https', host: '${segments[1]}.substack.com'),
+        slug: segments[3],
+      );
+    }
+    return null;
+  }
+
+  if (isSubstackServiceHost(host) || isObviousNonSubstackHost(host)) {
+    return null;
+  }
+
+  if (segments.length >= 2 &&
+      segments.first == 'p' &&
+      _isPostSlug(segments[1])) {
+    return (base: Uri(scheme: 'https', host: host), slug: segments[1]);
+  }
+  return null;
 }
+
+/// Origins to try when fetching a followed publication.
+///
+/// The saved host first (a living custom domain still serves JSON there), then
+/// the apex/`www` twin, then `{label}.substack.com` so a leftover custom
+/// domain — or a follow saved as `www` — still reaches the archive on Substack.
+List<Uri> publicationFetchBases(SubstackPublication publication) {
+  final parsed = Uri.tryParse(publication.baseUrl);
+  final hinted = parsed != null && parsed.host.isNotEmpty
+      ? parsed
+      : (publication.subdomain.isEmpty
+            ? null
+            : Uri(
+                scheme: 'https',
+                host: '${publication.subdomain}.substack.com',
+              ));
+  if (hinted == null) return const [];
+  return substackHostCandidates(hinted, subdomainHint: publication.subdomain);
+}
+
+/// Hosts to probe for a pasted or followed publication URL.
+List<Uri> substackHostCandidates(Uri base, {String? subdomainHint}) {
+  final out = <Uri>[];
+
+  void add(String host) {
+    final h = host.toLowerCase();
+    if (h.isEmpty) return;
+    if (isSubstackServiceHost(h) || isObviousNonSubstackHost(h)) return;
+    if (out.any((e) => e.host == h)) return;
+    out.add(Uri(scheme: 'https', host: h));
+  }
+
+  add(base.host);
+  final bare = base.host.toLowerCase().startsWith('www.')
+      ? base.host.toLowerCase().substring(4)
+      : base.host.toLowerCase();
+  add(bare);
+  add('www.$bare');
+
+  void addSubstackTwin(String? slug) {
+    if (slug == null || slug.isEmpty) return;
+    if (!_isHandle(slug) || slug.toLowerCase() == 'www') return;
+    add('$slug.substack.com');
+  }
+
+  addSubstackTwin(subdomainHint);
+  addSubstackTwin(registrableLabel(base.host));
+  return out;
+}
+
+Uri? _parseUserUri(String input) {
+  var raw = input.trim();
+  if (raw.isEmpty) return null;
+  if (!raw.contains('://')) {
+    if (raw.startsWith('@')) return null;
+    raw = raw.contains('.') ? 'https://$raw' : 'https://$raw.substack.com';
+  }
+  final uri = Uri.tryParse(raw);
+  if (uri == null || uri.host.isEmpty) return null;
+  if (uri.scheme != 'http' && uri.scheme != 'https') return null;
+  return uri;
+}
+
+bool _isHandle(String value) =>
+    RegExp(r'^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$').hasMatch(value);
+
+bool _isPostSlug(String value) =>
+    value.isNotEmpty && !value.startsWith('@') && value != 'p';
 
 String subdomainOf(Uri base) {
   final host = base.host.toLowerCase();
   if (host.endsWith('.substack.com')) {
-    return host.substring(0, host.length - '.substack.com'.length);
+    var sub = host.substring(0, host.length - '.substack.com'.length);
+    if (sub.startsWith('www.')) sub = sub.substring(4);
+    return sub;
   }
-  return host.split('.').first;
+  return registrableLabel(host) ?? host.split('.').first;
 }
 
 List<String> readIdsFromPrefs(String? raw) {

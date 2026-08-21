@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Seda väljaannet ei õnnestunud lisada",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Sisesta Substacki tunnus, väljaande URL või postituse link",
+  "plugin_substack_add_hint": "Sisesta Substacki tunnus, @-profiil, väljaande URL või postituse link",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten või https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@tunnus, name.substack.com või postituse link",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Kommentaarid",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "See ei ole Substacki väljaanne. Kui see kunagi oli, proovi aadressi name.substack.com või autori @tunnust."
 }

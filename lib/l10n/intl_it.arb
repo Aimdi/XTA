@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Impossibile aggiungere quella pubblicazione",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Inserisci un handle Substack, l’URL di una pubblicazione o il link di un post",
+  "plugin_substack_add_hint": "Inserisci un handle Substack, un profilo @, l’URL di una pubblicazione o il link di un post",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten o https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@handle, name.substack.com o il link di un post",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Commenti",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Questa non è una pubblicazione Substack. Se lo era, prova l’indirizzo name.substack.com o l’@handle dell’autore."
 }

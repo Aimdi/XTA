@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Ne eblis aldoni tiun eldonaĵon",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Enigu Substack-identigilon, URL de eldonaĵo aŭ ligilon de afiŝo",
+  "plugin_substack_add_hint": "Enigu Substack-identigilon, @-profilon, URL de eldonaĵo aŭ ligilon de afiŝo",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten aŭ https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@identigilo, name.substack.com aŭ afiŝa ligilo",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Komentoj",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Tio ne estas Substack-eldonaĵo. Se ĝi iam estis, provu la adreson name.substack.com aŭ la @-identigilon de la aŭtoro."
 }

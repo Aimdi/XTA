@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Не вдалося додати це видання",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Введіть ідентифікатор Substack, URL видання або посилання на пост",
+  "plugin_substack_add_hint": "Введіть ідентифікатор Substack, профіль @, URL видання або посилання на пост",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten або https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@ідентифікатор, name.substack.com або посилання на пост",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Коментарі",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Це не видання Substack. Якщо воно ним було, спробуйте адресу name.substack.com або @ідентифікатор автора."
 }

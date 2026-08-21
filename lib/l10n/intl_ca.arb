@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "No s’ha pogut afegir aquesta publicació",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Introdueix un identificador de Substack, l’URL de la publicació o l’enllaç d’una entrada",
+  "plugin_substack_add_hint": "Introdueix un identificador de Substack, un perfil @, l’URL de la publicació o l’enllaç d’una entrada",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten o https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@identificador, name.substack.com o un enllaç d’entrada",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Comentaris",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Això no és una publicació de Substack. Si ho havia estat, prova l’adreça name.substack.com o el @identificador de l’autor."
 }

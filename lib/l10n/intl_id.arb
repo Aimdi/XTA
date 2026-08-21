@@ -2093,9 +2093,9 @@
   "@plugin_substack_add": {},
   "plugin_substack_add_error": "Tidak dapat menambahkan publikasi itu",
   "@plugin_substack_add_error": {},
-  "plugin_substack_add_hint": "Masukkan handle Substack, URL publikasi, atau tautan postingan",
+  "plugin_substack_add_hint": "Masukkan handle Substack, profil @, URL publikasi, atau tautan postingan",
   "@plugin_substack_add_hint": {},
-  "plugin_substack_add_placeholder": "astralcodexten atau https://….substack.com/p/…",
+  "plugin_substack_add_placeholder": "@handle, name.substack.com, atau tautan postingan",
   "@plugin_substack_add_placeholder": {},
   "plugin_substack_comments": "Komentar",
   "@plugin_substack_comments": {},
@@ -2981,5 +2981,6 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
   "@zen_mode_page_cap_description": {},
-  "@plugin_store_search": {}
+  "@plugin_store_search": {},
+  "plugin_substack_not_publication": "Ini bukan publikasi Substack. Jika dulu iya, coba alamat name.substack.com atau @handle penulisnya."
 }
