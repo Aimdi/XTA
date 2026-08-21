@@ -4,6 +4,18 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### Crash on the first home frame
+
+**Install this build, not aimdi103.** The first home frame after aimdi103
+could crash: a missing `rss_subscription` table after a swallowed migrate,
+empty or restored `home.pages`, and string-list prefs stored as JSON. This
+build creates the table if it is still missing, keeps the default Home /
+Subscriptions / Discover / Saved tabs when nothing usable is selected,
+reads those prefs without assuming the stored type, and hardens IconLabel,
+Networks → Add timeline, RSS enable, and the feed strip.
+
+Existing databases keep working. No settings reset.
+
 ### RSS, groups, and Substack leftovers
 
 **RSS** is in the Plugin store (search `rss`). Paste a site or feed URL; XTA
@@ -49,7 +61,7 @@ starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi102](https://github.com/Aimdi/XTA/releases/tag/aimdi102) is
+Everything from [aimdi103](https://github.com/Aimdi/XTA/releases/tag/aimdi103) is
 in here too.
 
 ---

@@ -1,3 +1,10 @@
+## XTA aimdi104
+
+What's new in XTA aimdi104:
+  - Stop the crash on the first home frame (missing RSS table, empty or restored home tabs, bad string-list prefs)
+  - Tight IconLabel tabs, Networks → Add timeline, and enabling RSS no longer take the process down
+  - Everything from aimdi103
+
 ## XTA aimdi103
 
 What's new in XTA aimdi103:
