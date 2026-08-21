@@ -56,6 +56,8 @@ import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
+import 'package:xta/plugins/rss/rss_client.dart';
+import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
@@ -519,6 +521,12 @@ Future<void> main() async {
       optionPluginHnSavedPosts: '[]',
       optionPluginHnFollows: '[]',
       optionPluginHnSearchHistory: '[]',
+      optionPluginRssEnabled: false,
+      optionPluginRssShowTab: true,
+      optionPluginRssInHomeFeed: false,
+      optionPluginRssFeeds: '[]',
+      optionPluginRssReadIds: '[]',
+      optionPluginRssTags: '{}',
       optionPluginRedditEnabled: false,
       optionPluginRedditClientId: '',
       optionPluginRedditInHomeFeed: false,
@@ -788,6 +796,11 @@ Future<void> main() async {
     final hnSaved = HnSavedStore(prefService);
     final hnFollows = HnFollowsStore(prefService);
     final hnSearchHistory = HnSearchHistoryStore(prefService);
+    final rssClient = RssClient();
+    final rssFeeds = RssFeedsStore(prefService);
+    final rssRead = RssReadStore(prefService);
+    final rssTags = RssTagsStore(prefService);
+    final rssTimeline = RssTimelineStore(rssClient, rssFeeds);
     final tiktokClient = TikTokClient(prefService);
     final tiktokFollows = TikTokFollowsStore();
     final tiktokLikes = TikTokLikesStore(prefService);
@@ -865,6 +878,11 @@ Future<void> main() async {
           hnSaved.load(),
           hnFollows.load(),
           hnSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginRssEnabled) == true) ...[
+          rssFeeds.load(),
+          rssRead.load(),
+          rssTags.load(),
         ],
         if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
           tiktokFollows.load(),
@@ -981,6 +999,11 @@ Future<void> main() async {
             Provider(create: (_) => hnSaved),
             Provider(create: (_) => hnFollows),
             Provider(create: (_) => hnSearchHistory),
+            Provider(create: (_) => rssClient),
+            Provider(create: (_) => rssFeeds),
+            Provider(create: (_) => rssRead),
+            Provider(create: (_) => rssTags),
+            Provider(create: (_) => rssTimeline),
             Provider(create: (_) => tiktokClient),
             Provider(create: (_) => tiktokFollows),
             Provider(create: (_) => tiktokLikes),

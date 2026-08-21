@@ -124,6 +124,15 @@ const optionPluginHnSavedPosts = 'plugin.hackernews.saved_posts';
 const optionPluginHnFollows = 'plugin.hackernews.follows';
 const optionPluginHnSearchHistory = 'plugin.hackernews.search_history';
 
+const pluginIdRss = 'rss';
+const optionPluginRssEnabled = 'plugin.rss.enabled';
+const optionPluginRssShowTab = 'plugin.rss.show_tab';
+const optionPluginRssInHomeFeed = 'plugin.rss.in_home_feed';
+const optionPluginRssFeeds = 'plugin.rss.feeds';
+const optionPluginRssReadIds = 'plugin.rss.read_ids';
+const optionPluginRssTags = 'plugin.rss.tags';
+const rssReadIdsCap = 800;
+
 const pluginIdReddit = 'reddit';
 const optionPluginRedditEnabled = 'plugin.reddit.enabled';
 const optionPluginRedditClientId = 'plugin.reddit.client_id';

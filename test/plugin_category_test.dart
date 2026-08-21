@@ -26,7 +26,7 @@ void main() {
       containsAll(['threads', 'bluesky', 'mastodon', 'tiktok', 'instagram']),
     );
     expect(groups[1].plugins.map((p) => p.id), ['reddit', 'hackernews']);
-    expect(groups[2].plugins.single.id, 'substack');
+    expect(groups[2].plugins.map((p) => p.id), ['substack', 'rss']);
     expect(groups[3].plugins.map((p) => p.id), ['pixiv', 'booru', 'ehviewer']);
     expect(groups[4].plugins.single.id, 'stocks');
   });

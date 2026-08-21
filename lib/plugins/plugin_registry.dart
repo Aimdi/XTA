@@ -11,6 +11,7 @@ import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/plugins/rss/rss_plugin.dart';
 import 'package:xta/plugins/reddit/reddit_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
@@ -27,6 +28,7 @@ final List<XtaPlugin> builtInPlugins = [
   RedditPlugin(),
   HackerNewsPlugin(),
   SubstackPlugin(),
+  RssPlugin(),
   PixivPlugin(),
   BooruPlugin(),
   EhViewerPlugin(),
