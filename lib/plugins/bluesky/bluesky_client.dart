@@ -317,40 +317,6 @@ class BlueskyClient {
     return json.raw;
   }
 
-  /// Posts from a public custom feed generator (`app.bsky.feed.getFeed`).
-  Future<BlueskyFeedPage> getFeed(
-    String feed, {
-    int limit = 30,
-    String? cursor,
-  }) async {
-    final query = <String, String>{'feed': feed, 'limit': '$limit'};
-    if (cursor != null && cursor.isNotEmpty) {
-      query['cursor'] = cursor;
-    }
-    final json = await _get(_uri('/xrpc/app.bsky.feed.getFeed', query));
-    return BlueskyFeedPage(
-      posts: parseBlueskyFeed(json.raw),
-      cursor: json['cursor'].string,
-    );
-  }
-
-  /// Posts from a public list (`app.bsky.feed.getListFeed`).
-  Future<BlueskyFeedPage> getListFeed(
-    String list, {
-    int limit = 30,
-    String? cursor,
-  }) async {
-    final query = <String, String>{'list': list, 'limit': '$limit'};
-    if (cursor != null && cursor.isNotEmpty) {
-      query['cursor'] = cursor;
-    }
-    final json = await _get(_uri('/xrpc/app.bsky.feed.getListFeed', query));
-    return BlueskyFeedPage(
-      posts: parseBlueskyFeed(json.raw),
-      cursor: json['cursor'].string,
-    );
-  }
-
   /// Metadata for one feed generator.
   Future<BlueskyFeedGenerator> getFeedGenerator(String feed) async {
     final json = await _get(

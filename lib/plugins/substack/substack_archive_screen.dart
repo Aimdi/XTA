@@ -12,7 +12,6 @@ import 'package:xta/plugins/substack/substack_group.dart';
 import 'package:xta/plugins/substack/substack_similar_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/feed_list.dart';
 
 SubstackPublication publicationForPost(SubstackPost post, {String? logoUrl}) {
   final pub = post.publication;

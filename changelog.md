@@ -1,3 +1,19 @@
+## XTA aimdi103
+
+What's new in XTA aimdi103:
+  - Guest RSS plugin: paste a site or feed URL, unread stays on this device, feeds can join groups
+  - Substack custom-domain follows load; tap the publication name on a card to open its profile
+  - Sherpa is an explicit on-device read-aloud engine under Settings → Read aloud
+  - Group feeds include plugin posts (Reddit, Substack, RSS, and the rest), not only X
+  - Bluesky adds Discover (custom feeds / algos) and Lists next to Following and Liked
+  - Bluesky home stays put when you swipe away and back
+  - The group image tab reuses the tweet list instead of starting a second Search
+  - Reddit home switches among followed communities; Discover plugin chips own search
+  - Plugin switching lives on the home strip (Networks), not the Groups board
+  - Hiding a plugin tab pins it on the home strip instead of the Groups board
+  - Plugin and section icons sit beside tab labels
+  - Smoother home and plugin feeds without a rewrite
+
 ## XTA aimdi102
 
 What's new in XTA aimdi102:

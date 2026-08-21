@@ -4,27 +4,52 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Hacker News is in the store
+### RSS, groups, and Substack leftovers
 
-The Plugin store used to hide compiled-in plugins that `main`'s catalogue had
-not named yet, which is why Hacker News vanished after the first refresh. This
-build keeps any plugin this APK already contains unless the catalogue names it
-and marks it unavailable. Search the store by name, initials, or id (`hn`,
-`hacker news`). Available starts open.
+**RSS** is in the Plugin store (search `rss`). Paste a site or feed URL; XTA
+finds the public RSS or Atom feed. Home merges items newest-first with an
+unread chip. Follows stay on this device and can be added to a group.
 
-### Faster HN threads
+**Group feeds** now show those plugin posts next to X. Add a Reddit community,
+Substack publication, or RSS feed to a group and they appear in that group's
+timeline instead of an X-only list.
 
-Story lists, comment trees, and user pages use the same lazy list as the X
-feed. Collapsing a comment skips its children instead of building them.
+**Substack** custom-domain follows (garbageday and other leftover hosts) load
+again. Tap the publication name or logo on a card to open the profile, not
+only the article.
 
-### Still in from aimdi101
+**Sherpa** is an explicit on-device engine under Settings → Read aloud. Install
+the Sherpa ONNX TTS Engine app, then choose Sherpa when you listen to an
+article.
 
-Guest Hacker News (Top / New / Best / Ask / Show / Jobs, search, local likes).
-Home tabs build on demand. Cheaper tweet tiles and paint-size plugin images.
+### Bluesky lists and custom feeds
+
+Bluesky now has **Following**, **Discover**, **Lists**, and **Liked**. Discover
+opens custom feeds (algos); Lists opens list timelines. Paste a feed or list
+AT-URI or bsky.app link. Following no longer rebuilds from the first account
+when you swipe away and back.
+
+The group **image** tab reuses tweets already on the list instead of firing a
+second Search, which was 429ing larger groups.
+
+Reddit home can switch among the communities you follow without leaving the
+tab. Discover plugin chips own the search results for that plugin.
+
+### Home strip, not Groups
+
+Switching networks lives on the home strip. The globe opens **Networks** for
+plugins that are not pinned. Hiding a plugin tab pins it there; it is not a
+Groups-board chip. Plugin and section icons sit beside the labels.
+
+### Still in from aimdi102
+
+Hacker News is in the Plugin store — search `hn` or `hacker news`. A stale
+catalogue on `main` cannot hide a plugin this APK already contains. Available
+starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi101](https://github.com/Aimdi/XTA/releases/tag/aimdi101) is
+Everything from [aimdi102](https://github.com/Aimdi/XTA/releases/tag/aimdi102) is
 in here too.
 
 ---
