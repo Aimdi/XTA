@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Aurkitu jendea",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Bilatu {name}(e)n argitalpenak, jendea eta komunitateak.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Oraindik ez dago joerarik leku honetan. Bilatu goian, edo gehitu beste kokaleku bat.",
   "@discover_trends_empty": {},
   "dismiss": "Itxi",

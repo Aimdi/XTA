@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Finn personer",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Søk i {name} etter innlegg, personer og fellesskap.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Ingen trender for dette stedet ennå. Søk ovenfor, eller legg til et annet sted.",
   "@discover_trends_empty": {},
   "dismiss": "Lukk",

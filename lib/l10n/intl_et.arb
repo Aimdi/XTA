@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Leia inimesi",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Otsi {name} postitusi, inimesi ja kogukondi.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Selle koha kohta pole veel trende. Otsi ülalt või lisa teine asukoht.",
   "@discover_trends_empty": {},
   "dismiss": "Sulge",

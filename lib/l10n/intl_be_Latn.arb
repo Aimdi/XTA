@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Znajści ludzi",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Šukajcie ŭ {name} dopisy, ludzi i supolnasci.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Pakul niama trendau dla hetaha miesca. Šukajcie vyšej albo dadajcie inšuju lakacyju.",
   "@discover_trends_empty": {},
   "dismiss": "Zachynić",

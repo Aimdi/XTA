@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "找人",
   "@discover_find_people": {},
+  "discover_plugin_empty": "在 {name} 搜索帖子、用户和社区。",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "此地暂无热门话题。请在上方搜索，或添加其他地点。",
   "@discover_trends_empty": {},
   "dismiss": "关闭",

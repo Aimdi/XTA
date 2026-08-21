@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Troba persones",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Cerca a {name} publicacions, persones i comunitats.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Encara no hi ha tendències en aquest lloc. Cerca a dalt o afegeix una altra ubicació.",
   "@discover_trends_empty": {},
   "dismiss": "Tanca",

@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Tìm người",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Tìm bài viết, mọi người và cộng đồng trên {name}.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Chưa có xu hướng cho nơi này. Tìm phía trên, hoặc thêm địa điểm khác.",
   "@discover_trends_empty": {},
   "dismiss": "Bỏ qua",

@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "البحث عن أشخاص",
   "@discover_find_people": {},
+  "discover_plugin_empty": "ابحث في {name} عن المنشورات والأشخاص والمجتمعات.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "لا توجد مواضيع رائجة هنا بعد. ابحث أعلاه أو أضف مكانًا آخر.",
   "@discover_trends_empty": {},
   "dismiss": "إغلاق",

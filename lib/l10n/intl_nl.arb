@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Mensen vinden",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Zoek in {name} naar posts, mensen en community's.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Nog geen trends voor deze plaats. Zoek hierboven of voeg een andere locatie toe.",
   "@discover_trends_empty": {},
   "dismiss": "Sluiten",

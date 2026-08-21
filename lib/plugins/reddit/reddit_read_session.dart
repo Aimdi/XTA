@@ -3,6 +3,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
+import 'package:xta/plugins/reddit/reddit_search_html.dart';
 
 /// Credentials every Reddit listing and thread read should share.
 ///
@@ -101,4 +102,38 @@ class RedditReadSession {
         userToken: userToken,
         preferPublic: preferPublic,
       );
+
+  Future<List<RedditPost>> searchPosts(
+    RedditClient client,
+    String query, {
+    String? subreddit,
+    String searchSort = 'relevance',
+  }) => client.searchPosts(
+    query,
+    subreddit: subreddit,
+    searchSort: searchSort,
+    clientId: clientId,
+    userToken: userToken,
+    preferPublic: preferPublic,
+  );
+
+  Future<List<RedditSubredditResult>> searchSubreddits(
+    RedditClient client,
+    String query,
+  ) => client.searchSubreddits(
+    query,
+    clientId: clientId,
+    userToken: userToken,
+    preferPublic: preferPublic,
+  );
+
+  Future<List<RedditUserResult>> searchUsers(
+    RedditClient client,
+    String query,
+  ) => client.searchUsers(
+    query,
+    clientId: clientId,
+    userToken: userToken,
+    preferPublic: preferPublic,
+  );
 }

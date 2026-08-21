@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "Знайсці людзей",
   "@discover_find_people": {},
+  "discover_plugin_empty": "Шукайце ў {name} допісы, людзей і супольнасці.",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "Пакуль няма трэндаў для гэтага месца. Шукайце вышэй або дадайце іншую лакацыю.",
   "@discover_trends_empty": {},
   "dismiss": "Закрыць",

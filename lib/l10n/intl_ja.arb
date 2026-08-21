@@ -369,6 +369,8 @@
   "@discover_add_location": {},
   "discover_find_people": "ユーザーを探す",
   "@discover_find_people": {},
+  "discover_plugin_empty": "{name} で投稿、ユーザー、コミュニティを検索。",
+  "@discover_plugin_empty": {},
   "discover_trends_empty": "この場所のトレンドはまだありません。上で検索するか、別の場所を追加してください。",
   "@discover_trends_empty": {},
   "dismiss": "Dismiss",
