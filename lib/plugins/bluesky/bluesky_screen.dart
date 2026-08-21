@@ -7,6 +7,8 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_discovery.dart';
+import 'package:xta/plugins/bluesky/bluesky_feed.dart';
+import 'package:xta/plugins/bluesky/bluesky_feeds_pane.dart';
 import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
@@ -34,9 +36,15 @@ class BlueskyScreen extends StatefulWidget {
   State<BlueskyScreen> createState() => _BlueskyScreenState();
 }
 
-class _BlueskyScreenState extends State<BlueskyScreen> {
+class _BlueskyScreenState extends State<BlueskyScreen>
+    with AutomaticKeepAliveClientMixin {
   final _shell = _BlueskyShellStore();
+  final _algoScrollController = ScrollController();
+  final _listsScrollController = ScrollController();
   final _likedScrollController = ScrollController();
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -50,22 +58,25 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
 
   @override
   void dispose() {
+    _algoScrollController.dispose();
+    _listsScrollController.dispose();
     _likedScrollController.dispose();
     _shell.destroy();
     super.dispose();
   }
 
   Future<void> _loadHome({bool force = false}) async {
+    final accounts = context.read<BlueskyAccountsStore>();
     final likes = context.read<BlueskyLikesStore>();
     final feed = context.read<BlueskyFeedStore>();
-    // Startup already hydrated likes when the plugin was on. A remount from
+    // Startup already hydrated these when the plugin was on. A remount from
     // the home strip should not hit SQLite again just to paint the same list.
-    if (likes.state.isEmpty) {
-      await likes.load();
-    }
-    // The pull is the reader asking for new posts, so it has to get past the
-    // ten-minute per-account cache — without this the spinner ran and nothing
-    // was refetched.
+    await Future.wait([
+      if (accounts.state.isEmpty) accounts.load(),
+      if (likes.state.isEmpty) likes.load(),
+    ]);
+    // The store no-ops when the first page is still fresh. Pull-to-refresh
+    // passes [force] so it still gets past the ten-minute cache.
     await feed.refresh(force: force);
   }
 
@@ -110,6 +121,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final l10n = L10n.of(context);
 
     return Scaffold(
@@ -122,16 +134,28 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
               accent: BlueskyPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
-                  label: l10n.plugin_bluesky_home,
+                  label: l10n.plugin_bluesky_following,
                   icon: Icons.home_outlined,
                   selected: tab == 0,
                   onTap: () => _shell.select(0),
                 ),
                 PluginHomeTab(
-                  label: l10n.plugin_bluesky_liked,
-                  icon: Icons.favorite_border,
+                  label: l10n.plugin_bluesky_discover,
+                  icon: Icons.auto_awesome_outlined,
                   selected: tab == 1,
                   onTap: () => _shell.select(1),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_bluesky_lists,
+                  icon: Icons.list_alt_outlined,
+                  selected: tab == 2,
+                  onTap: () => _shell.select(2),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_bluesky_liked,
+                  icon: Icons.favorite_border,
+                  selected: tab == 3,
+                  onTap: () => _shell.select(3),
                 ),
               ],
               actions: [
@@ -186,6 +210,11 @@ class _BlueskyScreenState extends State<BlueskyScreen> {
                     scrollController: widget.scrollController,
                     onRefresh: () => _loadHome(force: true),
                   ),
+                  (_) =>
+                      BlueskyAlgoPane(scrollController: _algoScrollController),
+                  (_) => BlueskyListsPane(
+                    scrollController: _listsScrollController,
+                  ),
                   (_) => _LikedPane(
                     scrollController: _likedScrollController,
                     likes: context.read<BlueskyLikesStore>(),
@@ -220,6 +249,7 @@ class _HomePane extends StatelessWidget {
 
     return ScopedBuilder<BlueskyFeedStore, List<BlueskyPost>>(
       store: feed,
+      distinct: blueskyFeedDistinct,
       onLoading: (_) {
         if (feed.state.isNotEmpty) {
           return _feed(context, l10n, feed.state);
@@ -288,6 +318,7 @@ class _HomePane extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: onRefresh,
           child: FeedListView(
+            key: const PageStorageKey<String>('bluesky-home-feed'),
             controller: scrollController,
             itemCount: posts.length + peopleOffset + pendingOffset,
             itemBuilder: (context, index) {
@@ -320,7 +351,7 @@ class _HomePane extends StatelessWidget {
               }
               final post = posts[afterPeople - pendingOffset];
               return BlueskyPostCard(
-                key: ValueKey(post.uri),
+                key: ValueKey(blueskyFeedRowKey(post)),
                 post: post,
                 showSourceBadge: false,
               );
