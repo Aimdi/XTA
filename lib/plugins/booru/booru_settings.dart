@@ -58,6 +58,12 @@ class _BooruSettingsScreenState extends State<BooruSettingsScreen> {
     await prefs.set(optionPluginBooruPreset, preset.id);
     await prefs.set(optionPluginBooruEngine, preset.engine.id);
     await prefs.set(optionPluginBooruHost, preset.host);
+    await prefs.set(
+      optionPluginBooruMaxRating,
+      booruHostIsMostlyExplicit(preset.host)
+          ? BooruRating.explicit.code
+          : BooruRating.general.code,
+    );
     setState(() => _host.text = preset.host);
   }
 

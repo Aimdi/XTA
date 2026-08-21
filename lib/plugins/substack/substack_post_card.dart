@@ -256,9 +256,7 @@ class SubstackPostCard extends StatelessWidget {
                     color: muted,
                   ),
                   label: Text(
-                    comments > 0
-                        ? '$comments'
-                        : L10n.of(context).plugin_substack_comments,
+                    '$comments',
                     style: theme.textTheme.bodySmall!.copyWith(color: muted),
                   ),
                 ),

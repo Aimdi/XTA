@@ -406,11 +406,27 @@ class PixivClient {
   }
 
   /// Bookmark [illustId] so it appears in the Bookmarks tab.
-  Future<void> addBookmark(int illustId, {String restrict = 'public'}) async {
+  Future<void> addBookmark(
+    int illustId, {
+    String restrict = 'public',
+    String? folder,
+  }) async {
     await _apiPost('/v2/illust/bookmark/add', {
       'illust_id': '$illustId',
       'restrict': restrict,
+      if (folder != null && folder.trim().isNotEmpty) 'tags[]': folder.trim(),
     });
+  }
+
+  /// Bookmark-tag folders on this account (`/v1/user/bookmark-tags/illust`).
+  Future<List<String>> bookmarkFolders() async {
+    final json = await _apiGet('/v1/user/bookmark-tags/illust', {
+      'restrict': 'public',
+    });
+    return [
+      for (final tag in Json(json)['bookmark_tags'].list)
+        if ((tag['name'].string ?? '').trim().isNotEmpty) tag['name'].string!,
+    ];
   }
 
   Future<void> deleteBookmark(int illustId) async {
@@ -427,7 +443,7 @@ class PixivClient {
 
   Future<PixivIllustPage> following({String? nextUrl}) async {
     final json = nextUrl == null
-        ? await _apiGet('/v2/illust/follow', {'restrict': 'public'})
+        ? await _apiGet('/v2/illust/follow', {'restrict': 'all'})
         : await _apiGetUrl(nextUrl);
     return _illustPage(json);
   }

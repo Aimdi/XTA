@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
@@ -58,6 +59,7 @@ class _PixivScreenState extends State<PixivScreen>
     _tabs.addListener(() {
       if (_tabs.indexIsChanging) return;
       _ensureTabLoaded(_tabs.index);
+      if (mounted) setState(() {});
     });
     final mute = context.read<PixivMuteStore>();
     _recommended = PixivIllustListStore(
@@ -266,19 +268,21 @@ class _PixivScreenState extends State<PixivScreen>
               controller: _tabs,
               children: [
                 _KeepAlive(
+                  keep: _tabs.index == 0,
                   child: _feedTab(
                     store: context.read<PixivFeedStore>(),
                     empty: l10n.plugin_pixiv_empty,
                   ),
                 ),
                 _KeepAlive(
+                  keep: _tabs.index == 1,
                   child: _feedTab(
                     store: _recommended,
                     empty: l10n.plugin_pixiv_recommended_empty,
                   ),
                 ),
-                _KeepAlive(child: _rankingTab(l10n)),
-                _KeepAlive(child: _bookmarksTab(l10n)),
+                _KeepAlive(keep: _tabs.index == 2, child: _rankingTab(l10n)),
+                _KeepAlive(keep: _tabs.index == 3, child: _bookmarksTab(l10n)),
               ],
             ),
     );
@@ -479,6 +483,7 @@ class _PixivScreenState extends State<PixivScreen>
           scrollController: store == context.read<PixivFeedStore>()
               ? widget.scrollController
               : null,
+          padding: pluginFeedPadding(context, extra: const EdgeInsets.all(4)),
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
         ),
@@ -528,11 +533,14 @@ class _ThumbPrefetchState extends State<_ThumbPrefetch> {
   Widget build(BuildContext context) => widget.child;
 }
 
-/// Keeps each Pixiv tab's scroll offset and decoded thumbs warm.
+/// Keeps the visible Pixiv tab's scroll offset and decoded thumbs warm.
+/// Off-screen masonry grids drop their keep-alive so four boards do not
+/// stay decoded at once.
 class _KeepAlive extends StatefulWidget {
   final Widget child;
+  final bool keep;
 
-  const _KeepAlive({required this.child});
+  const _KeepAlive({required this.child, required this.keep});
 
   @override
   State<_KeepAlive> createState() => _KeepAliveState();
@@ -541,7 +549,15 @@ class _KeepAlive extends StatefulWidget {
 class _KeepAliveState extends State<_KeepAlive>
     with AutomaticKeepAliveClientMixin {
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => widget.keep;
+
+  @override
+  void didUpdateWidget(_KeepAlive oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.keep != widget.keep) {
+      updateKeepAlive();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

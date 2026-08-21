@@ -56,14 +56,23 @@ class FeedTab {
 class FeedTabOption {
   final FeedTab id;
   final FeedTabTitleBuilder titleBuilder;
+  final IconData? icon;
 
-  FeedTabOption(this.id, this.titleBuilder);
+  FeedTabOption(this.id, this.titleBuilder, {this.icon});
 }
 
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
-  FeedTabOption(FeedTab.following, (c) => L10n.of(c).following),
-  FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou),
+  FeedTabOption(
+    FeedTab.following,
+    (c) => L10n.of(c).following,
+    icon: Icons.home_outlined,
+  ),
+  FeedTabOption(
+    FeedTab.foryou,
+    (c) => L10n.of(c).foryou,
+    icon: Icons.auto_awesome_outlined,
+  ),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -76,8 +85,16 @@ List<FeedTabOption> availableFeedTabsFromIds(
   BasePrefService prefs,
 ) {
   final options = <FeedTabOption>[
-    FeedTabOption(FeedTab.following, (c) => L10n.of(c).following),
-    FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou),
+    FeedTabOption(
+      FeedTab.following,
+      (c) => L10n.of(c).following,
+      icon: Icons.home_outlined,
+    ),
+    FeedTabOption(
+      FeedTab.foryou,
+      (c) => L10n.of(c).foryou,
+      icon: Icons.auto_awesome_outlined,
+    ),
   ];
   for (final pluginId in pluginIds) {
     final plugin = pluginById(pluginId);
@@ -86,7 +103,13 @@ List<FeedTabOption> availableFeedTabsFromIds(
         !plugin.supportsFeedStrip) {
       continue;
     }
-    options.add(FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c)));
+    options.add(
+      FeedTabOption(
+        FeedTab(pluginId),
+        (c) => plugin.title(c),
+        icon: plugin.icon,
+      ),
+    );
   }
   return List.unmodifiable(options);
 }
@@ -328,6 +351,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         Tab(
                           child: FeedStripTab(
                             title: e.titleBuilder(context),
+                            icon: e.icon,
                             unread: unreadIds.contains(_unreadKeyFor(e.id)),
                           ),
                         ),

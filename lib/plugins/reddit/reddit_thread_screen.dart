@@ -17,6 +17,7 @@ import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 /// How far each level of replies is indented, and how deep that goes.
 ///
@@ -207,7 +208,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
             final rows = comments == null
                 ? const <VisibleComment>[]
                 : visibleComments(comments, _collapsed);
-            return ListView.builder(
+            return FeedListView(
               // One header plus the flattened tree: nesting the widgets
               // instead would build every reply of every collapsed branch
               // up front.
