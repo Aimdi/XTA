@@ -16,6 +16,7 @@ import 'package:xta/plugins/substack/substack_comments_screen.dart';
 import 'package:xta/plugins/substack/substack_links.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/speech/speech_store.dart';
+import 'package:xta/speech/tts_engines.dart';
 import 'package:xta/speech/tts_settings.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
@@ -344,16 +345,37 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
       choice: choice,
     );
     if (!spoke && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(L10n.of(context).plugin_substack_tts_unavailable),
-          action: SnackBarAction(
-            label: L10n.of(context).plugin_substack_tts_settings,
-            onPressed: () => openTtsSettings(context, speech.tts),
-          ),
-        ),
-      );
+      await _onTtsFailed(speech, choice);
     }
+  }
+
+  Future<void> _onTtsFailed(SpeechStore speech, TtsChoice choice) async {
+    final l10n = L10n.of(context);
+    final action = ttsFailureActionFor(choice.engine);
+    final install = action == TtsFailureAction.installSherpa;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          install
+              ? l10n.tts_sherpa_missing
+              : l10n.plugin_substack_tts_unavailable,
+        ),
+        action: SnackBarAction(
+          label: install ? l10n.tts_sherpa_install : l10n.tts_use_sherpa,
+          onPressed: () => _onTtsFailureAction(speech, install),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onTtsFailureAction(SpeechStore speech, bool install) async {
+    if (install) {
+      if (!mounted) return;
+      await openUri(context, sherpaTtsInstallUrl);
+      return;
+    }
+    await preferSherpaTts(PrefService.of(context, listen: false));
+    if (mounted) await _toggleTts(speech);
   }
 
   void _share() {

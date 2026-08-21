@@ -14,6 +14,28 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
+SubstackPublication publicationForPost(SubstackPost post, {String? logoUrl}) {
+  final pub = post.publication;
+  return SubstackPublication(
+    subdomain: pub.subdomain,
+    baseUrl: pub.baseUrl,
+    name: pub.displayName,
+    description: pub.description,
+    logoUrl: logoUrl ?? pub.logoUrl,
+  );
+}
+
+void openSubstackPublication(
+  BuildContext context,
+  SubstackPublication publication,
+) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => SubstackArchiveScreen(publication: publication),
+    ),
+  );
+}
+
 class SubstackArchiveScreen extends StatefulWidget {
   final SubstackPublication publication;
 
@@ -60,54 +82,165 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
 
   Future<void> _enrichHeader() async {
     final current = widget.publication;
-    if ((current.description?.trim().isNotEmpty ?? false) &&
-        (current.logoUrl?.isNotEmpty ?? false)) {
-      return;
-    }
+    final alreadyRich =
+        !publicationNameLooksGeneric(current.name) &&
+        current.name.toLowerCase() != current.subdomain.toLowerCase() &&
+        (current.description?.trim().isNotEmpty ?? false) &&
+        (current.logoUrl?.isNotEmpty ?? false);
+    if (alreadyRich) return;
     try {
       final fresh = await context.read<SubstackClient>().fetchPublication(
         Uri.parse(current.baseUrl),
       );
       if (!mounted) return;
-      setState(() {
-        _enriched = SubstackPublication(
-          subdomain: current.subdomain,
-          baseUrl: current.baseUrl,
-          name: fresh.name.isNotEmpty ? fresh.name : current.name,
-          description: fresh.description ?? current.description,
-          logoUrl: fresh.logoUrl ?? current.logoUrl,
-        );
-      });
+      final merged = SubstackPublication(
+        subdomain: fresh.subdomain.isNotEmpty
+            ? fresh.subdomain
+            : current.subdomain,
+        baseUrl: current.baseUrl,
+        name: publicationNameLooksGeneric(fresh.name)
+            ? current.name
+            : fresh.name,
+        description: fresh.description ?? current.description,
+        logoUrl: fresh.logoUrl ?? current.logoUrl,
+      );
+      final pubs = context.read<SubstackPublicationsStore>();
+      final followed = pubs.state.any(
+        (e) => e.id == current.id || e.id == merged.id,
+      );
+      if (followed &&
+          (current.name != merged.name ||
+              current.logoUrl != merged.logoUrl ||
+              current.subdomain != merged.subdomain)) {
+        await pubs.add(merged);
+        if (current.id != merged.id) {
+          await pubs.remove(current.id);
+        }
+      }
+      if (!mounted) return;
+      setState(() => _enriched = merged);
     } catch (_) {
-      // Keep the stub header; the archive list still loads.
+      // Keep the stub header; the archive list still loads from host fallbacks.
     }
   }
 
-  Widget _searchResults(BuildContext context) {
+  Widget _searchField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
+      child: XSearchField(
+        controller: _searchController,
+        hintText: L10n.of(context).search,
+        onChanged: _search,
+      ),
+    );
+  }
+
+  List<Widget> _searchSlivers(BuildContext context) {
     if (_searching) {
-      return const Center(child: CircularProgressIndicator());
+      return const [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ];
     }
     if (_searchError != null) {
-      return FullPageErrorWidget(
-        error: _searchError,
-        stackTrace: null,
-        prefix: L10n.of(context).plugin_substack_load_error,
-        onRetry: () => _search(_query),
-      );
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: FullPageErrorWidget(
+            error: _searchError,
+            stackTrace: null,
+            prefix: L10n.of(context).plugin_substack_load_error,
+            onRetry: () => _search(_query),
+          ),
+        ),
+      ];
     }
     final results = _results ?? const <SubstackPost>[];
     if (results.isEmpty) {
-      return Center(child: Text(L10n.of(context).plugin_substack_feed_empty));
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Text(L10n.of(context).plugin_substack_feed_empty),
+          ),
+        ),
+      ];
     }
-    return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 24),
-      itemCount: results.length,
-      itemBuilder: (context, index) => SubstackPostCard(
-        post: results[index],
-        showSourceBadge: false,
-        logoUrl: _publication.logoUrl,
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.only(bottom: 24),
+        sliver: SliverList.builder(
+          itemCount: results.length,
+          itemBuilder: (context, index) => SubstackPostCard(
+            post: results[index],
+            showSourceBadge: false,
+            logoUrl: _publication.logoUrl,
+          ),
+        ),
       ),
+    ];
+  }
+
+  List<Widget> _feedSlivers(
+    BuildContext context,
+    SubstackArchiveStore store, {
+    required SubstackFeedSnapshot snapshot,
+  }) {
+    if (snapshot.posts.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: Text(L10n.of(context).plugin_substack_feed_empty),
+          ),
+        ),
+      ];
+    }
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.only(bottom: 24),
+        sliver: SliverList.builder(
+          itemCount: snapshot.posts.length + (snapshot.canLoadMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= snapshot.posts.length) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                  child: OutlinedButton(
+                    onPressed: store.loadMore,
+                    child: Text(L10n.of(context).plugin_substack_load_more),
+                  ),
+                ),
+              );
+            }
+            return SubstackPostCard(
+              post: snapshot.posts[index],
+              showSourceBadge: false,
+              logoUrl: _publication.logoUrl,
+            );
+          },
+        ),
+      ),
+    ];
+  }
+
+  Widget _profileScroll(
+    BuildContext context, {
+    required List<Widget> bodySlivers,
+    Future<void> Function()? onRefresh,
+  }) {
+    final scroll = CustomScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(child: _hero(context)),
+        SliverToBoxAdapter(child: _searchField(context)),
+        ...bodySlivers,
+      ],
     );
+    if (onRefresh == null) return scroll;
+    return RefreshIndicator(onRefresh: onRefresh, child: scroll);
   }
 
   Widget _hero(BuildContext context) {
@@ -152,7 +285,7 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      pub.name,
+                      pub.displayName,
                       style: theme.textTheme.headlineSmall!.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
@@ -224,83 +357,49 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
   @override
   Widget build(BuildContext context) {
     final store = _store;
+    final title = _publication.displayName;
     if (store == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.publication.name)),
+        appBar: AppBar(title: Text(widget.publication.displayName)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(_publication.name)),
-      body: Column(
-        children: [
-          _hero(context),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
-            child: XSearchField(
-              controller: _searchController,
-              hintText: L10n.of(context).search,
-              onChanged: _search,
-            ),
-          ),
-          Expanded(
-            child: _query.isNotEmpty
-                ? _searchResults(context)
-                : ScopedBuilder<SubstackArchiveStore, SubstackFeedSnapshot>(
-                    store: store,
-                    onError: (_, error) => FullPageErrorWidget(
+      appBar: AppBar(title: Text(title)),
+      body: _query.isNotEmpty
+          ? _profileScroll(context, bodySlivers: _searchSlivers(context))
+          : ScopedBuilder<SubstackArchiveStore, SubstackFeedSnapshot>(
+              store: store,
+              onError: (_, error) => _profileScroll(
+                context,
+                bodySlivers: [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: FullPageErrorWidget(
                       error: error,
                       stackTrace: null,
                       prefix: L10n.of(context).plugin_substack_load_error,
                       onRetry: store.refresh,
                     ),
-                    onLoading: (_) =>
-                        const Center(child: CircularProgressIndicator()),
-                    onState: (context, snapshot) {
-                      if (snapshot.posts.isEmpty) {
-                        return Center(
-                          child: Text(
-                            L10n.of(context).plugin_substack_feed_empty,
-                          ),
-                        );
-                      }
-                      return RefreshIndicator(
-                        onRefresh: store.refresh,
-                        child: FeedListView(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          itemCount:
-                              snapshot.posts.length +
-                              (snapshot.canLoadMore ? 1 : 0),
-                          itemBuilder: (context, index) {
-                            if (index >= snapshot.posts.length) {
-                              return Padding(
-                                padding: const EdgeInsets.all(16),
-                                child: Center(
-                                  child: OutlinedButton(
-                                    onPressed: store.loadMore,
-                                    child: Text(
-                                      L10n.of(
-                                        context,
-                                      ).plugin_substack_load_more,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                            return SubstackPostCard(
-                              post: snapshot.posts[index],
-                              showSourceBadge: false,
-                              logoUrl: _publication.logoUrl,
-                            );
-                          },
-                        ),
-                      );
-                    },
                   ),
-          ),
-        ],
-      ),
+                ],
+              ),
+              onLoading: (_) => _profileScroll(
+                context,
+                bodySlivers: const [
+                  SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ],
+              ),
+              onState: (context, snapshot) => _profileScroll(
+                context,
+                onRefresh: store.refresh,
+                bodySlivers: _feedSlivers(context, store, snapshot: snapshot),
+              ),
+            ),
     );
   }
 }

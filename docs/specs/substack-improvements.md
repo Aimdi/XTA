@@ -36,8 +36,10 @@ in browser.
    (`/api/v1/publication/search` + handle/URL slug probe)
 2. Notes host rotation across followed publications (fallback `substack.com`)
 3. TTS always has title/excerpt fallback; live-site pages extract article text
-   via the web view; Listen stays available for paid teasers; engine failures
-   open Voice settings
+   via the web view; Listen stays available for paid teasers. Voice settings
+   always offer **Sherpa (on-device)**; a failed Listen can switch to Sherpa
+   or open the Sherpa TTS Engine install page instead of staying on a mute
+   system voice.
 
 ## Explicitly out of scope
 
