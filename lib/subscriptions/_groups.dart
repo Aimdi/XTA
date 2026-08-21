@@ -317,9 +317,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
         // above them. It used to be a fixed child of a Column with the grid
         // in an Expanded below, so tiles slid under it and were sliced off
         // mid-card at the top of the viewport.
-        final header = [
-          if (state.length > 5) _buildSearchBar(context),
-        ];
+        final header = [if (state.length > 5) _buildSearchBar(context)];
 
         return GroupUnreadScope(
           builder: (context, unreadIds) => asList

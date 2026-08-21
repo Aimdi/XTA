@@ -609,10 +609,9 @@ class _ScaffoldWithBottomNavigationState
     } on ProviderNotFoundException {
       recentPluginId = null;
     }
-    return layoutBottomBar(
-      [for (final page in widget.pages) page.id],
-      recentPluginId: recentPluginId,
-    );
+    return layoutBottomBar([
+      for (final page in widget.pages) page.id,
+    ], recentPluginId: recentPluginId);
   }
 
   NavigationDestination _destinationForSlot(
