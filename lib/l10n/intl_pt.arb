@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Comunidades seguidas",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Mostrar na cronologia principal",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Mistura as publicações dos subreddits que segue em «A seguir» e «Para si»",

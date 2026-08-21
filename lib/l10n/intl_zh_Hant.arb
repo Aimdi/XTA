@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "熱門",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "已追蹤的社群",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "顯示在主時間軸中",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "將你追蹤的子版塊的貼文混入「追蹤中」和「為你推薦」",

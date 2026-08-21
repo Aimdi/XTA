@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Beliebt",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Gefolgte Communities",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "In der Startseite anzeigen",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Mischt Beiträge aus deinen abonnierten Subreddits unter „Folge ich“ und „Für dich“",

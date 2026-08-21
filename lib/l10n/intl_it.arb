@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popolare",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Community seguite",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Mostra nella timeline principale",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Inserisce i post dei subreddit che segui in «Seguiti» e «Per te»",

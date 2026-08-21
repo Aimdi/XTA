@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Populární",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Sledované komunity",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Zobrazovat na hlavní nástěnce",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Přimíchá příspěvky ze subredditů, které sledujete, do „Sleduji“ a „Pro tebe“",

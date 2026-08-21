@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "热门",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "已关注的社区",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "显示在主时间线中",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "把你关注的子版块的帖子混入「关注」和「为你推荐」",

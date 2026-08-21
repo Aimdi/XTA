@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "인기",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "팔로우 중인 커뮤니티",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "홈 타임라인에 표시",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "팔로우한 서브레딧의 게시물을 팔로잉과 추천에 함께 표시합니다",

@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "Jälgitavad kogukonnad",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "Näita avalehe voos",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "Lisab jälgitavate subredditide postitused voogudesse „Jälgitavad“ ja „Sulle“",

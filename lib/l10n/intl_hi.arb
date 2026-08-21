@@ -1940,6 +1940,8 @@
   "@plugin_reddit_feed_following": {},
   "plugin_reddit_feed_popular": "Popular",
   "@plugin_reddit_feed_popular": {},
+  "plugin_reddit_followed_communities": "फ़ॉलो की गई कम्युनिटी",
+  "@plugin_reddit_followed_communities": {},
   "plugin_reddit_in_home_feed": "होम टाइमलाइन में दिखाएँ",
   "@plugin_reddit_in_home_feed": {},
   "plugin_reddit_in_home_feed_description": "आप जिन सबरेडिट को फ़ॉलो करते हैं उनकी पोस्ट को \"फ़ॉलोइंग\" और \"आपके लिए\" में मिलाता है",

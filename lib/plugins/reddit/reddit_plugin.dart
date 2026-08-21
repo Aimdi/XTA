@@ -187,6 +187,7 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginRedditSort, redditSortHot);
     await prefs.set(optionPluginRedditTimeFilter, redditTimeFilterDay);
     await prefs.set(optionPluginRedditFeedMode, redditFeedModeFollowing);
+    await prefs.set(optionPluginRedditSelectedSubreddit, '');
     await prefs.set(optionPluginRedditNsfwMode, redditNsfwModeTap);
     await prefs.set(optionPluginRedditSavedPosts, '[]');
     await prefs.set(optionPluginRedditInHomeFeed, false);
