@@ -8,8 +8,8 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_discovery.dart';
-import 'package:xta/plugins/bluesky/bluesky_feeds_pane.dart';
 import 'package:xta/plugins/bluesky/bluesky_feed.dart';
+import 'package:xta/plugins/bluesky/bluesky_feeds_pane.dart';
 import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
@@ -40,6 +40,8 @@ class BlueskyScreen extends StatefulWidget {
 class _BlueskyScreenState extends State<BlueskyScreen>
     with AutomaticKeepAliveClientMixin {
   final _shell = _BlueskyShellStore();
+  final _algoScrollController = ScrollController();
+  final _listsScrollController = ScrollController();
   final _likedScrollController = ScrollController();
 
   @override
@@ -57,6 +59,8 @@ class _BlueskyScreenState extends State<BlueskyScreen>
 
   @override
   void dispose() {
+    _algoScrollController.dispose();
+    _listsScrollController.dispose();
     _likedScrollController.dispose();
     _shell.destroy();
     super.dispose();
@@ -131,22 +135,28 @@ class _BlueskyScreenState extends State<BlueskyScreen>
               accent: BlueskyPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
-                  label: l10n.plugin_bluesky_home,
+                  label: l10n.plugin_bluesky_following,
                   icon: Icons.home_outlined,
                   selected: tab == 0,
                   onTap: () => _shell.select(0),
                 ),
                 PluginHomeTab(
-                  label: l10n.plugin_bluesky_feeds,
+                  label: l10n.plugin_bluesky_discover,
                   icon: Icons.auto_awesome_outlined,
                   selected: tab == 1,
                   onTap: () => _shell.select(1),
                 ),
                 PluginHomeTab(
-                  label: l10n.plugin_bluesky_liked,
-                  icon: Icons.favorite_border,
+                  label: l10n.plugin_bluesky_lists,
+                  icon: Icons.list_alt_outlined,
                   selected: tab == 2,
                   onTap: () => _shell.select(2),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_bluesky_liked,
+                  icon: Icons.favorite_border,
+                  selected: tab == 3,
+                  onTap: () => _shell.select(3),
                 ),
               ],
               actions: [
@@ -201,8 +211,10 @@ class _BlueskyScreenState extends State<BlueskyScreen>
                     scrollController: widget.scrollController,
                     onRefresh: () => _loadHome(force: true),
                   ),
-                  (_) => BlueskyFeedsPane(
-                    scrollController: widget.scrollController,
+                  (_) =>
+                      BlueskyAlgoPane(scrollController: _algoScrollController),
+                  (_) => BlueskyListsPane(
+                    scrollController: _listsScrollController,
                   ),
                   (_) => _LikedPane(
                     scrollController: _likedScrollController,

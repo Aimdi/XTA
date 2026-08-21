@@ -42,6 +42,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
+import 'package:xta/plugins/bluesky/bluesky_feeds_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
@@ -564,6 +565,9 @@ Future<void> main() async {
       optionPluginBlueskyInstance: kBlueskyDefaultAppView,
       optionPluginBlueskyLikedPosts: '[]',
       optionPluginBlueskySearchHistory: '[]',
+      optionPluginBlueskyPinnedFeeds: '[]',
+      optionPluginBlueskyPinnedLists: '[]',
+      optionPluginBlueskyHandle: '',
       optionPluginMastodonEnabled: false,
       optionPluginMastodonShowTab: true,
       optionPluginMastodonInstance: '',
@@ -770,6 +774,8 @@ Future<void> main() async {
     final blueskyAccounts = BlueskyAccountsStore();
     final blueskyLikes = BlueskyLikesStore(prefService);
     final blueskyFeed = BlueskyFeedStore(blueskyClient, blueskyAccounts);
+    final blueskyAlgos = BlueskyAlgoStore(blueskyClient, prefService);
+    final blueskyLists = BlueskyListsStore(blueskyClient, prefService);
     final mastodonClient = MastodonClient();
     final mastodonAccounts = MastodonAccountsStore();
     final mastodonFeed = MastodonFeedStore(
@@ -982,6 +988,8 @@ Future<void> main() async {
             Provider(create: (_) => blueskyAccounts),
             Provider(create: (_) => blueskyLikes),
             Provider(create: (_) => blueskyFeed),
+            Provider(create: (_) => blueskyAlgos),
+            Provider(create: (_) => blueskyLists),
             Provider(create: (_) => mastodonClient),
             Provider(create: (_) => mastodonAccounts),
             Provider(create: (_) => mastodonFeed),

@@ -317,6 +317,139 @@ class BlueskyClient {
     return json.raw;
   }
 
+  /// Posts from a public custom feed generator (`app.bsky.feed.getFeed`).
+  Future<BlueskyFeedPage> getFeed(
+    String feed, {
+    int limit = 30,
+    String? cursor,
+  }) async {
+    final query = <String, String>{'feed': feed, 'limit': '$limit'};
+    if (cursor != null && cursor.isNotEmpty) {
+      query['cursor'] = cursor;
+    }
+    final json = await _get(_uri('/xrpc/app.bsky.feed.getFeed', query));
+    return BlueskyFeedPage(
+      posts: parseBlueskyFeed(json.raw),
+      cursor: json['cursor'].string,
+    );
+  }
+
+  /// Posts from a public list (`app.bsky.feed.getListFeed`).
+  Future<BlueskyFeedPage> getListFeed(
+    String list, {
+    int limit = 30,
+    String? cursor,
+  }) async {
+    final query = <String, String>{'list': list, 'limit': '$limit'};
+    if (cursor != null && cursor.isNotEmpty) {
+      query['cursor'] = cursor;
+    }
+    final json = await _get(_uri('/xrpc/app.bsky.feed.getListFeed', query));
+    return BlueskyFeedPage(
+      posts: parseBlueskyFeed(json.raw),
+      cursor: json['cursor'].string,
+    );
+  }
+
+  /// Metadata for one feed generator.
+  Future<BlueskyFeedGenerator> getFeedGenerator(String feed) async {
+    final json = await _get(
+      _uri('/xrpc/app.bsky.feed.getFeedGenerator', {'feed': feed}),
+    );
+    final generator = BlueskyFeedGenerator.fromJson(
+      json['view'].exists ? json['view'].raw : json.raw,
+    );
+    if (generator.uri.isEmpty) {
+      throw BlueskyException(
+        BlueskyErrorKind.badResponse,
+        'empty feed generator for $feed',
+      );
+    }
+    return generator;
+  }
+
+  /// Metadata for several feed generators (pinned / known Discover URIs).
+  Future<List<BlueskyFeedGenerator>> getFeedGenerators(
+    List<String> feeds,
+  ) async {
+    final uris = [
+      for (final feed in feeds)
+        if (feed.trim().isNotEmpty) feed.trim(),
+    ].take(25).toList(growable: false);
+    if (uris.isEmpty) {
+      return const [];
+    }
+    final query = uris
+        .map((u) => 'feeds=${Uri.encodeQueryComponent(u)}')
+        .join('&');
+    final base = _uri('/xrpc/app.bsky.feed.getFeedGenerators');
+    final json = await _get(
+      Uri.parse('$base${base.hasQuery ? '&' : '?'}$query'),
+    );
+    return parseBlueskyFeedGenerators(json.raw);
+  }
+
+  /// Guest-visible popular / trending custom feeds (the same catalog bsky.app
+  /// uses for Discover).
+  Future<BlueskyFeedGeneratorsPage> getPopularFeedGenerators({
+    int limit = 20,
+    String? cursor,
+    String? query,
+  }) async {
+    final params = <String, String>{'limit': '$limit'};
+    if (cursor != null && cursor.isNotEmpty) {
+      params['cursor'] = cursor;
+    }
+    if (query != null && query.isNotEmpty) {
+      params['query'] = query;
+    }
+    final json = await _get(
+      _uri('/xrpc/app.bsky.unspecced.getPopularFeedGenerators', params),
+    );
+    return parseBlueskyFeedGeneratorsPage(json.raw);
+  }
+
+  /// Feed generators [actor] created (public, not their saved/pinned prefs).
+  Future<BlueskyFeedGeneratorsPage> getActorFeeds(
+    String actor, {
+    int limit = 50,
+    String? cursor,
+  }) async {
+    final params = <String, String>{'actor': actor, 'limit': '$limit'};
+    if (cursor != null && cursor.isNotEmpty) {
+      params['cursor'] = cursor;
+    }
+    final json = await _get(_uri('/xrpc/app.bsky.feed.getActorFeeds', params));
+    return parseBlueskyFeedGeneratorsPage(json.raw);
+  }
+
+  /// Resolves a web feed URL or AT-URI into
+  /// `at://…/app.bsky.feed.generator/…`.
+  Future<String> resolveFeedUri(BlueskyFeedRef ref) async {
+    final atUri = ref.atUri?.trim();
+    if (atUri != null && atUri.isNotEmpty) {
+      return atUri;
+    }
+
+    final actor = ref.actor?.trim();
+    final rkey = ref.rkey?.trim();
+    if (actor == null || actor.isEmpty || rkey == null || rkey.isEmpty) {
+      throw BlueskyException(
+        BlueskyErrorKind.badResponse,
+        'incomplete feed reference',
+      );
+    }
+
+    final profile = await getProfile(actor);
+    if (profile.did.isEmpty) {
+      throw BlueskyException(
+        BlueskyErrorKind.notFound,
+        'feed owner missing did: $actor',
+      );
+    }
+    return 'at://${profile.did}/app.bsky.feed.generator/$rkey';
+  }
+
   /// Resolves a web starter-pack URL or AT-URI into
   /// `at://…/app.bsky.graph.starterpack/…`.
   Future<String> resolveStarterPackUri(BlueskyStarterPackRef ref) async {
