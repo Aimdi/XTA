@@ -107,6 +107,7 @@ void main() {
 
       final pinned = await seedFeedStripPlugins(prefs);
 
+      expect(feedStripPluginIds(prefs), contains(pluginIdMastodon));
       expect(pinned, contains(pluginIdMastodon));
       expect(
         prefs.getStringList(optionHomeFeedStripPlugins),

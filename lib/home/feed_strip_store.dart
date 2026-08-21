@@ -37,9 +37,14 @@ Future<List<String>> seedFeedStripPlugins(BasePrefService prefs) async {
     newly.add(id);
   }
 
-  if (newly.isEmpty) return current;
+  if (newly.isEmpty &&
+      prefs.getStringList(optionHomeFeedStripPlugins) != null) {
+    return current;
+  }
 
-  await prefs.set(optionSeededStripPlugins, [...seeded, ...newly]);
+  // Persist the implied list on first seed so later edits have a real pin list.
+  final seededNext = {...seeded, ...next}.toList();
+  await prefs.set(optionSeededStripPlugins, seededNext);
   await prefs.set(optionHomeFeedStripPlugins, next);
   return next;
 }
