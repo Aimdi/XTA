@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -78,7 +79,7 @@ class InstalledPluginRow extends StatelessWidget {
         children: [
           if (tabPref != null)
             _PluginIconButton(
-              tooltip: l10n.plugin_show_as_tab,
+              tooltip: l10n.plugin_show_as_tab_description,
               icon: plugin.showsHomeTab(prefs)
                   ? Icons.tab
                   : Icons.tab_unselected,
@@ -128,6 +129,7 @@ class InstalledPluginRow extends StatelessWidget {
     String tabPref,
   ) async {
     final next = !plugin.showsHomeTab(prefs);
+    final home = context.read<HomeModel>();
     await prefs.set(tabPref, next);
 
     // Asking for the tab back has to actually bring it back: the page list only
@@ -140,10 +142,13 @@ class InstalledPluginRow extends StatelessWidget {
         optionSeededPluginTabs,
         seeded.where((e) => e != plugin.id).toList(),
       );
+    } else if (context.mounted) {
+      // Off the bottom bar → home strip, not a Groups chip.
+      await pinPluginOnFeedStripIn(context, plugin.id);
     }
 
     if (!context.mounted) return;
-    await context.read<HomeModel>().loadPages();
+    await home.loadPages();
     onChanged();
   }
 }

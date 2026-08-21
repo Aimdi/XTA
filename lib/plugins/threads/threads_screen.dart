@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_feed_people.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
@@ -228,7 +229,8 @@ class _HomePane extends StatelessWidget {
           // The reader pulled: that is the one moment worth going past the cache.
           onRefresh: onRefresh,
           child: FeedListView(
-            controller: scrollController,
+            controller: pluginInnerScrollController(context, scrollController),
+            padding: pluginFeedPadding(context),
             itemCount: posts.length + peopleOffset + pendingOffset,
             itemBuilder: (context, index) {
               if (peopleOffset == 1 && index == 0) {
@@ -280,7 +282,13 @@ class _HomePane extends StatelessWidget {
       );
     }
     return ClipOval(
-      child: ThreadsNetworkImage(url, width: 20, height: 20, fit: BoxFit.cover),
+      child: ThreadsNetworkImage(
+        url,
+        width: 20,
+        height: 20,
+        fit: BoxFit.cover,
+        cacheWidth: (20 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+      ),
     );
   }
 
@@ -438,7 +446,8 @@ class _LikedPane extends StatelessWidget {
           }
 
           return FeedListView(
-            controller: scrollController,
+            controller: pluginInnerScrollController(context, scrollController),
+            padding: pluginFeedPadding(context),
             itemCount: posts.length,
             itemBuilder: (context, index) => ThreadsPostCard(
               key: ValueKey('liked-${posts[index].id}'),

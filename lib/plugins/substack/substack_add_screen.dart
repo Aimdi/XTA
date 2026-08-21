@@ -122,6 +122,12 @@ class _SubstackAddScreenState extends State<SubstackAddScreen> {
                                       width: 40,
                                       height: 40,
                                       fit: BoxFit.cover,
+                                      cacheWidth:
+                                          (40 *
+                                                  MediaQuery.devicePixelRatioOf(
+                                                    context,
+                                                  ))
+                                              .ceil(),
                                     ),
                                   ),
                             title: Text(shown.name),

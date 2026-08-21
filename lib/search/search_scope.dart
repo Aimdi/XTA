@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -15,6 +17,40 @@ class SearchScopeStore extends Store<String> {
   SearchScopeStore() : super(searchScopeX);
 
   void select(String id) => update(id);
+}
+
+/// The Discover search bar's committed query. A selected plugin chip reads this
+/// so results update without leaving the hub for X trends.
+class DiscoverQueryStore extends Store<String> {
+  DiscoverQueryStore() : super('');
+
+  Timer? _debounce;
+
+  /// Updates after a short pause so typing does not fire a search per letter.
+  void type(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 350), () {
+      update(value.trim());
+    });
+  }
+
+  /// Updates at once — chip select, submit, or a test.
+  void commit(String value) {
+    _debounce?.cancel();
+    update(value.trim());
+  }
+}
+
+/// What Discover should put in the body for this chip + query.
+enum DiscoverBodyKind { xTrends, pluginEmpty, pluginSearch }
+
+DiscoverBodyKind discoverBodyKind(String scope, String query) {
+  if (scope == searchScopeX) {
+    return DiscoverBodyKind.xTrends;
+  }
+  return query.trim().isEmpty
+      ? DiscoverBodyKind.pluginEmpty
+      : DiscoverBodyKind.pluginSearch;
 }
 
 /// Enabled plugins that can take a query from the Search tab.
