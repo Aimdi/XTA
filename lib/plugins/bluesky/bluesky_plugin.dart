@@ -6,6 +6,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
+import 'package:xta/plugins/bluesky/bluesky_feeds_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
@@ -54,7 +55,8 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
   String title(BuildContext context) => L10n.of(context).plugin_bluesky_title;
 
   @override
-  String description(BuildContext context) => L10n.of(context).plugin_bluesky_description;
+  String description(BuildContext context) =>
+      L10n.of(context).plugin_bluesky_description;
 
   @override
   NavigationPage homePage(BuildContext context) {
@@ -82,18 +84,18 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
     return showBlueskySearchSheet(context, initialQuery: initialQuery);
   }
 
-
   @override
   List<String> get tables => const [
-        tableBlueskySubscription,
-        tableBlueskyLocalLike,
-      ];
+    tableBlueskySubscription,
+    tableBlueskyLocalLike,
+  ];
 
   @override
   String get subscriptionTable => tableBlueskySubscription;
 
   @override
-  Subscription subscriptionFromMap(Map<String, Object?> row) => BlueskySubscription.fromMap(row);
+  Subscription subscriptionFromMap(Map<String, Object?> row) =>
+      BlueskySubscription.fromMap(row);
 
   @override
   bool owns(Subscription subscription) => subscription is BlueskySubscription;
@@ -101,7 +103,10 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
   @override
   Widget avatarFor(Subscription subscription, {double size = 40}) => Stack(
     alignment: Alignment.bottomRight,
-    children: [UserAvatar(uri: subscription.profileImageUrlHttps), const BlueskyButterflyIcon(size: 12)],
+    children: [
+      UserAvatar(uri: subscription.profileImageUrlHttps),
+      const BlueskyButterflyIcon(size: 12),
+    ],
   );
 
   @override
@@ -109,21 +114,25 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
       () => BlueskyProfileScreen(actor: subscription.id);
 
   @override
-  Future<void> reloadFromDatabase(BuildContext context) => context.read<BlueskyAccountsStore>().load();
+  Future<void> reloadFromDatabase(BuildContext context) =>
+      context.read<BlueskyAccountsStore>().load();
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
       context.read<BlueskyAccountsStore>().remove(subscription.id);
 
   @override
-  bool inHomeFeed(BuildContext context) => blueskyInHomeFeed(PrefService.of(context, listen: false));
+  bool inHomeFeed(BuildContext context) =>
+      blueskyInHomeFeed(PrefService.of(context, listen: false));
 
   @override
   List<String> homeFeedIds(BuildContext context) => blueskyHomeIds(context);
 
   @override
-  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
-      loadBlueskyInterleaved(context, ids);
+  Future<List<InterleavedItem>> interleavedPosts(
+    BuildContext context,
+    List<String> ids,
+  ) => loadBlueskyInterleaved(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [
@@ -146,6 +155,9 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBlueskyInstance, kBlueskyDefaultAppView);
     await prefs.set(optionPluginBlueskyLikedPosts, '[]');
     await prefs.set(optionPluginBlueskySearchHistory, '[]');
+    await prefs.set(optionPluginBlueskyPinnedFeeds, '[]');
+    await prefs.set(optionPluginBlueskyPinnedLists, '[]');
+    await prefs.set(optionPluginBlueskyHandle, '');
   }
 
   @override
@@ -155,6 +167,8 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
     final feed = context.read<BlueskyFeedStore>();
     await accounts.load();
     await likes.load();
-    await feed.refresh();
+    await feed.refresh(force: true);
+    await context.read<BlueskyAlgoStore>().ensureLoaded(force: true);
+    await context.read<BlueskyListsStore>().ensureLoaded(force: true);
   }
 }

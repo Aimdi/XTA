@@ -279,6 +279,13 @@ const optionPluginBlueskyInstance = 'plugin.bluesky.instance';
 /// Snapshots of locally liked Bluesky posts (JSON list). Ids live in SQLite.
 const optionPluginBlueskyLikedPosts = 'plugin.bluesky.liked_posts';
 const optionPluginBlueskySearchHistory = 'plugin.bluesky.search_history';
+
+/// Locally pinned custom-feed and list AT-URIs (JSON). Guest-readable.
+const optionPluginBlueskyPinnedFeeds = 'plugin.bluesky.pinned_feeds';
+const optionPluginBlueskyPinnedLists = 'plugin.bluesky.pinned_lists';
+
+/// Optional public handle used to load that actor's lists and created feeds.
+const optionPluginBlueskyHandle = 'plugin.bluesky.handle';
 const blueskyLikedPostsCap = 400;
 
 /// How many posts one account contributes to the merged Bluesky feed.
