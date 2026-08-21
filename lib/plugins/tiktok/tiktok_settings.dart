@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
 import 'package:xta/ui/errors.dart';
@@ -77,6 +78,11 @@ class _TikTokSettingsScreenState extends State<TikTokSettingsScreen> {
             title: Text(l10n.plugin_tiktok_show_tab),
             subtitle: Text(l10n.plugin_tiktok_show_tab_description),
             pref: optionPluginTiktokShowTab,
+            onChange: (show) async {
+              if (!show) {
+                await pinPluginOnFeedStripIn(context, pluginIdTiktok);
+              }
+            },
           ),
           PrefTitle(title: Text(l10n.plugin_tiktok_section_playback)),
           PrefSwitch(
