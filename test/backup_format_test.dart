@@ -39,6 +39,7 @@ const _keys = {
   'ehHistory',
   'tiktokSubscriptions',
   'instagramSubscriptions',
+  'rssSubscriptions',
 };
 
 void main() {
