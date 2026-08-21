@@ -173,9 +173,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   }
 
   Future<bool> _collectPostsFrom(SubscriptionSource source) async {
-    if (widget.mediaOnly) {
-      return false;
-    }
+    // Still fetched on the image tab: that toggle used to skip this and
+    // never ask again when the reader switched back, so a group opened on
+    // images stayed X-only for the rest of the visit.
 
     final isCombined = widget.group.id == legacyFeedKeyFollowing;
     final inHomeFeed = isCombined && source.inHomeFeed(context);
