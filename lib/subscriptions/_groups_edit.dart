@@ -722,6 +722,7 @@ class _SubscriptionGroupEditDialogState
                         Padding(
                           padding: const EdgeInsets.only(right: 6),
                           child: FilterChip(
+                            avatar: Icon(plugin.icon, size: 16),
                             label: Text(plugin.title(context)),
                             selected: _sourceFilter == plugin.id,
                             onSelected: (_) =>

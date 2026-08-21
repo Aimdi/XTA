@@ -46,6 +46,13 @@ class FeedTab {
 
   bool get isPlugin => id != following.id && id != foryou.id;
 
+  /// Chip / store mark for this tab — [XtaPlugin.icon], or house / spark for X.
+  IconData get icon {
+    if (this == following) return followingTabIcon;
+    if (this == foryou) return forYouTabIcon;
+    return pluginById(id)?.icon ?? Icons.extension_outlined;
+  }
+
   @override
   bool operator ==(Object other) => other is FeedTab && other.id == id;
 
@@ -59,6 +66,10 @@ class FeedTabOption {
 
   FeedTabOption(this.id, this.titleBuilder);
 }
+
+/// House for Following, spark for For you — matches the chip-style tab row.
+const IconData followingTabIcon = Icons.home_outlined;
+const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
@@ -328,6 +339,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         Tab(
                           child: FeedStripTab(
                             title: e.titleBuilder(context),
+                            icon: e.id.icon,
                             unread: unreadIds.contains(_unreadKeyFor(e.id)),
                           ),
                         ),
