@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
@@ -482,6 +483,7 @@ class _PixivScreenState extends State<PixivScreen>
           scrollController: store == context.read<PixivFeedStore>()
               ? widget.scrollController
               : null,
+          padding: pluginFeedPadding(context, extra: const EdgeInsets.all(4)),
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
         ),

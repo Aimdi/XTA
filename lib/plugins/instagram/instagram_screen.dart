@@ -12,6 +12,7 @@ import 'package:xta/plugins/instagram/instagram_profile_screen.dart';
 import 'package:xta/plugins/instagram/instagram_search_sheet.dart';
 import 'package:xta/plugins/instagram/instagram_settings.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
@@ -241,7 +242,11 @@ class _ForYouTab extends StatelessWidget {
           child: RefreshIndicator(
             onRefresh: store.refresh,
             child: FeedListView(
-              controller: scrollController,
+              controller: pluginInnerScrollController(
+                context,
+                scrollController,
+              ),
+              padding: pluginFeedPadding(context),
               itemCount: posts.length + extras,
               itemBuilder: (context, index) {
                 final peopleOffset = people.isEmpty ? 0 : 1;

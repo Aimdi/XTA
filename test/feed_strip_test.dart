@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -65,6 +66,8 @@ void main() {
         FeedTab.foryou,
         FeedTab.reddit,
       ]);
+      expect(tabs.first.icon, Icons.home_outlined);
+      expect(tabs.last.icon, isNotNull);
     });
   });
 

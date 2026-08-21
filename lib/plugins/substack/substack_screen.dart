@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
@@ -389,8 +390,11 @@ class _PostsPane extends StatelessWidget {
                       }
 
                       return FeedListView(
-                        controller: scrollController,
-                        padding: const EdgeInsets.only(bottom: 24),
+                        controller: pluginInnerScrollController(
+                          context,
+                          scrollController,
+                        ),
+                        padding: pluginFeedPadding(context),
                         itemCount:
                             1 +
                             snapshot.posts.length +

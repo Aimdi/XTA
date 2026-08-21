@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
@@ -361,7 +362,8 @@ class _PostList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: FeedListView(
-        controller: scrollController,
+        controller: pluginInnerScrollController(context, scrollController),
+        padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return TikTokPostCard(
