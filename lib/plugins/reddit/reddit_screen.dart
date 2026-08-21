@@ -48,14 +48,16 @@ class _RedditScreenState extends State<RedditScreen> {
   }
 
   Future<void> _prime() async {
-    await context.read<RedditSavedStore>().load();
+    final saved = context.read<RedditSavedStore>();
     final subs = context.read<RedditSubredditsStore>();
+    await saved.load();
     if (subs.state.isEmpty) {
       await subs.load();
     }
-    if (mounted) {
-      await home.reconcileFollowed(subs.state);
+    if (!mounted) {
+      return;
     }
+    await home.reconcileFollowed(subs.state);
   }
 
   @override
@@ -170,9 +172,6 @@ class RedditHomeChrome extends StatelessWidget {
     this.actions = const [],
   });
 
-  bool _railSelected(RedditFeedMode mode) =>
-      !source.viewingSubreddit && source.mode == mode;
-
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -182,19 +181,19 @@ class RedditHomeChrome extends StatelessWidget {
         PluginHomeTab(
           icon: Icons.home_outlined,
           label: l10n.plugin_reddit_feed_following,
-          selected: _railSelected(RedditFeedMode.following),
+          selected: redditHomeRailSelected(source, RedditFeedMode.following),
           onTap: () => onMode(RedditFeedMode.following),
         ),
         PluginHomeTab(
           icon: Icons.whatshot_outlined,
           label: l10n.plugin_reddit_feed_popular,
-          selected: _railSelected(RedditFeedMode.popular),
+          selected: redditHomeRailSelected(source, RedditFeedMode.popular),
           onTap: () => onMode(RedditFeedMode.popular),
         ),
         PluginHomeTab(
           icon: Icons.public_outlined,
           label: l10n.plugin_reddit_feed_all,
-          selected: _railSelected(RedditFeedMode.all),
+          selected: redditHomeRailSelected(source, RedditFeedMode.all),
           onTap: () => onMode(RedditFeedMode.all),
         ),
       ],

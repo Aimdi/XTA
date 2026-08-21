@@ -40,6 +40,9 @@ String redditHomeFeedKey(RedditHomeSource source) {
 bool isSelectedRedditCommunity(String? selected, String name) =>
     selected != null && selected.toLowerCase() == name.toLowerCase();
 
+bool redditHomeRailSelected(RedditHomeSource source, RedditFeedMode mode) =>
+    !source.viewingSubreddit && source.mode == mode;
+
 String? storedRedditSelectedSubreddit(BasePrefService prefs) {
   final raw = prefs.get<String>(optionPluginRedditSelectedSubreddit) ?? '';
   return raw.isEmpty ? null : normaliseSubreddit(raw);

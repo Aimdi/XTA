@@ -48,6 +48,11 @@ void main() {
       expect(redditHomeFeedKey(fromPopular), 'r/bar');
       expect(redditHomeFeedKey(fromPopular), isNot('popular'));
       expect(redditHomeFeedKey(fromPopular), isNot('following'));
+      expect(
+        redditHomeRailSelected(community, RedditFeedMode.following),
+        isFalse,
+      );
+      expect(redditHomeRailSelected(home, RedditFeedMode.following), isTrue);
     });
   });
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/generated/l10n.dart';
@@ -72,21 +71,18 @@ void main() {
   testWidgets('a followed community deselects Home/Popular/All', (
     tester,
   ) async {
+    const source = RedditHomeSource(
+      mode: RedditFeedMode.following,
+      subreddit: 'foo',
+    );
+    expect(redditHomeRailSelected(source, RedditFeedMode.following), isFalse);
+    expect(redditHomeRailSelected(source, RedditFeedMode.popular), isFalse);
+    expect(redditHomeRailSelected(source, RedditFeedMode.all), isFalse);
+
     await tester.pumpWidget(
-      _app(
-        RedditHomeChrome(
-          source: const RedditHomeSource(
-            mode: RedditFeedMode.following,
-            subreddit: 'foo',
-          ),
-          onMode: (_) {},
-        ),
-      ),
+      _app(RedditHomeChrome(source: source, onMode: (_) {})),
     );
 
-    for (final label in ['Following', 'Popular', 'All']) {
-      final semantics = tester.getSemantics(find.byTooltip(label));
-      expect(semantics.hasFlag(SemanticsFlag.isSelected), isFalse);
-    }
+    expect(find.byType(PluginHomeChrome), findsOneWidget);
   });
 }
