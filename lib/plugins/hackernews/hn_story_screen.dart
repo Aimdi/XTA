@@ -70,7 +70,7 @@ class _HnStoryScreenState extends State<HnStoryScreen> {
             return RefreshIndicator(
               onRefresh: _thread.refresh,
               child: FeedListView(
-                padding: const EdgeInsets.only(bottom: 32),
+                padding: const EdgeInsets.only(bottom: 48),
                 itemCount: 1 + rows.length,
                 itemBuilder: (context, index) {
                   if (index == 0) {
@@ -178,49 +178,68 @@ class _CommentTile extends StatelessWidget {
     required this.onToggle,
   });
 
+  static const _maxIndentDepth = 8;
+  static const _indentPerLevel = 12.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    final indent = 12.0 + depth * 14.0;
+    final steps = depth.clamp(0, _maxIndentDepth);
+    final railColor = hackerNewsBrand.withValues(
+      alpha: 0.28 + (depth % 5) * 0.1,
+    );
     return InkWell(
       onTap: () => onToggle(comment.id),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(
-              color: hackerNewsBrand.withValues(
-                alpha: 0.35 + (depth % 4) * 0.12,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < steps; i++)
+                Container(
+                  width: _indentPerLevel,
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: 2,
+                    color: i == steps - 1
+                        ? railColor
+                        : theme.dividerColor.withValues(alpha: 0.45),
+                  ),
+                ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        [
+                          comment.deleted
+                              ? l10n.plugin_hn_deleted
+                              : (comment.author ?? l10n.plugin_hn_deleted),
+                          if (comment.createdAt != null)
+                            createCompactDate(comment.createdAt!),
+                          if (collapsed && hiddenCount > 0)
+                            l10n.plugin_hn_comment_count(hiddenCount),
+                        ].join(' · '),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.hintColor,
+                        ),
+                      ),
+                      if (!collapsed &&
+                          !comment.deleted &&
+                          (comment.text ?? '').isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(comment.text!),
+                      ],
+                    ],
+                  ),
+                ),
               ),
-              width: 2,
-            ),
-          ),
-        ),
-        padding: EdgeInsets.fromLTRB(indent, 8, 16, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              [
-                comment.deleted
-                    ? l10n.plugin_hn_deleted
-                    : (comment.author ?? l10n.plugin_hn_deleted),
-                if (comment.createdAt != null)
-                  createCompactDate(comment.createdAt!),
-                if (collapsed && hiddenCount > 0)
-                  l10n.plugin_hn_comment_count(hiddenCount),
-              ].join(' · '),
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.hintColor,
-              ),
-            ),
-            if (!collapsed &&
-                !comment.deleted &&
-                (comment.text ?? '').isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(comment.text!),
             ],
-          ],
+          ),
         ),
       ),
     );

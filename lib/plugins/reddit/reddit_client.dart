@@ -1364,12 +1364,44 @@ class RedditClient {
     }
 
     final media = parsePostMedia(response.body);
+    final comments = parseComments(response.body, postPermalink: permalink);
+    if (comments.isEmpty) {
+      // old.reddit sometimes serves a login wall or an empty tree while the
+      // public JSON listing still has the thread.
+      try {
+        return await _commentsFromPublicJson(permalink, sort: sort);
+      } catch (_) {}
+    }
     return (
-      comments: parseComments(response.body, postPermalink: permalink),
+      comments: comments,
       selfText: parseSelfText(response.body),
       postUrl: media.url,
       postImages: media.images,
     );
+  }
+
+  Future<
+    ({
+      List<RedditComment> comments,
+      String? selfText,
+      String? postUrl,
+      List<String> postImages,
+    })
+  >
+  _commentsFromPublicJson(String permalink, {String? sort}) async {
+    final query = {
+      'raw_json': '1',
+      'limit': '500',
+      if (sort != null && sort.isNotEmpty) 'sort': sort,
+    };
+    final uri = Uri.parse(
+      '$_publicBase${_commentsJsonPath(permalink)}',
+    ).replace(queryParameters: query);
+    final response = await _read(uri);
+    if (response.statusCode != 200) {
+      throw _errorFor(response, uri);
+    }
+    return _threadFromJson(_decodeList(response), postPermalink: permalink);
   }
 
   /// Reddit's comments endpoint is `[postListing, commentsListing]`.

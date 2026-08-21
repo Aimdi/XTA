@@ -85,6 +85,7 @@ class _RedditScreenState extends State<RedditScreen> {
             mode: _mode,
             onMode: _setMode,
             actions: [
+              const RedditCommunitySwitcher(),
               IconButton(
                 tooltip: L10n.of(context).saved,
                 icon: const Icon(Icons.bookmark_border),
