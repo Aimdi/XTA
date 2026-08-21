@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/home_model.dart';
+import 'package:xta/home/feed_strip_store.dart';
 
 /// Switching a plugin on should put its tab in the navigation bar. Only
 /// Substack did, so enabling Reddit registered a tab that never appeared —
@@ -105,6 +106,24 @@ void main() {
       for (final id in ['feed', 'subscriptions', 'trending', 'saved']) {
         expect(_selected(model, id), isTrue, reason: id);
       }
+    });
+
+    test('enabling RSS selects its tab and pins the home strip', () async {
+      final prefs = PrefServiceCache(
+        cache: {
+          optionHomePages: ['feed', 'subscriptions', 'trending', 'saved'],
+          optionSeededPluginTabs: <String>[],
+          optionPluginRssEnabled: true,
+          optionPluginRedditEnabled: false,
+          optionPluginSubstackEnabled: false,
+          optionPluginDeepmarksEnabled: false,
+          optionPluginKarakeepEnabled: false,
+        },
+      );
+      final model = await _load(prefs);
+
+      expect(_selected(model, pluginIdRss), isTrue);
+      expect(feedStripPluginIds(prefs), contains(pluginIdRss));
     });
 
     test(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
 
@@ -85,6 +87,26 @@ void main() {
       expect(
         rssFeedId('https://Example.COM/feed/'),
         'https://example.com/feed',
+      );
+    });
+
+    test('listFromPrefs accepts a restored List, not only a JSON string', () {
+      final feed = {
+        'id': 'https://example.com/feed',
+        'feedUrl': 'https://example.com/feed',
+        'name': 'Example',
+      };
+      expect(RssFeed.listFromPrefs([feed]).single.name, 'Example');
+      expect(RssFeed.listFromPrefs(jsonEncode([feed])).single.name, 'Example');
+      expect(RssFeed.listFromPrefs(null), isEmpty);
+      expect(readIdsFromPrefs(['a', 'b']), ['a', 'b']);
+      expect(
+        rssTagsFromPrefs({
+          'https://example.com/feed': ['news'],
+        }),
+        {
+          'https://example.com/feed': ['news'],
+        },
       );
     });
 

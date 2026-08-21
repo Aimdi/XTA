@@ -130,4 +130,92 @@ void main() {
     expect(find.text('Networks'), findsOneWidget);
     expect(find.text('RSS'), findsOneWidget);
   });
+
+  testWidgets('IconLabel survives a tight tab and a scrollable strip', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        Builder(
+          builder: (context) {
+            return DefaultTabController(
+              length: 2,
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: 72,
+                    child: FeedStripTab(
+                      title: 'Subscriptions',
+                      icon: Icons.people_outlined,
+                    ),
+                  ),
+                  TabBar(
+                    isScrollable: true,
+                    tabs: [
+                      Tab(
+                        child: FeedStripTab(
+                          title: 'Following',
+                          icon: Icons.home_outlined,
+                        ),
+                      ),
+                      Tab(
+                        child: FeedStripTab(
+                          title: 'RSS',
+                          icon: Icons.rss_feed,
+                          unread: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        prefs: PrefServiceCache(cache: {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Following'), findsOneWidget);
+    expect(find.text('RSS'), findsOneWidget);
+    expect(find.byIcon(Icons.rss_feed), findsOneWidget);
+  });
+
+  testWidgets('Networks Add timeline opens after the sheet pops', (
+    tester,
+  ) async {
+    final prefs = PrefServiceCache(
+      cache: {
+        optionHomeFeedStripPlugins: [pluginIdRss],
+        optionPluginRssEnabled: true,
+      },
+    );
+
+    await tester.pumpWidget(
+      _app(
+        Builder(
+          builder: (context) {
+            return TextButton(
+              onPressed: () => showNetworkSwitcherSheet(
+                context,
+                plugins: pluginsForSwitcher([pluginIdRss]),
+                currentId: pluginIdRss,
+              ),
+              child: const Text('open'),
+            );
+          },
+        ),
+        prefs: prefs,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add timeline'));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(homeNetworksSheetKey), findsNothing);
+    expect(find.text('Plugin timelines'), findsOneWidget);
+  });
 }

@@ -72,14 +72,13 @@ class _FeedStripAddSheet extends StatelessWidget {
                         Center(
                           child: FilledButton.icon(
                             onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
+                              final nav = Navigator.of(context);
+                              final storeTitle = l10n.plugin_store;
+                              nav.pop();
+                              nav.push(
                                 MaterialPageRoute(
                                   builder: (_) => Scaffold(
-                                    appBar: AppBar(
-                                      title: Text(l10n.plugin_store),
-                                    ),
+                                    appBar: AppBar(title: Text(storeTitle)),
                                     body: const SettingsPluginStoreFragment(),
                                   ),
                                 ),

@@ -209,6 +209,57 @@ void main() {
       expect(find.text('body1'), findsOneWidget);
     });
 
+    test('pagesForNavigationBar keeps two-or-more lists', () {
+      final pages = [_page('feed', Icons.home), _page('saved', Icons.bookmark)];
+      expect(pagesForNavigationBar(pages), pages);
+    });
+
+    test('pagesForNavigationBar replaces a single leftover tab', () {
+      final pages = pagesForNavigationBar([_page('feed', Icons.home)]);
+      expect(pages, hasLength(defaultHomePages.length));
+      expect(pages.map((e) => e.id), [
+        'feed',
+        'subscriptions',
+        'trending',
+        'saved',
+      ]);
+    });
+
+    testWidgets('a single leftover page still builds the default bar', (
+      tester,
+    ) async {
+      final prefs = PrefServiceCache(
+        cache: {optionShowNavigationLabels: false},
+      );
+      await tester.pumpWidget(
+        PrefService(
+          service: prefs,
+          child: MaterialApp(
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: Provider<GroupsModel>(
+              create: (_) => GroupsModel(prefs),
+              child: ScaffoldWithBottomNavigation(
+                pages: [_page('feed', Icons.home)],
+                prefs: prefs,
+                initialPage: 0,
+                builder: (index, _, _) => Center(child: Text('fallback$index')),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NavigationBar), findsOneWidget);
+      expect(find.text('fallback0'), findsOneWidget);
+    });
+
     testWidgets('an empty page list still builds the default tabs', (
       tester,
     ) async {

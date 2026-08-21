@@ -168,8 +168,11 @@ class _NetworkSwitcherSheet extends StatelessWidget {
             leading: const Icon(Icons.add),
             title: Text(l10n.feed_strip_add),
             onTap: () {
-              Navigator.pop(context);
-              showFeedStripAddSheet(context);
+              // The sheet's context dies with the pop. The navigator's
+              // context is the parent route and can open the add sheet.
+              final nav = Navigator.of(context);
+              nav.pop();
+              showFeedStripAddSheet(nav.context);
             },
           ),
         ],

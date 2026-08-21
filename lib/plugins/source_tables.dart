@@ -17,12 +17,25 @@ Future<List<Map<String, Object?>>> querySourceTable(
         ? await database.query(table)
         : await database.rawQuery(sql, arguments);
   } catch (error) {
-    if (!_isMissingTable(error, table)) rethrow;
+    if (!isMissingSourceTable(error, table)) rethrow;
     return const [];
   }
 }
 
-bool _isMissingTable(Object error, String table) {
+/// Writes that need the table, or nothing when it was never created.
+Future<T?> mutateSourceTable<T>(
+  String table,
+  Future<T> Function() action,
+) async {
+  try {
+    return await action();
+  } catch (error) {
+    if (!isMissingSourceTable(error, table)) rethrow;
+    return null;
+  }
+}
+
+bool isMissingSourceTable(Object error, String table) {
   final text = error.toString().toLowerCase();
   return text.contains('no such table') && text.contains(table.toLowerCase());
 }

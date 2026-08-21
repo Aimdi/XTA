@@ -67,6 +67,11 @@ final List<NavigationPage> defaultHomePages = [
   ),
 ];
 
+/// NavigationBar asserts at least two destinations. One leftover tab after
+/// a restore, or an empty list, used to take the first frame down.
+List<NavigationPage> pagesForNavigationBar(List<NavigationPage> pages) =>
+    pages.length < 2 ? List<NavigationPage>.from(defaultHomePages) : pages;
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -110,7 +115,7 @@ class _HomeScreenState extends State<_HomeScreen> {
       for (final element in state)
         if (element.selected) element.page,
     ];
-    return pages.isEmpty ? List<NavigationPage>.from(defaultHomePages) : pages;
+    return pagesForNavigationBar(pages);
   }
 
   int _initialPageOf(List<NavigationPage> pages) {
@@ -269,8 +274,7 @@ class _ScaffoldWithBottomNavigationState
   /// How far the current drag across the navigation bar has travelled.
   double _dragDistance = 0;
 
-  List<NavigationPage> get _barPages =>
-      widget.pages.isEmpty ? defaultHomePages : widget.pages;
+  List<NavigationPage> get _barPages => pagesForNavigationBar(widget.pages);
 
   /// Drops focus everywhere before a tab change.
   ///
@@ -302,10 +306,7 @@ class _ScaffoldWithBottomNavigationState
   @override
   void didUpdateWidget(covariant ScaffoldWithBottomNavigation oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_barPages.length !=
-        (oldWidget.pages.isEmpty
-            ? defaultHomePages.length
-            : oldWidget.pages.length)) {
+    if (_barPages.length != pagesForNavigationBar(oldWidget.pages).length) {
       // Dispose controllers that are no longer needed.
       _scrollControllers.keys
           .where((k) => k >= _barPages.length)

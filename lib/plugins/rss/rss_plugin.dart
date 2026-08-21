@@ -14,6 +14,7 @@ import 'package:xta/plugins/rss/rss_interleaved.dart';
 import 'package:xta/plugins/rss/rss_screen.dart';
 import 'package:xta/plugins/rss/rss_settings.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
+import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/plugins/subscription_source.dart';
 import 'package:xta/settings/backup_category.dart';
 import 'package:xta/tweet/interleaved_items.dart';
@@ -111,7 +112,7 @@ class RssPlugin extends XtaPlugin with SubscriptionSource {
     List<String> ids,
   ) async {
     final database = await Repository.readOnly();
-    final rows = await database.query(tableRssSubscription);
+    final rows = await querySourceTable(database, tableRssSubscription);
     final feeds = rows
         .map(RssSubscription.fromMap)
         .where((feed) => ids.contains(feed.id))

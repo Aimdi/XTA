@@ -40,8 +40,15 @@ class RssFeed {
     );
   }
 
-  static List<RssFeed> listFromPrefs(String? raw) {
-    if (raw == null || raw.isEmpty) return const [];
+  static List<RssFeed> listFromPrefs(Object? raw) {
+    if (raw == null) return const [];
+    if (raw is List) {
+      return [
+        for (final item in raw)
+          if (item is Map) RssFeed.fromJson(Map<String, dynamic>.from(item)),
+      ].where((feed) => feed.id.isNotEmpty && feed.feedUrl.isNotEmpty).toList();
+    }
+    if (raw is! String || raw.isEmpty) return const [];
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! List) return const [];
@@ -139,8 +146,12 @@ bool looksLikeRssUrl(String raw) {
   ).hasMatch(path);
 }
 
-List<String> readIdsFromPrefs(String? raw) {
-  if (raw == null || raw.isEmpty) return const [];
+List<String> readIdsFromPrefs(Object? raw) {
+  if (raw == null) return const [];
+  if (raw is List) {
+    return raw.whereType<String>().where((e) => e.isNotEmpty).toList();
+  }
+  if (raw is! String || raw.isEmpty) return const [];
   try {
     final decoded = jsonDecode(raw);
     if (decoded is! List) return const [];
@@ -153,8 +164,19 @@ List<String> readIdsFromPrefs(String? raw) {
 String readIdsToPrefs(List<String> ids) => jsonEncode(ids);
 
 /// `{feedId: ["news", "blogs"]}` — tags stay in preferences.
-Map<String, List<String>> rssTagsFromPrefs(String? raw) {
-  if (raw == null || raw.isEmpty) return const {};
+Map<String, List<String>> rssTagsFromPrefs(Object? raw) {
+  if (raw == null) return const {};
+  if (raw is Map) {
+    return {
+      for (final entry in raw.entries)
+        if (entry.key is String && entry.value is List)
+          entry.key as String: [
+            for (final tag in entry.value as List)
+              if (tag is String && tag.trim().isNotEmpty) tag.trim(),
+          ],
+    };
+  }
+  if (raw is! String || raw.isEmpty) return const {};
   try {
     final decoded = jsonDecode(raw);
     if (decoded is! Map) return const {};

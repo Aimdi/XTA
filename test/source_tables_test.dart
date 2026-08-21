@@ -4,7 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/rss/rss_plugin.dart';
+import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/plugins/source_tables.dart';
 
 void main() {
@@ -60,5 +62,40 @@ void main() {
     final rows = await querySourceTable(db, tableRssSubscription);
     expect(rows, hasLength(1));
     expect(rows.single['name'], 'Example');
+  });
+
+  test('readRssFeedsTable is empty when rss_subscription is missing', () async {
+    final path =
+        '${Directory.systemTemp.path}/xta_rss_read_missing_${DateTime.now().microsecondsSinceEpoch}.db';
+    final db = await openDatabase(path);
+    addTearDown(() async {
+      await db.close();
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    });
+
+    expect(await readRssFeedsTable(db), isEmpty);
+  });
+
+  test('syncRssFeedsTable does not throw when the table is missing', () async {
+    final path =
+        '${Directory.systemTemp.path}/xta_rss_sync_missing_${DateTime.now().microsecondsSinceEpoch}.db';
+    final db = await openDatabase(path);
+    addTearDown(() async {
+      await db.close();
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    });
+
+    await expectLater(
+      syncRssFeedsTable(db, [
+        const RssFeed(
+          id: 'https://example.com/feed',
+          feedUrl: 'https://example.com/feed',
+          name: 'Example',
+        ),
+      ]),
+      completes,
+    );
   });
 }

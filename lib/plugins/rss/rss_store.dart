@@ -8,6 +8,7 @@ import 'package:xta/plugins/account_posts.dart';
 import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
+import 'package:xta/plugins/source_tables.dart';
 
 class RssFeedSnapshot {
   final List<RssItem> items;
@@ -40,18 +41,55 @@ class RssFeedsStore extends Store<List<RssFeed>> {
 
   Future<List<RssFeed>> _readTable() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(
-      tableRssSubscription,
-      orderBy: 'name COLLATE NOCASE',
-    );
-    return rows
-        .map(RssSubscription.fromMap)
-        .map(feedOf)
-        .toList(growable: false);
+    return readRssFeedsTable(database);
   }
 
   Future<void> _syncTable(List<RssFeed> feeds) async {
     final database = await Repository.writable();
+    await syncRssFeedsTable(database, feeds);
+  }
+
+  Future<void> add(RssFeed feed) async {
+    await execute(() async {
+      final next = [feed, ...state.where((e) => e.id != feed.id)];
+      await prefs.set(optionPluginRssFeeds, RssFeed.listToPrefs(next));
+      await _syncTable(next);
+      return next;
+    });
+  }
+
+  Future<void> remove(String id) async {
+    await execute(() async {
+      final next = [
+        for (final feed in state)
+          if (feed.id != id) feed,
+      ];
+      await prefs.set(optionPluginRssFeeds, RssFeed.listToPrefs(next));
+      await _syncTable(next);
+      return next;
+    });
+  }
+
+  bool isFollowing(String id) => state.any((feed) => feed.id == id);
+}
+
+/// Prefs are the copy the plugin tab reads; the table is for groups.
+/// A missing `rss_subscription` (58 never applied) must not take enable
+/// or the first RSS frame down — prefs still have the follows.
+Future<List<RssFeed>> readRssFeedsTable(DatabaseExecutor database) async {
+  final rows = await querySourceTable(
+    database,
+    tableRssSubscription,
+    sql: 'SELECT * FROM $tableRssSubscription ORDER BY name COLLATE NOCASE',
+  );
+  return [for (final row in rows) feedOf(RssSubscription.fromMap(row))];
+}
+
+Future<void> syncRssFeedsTable(
+  DatabaseExecutor database,
+  List<RssFeed> feeds,
+) async {
+  await mutateSourceTable(tableRssSubscription, () async {
     final keep = feeds.map((e) => e.id).toSet();
     final existing = await database.query(
       tableRssSubscription,
@@ -79,30 +117,7 @@ class RssFeedsStore extends Store<List<RssFeed>> {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     }
-  }
-
-  Future<void> add(RssFeed feed) async {
-    await execute(() async {
-      final next = [feed, ...state.where((e) => e.id != feed.id)];
-      await prefs.set(optionPluginRssFeeds, RssFeed.listToPrefs(next));
-      await _syncTable(next);
-      return next;
-    });
-  }
-
-  Future<void> remove(String id) async {
-    await execute(() async {
-      final next = [
-        for (final feed in state)
-          if (feed.id != id) feed,
-      ];
-      await prefs.set(optionPluginRssFeeds, RssFeed.listToPrefs(next));
-      await _syncTable(next);
-      return next;
-    });
-  }
-
-  bool isFollowing(String id) => state.any((feed) => feed.id == id);
+  });
 }
 
 RssSubscription subscriptionOf(RssFeed feed) => RssSubscription(
