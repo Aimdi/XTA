@@ -506,7 +506,7 @@ Widget _selectedHeader(
           icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined),
           onPressed: onPinToggle,
         ),
-        if (extra != null) extra,
+        ?extra,
       ],
     ),
   );

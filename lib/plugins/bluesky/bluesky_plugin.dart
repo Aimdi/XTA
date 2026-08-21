@@ -165,10 +165,12 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
     final accounts = context.read<BlueskyAccountsStore>();
     final likes = context.read<BlueskyLikesStore>();
     final feed = context.read<BlueskyFeedStore>();
+    final algos = context.read<BlueskyAlgoStore>();
+    final lists = context.read<BlueskyListsStore>();
     await accounts.load();
     await likes.load();
     await feed.refresh(force: true);
-    await context.read<BlueskyAlgoStore>().ensureLoaded(force: true);
-    await context.read<BlueskyListsStore>().ensureLoaded(force: true);
+    await algos.ensureLoaded(force: true);
+    await lists.ensureLoaded(force: true);
   }
 }
