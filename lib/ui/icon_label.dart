@@ -15,21 +15,23 @@ class IconLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // No Flexible: this row sits in scrollable TabBars whose width is
-    // unbounded, and a flex child throws there. Ellipsis still applies when
-    // a parent *does* constrain the tab.
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: iconSize),
-        const SizedBox(width: 6),
-        Text(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final text = Text(
           label,
           maxLines: 1,
           softWrap: false,
           overflow: TextOverflow.ellipsis,
-        ),
-      ],
+        );
+        // Scrollable TabBars give this row infinite width. A Flexible child
+        // throws there; a min-row overflows when a parent *does* constrain it.
+        final children = [
+          Icon(icon, size: iconSize),
+          const SizedBox(width: 6),
+          if (constraints.hasBoundedWidth) Flexible(child: text) else text,
+        ];
+        return Row(mainAxisSize: MainAxisSize.min, children: children);
+      },
     );
   }
 }
