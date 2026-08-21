@@ -31,7 +31,7 @@ class _RedditSavedScreenState extends State<RedditSavedScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(L10n.of(context).saved)),
-      body: ScopedBuilder<RedditSavedStore, List<RedditPost>>.transition(
+      body: ScopedBuilder<RedditSavedStore, List<RedditPost>>(
         store: store,
         onLoading: (_) => const Center(child: CircularProgressIndicator()),
         onState: (context, posts) =>

@@ -261,5 +261,52 @@ void main() {
       expect(find.text('body0'), findsOneWidget);
       expect(find.text('body1'), findsNothing);
     });
+
+    testWidgets('a pref write does not rebuild the visible page', (
+      tester,
+    ) async {
+      var builds = 0;
+      final prefs = PrefServiceCache(
+        cache: {optionShowNavigationLabels: false, optionZenMode: false},
+      );
+
+      await tester.pumpWidget(
+        PrefService(
+          service: prefs,
+          child: MaterialApp(
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: Provider<GroupsModel>(
+              create: (_) => GroupsModel(prefs),
+              child: ScaffoldWithBottomNavigation(
+                pages: [
+                  for (var i = 0; i < 3; i++) _page('page$i', Icons.circle),
+                ],
+                prefs: prefs,
+                initialPage: 0,
+                builder: (index, _, _) {
+                  builds++;
+                  return Center(child: Text('body$index'));
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final afterFirst = builds;
+
+      await prefs.set(optionZenMode, true);
+      await prefs.set(optionShowNavigationLabels, true);
+      await tester.pump();
+
+      expect(builds, afterFirst);
+      expect(find.text('body0'), findsOneWidget);
+    });
   });
 }

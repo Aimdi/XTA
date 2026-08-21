@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -141,6 +142,7 @@ class _FeedScreenState extends State<FeedScreen> {
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
   HomeAccountFilterStore? _accountFilter;
+  Timer? _unreadReloadDebounce;
   Set<String> _lastDisabledAccountIds = const {};
   List<String> _lastStripPlugins = const [];
 
@@ -227,8 +229,18 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   void dispose() {
+    _unreadReloadDebounce?.cancel();
     _forYouFeed.dispose();
     super.dispose();
+  }
+
+  /// Strip taps used to run a full unread SQLite scan on every switch.
+  void _reloadUnreadSoon() {
+    _unreadReloadDebounce?.cancel();
+    _unreadReloadDebounce = Timer(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
+      maybeGroupUnreadStore(context)?.reload();
+    });
   }
 
   void _remountForYou({required bool scrollToTopFirst}) {
@@ -340,7 +352,7 @@ class _FeedScreenState extends State<FeedScreen> {
                         // this does not bump the epoch and the indicator keeps sliding.
                         _tabStore?.select(_tab!);
                       });
-                      maybeGroupUnreadStore(context)?.reload();
+                      _reloadUnreadSoon();
                     },
                   ),
                 ),
