@@ -13,7 +13,25 @@ import 'package:xta/subscriptions/_import_list.dart';
 import 'package:xta/subscriptions/_list.dart';
 import 'package:xta/subscriptions/group_ungrouped_screen.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/icon_label.dart';
 import 'package:provider/provider.dart';
+
+/// Folder for Groups, people list for Abos — same icon+label row as chips.
+const IconData subscriptionGroupsTabIcon = Icons.folder_outlined;
+const IconData subscriptionPeopleTabIcon = Icons.people_outlined;
+
+/// The Gruppen | Abos [TabBar] entries.
+List<Widget> subscriptionSectionTabs(L10n l10n) => [
+  Tab(
+    child: IconLabel(icon: subscriptionGroupsTabIcon, label: l10n.groups),
+  ),
+  Tab(
+    child: IconLabel(
+      icon: subscriptionPeopleTabIcon,
+      label: l10n.subscriptions,
+    ),
+  ),
+];
 
 /// Subscriptions home tab: Groups | People, with management actions in the app bar.
 class SubscriptionsScreen extends StatefulWidget {
@@ -131,13 +149,7 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.subscriptions),
-        bottom: TabBar(
-          controller: _tabs,
-          tabs: [
-            Tab(text: l10n.groups),
-            Tab(text: l10n.subscriptions),
-          ],
-        ),
+        bottom: TabBar(controller: _tabs, tabs: subscriptionSectionTabs(l10n)),
         actions: [
           if (_onGroups)
             IconButton(
