@@ -560,7 +560,7 @@ class _InboxPane extends StatelessWidget {
                     );
                   }
 
-                  return ListView.builder(
+                  return FeedListView(
                     controller: scrollController,
                     padding: const EdgeInsets.only(bottom: 24, top: 8),
                     itemCount: unread.length + 1,

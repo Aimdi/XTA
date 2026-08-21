@@ -3,6 +3,7 @@
   "plugins": [
     { "id": "substack" },
     { "id": "reddit" },
+    { "id": "hackernews" },
     { "id": "threads" },
     { "id": "bluesky" },
     { "id": "mastodon" },

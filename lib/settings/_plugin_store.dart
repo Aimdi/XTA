@@ -3,7 +3,9 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_model.dart';
+import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_catalogue.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -34,15 +36,31 @@ class _SettingsPluginStoreFragmentState
   List<String> _offered = const [];
   bool _loading = true;
   bool _unreachable = false;
+  String _query = '';
 
   @override
   void initState() {
     super.initState();
-    // Until a catalogue has ever been read, everything compiled in is on offer.
-    _offered = _catalogue.hasCache
-        ? _catalogue.cached()
-        : builtInPlugins.map((p) => p.id).toList();
+    _offered = _offeredFromCache();
     WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
+  }
+
+  List<String> _offeredFromCache() {
+    final builtIn = builtInPlugins.map((p) => p.id);
+    if (!_catalogue.hasCache) {
+      return builtIn.toList();
+    }
+    final body =
+        PrefService.of(
+          context,
+          listen: false,
+        ).get<String>(optionPluginCatalogueCache) ??
+        '';
+    return offeredPluginIds(
+      builtInIds: builtIn,
+      catalogueOffered: _catalogue.cached(),
+      catalogueMentioned: parsePluginCatalogueMentioned(body),
+    );
   }
 
   Future<void> _refresh() async {
@@ -55,7 +73,7 @@ class _SettingsPluginStoreFragmentState
       _loading = false;
       _unreachable = fetched == null;
       if (fetched != null) {
-        _offered = fetched;
+        _offered = _offeredFromCache();
       }
     });
   }
@@ -73,6 +91,15 @@ class _SettingsPluginStoreFragmentState
               _offered.contains(plugin.id) ||
               (plugin.isPrivate && showPrivate),
         )
+        .where(
+          (plugin) => pluginMatchesStoreQuery(
+            query: _query,
+            id: plugin.id,
+            title: plugin.title(context),
+            description: plugin.description(context),
+            category: plugin.category.label(context),
+          ),
+        )
         .toList();
   }
 
@@ -81,6 +108,8 @@ class _SettingsPluginStoreFragmentState
     await plugin.setEnabled(prefs, true);
     if (!mounted) return;
     await context.read<HomeModel>().loadPages();
+    if (!mounted) return;
+    await context.read<FeedStripStore>().seedEnabled();
     if (mounted) setState(() {});
   }
 
@@ -110,9 +139,21 @@ class _SettingsPluginStoreFragmentState
 
     if (confirmed != true || !mounted) return;
 
+    final strip = context.read<FeedStripStore>();
+    final home = context.read<HomeModel>();
+    NetworkRecentsStore? recents;
+    try {
+      recents = context.read<NetworkRecentsStore>();
+    } on ProviderNotFoundException {
+      recents = null;
+    }
+
     await plugin.uninstall(context);
     if (!mounted) return;
-    await context.read<HomeModel>().loadPages();
+    await strip.forget(plugin.id);
+    await recents?.forget(plugin.id);
+    if (!mounted) return;
+    await home.loadPages();
     if (mounted) setState(() {});
   }
 
@@ -160,6 +201,14 @@ class _SettingsPluginStoreFragmentState
           padding: const EdgeInsets.only(bottom: 24),
           children: [
             if (_loading) const LinearProgressIndicator(minHeight: 2),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              child: SearchBar(
+                hintText: l10n.plugin_store_search,
+                leading: const Icon(Icons.search),
+                onChanged: (value) => setState(() => _query = value),
+              ),
+            ),
             if (_unreachable)
               ListTile(
                 dense: true,
@@ -228,7 +277,7 @@ class PluginAvailableSection extends StatelessWidget {
     final l10n = L10n.of(context);
     return ExpansionTile(
       key: const Key('plugin-available'),
-      initiallyExpanded: false,
+      initiallyExpanded: true,
       tilePadding: const EdgeInsets.symmetric(horizontal: 16),
       title: Text(
         l10n.plugin_available,
