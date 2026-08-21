@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
@@ -72,6 +73,16 @@ void main() {
     test('equality is by id, not identity', () {
       expect(FeedTab('mastodon'), FeedTab(pluginIdMastodon));
       expect(FeedTab.reddit.name, pluginIdReddit);
+    });
+
+    test('X tabs use house and spark; plugins reuse XtaPlugin.icon', () {
+      expect(FeedTab.following.icon, followingTabIcon);
+      expect(FeedTab.foryou.icon, forYouTabIcon);
+      expect(FeedTab(pluginIdSubstack).icon, Icons.newspaper);
+      expect(FeedTab(pluginIdPixiv).icon, Icons.brush);
+      expect(FeedTab(pluginIdBooru).icon, Icons.photo_library_outlined);
+      expect(FeedTab(pluginIdThreads).icon, Icons.alternate_email);
+      expect(FeedTab(pluginIdBluesky).icon, Icons.cloud);
     });
   });
 }
