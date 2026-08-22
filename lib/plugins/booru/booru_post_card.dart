@@ -4,6 +4,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/ui/provenance_accent.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 
@@ -49,6 +50,8 @@ class BooruPostCard extends StatelessWidget {
                 children: [
                   Text(
                     l10n.plugin_booru_card_title(post.id),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall,
                   ),
                   if (preview.isNotEmpty) ...[
@@ -62,8 +65,9 @@ class BooruPostCard extends StatelessWidget {
                   ],
                   if (post.score != null) ...[
                     const SizedBox(height: 4),
-                    Text(
-                      l10n.plugin_booru_score(post.score!),
+                    PluginMetaLine(
+                      maxLines: 1,
+                      parts: [l10n.plugin_booru_score(post.score!)],
                       style: theme.textTheme.labelSmall,
                     ),
                   ],

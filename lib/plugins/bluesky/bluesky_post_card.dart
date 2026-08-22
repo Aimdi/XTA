@@ -14,6 +14,7 @@ import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
@@ -252,37 +253,29 @@ class BlueskyPostCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                post.authorName,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+        PluginNameMetaRow(
+          name: Text(
+            post.authorName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w800,
             ),
-            if (date != null) ...[
-              const SizedBox(width: 6),
-              Text(
-                '· ${createRelativeDate(date)}',
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
-          ],
+          ),
+          meta: [if (date != null) createRelativeDate(date)],
         ),
         Row(
           children: [
             Flexible(
               child: Text(
                 '@${post.handle}',
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.bodySmall!.copyWith(color: muted),
               ),
             ),
             if (showSourceBadge) ...[
-              const SizedBox(width: 6),
+              const SizedBox(width: kPluginMetaGap),
               Tooltip(
                 message: l10n.plugin_bluesky_title,
                 child: const BlueskyButterflyIcon(size: 14),

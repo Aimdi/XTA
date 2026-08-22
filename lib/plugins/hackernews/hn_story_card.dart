@@ -7,6 +7,7 @@ import 'package:xta/plugins/hackernews/hn_plugin.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_screen.dart';
 import 'package:xta/plugins/hackernews/hn_user_screen.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/ui/dates.dart';
 
 class HnStoryCard extends StatelessWidget {
@@ -54,6 +55,8 @@ class HnStoryCard extends StatelessWidget {
                       children: [
                         Text(
                           story.title,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -62,14 +65,16 @@ class HnStoryCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             story.host!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.hintColor,
                             ),
                           ),
                         ],
                         const SizedBox(height: 4),
-                        Text(
-                          _meta(l10n, story),
+                        PluginMetaLine(
+                          parts: _meta(l10n, story),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.hintColor,
                           ),
@@ -122,15 +127,12 @@ class HnStoryCard extends StatelessWidget {
   }
 }
 
-String _meta(L10n l10n, HnStory story) {
-  final parts = <String>[
-    l10n.plugin_hn_points(story.score),
-    if (story.author != null) l10n.plugin_hn_by(story.author!),
-    if (story.createdAt != null) createCompactDate(story.createdAt!),
-    l10n.plugin_hn_comment_count(story.commentCount),
-  ];
-  return parts.join(' · ');
-}
+List<String> _meta(L10n l10n, HnStory story) => [
+  l10n.plugin_hn_points(story.score),
+  if (story.author != null) l10n.plugin_hn_by(story.author!),
+  if (story.createdAt != null) createCompactDate(story.createdAt!),
+  l10n.plugin_hn_comment_count(story.commentCount),
+];
 
 void openHnUser(BuildContext context, String author) {
   Navigator.push(

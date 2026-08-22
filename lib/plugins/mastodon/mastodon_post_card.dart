@@ -7,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_text.dart';
@@ -213,66 +214,29 @@ class MastodonPostCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                post.authorName,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+        PluginNameMetaRow(
+          name: Text(
+            post.authorName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w800,
             ),
-            if (date != null) ...[
-              const SizedBox(width: 6),
-              Text(
-                '· ${createRelativeDate(date)}',
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
-            if (post.edited) ...[
-              const SizedBox(width: 6),
-              Text(
-                '· ${l10n.plugin_mastodon_edited}',
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
+          ),
+          meta: [
+            if (date != null) createRelativeDate(date),
+            if (post.edited) l10n.plugin_mastodon_edited,
           ],
         ),
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                '@${post.acct}',
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(color: muted),
-              ),
-            ),
-            if (pinned) ...[
-              const SizedBox(width: 6),
-              _badge(context, l10n.plugin_mastodon_pinned),
-            ],
-            if (showSourceBadge) ...[
-              const SizedBox(width: 6),
-              _badge(context, l10n.plugin_mastodon_title),
-            ],
+        PluginHandleBadgeRow(
+          handle: _MastodonHandle(acct: post.acct, muted: muted),
+          badges: [
+            if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned),
+            if (showSourceBadge)
+              PluginCardBadge(label: l10n.plugin_mastodon_title),
           ],
         ),
       ],
-    );
-  }
-
-  Widget _badge(BuildContext context, String label) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(label, style: theme.textTheme.labelSmall),
     );
   }
 
@@ -312,6 +276,49 @@ class MastodonPostCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// `@user@instance`, with the instance dimmed.
+///
+/// Which server someone posts from is half of who they are on the Fediverse,
+/// so the card never drops it — but it is the part that gets shortened when
+/// the handle will not fit, because the name is what a reader recognises.
+class _MastodonHandle extends StatelessWidget {
+  final String acct;
+  final Color muted;
+
+  const _MastodonHandle({required this.acct, required this.muted});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.bodySmall!.copyWith(color: muted);
+    final at = acct.indexOf('@');
+
+    if (at <= 0) {
+      return Text(
+        '@$acct',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
+    }
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: '@${acct.substring(0, at)}'),
+          TextSpan(
+            text: acct.substring(at),
+            style: style.copyWith(color: muted.withValues(alpha: 0.7)),
+          ),
+        ],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: style,
     );
   }
 }
