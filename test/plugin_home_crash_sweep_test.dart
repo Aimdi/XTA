@@ -98,15 +98,63 @@ class _IdleRssFeeds extends RssFeedsStore {
   Future<void> load() async {}
 }
 
+class _IdleRssRead extends RssReadStore {
+  _IdleRssRead(super.prefs);
+
+  @override
+  Future<void> load() async {}
+}
+
+class _IdleRssTags extends RssTagsStore {
+  _IdleRssTags(super.prefs);
+
+  @override
+  Future<void> load() async {}
+}
+
 class _IdleRssTimeline extends RssTimelineStore {
   _IdleRssTimeline(super.client, super.feeds);
 
   @override
   Future<void> refresh({bool force = false}) async {}
+
+  @override
+  void syncReadIds(Set<String> readIds) {}
+
+  @override
+  void syncTags(Map<String, List<String>> tags) {}
 }
 
 class _IdlePubs extends SubstackPublicationsStore {
   _IdlePubs(super.prefs);
+
+  @override
+  Future<void> load() async {}
+}
+
+class _IdleNotes extends SubstackNotesStore {
+  _IdleNotes(super.client, super.publications);
+
+  @override
+  Future<void> refresh({bool force = false}) async {}
+}
+
+class _IdleSubstackRead extends SubstackReadStore {
+  _IdleSubstackRead(super.prefs);
+
+  @override
+  Future<void> load() async {}
+}
+
+class _IdleSubstackLikes extends SubstackLikesStore {
+  _IdleSubstackLikes(super.prefs);
+
+  @override
+  Future<void> load() async {}
+}
+
+class _IdleSubstackSaved extends SubstackSavedStore {
+  _IdleSubstackSaved(super.prefs);
 
   @override
   Future<void> load() async {}
@@ -342,8 +390,8 @@ void main() {
       addTearDown(outer.dispose);
       final prefs = PrefServiceCache();
       final feeds = _IdleRssFeeds(prefs);
-      final read = RssReadStore(prefs);
-      final tags = RssTagsStore(prefs);
+      final read = _IdleRssRead(prefs);
+      final tags = _IdleRssTags(prefs);
       final timeline = RssTimelineStore(RssClient(), feeds);
       addTearDown(() {
         timeline.destroy();
@@ -390,8 +438,8 @@ void main() {
           name: 'Example',
         ),
       ]);
-      final read = RssReadStore(prefs);
-      final tags = RssTagsStore(prefs);
+      final read = _IdleRssRead(prefs);
+      final tags = _IdleRssTags(prefs);
       final timeline = _IdleRssTimeline(RssClient(), feeds);
       timeline.update(
         const RssFeedSnapshot(
@@ -444,8 +492,8 @@ void main() {
       addTearDown(outer.dispose);
       final prefs = PrefServiceCache();
       final feeds = _IdleRssFeeds(prefs);
-      final read = RssReadStore(prefs);
-      final tags = RssTagsStore(prefs);
+      final read = _IdleRssRead(prefs);
+      final tags = _IdleRssTags(prefs);
       final timeline = RssTimelineStore(RssClient(), feeds);
       addTearDown(() {
         timeline.destroy();
@@ -516,16 +564,19 @@ void main() {
       addTearDown(outer.dispose);
       final prefs = PrefServiceCache();
       final pubs = _IdlePubs(prefs);
-      final feed = SubstackFeedStore(SubstackClient(), pubs);
-      final read = SubstackReadStore(prefs);
-      final likes = SubstackLikesStore(prefs);
-      final saved = SubstackSavedStore(prefs);
+      final client = SubstackClient();
+      final feed = SubstackFeedStore(client, pubs);
+      final read = _IdleSubstackRead(prefs);
+      final likes = _IdleSubstackLikes(prefs);
+      final saved = _IdleSubstackSaved(prefs);
+      final notes = _IdleNotes(client, pubs);
       addTearDown(() {
         feed.destroy();
         pubs.destroy();
         read.destroy();
         likes.destroy();
         saved.destroy();
+        notes.destroy();
       });
 
       await tester.pumpWidget(
@@ -538,6 +589,7 @@ void main() {
               Provider<SubstackReadStore>.value(value: read),
               Provider<SubstackLikesStore>.value(value: likes),
               Provider<SubstackSavedStore>.value(value: saved),
+              Provider<SubstackNotesStore>.value(value: notes),
             ],
             child: _shell(
               outer: outer,
