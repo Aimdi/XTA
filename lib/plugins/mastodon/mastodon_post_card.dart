@@ -492,21 +492,9 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
     if (post.hasSpoiler && !_open) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 6),
-          Text(
-            post.spoilerText,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          TextButton(
-            onPressed: () => setState(() => _open = true),
-            child: Text(l10n.show),
-          ),
-        ],
+      return _MastodonContentWarning(
+        text: post.spoilerText,
+        onShow: () => setState(() => _open = true),
       );
     }
     return _visible(theme, l10n, blur: post.sensitive && !_open);
@@ -517,13 +505,14 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // The warning stays on screen once opened. Mastodon readers use it to
+        // decide whether to keep reading, and a post whose warning vanished on
+        // the first tap gave them nothing to close it again by.
         if (post.hasSpoiler)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              onPressed: () => setState(() => _open = false),
-              child: Text(l10n.hide),
-            ),
+          _MastodonContentWarning(
+            text: post.spoilerText,
+            open: true,
+            onHide: () => setState(() => _open = false),
           ),
         if (post.text.isNotEmpty) ...[
           const SizedBox(height: 6),
@@ -568,6 +557,82 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
           _MastodonLinkPreview(card: post.linkCard!),
         ],
       ],
+    );
+  }
+}
+
+/// A Mastodon content warning, which is a label and a decision, not a headline.
+///
+/// Mastodon shows the author's warning text under a "Content warning" heading
+/// so a reader can tell the warning apart from the post it is warning about.
+/// The card used to print the spoiler text in bold body type, which read as if
+/// the post itself simply started that way.
+class _MastodonContentWarning extends StatelessWidget {
+  final String text;
+  final bool open;
+  final VoidCallback? onShow;
+  final VoidCallback? onHide;
+
+  const _MastodonContentWarning({
+    required this.text,
+    this.open = false,
+    this.onShow,
+    this.onHide,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    final accent = theme.colorScheme.tertiary;
+    return Container(
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.fromLTRB(10, 8, 6, 4),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: accent.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: Icon(
+                  Icons.warning_amber_rounded,
+                  size: 16,
+                  color: accent,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.content_warning,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (text.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 2, right: 4),
+              child: Text(text, style: theme.textTheme.bodyMedium),
+            ),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton(
+              onPressed: open ? onHide : onShow,
+              child: Text(open ? l10n.hide : l10n.show),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "Kun SFW",
   "@content_filter_sfw": {},
+  "content_warning": "Innholdsadvarsel",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "Bidra",

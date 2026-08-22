@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "Толькі SFW",
   "@content_filter_sfw": {},
+  "content_warning": "Папярэджанне пра змест",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "Падтрымаць",

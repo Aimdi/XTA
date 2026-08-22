@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "केवल SFW",
   "@content_filter_sfw": {},
+  "content_warning": "सामग्री चेतावनी",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "योगदान दें",

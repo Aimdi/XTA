@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "SFW만",
   "@content_filter_sfw": {},
+  "content_warning": "열람 주의",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "기여하기",

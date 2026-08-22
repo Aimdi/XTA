@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "Tolki SFW",
   "@content_filter_sfw": {},
+  "content_warning": "Papiaredžannie pra zmiest",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "Uniesci ŭklad",

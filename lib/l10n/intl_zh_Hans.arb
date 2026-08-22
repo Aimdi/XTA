@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "仅SFW",
   "@content_filter_sfw": {},
+  "content_warning": "内容警告",
+  "@content_warning": {},
   "continue_thread": "继续帖子串",
   "@continue_thread": {},
   "contribute": "贡献 💖",

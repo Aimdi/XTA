@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "Chỉ SFW",
   "@content_filter_sfw": {},
+  "content_warning": "Cảnh báo nội dung",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "Người đóng góp",

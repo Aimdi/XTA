@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "SFW uniquement",
   "@content_filter_sfw": {},
+  "content_warning": "Avertissement de contenu",
+  "@content_warning": {},
   "continue_thread": "Continuer le fil",
   "@continue_thread": {},
   "contribute": "Contribuer",

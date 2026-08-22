@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "Yalnızca SFW",
   "@content_filter_sfw": {},
+  "content_warning": "İçerik uyarısı",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "Katkıda bulunun",
