@@ -401,7 +401,7 @@ bool _shouldGate(BuildContext context, RedditPost post) {
   if (post.spoiler) {
     return true;
   }
-  final prefs = PrefService.of(context);
+  final prefs = PrefService.of(context, listen: false);
   return post.over18 && storedRedditNsfwMode(prefs) != RedditNsfwMode.show;
 }
 

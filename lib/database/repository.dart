@@ -21,6 +21,7 @@ const String tableSavedTweetFolder = 'saved_tweet_folder';
 const String tableLikedTweet = 'liked_tweet';
 const String tableSearchSubscription = 'search_subscription';
 const String tableSubstackSubscription = 'substack_subscription';
+const String tableRssSubscription = 'rss_subscription';
 const String tableThreadsSubscription = 'threads_subscription';
 const String tableBlueskySubscription = 'bluesky_subscription';
 const String tableMastodonSubscription = 'mastodon_subscription';
@@ -49,7 +50,7 @@ const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 
-const int databaseVersion = 57;
+const int databaseVersion = 58;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -813,6 +814,17 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       reverseSql: 'DROP TABLE $tableInstagramSubscription',
     ),
   ],
+  58: [
+    // Followed RSS / Atom feeds, for the same reason publications got a table
+    // in 40: group membership joins profile ids against subscription tables.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableRssSubscription ('
+      'id VARCHAR PRIMARY KEY, feed_url VARCHAR NOT NULL, name VARCHAR NOT NULL, '
+      'site_url VARCHAR, icon_url VARCHAR, in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableRssSubscription',
+    ),
+  ],
 });
 
 /// Indexes added in migration 39, applied so that a failure cannot block the
@@ -910,6 +922,19 @@ Future<void> _dropGroupParentColumn(Database db) async {
     Repository.log.warning(
       'Could not drop parent_id from $tableSubscriptionGroup: $e',
     );
+  }
+}
+
+Future<void> _ensureRssSubscriptionTable(Database db) async {
+  try {
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS $tableRssSubscription ('
+      'id VARCHAR PRIMARY KEY, feed_url VARCHAR NOT NULL, name VARCHAR NOT NULL, '
+      'site_url VARCHAR, icon_url VARCHAR, in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not ensure $tableRssSubscription: $e');
   }
 }
 
@@ -1038,6 +1063,15 @@ class Repository {
       onCreate: myMigrationPlan.call,
       onDowngrade: myMigrationPlan.call,
     );
+
+    // 58 adds rss_subscription, and group/subscription reloads query every
+    // source table on launch. If the plan was skipped or only half-applied,
+    // create the table here rather than let those reads take the process down.
+    try {
+      await _ensureRssSubscriptionTable(await writable());
+    } catch (e) {
+      log.warning('Could not ensure $tableRssSubscription after migrate: $e');
+    }
 
     // The weekly cache cleanup walks the largest tables in the schema, and it
     // used to be awaited here — twice, since migrate() runs twice per launch —

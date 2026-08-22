@@ -31,10 +31,26 @@ void main() {
       expect(channel.title, 'Slow Boring');
       expect(channel.description, 'Pragmatic takes.');
       expect(channel.imageUrl, 'https://example.org/logo.png');
+      expect(channel.looksLikeSubstack, isFalse);
       expect(channel.posts, hasLength(1));
       expect(channel.posts.first.slug, 'hello-there');
       expect(channel.posts.first.isPodcast, isTrue);
       expect(channel.posts.first.publishedAt, isNotNull);
+    });
+
+    test('recognises Substack RSS and rejects Ghost', () {
+      expect(
+        rssLooksLikeSubstack(
+          '<rss><channel><generator>Substack</generator></channel></rss>',
+        ),
+        isTrue,
+      );
+      expect(
+        rssLooksLikeSubstack(
+          '<rss><channel><generator>Ghost 6.59</generator></channel></rss>',
+        ),
+        isFalse,
+      );
     });
   });
 
@@ -66,10 +82,22 @@ void main() {
     );
 
     test('unread / free / podcast', () {
-      expect(postMatchesSubstackFilter(free, SubstackFeedFilter.unread, {'1'}), isFalse);
-      expect(postMatchesSubstackFilter(free, SubstackFeedFilter.unread, const {}), isTrue);
-      expect(postMatchesSubstackFilter(paid, SubstackFeedFilter.free, const {}), isFalse);
-      expect(postMatchesSubstackFilter(pod, SubstackFeedFilter.podcast, const {}), isTrue);
+      expect(
+        postMatchesSubstackFilter(free, SubstackFeedFilter.unread, {'1'}),
+        isFalse,
+      );
+      expect(
+        postMatchesSubstackFilter(free, SubstackFeedFilter.unread, const {}),
+        isTrue,
+      );
+      expect(
+        postMatchesSubstackFilter(paid, SubstackFeedFilter.free, const {}),
+        isFalse,
+      );
+      expect(
+        postMatchesSubstackFilter(pod, SubstackFeedFilter.podcast, const {}),
+        isTrue,
+      );
     });
   });
 

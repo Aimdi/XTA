@@ -36,7 +36,14 @@ translated. This plugin talks to Bluesky's documented public AppView at
   **import list** from a public list URL / AT-URI (`getList`) — both write only
   to local `bluesky_subscription`, never to Bluesky.
 - Local likes library (device-only hearts; never written to Bluesky), with a
-  Liked tab next to Home — same pattern as Threads.
+  Liked tab next to Following — same pattern as Threads.
+- **Custom feeds (algos)** via `app.bsky.feed.getFeed`,
+  `getPopularFeedGenerators`, and `getActorFeeds`. Guest Discover is Bluesky's
+  public What's Hot generator. Local pins live in prefs; an optional handle
+  loads that account's created feeds.
+- **List feeds** via `app.bsky.feed.getListFeed` and `app.bsky.graph.getLists`.
+  Open a public list by URL / AT-URI, or look up lists on a handle. Pins stay
+  on the device. Import members is still a local-only copy.
 - Home tab when the plugin is enabled.
 - Local follows can join subscription groups; their posts interleave into the
   group feed beside X. Mixed-feed cards show the blue Bluesky butterfly (and a
@@ -48,7 +55,8 @@ translated. This plugin talks to Bluesky's documented public AppView at
 ## Not implemented
 
 - Compose, like-on-Bluesky, repost, follow-on-Bluesky, DMs, or any write to Bluesky.
-- Creating / editing lists on Bluesky, starter packs, notifications, or video
-  embeds beyond what a card can ignore safely.
+- Creating / editing lists on Bluesky, saving feeds *to* Bluesky (prefs are
+  local), starter packs, notifications, or video embeds beyond what a card can
+  ignore safely.
 - Interleaving Bluesky posts into the X home / Following feed is opt-in
   (`optionPluginBlueskyInHomeFeed`); groups always include Bluesky members.
