@@ -4,14 +4,27 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### Still crashing after aimdi105
+
+**Install this build, not aimdi105.** aimdi105 only fixed empty Reddit.
+Empty RSS, Substack, Threads, and Stocks homes — and one-item RSS / EH /
+Booru lists — still attached the home strip's outer scroll controller, which
+freezes then crashes. Add-account, RSS tag, and Reddit client-id dialogs
+could dispose the text field while the sheet was still closing. The EH
+page-jump dialog had the same dispose-while-closing bug. This build
+routes every plugin list through the inner NestedScrollView controller, owns
+those fields in a State, and does not spin empty RSS / Substack on a remount
+from Für dich.
+
+Existing databases keep working. No settings reset.
+
 ### Reddit home freeze
 
-**Install this build, not aimdi104.** Home → Start → Reddit with no followed
-communities showed the empty "Add a subreddit" pane, then froze and crashed.
-The empty list was attached to the home strip's outer scroll controller, and
-tapping Add disposed the text field while the sheet was still closing. This
-build keeps that pane on the inner scroller, owns the Add field in a State,
-and does not refetch on every swipe back from Für dich.
+aimdi105 stopped empty Reddit Following from freezing: the empty list was
+attached to the home strip's outer scroll controller, and tapping Add
+disposed the text field while the sheet was still closing. That pane stays
+on the inner scroller, the Add field is owned in a State, and a swipe back
+from Für dich does not refetch an empty following list.
 
 Existing databases keep working. No settings reset.
 

@@ -1,3 +1,12 @@
+## XTA aimdi106
+
+What's new in XTA aimdi106:
+  - Empty RSS, Substack, Threads, and Stocks homes no longer freeze or crash under the home strip
+  - One-item RSS / EH / Booru lists no longer attach the outer NestedScrollView controller
+  - Add-account, RSS tag, Reddit client-id, and EH page-jump fields dispose with the dialog, not while it closes
+  - Empty RSS / Substack remounts from Für dich do not enter a loading spinner
+  - Everything from aimdi105
+
 ## XTA aimdi105
 
 What's new in XTA aimdi105:
