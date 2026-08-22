@@ -1,3 +1,11 @@
+## XTA aimdi105
+
+What's new in XTA aimdi105:
+  - Home → Reddit with no followed communities no longer freezes or crashes on the empty pane
+  - The Add subreddit sheet can be cancelled without taking the process down
+  - Swiping Für dich → Reddit does not refetch an empty following list
+  - Everything from aimdi104
+
 ## XTA aimdi104
 
 What's new in XTA aimdi104:

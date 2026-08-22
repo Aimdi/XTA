@@ -4,17 +4,25 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
-### Crash on the first home frame
+### Reddit home freeze
 
-**Install this build, not aimdi103.** The first home frame after aimdi103
-could crash: a missing `rss_subscription` table after a swallowed migrate,
-empty or restored `home.pages`, and string-list prefs stored as JSON. This
-build creates the table if it is still missing, keeps the default Home /
-Subscriptions / Discover / Saved tabs when nothing usable is selected,
-reads those prefs without assuming the stored type, and hardens IconLabel,
-Networks → Add timeline, RSS enable, and the feed strip.
+**Install this build, not aimdi104.** Home → Start → Reddit with no followed
+communities showed the empty "Add a subreddit" pane, then froze and crashed.
+The empty list was attached to the home strip's outer scroll controller, and
+tapping Add disposed the text field while the sheet was still closing. This
+build keeps that pane on the inner scroller, owns the Add field in a State,
+and does not refetch on every swipe back from Für dich.
 
 Existing databases keep working. No settings reset.
+
+### Crash on the first home frame
+
+aimdi104 stopped the first home frame from crashing: a missing
+`rss_subscription` table after a swallowed migrate, empty or restored
+`home.pages`, and string-list prefs stored as JSON. The table is created if
+it is still missing. Default Home / Subscriptions / Discover / Saved tabs
+stay when nothing usable is selected. IconLabel, Networks → Add timeline,
+RSS enable, and the feed strip stay hardened.
 
 ### RSS, groups, and Substack leftovers
 
@@ -61,7 +69,7 @@ starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi103](https://github.com/Aimdi/XTA/releases/tag/aimdi103) is
+Everything from [aimdi104](https://github.com/Aimdi/XTA/releases/tag/aimdi104) is
 in here too.
 
 ---
