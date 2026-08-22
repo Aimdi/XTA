@@ -1,7 +1,6 @@
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -23,6 +22,7 @@ import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
@@ -34,8 +34,6 @@ Widget _threadsMediaImage(
 ) {
   return ThreadsNetworkImage(item.url, fit: fit);
 }
-
-final NumberFormat _threadsCountFormat = NumberFormat.compact(locale: 'en_US');
 
 /// A Threads post as a timeline card.
 ///
@@ -433,7 +431,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
       if (count == null || hideCounts) {
         return '';
       }
-      return _threadsCountFormat.format(count);
+      return compactCount(count);
     }
 
     return Padding(
@@ -468,7 +466,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
                   : post.likeCount! + (isLiked ? 1 : 0);
               final likeLabel = hideCounts || shown == null
                   ? ''
-                  : _threadsCountFormat.format(shown);
+                  : compactCount(shown);
               return LikeButton(
                 isLiked: isLiked,
                 label: likeLabel,

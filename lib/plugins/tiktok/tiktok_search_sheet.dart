@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
@@ -12,8 +11,7 @@ import 'package:xta/plugins/tiktok/tiktok_parse.dart';
 import 'package:xta/plugins/tiktok/tiktok_post_card.dart';
 import 'package:xta/plugins/tiktok/tiktok_profile_screen.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
-
-final NumberFormat _tiktokSearchCount = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_counts.dart';
 
 Future<void> showTikTokSearchSheet(
   BuildContext context, {
@@ -351,7 +349,7 @@ class _TikTokSearchSheetState extends State<_TikTokSearchSheet>
   Widget _userTile(TikTokSearchUser user) {
     final theme = Theme.of(context);
     final followers = user.followerCount > 0
-        ? _tiktokSearchCount.format(user.followerCount)
+        ? compactCount(user.followerCount)
         : null;
     return ListTile(
       leading: TikTokAvatar(

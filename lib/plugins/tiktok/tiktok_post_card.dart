@@ -1,7 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
@@ -16,8 +15,7 @@ import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
-
-final NumberFormat _tiktokCountFormat = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_counts.dart';
 
 const double kTikTokAvatarSize = 48;
 
@@ -116,7 +114,7 @@ class TikTokPostCard extends StatelessWidget {
                     Icon(Icons.play_arrow, size: 16, color: muted),
                     const SizedBox(width: 2),
                     Text(
-                      _tiktokCountFormat.format(post.playCount),
+                      compactCount(post.playCount),
                       style: theme.textTheme.bodySmall?.copyWith(color: muted),
                     ),
                   ],
@@ -130,7 +128,7 @@ class TikTokPostCard extends StatelessWidget {
                     store: context.read<TikTokLikesStore>(),
                     onState: (context, ids) => LikeButton(
                       isLiked: ids.contains(post.id),
-                      label: _tiktokCountFormat.format(post.diggCount),
+                      label: compactCount(post.diggCount),
                       color: ids.contains(post.id)
                           ? theme.colorScheme.primary
                           : muted,

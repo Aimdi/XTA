@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -12,6 +11,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// One Pixiv user's profile and works in a staggered grid.
 class PixivUserScreen extends StatefulWidget {
@@ -178,7 +178,6 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
     }
 
     final user = _user!;
-    final numbers = NumberFormat.compact();
     final theme = Theme.of(context);
     final avatar = user.avatarUrl;
 
@@ -260,7 +259,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                   ],
                   const SizedBox(height: 14),
                   Text(
-                    '${numbers.format(user.illustsCount)} ${l10n.tweets} · ${numbers.format(user.followersCount)} ${l10n.followers}',
+                    '${compactCount(user.illustsCount)} ${l10n.tweets} · ${compactCount(user.followersCount)} ${l10n.followers}',
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 12),

@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -18,14 +17,13 @@ import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// Avatar size matching X / Reddit cards so Fediverse posts don't look smaller.
 const double kMastodonAvatarSize = 48;
 
 /// Tallest a single attached image is allowed to paint relative to its width.
 const double kMastodonMediaMaxAspectRatio = 16 / 9;
-
-final NumberFormat _mastodonCountFormat = NumberFormat.compact(locale: 'en_US');
 
 /// A Mastodon status as a timeline card — tweet-sized layout, counts, link preview.
 class MastodonPostCard extends StatelessWidget {
@@ -427,8 +425,7 @@ class _MastodonEngagementRow extends StatelessWidget {
     final hideCounts =
         prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
-    String label(int count) =>
-        hideCounts ? '' : _mastodonCountFormat.format(count);
+    String label(int count) => hideCounts ? '' : compactCount(count);
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),

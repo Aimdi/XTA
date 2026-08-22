@@ -4,7 +4,6 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -24,8 +23,7 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
-
-final NumberFormat _pixivDetailCount = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// In-app illust viewer — pages, caption, tags, stats, related works (Pixez-like).
 class PixivIllustScreen extends StatefulWidget {
@@ -393,13 +391,13 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
                   final bookmarked = bookmarks.isBookmarked(_illust);
                   return _stat(
                     bookmarked ? Icons.favorite : Icons.favorite_border,
-                    _pixivDetailCount.format(bookmarks.bookmarkCount(_illust)),
+                    compactCount(bookmarks.bookmarkCount(_illust)),
                   );
                 },
               ),
               _stat(
                 Icons.visibility_outlined,
-                _pixivDetailCount.format(_illust.totalViews),
+                compactCount(_illust.totalViews),
               ),
               if (_illust.createdAt != null)
                 Text(
