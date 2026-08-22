@@ -4,6 +4,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
@@ -255,7 +256,7 @@ class _PostsPane extends StatelessWidget {
               prefix: L10n.of(context).plugin_substack_load_error,
               onRetry: pubs.load,
             ),
-            onLoading: (_) => const Center(child: CircularProgressIndicator()),
+            onLoading: (_) => const PluginFeedSkeleton(),
             onState: (context, publications) {
               if (publications.isEmpty) {
                 return ListView(
@@ -513,7 +514,7 @@ class _InboxPane extends StatelessWidget {
           prefix: l10n.plugin_substack_load_error,
           onRetry: feed.refresh,
         ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, _) {
           return ScopedBuilder<SubstackReadStore, Set<String>>(
             store: context.read<SubstackReadStore>(),
@@ -943,7 +944,7 @@ class _NotesPane extends StatelessWidget {
           prefix: l10n.plugin_substack_load_error,
           onRetry: notes.refresh,
         ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, page) {
           if (page.notes.isEmpty) {
             return ListView(

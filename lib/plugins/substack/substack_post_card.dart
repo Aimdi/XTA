@@ -7,6 +7,7 @@ import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_comments_screen.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_reader_screen.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -150,56 +151,58 @@ class SubstackPostCard extends StatelessWidget {
                 ),
               ),
             Expanded(
-              child: InkWell(
-                onTap: () => _openPublication(context),
-                child: Tooltip(
-                  message: L10n.of(context).plugin_substack_publication,
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: logo == null
-                            ? Container(
-                                width: kSubstackLogoSize,
-                                height: kSubstackLogoSize,
-                                color:
-                                    theme.colorScheme.surfaceContainerHighest,
-                                child: Icon(
-                                  Icons.article_outlined,
-                                  size: 20,
-                                  color: theme.colorScheme.onSurfaceVariant,
+              child: PluginNameMetaRow(
+                name: InkWell(
+                  onTap: () => _openPublication(context),
+                  child: Tooltip(
+                    message: L10n.of(context).plugin_substack_publication,
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: logo == null
+                              ? Container(
+                                  width: kSubstackLogoSize,
+                                  height: kSubstackLogoSize,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    Icons.article_outlined,
+                                    size: 20,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                )
+                              : ExtendedImage.network(
+                                  logo,
+                                  width: kSubstackLogoSize,
+                                  height: kSubstackLogoSize,
+                                  fit: BoxFit.cover,
+                                  cacheWidth:
+                                      (kSubstackLogoSize *
+                                              MediaQuery.devicePixelRatioOf(
+                                                context,
+                                              ))
+                                          .ceil(),
                                 ),
-                              )
-                            : ExtendedImage.network(
-                                logo,
-                                width: kSubstackLogoSize,
-                                height: kSubstackLogoSize,
-                                fit: BoxFit.cover,
-                                cacheWidth:
-                                    (kSubstackLogoSize *
-                                            MediaQuery.devicePixelRatioOf(
-                                              context,
-                                            ))
-                                        .ceil(),
-                              ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          post.publicationName,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleSmall!.copyWith(
-                            fontWeight: FontWeight.w800,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            post.publicationName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall!.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
+                meta: date == null ? const [] : [createRelativeDate(date)],
               ),
             ),
-            if (date != null)
-              Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
           ],
         ),
         if (hasBadges) ...[

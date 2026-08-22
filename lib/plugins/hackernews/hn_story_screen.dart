@@ -7,6 +7,7 @@ import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_plugin.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
@@ -56,7 +57,7 @@ class _HnStoryScreenState extends State<HnStoryScreen> {
       ),
       body: ScopedBuilder<_HnThreadStore, _HnThread>(
         store: _thread,
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) => const PluginFeedSkeleton(applyFeedInsets: false),
         onError: (_, error) => FullPageErrorWidget(
           error: error,
           stackTrace: null,

@@ -136,12 +136,15 @@ class _MastodonScreenState extends State<MastodonScreen> {
                   (_) => _PublicPane(
                     store: context.read<MastodonLocalStore>(),
                     emptyIcon: Icons.home_outlined,
+                    scrollController: widget.scrollController,
                   ),
                   (_) => _PublicPane(
                     store: context.read<MastodonFederatedStore>(),
                     emptyIcon: Icons.public,
+                    scrollController: widget.scrollController,
                   ),
-                  (_) => _FollowingPane(),
+                  (_) =>
+                      _FollowingPane(scrollController: widget.scrollController),
                 ],
               ),
             ),
@@ -368,8 +371,13 @@ class _TrendingTags extends StatelessWidget {
 class _PublicPane extends StatelessWidget {
   final MastodonPublicFeedStore store;
   final IconData emptyIcon;
+  final ScrollController scrollController;
 
-  const _PublicPane({required this.store, required this.emptyIcon});
+  const _PublicPane({
+    required this.store,
+    required this.emptyIcon,
+    required this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -395,6 +403,7 @@ class _PublicPane extends StatelessWidget {
           return EmptyPane(
             icon: emptyIcon,
             message: l10n.plugin_mastodon_empty_public,
+            scrollController: scrollController,
             onRefresh: store.refresh,
           );
         }
@@ -419,6 +428,7 @@ class _PublicPane extends StatelessWidget {
       child: RefreshIndicator(
         onRefresh: store.refresh,
         child: FeedListView(
+          controller: pluginInnerScrollController(context, scrollController),
           padding: pluginFeedPadding(context),
           itemCount: posts.length + (store.loadingMore ? 1 : 0),
           itemBuilder: (context, index) {
@@ -441,6 +451,10 @@ class _PublicPane extends StatelessWidget {
 }
 
 class _FollowingPane extends StatelessWidget {
+  final ScrollController scrollController;
+
+  const _FollowingPane({required this.scrollController});
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -478,6 +492,7 @@ class _FollowingPane extends StatelessWidget {
           message: accounts.isEmpty
               ? l10n.plugin_mastodon_empty
               : l10n.plugin_mastodon_no_posts,
+          scrollController: scrollController,
           onRefresh: () =>
               context.read<MastodonFeedStore>().refresh(force: true),
           action: accounts.isEmpty
@@ -498,6 +513,7 @@ class _FollowingPane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
       child: FeedListView(
+        controller: scrollController,
         padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
