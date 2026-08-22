@@ -541,31 +541,58 @@ Future<String?> _prompt(
   required String title,
   required String hint,
 }) {
-  final controller = TextEditingController();
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      return AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(hintText: hint),
-          onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(dialogContext, controller.text.trim()),
-            child: Text(l10n.ok),
-          ),
-        ],
-      );
-    },
+    builder: (_) => _BlueskyPromptDialog(title: title, hint: hint),
   );
+}
+
+class _BlueskyPromptDialog extends StatefulWidget {
+  final String title;
+  final String hint;
+
+  const _BlueskyPromptDialog({required this.title, required this.hint});
+
+  @override
+  State<_BlueskyPromptDialog> createState() => _BlueskyPromptDialogState();
+}
+
+class _BlueskyPromptDialogState extends State<_BlueskyPromptDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(hintText: widget.hint),
+        onSubmitted: (value) => Navigator.pop(context, value.trim()),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          child: Text(l10n.ok),
+        ),
+      ],
+    );
+  }
 }

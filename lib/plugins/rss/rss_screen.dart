@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/rss/rss_add_screen.dart';
@@ -33,13 +34,17 @@ class _RssScreenState extends State<RssScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       final feeds = context.read<RssFeedsStore>();
       final read = context.read<RssReadStore>();
       final tags = context.read<RssTagsStore>();
       final timeline = context.read<RssTimelineStore>();
       if (feeds.state.isEmpty) await feeds.load();
+      if (!mounted) return;
       if (read.state.isEmpty) await read.load();
+      if (!mounted) return;
       if (tags.state.isEmpty) await tags.load();
+      if (!mounted) return;
       timeline.syncReadIds(read.state);
       timeline.syncTags(tags.state);
       await timeline.refresh();
@@ -216,7 +221,10 @@ class _HomePane extends StatelessWidget {
                 store: context.read<RssTagsStore>(),
                 onState: (context, tags) {
                   return FeedListView(
-                    controller: scrollController,
+                    controller: pluginInnerScrollController(
+                      context,
+                      scrollController,
+                    ),
                     itemCount: snapshot.items.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
@@ -347,7 +355,7 @@ class _FeedsPane extends StatelessWidget {
           );
         }
         return ListView.builder(
-          controller: scrollController,
+          controller: pluginInnerScrollController(context, scrollController),
           itemCount: followed.length,
           itemBuilder: (context, index) {
             final feed = followed[index];
@@ -395,32 +403,12 @@ class _FeedsPane extends StatelessWidget {
   }
 
   Future<void> _editTag(BuildContext context, RssFeed feed) async {
-    final l10n = L10n.of(context);
     final tags = context.read<RssTagsStore>();
     final current = tags.tagsFor(feed.id).join(', ');
-    final controller = TextEditingController(text: current);
     final next = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.plugin_rss_set_tag),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(hintText: l10n.plugin_rss_tag_hint),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: Text(l10n.plugin_rss_tag),
-          ),
-        ],
-      ),
+      builder: (_) => _RssTagDialog(initial: current),
     );
-    controller.dispose();
     if (next == null || !context.mounted) return;
     final parts = [
       for (final part in next.split(RegExp(r'[,/]')))
@@ -430,5 +418,54 @@ class _FeedsPane extends StatelessWidget {
     if (context.mounted) {
       context.read<RssTimelineStore>().syncTags(tags.state);
     }
+  }
+}
+
+/// Owns the field so cancel does not dispose it while the route is animating.
+class _RssTagDialog extends StatefulWidget {
+  final String initial;
+
+  const _RssTagDialog({required this.initial});
+
+  @override
+  State<_RssTagDialog> createState() => _RssTagDialogState();
+}
+
+class _RssTagDialogState extends State<_RssTagDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initial);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(l10n.plugin_rss_set_tag),
+      content: TextField(
+        controller: _controller,
+        decoration: InputDecoration(hintText: l10n.plugin_rss_tag_hint),
+        autofocus: true,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _controller.text),
+          child: Text(l10n.plugin_rss_tag),
+        ),
+      ],
+    );
   }
 }

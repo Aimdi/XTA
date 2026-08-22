@@ -513,54 +513,71 @@ Future<String?> showMastodonAddAccountDialog(
   BuildContext context, {
   bool lookup = false,
 }) {
-  final controller = TextEditingController();
-
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      String? error;
-
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(
-            lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: l10n.plugin_mastodon_handle_hint,
-              errorText: error,
-            ),
-            onSubmitted: (_) {
-              final acct = normaliseMastodonAcct(controller.text);
-              if (acct == null) {
-                setState(() => error = l10n.plugin_mastodon_invalid_handle);
-              } else {
-                Navigator.pop(context, acct);
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                final acct = normaliseMastodonAcct(controller.text);
-                if (acct == null) {
-                  setState(() => error = l10n.plugin_mastodon_invalid_handle);
-                } else {
-                  Navigator.pop(context, acct);
-                }
-              },
-              child: Text(l10n.ok),
-            ),
-          ],
-        ),
-      );
-    },
+    builder: (_) => _MastodonAddAccountDialog(lookup: lookup),
   );
+}
+
+class _MastodonAddAccountDialog extends StatefulWidget {
+  final bool lookup;
+
+  const _MastodonAddAccountDialog({required this.lookup});
+
+  @override
+  State<_MastodonAddAccountDialog> createState() =>
+      _MastodonAddAccountDialogState();
+}
+
+class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = L10n.of(context);
+    final acct = normaliseMastodonAcct(_controller.text);
+    if (acct == null) {
+      setState(() => _error = l10n.plugin_mastodon_invalid_handle);
+    } else {
+      Navigator.pop(context, acct);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(
+        widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: l10n.plugin_mastodon_handle_hint,
+          errorText: _error,
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _submit, child: Text(l10n.ok)),
+      ],
+    );
+  }
 }

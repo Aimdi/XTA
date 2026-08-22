@@ -280,10 +280,20 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   /// Unfiltered merged posts (Home chips / Inbox read from this).
   List<SubstackPost> get allPosts => _allPosts;
 
+  DateTime? get fetchedAt => _fetchedAt;
+
   /// When the home strip remounts this tab, skip a full refetch if the last
   /// one is still inside [kAccountPostsCacheTtl]. Pull-to-refresh passes
   /// [force].
   Future<void> refresh({bool force = false}) async {
+    if (publications.state.isEmpty) {
+      if (_allPosts.isNotEmpty) {
+        _allPosts = const [];
+        update(const SubstackFeedSnapshot());
+      }
+      _fetchedAt ??= DateTime.now();
+      return;
+    }
     if (!force &&
         _allPosts.isNotEmpty &&
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {

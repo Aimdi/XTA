@@ -482,7 +482,10 @@ class _LikedPane extends StatelessWidget {
         onState: (context, posts) {
           if (posts.isEmpty) {
             return ListView(
-              controller: scrollController,
+              controller: pluginInnerScrollController(
+                context,
+                scrollController,
+              ),
               padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
               children: [
                 Icon(
@@ -521,54 +524,71 @@ Future<String?> showBlueskyAddAccountDialog(
   BuildContext context, {
   bool lookup = false,
 }) {
-  final controller = TextEditingController();
-
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      String? error;
-
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(
-            lookup ? l10n.plugin_bluesky_lookup : l10n.plugin_bluesky_add,
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: l10n.plugin_bluesky_handle_hint,
-              errorText: error,
-            ),
-            onSubmitted: (_) {
-              final handle = normaliseBlueskyHandle(controller.text);
-              if (handle == null) {
-                setState(() => error = l10n.plugin_bluesky_invalid_handle);
-              } else {
-                Navigator.pop(context, handle);
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                final handle = normaliseBlueskyHandle(controller.text);
-                if (handle == null) {
-                  setState(() => error = l10n.plugin_bluesky_invalid_handle);
-                } else {
-                  Navigator.pop(context, handle);
-                }
-              },
-              child: Text(l10n.ok),
-            ),
-          ],
-        ),
-      );
-    },
+    builder: (_) => _BlueskyAddAccountDialog(lookup: lookup),
   );
+}
+
+class _BlueskyAddAccountDialog extends StatefulWidget {
+  final bool lookup;
+
+  const _BlueskyAddAccountDialog({required this.lookup});
+
+  @override
+  State<_BlueskyAddAccountDialog> createState() =>
+      _BlueskyAddAccountDialogState();
+}
+
+class _BlueskyAddAccountDialogState extends State<_BlueskyAddAccountDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = L10n.of(context);
+    final handle = normaliseBlueskyHandle(_controller.text);
+    if (handle == null) {
+      setState(() => _error = l10n.plugin_bluesky_invalid_handle);
+    } else {
+      Navigator.pop(context, handle);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(
+        widget.lookup ? l10n.plugin_bluesky_lookup : l10n.plugin_bluesky_add,
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: l10n.plugin_bluesky_handle_hint,
+          errorText: _error,
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _submit, child: Text(l10n.ok)),
+      ],
+    );
+  }
 }

@@ -6,6 +6,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 
 String booruPostHeroTag(BooruPost post) => 'booru-${post.host}-${post.id}';
 
@@ -39,7 +40,7 @@ class BooruPostGrid extends StatelessWidget {
         return false;
       },
       child: CustomScrollView(
-        controller: scrollController,
+        controller: pluginInnerScrollController(context, scrollController),
         scrollCacheExtent: const ScrollCacheExtent.pixels(1200),
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [

@@ -227,8 +227,17 @@ class RssTimelineStore extends Store<RssFeedSnapshot> {
   RssFeedFilter get filter => _filter;
   String? get tag => _tag;
   List<RssItem> get allItems => _allItems;
+  DateTime? get fetchedAt => _fetchedAt;
 
   Future<void> refresh({bool force = false}) async {
+    if (feeds.state.isEmpty) {
+      if (_allItems.isNotEmpty || state.items.isNotEmpty) {
+        _allItems = const [];
+        update(const RssFeedSnapshot());
+      }
+      _fetchedAt ??= DateTime.now();
+      return;
+    }
     if (!force &&
         _allItems.isNotEmpty &&
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {

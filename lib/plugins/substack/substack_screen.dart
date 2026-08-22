@@ -39,15 +39,20 @@ class _SubstackScreenState extends State<SubstackScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
       final pubs = context.read<SubstackPublicationsStore>();
       final feed = context.read<SubstackFeedStore>();
       final read = context.read<SubstackReadStore>();
       final likes = context.read<SubstackLikesStore>();
       final saved = context.read<SubstackSavedStore>();
       if (pubs.state.isEmpty) await pubs.load();
+      if (!mounted) return;
       if (read.state.isEmpty) await read.load();
+      if (!mounted) return;
       if (likes.state.isEmpty) await likes.load();
+      if (!mounted) return;
       if (saved.state.isEmpty) await saved.load();
+      if (!mounted) return;
       feed.syncReadIds(read.state);
       await feed.refresh();
     });
@@ -254,7 +259,10 @@ class _PostsPane extends StatelessWidget {
             onState: (context, publications) {
               if (publications.isEmpty) {
                 return ListView(
-                  controller: scrollController,
+                  controller: pluginInnerScrollController(
+                    context,
+                    scrollController,
+                  ),
                   children: [
                     const SizedBox(height: 80),
                     Icon(
@@ -384,7 +392,10 @@ class _PostsPane extends StatelessWidget {
                           ),
                         ]);
                         return ListView(
-                          controller: scrollController,
+                          controller: pluginInnerScrollController(
+                            context,
+                            scrollController,
+                          ),
                           children: children,
                         );
                       }
@@ -515,7 +526,10 @@ class _InboxPane extends StatelessWidget {
                 onState: (context, publications) {
                   if (publications.isEmpty) {
                     return ListView(
-                      controller: scrollController,
+                      controller: pluginInnerScrollController(
+                        context,
+                        scrollController,
+                      ),
                       children: [
                         const SizedBox(height: 80),
                         Padding(
@@ -542,7 +556,10 @@ class _InboxPane extends StatelessWidget {
                       .toList();
                   if (unread.isEmpty) {
                     return ListView(
-                      controller: scrollController,
+                      controller: pluginInnerScrollController(
+                        context,
+                        scrollController,
+                      ),
                       children: [
                         const SizedBox(height: 48),
                         Padding(
@@ -565,7 +582,10 @@ class _InboxPane extends StatelessWidget {
                   }
 
                   return FeedListView(
-                    controller: scrollController,
+                    controller: pluginInnerScrollController(
+                      context,
+                      scrollController,
+                    ),
                     padding: const EdgeInsets.only(bottom: 24, top: 8),
                     itemCount: unread.length + 1,
                     itemBuilder: (context, index) {
@@ -703,7 +723,10 @@ class _LibraryPaneState extends State<_LibraryPane> {
                         .toList();
                     if (visible.isEmpty) {
                       return ListView(
-                        controller: widget.scrollController,
+                        controller: pluginInnerScrollController(
+                          context,
+                          widget.scrollController,
+                        ),
                         children: [
                           const SizedBox(height: 48),
                           Padding(
@@ -729,7 +752,10 @@ class _LibraryPaneState extends State<_LibraryPane> {
                       );
                     }
                     return ListView.separated(
-                      controller: widget.scrollController,
+                      controller: pluginInnerScrollController(
+                        context,
+                        widget.scrollController,
+                      ),
                       padding: const EdgeInsets.only(bottom: 24),
                       itemCount: visible.length,
                       separatorBuilder: (_, _) => const Divider(height: 1),
@@ -854,7 +880,10 @@ class _LibraryPaneState extends State<_LibraryPane> {
                             .toList();
                         if (visible.isEmpty) {
                           return ListView(
-                            controller: widget.scrollController,
+                            controller: pluginInnerScrollController(
+                              context,
+                              widget.scrollController,
+                            ),
                             children: [
                               const SizedBox(height: 48),
                               Padding(
@@ -874,7 +903,10 @@ class _LibraryPaneState extends State<_LibraryPane> {
                           );
                         }
                         return ListView.builder(
-                          controller: widget.scrollController,
+                          controller: pluginInnerScrollController(
+                            context,
+                            widget.scrollController,
+                          ),
                           padding: const EdgeInsets.only(bottom: 24),
                           itemCount: visible.length,
                           itemBuilder: (context, index) => SubstackPostCard(
@@ -915,7 +947,10 @@ class _NotesPane extends StatelessWidget {
         onState: (context, page) {
           if (page.notes.isEmpty) {
             return ListView(
-              controller: scrollController,
+              controller: pluginInnerScrollController(
+                context,
+                scrollController,
+              ),
               children: [
                 const SizedBox(height: 48),
                 Padding(
@@ -938,7 +973,7 @@ class _NotesPane extends StatelessWidget {
           }
 
           return ListView.builder(
-            controller: scrollController,
+            controller: pluginInnerScrollController(context, scrollController),
             padding: const EdgeInsets.only(bottom: 24, top: 8),
             itemCount: page.notes.length + 2,
             itemBuilder: (context, index) {

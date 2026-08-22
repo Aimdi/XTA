@@ -96,7 +96,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     final accounts = context.read<ThreadsAccountsStore>();
     final feed = context.read<ThreadsFeedStore>();
     final handle = await showThreadsAddAccountDialog(context);
-    if (handle == null) {
+    if (handle == null || !mounted) {
       return;
     }
 
@@ -362,7 +362,7 @@ class _HomePane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
-        controller: scrollController,
+        controller: pluginInnerScrollController(context, scrollController),
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
         children: [
@@ -427,7 +427,10 @@ class _LikedPane extends StatelessWidget {
         onState: (context, posts) {
           if (posts.isEmpty) {
             return ListView(
-              controller: scrollController,
+              controller: pluginInnerScrollController(
+                context,
+                scrollController,
+              ),
               padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
               children: [
                 Icon(
@@ -633,59 +636,76 @@ Future<String?> showThreadsAddAccountDialog(
   BuildContext context, {
   bool lookup = false,
 }) {
-  final controller = TextEditingController();
-
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      String? error;
-
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(
-            lookup
-                ? l10n.plugin_threads_lookup
-                : l10n.plugin_threads_add_account,
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: l10n.plugin_threads_account_hint,
-              errorText: error,
-              prefixText: '@',
-            ),
-            onSubmitted: (_) {
-              final handle = normaliseThreadsHandle(controller.text);
-              if (handle == null) {
-                setState(() => error = l10n.plugin_threads_invalid_handle);
-              } else {
-                Navigator.pop(context, handle);
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                final handle = normaliseThreadsHandle(controller.text);
-                if (handle == null) {
-                  setState(() => error = l10n.plugin_threads_invalid_handle);
-                } else {
-                  Navigator.pop(context, handle);
-                }
-              },
-              child: Text(l10n.ok),
-            ),
-          ],
-        ),
-      );
-    },
+    builder: (_) => _ThreadsAddAccountDialog(lookup: lookup),
   );
+}
+
+class _ThreadsAddAccountDialog extends StatefulWidget {
+  final bool lookup;
+
+  const _ThreadsAddAccountDialog({required this.lookup});
+
+  @override
+  State<_ThreadsAddAccountDialog> createState() =>
+      _ThreadsAddAccountDialogState();
+}
+
+class _ThreadsAddAccountDialogState extends State<_ThreadsAddAccountDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = L10n.of(context);
+    final handle = normaliseThreadsHandle(_controller.text);
+    if (handle == null) {
+      setState(() => _error = l10n.plugin_threads_invalid_handle);
+    } else {
+      Navigator.pop(context, handle);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(
+        widget.lookup
+            ? l10n.plugin_threads_lookup
+            : l10n.plugin_threads_add_account,
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: l10n.plugin_threads_account_hint,
+          errorText: _error,
+          prefixText: '@',
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _submit, child: Text(l10n.ok)),
+      ],
+    );
+  }
 }
 
 class _PendingAccountsNote extends StatelessWidget {
