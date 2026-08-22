@@ -286,21 +286,25 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   }
 
   Future<void> _loadPreview() async {
-    var repository = await Repository.readOnly();
-    var stored = await readCachedChainsForHashes(
-      repository,
-      widget.chunks.map((e) => e.hash),
-    );
-    var cached = filterHiddenRetweets(
-      stored.chains,
-      await hiddenRetweetScreenNames(),
-    );
-    cached = filterHiddenReplies(cached, await hiddenReplyScreenNames());
-    if (!mounted) return;
-    setState(() {
-      _cachedPreview = cached;
-      _cachedPreviewAt = stored.cachedAt;
-    });
+    try {
+      var repository = await Repository.readOnly();
+      var stored = await readCachedChainsForHashes(
+        repository,
+        widget.chunks.map((e) => e.hash),
+      );
+      var cached = filterHiddenRetweets(
+        stored.chains,
+        await hiddenRetweetScreenNames(),
+      );
+      cached = filterHiddenReplies(cached, await hiddenReplyScreenNames());
+      if (!mounted) return;
+      setState(() {
+        _cachedPreview = cached;
+        _cachedPreviewAt = stored.cachedAt;
+      });
+    } catch (_) {
+      // Corrupt or isolate-failed cache must not abort the first feed frame.
+    }
   }
 
   @override

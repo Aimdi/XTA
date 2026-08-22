@@ -23,6 +23,21 @@ void main() {
     expect(await chainsFromStoredChunksAsync(const []), isEmpty);
   });
 
+  test('a corrupt or null chunk is skipped instead of aborting', () async {
+    final rows = [
+      {'response': '{not-json'},
+      {'response': null},
+      {
+        'response': jsonEncode([
+          {'id': 'ok', 'isPinned': false, 'tweets': <Map<String, dynamic>>[]},
+        ]),
+      },
+    ];
+
+    final decoded = await chainsFromStoredChunksAsync(rows);
+    expect(decoded.map((c) => c.id), ['ok']);
+  });
+
   test('chunk encode matches the former UI-isolate jsonEncode', () async {
     final chains = [
       {'id': 'c1', 'isPinned': false, 'tweets': <Map<String, dynamic>>[]},

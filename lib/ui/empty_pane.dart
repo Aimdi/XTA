@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 
 /// Icon, sentence, optional way out — the empty shape plugin feeds share.
 class EmptyPane extends StatelessWidget {
@@ -27,6 +28,7 @@ class EmptyPane extends StatelessWidget {
     // the *outer* one; attaching it here freezes, then crashes.
     final list = ListView(
       controller: pluginInnerScrollController(context, scrollController),
+      primary: PluginEmbedded.maybeOf(context) ? false : null,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: pluginFeedPadding(
         context,

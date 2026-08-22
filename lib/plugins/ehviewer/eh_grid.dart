@@ -7,6 +7,7 @@ import 'package:xta/plugins/ehviewer/eh_gallery_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 
 const ehImageTimeLimit = Duration(seconds: 20);
 
@@ -115,6 +116,7 @@ class EhGalleryGrid extends StatelessWidget {
       },
       child: CustomScrollView(
         controller: pluginInnerScrollController(context, scrollController),
+        primary: PluginEmbedded.maybeOf(context) ? false : null,
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(

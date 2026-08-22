@@ -133,10 +133,14 @@ class _SubscriptionGroupScreenContentState
   }
 
   Future<void> _loadPreview() async {
-    var repository = await Repository.readOnly();
-    var cached = await readAllCachedChains(repository);
-    if (!mounted) return;
-    setState(() => _preview = cached);
+    try {
+      var repository = await Repository.readOnly();
+      var cached = await readAllCachedChains(repository);
+      if (!mounted) return;
+      setState(() => _preview = cached);
+    } catch (_) {
+      // A bad cached chunk must not take the first Following frame down.
+    }
   }
 
   Widget _loadingView() {

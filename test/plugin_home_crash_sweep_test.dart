@@ -15,6 +15,10 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_reader_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_grid.dart';
+import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
@@ -231,6 +235,93 @@ void main() {
       expect(find.text('one'), findsOneWidget);
     });
 
+    testWidgets('FeedListView with a filled page does not attach the outer', (
+      tester,
+    ) async {
+      final outer = ScrollController();
+      addTearDown(outer.dispose);
+
+      await tester.pumpWidget(
+        _shell(
+          outer: outer,
+          body: FeedListView(
+            controller: outer,
+            itemCount: 24,
+            itemBuilder: (_, i) => ListTile(title: Text('row $i')),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(outer.positions.length, 1);
+      expect(find.text('row 0'), findsOneWidget);
+
+      await tester.drag(find.byType(ListView), const Offset(0, -400));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(outer.positions.length, 1);
+    });
+
+    testWidgets(
+      'PluginLazyTabs keeps one filled list on the inner controller',
+      (tester) async {
+        final outer = ScrollController();
+        addTearDown(outer.dispose);
+
+        await tester.pumpWidget(
+          _shell(
+            outer: outer,
+            body: PluginLazyTabs(
+              index: 0,
+              children: [
+                (_) => FeedListView(
+                  controller: outer,
+                  itemCount: 16,
+                  itemBuilder: (_, i) => ListTile(title: Text('home $i')),
+                ),
+                (_) => FeedListView(
+                  controller: outer,
+                  itemCount: 16,
+                  itemBuilder: (_, i) => ListTile(title: Text('liked $i')),
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(find.text('home 0'), findsOneWidget);
+        expect(find.text('liked 0'), findsNothing);
+        expect(outer.positions.length, 1);
+        expect(tester.takeException(), isNull);
+
+        await tester.pumpWidget(
+          _shell(
+            outer: outer,
+            body: PluginLazyTabs(
+              index: 1,
+              children: [
+                (_) => FeedListView(
+                  controller: outer,
+                  itemCount: 16,
+                  itemBuilder: (_, i) => ListTile(title: Text('home $i')),
+                ),
+                (_) => FeedListView(
+                  controller: outer,
+                  itemCount: 16,
+                  itemBuilder: (_, i) => ListTile(title: Text('liked $i')),
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(find.text('liked 0'), findsOneWidget);
+        expect(find.text('home 0'), findsNothing);
+        expect(outer.positions.length, 1);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets('EmptyPane keeps the outer on NestedScrollView only', (
       tester,
     ) async {
@@ -357,6 +448,102 @@ void main() {
           ),
         ),
       );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(outer.positions.length, 1);
+    });
+
+    testWidgets('BooruPostGrid filled page stays off the outer', (
+      tester,
+    ) async {
+      final outer = ScrollController();
+      addTearDown(outer.dispose);
+      final posts = [
+        for (var i = 0; i < 8; i++)
+          BooruPost(
+            id: '$i',
+            host: 'danbooru.donmai.us',
+            engine: 'danbooru',
+            tags: const ['safe'],
+            rating: BooruRating.general,
+            score: i,
+            width: 100,
+            height: 120,
+            previewUrl: '',
+            sampleUrl: '',
+            fileUrl: '',
+            fileExt: 'jpg',
+            source: null,
+            createdAt: null,
+          ),
+      ];
+
+      await tester.pumpWidget(
+        _shell(
+          outer: outer,
+          body: BooruPostGrid(posts: posts, scrollController: outer),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(outer.positions.length, 1);
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(outer.positions.length, 1);
+    });
+
+    testWidgets('PixivIllustGrid filled page stays off the outer', (
+      tester,
+    ) async {
+      final outer = ScrollController();
+      addTearDown(outer.dispose);
+      final prefs = PrefServiceCache();
+      final mute = PixivMuteStore(prefs);
+      final bookmarks = PixivBookmarkStore();
+      addTearDown(() {
+        mute.destroy();
+        bookmarks.destroy();
+      });
+      final illusts = [
+        for (var i = 0; i < 8; i++)
+          PixivIllust(
+            id: i,
+            title: 'illust $i',
+            caption: '',
+            type: 'illust',
+            thumbnailUrl: 'https://example.test/$i.jpg',
+            pageCount: 1,
+            userId: 1,
+            userName: 'artist',
+            userAccount: 'artist',
+            width: 200,
+            height: 240,
+          ),
+      ];
+
+      await tester.pumpWidget(
+        PrefService(
+          service: prefs,
+          child: MultiProvider(
+            providers: [
+              Provider<PixivMuteStore>.value(value: mute),
+              Provider<PixivBookmarkStore>.value(value: bookmarks),
+            ],
+            child: _shell(
+              outer: outer,
+              body: PixivIllustGrid(illusts: illusts, scrollController: outer),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(outer.positions.length, 1);
+      expect(find.text('illust 0'), findsOneWidget);
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
       await tester.pump();
       expect(tester.takeException(), isNull);
       expect(outer.positions.length, 1);

@@ -8,6 +8,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
@@ -262,27 +263,24 @@ class _PixivScreenState extends State<PixivScreen>
             : const SizedBox.shrink(),
         actions: actions,
       ),
+      // TabBarView kept every board mounted. Each masonry attached the home
+      // NestedScrollView's *inner* controller, then NestedScrollView.position
+      // threw `Too many elements` on the first filled frame.
       body: !hasToken
           ? _signInBody(l10n)
-          : TabBarView(
-              controller: _tabs,
+          : PluginLazyTabs(
+              index: _tabs.index,
               children: [
-                _KeepAlive(
-                  keep: _tabs.index == 0,
-                  child: _feedTab(
-                    store: context.read<PixivFeedStore>(),
-                    empty: l10n.plugin_pixiv_empty,
-                  ),
+                (_) => _feedTab(
+                  store: context.read<PixivFeedStore>(),
+                  empty: l10n.plugin_pixiv_empty,
                 ),
-                _KeepAlive(
-                  keep: _tabs.index == 1,
-                  child: _feedTab(
-                    store: _recommended,
-                    empty: l10n.plugin_pixiv_recommended_empty,
-                  ),
+                (_) => _feedTab(
+                  store: _recommended,
+                  empty: l10n.plugin_pixiv_recommended_empty,
                 ),
-                _KeepAlive(keep: _tabs.index == 2, child: _rankingTab(l10n)),
-                _KeepAlive(keep: _tabs.index == 3, child: _bookmarksTab(l10n)),
+                (_) => _rankingTab(l10n),
+                (_) => _bookmarksTab(l10n),
               ],
             ),
     );
@@ -531,37 +529,4 @@ class _ThumbPrefetchState extends State<_ThumbPrefetch> {
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-/// Keeps the visible Pixiv tab's scroll offset and decoded thumbs warm.
-/// Off-screen masonry grids drop their keep-alive so four boards do not
-/// stay decoded at once.
-class _KeepAlive extends StatefulWidget {
-  final Widget child;
-  final bool keep;
-
-  const _KeepAlive({required this.child, required this.keep});
-
-  @override
-  State<_KeepAlive> createState() => _KeepAliveState();
-}
-
-class _KeepAliveState extends State<_KeepAlive>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => widget.keep;
-
-  @override
-  void didUpdateWidget(_KeepAlive oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.keep != widget.keep) {
-      updateKeepAlive();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return widget.child;
-  }
 }

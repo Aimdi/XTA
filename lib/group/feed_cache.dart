@@ -29,18 +29,48 @@ Future<List<TweetChain>> chainsFromStoredChunksAsync(
   if (storedChunks.isEmpty) {
     return const [];
   }
-  final blobs = [for (final row in storedChunks) row['response'] as String];
-  final decoded = await compute(_decodeChunkBlobs, blobs);
+  final blobs = [
+    for (final row in storedChunks)
+      if (row['response'] is String) row['response'] as String,
+  ];
+  if (blobs.isEmpty) {
+    return const [];
+  }
+  List<dynamic> decoded;
+  try {
+    decoded = await compute(_decodeChunkBlobs, blobs);
+  } catch (_) {
+    try {
+      decoded = _decodeChunkBlobs(blobs);
+    } catch (_) {
+      return const [];
+    }
+  }
   return [
     for (final chain in decoded)
-      TweetChain.fromJson(Map<String, dynamic>.from(chain as Map)),
+      if (chain is Map) ..._tryTweetChain(Map<String, dynamic>.from(chain)),
   ];
 }
 
+List<TweetChain> _tryTweetChain(Map<String, dynamic> json) {
+  try {
+    return [TweetChain.fromJson(json)];
+  } catch (_) {
+    return const [];
+  }
+}
+
 List<dynamic> _decodeChunkBlobs(List<String> blobs) {
-  return [
-    for (final blob in blobs) ...List<dynamic>.from(jsonDecode(blob) as List),
-  ];
+  final out = <dynamic>[];
+  for (final blob in blobs) {
+    try {
+      final decoded = jsonDecode(blob);
+      if (decoded is List) {
+        out.addAll(decoded);
+      }
+    } catch (_) {}
+  }
+  return out;
 }
 
 /// [TweetChain.toJson] stays on the UI isolate (same reason as decode);
@@ -49,7 +79,10 @@ Future<String> encodeChunkBlob(List<Map<String, dynamic>> chains) {
   if (chains.isEmpty) {
     return Future.value('[]');
   }
-  return compute(_encodeChunkBlob, chains);
+  return compute(
+    _encodeChunkBlob,
+    chains,
+  ).catchError((_) => jsonEncode(chains));
 }
 
 String _encodeChunkBlob(List<Map<String, dynamic>> chains) =>
