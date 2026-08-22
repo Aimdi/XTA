@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Krasjlogg",
+  "crash_log_settings_description": "Hva som gikk galt på denne enheten, klart til å kopieres eller deles",
+  "crash_log_description": "Feil XTA støtte på på denne enheten. Ingenting sendes noe sted – del det selv hvis du vil at noen skal se på det.",
+  "crash_log_empty": "Ingenting har gått galt ennå",
+  "crash_log_empty_description": "Hvis XTA lukker seg selv eller noe ryker, blir det notert her. Kom tilbake etterpå og del teksten.",
+  "crash_log_copy": "Kopier",
+  "crash_log_copied": "Krasjloggen er kopiert",
+  "crash_log_share": "Del",
+  "crash_log_clear": "Tøm loggen",
+  "crash_log_cleared": "Krasjloggen er tømt",
+  "crash_log_add_test_entry": "Skriv en testoppføring",
+  "crash_log_occurrences": "{count, plural, one{Sett én gang} other{Sett {count} ganger}}",
+  "crash_log_source_interface": "Grensesnittfeil",
+  "crash_log_source_background": "Bakgrunnsfeil",
+  "crash_log_source_worker": "Feil i arbeidsprosess",
+  "crash_log_source_killed": "Lukket uventet",
+  "crash_log_source_test": "Testoppføring"
 }

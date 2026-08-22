@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Registro degli arresti",
+  "crash_log_settings_description": "Che cosa è andato storto su questo dispositivo, pronto da copiare o condividere",
+  "crash_log_description": "Gli errori incontrati da XTA su questo dispositivo. Non viene inviato nulla: condividili tu se vuoi che qualcuno li esamini.",
+  "crash_log_empty": "Finora non è andato storto nulla",
+  "crash_log_empty_description": "Se XTA si chiude da sola o qualcosa si rompe, finisce qui. Torna dopo e condividi il testo.",
+  "crash_log_copy": "Copia",
+  "crash_log_copied": "Registro degli arresti copiato",
+  "crash_log_share": "Condividi",
+  "crash_log_clear": "Svuota il registro",
+  "crash_log_cleared": "Registro degli arresti svuotato",
+  "crash_log_add_test_entry": "Scrivi una voce di prova",
+  "crash_log_occurrences": "{count, plural, one{Rilevato una volta} other{Rilevato {count} volte}}",
+  "crash_log_source_interface": "Errore dell'interfaccia",
+  "crash_log_source_background": "Errore in background",
+  "crash_log_source_worker": "Errore di un processo di lavoro",
+  "crash_log_source_killed": "Chiusura imprevista",
+  "crash_log_source_test": "Voce di prova"
 }

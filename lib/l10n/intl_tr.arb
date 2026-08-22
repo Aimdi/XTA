@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Çökme günlüğü",
+  "crash_log_settings_description": "Bu cihazda neyin ters gittiği; kopyalamaya veya paylaşmaya hazır",
+  "crash_log_description": "XTA'nın bu cihazda karşılaştığı hatalar. Hiçbir yere gönderilmez; incelenmesini istiyorsanız kendiniz paylaşın.",
+  "crash_log_empty": "Henüz bir sorun çıkmadı",
+  "crash_log_empty_description": "XTA kendi kendine kapanırsa ya da bir şey bozulursa buraya kaydedilir. Sonra geri gelip metni paylaşın.",
+  "crash_log_copy": "Kopyala",
+  "crash_log_copied": "Çökme günlüğü kopyalandı",
+  "crash_log_share": "Paylaş",
+  "crash_log_clear": "Günlüğü temizle",
+  "crash_log_cleared": "Çökme günlüğü temizlendi",
+  "crash_log_add_test_entry": "Sınama kaydı yaz",
+  "crash_log_occurrences": "{count, plural, one{Bir kez görüldü} other{{count} kez görüldü}}",
+  "crash_log_source_interface": "Arayüz hatası",
+  "crash_log_source_background": "Arka plan hatası",
+  "crash_log_source_worker": "İşçi süreç hatası",
+  "crash_log_source_killed": "Beklenmedik şekilde kapandı",
+  "crash_log_source_test": "Sınama kaydı"
 }

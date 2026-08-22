@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Comprimento do feed no modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantas páginas o feed carrega no modo zen antes de fazer uma pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Registro de falhas",
+  "crash_log_settings_description": "O que deu errado neste dispositivo, pronto para copiar ou compartilhar",
+  "crash_log_description": "Erros que o XTA encontrou neste dispositivo. Nada é enviado para lugar nenhum — compartilhe você mesmo se quiser que alguém veja.",
+  "crash_log_empty": "Ainda não deu nada errado",
+  "crash_log_empty_description": "Se o XTA fechar sozinho ou algo quebrar, fica registrado aqui. Volte depois e compartilhe o texto.",
+  "crash_log_copy": "Copiar",
+  "crash_log_copied": "Registro de falhas copiado",
+  "crash_log_share": "Compartilhar",
+  "crash_log_clear": "Limpar o registro",
+  "crash_log_cleared": "Registro de falhas limpo",
+  "crash_log_add_test_entry": "Escrever uma entrada de teste",
+  "crash_log_occurrences": "{count, plural, one{Visto uma vez} other{Visto {count} vezes}}",
+  "crash_log_source_interface": "Erro da interface",
+  "crash_log_source_background": "Erro em segundo plano",
+  "crash_log_source_worker": "Erro de um processo de trabalho",
+  "crash_log_source_killed": "Fechou inesperadamente",
+  "crash_log_source_test": "Entrada de teste"
 }

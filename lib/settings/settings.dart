@@ -12,6 +12,7 @@ import 'package:xta/settings/_media.dart';
 import 'package:xta/settings/_plugin_store.dart';
 import 'package:xta/settings/_posts.dart';
 import 'package:xta/settings/_theme.dart';
+import 'package:xta/settings/crash_log_screen.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
 import 'package:xta/speech/tts_settings.dart';
 import 'package:xta/ui/x_controls.dart';
@@ -162,6 +163,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: l10n.diagnostics,
         description: l10n.diagnostics_description,
         builder: (context) => const DiagnosticsScreen(),
+      ),
+      _SettingsEntry(
+        icon: Icons.bug_report_outlined,
+        title: l10n.crash_log,
+        description: l10n.crash_log_settings_description,
+        builder: (context) => const CrashLogScreen(),
       ),
     ];
   }

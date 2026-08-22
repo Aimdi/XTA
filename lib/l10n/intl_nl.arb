@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Crashlogboek",
+  "crash_log_settings_description": "Wat er op dit apparaat misging, klaar om te kopiëren of te delen",
+  "crash_log_description": "Fouten die XTA op dit apparaat tegenkwam. Er wordt niets verstuurd — deel het zelf als je er iemand naar wilt laten kijken.",
+  "crash_log_empty": "Er is nog niets misgegaan",
+  "crash_log_empty_description": "Als XTA zichzelf afsluit of er iets stukgaat, komt het hier terecht. Kom daarna terug en deel de tekst.",
+  "crash_log_copy": "Kopiëren",
+  "crash_log_copied": "Crashlogboek gekopieerd",
+  "crash_log_share": "Delen",
+  "crash_log_clear": "Logboek wissen",
+  "crash_log_cleared": "Crashlogboek gewist",
+  "crash_log_add_test_entry": "Testregel schrijven",
+  "crash_log_occurrences": "{count, plural, one{Eén keer gezien} other{{count} keer gezien}}",
+  "crash_log_source_interface": "Interfacefout",
+  "crash_log_source_background": "Achtergrondfout",
+  "crash_log_source_worker": "Fout in een werkproces",
+  "crash_log_source_killed": "Onverwacht afgesloten",
+  "crash_log_source_test": "Testregel"
 }

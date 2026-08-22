@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Nhật ký sự cố",
+  "crash_log_settings_description": "Điều gì đã hỏng trên thiết bị này, sẵn sàng để sao chép hoặc chia sẻ",
+  "crash_log_description": "Những lỗi XTA gặp phải trên thiết bị này. Không có gì được gửi đi đâu cả — bạn tự chia sẻ nếu muốn ai đó xem giúp.",
+  "crash_log_empty": "Chưa có gì hỏng cả",
+  "crash_log_empty_description": "Nếu XTA tự đóng hoặc có gì đó hỏng, nó sẽ được ghi lại ở đây. Hãy quay lại sau và chia sẻ đoạn văn bản này.",
+  "crash_log_copy": "Sao chép",
+  "crash_log_copied": "Đã sao chép nhật ký sự cố",
+  "crash_log_share": "Chia sẻ",
+  "crash_log_clear": "Xoá nhật ký",
+  "crash_log_cleared": "Đã xoá nhật ký sự cố",
+  "crash_log_add_test_entry": "Ghi một mục thử",
+  "crash_log_occurrences": "{count, plural, other{Đã xảy ra {count} lần}}",
+  "crash_log_source_interface": "Lỗi giao diện",
+  "crash_log_source_background": "Lỗi chạy nền",
+  "crash_log_source_worker": "Lỗi tiến trình xử lý",
+  "crash_log_source_killed": "Đóng đột ngột",
+  "crash_log_source_test": "Mục thử"
 }

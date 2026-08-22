@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Журнал збоїв",
+  "crash_log_settings_description": "Що пішло не так на цьому пристрої — готово скопіювати чи надіслати",
+  "crash_log_description": "Помилки, з якими XTA зіткнулася на цьому пристрої. Нічого нікуди не надсилається — поділіться самі, якщо хочете, щоб їх розібрали.",
+  "crash_log_empty": "Поки нічого не зламалося",
+  "crash_log_empty_description": "Якщо XTA закриється сама або щось зламається, це потрапить сюди. Поверніться потім і надішліть цей текст.",
+  "crash_log_copy": "Скопіювати",
+  "crash_log_copied": "Журнал збоїв скопійовано",
+  "crash_log_share": "Поділитися",
+  "crash_log_clear": "Очистити журнал",
+  "crash_log_cleared": "Журнал збоїв очищено",
+  "crash_log_add_test_entry": "Записати тестовий запис",
+  "crash_log_occurrences": "{count, plural, one{Помічено {count} раз} few{Помічено {count} рази} many{Помічено {count} разів} other{Помічено {count} разу}}",
+  "crash_log_source_interface": "Помилка інтерфейсу",
+  "crash_log_source_background": "Фонова помилка",
+  "crash_log_source_worker": "Помилка робочого процесу",
+  "crash_log_source_killed": "Несподівано закрилося",
+  "crash_log_source_test": "Тестовий запис"
 }

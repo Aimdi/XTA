@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "क्रैश लॉग",
+  "crash_log_settings_description": "इस डिवाइस पर क्या गड़बड़ हुई — कॉपी या साझा करने के लिए तैयार",
+  "crash_log_description": "इस डिवाइस पर XTA को मिली गड़बड़ियाँ। कुछ भी कहीं नहीं भेजा जाता — जाँच करवानी हो तो आप खुद साझा करें।",
+  "crash_log_empty": "अब तक कुछ भी गड़बड़ नहीं हुआ",
+  "crash_log_empty_description": "अगर XTA अपने आप बंद हो जाए या कुछ टूटे, तो वह यहाँ दर्ज होगा। बाद में लौटकर यह टेक्स्ट साझा करें।",
+  "crash_log_copy": "कॉपी करें",
+  "crash_log_copied": "क्रैश लॉग कॉपी हो गया",
+  "crash_log_share": "साझा करें",
+  "crash_log_clear": "लॉग खाली करें",
+  "crash_log_cleared": "क्रैश लॉग खाली कर दिया गया",
+  "crash_log_add_test_entry": "एक परीक्षण प्रविष्टि लिखें",
+  "crash_log_occurrences": "{count, plural, one{एक बार देखा गया} other{{count} बार देखा गया}}",
+  "crash_log_source_interface": "इंटरफ़ेस की गड़बड़ी",
+  "crash_log_source_background": "पृष्ठभूमि की गड़बड़ी",
+  "crash_log_source_worker": "वर्कर प्रक्रिया की गड़बड़ी",
+  "crash_log_source_killed": "अचानक बंद हो गया",
+  "crash_log_source_test": "परीक्षण प्रविष्टि"
 }

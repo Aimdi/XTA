@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "崩溃日志",
+  "crash_log_settings_description": "这台设备上出过什么问题，可直接复制或分享",
+  "crash_log_description": "XTA 在这台设备上遇到的错误。不会发送到任何地方——想让人排查的话，请自己分享出去。",
+  "crash_log_empty": "目前一切正常",
+  "crash_log_empty_description": "如果 XTA 自己关掉，或者出了问题，都会记在这里。之后回到这个页面，把文字分享出去。",
+  "crash_log_copy": "复制",
+  "crash_log_copied": "已复制崩溃日志",
+  "crash_log_share": "分享",
+  "crash_log_clear": "清空日志",
+  "crash_log_cleared": "已清空崩溃日志",
+  "crash_log_add_test_entry": "写入一条测试记录",
+  "crash_log_occurrences": "{count, plural, other{出现 {count} 次}}",
+  "crash_log_source_interface": "界面错误",
+  "crash_log_source_background": "后台错误",
+  "crash_log_source_worker": "工作线程错误",
+  "crash_log_source_killed": "意外退出",
+  "crash_log_source_test": "测试记录"
 }

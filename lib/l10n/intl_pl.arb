@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Dziennik awarii",
+  "crash_log_settings_description": "Co poszło nie tak na tym urządzeniu — gotowe do skopiowania lub udostępnienia",
+  "crash_log_description": "Błędy, na które XTA natrafiła na tym urządzeniu. Nic nigdzie nie jest wysyłane — udostępnij je sam, jeśli chcesz, by ktoś się im przyjrzał.",
+  "crash_log_empty": "Na razie nic się nie zepsuło",
+  "crash_log_empty_description": "Jeśli XTA sama się zamknie albo coś się zepsuje, trafi to tutaj. Wróć potem i udostępnij ten tekst.",
+  "crash_log_copy": "Kopiuj",
+  "crash_log_copied": "Skopiowano dziennik awarii",
+  "crash_log_share": "Udostępnij",
+  "crash_log_clear": "Wyczyść dziennik",
+  "crash_log_cleared": "Wyczyszczono dziennik awarii",
+  "crash_log_add_test_entry": "Zapisz wpis testowy",
+  "crash_log_occurrences": "{count, plural, one{Wystąpiło raz} few{Wystąpiło {count} razy} many{Wystąpiło {count} razy} other{Wystąpiło {count} razy}}",
+  "crash_log_source_interface": "Błąd interfejsu",
+  "crash_log_source_background": "Błąd w tle",
+  "crash_log_source_worker": "Błąd wątku roboczego",
+  "crash_log_source_killed": "Zamknęła się niespodziewanie",
+  "crash_log_source_test": "Wpis testowy"
 }

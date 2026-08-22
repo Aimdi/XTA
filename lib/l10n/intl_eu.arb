@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Kraskatze-erregistroa",
+  "crash_log_settings_description": "Gailu honetan zer huts egin duen, kopiatzeko edo partekatzeko prest",
+  "crash_log_description": "XTAk gailu honetan aurkitutako erroreak. Ez da ezer inora bidaltzen: zuk partekatu, norbaitek begiratzea nahi baduzu.",
+  "crash_log_empty": "Oraindik ez du ezerk huts egin",
+  "crash_log_empty_description": "XTA bere kabuz ixten bada edo zerbait hausten bada, hemen geratuko da jasota. Itzuli gero eta partekatu testua.",
+  "crash_log_copy": "Kopiatu",
+  "crash_log_copied": "Kraskatze-erregistroa kopiatuta",
+  "crash_log_share": "Partekatu",
+  "crash_log_clear": "Hustu erregistroa",
+  "crash_log_cleared": "Kraskatze-erregistroa hustuta",
+  "crash_log_add_test_entry": "Idatzi proba-sarrera bat",
+  "crash_log_occurrences": "{count, plural, one{Behin ikusia} other{{count} aldiz ikusia}}",
+  "crash_log_source_interface": "Interfazeko errorea",
+  "crash_log_source_background": "Bigarren planoko errorea",
+  "crash_log_source_worker": "Langile-prozesuko errorea",
+  "crash_log_source_killed": "Ustekabean itxi da",
+  "crash_log_source_test": "Proba-sarrera"
 }

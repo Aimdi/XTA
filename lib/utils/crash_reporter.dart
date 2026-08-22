@@ -65,8 +65,13 @@ class CrashReporter {
       previousFlutter?.call(details);
     };
 
+    // Chained rather than replaced: the crash log installs first, and there is
+    // only one slot, so overwriting it would silently stop recording exactly
+    // the errors the log exists for.
+    final previousPlatform = PlatformDispatcher.instance.onError;
     PlatformDispatcher.instance.onError = (error, stack) {
       unawaited(report(error, stack));
+      previousPlatform?.call(error, stack);
       // Handled: an uncaught async error must not abort the isolate. Returning
       // false is how a widget or compute failure became "XTA has stopped".
       return handleUncaughtIsolateErrors;

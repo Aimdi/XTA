@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "충돌 기록",
+  "crash_log_settings_description": "이 기기에서 무엇이 잘못됐는지, 복사하거나 공유할 수 있습니다",
+  "crash_log_description": "이 기기에서 XTA가 만난 오류입니다. 아무 곳에도 전송되지 않으며, 확인받고 싶다면 직접 공유하세요.",
+  "crash_log_empty": "아직 문제가 없습니다",
+  "crash_log_empty_description": "XTA가 저절로 닫히거나 무언가 고장 나면 여기에 기록됩니다. 나중에 다시 와서 이 텍스트를 공유하세요.",
+  "crash_log_copy": "복사",
+  "crash_log_copied": "충돌 기록을 복사했습니다",
+  "crash_log_share": "공유",
+  "crash_log_clear": "기록 지우기",
+  "crash_log_cleared": "충돌 기록을 지웠습니다",
+  "crash_log_add_test_entry": "테스트 항목 기록",
+  "crash_log_occurrences": "{count, plural, other{{count}회 발생}}",
+  "crash_log_source_interface": "화면 오류",
+  "crash_log_source_background": "백그라운드 오류",
+  "crash_log_source_worker": "작업 스레드 오류",
+  "crash_log_source_killed": "예기치 않게 종료됨",
+  "crash_log_source_test": "테스트 항목"
 }

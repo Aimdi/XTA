@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Журнал сбоев",
+  "crash_log_settings_description": "Что пошло не так на этом устройстве — можно скопировать или отправить",
+  "crash_log_description": "Ошибки, с которыми XTA столкнулась на этом устройстве. Ничего никуда не отправляется — поделитесь сами, если хотите, чтобы их разобрали.",
+  "crash_log_empty": "Пока ничего не ломалось",
+  "crash_log_empty_description": "Если XTA закроется сама или что-то сломается, это попадёт сюда. Вернитесь потом и отправьте этот текст.",
+  "crash_log_copy": "Скопировать",
+  "crash_log_copied": "Журнал сбоев скопирован",
+  "crash_log_share": "Поделиться",
+  "crash_log_clear": "Очистить журнал",
+  "crash_log_cleared": "Журнал сбоев очищен",
+  "crash_log_add_test_entry": "Записать тестовую запись",
+  "crash_log_occurrences": "{count, plural, one{Замечено {count} раз} few{Замечено {count} раза} many{Замечено {count} раз} other{Замечено {count} раза}}",
+  "crash_log_source_interface": "Ошибка интерфейса",
+  "crash_log_source_background": "Фоновая ошибка",
+  "crash_log_source_worker": "Ошибка рабочего процесса",
+  "crash_log_source_killed": "Неожиданно закрылось",
+  "crash_log_source_test": "Тестовая запись"
 }

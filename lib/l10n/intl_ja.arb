@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "クラッシュログ",
+  "crash_log_settings_description": "この端末で起きた不具合。コピーや共有がそのままできます",
+  "crash_log_description": "この端末で XTA が遭遇したエラーです。どこにも送信されません。調べてほしいときは自分で共有してください。",
+  "crash_log_empty": "まだ問題は起きていません",
+  "crash_log_empty_description": "XTA が勝手に終了したり不具合が起きたりすると、ここに記録されます。あとで戻ってきて、このテキストを共有してください。",
+  "crash_log_copy": "コピー",
+  "crash_log_copied": "クラッシュログをコピーしました",
+  "crash_log_share": "共有",
+  "crash_log_clear": "ログを消去",
+  "crash_log_cleared": "クラッシュログを消去しました",
+  "crash_log_add_test_entry": "テスト項目を書き込む",
+  "crash_log_occurrences": "{count, plural, other{{count} 回発生}}",
+  "crash_log_source_interface": "画面のエラー",
+  "crash_log_source_background": "バックグラウンドのエラー",
+  "crash_log_source_worker": "処理スレッドのエラー",
+  "crash_log_source_killed": "予期せず終了しました",
+  "crash_log_source_test": "テスト項目"
 }

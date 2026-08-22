@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Jurnal de erori",
+  "crash_log_settings_description": "Ce nu a mers pe acest dispozitiv, gata de copiat sau partajat",
+  "crash_log_description": "Erorile întâlnite de XTA pe acest dispozitiv. Nu se trimite nimic nicăieri — partajează-le tu dacă vrei să fie analizate.",
+  "crash_log_empty": "Deocamdată nu a mers nimic prost",
+  "crash_log_empty_description": "Dacă XTA se închide singură sau ceva se strică, apare aici. Revino apoi și partajează textul.",
+  "crash_log_copy": "Copiază",
+  "crash_log_copied": "Jurnalul de erori a fost copiat",
+  "crash_log_share": "Partajează",
+  "crash_log_clear": "Golește jurnalul",
+  "crash_log_cleared": "Jurnalul de erori a fost golit",
+  "crash_log_add_test_entry": "Scrie o intrare de test",
+  "crash_log_occurrences": "{count, plural, one{Văzut o dată} few{Văzut de {count} ori} other{Văzut de {count} de ori}}",
+  "crash_log_source_interface": "Eroare de interfață",
+  "crash_log_source_background": "Eroare în fundal",
+  "crash_log_source_worker": "Eroare într-un proces de lucru",
+  "crash_log_source_killed": "S-a închis pe neașteptate",
+  "crash_log_source_test": "Intrare de test"
 }

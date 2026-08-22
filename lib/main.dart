@@ -95,7 +95,11 @@ import 'package:xta/trends/trends_model.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/image_cache_budget.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/utils/breadcrumbs.dart';
+import 'package:xta/utils/crash_log.dart';
+import 'package:xta/utils/crash_log_entry.dart';
 import 'package:xta/utils/crash_reporter.dart';
 import 'package:xta/utils/updates.dart';
 import 'package:logging/logging.dart';
@@ -402,6 +406,20 @@ class _EnglishCupertinoFallback
   bool shouldReload(_EnglishCupertinoFallback old) => false;
 }
 
+/// Loads the crash history and opens this run's session marker.
+///
+/// Left unawaited on the launch path: it reads two small files and asks the
+/// platform for the version, and holding the first frame for that is exactly
+/// the kind of thing this release is trying to stop doing.
+Future<void> _openCrashLog(CrashLog crashLog) async {
+  try {
+    final info = await PackageInfo.fromPlatform();
+    await crashLog.start(appVersion: '${info.version}+${info.buildNumber}');
+  } catch (e) {
+    Logger.root.info('Unable to open the crash log: $e');
+  }
+}
+
 Future<void> main() async {
   // The listener below hands every record to dart:developer, and the client logs
   // one line per request, so a release build paid for the whole session's
@@ -424,7 +442,16 @@ Future<void> main() async {
   // player. Mixed plugin feeds (Substack covers, Reddit, Bluesky) evicted
   // tiles at 64 MiB and re-decoded them on every scroll-back; 96 MiB holds
   // a few more screenfuls without the old 100 MiB default.
-  PaintingBinding.instance.imageCache.maximumSizeBytes = 96 * 1024 * 1024;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = kImageCacheBytes;
+
+  // Installed before anything else can fail. Every report so far has been "it
+  // crashes", with no logcat and no way to ask a phone what it was doing, so
+  // the app now keeps that answer itself — on the device, shared only when the
+  // reader taps share on Settings › Crash log.
+  final crashLog = CrashLog(storage: FileCrashLogStorage());
+  CrashLog.instance = crashLog;
+  crashLog.install();
+  unawaited(_openCrashLog(crashLog));
 
   // The bundled Inter font ships under the SIL Open Font License, which
   // requires the licence to travel with the software.
@@ -1051,6 +1078,12 @@ Future<void> main() async {
         FlutterError.dumpErrorToConsole(
           FlutterErrorDetails(exception: error, stack: stack),
         );
+        CrashLog.instance?.record(
+          error,
+          stack,
+          source: CrashSource.asyncError,
+          context: 'runZonedGuarded',
+        );
         unawaited(CrashReporter.instance?.report(error, stack));
       },
     );
@@ -1262,6 +1295,10 @@ class _FritterAppState extends State<FritterApp> {
                   pageTransitions,
                 ),
                 themeMode: xLookThemeModeFor(_xLookBackground),
+                // Every screen the reader opens becomes a breadcrumb, so a
+                // crash entry can say where it happened rather than only what
+                // threw.
+                navigatorObservers: [BreadcrumbNavigatorObserver()],
                 initialRoute: '/',
                 routes: {
                   routeHome: (context) => const DefaultPage(),
@@ -1477,6 +1514,9 @@ class _DefaultPageState extends State<DefaultPage> {
         if (didPop) return;
         var prefService = PrefService.of(context);
         if (!prefService.get(optionConfirmClose)) {
+          // Leaving on purpose is not a crash: clearing the marker is what
+          // keeps the next launch from reporting this exit as one.
+          await CrashLog.instance?.markCleanShutdown();
           SystemNavigator.pop();
           return;
         }
@@ -1500,6 +1540,7 @@ class _DefaultPageState extends State<DefaultPage> {
         );
 
         if (confirmed == true && context.mounted) {
+          await CrashLog.instance?.markCleanShutdown();
           SystemNavigator.pop();
         }
       },

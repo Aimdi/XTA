@@ -3087,5 +3087,22 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "crash_log": "Log kerusakan",
+  "crash_log_settings_description": "Apa yang bermasalah di perangkat ini, siap disalin atau dibagikan",
+  "crash_log_description": "Kesalahan yang dialami XTA di perangkat ini. Tidak ada yang dikirim ke mana pun — bagikan sendiri jika ingin diperiksa.",
+  "crash_log_empty": "Belum ada yang bermasalah",
+  "crash_log_empty_description": "Kalau XTA menutup sendiri atau ada yang rusak, catatannya muncul di sini. Kembalilah nanti dan bagikan teksnya.",
+  "crash_log_copy": "Salin",
+  "crash_log_copied": "Log kerusakan disalin",
+  "crash_log_share": "Bagikan",
+  "crash_log_clear": "Kosongkan log",
+  "crash_log_cleared": "Log kerusakan dikosongkan",
+  "crash_log_add_test_entry": "Tulis entri uji",
+  "crash_log_occurrences": "{count, plural, other{Terjadi {count} kali}}",
+  "crash_log_source_interface": "Kesalahan antarmuka",
+  "crash_log_source_background": "Kesalahan di latar belakang",
+  "crash_log_source_worker": "Kesalahan proses pekerja",
+  "crash_log_source_killed": "Tertutup tiba-tiba",
+  "crash_log_source_test": "Entri uji"
 }
