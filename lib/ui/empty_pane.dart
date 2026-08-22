@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 
 /// Icon, sentence, optional way out — the empty shape plugin feeds share.
 class EmptyPane extends StatelessWidget {
@@ -22,10 +23,14 @@ class EmptyPane extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Home-strip plugins sit in NestedScrollView. The requested controller is
+    // the *outer* one; attaching it here freezes, then crashes.
     final list = ListView(
-      controller: scrollController,
+      controller: pluginInnerScrollController(context, scrollController),
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(32, leading != null ? 16 : 72, 32, 32),
+      padding: pluginFeedPadding(
+        context,
+      ).add(EdgeInsets.fromLTRB(32, leading != null ? 16 : 72, 32, 32)),
       children: [
         ?leading,
         Icon(icon, size: 52, color: theme.colorScheme.outline),

@@ -8,6 +8,7 @@ import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
@@ -37,9 +38,13 @@ class _RedditFeedListState extends State<RedditFeedList>
     // happens to be — the tab, or the switcher entry.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await context.read<RedditSubredditsStore>().load();
+      // Capture before the awaits: a home-strip remount can drop this State
+      // while SQLite or the feed store is still answering.
+      final subs = context.read<RedditSubredditsStore>();
+      final feed = context.read<RedditFeedStore>();
+      await subs.load();
       if (mounted) {
-        await context.read<RedditFeedStore>().refresh();
+        await feed.refresh();
       }
     });
   }
@@ -93,29 +98,15 @@ class _RedditFeedListState extends State<RedditFeedList>
   }
 
   Widget _empty(BuildContext context, L10n l10n) {
-    return ListView(
-      controller: widget.scrollController,
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-      children: [
-        Icon(
-          Icons.forum_outlined,
-          size: 48,
-          color: Theme.of(context).colorScheme.outline,
-        ),
-        const SizedBox(height: 16),
-        Text(l10n.plugin_reddit_empty, textAlign: TextAlign.center),
-        const SizedBox(height: 16),
-        // Telling the reader to add a subreddit and then leaving the only
-        // control in the app bar is how this screen managed to look broken
-        // when it was merely empty.
-        Center(
-          child: FilledButton.icon(
-            onPressed: () => addRedditSubreddit(context),
-            icon: const Icon(Icons.add),
-            label: Text(l10n.plugin_reddit_add),
-          ),
-        ),
-      ],
+    return EmptyPane(
+      icon: Icons.forum_outlined,
+      message: l10n.plugin_reddit_empty,
+      scrollController: widget.scrollController,
+      action: FilledButton.icon(
+        onPressed: () => addRedditSubreddit(context),
+        icon: const Icon(Icons.add),
+        label: Text(l10n.plugin_reddit_add),
+      ),
     );
   }
 }

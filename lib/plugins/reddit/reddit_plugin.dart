@@ -137,7 +137,7 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   Future<void> reloadFromDatabase(BuildContext context) =>
-      context.read<RedditSubredditsStore>().load();
+      context.read<RedditSubredditsStore>().load(force: true);
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
@@ -201,7 +201,7 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
     final votes = context.read<RedditVotesStore>();
     final saved = context.read<RedditSavedStore>();
 
-    await context.read<RedditSubredditsStore>().load();
+    await context.read<RedditSubredditsStore>().load(force: true);
     client.forgetToken();
     // The rows are deleted by [tables], but the set that was read from them is
     // still in memory — an uninstall that left the arrows lit would look like

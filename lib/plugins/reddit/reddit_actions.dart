@@ -300,37 +300,10 @@ class RedditCommunitySwitcher extends StatelessWidget {
 /// A function rather than a method: the app bar offers it, and so does the
 /// empty feed, which is the screen a reader with no subreddits actually sees.
 Future<void> addRedditSubreddit(BuildContext context) async {
-  final controller = TextEditingController();
-
-  // Nothing here is a State, so the controller has no owner to dispose it; it
-  // goes when the dialog it belongs to goes.
   final entered = await showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      return AlertDialog(
-        title: Text(l10n.plugin_reddit_add),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          autocorrect: false,
-          decoration: const InputDecoration(hintText: 'r/dartlang'),
-          onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () =>
-                Navigator.pop(dialogContext, controller.text.trim()),
-            child: Text(l10n.ok),
-          ),
-        ],
-      );
-    },
-  ).whenComplete(controller.dispose);
+    builder: (_) => const _AddSubredditDialog(),
+  );
 
   if (entered == null || entered.isEmpty || !context.mounted) return;
 
@@ -341,7 +314,8 @@ Future<void> addRedditSubreddit(BuildContext context) async {
     return;
   }
 
-  await context.read<RedditSubredditsStore>().add(entered);
+  final subs = context.read<RedditSubredditsStore>();
+  await subs.add(entered);
   if (context.mounted) {
     await refreshAfterRedditChange(context);
   }
@@ -351,7 +325,58 @@ Future<void> addRedditSubreddit(BuildContext context) async {
 /// subreddit is a group member too, and the group editor reads that list rather
 /// than the store the Reddit screens keep.
 Future<void> refreshAfterRedditChange(BuildContext context) async {
+  final feed = context.read<RedditFeedStore>();
   final subscriptions = context.read<SubscriptionsModel>();
-  await context.read<RedditFeedStore>().refresh();
+  await feed.refresh();
   await subscriptions.reloadSubscriptions();
+}
+
+/// Owns the field so the controller is not disposed while the route is still
+/// animating out — `whenComplete(controller.dispose)` crashed the empty pane.
+class _AddSubredditDialog extends StatefulWidget {
+  const _AddSubredditDialog();
+
+  @override
+  State<_AddSubredditDialog> createState() => _AddSubredditDialogState();
+}
+
+class _AddSubredditDialogState extends State<_AddSubredditDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(l10n.plugin_reddit_add),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        autocorrect: false,
+        decoration: const InputDecoration(hintText: 'r/dartlang'),
+        onSubmitted: (value) => Navigator.pop(context, value.trim()),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          child: Text(l10n.ok),
+        ),
+      ],
+    );
+  }
 }

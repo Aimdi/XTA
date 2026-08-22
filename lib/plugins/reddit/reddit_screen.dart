@@ -27,7 +27,8 @@ class RedditScreen extends StatefulWidget {
   State<RedditScreen> createState() => _RedditScreenState();
 }
 
-class _RedditScreenState extends State<RedditScreen> {
+class _RedditScreenState extends State<RedditScreen>
+    with AutomaticKeepAliveClientMixin {
   final _popularKey = GlobalKey<RedditListingBodyState>();
   final _allKey = GlobalKey<RedditListingBodyState>();
   final _subredditKeys = <String, GlobalKey<RedditListingBodyState>>{};
@@ -36,6 +37,9 @@ class _RedditScreenState extends State<RedditScreen> {
   bool _loadedStores = false;
 
   RedditHomeStore get home => _home!;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void didChangeDependencies() {
@@ -51,9 +55,7 @@ class _RedditScreenState extends State<RedditScreen> {
     final saved = context.read<RedditSavedStore>();
     final subs = context.read<RedditSubredditsStore>();
     await saved.load();
-    if (subs.state.isEmpty) {
-      await subs.load();
-    }
+    await subs.load();
     if (!mounted) {
       return;
     }
@@ -98,6 +100,7 @@ class _RedditScreenState extends State<RedditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final store = _home;
     if (store == null) {
       return const SizedBox.shrink();
