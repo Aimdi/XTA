@@ -4,6 +4,22 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### Still crashing after aimdi106
+
+**Install this build, not aimdi106.** aimdi106 stopped empty and one-item
+plugin lists from attaching the home strip's *outer* scroll controller.
+Filled Pixiv and Booru homes still mounted every board at once. Each
+masonry attached the NestedScrollView *inner* controller, and the first
+filled frame threw `Bad state: Too many elements` — freeze, then
+"XTA has stopped". Those boards now mount one at a time. A corrupt
+Following cache or an uncaught async error no longer aborts the isolate.
+
+Existing databases keep working. No settings reset.
+
+We could not reproduce a native SIGSEGV on this VM (no usable emulator).
+If a leftover kill remains after 107, it is not the Pixiv/Booru inner
+controller trap and not an uncaught Dart isolate error.
+
 ### Still crashing after aimdi105
 
 **Install this build, not aimdi105.** aimdi105 only fixed empty Reddit.
@@ -82,7 +98,7 @@ starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi104](https://github.com/Aimdi/XTA/releases/tag/aimdi104) is
+Everything from [aimdi106](https://github.com/Aimdi/XTA/releases/tag/aimdi106) is
 in here too.
 
 ---

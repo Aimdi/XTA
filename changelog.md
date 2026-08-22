@@ -1,3 +1,12 @@
+## XTA aimdi107
+
+What's new in XTA aimdi107:
+  - Filled Pixiv and Booru homes no longer attach every board to the home NestedScrollView controller
+  - Switching Pixiv / Booru tabs unmounts the hidden grid instead of keeping four (or two) decoded
+  - A bad cached Following chunk no longer takes the first home frame down
+  - An uncaught widget or isolate error no longer aborts the process
+  - Everything from aimdi106
+
 ## XTA aimdi106
 
 What's new in XTA aimdi106:
