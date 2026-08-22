@@ -23,6 +23,10 @@ import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 import 'package:xta/plugins/rss/rss_card.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
+import 'package:xta/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_note_card.dart';
+import 'package:xta/plugins/substack/substack_post_card.dart';
+import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
@@ -264,6 +268,69 @@ void main() {
                 publishedAt: now,
                 isVerified: true,
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a Substack note in German does not overflow', (tester) async {
+    await _pumpNarrow(
+      tester,
+      _german(
+        SubstackNoteCard(
+          note: SubstackNote(
+            id: '1',
+            body: 'Hallo',
+            authorName: 'Ein sehr langer Anzeigename hier',
+            at: now,
+            publication: const SubstackPublication(
+              subdomain: 'lang',
+              baseUrl: 'https://lang.substack.com',
+              name: 'Ein außerordentlich langer Publikationsname ohne Ende',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a Substack post in German does not overflow', (tester) async {
+    final prefs = PrefServiceCache();
+    final read = SubstackReadStore(prefs);
+    final likes = SubstackLikesStore(prefs);
+    final saved = SubstackSavedStore(prefs);
+    addTearDown(() {
+      read.destroy();
+      likes.destroy();
+      saved.destroy();
+    });
+
+    await _pumpNarrow(
+      tester,
+      MultiProvider(
+        providers: [
+          Provider<SubstackReadStore>.value(value: read),
+          Provider<SubstackLikesStore>.value(value: likes),
+          Provider<SubstackSavedStore>.value(value: saved),
+        ],
+        child: _german(
+          SubstackPostCard(
+            post: SubstackPost(
+              id: '1',
+              title: 'Titel',
+              slug: 'titel',
+              publicationBaseUrl: 'https://lang.substack.com',
+              publicationName:
+                  'Ein außerordentlich langer Publikationsname ohne Ende',
+              postDate: now.toIso8601String(),
+              audience: 'only_paid',
+              commentCount: 12,
             ),
           ),
         ),

@@ -42,8 +42,14 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
   Object? _error;
   var _loadingDetail = true;
   var _loadingMoreRelated = false;
-  var _pageIndex = 0;
+  final _pageIndex = ValueNotifier(0);
   var _includeRelatedR18 = false;
+
+  @override
+  void dispose() {
+    _pageIndex.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -138,7 +144,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             tooltip: l10n.download,
             onPressed: pages.isEmpty
                 ? null
-                : () => _downloadPage(pages[_pageIndex]),
+                : () => _downloadPage(pages[_pageIndex.value]),
             icon: const Icon(Icons.download_outlined),
           ),
           IconButton(
@@ -166,17 +172,6 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(child: _viewer(pages)),
-              if (pages.length > 1)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(
-                      l10n.plugin_pixiv_page_of(_pageIndex + 1, pages.length),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
-                ),
               SliverToBoxAdapter(child: _meta(context)),
               if (_loadingDetail)
                 const SliverToBoxAdapter(
@@ -248,44 +243,86 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
 
     return SizedBox(
       height: height,
-      child: PageView.builder(
-        itemCount: pages.length,
-        onPageChanged: (i) {
-          setState(() => _pageIndex = i);
-          _prefetchViewerPage(pages, i + 1, cacheWidth);
-        },
-        itemBuilder: (context, index) {
-          final page = pages[index];
-          final image = Stack(
-            fit: StackFit.expand,
-            alignment: Alignment.center,
-            children: [
-              // Instant paint from the grid thumb already on disk.
-              if (index == 0)
-                PixivNetworkImage(
-                  url: _illust.thumbnailUrl,
-                  fit: BoxFit.contain,
-                  cacheWidth: cacheWidth,
-                ),
-              PixivNetworkImage(
-                url: page,
-                fit: BoxFit.contain,
-                cacheWidth: cacheWidth,
+      child: Stack(
+        children: [
+          PageView.builder(
+            itemCount: pages.length,
+            // Only the counter needs the new page. Calling setState here
+            // rebuilt the caption, the tag list and the whole related masonry
+            // grid on every swipe of a multi-page work.
+            onPageChanged: (i) {
+              _pageIndex.value = i;
+              _prefetchViewerPage(pages, i + 1, cacheWidth);
+            },
+            itemBuilder: (context, index) {
+              final page = pages[index];
+              final image = Stack(
+                fit: StackFit.expand,
+                alignment: Alignment.center,
+                children: [
+                  // Instant paint from the grid thumb already on disk.
+                  if (index == 0)
+                    PixivNetworkImage(
+                      url: _illust.thumbnailUrl,
+                      fit: BoxFit.contain,
+                      cacheWidth: cacheWidth,
+                    ),
+                  PixivNetworkImage(
+                    url: page,
+                    fit: BoxFit.contain,
+                    cacheWidth: cacheWidth,
+                  ),
+                ],
+              );
+
+              final body = InteractiveViewer(
+                minScale: 1,
+                maxScale: 4,
+                child: Center(child: image),
+              );
+
+              if (index == 0) {
+                return Hero(tag: pixivIllustHeroTag(_illust.id), child: body);
+              }
+              return body;
+            },
+          ),
+          if (pages.length > 1)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: ValueListenableBuilder<int>(
+                valueListenable: _pageIndex,
+                builder: (context, index, _) =>
+                    _pageCounter(context, index, pages.length),
               ),
-            ],
-          );
+            ),
+        ],
+      ),
+    );
+  }
 
-          final body = InteractiveViewer(
-            minScale: 1,
-            maxScale: 4,
-            child: Center(child: image),
-          );
-
-          if (index == 0) {
-            return Hero(tag: pixivIllustHeroTag(_illust.id), child: body);
-          }
-          return body;
-        },
+  /// Which page of a multi-page work is showing, over the artwork.
+  ///
+  /// It used to be a line of grey text below the image, which said nothing
+  /// until the reader had already scrolled past the picture — the one place a
+  /// reader is not looking when deciding whether to swipe.
+  static Widget _pageCounter(BuildContext context, int index, int total) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        child: Text(
+          L10n.of(context).plugin_pixiv_page_of(index + 1, total),
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }

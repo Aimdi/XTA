@@ -4,8 +4,39 @@ import 'package:timeago/timeago.dart' as timeago;
 
 final absoluteDateFormat = DateFormat.yMMMd().add_Hms();
 
+/// Relative dates the app has already spelled out this minute.
+///
+/// Every card in every feed formats its own timestamp on every build, and
+/// `timeago.format` walks its rule list and builds a string each time. The
+/// answer only changes as the clock moves, so it is worth keeping — but only
+/// until the wording would change, hence the per-minute bucket.
+final Map<String, String> _relativeCache = {};
+int _relativeCacheMinute = -1;
+
+String _cachedRelative(
+  DateTime dateTime,
+  String key,
+  String Function() format,
+) {
+  final minute = DateTime.now().millisecondsSinceEpoch ~/ 60000;
+  // A long-lived feed would otherwise hold a string per post it ever showed.
+  if (minute != _relativeCacheMinute || _relativeCache.length > 2048) {
+    _relativeCacheMinute = minute;
+    _relativeCache.clear();
+  }
+  return _relativeCache.putIfAbsent(
+    '$key|${dateTime.microsecondsSinceEpoch}',
+    format,
+  );
+}
+
 String createRelativeDate(DateTime dateTime) {
-  return timeago.format(dateTime, locale: Intl.shortLocale(Intl.getCurrentLocale()));
+  final locale = Intl.shortLocale(Intl.getCurrentLocale());
+  return _cachedRelative(
+    dateTime,
+    locale,
+    () => timeago.format(dateTime, locale: locale),
+  );
 }
 
 /// The locales whose `<locale>_short` messages main.dart registered — timeago
@@ -20,7 +51,12 @@ final Set<String> compactDateLocales = {};
 /// size) keep the full wording.
 String createCompactDate(DateTime dateTime) {
   final locale = Intl.shortLocale(Intl.getCurrentLocale());
-  return timeago.format(dateTime, locale: compactDateLocales.contains(locale) ? '${locale}_short' : locale);
+  final tag = compactDateLocales.contains(locale) ? '${locale}_short' : locale;
+  return _cachedRelative(
+    dateTime,
+    tag,
+    () => timeago.format(dateTime, locale: tag),
+  );
 }
 
 class Timestamp extends StatefulWidget {
@@ -31,21 +67,29 @@ class Timestamp extends StatefulWidget {
   /// wording. Tapping still toggles to the absolute date either way.
   final bool compact;
 
-  const Timestamp({super.key, required this.timestamp, this.absoluteTimestamp = false, this.compact = false});
+  const Timestamp({
+    super.key,
+    required this.timestamp,
+    this.absoluteTimestamp = false,
+    this.compact = false,
+  });
 
   @override
-  State<Timestamp> createState() => _TimestampState(useRelativeTimestamp: !absoluteTimestamp);
+  State<Timestamp> createState() =>
+      _TimestampState(useRelativeTimestamp: !absoluteTimestamp);
 }
 
 class _TimestampState extends State<Timestamp> {
   bool _useRelativeTimestamp;
 
-  _TimestampState({useRelativeTimestamp = true}) : _useRelativeTimestamp = useRelativeTimestamp;
+  _TimestampState({useRelativeTimestamp = true})
+    : _useRelativeTimestamp = useRelativeTimestamp;
 
   String formattedTime = '';
 
-  String _relative(DateTime timestamp) =>
-      widget.compact ? createCompactDate(timestamp) : createRelativeDate(timestamp);
+  String _relative(DateTime timestamp) => widget.compact
+      ? createCompactDate(timestamp)
+      : createRelativeDate(timestamp);
 
   @override
   void initState() {

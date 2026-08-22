@@ -17,6 +17,18 @@ String _initial(String? name) {
   return trimmed.substring(0, 1).toUpperCase();
 }
 
+/// Chip text on one line. A chip already caps its own width, so a long
+/// publication name did not spill — it grew the chip three lines tall.
+class _ChipLabel extends StatelessWidget {
+  final String text;
+
+  const _ChipLabel({required this.text});
+
+  @override
+  Widget build(BuildContext context) =>
+      Text(text, maxLines: 1, overflow: TextOverflow.ellipsis);
+}
+
 /// A public Note from Substack's discovery feed.
 class SubstackNoteCard extends StatelessWidget {
   final SubstackNote note;
@@ -122,9 +134,10 @@ class SubstackNoteCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
+                      runSpacing: 8,
                       children: [
                         ActionChip(
-                          label: Text(pub.name),
+                          label: _ChipLabel(text: pub.name),
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -135,7 +148,7 @@ class SubstackNoteCard extends StatelessWidget {
                         ),
                         ActionChip(
                           avatar: const Icon(Icons.add, size: 16),
-                          label: Text(l10n.plugin_substack_follow),
+                          label: _ChipLabel(text: l10n.plugin_substack_follow),
                           onPressed: () async {
                             final pubs = context
                                 .read<SubstackPublicationsStore>();
@@ -155,7 +168,7 @@ class SubstackNoteCard extends StatelessWidget {
                         ),
                         ActionChip(
                           avatar: const Icon(Icons.group_add, size: 16),
-                          label: Text(l10n.add_to_group),
+                          label: _ChipLabel(text: l10n.add_to_group),
                           onPressed: () =>
                               addSubstackPublicationToGroup(context, pub),
                         ),
