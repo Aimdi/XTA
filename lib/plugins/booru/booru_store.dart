@@ -135,10 +135,24 @@ class BooruFeedStore extends Store<List<BooruPost>> {
     _page = 0;
     _hasMore = true;
     await execute(() async {
-      final page = await loader(page: 1);
-      _page = 1;
-      _hasMore = page.hasMore;
-      return page.posts;
+      // Rating / mute filters can zero the first raw page. Skip a few so Latest
+      // does not open empty while the host still has posts.
+      var posts = <BooruPost>[];
+      var pageNo = 0;
+      var hasMore = true;
+      for (
+        var attempt = 0;
+        attempt < 4 && hasMore && posts.isEmpty;
+        attempt++
+      ) {
+        pageNo += 1;
+        final page = await loader(page: pageNo);
+        posts = page.posts;
+        hasMore = page.hasMore;
+      }
+      _page = pageNo;
+      _hasMore = hasMore;
+      return posts;
     });
   }
 

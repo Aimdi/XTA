@@ -6,6 +6,7 @@ import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_comments_json.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
+import 'package:xta/plugins/reddit/reddit_search_json.dart';
 import 'package:xta/utils/json.dart';
 
 /// How many posts one subreddit listing page asks Reddit for.
@@ -1116,46 +1117,149 @@ class RedditClient {
 
   /// [searchSort] is Reddit's search order — `relevance`, `new`, `top` or
   /// `comments` — its own axis, not the listing sort.
+  ///
+  /// Same credential choice as listings: OAuth JSON when a token or client id
+  /// is available, then public `.json`, then old-site HTML. Guest HTML search
+  /// is often refused; JSON is the path that still answers.
   Future<List<RedditPost>> searchPosts(
     String query, {
     String? subreddit,
     String searchSort = 'relevance',
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
   }) async {
     final name = subreddit == null ? null : normaliseSubreddit(subreddit);
     final path = name == null ? '/search' : '/r/$name/search';
-
-    final body = await _scrape(
-      Uri.parse('$_publicFallbackBase$path').replace(
-        queryParameters: {
-          'q': query,
-          'sort': searchSort,
-          't': 'all',
-          if (name != null) 'restrict_sr': 'on',
-        },
-      ),
+    final params = {
+      'q': query,
+      'sort': searchSort,
+      't': 'all',
+      'raw_json': '1',
+      'type': 'link',
+      if (name != null) 'restrict_sr': 'on',
+    };
+    return _searchJsonThenHtml(
+      path: path,
+      params: params,
+      clientId: clientId,
+      userToken: userToken,
+      preferPublic: preferPublic,
+      fromJson: parseSearchPostsJson,
+      fromHtml: parseSearchPosts,
     );
-
-    return body == null ? const [] : parseSearchPosts(body);
   }
 
-  Future<List<RedditSubredditResult>> searchSubreddits(String query) async {
-    final body = await _scrape(
-      Uri.parse(
-        '$_publicFallbackBase/subreddits/search',
-      ).replace(queryParameters: {'q': query}),
+  Future<List<RedditSubredditResult>> searchSubreddits(
+    String query, {
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
+  }) {
+    return _searchJsonThenHtml(
+      path: '/subreddits/search',
+      params: {'q': query, 'raw_json': '1'},
+      clientId: clientId,
+      userToken: userToken,
+      preferPublic: preferPublic,
+      fromJson: parseSubredditResultsJson,
+      fromHtml: parseSubredditResults,
     );
-
-    return body == null ? const [] : parseSubredditResults(body);
   }
 
-  Future<List<RedditUserResult>> searchUsers(String query) async {
-    final body = await _scrape(
-      Uri.parse(
-        '$_publicFallbackBase/search',
-      ).replace(queryParameters: {'q': query, 'type': 'user'}),
+  Future<List<RedditUserResult>> searchUsers(
+    String query, {
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
+  }) {
+    return _searchJsonThenHtml(
+      path: '/users/search',
+      params: {'q': query, 'raw_json': '1'},
+      clientId: clientId,
+      userToken: userToken,
+      preferPublic: preferPublic,
+      fromJson: parseUserResultsJson,
+      fromHtml: parseUserResults,
+      htmlPath: '/search',
+      htmlParams: {'q': query, 'type': 'user'},
     );
+  }
 
-    return body == null ? const [] : parseUserResults(body);
+  Future<List<T>> _searchJsonThenHtml<T>({
+    required String path,
+    required Map<String, String> params,
+    required String clientId,
+    required String? userToken,
+    required bool preferPublic,
+    required List<T> Function(Object? raw) fromJson,
+    required List<T> Function(String body) fromHtml,
+    String? htmlPath,
+    Map<String, String>? htmlParams,
+  }) async {
+    final anonymous =
+        preferPublic || (userToken == null && clientId.trim().isEmpty);
+    if (!anonymous) {
+      final token = userToken ?? await _authorize(clientId);
+      try {
+        return fromJson(
+          _decode(
+            await _read(
+              Uri.parse('$_apiBase$path').replace(queryParameters: params),
+              token,
+            ),
+          ),
+        );
+      } on RedditException {
+        // Public hosts still work when OAuth is flaky.
+      }
+    }
+
+    final html =
+        htmlParams ?? (Map<String, String>.from(params)..remove('raw_json'));
+    return _searchPublic(
+      path: path,
+      params: params,
+      htmlPath: htmlPath ?? path,
+      htmlParams: html,
+      fromJson: fromJson,
+      fromHtml: fromHtml,
+    );
+  }
+
+  Future<List<T>> _searchPublic<T>({
+    required String path,
+    required Map<String, String> params,
+    required String htmlPath,
+    required Map<String, String> htmlParams,
+    required List<T> Function(Object? raw) fromJson,
+    required List<T> Function(String body) fromHtml,
+  }) async {
+    RedditException? last;
+    for (final base in [_publicBase, _publicFallbackBase]) {
+      try {
+        final response = await _read(
+          Uri.parse('$base$path.json').replace(queryParameters: params),
+        );
+        if (response.statusCode == 200) {
+          return fromJson(_decode(response));
+        }
+        last = _errorFor(response);
+      } on RedditException catch (e) {
+        last = e;
+      }
+    }
+
+    try {
+      final body = await _scrape(
+        Uri.parse(
+          '$_publicFallbackBase$htmlPath',
+        ).replace(queryParameters: htmlParams),
+      );
+      return body == null ? const [] : fromHtml(body);
+    } on RedditException catch (e) {
+      throw last ?? e;
+    }
   }
 
   /// One account's posts. Comments on the same page have no title and are
@@ -1364,12 +1468,62 @@ class RedditClient {
     }
 
     final media = parsePostMedia(response.body);
-    return (
-      comments: parseComments(response.body, postPermalink: permalink),
-      selfText: parseSelfText(response.body),
-      postUrl: media.url,
-      postImages: media.images,
-    );
+    final comments = parseComments(response.body, postPermalink: permalink);
+    if (comments.isNotEmpty) {
+      return (
+        comments: comments,
+        selfText: parseSelfText(response.body),
+        postUrl: media.url,
+        postImages: media.images,
+      );
+    }
+
+    // old.reddit sometimes serves a thread with no comment markup; public
+    // JSON still carries the tree.
+    try {
+      return await _commentsFromPublicJson(permalink, sort: sort);
+    } catch (_) {
+      return (
+        comments: comments,
+        selfText: parseSelfText(response.body),
+        postUrl: media.url,
+        postImages: media.images,
+      );
+    }
+  }
+
+  Future<
+    ({
+      List<RedditComment> comments,
+      String? selfText,
+      String? postUrl,
+      List<String> postImages,
+    })
+  >
+  _commentsFromPublicJson(String permalink, {String? sort}) async {
+    final query = {
+      'raw_json': '1',
+      'limit': '500',
+      if (sort != null && sort.isNotEmpty) 'sort': sort,
+    };
+    RedditException? last;
+    for (final base in [_publicBase, _publicFallbackBase]) {
+      try {
+        final uri = Uri.parse(
+          '$base${_commentsJsonPath(permalink)}',
+        ).replace(queryParameters: query);
+        final response = await _read(uri);
+        if (response.statusCode != 200) {
+          last = _errorFor(response, uri);
+          continue;
+        }
+        return _threadFromJson(_decodeList(response), postPermalink: permalink);
+      } on RedditException catch (e) {
+        last = e;
+      }
+    }
+    throw last ??
+        RedditException(RedditErrorKind.badResponse, 'No comments: $permalink');
   }
 
   /// Reddit's comments endpoint is `[postListing, commentsListing]`.

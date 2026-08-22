@@ -1,3 +1,58 @@
+## XTA aimdi106
+
+What's new in XTA aimdi106:
+  - Empty RSS, Substack, Threads, and Stocks homes no longer freeze or crash under the home strip
+  - One-item RSS / EH / Booru lists no longer attach the outer NestedScrollView controller
+  - Add-account, RSS tag, Reddit client-id, and EH page-jump fields dispose with the dialog, not while it closes
+  - Empty RSS / Substack remounts from Für dich do not enter a loading spinner
+  - Everything from aimdi105
+
+## XTA aimdi105
+
+What's new in XTA aimdi105:
+  - Home → Reddit with no followed communities no longer freezes or crashes on the empty pane
+  - The Add subreddit sheet can be cancelled without taking the process down
+  - Swiping Für dich → Reddit does not refetch an empty following list
+  - Everything from aimdi104
+
+## XTA aimdi104
+
+What's new in XTA aimdi104:
+  - Stop the crash on the first home frame (missing RSS table, empty or restored home tabs, bad string-list prefs)
+  - Tight IconLabel tabs, Networks → Add timeline, and enabling RSS no longer take the process down
+  - Everything from aimdi103
+
+## XTA aimdi103
+
+What's new in XTA aimdi103:
+  - Guest RSS plugin: paste a site or feed URL, unread stays on this device, feeds can join groups
+  - Substack custom-domain follows load; tap the publication name on a card to open its profile
+  - Sherpa is an explicit on-device read-aloud engine under Settings → Read aloud
+  - Group feeds include plugin posts (Reddit, Substack, RSS, and the rest), not only X
+  - Bluesky adds Discover (custom feeds / algos) and Lists next to Following and Liked
+  - Bluesky home stays put when you swipe away and back
+  - The group image tab reuses the tweet list instead of starting a second Search
+  - Reddit home switches among followed communities; Discover plugin chips own search
+  - Plugin switching lives on the home strip (Networks), not the Groups board
+  - Hiding a plugin tab pins it on the home strip instead of the Groups board
+  - Plugin and section icons sit beside tab labels
+  - Smoother home and plugin feeds without a rewrite
+
+## XTA aimdi102
+
+What's new in XTA aimdi102:
+  - Hacker News stays in the Plugin store even when `main`'s catalogue is stale
+  - Search plugins by name, initials, or id (`hn`, `hacker news`)
+  - Available plugins start open so Communities is not hidden
+  - HN threads and user pages build comment and story rows on demand
+
+## XTA aimdi101
+
+What's new in XTA aimdi101:
+  - Guest Hacker News plugin (Top / New / Best / Ask / Show / Jobs, search, threads, local likes and follows)
+  - Home tabs build on demand; switching tabs no longer rebuilds the feed you are reading
+  - Cheaper tweet tiles, paint-size plugin images, and feed-cache JSON encode off the UI isolate
+
 ## XTA aimdi100
 
 What's new in XTA aimdi100:

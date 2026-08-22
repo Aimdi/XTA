@@ -118,6 +118,32 @@ void main() {
       expect(posts.single.tags, ['solo', 'smile']);
     });
 
+    test('Rule34 guest posts compose file URLs from directory and image', () {
+      final posts = parseBooruPosts(
+        {
+          'post': [
+            {
+              'id': 11,
+              'tags': 'solo',
+              'rating': 'e',
+              'width': 100,
+              'height': 200,
+              'directory': '1234',
+              'image': 'abc.png',
+              'preview_url': '//rule34.xxx/thumb.jpg',
+            },
+          ],
+        },
+        engine: BooruEngine.gelbooruV2,
+        host: 'https://rule34.xxx',
+      );
+
+      expect(posts, hasLength(1));
+      expect(posts.single.fileUrl, 'https://rule34.xxx/images/1234/abc.png');
+      expect(posts.single.previewUrl, 'https://rule34.xxx/thumb.jpg');
+      expect(posts.single.rating, BooruRating.explicit);
+    });
+
     test('Rule34 API host opens the public site', () {
       final posts = parseBooruPosts(
         [
@@ -311,6 +337,15 @@ void main() {
       ], engine: BooruEngine.danbooru);
       expect(tags.map((t) => t.name), ['1girl', '2girls']);
       expect(tags.first.postCount, 100);
+    });
+  });
+
+  group('booruHostIsMostlyExplicit', () {
+    test('Rule34 and Gelbooru default to an explicit catalogue', () {
+      expect(booruHostIsMostlyExplicit('https://rule34.xxx'), isTrue);
+      expect(booruHostIsMostlyExplicit('https://gelbooru.com'), isTrue);
+      expect(booruHostIsMostlyExplicit('https://danbooru.donmai.us'), isFalse);
+      expect(booruHostIsMostlyExplicit('https://safebooru.org'), isFalse);
     });
   });
 }

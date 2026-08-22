@@ -10,7 +10,9 @@ class SubstackPostLink {
 
   @override
   bool operator ==(Object other) =>
-      other is SubstackPostLink && other.publicationBase == publicationBase && other.slug == slug;
+      other is SubstackPostLink &&
+      other.publicationBase == publicationBase &&
+      other.slug == slug;
 
   @override
   int get hashCode => Object.hash(publicationBase, slug);
@@ -19,11 +21,18 @@ class SubstackPostLink {
   String toString() => 'SubstackPostLink($publicationBase, $slug)';
 }
 
-/// Hosts that serve Substack's own pages rather than a publication.
-const _substackServiceHosts = {'substack.com', 'www.substack.com', 'open.substack.com'};
-
 /// Path segments that are pages of a publication, never a post.
-const _nonPostSegments = {'archive', 'about', 'subscribe', 'notes', 'note', 'podcast', 'people', 's', 'i'};
+const _nonPostSegments = {
+  'archive',
+  'about',
+  'subscribe',
+  'notes',
+  'note',
+  'podcast',
+  'people',
+  's',
+  'i',
+};
 
 /// Recognises a link to a readable Substack post.
 ///
@@ -35,9 +44,14 @@ const _nonPostSegments = {'archive', 'about', 'subscribe', 'notes', 'note', 'pod
 ///
 /// Returns null for anything else, including publication home pages, archives,
 /// notes and non-Substack links, so the caller can fall back to the browser.
-SubstackPostLink? parseSubstackPostLink(String url, {Iterable<String> knownBaseUrls = const []}) {
+SubstackPostLink? parseSubstackPostLink(
+  String url, {
+  Iterable<String> knownBaseUrls = const [],
+}) {
   final uri = Uri.tryParse(url.trim());
-  if (uri == null || !uri.hasScheme || (uri.scheme != 'http' && uri.scheme != 'https')) {
+  if (uri == null ||
+      !uri.hasScheme ||
+      (uri.scheme != 'http' && uri.scheme != 'https')) {
     return null;
   }
 
@@ -63,7 +77,7 @@ SubstackPostLink? parseSubstackPostLink(String url, {Iterable<String> knownBaseU
     return null;
   }
 
-  final onSubstackSubdomain = host.endsWith('.substack.com') && !_substackServiceHosts.contains(host);
+  final onSubstackSubdomain = isSubstackPublicationHost(host);
   final knownHosts = knownBaseUrls
       .map((base) => Uri.tryParse(base)?.host.toLowerCase())
       .whereType<String>()
@@ -76,22 +90,31 @@ SubstackPostLink? parseSubstackPostLink(String url, {Iterable<String> knownBaseU
 
   // https://<publication>/p/<slug>, optionally /comments.
   if (segments.length >= 2 && segments[0] == 'p' && _isSlug(segments[1])) {
-    return SubstackPostLink(publicationBase: Uri.parse('https://$host'), slug: segments[1]);
+    return SubstackPostLink(
+      publicationBase: Uri.parse('https://$host'),
+      slug: segments[1],
+    );
   }
 
   return null;
 }
 
 bool _isSlug(String value) =>
-    value.isNotEmpty && !_nonPostSegments.contains(value.toLowerCase()) && !value.startsWith('@');
+    value.isNotEmpty &&
+    !_nonPostSegments.contains(value.toLowerCase()) &&
+    !value.startsWith('@');
 
-bool _isSubdomain(String value) => value.isNotEmpty && !value.contains('/') && !value.contains('.');
+bool _isSubdomain(String value) =>
+    value.isNotEmpty && !value.contains('/') && !value.contains('.');
 
 /// The minimum post the reader needs to fetch the real one: it reloads from the
 /// publication and slug on open, so the title and body arrive with that
 /// request. Until then the publication's name stands in, so the screen never
 /// opens with an empty title bar.
-SubstackPost substackPostStub(SubstackPostLink link, {String? publicationName}) {
+SubstackPost substackPostStub(
+  SubstackPostLink link, {
+  String? publicationName,
+}) {
   final name = publicationName ?? subdomainOf(link.publicationBase);
   return SubstackPost(
     id: link.slug,

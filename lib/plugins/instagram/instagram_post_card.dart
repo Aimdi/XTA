@@ -40,100 +40,102 @@ class InstagramPostCard extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
 
-    return tweetFlatCard(
-      color: tweetCardColor(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
-            leading: GestureDetector(
-              onTap: openAuthor ? () => _openAuthor(context) : null,
-              child: InstagramAvatar(
-                url: post.author.avatarUrl,
-                seed: post.author.username,
-                name: post.author.displayName,
-              ),
-            ),
-            title: Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    post.author.displayName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
+    return RepaintBoundary(
+      child: tweetFlatCard(
+        color: tweetCardColor(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding: const EdgeInsets.fromLTRB(16, 8, 8, 0),
+              leading: GestureDetector(
+                onTap: openAuthor ? () => _openAuthor(context) : null,
+                child: InstagramAvatar(
+                  url: post.author.avatarUrl,
+                  seed: post.author.username,
+                  name: post.author.displayName,
                 ),
-                if (post.author.isVerified) ...[
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.verified,
-                    size: 16,
-                    color: theme.colorScheme.primary,
+              ),
+              title: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      post.author.displayName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  if (post.author.isVerified) ...[
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.verified,
+                      size: 16,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ],
+                ],
+              ),
+              subtitle: Text(
+                '@${post.author.username} · ${createRelativeDate(post.createdAt)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: showFollow
+                  ? _FollowButton(author: post.author, onFollowed: onFollowed)
+                  : null,
+            ),
+            if (post.caption.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Text(post.caption),
+              ),
+            if (post.displayUrls.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                child: _PostMedia(post: post),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 2, 4, 4),
+              child: Row(
+                children: [
+                  ScopedBuilder<InstagramLikesStore, Set<String>>(
+                    store: context.read<InstagramLikesStore>(),
+                    onState: (context, ids) => LikeButton(
+                      isLiked: ids.contains(post.id),
+                      label: _igCount.format(post.likeCount),
+                      color: ids.contains(post.id)
+                          ? theme.colorScheme.primary
+                          : muted,
+                      onPressed: () =>
+                          context.read<InstagramLikesStore>().toggle(post.id),
+                    ),
+                  ),
+                  const Spacer(),
+                  tweetFooterIconButton(
+                    context,
+                    Icons.open_in_new,
+                    muted,
+                    null,
+                    () => openUri(context, post.webUri().toString()),
+                    l10n.plugin_instagram_open_on_site,
+                  ),
+                  tweetFooterIconButton(
+                    context,
+                    Icons.share_outlined,
+                    muted,
+                    null,
+                    () => SharePlus.instance.share(
+                      ShareParams(text: post.webUri().toString()),
+                    ),
+                    l10n.share_tweet_link,
                   ),
                 ],
-              ],
+              ),
             ),
-            subtitle: Text(
-              '@${post.author.username} · ${createRelativeDate(post.createdAt)}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: showFollow
-                ? _FollowButton(author: post.author, onFollowed: onFollowed)
-                : null,
-          ),
-          if (post.caption.trim().isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Text(post.caption),
-            ),
-          if (post.displayUrls.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-              child: _PostMedia(post: post),
-            ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 2, 4, 4),
-            child: Row(
-              children: [
-                ScopedBuilder<InstagramLikesStore, Set<String>>(
-                  store: context.read<InstagramLikesStore>(),
-                  onState: (context, ids) => LikeButton(
-                    isLiked: ids.contains(post.id),
-                    label: _igCount.format(post.likeCount),
-                    color: ids.contains(post.id)
-                        ? theme.colorScheme.primary
-                        : muted,
-                    onPressed: () =>
-                        context.read<InstagramLikesStore>().toggle(post.id),
-                  ),
-                ),
-                const Spacer(),
-                tweetFooterIconButton(
-                  context,
-                  Icons.open_in_new,
-                  muted,
-                  null,
-                  () => openUri(context, post.webUri().toString()),
-                  l10n.plugin_instagram_open_on_site,
-                ),
-                tweetFooterIconButton(
-                  context,
-                  Icons.share_outlined,
-                  muted,
-                  null,
-                  () => SharePlus.instance.share(
-                    ShareParams(text: post.webUri().toString()),
-                  ),
-                  l10n.share_tweet_link,
-                ),
-              ],
-            ),
-          ),
-          tweetHairlineDivider(context),
-        ],
+            tweetHairlineDivider(context),
+          ],
+        ),
       ),
     );
   }
@@ -265,18 +267,27 @@ class _NetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedImage.network(
-      url,
-      fit: BoxFit.cover,
-      cache: true,
-      loadStateChanged: (state) {
-        if (state.extendedImageLoadState != LoadState.failed) return null;
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          child: Icon(
-            Icons.broken_image_outlined,
-            color: Theme.of(context).colorScheme.outline,
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxW = constraints.maxWidth;
+        final cacheWidth = maxW.isFinite && maxW > 0
+            ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+            : null;
+        return ExtendedImage.network(
+          url,
+          fit: BoxFit.cover,
+          cache: true,
+          cacheWidth: cacheWidth,
+          loadStateChanged: (state) {
+            if (state.extendedImageLoadState != LoadState.failed) return null;
+            return ColoredBox(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: Icon(
+                Icons.broken_image_outlined,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            );
+          },
         );
       },
     );
@@ -307,6 +318,7 @@ class InstagramAvatar extends StatelessWidget {
         accent: Theme.of(context).colorScheme.primary,
       );
     }
+    final cache = (size * MediaQuery.devicePixelRatioOf(context)).ceil();
     return ClipOval(
       child: ExtendedImage.network(
         url!,
@@ -314,6 +326,8 @@ class InstagramAvatar extends StatelessWidget {
         height: size,
         fit: BoxFit.cover,
         cache: true,
+        cacheWidth: cache,
+        cacheHeight: cache,
         loadStateChanged: (state) {
           if (state.extendedImageLoadState != LoadState.failed) return null;
           return FallbackAvatar(

@@ -7,6 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/group/custom_feed_rules.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/group_mark_style.dart';
@@ -143,7 +144,12 @@ class GroupModel extends Store<SubscriptionGroupGet> {
       database.rawQuery(membership(tableSearchSubscription), ids),
       database.rawQuery(membership(tableSubscription), ids),
       for (final source in sources)
-        database.rawQuery(membership(source.subscriptionTable), ids),
+        querySourceTable(
+          database,
+          source.subscriptionTable,
+          sql: membership(source.subscriptionTable),
+          arguments: ids,
+        ),
     ]);
 
     final members = <Subscription>[
@@ -388,10 +394,13 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
     // every one of them storing an avatar. They come after the X accounts so a
     // mixed group still leads with faces.
     for (final source in subscriptionSources) {
-      final rows = await database.rawQuery(
-        'SELECT gm.group_id, s.* FROM $tableSubscriptionGroupMember gm '
-        'JOIN ${source.subscriptionTable} s ON s.id = gm.profile_id '
-        'ORDER BY gm.group_id, s.name COLLATE NOCASE',
+      final rows = await querySourceTable(
+        database,
+        source.subscriptionTable,
+        sql:
+            'SELECT gm.group_id, s.* FROM $tableSubscriptionGroupMember gm '
+            'JOIN ${source.subscriptionTable} s ON s.id = gm.profile_id '
+            'ORDER BY gm.group_id, s.name COLLATE NOCASE',
       );
 
       for (final row in rows) {

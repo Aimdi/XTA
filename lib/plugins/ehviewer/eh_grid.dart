@@ -6,6 +6,7 @@ import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_gallery_screen.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_ui.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 
 const ehImageTimeLimit = Duration(seconds: 20);
 
@@ -113,7 +114,7 @@ class EhGalleryGrid extends StatelessWidget {
         return false;
       },
       child: CustomScrollView(
-        controller: scrollController,
+        controller: pluginInnerScrollController(context, scrollController),
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(
@@ -271,6 +272,12 @@ class EhSpriteThumb extends StatelessWidget {
                 height: constraints.maxHeight,
                 fit: BoxFit.fitHeight,
                 cache: true,
+                cacheHeight:
+                    constraints.maxHeight.isFinite && constraints.maxHeight > 0
+                    ? (constraints.maxHeight *
+                              MediaQuery.devicePixelRatioOf(context))
+                          .ceil()
+                    : null,
                 headers: _ehImageHeaders(context),
                 filterQuality: FilterQuality.medium,
                 timeLimit: ehImageTimeLimit,

@@ -24,6 +24,13 @@ void main() {
     expect(ids, isNot(contains(pluginIdThreads)));
   });
 
+  test('DiscoverQueryStore commit updates immediately', () {
+    final store = DiscoverQueryStore();
+    expect(store.state, '');
+    store.commit('  hu tao  ');
+    expect(store.state, 'hu tao');
+  });
+
   test('effectiveSearchScope falls back to X when the plugin is off', () {
     final prefs = PrefServiceCache(cache: {optionPluginRedditEnabled: true});
     final plugins = searchablePlugins(prefs);

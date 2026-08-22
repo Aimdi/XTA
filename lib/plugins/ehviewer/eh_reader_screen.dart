@@ -178,40 +178,12 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
   }
 
   Future<void> _jumpDialog() async {
-    final l10n = L10n.of(context);
     final total = widget.gallery.pageCount ?? _previews.length;
-    final controller = TextEditingController(text: '${_current.page}');
-    final page = await showDialog<int>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.plugin_eh_jump_to_page),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: InputDecoration(
-            hintText: l10n.plugin_eh_jump_hint(total),
-          ),
-          onSubmitted: (value) {
-            final n = int.tryParse(value);
-            Navigator.pop(context, n);
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () =>
-                Navigator.pop(context, int.tryParse(controller.text)),
-            child: Text(l10n.plugin_eh_jump_go),
-          ),
-        ],
-      ),
+    final page = await showEhJumpDialog(
+      context,
+      current: _current.page,
+      total: total,
     );
-    controller.dispose();
     if (page == null || !mounted) return;
     await _jumpTo(page);
   }
@@ -358,6 +330,76 @@ class _EhReaderScreenState extends State<EhReaderScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Owns the field so cancel does not dispose it while the route is animating.
+Future<int?> showEhJumpDialog(
+  BuildContext context, {
+  required int current,
+  required int total,
+}) {
+  return showDialog<int>(
+    context: context,
+    builder: (_) => _EhJumpDialog(current: current, total: total),
+  );
+}
+
+class _EhJumpDialog extends StatefulWidget {
+  final int current;
+  final int total;
+
+  const _EhJumpDialog({required this.current, required this.total});
+
+  @override
+  State<_EhJumpDialog> createState() => _EhJumpDialogState();
+}
+
+class _EhJumpDialogState extends State<_EhJumpDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: '${widget.current}');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(l10n.plugin_eh_jump_to_page),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        decoration: InputDecoration(
+          hintText: l10n.plugin_eh_jump_hint(widget.total),
+        ),
+        onSubmitted: (value) {
+          final n = int.tryParse(value);
+          Navigator.pop(context, n);
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () =>
+              Navigator.pop(context, int.tryParse(_controller.text)),
+          child: Text(l10n.plugin_eh_jump_go),
+        ),
+      ],
     );
   }
 }

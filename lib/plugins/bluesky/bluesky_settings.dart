@@ -24,6 +24,7 @@ class BlueskySettingsScreen extends StatefulWidget {
 
 class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
   late final TextEditingController _instance;
+  late final TextEditingController _handle;
   bool _testing = false;
 
   @override
@@ -35,11 +36,15 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
     _instance = TextEditingController(
       text: stored.isEmpty ? kBlueskyDefaultAppView : stored,
     );
+    _handle = TextEditingController(
+      text: (prefs.get<String>(optionPluginBlueskyHandle) ?? '').trim(),
+    );
   }
 
   @override
   void dispose() {
     _instance.dispose();
+    _handle.dispose();
     super.dispose();
   }
 
@@ -163,6 +168,31 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
                 child: Text(l10n.plugin_bluesky_use_default),
               ),
             ],
+          ),
+          const SizedBox(height: 28),
+          Text(
+            l10n.plugin_bluesky_your_handle,
+            style: theme.textTheme.titleSmall,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.plugin_bluesky_your_handle_description,
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _handle,
+            decoration: InputDecoration(
+              hintText: l10n.plugin_bluesky_handle_hint,
+              border: const OutlineInputBorder(),
+            ),
+            autocorrect: false,
+            onChanged: (value) => PrefService.of(
+              context,
+              listen: false,
+            ).set(optionPluginBlueskyHandle, value.trim()),
           ),
           const SizedBox(height: 28),
           ListTile(

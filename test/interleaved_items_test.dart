@@ -151,6 +151,38 @@ void main() {
     });
   });
 
+  group('showInterleavedOnXFailure', () {
+    test('plugin posts stay when X has not answered', () {
+      expect(
+        showInterleavedOnXFailure(chains: null, items: [_item(_at(5))]),
+        isTrue,
+      );
+    });
+
+    test('plugin posts stay when X answered with nothing', () {
+      expect(
+        showInterleavedOnXFailure(chains: const [], items: [_item(_at(5))]),
+        isTrue,
+      );
+    });
+
+    test('an empty plugin slot is not a reason to skip the X error', () {
+      expect(showInterleavedOnXFailure(chains: null, items: const []), isFalse);
+    });
+
+    test('X posts already on screen keep the mixed list', () {
+      expect(
+        showInterleavedOnXFailure(
+          chains: [
+            _chainAt('a', [_at(1)]),
+          ],
+          items: [_item(_at(5))],
+        ),
+        isFalse,
+      );
+    });
+  });
+
   group('replacePluginSlot', () {
     test('an empty answer does not dirty an already-empty slot', () {
       final slots = <String, List<InterleavedItem>>{};

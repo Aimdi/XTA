@@ -732,21 +732,44 @@ class BlueskyListInfo {
   final String uri;
   final String name;
   final int itemCount;
+  final String description;
+  final String? avatarUrl;
+  final String? creatorHandle;
 
   const BlueskyListInfo({
     required this.uri,
     required this.name,
     this.itemCount = 0,
+    this.description = '',
+    this.avatarUrl,
+    this.creatorHandle,
   });
 
   factory BlueskyListInfo.fromJson(Object? json) {
     final data = Json(json);
+    final avatar = data['avatar'].string?.trim();
+    final creator = data['creator']['handle'].string?.trim();
     return BlueskyListInfo(
       uri: data['uri'].string?.trim() ?? '',
       name: data['name'].string?.trim() ?? '',
       itemCount: data['listItemCount'].integer ?? 0,
+      description: data['description'].string?.trim() ?? '',
+      avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
+      creatorHandle: creator == null || creator.isEmpty ? null : creator,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    'uri': uri,
+    'name': name,
+    'itemCount': itemCount,
+    'description': description,
+    'avatarUrl': avatarUrl,
+    'creatorHandle': creatorHandle,
+  };
+
+  factory BlueskyListInfo.fromSnapshot(Object? raw) =>
+      BlueskyListInfo.fromJson(raw);
 }
 
 /// One page of lists created by an actor.
@@ -914,3 +937,165 @@ BlueskyListMembersPage parseBlueskyListMembersPage(Object? json) {
     cursor: root['cursor'].string,
   );
 }
+
+/// Official Discover / What's Hot algo on bsky.app (public, guest-readable).
+const kBlueskyDiscoverFeedUri =
+    'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot';
+
+/// A custom feed generator (`app.bsky.feed.defs#generatorView`).
+class BlueskyFeedGenerator {
+  final String uri;
+  final String displayName;
+  final String description;
+  final String? avatarUrl;
+  final String? creatorHandle;
+
+  const BlueskyFeedGenerator({
+    required this.uri,
+    required this.displayName,
+    this.description = '',
+    this.avatarUrl,
+    this.creatorHandle,
+  });
+
+  factory BlueskyFeedGenerator.fromJson(Object? json) {
+    final data = Json(json);
+    final uri = data['uri'].string?.trim() ?? '';
+    final name = data['displayName'].string?.trim();
+    final avatar = data['avatar'].string?.trim();
+    final creator = data['creator']['handle'].string?.trim();
+    return BlueskyFeedGenerator(
+      uri: uri,
+      displayName: (name == null || name.isEmpty)
+          ? (blueskyRkeyOf(uri) ?? uri)
+          : name,
+      description: data['description'].string?.trim() ?? '',
+      avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
+      creatorHandle: creator == null || creator.isEmpty ? null : creator,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'uri': uri,
+    'displayName': displayName,
+    'description': description,
+    'avatarUrl': avatarUrl,
+    'creatorHandle': creatorHandle,
+  };
+
+  factory BlueskyFeedGenerator.fromSnapshot(Object? raw) =>
+      BlueskyFeedGenerator.fromJson(raw);
+}
+
+/// One page of feed generators (`feeds` + optional cursor).
+class BlueskyFeedGeneratorsPage {
+  final List<BlueskyFeedGenerator> feeds;
+  final String? cursor;
+
+  const BlueskyFeedGeneratorsPage({required this.feeds, this.cursor});
+}
+
+/// A feed generator identified by AT-URI, or by handle + rkey from bsky.app.
+class BlueskyFeedRef {
+  final String? atUri;
+  final String? actor;
+  final String? rkey;
+
+  const BlueskyFeedRef.atUri(this.atUri) : actor = null, rkey = null;
+
+  const BlueskyFeedRef.web({required this.actor, required this.rkey})
+    : atUri = null;
+}
+
+/// Parses a public feed URL or `at://…/app.bsky.feed.generator/…` URI.
+BlueskyFeedRef? parseBlueskyFeedRef(String input) {
+  final value = input.trim();
+  if (value.isEmpty) {
+    return null;
+  }
+
+  if (value.startsWith('at://') &&
+      value.contains('/app.bsky.feed.generator/')) {
+    return BlueskyFeedRef.atUri(value);
+  }
+
+  final uri = Uri.tryParse(value);
+  if (uri == null || (uri.host != 'bsky.app' && uri.host != 'www.bsky.app')) {
+    return null;
+  }
+
+  final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
+  if (segments.length >= 4 &&
+      segments[0] == 'profile' &&
+      segments[2] == 'feed') {
+    final actor = segments[1].trim();
+    final rkey = segments[3].trim();
+    if (actor.isEmpty || rkey.isEmpty) {
+      return null;
+    }
+    return BlueskyFeedRef.web(actor: actor, rkey: rkey);
+  }
+  return null;
+}
+
+List<BlueskyFeedGenerator> parseBlueskyFeedGenerators(Object? json) {
+  final root = Json(json);
+  final items = root['feeds'].exists
+      ? root['feeds'].list
+      : (root['view'].exists ? [root['view']] : const <Json>[]);
+  return [
+    for (final feed in items) BlueskyFeedGenerator.fromJson(feed.raw),
+  ].where((e) => e.uri.isNotEmpty).toList(growable: false);
+}
+
+BlueskyFeedGeneratorsPage parseBlueskyFeedGeneratorsPage(Object? json) {
+  final root = Json(json);
+  return BlueskyFeedGeneratorsPage(
+    feeds: parseBlueskyFeedGenerators(root.raw),
+    cursor: root['cursor'].string,
+  );
+}
+
+List<BlueskyFeedGenerator> blueskyGeneratorsFromPrefs(String? raw) {
+  if (raw == null || raw.isEmpty) {
+    return const [];
+  }
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) {
+      return const [];
+    }
+    return decoded
+        .whereType<Map>()
+        .map(BlueskyFeedGenerator.fromSnapshot)
+        .where((e) => e.uri.isNotEmpty)
+        .toList(growable: false);
+  } catch (_) {
+    return const [];
+  }
+}
+
+String blueskyGeneratorsToPrefs(List<BlueskyFeedGenerator> feeds) =>
+    jsonEncode(feeds.map((e) => e.toJson()).toList());
+
+List<BlueskyListInfo> blueskyListsFromPrefs(String? raw) {
+  if (raw == null || raw.isEmpty) {
+    return const [];
+  }
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) {
+      return const [];
+    }
+    return decoded
+        .whereType<Map>()
+        .map(BlueskyListInfo.fromSnapshot)
+        .where((e) => e.uri.isNotEmpty)
+        .toList(growable: false);
+  } catch (_) {
+    return const [];
+  }
+}
+
+String blueskyListsToPrefs(List<BlueskyListInfo> lists) =>
+    jsonEncode(lists.map((e) => e.toJson()).toList());
