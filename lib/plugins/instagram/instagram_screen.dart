@@ -17,6 +17,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Guest Instagram home: For you + Following + local accounts.
 class InstagramScreen extends StatefulWidget {
@@ -194,7 +195,7 @@ class _ForYouTab extends StatelessWidget {
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _forYouList(context, l10n, store.state)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _forYouList(context, l10n, store.state)
           : FullPageErrorWidget(
@@ -442,7 +443,7 @@ class _FollowingTab extends StatelessWidget {
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _PostList(
               posts: store.state,

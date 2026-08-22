@@ -11,6 +11,7 @@ import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Every followed subreddit, newest first.
 ///
@@ -76,7 +77,7 @@ class _RedditFeedListState extends State<RedditFeedList>
           if (feed.state.isNotEmpty) {
             return _list(feed.state);
           }
-          return const Center(child: CircularProgressIndicator());
+          return const PluginFeedSkeleton();
         },
         onState: (_, posts) =>
             posts.isEmpty ? _empty(context, l10n) : _list(posts),

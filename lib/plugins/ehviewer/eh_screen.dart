@@ -14,6 +14,7 @@ import 'package:xta/plugins/ehviewer/eh_store.dart';
 import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// EhViewer-style home: Popular / Front / Toplist / Watched / History / Favs.
 class EhScreen extends StatefulWidget {
@@ -221,7 +222,7 @@ class _FeedTab extends StatelessWidget {
               loadingMore: store.loadingMore,
               onNearEnd: store.loadMore,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginGridSkeleton(columns: 2),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
         stackTrace: null,

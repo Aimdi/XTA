@@ -17,7 +17,8 @@ class TweetFeedSkeleton extends StatefulWidget {
   State<TweetFeedSkeleton> createState() => _TweetFeedSkeletonState();
 }
 
-class _TweetFeedSkeletonState extends State<TweetFeedSkeleton> with SingleTickerProviderStateMixin {
+class _TweetFeedSkeletonState extends State<TweetFeedSkeleton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _pulse = _skeletonPulse(this);
 
   @override
@@ -43,14 +44,22 @@ class _TweetFeedSkeletonState extends State<TweetFeedSkeleton> with SingleTicker
   }
 }
 
-AnimationController _skeletonPulse(TickerProvider vsync) =>
-    AnimationController(vsync: vsync, duration: const Duration(milliseconds: 1100));
+AnimationController _skeletonPulse(TickerProvider vsync) => AnimationController(
+  vsync: vsync,
+  duration: const Duration(milliseconds: 1100),
+);
 
 /// The accessibility preference and the platform's own "remove animations"
 /// setting both leave the bones at a flat colour rather than pulsing.
-bool skeletonWantsPulse(BuildContext context) =>
-    !MediaQuery.disableAnimationsOf(context) &&
-    PrefService.of(context, listen: false).get<bool>(optionDisableAnimations) != true;
+///
+/// A skeleton is also the first thing a plugin tab paints, sometimes before
+/// anything has provided a [PrefService]; without one the pulse simply runs.
+bool skeletonWantsPulse(BuildContext context) {
+  if (MediaQuery.disableAnimationsOf(context)) return false;
+
+  final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+  return prefs?.get<bool>(optionDisableAnimations) != true;
+}
 
 /// Starts or pins [controller] according to [skeletonWantsPulse].
 void applySkeletonPulse(BuildContext context, AnimationController controller) {
@@ -80,8 +89,11 @@ class TweetSkeletonTile extends StatefulWidget {
   State<TweetSkeletonTile> createState() => _TweetSkeletonTileState();
 }
 
-class _TweetSkeletonTileState extends State<TweetSkeletonTile> with SingleTickerProviderStateMixin {
-  late final AnimationController? _own = widget.pulse == null ? _skeletonPulse(this) : null;
+class _TweetSkeletonTileState extends State<TweetSkeletonTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController? _own = widget.pulse == null
+      ? _skeletonPulse(this)
+      : null;
 
   Animation<double> get _pulse => widget.pulse ?? _own!;
 
@@ -104,8 +116,10 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile> with SingleTicker
   @override
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
-    final base = tokens?.border ?? Theme.of(context).colorScheme.surfaceContainerHighest;
-    final highlight = tokens?.divider ?? Theme.of(context).colorScheme.surfaceContainerHigh;
+    final base =
+        tokens?.border ?? Theme.of(context).colorScheme.surfaceContainerHighest;
+    final highlight =
+        tokens?.divider ?? Theme.of(context).colorScheme.surfaceContainerHigh;
     final avatarSize = tokens?.avatarSize ?? 40;
     final mediaRadius = tokens?.mediaRadius ?? 16;
 
@@ -113,13 +127,22 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile> with SingleTicker
       child: AnimatedBuilder(
         animation: _pulse,
         builder: (context, child) {
-          final color = Color.lerp(base, highlight, Curves.easeInOut.transform(_pulse.value))!;
+          final color = Color.lerp(
+            base,
+            highlight,
+            Curves.easeInOut.transform(_pulse.value),
+          )!;
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _Bone(width: avatarSize, height: avatarSize, radius: avatarSize / 2, color: color),
+                _Bone(
+                  width: avatarSize,
+                  height: avatarSize,
+                  radius: avatarSize / 2,
+                  color: color,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -131,7 +154,12 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile> with SingleTicker
                       const SizedBox(height: 6),
                       _Bone(width: 220, height: 12, color: color),
                       const SizedBox(height: 12),
-                      _Bone(width: double.infinity, height: 120, radius: mediaRadius, color: color),
+                      _Bone(
+                        width: double.infinity,
+                        height: 120,
+                        radius: mediaRadius,
+                        color: color,
+                      ),
                     ],
                   ),
                 ),
@@ -150,7 +178,12 @@ class _Bone extends StatelessWidget {
   final double radius;
   final Color color;
 
-  const _Bone({required this.width, required this.height, required this.color, this.radius = 4});
+  const _Bone({
+    required this.width,
+    required this.height,
+    required this.color,
+    this.radius = 4,
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -19,6 +19,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Flare-style Pixiv home: Following / Recommended / Ranking / Bookmarks + search.
 class PixivScreen extends StatefulWidget {
@@ -424,7 +425,7 @@ class _PixivScreenState extends State<PixivScreen>
         if (store.state.isNotEmpty) {
           return _illustList(context, store, store.state);
         }
-        return const Center(child: CircularProgressIndicator());
+        return const PluginGridSkeleton(columns: 2);
       },
       onError: (context, error) {
         if (store.state.isNotEmpty) {

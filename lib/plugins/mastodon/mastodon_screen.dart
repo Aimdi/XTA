@@ -18,6 +18,7 @@ import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// The Mastodon tab: Explore / Local / Federated / Following, like Tusky.
 class MastodonScreen extends StatefulWidget {
@@ -271,7 +272,7 @@ class _ExplorePane extends StatelessWidget {
       onLoading: (_) =>
           store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.posts.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
           : Padding(
@@ -377,7 +378,7 @@ class _PublicPane extends StatelessWidget {
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _list(context, store.state, store)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _list(context, store.state, store)
           : Padding(
@@ -448,7 +449,7 @@ class _FollowingPane extends StatelessWidget {
       store: feed,
       onLoading: (_) => feed.state.isNotEmpty
           ? _followingList(context, l10n, feed.state)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (context, error) => feed.state.isNotEmpty
           ? _followingList(context, l10n, feed.state)
           : Padding(

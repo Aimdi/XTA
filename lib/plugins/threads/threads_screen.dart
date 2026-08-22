@@ -21,6 +21,7 @@ import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// What a failed Threads read should say, in the reader's terms.
 String threadsErrorMessage(L10n l10n, Object error) {
@@ -325,7 +326,7 @@ class _HomePane extends StatelessWidget {
               if (feed.state.isNotEmpty) {
                 return _feed(context, l10n, feed.state);
               }
-              return const Center(child: CircularProgressIndicator());
+              return const PluginFeedSkeleton();
             },
             onError: (context, error) {
               if (feed.state.isNotEmpty) {
