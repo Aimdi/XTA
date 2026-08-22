@@ -464,7 +464,7 @@ class _SavedScreenState extends State<SavedScreen>
   }
 
   Widget _buildSavedBody(SavedTweetModel model) {
-    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>.transition(
+    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
       store: model,
       onError: (_, e) => FullPageErrorWidget(
         error: e,
@@ -558,7 +558,7 @@ class _SavedScreenState extends State<SavedScreen>
   Widget _buildFavoritesBody() {
     var model = context.read<LikedTweetModel>();
 
-    return ScopedBuilder<LikedTweetModel, List<LikedTweet>>.transition(
+    return ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
       store: model,
       onError: (_, e) => FullPageErrorWidget(
         error: e,

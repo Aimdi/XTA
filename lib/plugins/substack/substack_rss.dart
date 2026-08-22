@@ -8,13 +8,28 @@ class SubstackRssChannel {
   final String? imageUrl;
   final List<SubstackPost> posts;
 
+  /// Whether the feed is Substack's, not Ghost / Beehiiv / a random blog.
+  final bool looksLikeSubstack;
+
   const SubstackRssChannel({
     this.title,
     this.description,
     this.link,
     this.imageUrl,
     this.posts = const [],
+    this.looksLikeSubstack = false,
   });
+}
+
+/// Substack stamps `<generator>Substack</generator>` and hosts images on
+/// substackcdn; Ghost and other newsletter hosts do not.
+bool rssLooksLikeSubstack(String xml) {
+  final generator = RegExp(
+    r'<generator[^>]*>([^<]+)</generator>',
+    caseSensitive: false,
+  ).firstMatch(xml)?.group(1)?.toLowerCase();
+  if (generator != null && generator.contains('substack')) return true;
+  return xml.contains('substackcdn.com') || xml.contains('.substack.com');
 }
 
 /// Parses Substack's public RSS into posts + channel metadata.
@@ -38,7 +53,9 @@ SubstackRssChannel parseSubstackRss(
     final post = _postFromItem(
       item,
       publicationBaseUrl: publicationBaseUrl,
-      publicationName: title?.trim().isNotEmpty == true ? title!.trim() : publicationName,
+      publicationName: title?.trim().isNotEmpty == true
+          ? title!.trim()
+          : publicationName,
     );
     if (post != null) posts.add(post);
   }
@@ -49,6 +66,7 @@ SubstackRssChannel parseSubstackRss(
     link: link?.trim(),
     imageUrl: imageUrl?.trim(),
     posts: posts,
+    looksLikeSubstack: rssLooksLikeSubstack(xml),
   );
 }
 
@@ -62,7 +80,8 @@ SubstackPost? _postFromItem(
   final slug = _slugFromLink(link);
   if (title.isEmpty || slug == null) return null;
 
-  final content = _textTag(item, 'content:encoded') ?? _textTag(item, 'description');
+  final content =
+      _textTag(item, 'content:encoded') ?? _textTag(item, 'description');
   final pubDate = _textTag(item, 'pubDate');
   final enclosure = _attr(_firstOpenTag(item, 'enclosure') ?? '', 'url');
   final audio = enclosure != null && _looksAudio(enclosure) ? enclosure : null;
@@ -147,12 +166,18 @@ String? _plainExcerpt(String? html) {
 
 String? _firstImg(String? html) {
   if (html == null) return null;
-  return RegExp(r'''<img[^>]+src=["']([^"']+)["']''', caseSensitive: false).firstMatch(html)?.group(1);
+  return RegExp(
+    r'''<img[^>]+src=["']([^"']+)["']''',
+    caseSensitive: false,
+  ).firstMatch(html)?.group(1);
 }
 
 bool _looksAudio(String url) {
   final lower = url.toLowerCase();
-  return lower.contains('.mp3') || lower.contains('.m4a') || lower.contains('audio') || lower.contains('podcast');
+  return lower.contains('.mp3') ||
+      lower.contains('.m4a') ||
+      lower.contains('audio') ||
+      lower.contains('podcast');
 }
 
 String? _firstTag(String xml, String name) {
@@ -171,11 +196,17 @@ List<String> _allTags(String xml, String name) {
 }
 
 String? _firstOpenTag(String xml, String name) {
-  return RegExp('<$name\\b[^>]*>', caseSensitive: false).firstMatch(xml)?.group(0);
+  return RegExp(
+    '<$name\\b[^>]*>',
+    caseSensitive: false,
+  ).firstMatch(xml)?.group(0);
 }
 
 String? _attr(String openTag, String name) {
-  return RegExp('$name=["\']([^"\']+)["\']', caseSensitive: false).firstMatch(openTag)?.group(1);
+  return RegExp(
+    '$name=["\']([^"\']+)["\']',
+    caseSensitive: false,
+  ).firstMatch(openTag)?.group(1);
 }
 
 String? _textTag(String xml, String name) {

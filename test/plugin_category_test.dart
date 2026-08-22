@@ -25,8 +25,8 @@ void main() {
       groups[0].plugins.map((p) => p.id),
       containsAll(['threads', 'bluesky', 'mastodon', 'tiktok', 'instagram']),
     );
-    expect(groups[1].plugins.single.id, 'reddit');
-    expect(groups[2].plugins.single.id, 'substack');
+    expect(groups[1].plugins.map((p) => p.id), ['reddit', 'hackernews']);
+    expect(groups[2].plugins.map((p) => p.id), ['substack', 'rss']);
     expect(groups[3].plugins.map((p) => p.id), ['pixiv', 'booru', 'ehviewer']);
     expect(groups[4].plugins.single.id, 'stocks');
   });
@@ -41,6 +41,7 @@ void main() {
     expect(sections.installed.map((p) => p.id), ['reddit', 'pixiv']);
     expect(sections.availableByCategory.map((g) => g.category), [
       PluginCategory.social,
+      PluginCategory.communities,
       PluginCategory.newsletters,
       PluginCategory.art,
       PluginCategory.markets,
@@ -55,8 +56,52 @@ void main() {
       ['booru', 'ehviewer'],
     );
     expect(
-      sections.availableByCategory.any(
-        (g) => g.category == PluginCategory.communities,
+      sections.availableByCategory
+          .firstWhere((g) => g.category == PluginCategory.communities)
+          .plugins
+          .map((p) => p.id),
+      ['hackernews'],
+    );
+  });
+
+  test('store search finds Hacker News by name or id', () {
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'hacker',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isTrue,
+    );
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'hn',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isTrue,
+    );
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'hacker news',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
+      ),
+      isTrue,
+    );
+    expect(
+      pluginMatchesStoreQuery(
+        query: 'pixiv',
+        id: 'hackernews',
+        title: 'Hacker News',
+        description: 'Read Hacker News without an account.',
+        category: 'Communities',
       ),
       isFalse,
     );

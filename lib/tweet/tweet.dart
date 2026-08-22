@@ -74,8 +74,7 @@ class TweetTile extends StatefulWidget {
   TweetTileState createState() => TweetTileState();
 }
 
-class TweetTileState extends State<TweetTile>
-    with SingleTickerProviderStateMixin {
+class TweetTileState extends State<TweetTile> {
   static final log = Logger('TweetTile');
 
   // Short K/M suffixes: locale-specific compact forms like "12 Tsd." or
@@ -595,7 +594,9 @@ class TweetTileState extends State<TweetTile>
               SizedBox(height: 8),
               AutoDirection(
                 text: tweetText,
-                child: SelectableText.rich(TextSpan(children: _displaySpans)),
+                child: widget.tweetOpened
+                    ? SelectableText.rich(TextSpan(children: _displaySpans))
+                    : Text.rich(TextSpan(children: _displaySpans)),
               ),
             ],
           ),
@@ -688,11 +689,15 @@ class TweetTileState extends State<TweetTile>
                   ? () => onClickOpenTweet(tweet)
                   : null,
               selectable: widget.tweetOpened,
+              // Feed tiles always cap: a long post at full height is the
+              // dominant layout cost on a fling. The pref still applies on
+              // the opened status screen.
               maxLines:
-                  PrefService.of(
-                    context,
-                    listen: false,
-                  ).get(alwaysShowFullTweetContents)
+                  widget.tweetOpened &&
+                      PrefService.of(
+                        context,
+                        listen: false,
+                      ).get(alwaysShowFullTweetContents)
                   ? null
                   : kTweetTextMaxLines,
             ),

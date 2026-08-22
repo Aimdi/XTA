@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class RedditSavedScreen extends StatefulWidget {
   const RedditSavedScreen({super.key});
@@ -30,7 +31,7 @@ class _RedditSavedScreenState extends State<RedditSavedScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(L10n.of(context).saved)),
-      body: ScopedBuilder<RedditSavedStore, List<RedditPost>>.transition(
+      body: ScopedBuilder<RedditSavedStore, List<RedditPost>>(
         store: store,
         onLoading: (_) => const Center(child: CircularProgressIndicator()),
         onState: (context, posts) =>
@@ -55,7 +56,7 @@ class _RedditSavedScreenState extends State<RedditSavedScreen> {
   }
 
   Widget _list(List<RedditPost> posts) {
-    return ListView.builder(
+    return FeedListView(
       itemCount: posts.length,
       itemBuilder: (context, index) =>
           RedditPostCard(post: posts[index], showSourceBadge: false),

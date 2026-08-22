@@ -10,8 +10,8 @@ import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
+import 'package:xta/group/group_members.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/group/group_switcher.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
@@ -186,21 +186,11 @@ class _SubscriptionGroupScreenContentState
 
         // Members belonging to a plugin are not searched on X: each source has
         // its own pagination, and leaving one in a search query puts a dangling
-        // `OR` in it. Grouped by the source that will fetch them, so nothing
-        // downstream has to know a network by name.
-        final pluginMembers = {
-          for (final source in subscriptionSources)
-            if (members.where(source.owns).toList(growable: false)
-                case final owned when owned.isNotEmpty)
-              source: owned,
-        };
-
-        // Named rather than subtracted: what X can search for is a closed set,
-        // so the next plugin whose members join a group cannot silently end up
-        // in a search query by not being on a list of exclusions.
-        final users = members
-            .where((e) => e is UserSubscription || e is SearchSubscription)
-            .toList(growable: false);
+        // `OR` in it — or worse, searches `from:flutter` and paints an empty
+        // tweet where a Reddit card should be.
+        final split = splitGroupMembers(members);
+        final pluginMembers = split.pluginMembers;
+        final users = split.xMembers;
 
         var chunks = partition(users, feedChunkSize)
             .map(

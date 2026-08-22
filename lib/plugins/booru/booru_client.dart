@@ -57,9 +57,15 @@ class BooruClient {
   String get apiKey =>
       (prefs.get<String>(optionPluginBooruApiKey) ?? '').trim();
 
-  BooruRating get maxRating =>
-      BooruRating.tryParse(prefs.get<String>(optionPluginBooruMaxRating)) ??
-      BooruRating.general;
+  BooruRating get maxRating {
+    final stored = BooruRating.tryParse(
+      prefs.get<String>(optionPluginBooruMaxRating),
+    );
+    if (stored != null) return stored;
+    return booruHostIsMostlyExplicit(host)
+        ? BooruRating.explicit
+        : BooruRating.general;
+  }
 
   Set<String> get mutedTags {
     final raw = prefs.get<String>(optionPluginBooruMutedTags) ?? '[]';

@@ -13,14 +13,23 @@ class ProfileMediaGrid extends StatefulWidget {
   final BasePrefService pref;
   final MediaFilter filter;
 
-  const ProfileMediaGrid({super.key, required this.user, required this.pref, this.filter = MediaFilter.all});
+  const ProfileMediaGrid({
+    super.key,
+    required this.user,
+    required this.pref,
+    this.filter = MediaFilter.all,
+  });
 
   @override
   State<ProfileMediaGrid> createState() => _ProfileMediaGridState();
 }
 
-class _ProfileMediaGridState extends State<ProfileMediaGrid> {
+class _ProfileMediaGridState extends State<ProfileMediaGrid>
+    with AutomaticKeepAliveClientMixin<ProfileMediaGrid> {
   late CursorPagingController<String, MediaGridItem> _paging;
+
+  @override
+  bool get wantKeepAlive => true;
 
   static const int pageSize = 20;
 
@@ -95,6 +104,7 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SensitiveMediaGate(
       sensitive: widget.user.possiblySensitive ?? false,
       errorMessage: L10n.current.possibly_sensitive_profile,
@@ -102,7 +112,9 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> {
       child: MediaGrid(
         controller: _paging.pagingController,
         firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
-        newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+        newPageErrorPrefix: L10n.of(
+          context,
+        ).unable_to_load_the_next_page_of_tweets,
         emptyMessage: L10n.of(context).could_not_find_any_tweets_by_this_user,
       ),
     );
