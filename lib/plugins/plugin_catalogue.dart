@@ -37,7 +37,40 @@ List<String> parsePluginCatalogue(String body) {
 
   return [
     for (final entry in plugins)
-      if (entry is Map && entry['id'] is String && entry['available'] != false) entry['id'] as String,
+      if (entry is Map && entry['id'] is String && entry['available'] != false)
+        entry['id'] as String,
+  ];
+}
+
+/// Every id the document names, including ones held back with `available: false`.
+Set<String> parsePluginCatalogueMentioned(String body) {
+  final Object? decoded = jsonDecode(body);
+  if (decoded is! Map) {
+    return const {};
+  }
+  final plugins = decoded['plugins'];
+  if (plugins is! List) {
+    return const {};
+  }
+  return {
+    for (final entry in plugins)
+      if (entry is Map && entry['id'] is String) entry['id'] as String,
+  };
+}
+
+/// What this build should offer after a catalogue fetch.
+///
+/// The published file can only *withdraw* an id it names (`available: false`).
+/// An id this APK knows that the document never mentions stays on offer — a
+/// stale `main` catalogue used to hide Hacker News the moment it was fetched.
+List<String> offeredPluginIds({
+  required Iterable<String> builtInIds,
+  required List<String> catalogueOffered,
+  required Set<String> catalogueMentioned,
+}) {
+  return [
+    for (final id in builtInIds)
+      if (catalogueOffered.contains(id) || !catalogueMentioned.contains(id)) id,
   ];
 }
 
@@ -47,8 +80,8 @@ class PluginCatalogue {
   final http.Client client;
 
   PluginCatalogue(this.prefs, {Logger? log, http.Client? client})
-      : log = log ?? Logger('PluginCatalogue'),
-        client = client ?? http.Client();
+    : log = log ?? Logger('PluginCatalogue'),
+      client = client ?? http.Client();
 
   /// The last document that arrived, so the store has something to show before
   /// — or without — a round trip.
@@ -68,18 +101,23 @@ class PluginCatalogue {
 
   /// True once a catalogue has been read at least once, which is what tells an
   /// empty list apart from "we have never asked".
-  bool get hasCache => (prefs.get<String>(optionPluginCatalogueCache) ?? '').isNotEmpty;
+  bool get hasCache =>
+      (prefs.get<String>(optionPluginCatalogueCache) ?? '').isNotEmpty;
 
   /// Fetches the catalogue and remembers it. Returns null when it could not be
   /// read, leaving whatever was cached in place.
   Future<List<String>?> fetch() async {
-    final url = prefs.get<String>(optionPluginCatalogueUrl) ?? defaultPluginCatalogueUrl;
+    final url =
+        prefs.get<String>(optionPluginCatalogueUrl) ??
+        defaultPluginCatalogueUrl;
     if (url.isEmpty) {
       return null;
     }
 
     try {
-      final response = await client.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      final response = await client
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode != 200) {
         log.warning('The plugin catalogue answered ${response.statusCode}');
         return null;
@@ -87,7 +125,10 @@ class PluginCatalogue {
 
       final ids = parsePluginCatalogue(response.body);
       await prefs.set(optionPluginCatalogueCache, response.body);
-      await prefs.set(optionPluginCatalogueFetchedAt, DateTime.now().toIso8601String());
+      await prefs.set(
+        optionPluginCatalogueFetchedAt,
+        DateTime.now().toIso8601String(),
+      );
       return ids;
     } catch (e) {
       log.warning('Unable to fetch the plugin catalogue: $e');

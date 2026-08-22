@@ -12,6 +12,7 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
@@ -302,7 +303,8 @@ class _ExplorePane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: context.read<MastodonExploreStore>().refresh,
       child: FeedListView(
-        controller: scrollController,
+        controller: pluginInnerScrollController(context, scrollController),
+        padding: pluginFeedPadding(context),
         itemCount: page.posts.length + (page.tags.isEmpty ? 0 : 1),
         itemBuilder: (context, index) {
           if (page.tags.isNotEmpty && index == 0) {
@@ -374,10 +376,10 @@ class _PublicPane extends StatelessWidget {
     return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
       store: store,
       onLoading: (_) => store.state.isNotEmpty
-          ? _list(store.state, store)
+          ? _list(context, store.state, store)
           : const Center(child: CircularProgressIndicator()),
       onError: (_, error) => store.state.isNotEmpty
-          ? _list(store.state, store)
+          ? _list(context, store.state, store)
           : Padding(
               padding: const EdgeInsets.all(24),
               child: FullPageErrorWidget(
@@ -395,12 +397,16 @@ class _PublicPane extends StatelessWidget {
             onRefresh: store.refresh,
           );
         }
-        return _list(posts, store);
+        return _list(context, posts, store);
       },
     );
   }
 
-  Widget _list(List<MastodonPost> posts, MastodonPublicFeedStore store) {
+  Widget _list(
+    BuildContext context,
+    List<MastodonPost> posts,
+    MastodonPublicFeedStore store,
+  ) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification.metrics.pixels >
@@ -412,6 +418,7 @@ class _PublicPane extends StatelessWidget {
       child: RefreshIndicator(
         onRefresh: store.refresh,
         child: FeedListView(
+          padding: pluginFeedPadding(context),
           itemCount: posts.length + (store.loadingMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index >= posts.length) {
@@ -490,6 +497,7 @@ class _FollowingPane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
       child: FeedListView(
+        padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
           key: ValueKey(posts[index].id),
@@ -505,54 +513,71 @@ Future<String?> showMastodonAddAccountDialog(
   BuildContext context, {
   bool lookup = false,
 }) {
-  final controller = TextEditingController();
-
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      String? error;
-
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(
-            lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: l10n.plugin_mastodon_handle_hint,
-              errorText: error,
-            ),
-            onSubmitted: (_) {
-              final acct = normaliseMastodonAcct(controller.text);
-              if (acct == null) {
-                setState(() => error = l10n.plugin_mastodon_invalid_handle);
-              } else {
-                Navigator.pop(context, acct);
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                final acct = normaliseMastodonAcct(controller.text);
-                if (acct == null) {
-                  setState(() => error = l10n.plugin_mastodon_invalid_handle);
-                } else {
-                  Navigator.pop(context, acct);
-                }
-              },
-              child: Text(l10n.ok),
-            ),
-          ],
-        ),
-      );
-    },
+    builder: (_) => _MastodonAddAccountDialog(lookup: lookup),
   );
+}
+
+class _MastodonAddAccountDialog extends StatefulWidget {
+  final bool lookup;
+
+  const _MastodonAddAccountDialog({required this.lookup});
+
+  @override
+  State<_MastodonAddAccountDialog> createState() =>
+      _MastodonAddAccountDialogState();
+}
+
+class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = L10n.of(context);
+    final acct = normaliseMastodonAcct(_controller.text);
+    if (acct == null) {
+      setState(() => _error = l10n.plugin_mastodon_invalid_handle);
+    } else {
+      Navigator.pop(context, acct);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(
+        widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: l10n.plugin_mastodon_handle_hint,
+          errorText: _error,
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _submit, child: Text(l10n.ok)),
+      ],
+    );
+  }
 }

@@ -12,6 +12,8 @@ import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 
 final NumberFormat _pixivCountFormat = NumberFormat.compact(locale: 'en_US');
 
@@ -47,7 +49,8 @@ class PixivIllustGrid extends StatelessWidget {
 
   Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts) {
     final grid = CustomScrollView(
-      controller: scrollController,
+      controller: pluginInnerScrollController(context, scrollController),
+      primary: PluginEmbedded.maybeOf(context) ? false : null,
       scrollCacheExtent: const ScrollCacheExtent.pixels(1200),
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [

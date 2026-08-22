@@ -280,10 +280,20 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   /// Unfiltered merged posts (Home chips / Inbox read from this).
   List<SubstackPost> get allPosts => _allPosts;
 
+  DateTime? get fetchedAt => _fetchedAt;
+
   /// When the home strip remounts this tab, skip a full refetch if the last
   /// one is still inside [kAccountPostsCacheTtl]. Pull-to-refresh passes
   /// [force].
   Future<void> refresh({bool force = false}) async {
+    if (publications.state.isEmpty) {
+      if (_allPosts.isNotEmpty) {
+        _allPosts = const [];
+        update(const SubstackFeedSnapshot());
+      }
+      _fetchedAt ??= DateTime.now();
+      return;
+    }
     if (!force &&
         _allPosts.isNotEmpty &&
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
@@ -507,16 +517,17 @@ class SubstackAddPublicationStore extends Store<SubstackPublication?> {
   SubstackAddPublicationStore(this.client) : super(null);
 
   Future<SubstackPublication> lookup(String input) async {
-    final base = resolveSubstackBase(input);
-    if (base == null) {
+    if (input.trim().isEmpty) {
       final error = SubstackClientException('Invalid Substack URL or handle');
       setError(error);
       throw error;
     }
-    await execute(() => client.fetchPublication(base));
+    await execute(() => client.resolvePublication(input));
     final result = state;
     if (result == null) {
-      throw SubstackClientException('Publication not found');
+      final error = SubstackNotPublicationException();
+      setError(error);
+      throw error;
     }
     return result;
   }

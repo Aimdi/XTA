@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/plugin_backup.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/plugin_storage.dart';
+import 'package:xta/utils/pref_lists.dart';
 
 /// Built-in XTA plugin descriptor. Plugins are read-oriented feature packs;
 /// they must not add X posting / compose capabilities.
@@ -99,6 +101,21 @@ abstract class XtaPlugin {
     await erasePluginStorage(tables: tables, caches: caches);
     await resetPreferences(prefs);
     await setEnabled(prefs, false);
+
+    final pinned = stringListPref(prefs, optionHomeFeedStripPlugins);
+    if (pinned != null && pinned.contains(id)) {
+      await prefs.set(
+        optionHomeFeedStripPlugins,
+        pinned.where((e) => e != id).toList(),
+      );
+    }
+    final seeded = stringListPref(prefs, optionSeededStripPlugins);
+    if (seeded != null && seeded.contains(id)) {
+      await prefs.set(
+        optionSeededStripPlugins,
+        seeded.where((e) => e != id).toList(),
+      );
+    }
 
     final tab = homeTabPrefKey;
     if (tab != null) {

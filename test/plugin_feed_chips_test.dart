@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
@@ -8,9 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/plugins/reddit/reddit_plugin.dart';
 import 'package:xta/subscriptions/_groups.dart';
-import 'package:xta/subscriptions/plugin_feed_chips.dart';
 
 SubscriptionGroup _group(String id, String name) => SubscriptionGroup(
   id: id,
@@ -27,7 +24,7 @@ class _FakeGroupsModel extends GroupsModel {
   }
 }
 
-Map<String, Object> _hiddenTabPlugins() => {
+Map<String, Object> _enabledPluginsHiddenTabs() => {
   optionPluginThreadsEnabled: true,
   optionPluginThreadsShowTab: false,
   optionPluginBlueskyEnabled: true,
@@ -78,55 +75,13 @@ Widget _page(BasePrefService prefs, List<SubscriptionGroup> groups) {
   );
 }
 
-Widget _chipApp(Widget child) {
-  return MaterialApp(
-    localizationsDelegates: const [
-      L10n.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: L10n.delegate.supportedLocales,
-    home: Scaffold(body: child),
-  );
-}
-
 void main() {
   final groups = [_group('a', 'Ai'), _group('b', 'Ai Art')];
 
-  test(
-    'pluginFeedsOnGroupsTab lists only enabled plugins that hid their tab',
-    () {
-      final listed = pluginFeedsOnGroupsTab(_prefs(_hiddenTabPlugins()));
-      expect(listed.map((p) => p.id).toList(), [
-        pluginIdThreads,
-        pluginIdBluesky,
-        pluginIdMastodon,
-        pluginIdTiktok,
-        pluginIdReddit,
-        pluginIdSubstack,
-        pluginIdPixiv,
-        pluginIdBooru,
-      ]);
-
-      final withTab = pluginFeedsOnGroupsTab(
-        _prefs({..._hiddenTabPlugins(), optionPluginRedditShowTab: true}),
-      );
-      expect(withTab.map((p) => p.id), isNot(contains(pluginIdReddit)));
-
-      expect(pluginFeedsOnGroupsTab(_prefs()).map((p) => p.id), isEmpty);
-    },
-  );
-
-  testWidgets('eight hidden-tab plugins render as chips, not rows', (
+  testWidgets('hidden-tab plugins are not site-switcher chips on Groups', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(390 * 3, 800 * 3);
-    tester.view.devicePixelRatio = 3;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-
-    await tester.pumpWidget(_page(_prefs(_hiddenTabPlugins()), groups));
+    await tester.pumpWidget(_page(_prefs(_enabledPluginsHiddenTabs()), groups));
     await tester.pump();
 
     for (final name in [
@@ -139,13 +94,11 @@ void main() {
       'Pixiv',
       'Booru',
     ]) {
-      expect(find.text(name), findsOneWidget);
+      expect(find.text(name), findsNothing, reason: name);
     }
-    expect(find.byIcon(Icons.chevron_right), findsNothing);
-    expect(find.byType(ListTile), findsNothing);
-    expect(find.byType(Wrap), findsOneWidget);
-    expect(find.byKey(pluginFeedChipKey(pluginIdReddit)), findsOneWidget);
-    expect(tester.getSize(find.byType(Wrap)).height, lessThan(180));
+    expect(find.byType(Wrap), findsNothing);
+    expect(find.text('Ai'), findsOneWidget);
+    expect(find.text('Ai Art'), findsOneWidget);
   });
 
   testWidgets('a plugin that still has a home tab is not on the Groups board', (
@@ -164,58 +117,11 @@ void main() {
 
     expect(find.text('Reddit'), findsNothing);
     expect(find.byType(Wrap), findsNothing);
-  });
-
-  testWidgets('no chips and no divider when every plugin is off', (
-    tester,
-  ) async {
-    await tester.pumpWidget(_page(_prefs(), groups));
-    await tester.pump();
-
-    expect(find.byType(Wrap), findsNothing);
-    expect(find.byType(Divider), findsNothing);
     expect(find.text('Ai'), findsOneWidget);
   });
 
-  testWidgets('tapping a chip calls onTap', (tester) async {
-    var taps = 0;
-    await tester.pumpWidget(
-      _chipApp(PluginFeedChip(plugin: RedditPlugin(), onTap: () => taps++)),
-    );
-    await tester.pump();
-
-    await tester.tap(find.text('Reddit'));
-    expect(taps, 1);
-  });
-
-  testWidgets('chip tooltip and semantics use the plugin title', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _chipApp(PluginFeedChip(plugin: RedditPlugin(), onTap: () {})),
-    );
-    await tester.pump();
-
-    expect(find.byTooltip('Reddit'), findsOneWidget);
-    final semantics = tester.getSemantics(find.text('Reddit'));
-    expect(semantics.label, contains('Reddit'));
-    expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
-  });
-
-  testWidgets('chips sit in the scroll header above the group grid', (
-    tester,
-  ) async {
-    await tester.pumpWidget(_page(_prefs(_hiddenTabPlugins()), groups));
-    await tester.pump();
-
-    expect(
-      tester.getTopLeft(find.byType(Wrap)).dy,
-      lessThan(tester.getTopLeft(find.text('Ai')).dy),
-    );
-  });
-
   testWidgets('the board is not wrapped in AnimatedSwitcher', (tester) async {
-    await tester.pumpWidget(_page(_prefs(_hiddenTabPlugins()), groups));
+    await tester.pumpWidget(_page(_prefs(_enabledPluginsHiddenTabs()), groups));
     await tester.pump();
 
     expect(find.byType(AnimatedSwitcher), findsNothing);

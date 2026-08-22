@@ -319,7 +319,7 @@ class _UserSearchResultList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<SearchUsersModel, List<UserWithExtra>>.transition(
+    return ScopedBuilder<SearchUsersModel, List<UserWithExtra>>(
       store: store,
       onLoading: (_) => const Center(child: CircularProgressIndicator()),
       onError: (_, error) => FullPageErrorWidget(

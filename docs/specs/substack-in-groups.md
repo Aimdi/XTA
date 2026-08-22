@@ -10,12 +10,11 @@ Two separate wishes, with very different costs.
 
 `XtaPlugin` gained `homeTabPrefKey`; when a plugin declares one, the plugin
 store offers **Show as a tab**, and `HomeModel.loadPages` skips its tab when it
-is off. Turned off, the Substack feed appears as a row in the **Groups** tab and
-opens as a pushed route, which is where feeds live. The reader, archive and
-add-publication screens are untouched.
+is off. Turned off, the Substack feed is pinned on the **home strip** next to
+Following / For you — Groups is for membership, not switching sites. The
+reader, archive and add-publication screens are untouched.
 
-Only one entry point exists at a time: the Groups row appears exactly when the
-plugin is enabled and its tab is off.
+A publication added to a group still appears in that group's timeline.
 
 ## 2. Newsletters inside a normal group — shipped (interleaving)
 

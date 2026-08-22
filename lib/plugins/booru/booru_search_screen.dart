@@ -217,7 +217,7 @@ class _BooruSearchScreenState extends State<BooruSearchScreen> {
                 ],
               ],
             )
-          : ScopedBuilder<BooruFeedStore, List<BooruPost>>.transition(
+          : ScopedBuilder<BooruFeedStore, List<BooruPost>>(
               store: _results!,
               onLoading: (_) =>
                   const Center(child: CircularProgressIndicator()),
