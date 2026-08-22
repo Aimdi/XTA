@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_triple/flutter_triple.dart';
@@ -6,6 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_post_source.dart';
@@ -17,13 +19,21 @@ import 'package:xta/plugins/reddit/reddit_post_source.dart';
 /// first load and the preference cleared.
 class RedditSubredditsStore extends Store<List<String>> {
   final BasePrefService prefs;
+  bool _hydrated = false;
 
   RedditSubredditsStore(this.prefs) : super(const []);
 
-  Future<void> load() async {
+  /// Home-strip remounts call this on every swipe. An empty following list is
+  /// a real answer — do not hit SQLite again just to paint the same empty pane.
+  Future<void> load({bool force = false}) async {
+    if (_hydrated && !force) {
+      return;
+    }
     await execute(() async {
       await _importFromPrefs();
-      return _read();
+      final names = await _read();
+      _hydrated = true;
+      return names;
     });
   }
 
@@ -115,6 +125,9 @@ class RedditFeedStore extends Store<List<RedditPost>> {
   /// store because this is the Reddit object every surface can already see.
   final RedditPostSource source;
 
+  DateTime? _fetchedAt;
+  Future<void>? _inFlight;
+
   RedditFeedStore(
     RedditClient client,
     this.subreddits,
@@ -124,12 +137,48 @@ class RedditFeedStore extends Store<List<RedditPost>> {
   }) : source = source ?? RedditPostSource(client, prefs, auth: auth),
        super(const []);
 
+  /// When the last successful following merge finished. Tests assert remounts
+  /// keep it.
+  DateTime? get fetchedAt => _fetchedAt;
+
   /// [sort] defaults to the reader's stored choice rather than hot, so the tab
   /// and the timeline agree about what they are showing.
   ///
   /// [force] is the pull-to-refresh: it goes past the shared cache, which is
   /// otherwise how the reader would pull down and be handed the same posts.
+  /// Home-strip remounts omit [force] so an empty following list — or a fresh
+  /// first page — is not fetched again on every swipe from Für dich.
   Future<void> refresh({RedditSort? sort, bool force = false}) async {
+    if (subreddits.state.isEmpty) {
+      if (state.isNotEmpty) {
+        update(const []);
+      }
+      _fetchedAt ??= DateTime.now();
+      return;
+    }
+
+    if (!force && state.isNotEmpty && pluginFeedIsFresh(_fetchedAt)) {
+      return;
+    }
+
+    final existing = _inFlight;
+    if (existing != null && !force) {
+      await existing;
+      return;
+    }
+
+    final done = Completer<void>();
+    _inFlight = done.future;
+    try {
+      await _refreshBody(sort: sort, force: force);
+      _fetchedAt = DateTime.now();
+    } finally {
+      _inFlight = null;
+      done.complete();
+    }
+  }
+
+  Future<void> _refreshBody({RedditSort? sort, required bool force}) async {
     if (state.isNotEmpty) {
       try {
         update(

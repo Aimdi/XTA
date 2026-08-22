@@ -5,7 +5,12 @@ import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart'
-    show LicenseEntryWithLineBreaks, LicenseRegistry, kReleaseMode;
+    show
+        FlutterError,
+        FlutterErrorDetails,
+        LicenseEntryWithLineBreaks,
+        LicenseRegistry,
+        kReleaseMode;
 import 'package:flutter/cupertino.dart' show CupertinoLocalizations;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,6 +33,7 @@ import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_model.dart';
@@ -41,6 +47,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
+import 'package:xta/plugins/bluesky/bluesky_feeds_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
@@ -54,6 +61,10 @@ import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_store.dart';
+import 'package:xta/plugins/hackernews/hn_client.dart';
+import 'package:xta/plugins/hackernews/hn_store.dart';
+import 'package:xta/plugins/rss/rss_client.dart';
+import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
@@ -511,6 +522,20 @@ Future<void> main() async {
       optionPluginKarakeepServerUrl: '',
       optionPluginKarakeepApiKey: '',
       optionSeededPluginTabs: <String>[],
+      optionSeededStripPlugins: <String>[],
+      optionHomeRecentNetworks: <String>[],
+      optionPluginHnEnabled: false,
+      optionPluginHnShowTab: true,
+      optionPluginHnLikedPosts: '[]',
+      optionPluginHnSavedPosts: '[]',
+      optionPluginHnFollows: '[]',
+      optionPluginHnSearchHistory: '[]',
+      optionPluginRssEnabled: false,
+      optionPluginRssShowTab: true,
+      optionPluginRssInHomeFeed: false,
+      optionPluginRssFeeds: '[]',
+      optionPluginRssReadIds: '[]',
+      optionPluginRssTags: '{}',
       optionPluginRedditEnabled: false,
       optionPluginRedditClientId: '',
       optionPluginRedditInHomeFeed: false,
@@ -545,6 +570,9 @@ Future<void> main() async {
       optionPluginBlueskyInstance: kBlueskyDefaultAppView,
       optionPluginBlueskyLikedPosts: '[]',
       optionPluginBlueskySearchHistory: '[]',
+      optionPluginBlueskyPinnedFeeds: '[]',
+      optionPluginBlueskyPinnedLists: '[]',
+      optionPluginBlueskyHandle: '',
       optionPluginMastodonEnabled: false,
       optionPluginMastodonShowTab: true,
       optionPluginMastodonInstance: '',
@@ -751,6 +779,8 @@ Future<void> main() async {
     final blueskyAccounts = BlueskyAccountsStore();
     final blueskyLikes = BlueskyLikesStore(prefService);
     final blueskyFeed = BlueskyFeedStore(blueskyClient, blueskyAccounts);
+    final blueskyAlgos = BlueskyAlgoStore(blueskyClient, prefService);
+    final blueskyLists = BlueskyListsStore(blueskyClient, prefService);
     final mastodonClient = MastodonClient();
     final mastodonAccounts = MastodonAccountsStore();
     final mastodonFeed = MastodonFeedStore(
@@ -775,6 +805,16 @@ Future<void> main() async {
     final ehClient = EhClient(prefService);
     final ehFavorites = EhFavoritesStore();
     final ehHistory = EhHistoryStore();
+    final hnClient = HackerNewsClient();
+    final hnLikes = HnLikesStore(prefService);
+    final hnSaved = HnSavedStore(prefService);
+    final hnFollows = HnFollowsStore(prefService);
+    final hnSearchHistory = HnSearchHistoryStore(prefService);
+    final rssClient = RssClient();
+    final rssFeeds = RssFeedsStore(prefService);
+    final rssRead = RssReadStore(prefService);
+    final rssTags = RssTagsStore(prefService);
+    final rssTimeline = RssTimelineStore(rssClient, rssFeeds);
     final tiktokClient = TikTokClient(prefService);
     final tiktokFollows = TikTokFollowsStore();
     final tiktokLikes = TikTokLikesStore(prefService);
@@ -817,8 +857,6 @@ Future<void> main() async {
         substackLikes.load(),
         substackSaved.load(),
       ],
-      if (prefService.get<bool>(optionPluginStocksEnabled) == true)
-        stocksWatchlist.load(),
       if (prefService.get<bool>(optionPluginThreadsEnabled) == true) ...[
         threadsAccounts.load(),
         threadsLikes.load(),
@@ -829,145 +867,192 @@ Future<void> main() async {
       ],
       if (prefService.get<bool>(optionPluginMastodonEnabled) == true)
         mastodonAccounts.load(),
-      if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
-        pixivMute.load(),
-        pixivSearchHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
-        booruTags.load(),
-        booruMute.load(),
-      ],
-      if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
-        ehFavorites.load(),
-        ehHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
-        tiktokFollows.load(),
-        tiktokLikes.load(),
-        tiktokSearchHistory.load(),
-      ],
-      if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
-        instagramFollows.load(),
-        instagramLikes.load(),
-        instagramSearchHistory.load(),
-      ],
     ]);
 
-    runApp(
-      PrefService(
-        service: prefService,
-        child: MultiProvider(
-          providers: [
-            Provider(create: (context) => groupsModel),
-            Provider(create: (context) => groupUnreadStore),
-            Provider(create: (context) => feedSessionCache),
-            Provider(
-              create: (context) => VideoControllerPool(maxSize: kVideoPoolSize),
-            ),
-            Provider(create: (context) => homeModel),
-            ChangeNotifierProvider(create: (context) => importDataModel),
-            Provider(create: (context) => subscriptionsModel),
-            Provider(create: (context) => SavedTweetModel()),
-            Provider(create: (context) => AntennaModel()),
-            Provider(create: (context) => SavedTweetFolderModel()),
-            Provider(create: (context) => LikedTweetModel()),
-            Provider(create: (context) => SearchUsersModel()),
-            Provider(create: (context) => trendLocationModel),
-            Provider(create: (context) => TrendLocationsModel()),
-            Provider(create: (context) => TrendsModel(trendLocationModel)),
-            Provider(create: (_) => deepmarksClient),
-            Provider(create: (_) => podcast),
-            Provider(create: (_) => immichClient),
-            Provider(create: (_) => karakeepClient),
-            Provider(create: (_) => redditClient),
-            Provider(create: (_) => redditIcons),
-            Provider(create: (_) => redditGalleries),
-            Provider(create: (_) => redditVotes),
-            Provider(create: (_) => redditSaved),
-            Provider(create: (_) => redditAuth),
-            Provider(create: (_) => redditSubreddits),
-            Provider(create: (_) => redditFeed),
-            Provider(create: (_) => stocksWatchlist),
-            Provider(create: (_) => tickerQuotes),
-            Provider(create: (_) => speech),
-            Provider(create: (_) => CombinedGroupsStore()),
-            Provider(
-              create: (_) => FeedTabStore(
-                feedTabFromId(
-                  prefService.get<String>(optionHomeDefaultFeedTab),
+    // Gallery / media plugins are not on For You's first paint. Let them race
+    // the first frame instead of holding startup for mute lists and watches.
+    unawaited(
+      Future.wait([
+        if (prefService.get<bool>(optionPluginStocksEnabled) == true)
+          stocksWatchlist.load(),
+        if (prefService.get<bool>(optionPluginPixivEnabled) == true) ...[
+          pixivMute.load(),
+          pixivSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginBooruEnabled) == true) ...[
+          booruTags.load(),
+          booruMute.load(),
+        ],
+        if (prefService.get<bool>(optionPluginEhEnabled) == true) ...[
+          ehFavorites.load(),
+          ehHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginHnEnabled) == true) ...[
+          hnLikes.load(),
+          hnSaved.load(),
+          hnFollows.load(),
+          hnSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginRssEnabled) == true) ...[
+          rssFeeds.load(),
+          rssRead.load(),
+          rssTags.load(),
+        ],
+        if (prefService.get<bool>(optionPluginTiktokEnabled) == true) ...[
+          tiktokFollows.load(),
+          tiktokLikes.load(),
+          tiktokSearchHistory.load(),
+        ],
+        if (prefService.get<bool>(optionPluginInstagramEnabled) == true) ...[
+          instagramFollows.load(),
+          instagramLikes.load(),
+          instagramSearchHistory.load(),
+        ],
+      ]),
+    );
+
+    runZonedGuarded(
+      () {
+        runApp(
+          PrefService(
+            service: prefService,
+            child: MultiProvider(
+              providers: [
+                Provider(create: (context) => groupsModel),
+                Provider(create: (context) => groupUnreadStore),
+                Provider(create: (context) => feedSessionCache),
+                Provider(
+                  create: (context) =>
+                      VideoControllerPool(maxSize: kVideoPoolSize),
                 ),
-              ),
+                Provider(create: (context) => homeModel),
+                ChangeNotifierProvider(create: (context) => importDataModel),
+                Provider(create: (context) => subscriptionsModel),
+                Provider(create: (context) => SavedTweetModel()),
+                Provider(create: (context) => AntennaModel()),
+                Provider(create: (context) => SavedTweetFolderModel()),
+                Provider(create: (context) => LikedTweetModel()),
+                Provider(create: (context) => SearchUsersModel()),
+                Provider(create: (context) => trendLocationModel),
+                Provider(create: (context) => TrendLocationsModel()),
+                Provider(create: (context) => TrendsModel(trendLocationModel)),
+                Provider(create: (_) => deepmarksClient),
+                Provider(create: (_) => podcast),
+                Provider(create: (_) => immichClient),
+                Provider(create: (_) => karakeepClient),
+                Provider(create: (_) => redditClient),
+                Provider(create: (_) => redditIcons),
+                Provider(create: (_) => redditGalleries),
+                Provider(create: (_) => redditVotes),
+                Provider(create: (_) => redditSaved),
+                Provider(create: (_) => redditAuth),
+                Provider(create: (_) => redditSubreddits),
+                Provider(create: (_) => redditFeed),
+                Provider(create: (_) => stocksWatchlist),
+                Provider(create: (_) => tickerQuotes),
+                Provider(create: (_) => speech),
+                Provider(create: (_) => CombinedGroupsStore()),
+                Provider(
+                  create: (_) => FeedTabStore(
+                    feedTabFromId(
+                      prefService.get<String>(optionHomeDefaultFeedTab),
+                    ),
+                  ),
+                ),
+                Provider(create: (_) => SearchScopeStore()),
+                Provider(create: (_) => DiscoverQueryStore()),
+                Provider(create: (_) => FeedStripStore(prefService)),
+                Provider(create: (_) => NetworkRecentsStore(prefService)),
+                Provider(create: (_) => HomeAccountFilterStore(prefService)),
+                Provider(create: (_) => ChromeAvatarStore(prefService)),
+                Provider(create: (_) => substackClient),
+                Provider(create: (_) => substackPublications),
+                Provider(
+                  create: (context) => SubstackFeedStore(
+                    context.read<SubstackClient>(),
+                    substackPublications,
+                  ),
+                ),
+                Provider(
+                  create: (context) => SubstackAddPublicationStore(
+                    context.read<SubstackClient>(),
+                  ),
+                ),
+                Provider(
+                  create: (context) => SubstackNotesStore(
+                    context.read<SubstackClient>(),
+                    substackPublications,
+                  ),
+                ),
+                Provider(create: (_) => substackRead),
+                Provider(create: (_) => substackLikes),
+                Provider(create: (_) => substackSaved),
+                Provider(create: (_) => threadsClient),
+                Provider(create: (_) => threadsDirect),
+                Provider(create: (_) => threadsApi),
+                Provider(create: (_) => threadsAccounts),
+                Provider(create: (_) => threadsLikes),
+                Provider(create: (_) => threadsFeed),
+                Provider(create: (_) => blueskyClient),
+                Provider(create: (_) => blueskyAccounts),
+                Provider(create: (_) => blueskyLikes),
+                Provider(create: (_) => blueskyFeed),
+                Provider(create: (_) => blueskyAlgos),
+                Provider(create: (_) => blueskyLists),
+                Provider(create: (_) => mastodonClient),
+                Provider(create: (_) => mastodonAccounts),
+                Provider(create: (_) => mastodonFeed),
+                Provider(create: (_) => mastodonExplore),
+                Provider(create: (_) => mastodonLocal),
+                Provider(create: (_) => mastodonFederated),
+                Provider(create: (_) => pixivClient),
+                Provider(create: (_) => pixivMute),
+                Provider(create: (_) => pixivSearchHistory),
+                Provider(create: (_) => pixivBookmarks),
+                Provider(create: (_) => pixivFeed),
+                Provider(create: (_) => booruClient),
+                Provider(create: (_) => booruTags),
+                Provider(create: (_) => booruMute),
+                Provider(create: (_) => ehClient),
+                Provider(create: (_) => ehFavorites),
+                Provider(create: (_) => ehHistory),
+                Provider(create: (_) => hnClient),
+                Provider(create: (_) => hnLikes),
+                Provider(create: (_) => hnSaved),
+                Provider(create: (_) => hnFollows),
+                Provider(create: (_) => hnSearchHistory),
+                Provider(create: (_) => rssClient),
+                Provider(create: (_) => rssFeeds),
+                Provider(create: (_) => rssRead),
+                Provider(create: (_) => rssTags),
+                Provider(create: (_) => rssTimeline),
+                Provider(create: (_) => tiktokClient),
+                Provider(create: (_) => tiktokFollows),
+                Provider(create: (_) => tiktokLikes),
+                Provider(create: (_) => tiktokSearchHistory),
+                Provider(create: (_) => tiktokFollowing),
+                Provider(create: (_) => instagramClient),
+                Provider(create: (_) => instagramFollows),
+                Provider(create: (_) => instagramLikes),
+                Provider(create: (_) => instagramSearchHistory),
+                Provider(create: (_) => instagramFollowing),
+                ChangeNotifierProvider(
+                  create: (_) => VideoContextState(
+                    prefService.get(optionMediaDefaultMute),
+                  ),
+                ),
+              ],
+              child: FritterApp(),
             ),
-            Provider(create: (_) => SearchScopeStore()),
-            Provider(create: (_) => FeedStripStore(prefService)),
-            Provider(create: (_) => HomeAccountFilterStore(prefService)),
-            Provider(create: (_) => ChromeAvatarStore(prefService)),
-            Provider(create: (_) => substackClient),
-            Provider(create: (_) => substackPublications),
-            Provider(
-              create: (context) => SubstackFeedStore(
-                context.read<SubstackClient>(),
-                substackPublications,
-              ),
-            ),
-            Provider(
-              create: (context) =>
-                  SubstackAddPublicationStore(context.read<SubstackClient>()),
-            ),
-            Provider(
-              create: (context) => SubstackNotesStore(
-                context.read<SubstackClient>(),
-                substackPublications,
-              ),
-            ),
-            Provider(create: (_) => substackRead),
-            Provider(create: (_) => substackLikes),
-            Provider(create: (_) => substackSaved),
-            Provider(create: (_) => threadsClient),
-            Provider(create: (_) => threadsDirect),
-            Provider(create: (_) => threadsApi),
-            Provider(create: (_) => threadsAccounts),
-            Provider(create: (_) => threadsLikes),
-            Provider(create: (_) => threadsFeed),
-            Provider(create: (_) => blueskyClient),
-            Provider(create: (_) => blueskyAccounts),
-            Provider(create: (_) => blueskyLikes),
-            Provider(create: (_) => blueskyFeed),
-            Provider(create: (_) => mastodonClient),
-            Provider(create: (_) => mastodonAccounts),
-            Provider(create: (_) => mastodonFeed),
-            Provider(create: (_) => mastodonExplore),
-            Provider(create: (_) => mastodonLocal),
-            Provider(create: (_) => mastodonFederated),
-            Provider(create: (_) => pixivClient),
-            Provider(create: (_) => pixivMute),
-            Provider(create: (_) => pixivSearchHistory),
-            Provider(create: (_) => pixivBookmarks),
-            Provider(create: (_) => pixivFeed),
-            Provider(create: (_) => booruClient),
-            Provider(create: (_) => booruTags),
-            Provider(create: (_) => booruMute),
-            Provider(create: (_) => ehClient),
-            Provider(create: (_) => ehFavorites),
-            Provider(create: (_) => ehHistory),
-            Provider(create: (_) => tiktokClient),
-            Provider(create: (_) => tiktokFollows),
-            Provider(create: (_) => tiktokLikes),
-            Provider(create: (_) => tiktokSearchHistory),
-            Provider(create: (_) => tiktokFollowing),
-            Provider(create: (_) => instagramClient),
-            Provider(create: (_) => instagramFollows),
-            Provider(create: (_) => instagramLikes),
-            Provider(create: (_) => instagramSearchHistory),
-            Provider(create: (_) => instagramFollowing),
-            ChangeNotifierProvider(
-              create: (_) =>
-                  VideoContextState(prefService.get(optionMediaDefaultMute)),
-            ),
-          ],
-          child: FritterApp(),
-        ),
-      ),
+          ),
+        );
+      },
+      (error, stack) {
+        FlutterError.dumpErrorToConsole(
+          FlutterErrorDetails(exception: error, stack: stack),
+        );
+        unawaited(CrashReporter.instance?.report(error, stack));
+      },
     );
 
     // libmpv is a large library to dlopen and a reader who never opens a video
@@ -995,6 +1080,7 @@ class _FritterAppState extends State<FritterApp> {
   final GlobalKey<NavigatorState> _navigatorKey =
       GlobalKey<NavigatorState>(); // NEW: Navigator key
 
+  var _prefsListening = false;
   String _xLookBackground = xLookBackgroundSystem;
   String _xLookAccent = xLookAccentBlue;
   bool _disableAnimations = false;
@@ -1075,6 +1161,11 @@ class _FritterAppState extends State<FritterApp> {
       _isSecure = prefService.get(optionDisableScreenshots);
       _textScaleFactor = prefService.get(optionTextScaleFactor);
     });
+
+    if (_prefsListening) {
+      return;
+    }
+    _prefsListening = true;
 
     prefService.addKeyListener(optionShouldCheckForUpdates, () {
       // Re-read rather than only rebuild: the value is held in a field, so a
@@ -1194,14 +1285,20 @@ class _FritterAppState extends State<FritterApp> {
                     _updateDialogShown = true;
                     // Use navigatorKey's context for showDialog
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      checkForUpdates(_navigatorKey.currentContext!);
+                      final navigatorContext = _navigatorKey.currentContext;
+                      if (navigatorContext != null) {
+                        checkForUpdates(navigatorContext);
+                      }
                     });
                   }
 
                   if (!_accountDialogShown) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       _accountDialogShown = true;
-                      checkForAccounts(_navigatorKey.currentContext!);
+                      final navigatorContext = _navigatorKey.currentContext;
+                      if (navigatorContext != null) {
+                        checkForAccounts(navigatorContext);
+                      }
                     });
                   }
 

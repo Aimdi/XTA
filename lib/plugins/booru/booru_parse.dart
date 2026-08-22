@@ -70,7 +70,7 @@ BooruPost? _parseOne(
 
   final preview = json['preview_file_url'].string ?? json['preview_url'].string;
   final sample = json['large_file_url'].string ?? json['sample_url'].string;
-  final file = json['file_url'].string;
+  final file = json['file_url'].string ?? _composedFileUrl(json);
   final ext = json['file_ext'].string ?? _extFromUrl(file ?? sample ?? preview);
 
   return BooruPost(
@@ -185,6 +185,19 @@ DateTime? _createdAt(Json json) {
     return DateTime.fromMillisecondsSinceEpoch(change * 1000);
   }
   return null;
+}
+
+/// Rule34 / Xbooru omit `file_url` for guests and only send directory + image.
+String? _composedFileUrl(Json json) {
+  final directory = json['directory'].string;
+  final image = json['image'].string;
+  if (directory == null ||
+      directory.isEmpty ||
+      image == null ||
+      image.isEmpty) {
+    return null;
+  }
+  return '/images/$directory/$image';
 }
 
 String? _extFromUrl(String? url) {

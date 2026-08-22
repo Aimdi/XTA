@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
 import 'package:xta/plugins/instagram/instagram_errors.dart';
 import 'package:xta/ui/errors.dart';
@@ -127,6 +128,11 @@ class _InstagramSettingsScreenState extends State<InstagramSettingsScreen> {
             title: Text(l10n.plugin_instagram_show_tab),
             subtitle: Text(l10n.plugin_instagram_show_tab_description),
             pref: optionPluginInstagramShowTab,
+            onChange: (show) async {
+              if (!show) {
+                await pinPluginOnFeedStripIn(context, pluginIdInstagram);
+              }
+            },
           ),
           PrefTitle(title: Text(l10n.plugin_instagram_section_session)),
           Padding(

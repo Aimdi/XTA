@@ -578,6 +578,61 @@ class SubstackSubscription extends Subscription {
   }
 }
 
+/// A followed public RSS or Atom feed.
+class RssSubscription extends Subscription {
+  final String feedUrl;
+  final String? siteUrl;
+
+  RssSubscription({
+    required super.id,
+    required this.feedUrl,
+    required super.name,
+    this.siteUrl,
+    required String? iconUrl,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: iconUrl);
+
+  String? get iconUrl => profileImageUrlHttps;
+
+  factory RssSubscription.fromMap(Map<String, Object?> map) {
+    return RssSubscription(
+      id: map['id'] as String,
+      feedUrl: map['feed_url'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      siteUrl: map['site_url'] as String?,
+      iconUrl: map['icon_url'] as String?,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RssSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'feed_url': feedUrl,
+      'name': name,
+      'site_url': siteUrl,
+      'icon_url': iconUrl,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
 /// A followed subreddit.
 ///
 /// A fourth kind of subscription, for the same reason publications became the

@@ -32,7 +32,11 @@ class _AntennaScreenState extends State<AntennaScreen> {
       builder: (sheetContext) => _AntennaEditorSheet(existing: existing),
     );
     if (saved != null && mounted) {
-      await Navigator.pushNamed(context, routeAntennaFeed, arguments: AntennaFeedArguments(saved));
+      await Navigator.pushNamed(
+        context,
+        routeAntennaFeed,
+        arguments: AntennaFeedArguments(saved),
+      );
     }
   }
 
@@ -43,8 +47,11 @@ class _AntennaScreenState extends State<AntennaScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.antenna_title)),
-      floatingActionButton: FloatingActionButton(onPressed: () => _openEditor(), child: const Icon(Icons.add)),
-      body: ScopedBuilder<AntennaModel, List<Antenna>>.transition(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _openEditor(),
+        child: const Icon(Icons.add),
+      ),
+      body: ScopedBuilder<AntennaModel, List<Antenna>>(
         store: model,
         onError: (_, error) => FullPageErrorWidget(
           error: error,
@@ -65,8 +72,15 @@ class _AntennaScreenState extends State<AntennaScreen> {
               return ListTile(
                 title: Text(antenna.name),
                 subtitle: Text(antenna.includeTerms.join(', ')),
-                trailing: IconButton(icon: const Icon(Icons.edit_outlined), onPressed: () => _openEditor(antenna)),
-                onTap: () => Navigator.pushNamed(context, routeAntennaFeed, arguments: AntennaFeedArguments(antenna)),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit_outlined),
+                  onPressed: () => _openEditor(antenna),
+                ),
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  routeAntennaFeed,
+                  arguments: AntennaFeedArguments(antenna),
+                ),
               );
             },
           );
@@ -96,8 +110,12 @@ class _AntennaEditorSheetState extends State<_AntennaEditorSheet> {
     super.initState();
     final existing = widget.existing;
     _name = TextEditingController(text: existing?.name ?? '');
-    _include = TextEditingController(text: existing?.includeTerms.join(', ') ?? '');
-    _exclude = TextEditingController(text: existing?.excludeTerms.join(', ') ?? '');
+    _include = TextEditingController(
+      text: existing?.includeTerms.join(', ') ?? '',
+    );
+    _exclude = TextEditingController(
+      text: existing?.excludeTerms.join(', ') ?? '',
+    );
     _scope = existing?.scope ?? 'search';
   }
 
@@ -135,7 +153,12 @@ class _AntennaEditorSheetState extends State<_AntennaEditorSheet> {
     final l10n = L10n.of(context);
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.of(context).viewInsets.bottom + 16),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -162,8 +185,14 @@ class _AntennaEditorSheetState extends State<_AntennaEditorSheet> {
           const SizedBox(height: 8),
           SegmentedButton<String>(
             segments: [
-              ButtonSegment(value: 'search', label: Text(l10n.antenna_scope_search)),
-              ButtonSegment(value: 'following', label: Text(l10n.antenna_scope_following)),
+              ButtonSegment(
+                value: 'search',
+                label: Text(l10n.antenna_scope_search),
+              ),
+              ButtonSegment(
+                value: 'following',
+                label: Text(l10n.antenna_scope_following),
+              ),
             ],
             selected: {_scope},
             onSelectionChanged: (value) => setState(() => _scope = value.first),

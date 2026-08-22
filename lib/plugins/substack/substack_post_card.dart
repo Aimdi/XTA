@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_comments_screen.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_reader_screen.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/tweet/_like_button.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -40,6 +42,13 @@ class SubstackPostCard extends StatelessWidget {
     );
   }
 
+  void _openPublication(BuildContext context) {
+    openSubstackPublication(
+      context,
+      publicationForPost(post, logoUrl: logoUrl),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
@@ -65,19 +74,20 @@ class SubstackPostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                InkWell(
-                  onTap: () => _open(context),
+                if (hasCover)
+                  InkWell(onTap: () => _open(context), child: _cover(context)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (hasCover) _cover(context),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                      _header(context, date, unread: unread),
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () => _open(context),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _header(context, date, unread: unread),
-                            const SizedBox(height: 8),
                             Text(
                               post.title,
                               maxLines: hasCover ? 4 : 3,
@@ -140,42 +150,59 @@ class SubstackPostCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: logo == null
-                  ? Container(
-                      width: kSubstackLogoSize,
-                      height: kSubstackLogoSize,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        Icons.article_outlined,
-                        size: 20,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    )
-                  : ExtendedImage.network(
-                      logo,
-                      width: kSubstackLogoSize,
-                      height: kSubstackLogoSize,
-                      fit: BoxFit.cover,
-                      cacheWidth:
-                          (kSubstackLogoSize *
-                                  MediaQuery.devicePixelRatioOf(context))
-                              .ceil(),
-                    ),
-            ),
-            const SizedBox(width: 10),
             Expanded(
-              child: Text(
-                post.publicationName,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w800,
+              child: PluginNameMetaRow(
+                name: InkWell(
+                  onTap: () => _openPublication(context),
+                  child: Tooltip(
+                    message: L10n.of(context).plugin_substack_publication,
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: logo == null
+                              ? Container(
+                                  width: kSubstackLogoSize,
+                                  height: kSubstackLogoSize,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    Icons.article_outlined,
+                                    size: 20,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                )
+                              : ExtendedImage.network(
+                                  logo,
+                                  width: kSubstackLogoSize,
+                                  height: kSubstackLogoSize,
+                                  fit: BoxFit.cover,
+                                  cacheWidth:
+                                      (kSubstackLogoSize *
+                                              MediaQuery.devicePixelRatioOf(
+                                                context,
+                                              ))
+                                          .ceil(),
+                                ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            post.publicationName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall!.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
+                meta: date == null ? const [] : [createRelativeDate(date)],
               ),
             ),
-            if (date != null)
-              Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
           ],
         ),
         if (hasBadges) ...[
@@ -256,9 +283,7 @@ class SubstackPostCard extends StatelessWidget {
                     color: muted,
                   ),
                   label: Text(
-                    comments > 0
-                        ? '$comments'
-                        : L10n.of(context).plugin_substack_comments,
+                    '$comments',
                     style: theme.textTheme.bodySmall!.copyWith(color: muted),
                   ),
                 ),

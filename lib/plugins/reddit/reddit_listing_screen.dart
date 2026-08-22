@@ -9,7 +9,7 @@ import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_search_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
-import 'package:intl/intl.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/subscriptions/users_model.dart';
 
 /// A list of Reddit posts under a title.
@@ -101,8 +101,6 @@ Future<void> toggleRedditFollow(BuildContext context, String subreddit, {require
 
 /// The sidebar as a sheet: what the community is, how many read it, and its
 /// own description — the "is this worth following" answer, one tap away.
-final NumberFormat _compact = NumberFormat.compact(locale: 'en_US');
-
 Future<void> showRedditAboutSheet(BuildContext context, String subreddit) {
   final client = context.read<RedditClient>();
   final prefs = PrefService.of(context, listen: false);
@@ -150,13 +148,13 @@ Future<void> showRedditAboutSheet(BuildContext context, String subreddit) {
                     if (about.subscribers != null) ...[
                       const Icon(Icons.people_outline, size: 16),
                       const SizedBox(width: 4),
-                      Text('${_compact.format(about.subscribers)} ${l10n.followers.toLowerCase()}'),
+                      Text('${compactCount(about.subscribers!)} ${l10n.followers.toLowerCase()}'),
                     ],
                     if (about.activeUsers != null) ...[
                       const SizedBox(width: 12),
                       Icon(Icons.circle, size: 8, color: theme.colorScheme.primary),
                       const SizedBox(width: 4),
-                      Text('${_compact.format(about.activeUsers)} ${l10n.plugin_reddit_online_now}'),
+                      Text('${compactCount(about.activeUsers!)} ${l10n.plugin_reddit_online_now}'),
                     ],
                   ],
                 ),

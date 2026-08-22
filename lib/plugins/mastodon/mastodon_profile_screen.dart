@@ -1,6 +1,5 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -13,6 +12,7 @@ import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 String mastodonErrorMessage(L10n l10n, Object error) {
   if (error is! MastodonException) {
@@ -369,7 +369,6 @@ class MastodonProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
-    final numbers = NumberFormat.compact();
     final avatar = profile.avatarUrl;
 
     return Column(
@@ -462,15 +461,15 @@ class MastodonProfileCard extends StatelessWidget {
           children: [
             _count(
               context,
-              numbers.format(profile.followersCount),
+              compactCount(profile.followersCount),
               l10n.followers,
             ),
             _count(
               context,
-              numbers.format(profile.followingCount),
+              compactCount(profile.followingCount),
               l10n.following,
             ),
-            _count(context, numbers.format(profile.statusesCount), l10n.tweets),
+            _count(context, compactCount(profile.statusesCount), l10n.tweets),
           ],
         ),
         if (onFollowToggle != null || onAddToGroup != null) ...[

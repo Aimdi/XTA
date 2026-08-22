@@ -11,9 +11,11 @@ import 'package:xta/plugins/reddit/reddit_listing_page.dart';
 import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/reddit/reddit_states.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 class RedditListingState {
   final List<RedditPost>? posts;
@@ -182,7 +184,7 @@ class RedditListingBodyState extends State<RedditListingBody>
     super.build(context);
     final store = _store;
     if (store == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const PluginFeedSkeleton();
     }
 
     final l10n = L10n.of(context);
@@ -196,7 +198,7 @@ class RedditListingBodyState extends State<RedditListingBody>
           if (posts != null && posts.isNotEmpty) {
             return _body(context, l10n, store, store.state);
           }
-          return const Center(child: CircularProgressIndicator());
+          return const PluginFeedSkeleton();
         },
         onState: (_, state) => _body(context, l10n, store, state),
       ),
@@ -232,7 +234,7 @@ class RedditListingBodyState extends State<RedditListingBody>
   ) {
     final posts = state.posts;
     if (posts == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const PluginFeedSkeleton();
     }
     if (posts.isEmpty) {
       return ListView(
@@ -246,8 +248,8 @@ class RedditListingBodyState extends State<RedditListingBody>
     }
 
     final list = FeedListView(
-      controller: widget.scrollController,
-      padding: const EdgeInsets.only(bottom: 24),
+      controller: pluginInnerScrollController(context, widget.scrollController),
+      padding: pluginFeedPadding(context),
       itemCount: posts.length + 1,
       itemBuilder: (context, index) {
         if (index >= posts.length) {

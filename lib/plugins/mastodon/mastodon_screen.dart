@@ -12,11 +12,13 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// The Mastodon tab: Explore / Local / Federated / Following, like Tusky.
 class MastodonScreen extends StatefulWidget {
@@ -134,12 +136,15 @@ class _MastodonScreenState extends State<MastodonScreen> {
                   (_) => _PublicPane(
                     store: context.read<MastodonLocalStore>(),
                     emptyIcon: Icons.home_outlined,
+                    scrollController: widget.scrollController,
                   ),
                   (_) => _PublicPane(
                     store: context.read<MastodonFederatedStore>(),
                     emptyIcon: Icons.public,
+                    scrollController: widget.scrollController,
                   ),
-                  (_) => _FollowingPane(),
+                  (_) =>
+                      _FollowingPane(scrollController: widget.scrollController),
                 ],
               ),
             ),
@@ -270,7 +275,7 @@ class _ExplorePane extends StatelessWidget {
       onLoading: (_) =>
           store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.posts.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
           : Padding(
@@ -302,7 +307,8 @@ class _ExplorePane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: context.read<MastodonExploreStore>().refresh,
       child: FeedListView(
-        controller: scrollController,
+        controller: pluginInnerScrollController(context, scrollController),
+        padding: pluginFeedPadding(context),
         itemCount: page.posts.length + (page.tags.isEmpty ? 0 : 1),
         itemBuilder: (context, index) {
           if (page.tags.isNotEmpty && index == 0) {
@@ -365,8 +371,13 @@ class _TrendingTags extends StatelessWidget {
 class _PublicPane extends StatelessWidget {
   final MastodonPublicFeedStore store;
   final IconData emptyIcon;
+  final ScrollController scrollController;
 
-  const _PublicPane({required this.store, required this.emptyIcon});
+  const _PublicPane({
+    required this.store,
+    required this.emptyIcon,
+    required this.scrollController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -374,10 +385,10 @@ class _PublicPane extends StatelessWidget {
     return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
       store: store,
       onLoading: (_) => store.state.isNotEmpty
-          ? _list(store.state, store)
-          : const Center(child: CircularProgressIndicator()),
+          ? _list(context, store.state, store)
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
-          ? _list(store.state, store)
+          ? _list(context, store.state, store)
           : Padding(
               padding: const EdgeInsets.all(24),
               child: FullPageErrorWidget(
@@ -392,15 +403,20 @@ class _PublicPane extends StatelessWidget {
           return EmptyPane(
             icon: emptyIcon,
             message: l10n.plugin_mastodon_empty_public,
+            scrollController: scrollController,
             onRefresh: store.refresh,
           );
         }
-        return _list(posts, store);
+        return _list(context, posts, store);
       },
     );
   }
 
-  Widget _list(List<MastodonPost> posts, MastodonPublicFeedStore store) {
+  Widget _list(
+    BuildContext context,
+    List<MastodonPost> posts,
+    MastodonPublicFeedStore store,
+  ) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification.metrics.pixels >
@@ -412,6 +428,8 @@ class _PublicPane extends StatelessWidget {
       child: RefreshIndicator(
         onRefresh: store.refresh,
         child: FeedListView(
+          controller: pluginInnerScrollController(context, scrollController),
+          padding: pluginFeedPadding(context),
           itemCount: posts.length + (store.loadingMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index >= posts.length) {
@@ -433,6 +451,10 @@ class _PublicPane extends StatelessWidget {
 }
 
 class _FollowingPane extends StatelessWidget {
+  final ScrollController scrollController;
+
+  const _FollowingPane({required this.scrollController});
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
@@ -441,7 +463,7 @@ class _FollowingPane extends StatelessWidget {
       store: feed,
       onLoading: (_) => feed.state.isNotEmpty
           ? _followingList(context, l10n, feed.state)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (context, error) => feed.state.isNotEmpty
           ? _followingList(context, l10n, feed.state)
           : Padding(
@@ -470,6 +492,7 @@ class _FollowingPane extends StatelessWidget {
           message: accounts.isEmpty
               ? l10n.plugin_mastodon_empty
               : l10n.plugin_mastodon_no_posts,
+          scrollController: scrollController,
           onRefresh: () =>
               context.read<MastodonFeedStore>().refresh(force: true),
           action: accounts.isEmpty
@@ -490,6 +513,8 @@ class _FollowingPane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
       child: FeedListView(
+        controller: scrollController,
+        padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
           key: ValueKey(posts[index].id),
@@ -505,54 +530,71 @@ Future<String?> showMastodonAddAccountDialog(
   BuildContext context, {
   bool lookup = false,
 }) {
-  final controller = TextEditingController();
-
   return showDialog<String>(
     context: context,
-    builder: (dialogContext) {
-      final l10n = L10n.of(dialogContext);
-      String? error;
-
-      return StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(
-            lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: InputDecoration(
-              hintText: l10n.plugin_mastodon_handle_hint,
-              errorText: error,
-            ),
-            onSubmitted: (_) {
-              final acct = normaliseMastodonAcct(controller.text);
-              if (acct == null) {
-                setState(() => error = l10n.plugin_mastodon_invalid_handle);
-              } else {
-                Navigator.pop(context, acct);
-              }
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                final acct = normaliseMastodonAcct(controller.text);
-                if (acct == null) {
-                  setState(() => error = l10n.plugin_mastodon_invalid_handle);
-                } else {
-                  Navigator.pop(context, acct);
-                }
-              },
-              child: Text(l10n.ok),
-            ),
-          ],
-        ),
-      );
-    },
+    builder: (_) => _MastodonAddAccountDialog(lookup: lookup),
   );
+}
+
+class _MastodonAddAccountDialog extends StatefulWidget {
+  final bool lookup;
+
+  const _MastodonAddAccountDialog({required this.lookup});
+
+  @override
+  State<_MastodonAddAccountDialog> createState() =>
+      _MastodonAddAccountDialogState();
+}
+
+class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
+  late final TextEditingController _controller;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final l10n = L10n.of(context);
+    final acct = normaliseMastodonAcct(_controller.text);
+    if (acct == null) {
+      setState(() => _error = l10n.plugin_mastodon_invalid_handle);
+    } else {
+      Navigator.pop(context, acct);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AlertDialog(
+      title: Text(
+        widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
+      ),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        decoration: InputDecoration(
+          hintText: l10n.plugin_mastodon_handle_hint,
+          errorText: _error,
+        ),
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(onPressed: _submit, child: Text(l10n.ok)),
+      ],
+    );
+  }
 }

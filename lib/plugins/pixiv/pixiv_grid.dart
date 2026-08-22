@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
@@ -12,8 +11,9 @@ import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
-
-final NumberFormat _pixivCountFormat = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// Stable Hero tag from a grid tile into the illust viewer.
 String pixivIllustHeroTag(int id) => 'pixiv-illust-$id';
@@ -47,7 +47,8 @@ class PixivIllustGrid extends StatelessWidget {
 
   Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts) {
     final grid = CustomScrollView(
-      controller: scrollController,
+      controller: pluginInnerScrollController(context, scrollController),
+      primary: PluginEmbedded.maybeOf(context) ? false : null,
       scrollCacheExtent: const ScrollCacheExtent.pixels(1200),
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
@@ -219,9 +220,7 @@ class PixivIllustTile extends StatelessWidget {
                               ),
                               const SizedBox(width: 2),
                               Text(
-                                _pixivCountFormat.format(
-                                  bookmarks.bookmarkCount(illust),
-                                ),
+                                compactCount(bookmarks.bookmarkCount(illust)),
                                 style: theme.textTheme.labelSmall!.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),

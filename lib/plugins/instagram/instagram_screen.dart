@@ -12,9 +12,12 @@ import 'package:xta/plugins/instagram/instagram_profile_screen.dart';
 import 'package:xta/plugins/instagram/instagram_search_sheet.dart';
 import 'package:xta/plugins/instagram/instagram_settings.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Guest Instagram home: For you + Following + local accounts.
 class InstagramScreen extends StatefulWidget {
@@ -131,12 +134,14 @@ class _InstagramScreenState extends State<InstagramScreen> {
                     onFollowingChanged: () => _following.refresh(force: true),
                   ),
                   (_) => _FollowingTab(
+                    scrollController: widget.scrollController,
                     store: _following,
                     follows: context.read<InstagramFollowsStore>(),
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFeeds,
                   ),
                   (_) => _AccountsTab(
+                    scrollController: widget.scrollController,
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFeeds,
                     onUnfollow: _refreshFeeds,
@@ -192,7 +197,7 @@ class _ForYouTab extends StatelessWidget {
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _forYouList(context, l10n, store.state)
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _forYouList(context, l10n, store.state)
           : FullPageErrorWidget(
@@ -239,8 +244,12 @@ class _ForYouTab extends StatelessWidget {
           },
           child: RefreshIndicator(
             onRefresh: store.refresh,
-            child: ListView.builder(
-              controller: scrollController,
+            child: FeedListView(
+              controller: pluginInnerScrollController(
+                context,
+                scrollController,
+              ),
+              padding: pluginFeedPadding(context),
               itemCount: posts.length + extras,
               itemBuilder: (context, index) {
                 final peopleOffset = people.isEmpty ? 0 : 1;
@@ -413,12 +422,14 @@ class _EmptyForYou extends StatelessWidget {
 }
 
 class _FollowingTab extends StatelessWidget {
+  final ScrollController scrollController;
   final InstagramFollowingStore store;
   final InstagramFollowsStore follows;
   final Future<void> Function() onFindHandle;
   final Future<void> Function() onProfileClosed;
 
   const _FollowingTab({
+    required this.scrollController,
     required this.store,
     required this.follows,
     required this.onFindHandle,
@@ -432,13 +443,15 @@ class _FollowingTab extends StatelessWidget {
       store: store,
       onLoading: (_) => store.state.isNotEmpty
           ? _PostList(
+              scrollController: scrollController,
               posts: store.state,
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _PostList(
+              scrollController: scrollController,
               posts: store.state,
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
@@ -452,12 +465,14 @@ class _FollowingTab extends StatelessWidget {
       onState: (context, posts) {
         if (posts.isEmpty) {
           return _EmptyFollowing(
+            scrollController: scrollController,
             hasAccounts: follows.state.isNotEmpty,
             onRefresh: () => store.refresh(force: true),
             onFindHandle: onFindHandle,
           );
         }
         return _PostList(
+          scrollController: scrollController,
           posts: posts,
           onRefresh: () => store.refresh(force: true),
           onProfileClosed: onProfileClosed,
@@ -468,11 +483,13 @@ class _FollowingTab extends StatelessWidget {
 }
 
 class _AccountsTab extends StatelessWidget {
+  final ScrollController scrollController;
   final Future<void> Function() onFindHandle;
   final Future<void> Function() onProfileClosed;
   final Future<void> Function() onUnfollow;
 
   const _AccountsTab({
+    required this.scrollController,
     required this.onFindHandle,
     required this.onProfileClosed,
     required this.onUnfollow,
@@ -485,6 +502,7 @@ class _AccountsTab extends StatelessWidget {
       onState: (context, follows) {
         if (follows.isEmpty) {
           return _EmptyFollowing(
+            scrollController: scrollController,
             hasAccounts: false,
             onRefresh: context.read<InstagramFollowsStore>().load,
             onFindHandle: onFindHandle,
@@ -493,6 +511,9 @@ class _AccountsTab extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => context.read<InstagramFollowsStore>().load(),
           child: ListView.builder(
+            controller: pluginInnerScrollController(context, scrollController),
+            primary: PluginEmbedded.maybeOf(context) ? false : null,
+            padding: pluginFeedPadding(context),
             itemCount: follows.length,
             itemBuilder: (context, index) {
               final follow = follows[index];
@@ -603,11 +624,13 @@ class _AccountsTab extends StatelessWidget {
 }
 
 class _PostList extends StatelessWidget {
+  final ScrollController? scrollController;
   final List<InstagramPost> posts;
   final Future<void> Function() onRefresh;
   final Future<void> Function()? onProfileClosed;
 
   const _PostList({
+    this.scrollController,
     required this.posts,
     required this.onRefresh,
     this.onProfileClosed,
@@ -617,7 +640,9 @@ class _PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ListView.builder(
+      child: FeedListView(
+        controller: scrollController,
+        padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return InstagramPostCard(
@@ -631,11 +656,13 @@ class _PostList extends StatelessWidget {
 }
 
 class _EmptyFollowing extends StatelessWidget {
+  final ScrollController? scrollController;
   final bool hasAccounts;
   final Future<void> Function() onRefresh;
   final Future<void> Function() onFindHandle;
 
   const _EmptyFollowing({
+    this.scrollController,
     required this.hasAccounts,
     required this.onRefresh,
     required this.onFindHandle,
@@ -648,6 +675,8 @@ class _EmptyFollowing extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
+        controller: pluginInnerScrollController(context, scrollController),
+        primary: PluginEmbedded.maybeOf(context) ? false : null,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
         children: [

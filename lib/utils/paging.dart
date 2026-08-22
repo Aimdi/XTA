@@ -57,6 +57,10 @@ class CursorPagingController<C, T> {
   /// The flattened items fetched so far, or `null` before the first page loads.
   List<T>? get items => pagingController.value.items;
 
+  /// Cursor the next page will be fetched with, or `null` before the first
+  /// page has set one / once pagination has ended.
+  C? get nextCursor => _nextCursor;
+
   Future<List<T>> _fetchPage(int pageKey) async {
     if (pageKey == 0) {
       _reachedEnd = false;
@@ -92,7 +96,9 @@ class CursorPagingController<C, T> {
 
   /// Surfaces an error while keeping any already-loaded items visible.
   void setError(Object error, StackTrace stackTrace) {
-    pagingController.value = pagingController.value.copyWith(error: PagingError(error, stackTrace));
+    pagingController.value = pagingController.value.copyWith(
+      error: PagingError(error, stackTrace),
+    );
   }
 
   /// Re-opens pagination after it ended, seeding [cursor] for the next page,

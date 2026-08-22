@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-/// Builds each tab the first time it is selected, then keeps it.
+/// Builds only the selected tab.
 ///
-/// [IndexedStack] constructs every child on the first frame, so opening
-/// Substack also built Inbox / Notes / Library (and Bluesky built Liked)
-/// before the home feed had painted. Home-strip remounts made that worse.
-class PluginLazyTabs extends StatefulWidget {
+/// [IndexedStack] kept every visited pane in the tree, so Substack Home and
+/// Inbox both rebuilt on the same feed store, and Bluesky / Threads Liked
+/// stayed mounted (and decoding images) while the reader was on Home. Scroll
+/// offset lives on the controllers the parent already holds.
+class PluginLazyTabs extends StatelessWidget {
   final int index;
   final List<WidgetBuilder> children;
 
@@ -16,34 +17,10 @@ class PluginLazyTabs extends StatefulWidget {
   });
 
   @override
-  State<PluginLazyTabs> createState() => _PluginLazyTabsState();
-}
-
-class _PluginLazyTabsState extends State<PluginLazyTabs> {
-  final _activated = <int>{};
-
-  @override
-  void initState() {
-    super.initState();
-    _activated.add(widget.index);
-  }
-
-  @override
-  void didUpdateWidget(covariant PluginLazyTabs oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _activated.add(widget.index);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return IndexedStack(
-      index: widget.index,
-      children: [
-        for (var i = 0; i < widget.children.length; i++)
-          _activated.contains(i)
-              ? widget.children[i](context)
-              : const SizedBox.shrink(),
-      ],
+    return KeyedSubtree(
+      key: ValueKey<int>(index),
+      child: children[index](context),
     );
   }
 }

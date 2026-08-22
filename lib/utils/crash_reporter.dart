@@ -29,8 +29,8 @@ class CrashReporter {
     this.prefs, {
     http.Client? httpClient,
     Future<PackageInfo> Function()? packageInfoLoader,
-  })  : httpClient = httpClient ?? http.Client(),
-        packageInfoLoader = packageInfoLoader ?? PackageInfo.fromPlatform;
+  }) : httpClient = httpClient ?? http.Client(),
+       packageInfoLoader = packageInfoLoader ?? PackageInfo.fromPlatform;
 
   static CrashReporter install(BasePrefService prefs) {
     final reporter = CrashReporter(prefs);
@@ -43,10 +43,11 @@ class CrashReporter {
 
   String get repository =>
       (prefs.get(optionCrashGithubRepo) as String?)?.trim().isNotEmpty == true
-          ? (prefs.get(optionCrashGithubRepo) as String).trim()
-          : defaultCrashGithubRepo;
+      ? (prefs.get(optionCrashGithubRepo) as String).trim()
+      : defaultCrashGithubRepo;
 
-  String get token => (prefs.get(optionCrashGithubToken) as String?)?.trim() ?? '';
+  String get token =>
+      (prefs.get(optionCrashGithubToken) as String?)?.trim() ?? '';
 
   void _attachHandlers() {
     if (_installed) return;
@@ -54,13 +55,21 @@ class CrashReporter {
 
     final previousFlutter = FlutterError.onError;
     FlutterError.onError = (details) {
-      unawaited(report(details.exception, details.stack, context: details.context?.toString()));
+      unawaited(
+        report(
+          details.exception,
+          details.stack,
+          context: details.context?.toString(),
+        ),
+      );
       previousFlutter?.call(details);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
       unawaited(report(error, stack));
-      return false;
+      // Handled: an uncaught async error must not abort the isolate. Returning
+      // false is how a widget or compute failure became "XTA has stopped".
+      return handleUncaughtIsolateErrors;
     };
   }
 
@@ -102,10 +111,7 @@ class CrashReporter {
           'X-GitHub-Api-Version': '2022-11-28',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'title': title,
-          'body': body,
-        }),
+        body: jsonEncode({'title': title, 'body': body}),
       );
 
       if (response.statusCode == 201) {
@@ -114,7 +120,9 @@ class CrashReporter {
         return CrashReportResult.sent;
       }
 
-      log.warning('GitHub issue create failed: ${response.statusCode} ${response.body}');
+      log.warning(
+        'GitHub issue create failed: ${response.statusCode} ${response.body}',
+      );
       if (response.statusCode == 401 || response.statusCode == 403) {
         return CrashReportResult.authFailed;
       }
@@ -160,6 +168,10 @@ enum CrashReportResult {
 
 const maxCrashReportsPerHour = 5;
 
+/// [PlatformDispatcher.onError] must return true so a widget or isolate
+/// failure does not abort the process with "XTA has stopped".
+const handleUncaughtIsolateErrors = true;
+
 bool shouldReport(Object error) {
   if (error is SyntheticException) return false;
   if (error is HttpException) return false;
@@ -192,8 +204,12 @@ String buildIssueBody({
     ..writeln('## Crash report (auto)')
     ..writeln()
     ..writeln('- App: `$packageName` `$appVersion`')
-    ..writeln('- OS: `${Platform.operatingSystem} ${Platform.operatingSystemVersion}`')
-    ..writeln('- Mode: `${kReleaseMode ? 'release' : (kProfileMode ? 'profile' : 'debug')}`');
+    ..writeln(
+      '- OS: `${Platform.operatingSystem} ${Platform.operatingSystemVersion}`',
+    )
+    ..writeln(
+      '- Mode: `${kReleaseMode ? 'release' : (kProfileMode ? 'profile' : 'debug')}`',
+    );
   if (context != null && context.isNotEmpty) {
     buffer.writeln('- Context: `$context`');
   }

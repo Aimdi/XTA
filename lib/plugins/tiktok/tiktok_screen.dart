@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
@@ -13,6 +14,8 @@ import 'package:xta/plugins/tiktok/tiktok_search_sheet.dart';
 import 'package:xta/plugins/tiktok/tiktok_settings.dart';
 import 'package:xta/plugins/tiktok/tiktok_store.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Guest TikTok home: Following feed + local accounts.
 class TikTokScreen extends StatefulWidget {
@@ -174,7 +177,7 @@ class _FollowingTab extends StatelessWidget {
               onRefresh: () => store.refresh(force: true),
               onProfileClosed: onProfileClosed,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _PostList(
               scrollController: scrollController,
@@ -359,8 +362,9 @@ class _PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ListView.builder(
-        controller: scrollController,
+      child: FeedListView(
+        controller: pluginInnerScrollController(context, scrollController),
+        padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) {
           return TikTokPostCard(
