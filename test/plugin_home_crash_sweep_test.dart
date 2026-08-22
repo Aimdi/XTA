@@ -14,6 +14,7 @@ import 'package:xta/plugins/booru/booru_grid.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/ehviewer/eh_grid.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
+import 'package:xta/plugins/ehviewer/eh_reader_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
@@ -27,7 +28,6 @@ import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_screen.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
-import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_screen.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
@@ -819,6 +819,35 @@ void main() {
                 onPressed: () => editRedditClientId(context),
                 child: const Text('open'),
               ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.text('Cancel'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('EH page-jump cancel disposes with the dialog', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            L10n.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: L10n.delegate.supportedLocales,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showEhJumpDialog(context, current: 3, total: 12),
+              child: const Text('open'),
             ),
           ),
         ),
