@@ -1,3 +1,14 @@
+## XTA aimdi108
+
+What's new in XTA aimdi108:
+  - Home Following / For you no longer freeze then crash (two inner NestedScrollView attachments on first load, zero on empty Following)
+  - Saved no longer dual-attaches the home strip's outer scroll controller
+  - Following scroll restore is bounded; switching Für dich / Following no longer remounts NestedScrollView
+  - Video pool refuses a new player when it is full instead of creating past the cap
+  - Plugin feeds share one card row, paint a post-shaped skeleton, write counts in the reader's language
+  - Mastodon content warnings say "content warning"; Substack titles no longer overflow
+  - Everything from aimdi107
+
 ## XTA aimdi107
 
 What's new in XTA aimdi107:

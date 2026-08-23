@@ -4,6 +4,31 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### Still crashing after aimdi107
+
+**Install this build, not aimdi107.** aimdi107 stopped filled Pixiv and Booru
+from attaching every board to the home NestedScrollView *inner* controller.
+Following and For you on the X home tab were never wrapped in PluginEmbedded,
+so they still froze then crashed: first-page loading painted a PagedListView
+*and* a skeleton ListView (two inner attachments → `Too many elements`); a
+cold empty Following painted a `Center` (zero inner attachments → `No
+element`); Saved passed the outer home controller into the inner list; the
+Following restore loop retried forever while `positions.length != 1`;
+switching Für dich / Following remounted the whole NestedScrollView on the
+same outer controller; video players that could not evict still created past
+the pool cap and disposed while painted.
+
+This build makes the first-page skeleton / empty / error the *only* inner
+scrollable until items exist, keeps Saved on the inner controller, bounds the
+restore loop, keeps the NestedScrollView alive across tab-controller epochs,
+and refuses a video player when the pool is full.
+
+Plugin feeds now share one card row, paint a post-shaped skeleton instead of
+a blank spinner, write counts in the reader's language, say "content warning"
+where Mastodon does, and no longer overflow a Substack title.
+
+Existing databases keep working. No settings reset.
+
 ### Still crashing after aimdi106
 
 **Install this build, not aimdi106.** aimdi106 stopped empty and one-item
@@ -98,7 +123,7 @@ starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi106](https://github.com/Aimdi/XTA/releases/tag/aimdi106) is
+Everything from [aimdi107](https://github.com/Aimdi/XTA/releases/tag/aimdi107) is
 in here too.
 
 ---
