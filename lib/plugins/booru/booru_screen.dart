@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
 import 'package:xta/plugins/booru/booru_grid.dart';
@@ -12,6 +13,7 @@ import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Boorusama-inspired home: Latest / Following / Search entry.
 class BooruScreen extends StatefulWidget {
@@ -39,6 +41,7 @@ class _BooruScreenState extends State<BooruScreen>
     _tabs.addListener(() {
       if (_tabs.indexIsChanging) return;
       if (_tabs.index == 1) _ensureFollowing();
+      if (mounted) setState(() {});
     });
 
     final client = context.read<BooruClient>();
@@ -145,15 +148,17 @@ class _BooruScreenState extends State<BooruScreen>
           ),
         ],
       ),
-      body: TabBarView(
-        controller: _tabs,
+      // Same NestedScrollView trap as Pixiv: TabBarView kept Latest and
+      // Following mounted, so both grids attached the inner controller.
+      body: PluginLazyTabs(
+        index: _tabs.index,
         children: [
-          _FeedTab(
+          (_) => _FeedTab(
             store: _latest,
             emptyLabel: l10n.plugin_booru_empty_latest,
             scrollController: widget.scrollController,
           ),
-          _FollowingTab(store: _following),
+          (_) => _FollowingTab(store: _following),
         ],
       ),
     );
@@ -184,7 +189,7 @@ class _FeedTab extends StatelessWidget {
               loadingMore: store.loadingMore,
               onNearEnd: store.loadMore,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginGridSkeleton(columns: 2),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
         stackTrace: null,

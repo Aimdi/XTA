@@ -9,6 +9,7 @@ enum BackupCategory {
   settings,
   subscriptions,
   substack,
+  rss,
   subreddits,
   stocks,
   threads,

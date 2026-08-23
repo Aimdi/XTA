@@ -6,8 +6,11 @@ import 'package:http/testing.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_html.dart';
 
-http.Response _json(Object body, int status) =>
-    http.Response(jsonEncode(body), status, headers: {'content-type': 'application/json'});
+http.Response _json(Object body, int status) => http.Response(
+  jsonEncode(body),
+  status,
+  headers: {'content-type': 'application/json'},
+);
 
 Map<String, dynamic> _tokenBody() => {
   'access_token': 'tok_123',
@@ -70,7 +73,10 @@ void main() {
         }),
       );
 
-      final about = await client.fetchSubredditAbout('dartlang', clientId: 'id');
+      final about = await client.fetchSubredditAbout(
+        'dartlang',
+        clientId: 'id',
+      );
 
       expect(about.name, 'dartlang');
       expect(about.title, 'The Dart Programming Language');
@@ -98,19 +104,80 @@ void main() {
 
   group('search order', () {
     test('the chosen order and the community scope ride the query', () async {
-      Uri? asked;
+      final asked = <Uri>[];
       final client = RedditClient(
         httpClient: MockClient((request) async {
-          asked = request.url;
-          return http.Response('<html><body><div id="siteTable"></div></body></html>', 200);
+          asked.add(request.url);
+          return http.Response(
+            jsonEncode({
+              'kind': 'Listing',
+              'data': {
+                'children': [
+                  {
+                    'kind': 't3',
+                    'data': {
+                      'id': 'abc',
+                      'title': 'Flutter',
+                      'subreddit': 'dartlang',
+                      'permalink': '/r/dartlang/comments/abc/flutter/',
+                    },
+                  },
+                ],
+              },
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
         }),
       );
 
-      await client.searchPosts('flutter', subreddit: 'dartlang', searchSort: 'comments');
+      final posts = await client.searchPosts(
+        'flutter',
+        subreddit: 'dartlang',
+        searchSort: 'comments',
+      );
 
-      expect(asked!.path, '/r/dartlang/search');
-      expect(asked!.queryParameters['sort'], 'comments');
-      expect(asked!.queryParameters['restrict_sr'], 'on');
+      expect(asked.first.path, '/r/dartlang/search.json');
+      expect(asked.first.queryParameters['sort'], 'comments');
+      expect(asked.first.queryParameters['restrict_sr'], 'on');
+      expect(posts.single.title, 'Flutter');
+    });
+
+    test('OAuth search is used when a client id is present', () async {
+      final hosts = <String>[];
+      final client = RedditClient(
+        httpClient: MockClient((request) async {
+          hosts.add(request.url.host);
+          if (request.url.path.contains('access_token')) {
+            return _json(_tokenBody(), 200);
+          }
+          expect(request.url.host, 'oauth.reddit.com');
+          expect(request.url.path, '/search');
+          return _json({
+            'kind': 'Listing',
+            'data': {
+              'children': [
+                {
+                  'kind': 't3',
+                  'data': {
+                    'id': 'xyz',
+                    'title': 'Hu Tao',
+                    'subreddit': 'Genshin_Impact',
+                    'permalink': '/r/Genshin_Impact/comments/xyz/hu_tao/',
+                    'num_comments': 9,
+                  },
+                },
+              ],
+            },
+          }, 200);
+        }),
+      );
+
+      final posts = await client.searchPosts('hu tao', clientId: 'id');
+
+      expect(hosts, contains('oauth.reddit.com'));
+      expect(posts.single.title, 'Hu Tao');
+      expect(posts.single.commentCount, 9);
     });
   });
 }

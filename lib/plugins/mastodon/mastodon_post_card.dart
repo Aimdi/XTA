@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_text.dart';
@@ -17,14 +17,13 @@ import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// Avatar size matching X / Reddit cards so Fediverse posts don't look smaller.
 const double kMastodonAvatarSize = 48;
 
 /// Tallest a single attached image is allowed to paint relative to its width.
 const double kMastodonMediaMaxAspectRatio = 16 / 9;
-
-final NumberFormat _mastodonCountFormat = NumberFormat.compact(locale: 'en_US');
 
 /// A Mastodon status as a timeline card — tweet-sized layout, counts, link preview.
 class MastodonPostCard extends StatelessWidget {
@@ -213,66 +212,29 @@ class MastodonPostCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                post.authorName,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+        PluginNameMetaRow(
+          name: Text(
+            post.authorName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w800,
             ),
-            if (date != null) ...[
-              const SizedBox(width: 6),
-              Text(
-                '· ${createRelativeDate(date)}',
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
-            if (post.edited) ...[
-              const SizedBox(width: 6),
-              Text(
-                '· ${l10n.plugin_mastodon_edited}',
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
+          ),
+          meta: [
+            if (date != null) createRelativeDate(date),
+            if (post.edited) l10n.plugin_mastodon_edited,
           ],
         ),
-        Row(
-          children: [
-            Flexible(
-              child: Text(
-                '@${post.acct}',
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(color: muted),
-              ),
-            ),
-            if (pinned) ...[
-              const SizedBox(width: 6),
-              _badge(context, l10n.plugin_mastodon_pinned),
-            ],
-            if (showSourceBadge) ...[
-              const SizedBox(width: 6),
-              _badge(context, l10n.plugin_mastodon_title),
-            ],
+        PluginHandleBadgeRow(
+          handle: _MastodonHandle(acct: post.acct, muted: muted),
+          badges: [
+            if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned),
+            if (showSourceBadge)
+              PluginCardBadge(label: l10n.plugin_mastodon_title),
           ],
         ),
       ],
-    );
-  }
-
-  Widget _badge(BuildContext context, String label) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(label, style: theme.textTheme.labelSmall),
     );
   }
 
@@ -312,6 +274,49 @@ class MastodonPostCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// `@user@instance`, with the instance dimmed.
+///
+/// Which server someone posts from is half of who they are on the Fediverse,
+/// so the card never drops it — but it is the part that gets shortened when
+/// the handle will not fit, because the name is what a reader recognises.
+class _MastodonHandle extends StatelessWidget {
+  final String acct;
+  final Color muted;
+
+  const _MastodonHandle({required this.acct, required this.muted});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.bodySmall!.copyWith(color: muted);
+    final at = acct.indexOf('@');
+
+    if (at <= 0) {
+      return Text(
+        '@$acct',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
+    }
+
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: '@${acct.substring(0, at)}'),
+          TextSpan(
+            text: acct.substring(at),
+            style: style.copyWith(color: muted.withValues(alpha: 0.7)),
+          ),
+        ],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: style,
     );
   }
 }
@@ -420,8 +425,7 @@ class _MastodonEngagementRow extends StatelessWidget {
     final hideCounts =
         prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
-    String label(int count) =>
-        hideCounts ? '' : _mastodonCountFormat.format(count);
+    String label(int count) => hideCounts ? '' : compactCount(count);
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
@@ -488,21 +492,9 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
     if (post.hasSpoiler && !_open) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 6),
-          Text(
-            post.spoilerText,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          TextButton(
-            onPressed: () => setState(() => _open = true),
-            child: Text(l10n.show),
-          ),
-        ],
+      return _MastodonContentWarning(
+        text: post.spoilerText,
+        onShow: () => setState(() => _open = true),
       );
     }
     return _visible(theme, l10n, blur: post.sensitive && !_open);
@@ -513,13 +505,14 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        // The warning stays on screen once opened. Mastodon readers use it to
+        // decide whether to keep reading, and a post whose warning vanished on
+        // the first tap gave them nothing to close it again by.
         if (post.hasSpoiler)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              onPressed: () => setState(() => _open = false),
-              child: Text(l10n.hide),
-            ),
+          _MastodonContentWarning(
+            text: post.spoilerText,
+            open: true,
+            onHide: () => setState(() => _open = false),
           ),
         if (post.text.isNotEmpty) ...[
           const SizedBox(height: 6),
@@ -564,6 +557,82 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
           _MastodonLinkPreview(card: post.linkCard!),
         ],
       ],
+    );
+  }
+}
+
+/// A Mastodon content warning, which is a label and a decision, not a headline.
+///
+/// Mastodon shows the author's warning text under a "Content warning" heading
+/// so a reader can tell the warning apart from the post it is warning about.
+/// The card used to print the spoiler text in bold body type, which read as if
+/// the post itself simply started that way.
+class _MastodonContentWarning extends StatelessWidget {
+  final String text;
+  final bool open;
+  final VoidCallback? onShow;
+  final VoidCallback? onHide;
+
+  const _MastodonContentWarning({
+    required this.text,
+    this.open = false,
+    this.onShow,
+    this.onHide,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = L10n.of(context);
+    final accent = theme.colorScheme.tertiary;
+    return Container(
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.fromLTRB(10, 8, 6, 4),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: accent.withValues(alpha: 0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: Icon(
+                  Icons.warning_amber_rounded,
+                  size: 16,
+                  color: accent,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  l10n.content_warning,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: accent,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (text.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 2, right: 4),
+              child: Text(text, style: theme.textTheme.bodyMedium),
+            ),
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: TextButton(
+              onPressed: open ? onHide : onShow,
+              child: Text(open ? l10n.hide : l10n.show),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

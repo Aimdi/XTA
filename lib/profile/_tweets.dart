@@ -156,7 +156,8 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
                     username: widget.user.screenName!,
                     isPinned: chain.isPinned);
               },
-              firstPageProgressIndicatorBuilder: (context) => const TweetFeedSkeleton(),
+              firstPageProgressIndicatorBuilder: (context) =>
+                  const TweetFeedSkeleton(primary: false),
               newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
               firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
                 error: pagingErrorOf(state)?.error,

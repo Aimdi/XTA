@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
@@ -139,28 +140,19 @@ class _RedditPostHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: GestureDetector(
-                        onTap: () => _openSubreddit(context),
-                        child: Text(
-                          'r/${post.subreddit}',
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleSmall!.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
+                PluginNameMetaRow(
+                  name: GestureDetector(
+                    onTap: () => _openSubreddit(context),
+                    child: Text(
+                      'r/${post.subreddit}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    if (date != null) ...[
-                      const SizedBox(width: 6),
-                      Text(
-                        '· ${createRelativeDate(date)}',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ],
+                  ),
+                  meta: [if (date != null) createRelativeDate(date)],
                 ),
                 _subtitle(context),
               ],
@@ -188,35 +180,32 @@ class _RedditPostHeader extends StatelessWidget {
       style: theme.textTheme.bodySmall!.copyWith(
         color: theme.colorScheme.onSurfaceVariant,
       ),
-      child: Row(
-        children: [
-          // A deleted account has no name to show; the row simply starts with
-          // the badge rather than announcing the absence.
-          if (author != null)
-            Flexible(
-              child: GestureDetector(
+      child: PluginHandleBadgeRow(
+        // A deleted account has no name to show; the row simply starts with
+        // the badge rather than announcing the absence.
+        handle: author == null
+            ? null
+            : GestureDetector(
                 onTap: () => openRedditPostSheet(context, post),
-                child: Text('u/$author', overflow: TextOverflow.ellipsis),
+                child: Text(
+                  'u/$author',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          if (showSourceBadge) ...[
-            if (author != null) const SizedBox(width: 6),
-            _RedditBadge(label: L10n.of(context).plugin_reddit_title),
-          ],
-          if (post.over18) ...[
-            const SizedBox(width: 6),
-            _RedditBadge(
+        badges: [
+          if (showSourceBadge)
+            PluginCardBadge(label: L10n.of(context).plugin_reddit_title),
+          if (post.over18)
+            PluginCardBadge(
               label: L10n.of(context).plugin_reddit_nsfw,
               tint: theme.colorScheme.error,
             ),
-          ],
-          if (post.spoiler) ...[
-            const SizedBox(width: 6),
-            _RedditBadge(
+          if (post.spoiler)
+            PluginCardBadge(
               label: L10n.of(context).plugin_reddit_spoiler,
               tint: theme.colorScheme.tertiary,
             ),
-          ],
         ],
       ),
     );
@@ -334,30 +323,6 @@ class _RedditFlair extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _RedditBadge extends StatelessWidget {
-  final String label;
-  final Color? tint;
-
-  const _RedditBadge({required this.label, this.tint});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-      decoration: BoxDecoration(
-        border: Border.all(color: tint ?? theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall!.copyWith(color: tint),
       ),
     );
   }

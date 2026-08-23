@@ -181,6 +181,16 @@ String displayNameForBooruHost(String host) {
   return Uri.tryParse(normaliseBooruHost(host))?.host ?? host;
 }
 
+/// Hosts whose catalogue is almost entirely explicit. Opening them with the
+/// default "general" cap yields an empty Latest tab that looks broken.
+bool booruHostIsMostlyExplicit(String host) {
+  final name = Uri.tryParse(normaliseBooruHost(host))?.host.toLowerCase() ?? '';
+  return name.contains('rule34') ||
+      name.contains('xbooru') ||
+      name.contains('gelbooru.com') ||
+      name.contains('e621');
+}
+
 List<BooruPreset> parseBooruCustomSites(String? raw) {
   if (raw == null || raw.trim().isEmpty) return const [];
   try {

@@ -33,42 +33,44 @@ void main() {
     expect(notesBuilds, 0);
   });
 
-  testWidgets('switching to a tab builds it once and keeps it', (tester) async {
+  testWidgets('switching away unmounts the previous tab', (tester) async {
+    var homeBuilds = 0;
     var notesBuilds = 0;
     var index = 0;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: StatefulBuilder(
-          builder: (context, setState) => Column(
+    Future<void> pumpAt(int next) async {
+      index = next;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: PluginLazyTabs(
+            index: index,
             children: [
-              TextButton(
-                onPressed: () => setState(() => index = 1),
-                child: const Text('Open notes'),
-              ),
-              Expanded(
-                child: PluginLazyTabs(
-                  index: index,
-                  children: [
-                    (_) => const Text('Home'),
-                    (_) {
-                      notesBuilds++;
-                      return const Text('Notes');
-                    },
-                  ],
-                ),
-              ),
+              (_) {
+                homeBuilds++;
+                return const Text('Home');
+              },
+              (_) {
+                notesBuilds++;
+                return const Text('Notes');
+              },
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
 
-    await tester.tap(find.text('Open notes'));
-    await tester.pump();
+    await pumpAt(0);
+    expect(homeBuilds, 1);
+    expect(notesBuilds, 0);
 
+    await pumpAt(1);
     expect(find.text('Notes'), findsOneWidget);
-    expect(find.text('Home', skipOffstage: false), findsOneWidget);
+    expect(find.text('Home', skipOffstage: false), findsNothing);
     expect(notesBuilds, 1);
+    expect(homeBuilds, 1);
+
+    await pumpAt(1);
+    expect(homeBuilds, 1);
+    expect(notesBuilds, 2);
   });
 }

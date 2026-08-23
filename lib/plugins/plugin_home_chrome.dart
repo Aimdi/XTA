@@ -62,6 +62,7 @@ class PluginHomeChrome extends StatelessWidget {
                   ? const SizedBox.shrink()
                   : ListView(
                       scrollDirection: Axis.horizontal,
+                      primary: false,
                       padding: const EdgeInsets.symmetric(horizontal: 2),
                       children: [
                         for (final tab in tabs)

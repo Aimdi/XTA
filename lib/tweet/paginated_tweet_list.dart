@@ -82,6 +82,10 @@ class TweetFeedController {
   /// The chains loaded so far, or `null` before the first page.
   List<TweetChain>? get items => _paging.items;
 
+  /// Where the tweet list will page from next. The image tab reuses this so
+  /// it does not start a second first-page Search fan-out.
+  String? get nextCursor => _paging.nextCursor;
+
   FeedPause? get pauseReason => _pausedBy;
 
   /// Whether there is anything left to show past the pause. A feed that stopped
@@ -368,7 +372,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return _buildChain(context, loaded[index]);
     }
 
-    final runLength = boostRunLengthAt(loaded, index);
+    final runLength = _boostRunLengthAt(loaded, index);
     if (runLength > 0) {
       return BoostRunCarousel(
         chains: loaded.sublist(index, index + runLength),
@@ -387,6 +391,22 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   List<TweetChain>? _placementItems;
   List<InterleavedItem>? _placementInterleaved;
   (int?, List<List<InterleavedItem>>) _placement = (null, const []);
+  List<TweetChain>? _boostItems;
+  List<int>? _boostRunLengths;
+
+  /// Length of a boost run starting at [index], remembered per items list.
+  ///
+  /// [boostRunLengthAt] walks forward from the index. The list builder used
+  /// to do that on every visible tile of every fling frame.
+  int _boostRunLengthAt(List<TweetChain> loaded, int index) {
+    if (!identical(_boostItems, loaded)) {
+      _boostItems = loaded;
+      _boostRunLengths = [
+        for (var i = 0; i < loaded.length; i++) boostRunLengthAt(loaded, i),
+      ];
+    }
+    return _boostRunLengths![index];
+  }
 
   (int?, List<List<InterleavedItem>>) _placementFor(List<TweetChain> loaded) {
     if (identical(_placementItems, loaded) &&
@@ -441,7 +461,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return null;
     }
 
-    final list = CachedTweetList(preview!, username: widget.username);
+    final list = CachedTweetList(
+      preview!,
+      username: widget.username,
+      interleaved: widget.interleaved,
+    );
     if (_staleBannerDismissed) {
       return list;
     }
@@ -487,10 +511,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   // A group can hold nothing but subreddits or publications, and a catch-up
   // feed with nothing new holds no chains at all. Neither is "no posts", so the
   // empty message is the last resort rather than the first.
-  // The pagination package renders this in a SliverFillRemaining that is
-  // exactly one viewport tall, which cannot scroll — and a RefreshIndicator
-  // that cannot scroll cannot be pulled. The same bug was fixed one aisle over
-  // in _interleavedOnlyList; this is the plain-empty twin.
+  //
+  // This list is the NestedScrollView body, not a PagedListView indicator.
+  // Nesting it inside PagedListView attached the inner controller twice and
+  // froze Following / For you on an empty first page.
   Widget _buildEmpty(BuildContext context, Widget? endCard) =>
       endCard ??
       LayoutBuilder(
@@ -531,6 +555,31 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       itemCount: items.length + (endCard == null ? 0 : 1),
       itemBuilder: (context, index) =>
           index < items.length ? items[index].build(context) : endCard!,
+    );
+  }
+
+  /// Plugin cards plus a compact explanation of why the X side is empty.
+  ///
+  /// Must not ride in [PagedListView]'s error slot: that slot is a
+  /// [SliverFillRemaining] one viewport tall, which is how a plugin-only
+  /// group used to show two posts and then a wall of empty space.
+  Widget _pluginPostsWithXError(
+    BuildContext context, {
+    required List<InterleavedItem> items,
+    required Object? error,
+    required VoidCallback onRetry,
+  }) {
+    return Column(
+      children: [
+        if (!_staleBannerDismissed)
+          StaleFeedBanner(
+            reason: staleFeedReasonOf(error),
+            cachedAt: widget.firstPagePreviewCachedAt,
+            onRetry: onRetry,
+            onDismiss: () => setState(() => _staleBannerDismissed = true),
+          ),
+        Expanded(child: _interleavedOnlyList(context, items, null)),
+      ],
     );
   }
 
@@ -582,7 +631,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     if (_showingPreview) {
       _maybeStartFirstLoad();
       return _wrapWithRefresh(
-        CachedTweetList(widget.firstPagePreview!, username: widget.username),
+        CachedTweetList(
+          widget.firstPagePreview!,
+          username: widget.username,
+          interleaved: widget.interleaved,
+        ),
       );
     }
 
@@ -610,6 +663,40 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           items: widget.interleaved,
         )) {
           return _interleavedOnlyList(context, buckets.last, endCard);
+        }
+        // X's first page failed and there is no cached tweet list to fall
+        // back on. The plugin cards are still worth showing — a rate-limited
+        // search must not hide the subreddit that is actually in this group.
+        if (showInterleavedOnXFailure(
+              chains: state.items,
+              items: widget.interleaved,
+            ) &&
+            (pagingErrorOf(state)?.error ?? state.error) != null) {
+          return _pluginPostsWithXError(
+            context,
+            items: buckets.last.isNotEmpty ? buckets.last : widget.interleaved,
+            error: pagingErrorOf(state)?.error ?? state.error,
+            onRetry: fetchNextPage,
+          );
+        }
+        // NestedScrollView allows exactly one inner PrimaryScrollController
+        // client. PagedListView already is one; a skeleton, empty list, or
+        // error scroll view in its indicator slot is a second — freeze, then
+        // "XTA has stopped" on For you (HomeTimeline) and cold Following.
+        if (state.items == null && state.error == null) {
+          _maybeStartFirstLoad();
+          return const TweetFeedSkeleton();
+        }
+        if (state.items == null) {
+          return FullPageErrorWidget(
+            error: pagingErrorOf(state)?.error,
+            stackTrace: pagingErrorOf(state)?.stackTrace,
+            prefix: widget.firstPageErrorPrefix,
+            onRetry: fetchNextPage,
+          );
+        }
+        if (loaded.isEmpty) {
+          return _buildEmpty(context, endCard);
         }
         return PagedListView<int, TweetChain>(
           // paddingOf, not of(): the whole-list builder must not take a
@@ -660,7 +747,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
               );
             },
             firstPageProgressIndicatorBuilder: (context) =>
-                const TweetFeedSkeleton(),
+                const TweetFeedSkeleton(primary: false),
             newPageProgressIndicatorBuilder: (context) =>
                 const TweetSkeletonTile(),
             firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(

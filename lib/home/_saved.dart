@@ -202,7 +202,6 @@ class _SavedScreenState extends State<SavedScreen>
     required Widget Function(int) tileAt,
   }) {
     return FeedListView(
-      controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 4),
       itemCount: itemCount,
@@ -464,7 +463,7 @@ class _SavedScreenState extends State<SavedScreen>
   }
 
   Widget _buildSavedBody(SavedTweetModel model) {
-    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>.transition(
+    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
       store: model,
       onError: (_, e) => FullPageErrorWidget(
         error: e,
@@ -528,7 +527,6 @@ class _SavedScreenState extends State<SavedScreen>
     }
 
     return FeedListView(
-      controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: rows.length,
       itemBuilder: (context, index) {
@@ -558,7 +556,7 @@ class _SavedScreenState extends State<SavedScreen>
   Widget _buildFavoritesBody() {
     var model = context.read<LikedTweetModel>();
 
-    return ScopedBuilder<LikedTweetModel, List<LikedTweet>>.transition(
+    return ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
       store: model,
       onError: (_, e) => FullPageErrorWidget(
         error: e,

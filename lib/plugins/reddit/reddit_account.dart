@@ -51,11 +51,13 @@ bool redditSignedIn(BasePrefService prefs) =>
     (prefs.get<String>(optionPluginRedditRefreshToken) ?? '').trim().isNotEmpty;
 
 /// The client id the reader registered, or an empty string.
-String redditClientId(BasePrefService prefs) => (prefs.get<String>(optionPluginRedditClientId) ?? '').trim();
+String redditClientId(BasePrefService prefs) =>
+    (prefs.get<String>(optionPluginRedditClientId) ?? '').trim();
 
 /// Whether the reader asked to be read the account-free way regardless of the
 /// credentials that happen to be stored.
-bool redditPrefersPublic(BasePrefService prefs) => prefs.get<String>(optionPluginRedditSource) == redditSourcePublic;
+bool redditPrefersPublic(BasePrefService prefs) =>
+    prefs.get<String>(optionPluginRedditSource) == redditSourcePublic;
 
 /// Forgets the sign-in.
 ///
@@ -64,7 +66,10 @@ bool redditPrefersPublic(BasePrefService prefs) => prefs.get<String>(optionPlugi
 /// is kept. So signing out is exactly this write, and it has to happen even if
 /// everything after it fails. The cached app-only token goes too — it was
 /// fetched on behalf of a reader who has just left.
-Future<void> redditForgetSignIn(BasePrefService prefs, RedditClient client) async {
+Future<void> redditForgetSignIn(
+  BasePrefService prefs,
+  RedditClient client,
+) async {
   await prefs.set(optionPluginRedditRefreshToken, '');
   client.forgetToken();
 }
@@ -84,7 +89,8 @@ Future<bool> signInToReddit(BuildContext context) async {
   final code = await Navigator.push<String>(
     context,
     MaterialPageRoute(
-      builder: (_) => RedditLoginWebview(clientId: clientId, state: redditOauthState()),
+      builder: (_) =>
+          RedditLoginWebview(clientId: clientId, state: redditOauthState()),
     ),
   );
   if (code == null || !context.mounted) {
@@ -104,19 +110,31 @@ Future<bool> _exchange(
   required String code,
 }) async {
   try {
-    final refreshToken = await context.read<RedditAuth>().exchangeCode(clientId: clientId, code: code);
+    final refreshToken = await context.read<RedditAuth>().exchangeCode(
+      clientId: clientId,
+      code: code,
+    );
     await prefs.set(optionPluginRedditRefreshToken, refreshToken);
     if (!context.mounted) {
       return true;
     }
 
     // The webview closing is not by itself proof the token was accepted.
-    showSnackBar(context, icon: '✅', message: L10n.of(context).plugin_reddit_signed_in);
+    showSnackBar(
+      context,
+      icon: '✅',
+      message: L10n.of(context).plugin_reddit_signed_in,
+    );
     await context.read<RedditFeedStore>().refresh();
     return true;
   } on RedditException catch (e) {
     if (context.mounted) {
-      showSnackBar(context, icon: '🔒', message: '${L10n.of(context).plugin_reddit_sign_in_failed}\n${e.detail}');
+      showSnackBar(
+        context,
+        icon: '🔒',
+        message:
+            '${L10n.of(context).plugin_reddit_sign_in_failed}\n${e.detail}',
+      );
     }
     return false;
   }
@@ -124,7 +142,10 @@ Future<bool> _exchange(
 
 /// Signs out and reloads the feed through whatever route is left.
 Future<void> signOutOfReddit(BuildContext context) async {
-  await redditForgetSignIn(PrefService.of(context, listen: false), context.read<RedditClient>());
+  await redditForgetSignIn(
+    PrefService.of(context, listen: false),
+    context.read<RedditClient>(),
+  );
   if (context.mounted) {
     await context.read<RedditFeedStore>().refresh();
   }
@@ -133,15 +154,12 @@ Future<void> signOutOfReddit(BuildContext context) async {
 /// Asks for the client id, and reports whether it was stored.
 Future<bool> editRedditClientId(BuildContext context) async {
   final prefs = PrefService.of(context, listen: false);
-  final controller = TextEditingController(text: prefs.get<String>(optionPluginRedditClientId) ?? '');
-
-  // The dialog is still on screen when this function's caller is done with it,
-  // so no State object is in a position to own the controller: it is disposed
-  // when the dialog itself goes, which is what `whenComplete` is for.
   final saved = await showDialog<String>(
     context: context,
-    builder: (dialogContext) => _ClientIdDialog(controller: controller),
-  ).whenComplete(controller.dispose);
+    builder: (_) => _ClientIdDialog(
+      initial: prefs.get<String>(optionPluginRedditClientId) ?? '',
+    ),
+  );
 
   if (saved == null || !context.mounted) {
     return false;
@@ -158,10 +176,29 @@ Future<bool> editRedditClientId(BuildContext context) async {
   return true;
 }
 
-class _ClientIdDialog extends StatelessWidget {
-  final TextEditingController controller;
+class _ClientIdDialog extends StatefulWidget {
+  final String initial;
 
-  const _ClientIdDialog({required this.controller});
+  const _ClientIdDialog({required this.initial});
+
+  @override
+  State<_ClientIdDialog> createState() => _ClientIdDialogState();
+}
+
+class _ClientIdDialogState extends State<_ClientIdDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initial);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,10 +216,13 @@ class _ClientIdDialog extends StatelessWidget {
           // Reddit rejects the login unless the registered app carries this
           // exact redirect, and it is not guessable — so it is stated here
           // rather than left to be discovered.
-          Text(l10n.plugin_reddit_redirect_uri_help(RedditAuth.redirectUri), style: style),
+          Text(
+            l10n.plugin_reddit_redirect_uri_help(RedditAuth.redirectUri),
+            style: style,
+          ),
           const SizedBox(height: 12),
           TextField(
-            controller: controller,
+            controller: _controller,
             autofocus: true,
             autocorrect: false,
             decoration: InputDecoration(hintText: l10n.plugin_reddit_client_id),
@@ -190,8 +230,14 @@ class _ClientIdDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-        TextButton(onPressed: () => Navigator.pop(context, controller.text.trim()), child: Text(l10n.save)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(context, _controller.text.trim()),
+          child: Text(l10n.save),
+        ),
       ],
     );
   }
@@ -221,10 +267,13 @@ class RedditIdentityStore extends Store<String?> {
   /// point of that choice is that Reddit is not told who is reading, and a
   /// request naming them on the settings screen would go behind it.
   Future<void> load(BasePrefService prefs) async {
-    final refreshToken = prefs.get<String>(optionPluginRedditRefreshToken) ?? '';
+    final refreshToken =
+        prefs.get<String>(optionPluginRedditRefreshToken) ?? '';
     final clientId = redditClientId(prefs);
 
-    if (refreshToken.isEmpty || clientId.isEmpty || redditPrefersPublic(prefs)) {
+    if (refreshToken.isEmpty ||
+        clientId.isEmpty ||
+        redditPrefersPublic(prefs)) {
       update(null);
       return;
     }
@@ -232,15 +281,26 @@ class RedditIdentityStore extends Store<String?> {
     await execute(() => _name(clientId: clientId, refreshToken: refreshToken));
   }
 
-  Future<String?> _name({required String clientId, required String refreshToken}) async {
+  Future<String?> _name({
+    required String clientId,
+    required String refreshToken,
+  }) async {
     try {
-      final token = await auth.accessToken(clientId: clientId, refreshToken: refreshToken);
+      final token = await auth.accessToken(
+        clientId: clientId,
+        refreshToken: refreshToken,
+      );
       final response = await httpClient.get(
         Uri.parse(_meEndpoint),
-        headers: {'Authorization': 'Bearer $token', 'User-Agent': RedditClient.userAgent},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'User-Agent': RedditClient.userAgent,
+        },
       );
 
-      return response.statusCode == 200 ? Json(jsonDecode(response.body))['name'].string : null;
+      return response.statusCode == 200
+          ? Json(jsonDecode(response.body))['name'].string
+          : null;
     } catch (_) {
       // The name is decoration. A sign-in that works for reading must not look
       // broken because this one request did not answer.

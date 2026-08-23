@@ -1,7 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
@@ -16,8 +15,7 @@ import 'package:xta/tweet/tweet.dart' show tweetCardColor;
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
-
-final NumberFormat _tiktokCountFormat = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_counts.dart';
 
 const double kTikTokAvatarSize = 48;
 
@@ -39,120 +37,122 @@ class TikTokPostCard extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
 
-    return tweetFlatCard(
-      color: tweetCardColor(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: openAuthor ? () => _openAuthor(context) : null,
-                  child: TikTokAvatar(
-                    url: post.author.avatarUrl,
-                    seed: post.author.uniqueId,
-                    name: post.author.displayName,
-                    size: kTikTokAvatarSize,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              post.author.displayName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
-                          if (post.author.verified) ...[
-                            const SizedBox(width: 4),
-                            Icon(
-                              Icons.verified,
-                              size: 16,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ],
-                        ],
-                      ),
-                      Text(
-                        '@${post.author.uniqueId} · ${createRelativeDate(post.createdAt)}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: muted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (post.desc.trim().isNotEmpty)
+    return RepaintBoundary(
+      child: tweetFlatCard(
+        color: tweetCardColor(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-              child: Text(post.desc),
-            ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-            child: _Cover(post: post),
-          ),
-          if (post.playCount > 0)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 0),
               child: Row(
                 children: [
-                  Icon(Icons.play_arrow, size: 16, color: muted),
-                  const SizedBox(width: 2),
-                  Text(
-                    _tiktokCountFormat.format(post.playCount),
-                    style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                  GestureDetector(
+                    onTap: openAuthor ? () => _openAuthor(context) : null,
+                    child: TikTokAvatar(
+                      url: post.author.avatarUrl,
+                      seed: post.author.uniqueId,
+                      name: post.author.displayName,
+                      size: kTikTokAvatarSize,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                post.author.displayName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            if (post.author.verified) ...[
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.verified,
+                                size: 16,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ],
+                          ],
+                        ),
+                        Text(
+                          '@${post.author.uniqueId} · ${createRelativeDate(post.createdAt)}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: muted,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 2, 4, 4),
-            child: Row(
-              children: [
-                ScopedBuilder<TikTokLikesStore, Set<String>>(
-                  store: context.read<TikTokLikesStore>(),
-                  onState: (context, ids) => LikeButton(
-                    isLiked: ids.contains(post.id),
-                    label: _tiktokCountFormat.format(post.diggCount),
-                    color: ids.contains(post.id)
-                        ? theme.colorScheme.primary
-                        : muted,
-                    onPressed: () =>
-                        context.read<TikTokLikesStore>().toggle(post.id),
-                  ),
-                ),
-                const Spacer(),
-                tweetFooterIconButton(
-                  context,
-                  Icons.share_outlined,
-                  muted,
-                  null,
-                  () => SharePlus.instance.share(
-                    ShareParams(text: post.webUri().toString()),
-                  ),
-                  l10n.share_tweet_link,
-                ),
-              ],
+            if (post.desc.trim().isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                child: Text(post.desc),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+              child: _Cover(post: post),
             ),
-          ),
-          tweetHairlineDivider(context),
-        ],
+            if (post.playCount > 0)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Row(
+                  children: [
+                    Icon(Icons.play_arrow, size: 16, color: muted),
+                    const SizedBox(width: 2),
+                    Text(
+                      compactCount(post.playCount),
+                      style: theme.textTheme.bodySmall?.copyWith(color: muted),
+                    ),
+                  ],
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 2, 4, 4),
+              child: Row(
+                children: [
+                  ScopedBuilder<TikTokLikesStore, Set<String>>(
+                    store: context.read<TikTokLikesStore>(),
+                    onState: (context, ids) => LikeButton(
+                      isLiked: ids.contains(post.id),
+                      label: compactCount(post.diggCount),
+                      color: ids.contains(post.id)
+                          ? theme.colorScheme.primary
+                          : muted,
+                      onPressed: () =>
+                          context.read<TikTokLikesStore>().toggle(post.id),
+                    ),
+                  ),
+                  const Spacer(),
+                  tweetFooterIconButton(
+                    context,
+                    Icons.share_outlined,
+                    muted,
+                    null,
+                    () => SharePlus.instance.share(
+                      ShareParams(text: post.webUri().toString()),
+                    ),
+                    l10n.share_tweet_link,
+                  ),
+                ],
+              ),
+            ),
+            tweetHairlineDivider(context),
+          ],
+        ),
       ),
     );
   }
@@ -195,10 +195,20 @@ class _Cover extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 if (post.coverUrl != null)
-                  ExtendedImage.network(
-                    post.coverUrl!,
-                    fit: BoxFit.cover,
-                    cache: true,
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final maxW = constraints.maxWidth;
+                      final cacheWidth = maxW.isFinite && maxW > 0
+                          ? (maxW * MediaQuery.devicePixelRatioOf(context))
+                                .ceil()
+                          : null;
+                      return ExtendedImage.network(
+                        post.coverUrl!,
+                        fit: BoxFit.cover,
+                        cache: true,
+                        cacheWidth: cacheWidth,
+                      );
+                    },
                   ),
                 if (!post.isPhoto)
                   Center(

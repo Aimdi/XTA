@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -19,6 +18,7 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// What a failed Xy / guest lookup should say.
 String threadsApiErrorMessage(L10n l10n, Object error) {
@@ -356,7 +356,6 @@ class ThreadsProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
-    final numbers = NumberFormat.compact();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,15 +460,15 @@ class ThreadsProfileCard extends StatelessWidget {
           children: [
             _count(
               context,
-              numbers.format(profile.followerCount),
+              compactCount(profile.followerCount),
               l10n.followers,
             ),
             _count(
               context,
-              numbers.format(profile.followingCount),
+              compactCount(profile.followingCount),
               l10n.following,
             ),
-            _count(context, numbers.format(profile.mediaCount), l10n.tweets),
+            _count(context, compactCount(profile.mediaCount), l10n.tweets),
           ],
         ),
         if (onFollow != null) ...[

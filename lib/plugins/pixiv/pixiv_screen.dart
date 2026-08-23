@@ -6,7 +6,9 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
@@ -17,6 +19,7 @@ import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Flare-style Pixiv home: Following / Recommended / Ranking / Bookmarks + search.
 class PixivScreen extends StatefulWidget {
@@ -58,6 +61,7 @@ class _PixivScreenState extends State<PixivScreen>
     _tabs.addListener(() {
       if (_tabs.indexIsChanging) return;
       _ensureTabLoaded(_tabs.index);
+      if (mounted) setState(() {});
     });
     final mute = context.read<PixivMuteStore>();
     _recommended = PixivIllustListStore(
@@ -260,25 +264,24 @@ class _PixivScreenState extends State<PixivScreen>
             : const SizedBox.shrink(),
         actions: actions,
       ),
+      // TabBarView kept every board mounted. Each masonry attached the home
+      // NestedScrollView's *inner* controller, then NestedScrollView.position
+      // threw `Too many elements` on the first filled frame.
       body: !hasToken
           ? _signInBody(l10n)
-          : TabBarView(
-              controller: _tabs,
+          : PluginLazyTabs(
+              index: _tabs.index,
               children: [
-                _KeepAlive(
-                  child: _feedTab(
-                    store: context.read<PixivFeedStore>(),
-                    empty: l10n.plugin_pixiv_empty,
-                  ),
+                (_) => _feedTab(
+                  store: context.read<PixivFeedStore>(),
+                  empty: l10n.plugin_pixiv_empty,
                 ),
-                _KeepAlive(
-                  child: _feedTab(
-                    store: _recommended,
-                    empty: l10n.plugin_pixiv_recommended_empty,
-                  ),
+                (_) => _feedTab(
+                  store: _recommended,
+                  empty: l10n.plugin_pixiv_recommended_empty,
                 ),
-                _KeepAlive(child: _rankingTab(l10n)),
-                _KeepAlive(child: _bookmarksTab(l10n)),
+                (_) => _rankingTab(l10n),
+                (_) => _bookmarksTab(l10n),
               ],
             ),
     );
@@ -422,7 +425,7 @@ class _PixivScreenState extends State<PixivScreen>
         if (store.state.isNotEmpty) {
           return _illustList(context, store, store.state);
         }
-        return const Center(child: CircularProgressIndicator());
+        return const PluginGridSkeleton(columns: 2);
       },
       onError: (context, error) {
         if (store.state.isNotEmpty) {
@@ -479,6 +482,7 @@ class _PixivScreenState extends State<PixivScreen>
           scrollController: store == context.read<PixivFeedStore>()
               ? widget.scrollController
               : null,
+          padding: pluginFeedPadding(context, extra: const EdgeInsets.all(4)),
           onRefresh: store.refresh,
           loadingMore: store.loadingMore,
         ),
@@ -526,26 +530,4 @@ class _ThumbPrefetchState extends State<_ThumbPrefetch> {
 
   @override
   Widget build(BuildContext context) => widget.child;
-}
-
-/// Keeps each Pixiv tab's scroll offset and decoded thumbs warm.
-class _KeepAlive extends StatefulWidget {
-  final Widget child;
-
-  const _KeepAlive({required this.child});
-
-  @override
-  State<_KeepAlive> createState() => _KeepAliveState();
-}
-
-class _KeepAliveState extends State<_KeepAlive>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return widget.child;
-  }
 }

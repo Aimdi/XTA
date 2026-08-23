@@ -3,7 +3,9 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
@@ -217,7 +219,7 @@ class _StocksScreenState extends State<StocksScreen> {
           prefix: l10n.plugin_stocks_watchlist,
           onRetry: _watchlist.load,
         ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, symbols) => _tabHome(symbols, quotes, l10n),
       ),
     );
@@ -289,7 +291,7 @@ class _StocksScreenState extends State<StocksScreen> {
 
   Widget _empty(BuildContext context, L10n l10n, {required bool trending}) {
     return ListView(
-      controller: widget.scrollController,
+      controller: pluginInnerScrollController(context, widget.scrollController),
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
       children: [

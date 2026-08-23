@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/instagram/instagram_client.dart';
@@ -10,8 +9,7 @@ import 'package:xta/plugins/instagram/instagram_post_card.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/utils/urls.dart';
-
-final NumberFormat _igStat = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_counts.dart';
 
 class InstagramProfileScreen extends StatefulWidget {
   final String handle;
@@ -316,7 +314,7 @@ class _Header extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            _igStat.format(value),
+            compactCount(value),
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
           Text(label),

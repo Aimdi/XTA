@@ -47,6 +47,7 @@ void main() {
         tableBlueskyLocalLike,
         tableEhFavorite,
         tableEhHistory,
+        tableRssSubscription,
       ]),
     );
 
@@ -145,4 +146,46 @@ void main() {
       expect(subscription.inFeed, isTrue);
     },
   );
+
+  test('upgrade from v57 creates rss_subscription', () async {
+    final path =
+        '${Directory.systemTemp.path}/xta_migrate_v57_${DateTime.now().microsecondsSinceEpoch}.db';
+    final plan = buildMigrationPlan();
+    var db = await openDatabase(
+      path,
+      version: 57,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    expect(
+      (await db.query(
+        'sqlite_master',
+        columns: ['name'],
+        where: "type = 'table' AND name = ?",
+        whereArgs: [tableRssSubscription],
+      )),
+      isEmpty,
+    );
+    await db.close();
+
+    db = await openDatabase(
+      path,
+      version: databaseVersion,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    addTearDown(() async {
+      await db.close();
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    });
+
+    expect(await db.getVersion(), databaseVersion);
+    final tables = (await db.query(
+      'sqlite_master',
+      columns: ['name'],
+      where: "type = 'table'",
+    )).map((row) => row['name'] as String).toSet();
+    expect(tables, contains(tableRssSubscription));
+  });
 }

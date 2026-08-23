@@ -132,6 +132,7 @@ String _label(BuildContext context, BackupCategory category) =>
       BackupCategory.settings => L10n.of(context).settings,
       BackupCategory.subscriptions => L10n.of(context).subscriptions,
       BackupCategory.substack => L10n.of(context).plugin_substack_title,
+      BackupCategory.rss => L10n.of(context).plugin_rss_title,
       BackupCategory.subreddits => L10n.of(
         context,
       ).plugin_reddit_search_subreddits,

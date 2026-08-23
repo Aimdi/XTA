@@ -65,9 +65,49 @@ void main() {
 
     // NestedScrollView briefly reports no single position when a sheet closes.
     // Treating that as "at top" used to run a held refresh and wipe mid-scroll.
-    test('keeps the last known answer when pixels are unavailable', () {
-      expect(feedRefreshAtTop(pixels: null, lastKnownAtTop: false), isFalse);
-      expect(feedRefreshAtTop(pixels: null, lastKnownAtTop: true), isTrue);
+  group('shouldRetryScrollRestore', () {
+    test('stops when the widget is gone', () {
+      expect(
+        shouldRetryScrollRestore(
+          mounted: false,
+          positionReady: false,
+          attempts: 0,
+        ),
+        isFalse,
+      );
+    });
+
+    test('stops when the inner position is ready', () {
+      expect(
+        shouldRetryScrollRestore(
+          mounted: true,
+          positionReady: true,
+          attempts: 0,
+        ),
+        isFalse,
+      );
+    });
+
+    test('waits a few frames while NestedScrollView has 0 or 2 positions', () {
+      expect(
+        shouldRetryScrollRestore(
+          mounted: true,
+          positionReady: false,
+          attempts: 0,
+        ),
+        isTrue,
+      );
+    });
+
+    test('gives up instead of scheduling forever', () {
+      expect(
+        shouldRetryScrollRestore(
+          mounted: true,
+          positionReady: false,
+          attempts: 29,
+        ),
+        isFalse,
+      );
     });
   });
 }
