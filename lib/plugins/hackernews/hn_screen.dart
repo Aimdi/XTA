@@ -15,6 +15,7 @@ import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 class HnScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -209,7 +210,7 @@ class _FeedTabState extends State<_FeedTab> {
               onMore: widget.store.loadMore,
               ranked: true,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginFeedSkeleton(),
       onError: (_, error) => widget.store.state.isNotEmpty
           ? _StoryList(
               stories: widget.store.state,
@@ -303,7 +304,7 @@ class _FollowingTabState extends State<_FollowingTab> {
     final follows = context.read<HnFollowsStore>();
     return ScopedBuilder<HnFollowingStore, List<HnStory>>(
       store: widget.store,
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      onLoading: (_) => const PluginFeedSkeleton(),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
         stackTrace: null,

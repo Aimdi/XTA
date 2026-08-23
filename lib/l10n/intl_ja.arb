@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "SFWのみ",
   "@content_filter_sfw": {},
+  "content_warning": "閲覧注意",
+  "@content_warning": {},
   "continue_thread": "スレッドを続ける",
   "@continue_thread": {},
   "contribute": "貢献する",

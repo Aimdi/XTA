@@ -13,6 +13,7 @@ import 'package:xta/plugins/booru/booru_settings.dart';
 import 'package:xta/plugins/booru/booru_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Boorusama-inspired home: Latest / Following / Search entry.
 class BooruScreen extends StatefulWidget {
@@ -188,7 +189,7 @@ class _FeedTab extends StatelessWidget {
               loadingMore: store.loadingMore,
               onNearEnd: store.loadMore,
             )
-          : const Center(child: CircularProgressIndicator()),
+          : const PluginGridSkeleton(columns: 2),
       onError: (_, error) => FullPageErrorWidget(
         error: error,
         stackTrace: null,

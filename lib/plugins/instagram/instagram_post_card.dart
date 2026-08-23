@@ -1,7 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
@@ -15,8 +14,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
-
-final NumberFormat _igCount = NumberFormat.compact(locale: 'en_US');
+import 'package:xta/plugins/plugin_counts.dart';
 
 class InstagramPostCard extends StatelessWidget {
   final InstagramPost post;
@@ -103,7 +101,7 @@ class InstagramPostCard extends StatelessWidget {
                     store: context.read<InstagramLikesStore>(),
                     onState: (context, ids) => LikeButton(
                       isLiked: ids.contains(post.id),
-                      label: _igCount.format(post.likeCount),
+                      label: compactCount(post.likeCount),
                       color: ids.contains(post.id)
                           ? theme.colorScheme.primary
                           : muted,

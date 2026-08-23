@@ -6,6 +6,7 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -43,7 +44,7 @@ class _HnUserScreenState extends State<HnUserScreen> {
       appBar: AppBar(title: Text(widget.userId)),
       body: ScopedBuilder<_HnUserStore, _HnUserPage>(
         store: _store,
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) => const PluginFeedSkeleton(applyFeedInsets: false),
         onError: (_, error) => FullPageErrorWidget(
           error: error,
           stackTrace: null,

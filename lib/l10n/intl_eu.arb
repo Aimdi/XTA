@@ -207,6 +207,8 @@
   "@content_filter_nsfw": {},
   "content_filter_sfw": "SFW soilik",
   "@content_filter_sfw": {},
+  "content_warning": "Edukiaren abisua",
+  "@content_warning": {},
   "continue_thread": "Continue thread",
   "@continue_thread": {},
   "contribute": "Egin ekarpena",

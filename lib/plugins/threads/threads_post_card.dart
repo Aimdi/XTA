@@ -1,11 +1,11 @@
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
@@ -22,6 +22,7 @@ import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
@@ -33,8 +34,6 @@ Widget _threadsMediaImage(
 ) {
   return ThreadsNetworkImage(item.url, fit: fit);
 }
-
-final NumberFormat _threadsCountFormat = NumberFormat.compact(locale: 'en_US');
 
 /// A Threads post as a timeline card.
 ///
@@ -260,33 +259,40 @@ class ThreadsPostCard extends StatelessWidget {
         Row(
           children: [
             Flexible(
-              child: Text(
-                post.authorName,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w800,
+              child: PluginNameMetaRow(
+                name: Text(
+                  post.authorName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall!.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
+                meta: [if (date != null) createCompactDate(date)],
+                metaStyle: metaStyle,
               ),
             ),
             if (post.isVerified) ...[
               const SizedBox(width: 4),
               Icon(Icons.verified, size: 16, color: theme.colorScheme.primary),
             ],
-            if (date != null) ...[
-              const SizedBox(width: 6),
-              Text('· ${createCompactDate(date)}', style: metaStyle),
-            ],
-            if (showSourceBadge) ...[
-              const SizedBox(width: 6),
-              _badge(context, L10n.of(context).plugin_threads_title),
-            ],
             _followButton(context),
           ],
         ),
-        Text(
-          '@${post.handle}',
-          overflow: TextOverflow.ellipsis,
-          style: metaStyle,
+        // The source badge rides with the handle, as it does on the Reddit and
+        // Mastodon cards — the name line already carries the follow button, and
+        // in German the two together were wider than a 320dp phone.
+        PluginHandleBadgeRow(
+          handle: Text(
+            '@${post.handle}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: metaStyle,
+          ),
+          badges: [
+            if (showSourceBadge)
+              PluginCardBadge(label: L10n.of(context).plugin_threads_title),
+          ],
         ),
       ],
     );
@@ -312,19 +318,6 @@ class ThreadsPostCard extends StatelessWidget {
           child: Text(L10n.of(context).plugin_threads_follow),
         );
       },
-    );
-  }
-
-  Widget _badge(BuildContext context, String label) {
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(label, style: theme.textTheme.labelSmall),
     );
   }
 }
@@ -438,7 +431,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
       if (count == null || hideCounts) {
         return '';
       }
-      return _threadsCountFormat.format(count);
+      return compactCount(count);
     }
 
     return Padding(
@@ -473,7 +466,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
                   : post.likeCount! + (isLiked ? 1 : 0);
               final likeLabel = hideCounts || shown == null
                   ? ''
-                  : _threadsCountFormat.format(shown);
+                  : compactCount(shown);
               return LikeButton(
                 isLiked: isLiked,
                 label: likeLabel,

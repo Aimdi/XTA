@@ -26,6 +26,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// The Bluesky tab: local follows feed, plus a device-only Liked library.
 class BlueskyScreen extends StatefulWidget {
@@ -255,7 +256,7 @@ class _HomePane extends StatelessWidget {
         if (feed.state.isNotEmpty) {
           return _feed(context, l10n, feed.state);
         }
-        return const Center(child: CircularProgressIndicator());
+        return const PluginFeedSkeleton();
       },
       onError: (context, error) {
         if (feed.state.isNotEmpty) {

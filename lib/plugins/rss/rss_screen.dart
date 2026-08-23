@@ -16,6 +16,7 @@ import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 class RssScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -193,7 +194,7 @@ class _HomePane extends StatelessWidget {
           prefix: l10n.plugin_rss_load_error,
           onRetry: feeds.load,
         ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, followed) {
           if (followed.isEmpty) {
             return EmptyPane(
@@ -215,7 +216,7 @@ class _HomePane extends StatelessWidget {
               prefix: l10n.plugin_rss_load_error,
               onRetry: () => timeline.refresh(force: true),
             ),
-            onLoading: (_) => const Center(child: CircularProgressIndicator()),
+            onLoading: (_) => const PluginFeedSkeleton(),
             onState: (context, snapshot) {
               return ScopedBuilder<RssTagsStore, Map<String, List<String>>>(
                 store: context.read<RssTagsStore>(),

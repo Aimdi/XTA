@@ -54,18 +54,22 @@ class _TweetFeedSkeletonState extends State<TweetFeedSkeleton>
   }
 }
 
-AnimationController _skeletonPulse(TickerProvider vsync) =>
-    AnimationController(
-      vsync: vsync,
-      duration: const Duration(milliseconds: 1100),
-    );
+AnimationController _skeletonPulse(TickerProvider vsync) => AnimationController(
+  vsync: vsync,
+  duration: const Duration(milliseconds: 1100),
+);
 
 /// The accessibility preference and the platform's own "remove animations"
 /// setting both leave the bones at a flat colour rather than pulsing.
-bool skeletonWantsPulse(BuildContext context) =>
-    !MediaQuery.disableAnimationsOf(context) &&
-    PrefService.of(context, listen: false).get<bool>(optionDisableAnimations) !=
-        true;
+///
+/// A skeleton is also the first thing a plugin tab paints, sometimes before
+/// anything has provided a [PrefService]; without one the pulse simply runs.
+bool skeletonWantsPulse(BuildContext context) {
+  if (MediaQuery.disableAnimationsOf(context)) return false;
+
+  final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+  return prefs?.get<bool>(optionDisableAnimations) != true;
+}
 
 /// Starts or pins [controller] according to [skeletonWantsPulse].
 void applySkeletonPulse(BuildContext context, AnimationController controller) {

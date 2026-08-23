@@ -7,6 +7,7 @@ import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
 import 'package:xta/ui/empty_pane.dart';
+import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
 Future<void> showHnSearchSheet(BuildContext context, {String? initialQuery}) {
@@ -79,7 +80,14 @@ class _HnSearchSheetState extends State<HnSearchSheet> {
               store: _store,
               onLoading: (_) =>
                   const Center(child: CircularProgressIndicator()),
-              onError: (_, error) => Center(child: Text(error.toString())),
+              // A bare exception string told the reader nothing they could act
+              // on, and no way to try the search again.
+              onError: (_, error) => FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: l10n.plugin_hn_search_hint,
+                onRetry: () => _submit(_store.query),
+              ),
               onState: (_, stories) {
                 if (_store.query.isEmpty) {
                   return ScopedBuilder<HnSearchHistoryStore, List<String>>(
