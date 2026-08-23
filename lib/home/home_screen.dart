@@ -707,13 +707,9 @@ class _ScaffoldWithBottomNavigationState
     }
     final pageIndex = slot.pageIndex!;
     if (pageIndex == currentPage) {
-      final controller = _scrollControllers[currentPage];
-      final atTop =
-          controller == null ||
-          !controller.hasClients ||
-          controller.offset <= 0;
+      final atTop = scrollControllerAtTop(_scrollControllers[currentPage]);
       if (!atTop) {
-        await scrollToTop(context, controller);
+        await scrollToTop(context, _scrollControllers[currentPage]);
       } else if (_barPages[pageIndex].id == 'trending') {
         _focusNodes[currentPage]?.requestFocus();
       }

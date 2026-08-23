@@ -140,4 +140,32 @@ void main() {
       );
     });
   });
+
+  group('videoPoolCanCreate', () {
+    test('reattaching to a cached player is always allowed', () {
+      expect(
+        videoPoolCanCreate(alreadyCached: true, entryCount: 8, maxSize: 3),
+        isTrue,
+      );
+    });
+
+    test('a new player is refused when the pool is full and nothing is free', () {
+      expect(
+        videoPoolCanCreate(alreadyCached: false, entryCount: 3, maxSize: 3),
+        isFalse,
+      );
+    });
+
+    test('a new player is allowed when an unused entry can be evicted', () {
+      expect(
+        videoPoolCanCreate(
+          alreadyCached: false,
+          entryCount: 3,
+          maxSize: 3,
+          hasEvictable: true,
+        ),
+        isTrue,
+      );
+    });
+  });
 }

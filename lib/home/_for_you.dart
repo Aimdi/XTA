@@ -101,25 +101,36 @@ class _ForYouTweetsState extends State<ForYouTweets>
   /// Sources finish on their own clocks; painting each one used to rebuild the
   /// whole X list. Collect first, then one [setState].
   Future<void> _loadPluginPosts() async {
-    final prefs = PrefService.of(context, listen: false);
-    var dirty = false;
-    await Future.wait(
-      enabledSubscriptionSources(prefs).map((source) async {
-        if (await _collectPostsFrom(source)) {
-          dirty = true;
-        }
-      }),
-    );
-    if (mounted && dirty) {
-      setState(_mergeInterleaved);
+    try {
+      final prefs = PrefService.of(context, listen: false);
+      var dirty = false;
+      await Future.wait(
+        enabledSubscriptionSources(prefs).map((source) async {
+          if (await _collectPostsFrom(source)) {
+            dirty = true;
+          }
+        }),
+      );
+      if (mounted && dirty) {
+        setState(_mergeInterleaved);
+      }
+    } catch (_) {
+      // One plugin failing must not take For you down with it.
     }
   }
 
   Future<bool> _collectPostsFrom(SubscriptionSource source) async {
-    final items = source.inHomeFeed(context)
-        ? await source.interleavedPosts(context, source.homeFeedIds(context))
-        : const <InterleavedItem>[];
-    return mounted && replacePluginSlot(_pluginItems, source, items);
+    try {
+      if (!mounted) {
+        return false;
+      }
+      final items = source.inHomeFeed(context)
+          ? await source.interleavedPosts(context, source.homeFeedIds(context))
+          : const <InterleavedItem>[];
+      return mounted && replacePluginSlot(_pluginItems, source, items);
+    } catch (_) {
+      return false;
+    }
   }
 
   // In zen mode the feed is finite: pagination pauses after this many pages

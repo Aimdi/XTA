@@ -64,3 +64,14 @@ bool shouldReleaseHiddenPlayer({
   if (anyVisible || visibleFraction >= 0.5) return false;
   return true;
 }
+
+/// Whether the pool may start a *new* libmpv instance.
+///
+/// Reattaching to an existing key is free. Creating past [maxSize] when nothing
+/// is evictable is what exhausted MediaCodec and froze the home timeline.
+bool videoPoolCanCreate({
+  required bool alreadyCached,
+  required int entryCount,
+  required int maxSize,
+  bool hasEvictable = false,
+}) => alreadyCached || entryCount < maxSize || hasEvictable;

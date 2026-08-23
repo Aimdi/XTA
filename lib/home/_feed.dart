@@ -388,7 +388,7 @@ class _FeedScreenState extends State<FeedScreen> {
     }
 
     if (tab == FeedTab.foryou) {
-      _remountForYou(scrollToTopFirst: false);
+      await _forYouFeed.softRefresh();
       return;
     }
 
@@ -438,22 +438,24 @@ class _FeedScreenState extends State<FeedScreen> {
     );
     final overflow = overflowFeedTabs(available: available, visible: visible);
 
-    // Keyed by the visible row so overflow picks remount the controller, but
-    // switching among already-visible tabs does not rebuild Following.
-    return DefaultTabController(
-      key: ValueKey(
-        '${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
-      ),
-      length: visible.length,
-      initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
-      child: GroupFeedShell(
-        scrollController: widget.scrollController,
-        groupId: widget.id,
-        centerTitle: false,
-        leading: const DrawerAvatarButton(),
-        titleBuilder: (context) => Text(L10n.of(context).home),
-        bottomBuilder: (context) => PreferredSize(
-          preferredSize: const Size.fromHeight(46),
+    // TabBar lives in its own DefaultTabController so a strip edit can remount
+    // the indicator without recreating NestedScrollView (two outers on the
+    // same ScrollController froze, then crashed, home).
+    return GroupFeedShell(
+      key: ValueKey('home-shell-${tab.id}'),
+      scrollController: widget.scrollController,
+      groupId: widget.id,
+      centerTitle: false,
+      leading: const DrawerAvatarButton(),
+      titleBuilder: (context) => Text(L10n.of(context).home),
+      bottomBuilder: (context) => PreferredSize(
+        preferredSize: const Size.fromHeight(46),
+        child: DefaultTabController(
+          key: ValueKey(
+            '${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
+          ),
+          length: visible.length,
+          initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
           child: Row(
             children: [
               Expanded(
@@ -495,7 +497,8 @@ class _FeedScreenState extends State<FeedScreen> {
             ],
           ),
         ),
-        actionsBuilder: (context) {
+      ),
+      actionsBuilder: (context) {
           // Reddit brings its own bar: sorting, search and adding a subreddit
           // are what this feed is steered with, and the generic feed actions
           // steer nothing here. Its overflow carries the app settings so they
@@ -534,7 +537,7 @@ class _FeedScreenState extends State<FeedScreen> {
             ],
           );
         },
-        bodyBuilder: (context) {
+      bodyBuilder: (context) {
           if (tab == FeedTab.following) {
             // With a cache key this feed survives a trip to another tab, the
             // way a pushed group route already does. Without one, every
@@ -558,7 +561,6 @@ class _FeedScreenState extends State<FeedScreen> {
           }
           return _pluginBody(tab);
         },
-      ),
     );
   }
 }

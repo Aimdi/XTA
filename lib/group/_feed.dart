@@ -158,40 +158,51 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Sources finish on their own clocks; painting each one used to rebuild the
   /// whole X list. Collect first, then one [setState].
   Future<void> _loadPluginPosts() async {
-    final prefs = PrefService.of(context, listen: false);
-    var dirty = false;
-    await Future.wait(
-      enabledSubscriptionSources(prefs).map((source) async {
-        if (await _collectPostsFrom(source)) {
-          dirty = true;
-        }
-      }),
-    );
-    if (mounted && dirty) {
-      setState(_mergeInterleaved);
+    try {
+      final prefs = PrefService.of(context, listen: false);
+      var dirty = false;
+      await Future.wait(
+        enabledSubscriptionSources(prefs).map((source) async {
+          if (await _collectPostsFrom(source)) {
+            dirty = true;
+          }
+        }),
+      );
+      if (mounted && dirty) {
+        setState(_mergeInterleaved);
+      }
+    } catch (_) {
+      // One plugin failing must not take Following down with it.
     }
   }
 
   Future<bool> _collectPostsFrom(SubscriptionSource source) async {
-    // Still fetched on the image tab: that toggle used to skip this and
-    // never ask again when the reader switched back, so a group opened on
-    // images stayed X-only for the rest of the visit.
+    try {
+      // Still fetched on the image tab: that toggle used to skip this and
+      // never ask again when the reader switched back, so a group opened on
+      // images stayed X-only for the rest of the visit.
 
-    final isCombined = widget.group.id == legacyFeedKeyFollowing;
-    final inHomeFeed = isCombined && source.inHomeFeed(context);
-    final ids = sourceIdsFor(
-      memberIds:
-          widget.pluginMembers[source]
-              ?.map((e) => e.id)
-              .toList(growable: false) ??
-          const [],
-      isCombinedFeed: isCombined,
-      inHomeFeed: inHomeFeed,
-      homeFeedIds: inHomeFeed ? source.homeFeedIds(context) : const [],
-    );
+      final isCombined = widget.group.id == legacyFeedKeyFollowing;
+      final inHomeFeed = isCombined && source.inHomeFeed(context);
+      final ids = sourceIdsFor(
+        memberIds:
+            widget.pluginMembers[source]
+                ?.map((e) => e.id)
+                .toList(growable: false) ??
+            const [],
+        isCombinedFeed: isCombined,
+        inHomeFeed: inHomeFeed,
+        homeFeedIds: inHomeFeed ? source.homeFeedIds(context) : const [],
+      );
 
-    final items = await source.interleavedPosts(context, ids);
-    return mounted && replacePluginSlot(_pluginItems, source, items);
+      if (!mounted) {
+        return false;
+      }
+      final items = await source.interleavedPosts(context, ids);
+      return mounted && replacePluginSlot(_pluginItems, source, items);
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> _reloadPluginSources(
@@ -501,12 +512,19 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   // ScrollPosition may not be attached yet on the very first post-frame.
   // Keep scheduling post-frame callbacks until the scrollable reports stable
   // dimensions, then jump. Terminates via `mounted` when the widget unmounts.
-  void _scheduleRestore(double offset) {
+  void _scheduleRestore(double offset, [int attempts = 0]) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final position = _scrollPosition;
-      if (position == null || !position.haveDimensions) {
-        _scheduleRestore(offset);
+      final ready = position != null && position.haveDimensions;
+      if (!ready) {
+        if (shouldRetryScrollRestore(
+          mounted: mounted,
+          positionReady: ready,
+          attempts: attempts,
+        )) {
+          _scheduleRestore(offset, attempts + 1);
+        }
         return;
       }
       position.jumpTo(offset.clamp(0.0, position.maxScrollExtent));
@@ -1009,10 +1027,18 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // before its posts were ever asked for — the list below knows how to show
     // interleaved items with no chains, but never got the chance.
     if (widget.chunks.isEmpty && widget.pluginMembers.isEmpty) {
-      return Scaffold(
-        body: Center(
-          child: Text(L10n.of(context).this_group_contains_no_subscriptions),
-        ),
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(
+            height: 240,
+            child: Center(
+              child: Text(
+                L10n.of(context).this_group_contains_no_subscriptions,
+              ),
+            ),
+          ),
+        ],
       );
     }
 

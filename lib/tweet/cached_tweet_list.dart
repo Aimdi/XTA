@@ -26,8 +26,17 @@ class CachedTweetList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (chains.isEmpty && interleaved.isEmpty) {
+      return FeedListView(
+        padding: const EdgeInsets.only(top: 4),
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: 0,
+        itemBuilder: (_, _) => const SizedBox.shrink(),
+      );
+    }
+
     if (interleaved.isEmpty) {
-      return ListView.builder(
+      return FeedListView(
         padding: const EdgeInsets.only(top: 4),
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: chains.length,

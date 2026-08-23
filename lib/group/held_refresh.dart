@@ -58,3 +58,20 @@ bool feedRefreshAtTop({
   }
   return pixels <= threshold;
 }
+
+/// Whether a NestedScrollView scroll restore should wait another frame.
+///
+/// Following used to reschedule forever while the inner controller had 0 or 2
+/// positions, which froze the home timeline. Caught-up restore was already
+/// capped; offset restore was not.
+bool shouldRetryScrollRestore({
+  required bool mounted,
+  required bool positionReady,
+  required int attempts,
+  int maxAttempts = maxCaughtUpRestoreFrames,
+}) {
+  if (!mounted || positionReady) {
+    return false;
+  }
+  return attempts + 1 < maxAttempts;
+}

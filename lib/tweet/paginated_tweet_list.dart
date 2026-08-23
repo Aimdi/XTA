@@ -511,10 +511,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   // A group can hold nothing but subreddits or publications, and a catch-up
   // feed with nothing new holds no chains at all. Neither is "no posts", so the
   // empty message is the last resort rather than the first.
-  // The pagination package renders this in a SliverFillRemaining that is
-  // exactly one viewport tall, which cannot scroll — and a RefreshIndicator
-  // that cannot scroll cannot be pulled. The same bug was fixed one aisle over
-  // in _interleavedOnlyList; this is the plain-empty twin.
+  //
+  // This list is the NestedScrollView body, not a PagedListView indicator.
+  // Nesting it inside PagedListView attached the inner controller twice and
+  // froze Following / For you on an empty first page.
   Widget _buildEmpty(BuildContext context, Widget? endCard) =>
       endCard ??
       LayoutBuilder(
@@ -679,6 +679,25 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             onRetry: fetchNextPage,
           );
         }
+        // NestedScrollView allows exactly one inner PrimaryScrollController
+        // client. PagedListView already is one; a skeleton, empty list, or
+        // error scroll view in its indicator slot is a second — freeze, then
+        // "XTA has stopped" on For you (HomeTimeline) and cold Following.
+        if (state.items == null && state.error == null) {
+          _maybeStartFirstLoad();
+          return const TweetFeedSkeleton();
+        }
+        if (state.items == null) {
+          return FullPageErrorWidget(
+            error: pagingErrorOf(state)?.error,
+            stackTrace: pagingErrorOf(state)?.stackTrace,
+            prefix: widget.firstPageErrorPrefix,
+            onRetry: fetchNextPage,
+          );
+        }
+        if (loaded.isEmpty) {
+          return _buildEmpty(context, endCard);
+        }
         return PagedListView<int, TweetChain>(
           // paddingOf, not of(): the whole-list builder must not take a
           // dependency on every MediaQuery change (keyboard, text scale).
@@ -728,7 +747,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
               );
             },
             firstPageProgressIndicatorBuilder: (context) =>
-                const TweetFeedSkeleton(),
+                const TweetFeedSkeleton(primary: false),
             newPageProgressIndicatorBuilder: (context) =>
                 const TweetSkeletonTile(),
             firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(

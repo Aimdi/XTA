@@ -202,7 +202,6 @@ class _SavedScreenState extends State<SavedScreen>
     required Widget Function(int) tileAt,
   }) {
     return FeedListView(
-      controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(top: 4),
       itemCount: itemCount,
@@ -528,7 +527,6 @@ class _SavedScreenState extends State<SavedScreen>
     }
 
     return FeedListView(
-      controller: widget.scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: rows.length,
       itemBuilder: (context, index) {

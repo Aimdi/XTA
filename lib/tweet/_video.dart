@@ -281,8 +281,17 @@ class _TweetVideoState extends State<TweetVideo> {
         return pooled;
       }
     } else {
-      pooled = await pool.acquire(key, create);
-      if (!mounted) {
+      final future = pool.acquire(key, create);
+      _acquireFuture = future;
+      try {
+        pooled = await future;
+      } on VideoPoolFullException {
+        if (identical(_acquireFuture, future)) {
+          _acquireFuture = null;
+        }
+        rethrow;
+      }
+      if (!mounted || !identical(_acquireFuture, future)) {
         pool.release(key);
         return pooled;
       }
@@ -336,7 +345,7 @@ class _TweetVideoState extends State<TweetVideo> {
 
     pooled.videoController.waitUntilFirstFrameRendered.then((_) {
       if (mounted) setState(() => _firstFrameRendered = true);
-    });
+    }).catchError((_) {});
   }
 
   void _detachListeners() {
@@ -418,11 +427,9 @@ class _TweetVideoState extends State<TweetVideo> {
     }
 
     _detachListeners();
-    if (_holdsPoolRef) {
-      _pool!.release(key!);
-      _holdsPoolRef = false;
-    }
-
+    final hadRef = _holdsPoolRef;
+    _holdsPoolRef = false;
+    final pool = _pool;
     setState(() {
       _pooled = null;
       _acquireFuture = null;
@@ -432,6 +439,13 @@ class _TweetVideoState extends State<TweetVideo> {
       // is actually back on screen.
       _hasBeenVisible = false;
     });
+    // Dispose the native texture only after Video is off the tree. Releasing
+    // first let eviction stop libmpv while the compositor still sampled it.
+    if (hadRef) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        pool?.release(key!);
+      });
+    }
   }
 
   Future<void> _openFullscreen(
@@ -654,6 +668,12 @@ class _TweetVideoState extends State<TweetVideo> {
     }
 
     _autoPlay = prefAutoPlay;
+    if (key != null &&
+        _pool != null &&
+        !alreadyCached &&
+        !_pool!.canAcquire(key)) {
+      return _poster();
+    }
     _acquireFuture ??= _acquire(prefLoop);
 
     return FutureBuilder(
@@ -669,6 +689,9 @@ class _TweetVideoState extends State<TweetVideo> {
         }
 
         if (hasError && !_firstFrameRendered) {
+          if (snapshot.error is VideoPoolFullException) {
+            return _poster();
+          }
           return AspectRatio(
             aspectRatio: widget.metadata.aspectRatio,
             child: Center(
@@ -723,14 +746,14 @@ class _TweetVideoState extends State<TweetVideo> {
       if (_ownsControllers) {
         _pooled?.dispose();
       } else if (key != null && _holdsPoolRef) {
-        // A fast fling can dispose this widget before the debounced pause timer
-        // fires; releasing the pool ref alone leaves the player running off-screen.
-        // Pause it now, unless the same video is still on screen in another widget.
         if (!(_pool?.anyVisible(key) ?? false)) {
           _pooled?.player.pause();
         }
-        _pool?.release(key);
         _holdsPoolRef = false;
+        final pool = _pool;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          pool?.release(key);
+        });
       }
     }
     super.dispose();

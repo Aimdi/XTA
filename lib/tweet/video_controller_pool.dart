@@ -1,6 +1,7 @@
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/tweet/video_playback_policy.dart';
 import 'package:xta/tweet/video_quality.dart';
 
 /// One cached video player: the libmpv [Player] together with the
@@ -36,6 +37,8 @@ class PooledVideo {
     required this.pausableByPolicy,
     this.httpHeaders,
   });
+
+  bool get isDisposed => _disposed;
 
   Future<void> dispose() async {
     // Two disposal paths can race on the same pair — an explicit restart and the
@@ -113,20 +116,40 @@ class VideoControllerPool {
   void pauseOthers(PooledVideo active) {
     for (final entry in _entries.values) {
       final video = entry.value;
-      if (video == null || identical(video, active)) continue;
+      if (video == null || video.isDisposed || identical(video, active)) {
+        continue;
+      }
       if (!video.pausableByPolicy) continue;
-      if (video.player.state.playing) video.player.pause();
+      try {
+        if (video.player.state.playing) video.player.pause();
+      } catch (_) {}
     }
   }
+
+  bool canAcquire(String key) => videoPoolCanCreate(
+    alreadyCached: _entries.containsKey(key),
+    entryCount: _entries.length,
+    maxSize: maxSize,
+    hasEvictable: _entries.values.any((e) => e.refCount == 0),
+  );
 
   Future<PooledVideo> acquire(
     String key,
     Future<PooledVideo> Function() create,
   ) {
-    var entry = _entries.remove(key) ?? _Entry(create());
+    var entry = _entries.remove(key);
+    if (entry != null) {
+      _entries[key] = entry;
+      entry.refCount++;
+      return entry.future;
+    }
+    _evict();
+    if (_entries.length >= maxSize) {
+      return Future.error(const VideoPoolFullException());
+    }
+    entry = _Entry(create());
     _entries[key] = entry;
     entry.refCount++;
-    _evict();
     return entry.future;
   }
 
@@ -156,4 +179,10 @@ class VideoControllerPool {
       _visibleTokens.remove(victimKey);
     }
   }
+}
+
+/// The pool is already at [VideoControllerPool.maxSize] with every player
+/// still on screen. Callers should keep the poster instead of creating more.
+class VideoPoolFullException implements Exception {
+  const VideoPoolFullException();
 }
