@@ -160,7 +160,7 @@ List<FeedTabOption> visibleFeedTabs({
 List<FeedTabOption> overflowFeedTabs({
   required List<FeedTabOption> available,
   required List<FeedTabOption> visible,
-}) {
+) {
   final shown = {for (final e in visible) e.id.id};
   return [
     for (final e in available)
@@ -482,7 +482,10 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 ),
               ),
-              if (overflow.isNotEmpty)
+              // Earth = switch among pinned plugin timelines. Plus = pin or
+              // unpin. They used to both end in the same add sheet when the
+              // networks list only offered "Add timeline".
+              if (available.any((e) => e.id.isPlugin))
                 IconButton(
                   key: homeNetworksButtonKey,
                   tooltip: L10n.of(context).home_networks_more,
@@ -492,7 +495,13 @@ class _FeedScreenState extends State<FeedScreen> {
               IconButton(
                 tooltip: L10n.of(context).feed_strip_add,
                 icon: const Icon(Icons.add),
-                onPressed: () => showFeedStripAddSheet(context),
+                onPressed: () async {
+                  final pinnedId = await showFeedStripAddSheet(context);
+                  if (!mounted || pinnedId == null) return;
+                  await rememberNetwork(context, pinnedId);
+                  if (!mounted) return;
+                  _selectStripTab(FeedTab(pinnedId));
+                },
               ),
             ],
           ),
