@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -9,7 +8,7 @@ import 'package:xta/plugins/plugin_registry.dart';
 
 /// Plugin tabs that stay one tap on the home strip. The rest live in the
 /// networks sheet so Following / For you are never squeezed off.
-const kHomeStripRecentLimit = 2;
+const kHomeStripRecentLimit = 6;
 
 /// Extra plugin destinations on the bottom bar before they collapse into
 /// one Networks slot. X pages are never collapsed.
@@ -75,44 +74,61 @@ List<BottomBarSlot> layoutBottomBar(
   final core = <BottomBarSlot>[];
   final plugins = <int>[];
   for (var i = 0; i < pageIds.length; i++) {
-    if (pluginById(pageIds[i]) != null) {
+    final id = pageIds[i];
+    if (pluginById(id) != null) {
       plugins.add(i);
     } else {
       core.add(BottomBarSlot.page(i));
     }
   }
-  if (plugins.isEmpty) return core;
+
   if (plugins.length <= pluginLimit) {
-    return [...core, for (final i in plugins) BottomBarSlot.page(i)];
+    return [
+      ...core,
+      for (final i in plugins) BottomBarSlot.page(i),
+    ];
   }
 
-  final recentIndex = recentPluginId == null
-      ? null
-      : plugins.where((i) => pageIds[i] == recentPluginId).firstOrNull;
-  final kept = recentIndex ?? plugins.first;
-  return [...core, BottomBarSlot.page(kept), const BottomBarSlot.overflow()];
+  final keep = <int>{};
+  if (recentPluginId != null) {
+    final recentIndex = pageIds.indexOf(recentPluginId);
+    if (recentIndex >= 0 && plugins.contains(recentIndex)) {
+      keep.add(recentIndex);
+    }
+  }
+  for (final i in plugins) {
+    if (keep.length >= pluginLimit) break;
+    keep.add(i);
+  }
+
+  final slots = <BottomBarSlot>[...core];
+  for (final i in plugins) {
+    if (keep.contains(i)) slots.add(BottomBarSlot.page(i));
+  }
+  slots.add(const BottomBarSlot.overflow());
+  return slots;
 }
 
 int destinationIndexForPage(List<BottomBarSlot> slots, int pageIndex) {
   for (var i = 0; i < slots.length; i++) {
     if (slots[i].pageIndex == pageIndex) return i;
   }
-  final overflow = slots.indexWhere((s) => s.isOverflow);
-  return overflow >= 0 ? overflow : 0;
+  for (var i = 0; i < slots.length; i++) {
+    if (slots[i].isOverflow) return i;
+  }
+  return 0;
 }
 
-/// Pick a network from the ones already on the home strip / bar.
 Future<String?> showNetworkSwitcherSheet(
   BuildContext context, {
   required List<XtaPlugin> plugins,
-  required String? currentId,
+  String? currentId,
   List<String> recentIds = const [],
 }) {
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    showDragHandle: true,
     builder: (_) => _NetworkSwitcherSheet(
       plugins: plugins,
       currentId: currentId,
@@ -163,18 +179,6 @@ class _NetworkSwitcherSheet extends StatelessWidget {
             _section(context, l10n.home_networks_all),
             for (final plugin in rest) _row(context, plugin),
           ],
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.add),
-            title: Text(l10n.feed_strip_add),
-            onTap: () {
-              // The sheet's context dies with the pop. The navigator's
-              // context is the parent route and can open the add sheet.
-              final nav = Navigator.of(context);
-              nav.pop();
-              showFeedStripAddSheet(nav.context);
-            },
-          ),
         ],
       ),
     );
