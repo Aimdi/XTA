@@ -75,3 +75,18 @@ bool videoPoolCanCreate({
   required int maxSize,
   bool hasEvictable = false,
 }) => alreadyCached || entryCount < maxSize || hasEvictable;
+
+/// How full the pool map may stay during eviction.
+///
+/// [makeRoom] is acquire of a *new* key: drop unused entries until there is a
+/// free slot (`entryCount < maxSize`). Without that, a pool sitting at capacity
+/// with idle cached players never shrinks — `_evict` used to run only when
+/// `entryCount > maxSize`, which acquire never allowed — and every later video
+/// failed to load.
+///
+/// Release leaves unused entries cached (`makeRoom: false`) so scrolling back
+/// re-attaches instead of restarting them.
+int videoPoolEvictionCeiling({
+  required int maxSize,
+  required bool makeRoom,
+}) => makeRoom ? maxSize - 1 : maxSize;

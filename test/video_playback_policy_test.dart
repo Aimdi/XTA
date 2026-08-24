@@ -168,4 +168,18 @@ void main() {
       );
     });
   });
+
+  group('videoPoolEvictionCeiling', () {
+    // Regression: acquire used to evict only when length > maxSize, then refuse
+    // at length >= maxSize. A pool sitting at capacity with idle cached
+    // players never dropped them, so every later video stayed a poster.
+    test('acquire at capacity must drop unused entries to free a slot', () {
+      expect(videoPoolEvictionCeiling(maxSize: 3, makeRoom: true), 2);
+      expect(videoPoolEvictionCeiling(maxSize: 1, makeRoom: true), 0);
+    });
+
+    test('release leaves unused entries cached up to maxSize', () {
+      expect(videoPoolEvictionCeiling(maxSize: 3, makeRoom: false), 3);
+    });
+  });
 }
