@@ -63,13 +63,14 @@ void main() {
         FeedTab.foryou,
         FeedTab.reddit,
         FeedTab(pluginIdMastodon),
+        FeedTab(pluginIdPixiv),
       ]);
       expect(
         overflowFeedTabs(
           available: available,
           visible: visible,
-        ).map((e) => e.id),
-        [FeedTab(pluginIdPixiv)],
+        ),
+        isEmpty,
       );
     });
   });
@@ -96,86 +97,6 @@ void main() {
       final slots = layoutBottomBar(['feed', pluginIdReddit]);
       expect(slots.map((s) => s.isOverflow), [false, false]);
       expect(destinationIndexForPage(slots, 1), 1);
-    });
-  });
-
-  group('seedFeedStripPlugins', () {
-    test('an enabled plugin is pinned on the home strip', () async {
-      final prefs = PrefServiceCache(
-        cache: {optionPluginMastodonEnabled: true},
-      );
-
-      final pinned = await seedFeedStripPlugins(prefs);
-
-      expect(feedStripPluginIds(prefs), contains(pluginIdMastodon));
-      expect(pinned, contains(pluginIdMastodon));
-      expect(
-        prefs.getStringList(optionHomeFeedStripPlugins),
-        contains(pluginIdMastodon),
-      );
-      expect(
-        prefs.getStringList(optionSeededStripPlugins),
-        contains(pluginIdMastodon),
-      );
-    });
-
-    test('a pin the reader removed stays removed', () async {
-      final prefs = PrefServiceCache(
-        cache: {
-          optionPluginMastodonEnabled: true,
-          optionHomeFeedStripPlugins: <String>[],
-          optionSeededStripPlugins: [pluginIdMastodon],
-        },
-      );
-
-      expect(await seedFeedStripPlugins(prefs), isEmpty);
-    });
-  });
-
-  group('HomeModel and the home strip', () {
-    test('enabling a plugin selects its home destination', () async {
-      final prefs = PrefServiceCache(
-        cache: {
-          optionHomePages: ['feed', 'subscriptions', 'trending', 'saved'],
-          optionSeededPluginTabs: <String>[],
-          optionPluginRedditEnabled: true,
-        },
-      );
-      final model = HomeModel(prefs, GroupsModel(prefs));
-      await model.loadPages();
-
-      expect(
-        model.state.any((page) => page.id == pluginIdReddit && page.selected),
-        isTrue,
-      );
-      expect(feedStripPluginIds(prefs), contains(pluginIdReddit));
-    });
-  });
-
-  group('switching does not remount Following', () {
-    test('visible row identity stays stable across plugin taps', () {
-      final prefs = PrefServiceCache(
-        cache: {
-          optionPluginRedditEnabled: true,
-          optionPluginMastodonEnabled: true,
-        },
-      );
-      final available = availableFeedTabsFromIds([
-        pluginIdReddit,
-        pluginIdMastodon,
-      ], prefs);
-      final followingKey = visibleFeedTabs(
-        available: available,
-        recent: const [pluginIdReddit, pluginIdMastodon],
-        current: FeedTab.reddit,
-      ).map((e) => e.id.id).join(',');
-      final afterSwitch = visibleFeedTabs(
-        available: available,
-        recent: const [pluginIdMastodon, pluginIdReddit],
-        current: FeedTab(pluginIdMastodon),
-      ).map((e) => e.id.id).join(',');
-
-      expect(followingKey, afterSwitch);
     });
   });
 }

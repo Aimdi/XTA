@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -9,7 +8,7 @@ import 'package:xta/plugins/plugin_registry.dart';
 
 /// Plugin tabs that stay one tap on the home strip. The rest live in the
 /// networks sheet so Following / For you are never squeezed off.
-const kHomeStripRecentLimit = 2;
+const kHomeStripRecentLimit = 6;
 
 /// Extra plugin destinations on the bottom bar before they collapse into
 /// one Networks slot. X pages are never collapsed.
@@ -163,18 +162,6 @@ class _NetworkSwitcherSheet extends StatelessWidget {
             _section(context, l10n.home_networks_all),
             for (final plugin in rest) _row(context, plugin),
           ],
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.add),
-            title: Text(l10n.feed_strip_add),
-            onTap: () {
-              // The sheet's context dies with the pop. The navigator's
-              // context is the parent route and can open the add sheet.
-              final nav = Navigator.of(context);
-              nav.pop();
-              showFeedStripAddSheet(nav.context);
-            },
-          ),
         ],
       ),
     );
