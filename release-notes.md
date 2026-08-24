@@ -4,6 +4,28 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### Videos not playing after aimdi108
+
+**Install this build, not aimdi108.** aimdi108 stopped extra libmpv players
+from being created past the pool cap, which was the right idea, but two
+bugs meant videos did not play:
+
+The tile stored `pool.acquire`'s inner future in the same field as
+`_acquire()`'s own future. Dart's `x ??= asyncFn()` overwrites that field
+at the first `await`, so the "is this still the in-flight acquire?" check
+failed on every first paint. The tile released the player, skipped the
+first-frame listener, and the poster never lifted — play button, then a
+spinner that never went away.
+
+The pool also refused a new player when it was already at capacity even
+if unused cached players could be dropped. After a few clips, every later
+video stayed a still with no play button.
+
+This build keeps the cap, evicts unused players to make a slot, attaches
+listeners on the first paint, and retries when a slot is busy.
+
+Existing databases keep working. No settings reset.
+
 ### Still crashing after aimdi107
 
 **Install this build, not aimdi107.** aimdi107 stopped filled Pixiv and Booru
@@ -123,7 +145,7 @@ starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi107](https://github.com/Aimdi/XTA/releases/tag/aimdi107) is
+Everything from [aimdi108](https://github.com/Aimdi/XTA/releases/tag/aimdi108) is
 in here too.
 
 ---

@@ -1,3 +1,11 @@
+## XTA aimdi109
+
+What's new in XTA aimdi109:
+  - Videos load and play again (aimdi108 compared the wrong acquire Future, so the poster never lifted)
+  - A full video pool now evicts unused players instead of leaving every later clip as a still
+  - Waiting for a pool slot still shows a tap target and retries; autoplay starts when the tile is on screen
+  - Everything from aimdi108
+
 ## XTA aimdi108
 
 What's new in XTA aimdi108:

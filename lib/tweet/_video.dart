@@ -143,6 +143,8 @@ class _TweetVideoState extends State<TweetVideo> {
   Timer? _pauseTimer;
   Timer? _releaseTimer;
   Timer? _creationGateTimer;
+  Timer? _poolRetryTimer;
+  int _acquireEpoch = 0;
   StreamSubscription<double>? _muteSub;
   StreamSubscription<String>? _errorSub;
   StreamSubscription<bool>? _playingSub;
@@ -241,7 +243,7 @@ class _TweetVideoState extends State<TweetVideo> {
     await player.setVolume(startMuted ? 0.0 : 100.0);
     await player.open(
       mk.Media(streamUrl, httpHeaders: urls.httpHeaders),
-      play: widget.alwaysPlay || _userRequestedPlay,
+      play: widget.alwaysPlay || _userRequestedPlay || _autoPlay,
     );
 
     return PooledVideo(
@@ -256,6 +258,7 @@ class _TweetVideoState extends State<TweetVideo> {
   }
 
   Future<PooledVideo> _acquire(bool prefLoop) async {
+    final epoch = _acquireEpoch;
     var startMuted = context.read<VideoContextState>().isMuted;
     var prefs = PrefService.of(context, listen: false);
     var quality = prefs.get(optionMediaVideoQuality);
@@ -276,22 +279,25 @@ class _TweetVideoState extends State<TweetVideo> {
     if (key == null || pool == null) {
       _ownsControllers = true;
       pooled = await create();
-      if (!mounted) {
+      if (!mounted || epoch != _acquireEpoch) {
         await pooled.dispose();
         return pooled;
       }
     } else {
+      // Do not store pool.acquire's future in _acquireFuture. build already
+      // holds this function's future; overwriting it with the inner one made
+      // `identical(_acquireFuture, future)` fail on every first paint, so the
+      // tile released the player, skipped listeners, and the poster never lifted.
       final future = pool.acquire(key, create);
-      _acquireFuture = future;
       try {
         pooled = await future;
       } on VideoPoolFullException {
-        if (identical(_acquireFuture, future)) {
+        if (epoch == _acquireEpoch) {
           _acquireFuture = null;
         }
         rethrow;
       }
-      if (!mounted || !identical(_acquireFuture, future)) {
+      if (!mounted || epoch != _acquireEpoch) {
         pool.release(key);
         return pooled;
       }
@@ -381,8 +387,7 @@ class _TweetVideoState extends State<TweetVideo> {
     if (isVisible) {
       if (key != null) _pool?.markVisible(key, this);
       _cancelVisibilityTimers();
-      if ((_autoPlay || widget.alwaysPlay) &&
-          !wasVisible &&
+      if ((_autoPlay || widget.alwaysPlay || _userRequestedPlay) &&
           !pooled.player.state.playing) {
         pooled.player.play();
       }
@@ -430,6 +435,7 @@ class _TweetVideoState extends State<TweetVideo> {
     final hadRef = _holdsPoolRef;
     _holdsPoolRef = false;
     final pool = _pool;
+    _acquireEpoch++;
     setState(() {
       _pooled = null;
       _acquireFuture = null;
@@ -479,6 +485,7 @@ class _TweetVideoState extends State<TweetVideo> {
 
   Future<void> _restartVideo(bool prefLoop) async {
     _detachListeners();
+    _acquireEpoch++;
     final key = _cacheKey;
     if (key != null && _pool != null) {
       if (_holdsPoolRef) {
@@ -616,6 +623,49 @@ class _TweetVideoState extends State<TweetVideo> {
     });
   }
 
+  void _schedulePoolRetry() {
+    if (_poolRetryTimer != null) return;
+    _poolRetryTimer = Timer(const Duration(milliseconds: 400), () {
+      _poolRetryTimer = null;
+      if (!mounted) return;
+      setState(() {});
+    });
+  }
+
+  /// Poster shown while every pooled player is still on screen. Tap retries
+  /// acquire; a short timer retries once a hidden tile hands its slot back.
+  Widget _waitingForSlotPoster() {
+    return VisibilityDetector(
+      key: _creationGateKey,
+      onVisibilityChanged: (info) {
+        if (!mounted) return;
+        _lastVisibleFraction = info.visibleFraction;
+        if (info.visibleFraction >= 0.5) _schedulePoolRetry();
+      },
+      child: GestureDetector(
+        onTap: () => setState(() {
+          _userRequestedPlay = true;
+          _acquireFuture = null;
+        }),
+        child: _poster(
+          child: (_autoPlay || widget.alwaysPlay || _userRequestedPlay)
+              ? const CircularProgressIndicator()
+              : FritterCenterPlayButton(
+                  backgroundColor: Colors.black54,
+                  iconColor: Colors.white,
+                  show: true,
+                  isPlaying: false,
+                  isFinished: false,
+                  onPressed: () => setState(() {
+                    _userRequestedPlay = true;
+                    _acquireFuture = null;
+                  }),
+                ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final prefs = PrefService.of(context, listen: false);
@@ -672,7 +722,8 @@ class _TweetVideoState extends State<TweetVideo> {
         _pool != null &&
         !alreadyCached &&
         !_pool!.canAcquire(key)) {
-      return _poster();
+      if (_lastVisibleFraction >= 0.5) _schedulePoolRetry();
+      return _waitingForSlotPoster();
     }
     _acquireFuture ??= _acquire(prefLoop);
 
@@ -681,7 +732,8 @@ class _TweetVideoState extends State<TweetVideo> {
       builder: (context, snapshot) {
         final hasError = snapshot.hasError || _playbackError;
         final isLoading = snapshot.connectionState == ConnectionState.waiting;
-        final pooled = _pooled ?? (key != null ? _pool?.peek(key) : null);
+        final pooled =
+            _pooled ?? snapshot.data ?? (key != null ? _pool?.peek(key) : null);
         final hasVideo = pooled != null;
 
         if (isLoading && !hasVideo) {
@@ -690,7 +742,8 @@ class _TweetVideoState extends State<TweetVideo> {
 
         if (hasError && !_firstFrameRendered) {
           if (snapshot.error is VideoPoolFullException) {
-            return _poster();
+            if (_lastVisibleFraction >= 0.5) _schedulePoolRetry();
+            return _waitingForSlotPoster();
           }
           return AspectRatio(
             aspectRatio: widget.metadata.aspectRatio,
@@ -736,6 +789,8 @@ class _TweetVideoState extends State<TweetVideo> {
     _pauseTimer?.cancel();
     _releaseTimer?.cancel();
     _creationGateTimer?.cancel();
+    _poolRetryTimer?.cancel();
+    _acquireEpoch++;
     _detachListeners();
     final key = _cacheKey;
     if (key != null) _pool?.markHidden(key, this);

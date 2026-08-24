@@ -143,7 +143,10 @@ class VideoControllerPool {
       entry.refCount++;
       return entry.future;
     }
-    _evict();
+    // Drop unused cached players so a new one can be created. Without
+    // [makeRoom] a pool sitting at [maxSize] with idle entries never
+    // shrinks, [canAcquire] says yes, and every later video fails.
+    _evict(makeRoom: true);
     if (_entries.length >= maxSize) {
       return Future.error(const VideoPoolFullException());
     }
@@ -165,8 +168,12 @@ class VideoControllerPool {
     _evict();
   }
 
-  void _evict() {
-    while (_entries.length > maxSize) {
+  void _evict({bool makeRoom = false}) {
+    final ceiling = videoPoolEvictionCeiling(
+      maxSize: maxSize,
+      makeRoom: makeRoom,
+    );
+    while (_entries.length > ceiling) {
       String? victimKey;
       for (final e in _entries.entries) {
         if (e.value.refCount == 0) {
