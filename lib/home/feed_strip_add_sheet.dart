@@ -9,8 +9,11 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/_plugin_store.dart';
 
 /// Pick which installed plugin timelines sit next to For you.
-Future<void> showFeedStripAddSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+///
+/// Returns the plugin id that was just pinned (or selected from the pinned
+/// list) so the caller can switch to it. Removing a pin returns null.
+Future<String?> showFeedStripAddSheet(BuildContext context) {
+  return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -20,6 +23,13 @@ Future<void> showFeedStripAddSheet(BuildContext context) {
 
 class _FeedStripAddSheet extends StatelessWidget {
   const _FeedStripAddSheet();
+
+  Future<void> _pinAndClose(BuildContext context, String pluginId) async {
+    final strip = context.read<FeedStripStore>();
+    await strip.ensurePersisted();
+    await strip.add(pluginId);
+    if (context.mounted) Navigator.pop(context, pluginId);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +130,7 @@ class _FeedStripAddSheet extends StatelessWidget {
                                     },
                                   )
                                 : null,
+                            onTap: () => Navigator.pop(context, plugin.id),
                           ),
                         const Divider(height: 1),
                       ],
@@ -140,15 +151,9 @@ class _FeedStripAddSheet extends StatelessWidget {
                             trailing: IconButton(
                               tooltip: l10n.feed_strip_add,
                               icon: const Icon(Icons.add_circle_outline),
-                              onPressed: () async {
-                                await strip.ensurePersisted();
-                                await strip.add(plugin.id);
-                              },
+                              onPressed: () => _pinAndClose(context, plugin.id),
                             ),
-                            onTap: () async {
-                              await strip.ensurePersisted();
-                              await strip.add(plugin.id);
-                            },
+                            onTap: () => _pinAndClose(context, plugin.id),
                           ),
                       ],
                     ],
