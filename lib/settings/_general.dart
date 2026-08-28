@@ -95,12 +95,12 @@ class SettingsGeneralFragment extends StatelessWidget {
             subtitle: Text(L10n.of(context).option_confirm_close_description),
             pref: optionConfirmClose,
           ),
-          PrefSwitch(
-            title: Text(L10n.of(context).option_open_links_in_embedded_browser_label),
-            subtitle: Text(L10n.of(context).option_open_links_in_embedded_browser_description),
-            pref: optionOpenLinksInEmbeddedBrowser,
-          ),
           const BrowserPickerTile(),
+          PrefSwitch(
+            title: Text(L10n.of(context).option_clean_links_label),
+            subtitle: Text(L10n.of(context).option_clean_links_description),
+            pref: optionCleanLinks,
+          ),
           PrefSwitch(
             title: Text(L10n.of(context).disable_screenshots),
             subtitle: Text(L10n.of(context).disable_screenshots_hint),

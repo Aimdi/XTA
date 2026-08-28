@@ -96,19 +96,27 @@ class MainActivity : AudioServiceActivity() {
      * a hardened browser for links off a feed had no way to say so short of
      * changing that default for everything.
      *
+     * MATCH_ALL plus CATEGORY_BROWSABLE is the full installed list. The
+     * previous MATCH_DEFAULT_ONLY query could come back with only the current
+     * default, which made the picker look empty.
+     *
      * Visible because the manifest already declares the matching <queries>
      * entries; without those, package visibility would hide all of them.
      */
     private fun listBrowsers(result: MethodChannel.Result) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com")).apply {
+            addCategory(Intent.CATEGORY_BROWSABLE)
+        }
+        val flags = PackageManager.MATCH_ALL
         val browsers = packageManager
-            .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            .queryIntentActivities(intent, flags)
             .map {
                 mapOf(
                     "package" to it.activityInfo.packageName,
                     "label" to it.loadLabel(packageManager).toString(),
                 )
             }
+            .filter { it["package"] != packageName }
             // One app can offer several matching activities; the reader is
             // choosing an app, not an activity.
             .distinctBy { it["package"] }

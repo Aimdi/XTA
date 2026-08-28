@@ -8,7 +8,31 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:xta/utils/browsers.dart';
 
-const _trackingParams = {'fbclid', 'gclid', 'igshid', 'mc_eid', 'mkt_tok', 'twclid', 'yclid'};
+const _trackingParams = {
+  'fbclid',
+  'gclid',
+  'dclid',
+  'msclkid',
+  'twclid',
+  'ttclid',
+  'yclid',
+  'igshid',
+  'igsh',
+  'mc_eid',
+  'mc_cid',
+  'mkt_tok',
+  'li_fat_id',
+  'gad_source',
+  'gclsrc',
+  'gbraid',
+  'wbraid',
+  'srsltid',
+  'ocid',
+  '_hsenc',
+  '_hsmi',
+  'wickedid',
+};
+const _trackingPrefixes = {'utm_', 'mtm_', 'pk_', 'hsa_'};
 // Share identifiers X appends to copied links; only meaningful on X hosts,
 // where stripping them cannot change what the link points to.
 const _xTrackingParams = {'s', 't', 'ref_src', 'ref_url'};
@@ -61,7 +85,9 @@ String? broadcastIdIn(String? url) {
 }
 
 bool _isTrackingParam(String key, bool isXHost) =>
-    key.startsWith('utm_') || _trackingParams.contains(key) || (isXHost && _xTrackingParams.contains(key));
+    _trackingPrefixes.any(key.startsWith) ||
+    _trackingParams.contains(key) ||
+    (isXHost && _xTrackingParams.contains(key));
 
 /// Removes known tracking query parameters from a URL before it leaves the
 /// app (opened externally or shared).
@@ -87,6 +113,15 @@ String cleanUrl(String url) {
   return kept.isEmpty ? cleaned.replaceFirst('?', '') : cleaned;
 }
 
+/// Whether outbound URLs should have tracking parameters stripped.
+///
+/// Unset is on: that is the behaviour this fork always had, and a missing
+/// key must not start leaking click-ids.
+bool cleanLinksEnabled(BasePrefService prefs) => prefs.get<bool>(optionCleanLinks) != false;
+
+/// [cleanUrl] when the reader left that switch on, otherwise [url] as written.
+String prepareUrl(BasePrefService prefs, String url) => cleanLinksEnabled(prefs) ? cleanUrl(url) : url;
+
 /// Hands a link to the system browser, bypassing the reader's choice.
 ///
 /// Kept for a caller that genuinely needs to leave the app; nothing does today,
@@ -102,13 +137,11 @@ Future<void> openInDefaultBrowser(String url) async {
 }
 
 /// Opens [uri] outside the feed: in an in-app browser view when the reader
-/// asked for that in settings, otherwise in their default browser.
-///
-/// Ported from upstream cb5927c2, keeping this fork's tracking-parameter
-/// stripping.
+/// asked for that in settings, otherwise in the browser they named — or the
+/// system default, if they named none.
 Future<void> openUri(BuildContext context, String uri) async {
   final prefs = PrefService.of(context, listen: false);
-  final url = cleanUrl(uri);
+  final url = prepareUrl(prefs, uri);
 
   if (prefs.get(optionOpenLinksInEmbeddedBrowser) == true) {
     await launchUrlString(url, mode: LaunchMode.inAppBrowserView);

@@ -26,8 +26,16 @@ class _LaunchRecorder {
   }
 }
 
-Future<void> _tapOpen(WidgetTester tester, {required bool embedded, required String url}) async {
-  final prefs = PrefServiceCache(cache: {optionOpenLinksInEmbeddedBrowser: embedded});
+Future<void> _tapOpen(
+  WidgetTester tester, {
+  required bool embedded,
+  bool? clean,
+  required String url,
+}) async {
+  final prefs = PrefServiceCache(cache: {
+    optionOpenLinksInEmbeddedBrowser: embedded,
+    if (clean != null) optionCleanLinks: clean,
+  });
 
   await tester.pumpWidget(PrefService(
     service: prefs,
@@ -65,12 +73,39 @@ void main() {
     expect(recorder.calls.single.url, 'https://example.com/a');
   });
 
-  testWidgets('this fork keeps stripping tracking parameters in both modes', (tester) async {
+  testWidgets('tracking is stripped by default in both launch modes', (tester) async {
     const dirty = 'https://example.com/a?utm_source=x&keep=1';
 
     await _tapOpen(tester, embedded: false, url: dirty);
     await _tapOpen(tester, embedded: true, url: dirty);
 
     expect(recorder.calls.map((c) => c.url), everyElement('https://example.com/a?keep=1'));
+  });
+
+  testWidgets('turning clean-links off leaves the junk on the URL', (tester) async {
+    const dirty = 'https://example.com/a?utm_source=x&keep=1';
+
+    await _tapOpen(tester, embedded: false, clean: false, url: dirty);
+    await _tapOpen(tester, embedded: true, clean: false, url: dirty);
+
+    expect(recorder.calls.map((c) => c.url), everyElement(dirty));
+  });
+
+  testWidgets('turning clean-links on still strips in both modes', (tester) async {
+    const dirty = 'https://example.com/a?fbclid=abc&keep=1';
+
+    await _tapOpen(tester, embedded: false, clean: true, url: dirty);
+    await _tapOpen(tester, embedded: true, clean: true, url: dirty);
+
+    expect(recorder.calls.map((c) => c.url), everyElement('https://example.com/a?keep=1'));
+  });
+
+  test('prepareUrl follows the switch and defaults to stripping', () {
+    const dirty = 'https://example.com/a?utm_source=x&keep=1';
+    const clean = 'https://example.com/a?keep=1';
+
+    expect(prepareUrl(PrefServiceCache(cache: {optionCleanLinks: true}), dirty), clean);
+    expect(prepareUrl(PrefServiceCache(cache: {optionCleanLinks: false}), dirty), dirty);
+    expect(prepareUrl(PrefServiceCache(cache: {}), dirty), clean);
   });
 }
