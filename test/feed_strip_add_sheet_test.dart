@@ -72,6 +72,10 @@ void main() {
       pluginIdMastodon,
       pluginIdPixiv,
     ]);
+    expect(find.text('Plugin timelines'), findsNothing);
+
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
     expect(find.byIcon(Icons.drag_handle), findsNWidgets(3));
 
     await tester.tap(find.byTooltip('Remove from strip').first);

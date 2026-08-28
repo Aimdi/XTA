@@ -1,3 +1,13 @@
+## XTA aimdi110
+
+What's new in XTA aimdi110:
+  - Group feeds keep showing posts when SearchTimeline is rate-limited
+  - Notes you write stay on this device (and in backup / Nextcloud), never on X
+  - Turn a login off and Für dich also drops that login's own posts
+  - Turn a group off to hide its members from Folgt (the group's own tab stays)
+  - The globe is gone from the home strip; plus adds, removes, and reorders plugin timelines
+  - Everything from aimdi109
+
 ## XTA aimdi109
 
 What's new in XTA aimdi109:

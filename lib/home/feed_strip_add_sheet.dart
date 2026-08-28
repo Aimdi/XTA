@@ -9,8 +9,11 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/_plugin_store.dart';
 
 /// Pick which installed plugin timelines sit next to For you.
-Future<void> showFeedStripAddSheet(BuildContext context) {
-  return showModalBottomSheet<void>(
+///
+/// Returns the plugin id that was just pinned (or selected from the pinned
+/// list) so the caller can switch to it. Removing a pin returns null.
+Future<String?> showFeedStripAddSheet(BuildContext context) {
+  return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -66,7 +69,7 @@ class _FeedStripAddSheet extends StatelessWidget {
 
                   if (pinnedPlugins.isEmpty) {
                     return ListView(
-                      children: _availableSection(context, l10n, strip, candidates),
+                      children: _availableSection(context, l10n, candidates),
                     );
                   }
 
@@ -87,7 +90,6 @@ class _FeedStripAddSheet extends StatelessWidget {
                               ..._availableSection(
                                 context,
                                 l10n,
-                                strip,
                                 candidates,
                               ),
                             ],
@@ -110,6 +112,7 @@ class _FeedStripAddSheet extends StatelessWidget {
                         plugin: plugin,
                         index: i,
                         canRemove: plugin.showsHomeTab(prefs),
+                        onSelect: () => Navigator.pop(context, plugin.id),
                         onRemove: () async {
                           await strip.ensurePersisted();
                           await strip.remove(plugin.id);
@@ -127,10 +130,16 @@ class _FeedStripAddSheet extends StatelessWidget {
   }
 }
 
+Future<void> _pinAndClose(BuildContext context, String pluginId) async {
+  final strip = context.read<FeedStripStore>();
+  await strip.ensurePersisted();
+  await strip.add(pluginId);
+  if (context.mounted) Navigator.pop(context, pluginId);
+}
+
 List<Widget> _availableSection(
   BuildContext context,
   L10n l10n,
-  FeedStripStore strip,
   List<XtaPlugin> candidates,
 ) {
   return [
@@ -147,15 +156,9 @@ List<Widget> _availableSection(
         trailing: IconButton(
           tooltip: l10n.feed_strip_add,
           icon: const Icon(Icons.add_circle_outline),
-          onPressed: () async {
-            await strip.ensurePersisted();
-            await strip.add(plugin.id);
-          },
+          onPressed: () => _pinAndClose(context, plugin.id),
         ),
-        onTap: () async {
-          await strip.ensurePersisted();
-          await strip.add(plugin.id);
-        },
+        onTap: () => _pinAndClose(context, plugin.id),
       ),
   ];
 }
@@ -200,6 +203,7 @@ class _PinnedPluginTile extends StatelessWidget {
   final XtaPlugin plugin;
   final int index;
   final bool canRemove;
+  final VoidCallback onSelect;
   final VoidCallback onRemove;
 
   const _PinnedPluginTile({
@@ -207,6 +211,7 @@ class _PinnedPluginTile extends StatelessWidget {
     required this.plugin,
     required this.index,
     required this.canRemove,
+    required this.onSelect,
     required this.onRemove,
   });
 
@@ -214,6 +219,7 @@ class _PinnedPluginTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return ListTile(
+      onTap: onSelect,
       leading: Icon(plugin.icon, color: plugin.brandColor),
       title: Text(plugin.title(context)),
       trailing: Row(
