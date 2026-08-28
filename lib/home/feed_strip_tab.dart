@@ -6,12 +6,14 @@ import 'package:xta/ui/icon_label.dart';
 class FeedStripTab extends StatelessWidget {
   final String title;
   final IconData? icon;
+  final Widget? mark;
   final bool unread;
 
   const FeedStripTab({
     super.key,
     required this.title,
     this.icon,
+    this.mark,
     this.unread = false,
   });
 
@@ -26,9 +28,9 @@ class FeedStripTab extends StatelessWidget {
         isLabelVisible: unread,
         smallSize: 8,
         child: ExcludeSemantics(
-          child: icon == null
+          child: icon == null && mark == null
               ? Text(title)
-              : IconLabel(icon: icon!, label: title),
+              : IconLabel(icon: icon, mark: mark, label: title),
         ),
       ),
     );

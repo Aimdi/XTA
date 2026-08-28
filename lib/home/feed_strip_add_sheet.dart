@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/_plugin_store.dart';
 
@@ -87,11 +88,7 @@ class _FeedStripAddSheet extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Divider(height: 1),
-                              ..._availableSection(
-                                context,
-                                l10n,
-                                candidates,
-                              ),
+                              ..._availableSection(context, l10n, candidates),
                             ],
                           ),
                     itemCount: pinnedPlugins.length,
@@ -151,7 +148,7 @@ List<Widget> _availableSection(
     ),
     for (final plugin in candidates)
       ListTile(
-        leading: Icon(plugin.icon, color: plugin.brandColor),
+        leading: pluginMark(plugin, size: 24),
         title: Text(plugin.title(context)),
         trailing: IconButton(
           tooltip: l10n.feed_strip_add,
@@ -220,7 +217,7 @@ class _PinnedPluginTile extends StatelessWidget {
     final l10n = L10n.of(context);
     return ListTile(
       onTap: onSelect,
-      leading: Icon(plugin.icon, color: plugin.brandColor),
+      leading: pluginMark(plugin, size: 24),
       title: Text(plugin.title(context)),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,

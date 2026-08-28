@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_tab.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
 
 Widget _app(Widget Function(BuildContext context) builder) {
@@ -73,7 +74,8 @@ void main() {
                     Tab(
                       child: FeedStripTab(
                         title: e.titleBuilder(context),
-                        icon: e.id.icon,
+                        icon: e.icon ?? e.id.icon,
+                        mark: e.mark,
                       ),
                     ),
                 ],
@@ -87,9 +89,8 @@ void main() {
 
     expect(find.byIcon(followingTabIcon), findsOneWidget);
     expect(find.byIcon(forYouTabIcon), findsOneWidget);
-    expect(find.byIcon(Icons.newspaper), findsOneWidget);
-    expect(find.byIcon(Icons.brush), findsOneWidget);
-    expect(find.byIcon(Icons.photo_library_outlined), findsOneWidget);
+    expect(find.byType(PluginBrandMark), findsNWidgets(3));
+    expect(find.byIcon(Icons.inventory_2), findsOneWidget);
     expect(find.text('Substack'), findsOneWidget);
     expect(find.text('Pixiv'), findsOneWidget);
     expect(find.text('Booru'), findsOneWidget);

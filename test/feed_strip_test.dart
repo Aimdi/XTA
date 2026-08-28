@@ -143,7 +143,7 @@ void main() {
       expect(FeedTab.foryou.icon, forYouTabIcon);
       expect(FeedTab(pluginIdSubstack).icon, Icons.newspaper);
       expect(FeedTab(pluginIdPixiv).icon, Icons.brush);
-      expect(FeedTab(pluginIdBooru).icon, Icons.photo_library_outlined);
+      expect(FeedTab(pluginIdBooru).icon, Icons.inventory_2);
       expect(FeedTab(pluginIdThreads).icon, Icons.alternate_email);
       expect(FeedTab(pluginIdBluesky).icon, Icons.cloud);
     });
