@@ -4,21 +4,27 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/reddit/reddit_account.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
+import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_search_screen.dart';
 import 'package:xta/plugins/reddit/reddit_settings_screen.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/subscriptions/users_model.dart';
 
 /// The controls a Reddit feed needs, wherever it is being shown.
 ///
 /// Reddit is two screens now — its own tab and an entry in the home switcher —
 /// and the second one arrived with only the generic feed actions, so sorting,
-/// searching and adding a subreddit were all missing from it. They live here so
-/// there is one set rather than two that drift.
+/// searching and the list of followed communities were all missing from it.
+/// They live here so there is one set rather than two that drift.
+///
+/// Subreddits are added from search, not a second plus next to the lens.
+/// Sign-in stays in Reddit settings — the overflow is for how Reddit is read.
 ///
 /// Returns a Row so it can sit as a single entry in an `AppBar.actions` list.
 class RedditFeedActions extends StatefulWidget {
@@ -78,21 +84,6 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
         ),
         const PopupMenuDivider(),
         PopupMenuItem(
-          value: _menuSignIn,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(_signedIn ? Icons.logout : Icons.login),
-            title: Text(
-              _signedIn
-                  ? l10n.plugin_reddit_sign_out
-                  : l10n.plugin_reddit_sign_in,
-            ),
-          ),
-        ),
-        // The client id used to sit here on its own, which left the rest of
-        // Reddit's settings reachable only from the plugin store. One entry
-        // leads to all of them, the client id included.
-        PopupMenuItem(
           value: _menuPluginSettings,
           child: ListTile(
             contentPadding: EdgeInsets.zero,
@@ -114,14 +105,10 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
   }
 
   /// Values the menu uses for the actions that are not a source choice.
-  static const _menuSignIn = '_signIn';
   static const _menuPluginSettings = '_pluginSettings';
   static const _menuAppSettings = '_appSettings';
 
   Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
-    if (value == _menuSignIn) {
-      return _signedIn ? _signOutHere() : _signInHere();
-    }
     if (value == _menuPluginSettings) {
       await Navigator.push(
         context,
@@ -143,52 +130,7 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
     }
   }
 
-  bool get _signedIn => redditSignedIn(PrefService.of(context, listen: false));
-
-  Future<void> _signInHere() async {
-    await signInToReddit(context);
-    if (mounted) setState(() {});
-  }
-
-  Future<void> _signOutHere() async {
-    await signOutOfReddit(context);
-    if (mounted) setState(() {});
-  }
-
-  Future<void> _addSubreddit() => addRedditSubreddit(context);
-
-  Future<void> _manageSubreddits() async {
-    await showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        final store = sheetContext.read<RedditSubredditsStore>();
-        return SafeArea(
-          child: ScopedBuilder<RedditSubredditsStore, List<String>>(
-            store: store,
-            onState: (_, names) => ListView(
-              shrinkWrap: true,
-              children: [
-                for (final name in names)
-                  ListTile(
-                    title: Text('r/$name'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: () async {
-                        await store.remove(name);
-                        if (sheetContext.mounted) {
-                          await refreshAfterRedditChange(sheetContext);
-                        }
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  Future<void> _manageSubreddits() => showRedditCommunitiesSheet(context);
 
   @override
   Widget build(BuildContext context) {
@@ -218,11 +160,6 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
             context,
             MaterialPageRoute(builder: (_) => const RedditSearchScreen()),
           ),
-        ),
-        IconButton(
-          tooltip: l10n.plugin_reddit_add,
-          icon: const Icon(Icons.add),
-          onPressed: _addSubreddit,
         ),
         IconButton(
           tooltip: l10n.subscriptions,
@@ -258,39 +195,226 @@ class RedditCommunitySwitcher extends StatelessWidget {
   }
 
   Future<void> _open(BuildContext context, List<String> names) async {
-    final l10n = L10n.of(context);
     if (names.isEmpty) {
       await addRedditSubreddit(context);
       return;
     }
+    await showRedditCommunitiesSheet(context);
+  }
+}
 
-    final chosen = await showModalBottomSheet<String>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: ListView(
-            shrinkWrap: true,
+/// Followed communities: open one, or drop it.
+///
+/// The list icon used to be delete-only rows with no tap target, so a reader
+/// could not actually visit r/foo from the sheet that listed it.
+Future<void> showRedditCommunitiesSheet(BuildContext context) {
+  final opener = context;
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (sheetContext) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.52,
+      minChildSize: 0.32,
+      maxChildSize: 0.88,
+      builder: (context, controller) =>
+          _RedditCommunitiesSheet(controller: controller, opener: opener),
+    ),
+  );
+}
+
+class _RedditCommunitiesSheet extends StatelessWidget {
+  final ScrollController controller;
+  final BuildContext opener;
+
+  const _RedditCommunitiesSheet({
+    required this.controller,
+    required this.opener,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    return SafeArea(
+      top: false,
+      child: ScopedBuilder<RedditSubredditsStore, List<String>>(
+        store: context.read<RedditSubredditsStore>(),
+        onState: (context, names) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ListTile(title: Text(l10n.plugin_reddit_communities)),
-              for (final name in names)
-                ListTile(
-                  leading: const Icon(Icons.tag),
-                  title: Text('r/$name'),
-                  onTap: () => Navigator.pop(sheetContext, name),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                child: Row(
+                  children: [
+                    Icon(Icons.forum_outlined, color: scheme.primary),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        l10n.plugin_reddit_communities,
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    if (names.isNotEmpty)
+                      Text(
+                        '${names.length}',
+                        style: theme.textTheme.titleMedium!.copyWith(
+                          color: scheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
                 ),
+              ),
+              Expanded(
+                child: ListView(
+                  controller: controller,
+                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                  children: [
+                    if (names.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.forum_outlined,
+                              size: 40,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l10n.plugin_reddit_empty,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      for (final name in names)
+                        _RedditCommunityTile(name: name, opener: opener),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: Icon(Icons.add, color: scheme.primary),
+                title: Text(
+                  l10n.plugin_reddit_add,
+                  style: TextStyle(color: scheme.primary),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  if (opener.mounted) {
+                    await addRedditSubreddit(opener);
+                  }
+                },
+              ),
             ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _RedditCommunityTile extends StatelessWidget {
+  final String name;
+  final BuildContext opener;
+
+  const _RedditCommunityTile({required this.name, required this.opener});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final store = context.read<RedditSubredditsStore>();
+
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      leading: RedditSubredditAvatar(subreddit: name, size: 44),
+      title: Text(
+        'r/$name',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleSmall!.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: _RedditCommunityCount(name: name),
+      trailing: IconButton(
+        tooltip: l10n.delete,
+        icon: const Icon(Icons.delete_outline),
+        onPressed: () async {
+          await store.remove(name);
+          if (context.mounted) {
+            await refreshAfterRedditChange(context);
+          }
+        },
+      ),
+      onTap: () {
+        Navigator.pop(context);
+        if (!opener.mounted) {
+          return;
+        }
+        Navigator.push(
+          opener,
+          MaterialPageRoute(
+            builder: (_) => RedditListingScreen.subreddit(name),
           ),
         );
       },
     );
+  }
+}
 
-    if (chosen == null || !context.mounted) {
-      return;
-    }
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => RedditListingScreen.subreddit(chosen)),
+class _RedditCommunityCount extends StatelessWidget {
+  final String name;
+
+  const _RedditCommunityCount({required this.name});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final client = context.read<RedditClient>();
+    final prefs = PrefService.of(context, listen: false);
+
+    return FutureBuilder<RedditSubredditAbout>(
+      future: RedditReadSession.resolve(
+        prefs: prefs,
+      ).then((session) => session.fetchSubredditAbout(client, name)),
+      builder: (context, snapshot) {
+        final count = snapshot.data?.subscribers;
+        if (count == null) {
+          return const SizedBox(height: 16);
+        }
+        return DefaultTextStyle.merge(
+          style: theme.textTheme.bodySmall!.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.people_outline, size: 16),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  '${compactCount(count)} ${l10n.followers.toLowerCase()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

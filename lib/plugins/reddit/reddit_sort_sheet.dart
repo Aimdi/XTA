@@ -74,6 +74,9 @@ RedditTimeFilter storedRedditTimeFilter(BasePrefService prefs) =>
 RedditNsfwMode storedRedditNsfwMode(BasePrefService prefs) =>
     redditNsfwModeFromName(prefs.get<String>(optionPluginRedditNsfwMode));
 
+bool storedRedditShowSpoilers(BasePrefService prefs) =>
+    prefs.get<bool>(optionPluginRedditShowSpoilers) == true;
+
 RedditFeedMode storedRedditFeedMode(BasePrefService prefs) =>
     redditFeedModeFromName(prefs.get<String>(optionPluginRedditFeedMode));
 

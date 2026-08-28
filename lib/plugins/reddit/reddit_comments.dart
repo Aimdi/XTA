@@ -253,8 +253,10 @@ String? _absolute(String? src) =>
 /// A media token is always noise. A bare URL is not: an image comment reads
 /// `https://i.redd.it/x.gif` as its text and printing that above the picture is
 /// pointless, but prose that merely happens to contain a link keeps every word.
+/// Non-image `<a>` tags are rewritten as `[label](url)` so the thread can
+/// paint them as tappable short names instead of dumping the href.
 String _bodyOf(Element? markdown, _CommentMedia media) {
-  var text = markdown?.text ?? '';
+  var text = _htmlAsMarkdown(markdown);
   for (final token in media.tokens) {
     text = text.replaceAll(token, '');
   }
@@ -264,13 +266,56 @@ String _bodyOf(Element? markdown, _CommentMedia media) {
     return stripRedditMediaPlaceholderTokens(text);
   }
 
-  var withoutLinks = text;
+  var withoutLinks = stripRedditMediaLinksFromText(text);
   for (final url in media.urls) {
     withoutLinks = withoutLinks.replaceAll(url, '');
   }
   withoutLinks = stripRedditMediaPlaceholderTokens(withoutLinks);
 
-  return withoutLinks.isEmpty ? '' : stripRedditMediaPlaceholderTokens(text);
+  return withoutLinks;
+}
+
+/// Visible words of a comment's `.md` block, with ordinary links kept as
+/// markdown so a later pass can shorten and open them.
+String _htmlAsMarkdown(Element? markdown) {
+  if (markdown == null) {
+    return '';
+  }
+  final out = StringBuffer();
+  _writeHtml(out, markdown);
+  return out.toString();
+}
+
+void _writeHtml(StringBuffer out, Node node) {
+  if (node is Text) {
+    out.write(node.text);
+    return;
+  }
+  if (node is! Element) {
+    return;
+  }
+  if (node.localName == 'a') {
+    final href = node.attributes['href'] ?? '';
+    final label = node.text.trim();
+    if (redditEmbeddableImage(href) != null) {
+      out.write(label);
+      return;
+    }
+    if (href.startsWith('http')) {
+      out.write(label.isEmpty || label == href ? href : '[$label]($href)');
+      return;
+    }
+  }
+  if (node.localName == 'br') {
+    out.write('\n');
+    return;
+  }
+  if (node.localName == 'p' && out.isNotEmpty) {
+    out.write('\n');
+  }
+  for (final child in node.nodes) {
+    _writeHtml(out, child);
+  }
 }
 
 /// The comments nested directly inside [thing].

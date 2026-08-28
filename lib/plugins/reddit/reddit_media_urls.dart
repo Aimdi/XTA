@@ -268,6 +268,26 @@ String stripRedditMediaPlaceholderTokens(String text) {
       .trim();
 }
 
+final _redditHttpUrl = RegExp(r'https?://[^\s\]\)<>]+', caseSensitive: false);
+
+/// Drops preview.redd.it / i.redd.it (and other image) URLs from title or
+/// body text once the card already shows that picture.
+///
+/// Meme titles often end with the full CDN URL; printing it above the photo
+/// is the URL a second time.
+String stripRedditMediaLinksFromText(String text) {
+  var out = text.replaceAllMapped(_redditHttpUrl, (match) {
+    final url = match.group(0)!;
+    return redditImageUrl(url) != null || redditEmbeddableImage(url) != null
+        ? ''
+        : url;
+  });
+  out = stripRedditMediaPlaceholderTokens(out);
+  out = out.replaceAll(RegExp(r' {2,}'), ' ').trim();
+  out = out.replaceAll(RegExp(r'[\s:–—\-]+$'), '').trim();
+  return out;
+}
+
 /// Playable DASH manifest for a `v.redd.it/...` link when the listing omitted
 /// `secure_media` (old.reddit HTML scrape never carries it).
 ///

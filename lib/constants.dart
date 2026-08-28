@@ -198,6 +198,9 @@ const optionPluginRedditSelectedSubreddit = 'plugin.reddit.selected_subreddit';
 /// Whether over-18 Reddit posts are hidden, tap-gated, or shown.
 const optionPluginRedditNsfwMode = 'plugin.reddit.nsfw_mode';
 
+/// When true, spoiler-tagged Reddit media is shown without the cover tile.
+const optionPluginRedditShowSpoilers = 'plugin.reddit.show_spoilers';
+
 /// JSON snapshots of locally saved Reddit posts.
 const optionPluginRedditSavedPosts = 'plugin.reddit.saved_posts';
 

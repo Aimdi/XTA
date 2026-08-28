@@ -1163,6 +1163,35 @@ void main() {
     );
 
     test(
+      'a title that is the picture URL stays hidden next to the picture',
+      () {
+        final url =
+            'https://preview.redd.it/aabro673w5mh1.jpeg?width=2400&format=pjpg';
+        final onlyUrl = RedditPost(
+          id: 'u',
+          title: url,
+          subreddit: 'x',
+          permalink: '/r/x/comments/u/',
+          url: url,
+          domain: 'preview.redd.it',
+        );
+        expect(onlyUrl.showsTitle, isFalse);
+        expect(onlyUrl.displayTitle, isEmpty);
+
+        final caption = RedditPost(
+          id: 'v',
+          title: 'look: $url',
+          subreddit: 'x',
+          permalink: '/r/x/comments/v/',
+          url: url,
+          domain: 'preview.redd.it',
+        );
+        expect(caption.showsTitle, isTrue);
+        expect(caption.displayTitle, 'look');
+      },
+    );
+
+    test(
       'a video is recognised so the card offers a play badge, not a dead image',
       () {
         expect(

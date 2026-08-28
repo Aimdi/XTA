@@ -116,6 +116,17 @@ class _RedditSettingsScreenState extends State<RedditSettingsScreen> {
               if (mounted) setState(() {});
             },
           ),
+          _SectionHeader(title: l10n.plugin_reddit_spoiler),
+          SwitchListTile(
+            secondary: const Icon(Icons.warning_amber_outlined),
+            title: Text(l10n.plugin_reddit_show_spoilers),
+            subtitle: Text(l10n.plugin_reddit_show_spoilers_description),
+            value: prefs.get<bool>(optionPluginRedditShowSpoilers) == true,
+            onChanged: (value) async {
+              await prefs.set(optionPluginRedditShowSpoilers, value);
+              if (mounted) setState(() {});
+            },
+          ),
         ],
       ),
     );

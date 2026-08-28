@@ -9,6 +9,7 @@ import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_post_media.dart';
 import 'package:xta/plugins/reddit/reddit_post_sheet.dart';
+import 'package:xta/plugins/reddit/reddit_text.dart';
 import 'package:xta/plugins/reddit/reddit_thread_screen.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
@@ -70,24 +71,21 @@ class RedditPostCard extends StatelessWidget {
                   if (post.isSelf && post.showsSelfText)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-                      child: Text(
-                        post.selfText!,
+                      child: RedditRichText(
+                        text: post.displaySelfText!,
                         maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
-                  RedditPostMedia(post: post),
-                  _RedditPostFooter(
-                    post: post,
-                    onComments: () => _open(context),
-                  ),
                 ],
               ),
             ),
           ),
+          // Outside the card InkWell so a tap opens the picture, not the thread.
+          RedditPostMedia(post: post),
+          _RedditPostFooter(post: post, onComments: () => _open(context)),
           tweetHairlineDivider(context),
         ],
       ),
@@ -98,7 +96,7 @@ class RedditPostCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Text(
-        post.title,
+        post.displayTitle,
         maxLines: 6,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.titleMedium!.copyWith(

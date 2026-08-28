@@ -14,6 +14,7 @@ import 'package:xta/plugins/reddit/reddit_post_sheet.dart' show redditPostUrl;
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/plugins/reddit/reddit_text.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/errors.dart';
@@ -269,7 +270,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
         children: [
           if (post.showsTitle) ...[
             Text(
-              post.title,
+              post.displayTitle,
               style: theme.textTheme.titleLarge!.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -297,17 +298,28 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           // The same block the feed card uses, so a picture post opens on its
           // picture rather than on a link to one.
           RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
-          if (_selfText != null &&
-              _selfText!.isNotEmpty &&
-              !(post.hasVisualMedia &&
-                  isRedditMediaPlaceholderTitle(_selfText!))) ...[
+          if (_visibleSelfText(post) case final selfText?) ...[
             const SizedBox(height: 10),
-            Text(_selfText!, style: theme.textTheme.bodyMedium),
+            RedditRichText(text: selfText, style: theme.textTheme.bodyMedium),
           ],
           const Divider(height: 24),
         ],
       ),
     );
+  }
+
+  /// Selftext worth printing under the media. CDN URLs that the picture
+  /// already shows are stripped first, so a leftover empty string is dropped.
+  String? _visibleSelfText(RedditPost post) {
+    final raw = _selfText;
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    final text = post.hasVisualMedia ? stripRedditMediaLinksFromText(raw) : raw;
+    if (text.isEmpty || isRedditMediaPlaceholderTitle(text)) {
+      return null;
+    }
+    return text;
   }
 
   /// A row that folds on tap. [hidden] is how many replies its fold is
@@ -343,26 +355,27 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
         kRedditIndentPerLevel *
         (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
 
-    return InkWell(
-      onTap: () => setState(
-        () =>
-            folded ? _collapsed.remove(comment.id) : _collapsed.add(comment.id),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(12 + indent, 6, 12, 6),
-        child: Container(
-          padding: EdgeInsets.only(left: depth == 0 ? 0 : 8),
-          decoration: depth == 0
-              ? null
-              : BoxDecoration(
-                  border: Border(
-                    left: BorderSide(color: _railColor(theme, depth), width: 2),
-                  ),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12 + indent, 6, 12, 6),
+      child: Container(
+        padding: EdgeInsets.only(left: depth == 0 ? 0 : 8),
+        decoration: depth == 0
+            ? null
+            : BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: _railColor(theme, depth), width: 2),
                 ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DefaultTextStyle.merge(
+              ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () => setState(
+                () => folded
+                    ? _collapsed.remove(comment.id)
+                    : _collapsed.add(comment.id),
+              ),
+              child: DefaultTextStyle.merge(
                 style: theme.textTheme.bodySmall!.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -406,9 +419,12 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 2),
-              if (folded)
-                Container(
+            ),
+            const SizedBox(height: 2),
+            if (folded)
+              GestureDetector(
+                onTap: () => setState(() => _collapsed.remove(comment.id)),
+                child: Container(
                   margin: const EdgeInsets.only(top: 2),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -422,14 +438,17 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                     '+${hidden + 1}',
                     style: theme.textTheme.labelSmall,
                   ),
-                )
-              else ...[
-                if (comment.body.isNotEmpty)
-                  Text(comment.body, style: theme.textTheme.bodyMedium),
-                RedditCommentImages(urls: comment.mediaUrls),
-              ],
+                ),
+              )
+            else ...[
+              if (comment.body.isNotEmpty)
+                RedditRichText(
+                  text: comment.body,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              RedditCommentImages(urls: comment.mediaUrls),
             ],
-          ),
+          ],
         ),
       ),
     );
