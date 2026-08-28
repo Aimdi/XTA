@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_links.dart';
 
@@ -99,7 +98,10 @@ String _trimUrlJunk(String url) {
 }
 
 /// Comment / selftext with tappable, shortened links.
-class RedditRichText extends StatefulWidget {
+///
+/// Links are [WidgetSpan]s so a tap hits the label itself, not a parent
+/// [InkWell] that would otherwise open the thread or fold the comment.
+class RedditRichText extends StatelessWidget {
   final String text;
   final TextStyle? style;
   final int? maxLines;
@@ -112,39 +114,16 @@ class RedditRichText extends StatefulWidget {
   });
 
   @override
-  State<RedditRichText> createState() => _RedditRichTextState();
-}
-
-class _RedditRichTextState extends State<RedditRichText> {
-  final _recognizers = <GestureRecognizer>[];
-
-  @override
-  void dispose() {
-    _clear();
-    super.dispose();
-  }
-
-  void _clear() {
-    for (final recognizer in _recognizers) {
-      recognizer.dispose();
-    }
-    _recognizers.clear();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    _clear();
     final theme = Theme.of(context);
-    final style = widget.style ?? theme.textTheme.bodyMedium!;
-    final parts = redditTextParts(widget.text);
+    final style = this.style ?? theme.textTheme.bodyMedium!;
+    final parts = redditTextParts(text);
     if (parts.every((part) => !part.isLink)) {
       return Text(
-        widget.text,
+        text,
         style: style,
-        maxLines: widget.maxLines,
-        overflow: widget.maxLines == null
-            ? TextOverflow.clip
-            : TextOverflow.ellipsis,
+        maxLines: maxLines,
+        overflow: maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
       );
     }
 
@@ -159,27 +138,37 @@ class _RedditRichTextState extends State<RedditRichText> {
 
     return Text.rich(
       TextSpan(
-        children: [for (final part in parts) _span(part, style, linkStyle)],
+        children: [
+          for (final part in parts) _span(context, part, style, linkStyle),
+        ],
       ),
-      maxLines: widget.maxLines,
-      overflow: widget.maxLines == null
-          ? TextOverflow.clip
-          : TextOverflow.ellipsis,
+      maxLines: maxLines,
+      overflow: maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
     );
   }
 
-  InlineSpan _span(RedditTextPart part, TextStyle style, TextStyle link) {
+  InlineSpan _span(
+    BuildContext context,
+    RedditTextPart part,
+    TextStyle style,
+    TextStyle link,
+  ) {
     final url = part.url;
     if (url == null) {
       return TextSpan(text: part.text, style: style);
     }
-    final recognizer = TapGestureRecognizer()
-      ..onTap = () {
-        if (context.mounted) {
-          openLink(context, url);
-        }
-      };
-    _recognizers.add(recognizer);
-    return TextSpan(text: part.text, style: link, recognizer: recognizer);
+    return WidgetSpan(
+      alignment: PlaceholderAlignment.baseline,
+      baseline: TextBaseline.alphabetic,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (context.mounted) {
+            openLink(context, url);
+          }
+        },
+        child: Text(part.text, style: link),
+      ),
+    );
   }
 }

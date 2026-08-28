@@ -130,6 +130,8 @@ void main() {
     expect(find.text('r/girlsfrontline2'), findsOneWidget);
     expect(find.text('r/novelai'), findsOneWidget);
     expect(find.byType(RedditSubredditAvatar), findsNWidgets(2));
+    expect(find.byIcon(Icons.people_outline), findsNWidgets(2));
+    expect(find.text('Add subreddit'), findsOneWidget);
 
     final tile = tester.widget<ListTile>(
       find

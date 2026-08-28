@@ -355,26 +355,27 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
         kRedditIndentPerLevel *
         (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
 
-    return InkWell(
-      onTap: () => setState(
-        () =>
-            folded ? _collapsed.remove(comment.id) : _collapsed.add(comment.id),
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(12 + indent, 6, 12, 6),
-        child: Container(
-          padding: EdgeInsets.only(left: depth == 0 ? 0 : 8),
-          decoration: depth == 0
-              ? null
-              : BoxDecoration(
-                  border: Border(
-                    left: BorderSide(color: _railColor(theme, depth), width: 2),
-                  ),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(12 + indent, 6, 12, 6),
+      child: Container(
+        padding: EdgeInsets.only(left: depth == 0 ? 0 : 8),
+        decoration: depth == 0
+            ? null
+            : BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: _railColor(theme, depth), width: 2),
                 ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DefaultTextStyle.merge(
+              ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: () => setState(
+                () => folded
+                    ? _collapsed.remove(comment.id)
+                    : _collapsed.add(comment.id),
+              ),
+              child: DefaultTextStyle.merge(
                 style: theme.textTheme.bodySmall!.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -418,9 +419,12 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 2),
-              if (folded)
-                Container(
+            ),
+            const SizedBox(height: 2),
+            if (folded)
+              GestureDetector(
+                onTap: () => setState(() => _collapsed.remove(comment.id)),
+                child: Container(
                   margin: const EdgeInsets.only(top: 2),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -434,17 +438,17 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                     '+${hidden + 1}',
                     style: theme.textTheme.labelSmall,
                   ),
-                )
-              else ...[
-                if (comment.body.isNotEmpty)
-                  RedditRichText(
-                    text: comment.body,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                RedditCommentImages(urls: comment.mediaUrls),
-              ],
+                ),
+              )
+            else ...[
+              if (comment.body.isNotEmpty)
+                RedditRichText(
+                  text: comment.body,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              RedditCommentImages(urls: comment.mediaUrls),
             ],
-          ),
+          ],
         ),
       ),
     );

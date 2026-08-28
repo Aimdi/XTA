@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/reddit/reddit_text.dart';
 
@@ -29,6 +30,21 @@ void main() {
         parts[3].url,
         'https://x.com/GFL2EXILIUM_EN/status/2093171725546770459',
       );
+    });
+
+    test('the GirlsFrontline2 sticker comment keeps short labels', () {
+      const raw =
+          'Sticker Download>> [OTs-14](https://drive.google.com/drive/mobile/folders/1PoYmalZzYdWTWfP2xdD3xGsG0blUU-r?usp=sharing) [Source ](https://x.com/GFL2EXILIUM_EN/status/2093171725546770459)';
+      final parts = redditTextParts(raw);
+
+      expect(parts.map((p) => p.text).toList(), [
+        'Sticker Download>> ',
+        'OTs-14',
+        ' ',
+        'Source',
+      ]);
+      expect(parts[1].url, contains('drive.google.com/drive/mobile/folders/'));
+      expect(parts[3].url, contains('x.com/GFL2EXILIUM_EN/status/'));
     });
 
     test('a bare Drive URL shrinks to the host', () {
@@ -65,5 +81,25 @@ void main() {
         'example.com/story',
       );
     });
+  });
+
+  testWidgets('paints Drive and X markdown as short blue labels', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: RedditRichText(
+            text:
+                'Sticker Download>> [OTs-14](https://drive.google.com/drive/mobile/folders/abc?usp=sharing) [Source ](https://x.com/GFL2EXILIUM_EN/status/2093171725546770459)',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('OTs-14'), findsOneWidget);
+    expect(find.text('Source'), findsOneWidget);
+    expect(find.textContaining('usp=sharing'), findsNothing);
+    expect(find.textContaining('2093171725546770459'), findsNothing);
   });
 }

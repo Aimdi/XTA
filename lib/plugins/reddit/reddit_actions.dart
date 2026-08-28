@@ -213,9 +213,10 @@ Future<void> showRedditCommunitiesSheet(BuildContext context) {
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
+    useSafeArea: true,
     builder: (sheetContext) => DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.48,
+      initialChildSize: 0.52,
       minChildSize: 0.32,
       maxChildSize: 0.88,
       builder: (context, controller) =>
@@ -237,6 +238,7 @@ class _RedditCommunitiesSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
 
     return SafeArea(
       top: false,
@@ -247,45 +249,73 @@ class _RedditCommunitiesSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
-                child: Text(
-                  l10n.plugin_reddit_communities,
-                  style: theme.textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                child: Row(
+                  children: [
+                    Icon(Icons.forum_outlined, color: scheme.primary),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        l10n.plugin_reddit_communities,
+                        style: theme.textTheme.titleLarge,
+                      ),
+                    ),
+                    if (names.isNotEmpty)
+                      Text(
+                        '${names.length}',
+                        style: theme.textTheme.titleMedium!.copyWith(
+                          color: scheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
                 ),
               ),
               Expanded(
                 child: ListView(
                   controller: controller,
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
                   children: [
                     if (names.isEmpty)
                       Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Text(
-                          l10n.plugin_reddit_empty,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium!.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.forum_outlined,
+                              size: 40,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              l10n.plugin_reddit_empty,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyMedium!.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ),
                       )
                     else
                       for (final name in names)
                         _RedditCommunityTile(name: name, opener: opener),
-                    ListTile(
-                      leading: const Icon(Icons.add),
-                      title: Text(l10n.plugin_reddit_add),
-                      onTap: () async {
-                        Navigator.pop(context);
-                        if (opener.mounted) {
-                          await addRedditSubreddit(opener);
-                        }
-                      },
-                    ),
                   ],
                 ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: Icon(Icons.add, color: scheme.primary),
+                title: Text(
+                  l10n.plugin_reddit_add,
+                  style: TextStyle(color: scheme.primary),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  if (opener.mounted) {
+                    await addRedditSubreddit(opener);
+                  }
+                },
               ),
             ],
           );
@@ -308,9 +338,12 @@ class _RedditCommunityTile extends StatelessWidget {
     final store = context.read<RedditSubredditsStore>();
 
     return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       leading: RedditSubredditAvatar(subreddit: name, size: 44),
       title: Text(
         'r/$name',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: theme.textTheme.titleSmall!.copyWith(
           fontWeight: FontWeight.w600,
         ),
@@ -361,12 +394,24 @@ class _RedditCommunityCount extends StatelessWidget {
       builder: (context, snapshot) {
         final count = snapshot.data?.subscribers;
         if (count == null) {
-          return const SizedBox.shrink();
+          return const SizedBox(height: 16);
         }
-        return Text(
-          '${compactCount(count)} ${l10n.followers.toLowerCase()}',
+        return DefaultTextStyle.merge(
           style: theme.textTheme.bodySmall!.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.people_outline, size: 16),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  '${compactCount(count)} ${l10n.followers.toLowerCase()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
         );
       },
