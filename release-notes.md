@@ -4,6 +4,38 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi111
+
+**Install this build, not aimdi110.** Six open feature PRs landed on main.
+
+**Reddit.** Search follows a subreddit (the plus next to the lens is gone).
+Tap a picture for fullscreen; long-press or the viewer download saves it
+without Twitter's `:orig` suffix, which 404s on i.redd.it. Settings → Show
+spoilers. Drive / X / other links in comments and selftext are short, blue,
+and tappable on their own. The communities sheet lists icons and subscriber
+counts; tap a row to open it, delete stays on the row, Add subreddit is
+pinned at the bottom. Sign-in stays in Reddit settings.
+
+**Plugin logos.** The timelines sheet uses each plugin's real mark instead
+of a generic icon.
+
+**Quotes, retweets, local notes.** Quotes and retweets show on the tweet.
+Local notes under Saved look like tweets. They never leave this device
+unless you back up or sync to Nextcloud.
+
+**Profile.** The private note is smaller and actually saves. Profile posts
+can be filtered. Broadcast tiles no longer paint a white bar.
+
+**Links.** Settings picks the browser that opens a link. Tracking junk is
+stripped from those URLs.
+
+**Substack + Sherpa.** Unchanged from 110 and still in this build. Listen
+on an article uses the on-device engine under Settings → Read aloud.
+Install the Sherpa ONNX TTS Engine app, then choose Sherpa. Substack
+publication logos that fail to load fall back to a coloured initial.
+
+Existing databases keep working. No settings reset.
+
 ### aimdi110
 
 **Install this build, not aimdi109.** Group feeds no longer go blank when X
@@ -165,7 +197,7 @@ starts open. HN threads and user pages build rows on demand.
 
 ---
 
-Everything from [aimdi108](https://github.com/Aimdi/XTA/releases/tag/aimdi108) is
+Everything from [aimdi110](https://github.com/Aimdi/XTA/releases/tag/aimdi110) is
 in here too.
 
 ---
