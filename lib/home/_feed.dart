@@ -155,11 +155,12 @@ List<FeedTabOption> visibleFeedTabs({
     limit: limit,
   );
   final byId = {for (final e in plugins) e.id.id: e};
-  return [
-    ...xTabs,
-    for (final id in visibleIds)
-      if (byId[id] case final option?) option,
-  ];
+  final visible = <FeedTabOption>[...xTabs];
+  for (final id in visibleIds) {
+    final option = byId[id];
+    if (option != null) visible.add(option);
+  }
+  return visible;
 }
 
 List<FeedTabOption> overflowFeedTabs({
@@ -488,9 +489,9 @@ class _FeedScreenState extends State<FeedScreen> {
                 icon: const Icon(Icons.add),
                 onPressed: () async {
                   final pinnedId = await showFeedStripAddSheet(context);
-                  if (!mounted || pinnedId == null) return;
+                  if (!context.mounted || pinnedId == null) return;
                   await rememberNetwork(context, pinnedId);
-                  if (!mounted) return;
+                  if (!context.mounted) return;
                   _selectStripTab(FeedTab(pinnedId));
                 },
               ),
