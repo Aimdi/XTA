@@ -1,4 +1,12 @@
+## XTA aimdi112
+
+What's new in XTA aimdi112:
+  - Vorlesen speaks with Sherpa / Next-gen Kaldi (Android 11 was hiding the engine from the app)
+  - An English-only voice no longer goes silent when the app is in German
+  - Everything from aimdi111
+
 ## XTA aimdi110
+
 
 What's new in XTA aimdi110:
   - Group feeds keep showing posts when SearchTimeline is rate-limited

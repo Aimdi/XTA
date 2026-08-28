@@ -4,7 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi112
+
+**Install this build, not aimdi111.** Vorlesen was silent on phones that use Sherpa / Next-gen Kaldi as the system voice.
+
+Android 11 hides third-party speech engines from apps that never declare them. XTA now asks for TTS engines, binds the one you already set as preferred, and picks a language that engine can actually speak — so an English Kaldi voice is not asked for German.
+
 ### aimdi111
+
 
 **Install this build, not aimdi110.** Six open feature PRs landed on main.
 

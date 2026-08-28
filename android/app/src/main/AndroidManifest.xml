@@ -172,5 +172,14 @@
             <action android:name="android.intent.action.PROCESS_TEXT" />
             <data android:mimeType="text/plain" />
         </intent>
+        <!-- Android 11+ hides third-party TTS engines unless we declare this.
+             Without it, getEngines() cannot see Sherpa / Next-gen Kaldi, setEngine
+             cannot bind it, and Vorlesen stays silent even when it is the system
+             preferred module. -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <package android:name="com.k2fsa.sherpa.onnx.tts.engine" />
+        <package android:name="org.woheller69.ttsengine" />
     </queries>
 </manifest>

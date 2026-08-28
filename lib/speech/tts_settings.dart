@@ -53,21 +53,88 @@ Future<void> preferSherpaTts(BasePrefService prefs) async {
 /// uninstalled since, say — so the caller can fall back rather than sit mute.
 Future<bool> applyTtsChoice(FlutterTts tts, TtsChoice choice) async {
   try {
-    final engine = choice.engine;
+    final engine = await resolveBoundEngine(tts, choice.engine);
     if (engine != null) {
-      await tts.setEngine(engine);
+      try {
+        await tts.setEngine(engine);
+        // Wait until the new engine answers. setLanguage right after setEngine
+        // is otherwise a no-op on some Android builds.
+        try {
+          await tts.getLanguages;
+        } catch (_) {}
+      } catch (_) {
+        if (isSherpaEngine(choice.engine)) return false;
+      }
     }
     if (choice.hasVoice) {
-      await tts.setVoice({
-        'name': choice.voiceName!,
-        'locale': choice.voiceLocale!,
-      });
+      try {
+        await tts.setVoice({
+          'name': choice.voiceName!,
+          'locale': choice.voiceLocale!,
+        });
+      } catch (_) {}
     }
+    try {
+      await tts.setVolume(1);
+    } catch (_) {}
     await tts.setSpeechRate(choice.rate);
     return true;
   } catch (_) {
     return false;
   }
+}
+
+/// Engine package to bind: the one the reader picked, Sherpa if they asked
+/// for it, or the system preferred module when they left it on default.
+Future<String?> resolveBoundEngine(FlutterTts tts, String? requested) async {
+  if (requested != null && requested.isNotEmpty) {
+    if (!isSherpaEngine(requested)) return requested;
+    try {
+      final options = await loadTtsOptions(tts);
+      return resolveSherpaEngineId(options.engines);
+    } catch (_) {
+      return requested;
+    }
+  }
+  return readDefaultEngine(tts);
+}
+
+Future<String?> readDefaultEngine(FlutterTts tts) async {
+  try {
+    final raw = await tts.getDefaultEngine;
+    if (raw is String && raw.isNotEmpty) return raw;
+  } catch (_) {}
+  return null;
+}
+
+/// First language the bound engine will actually speak.
+Future<String?> pickSpeakLanguage(
+  FlutterTts tts, {
+  String? voiceLocale,
+  String? appLocale,
+}) async {
+  final installed = <String>[];
+  try {
+    final raw = await tts.getLanguages;
+    if (raw is List) {
+      installed.addAll(raw.whereType<String>());
+    }
+  } catch (_) {}
+
+  return pickListedSpeakLanguage(
+    candidates: speakLanguageCandidates(
+      voiceLocale: voiceLocale,
+      appLocale: appLocale,
+    ),
+    installed: installed,
+    available: (tag) async {
+      try {
+        return ttsLanguageAvailable(await tts.isLanguageAvailable(tag));
+      } catch (_) {
+        return false;
+      }
+    },
+  );
 }
 
 /// Everything the platform will tell us about what can speak.
@@ -87,6 +154,15 @@ Future<TtsOptions> loadTtsOptions(FlutterTts tts) async {
     }
   } catch (_) {
     // Not every platform has engines to list; voices may still work.
+  }
+
+  try {
+    final fallback = await tts.getDefaultEngine;
+    if (fallback is String && fallback.isNotEmpty && !engines.contains(fallback)) {
+      engines.add(fallback);
+    }
+  } catch (_) {
+    // Default engine is optional; the list from getEngines is enough.
   }
 
   try {
@@ -216,6 +292,13 @@ class _TtsSettingsSheetState extends State<_TtsSettingsSheet> {
       } catch (_) {
         // Reported by the list simply not changing.
       }
+    } else {
+      try {
+        final fallback = await widget.tts.getDefaultEngine;
+        if (fallback is String && fallback.isNotEmpty) {
+          await widget.tts.setEngine(fallback);
+        }
+      } catch (_) {}
     }
 
     final refreshed = await loadTtsOptions(widget.tts);
