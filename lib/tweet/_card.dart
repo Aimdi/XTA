@@ -465,14 +465,22 @@ class _TweetCardState extends State<TweetCard> {
             context);
       case '745291183405076480:broadcast':
         // https://twitter.com/KwasiKwarteng/status/1573229010779516929
-        var uri = card['binding_values']['card_url']['string_value'];
-        var image = card['binding_values']['broadcast_thumbnail$imageKey']?['image_value']['url'];
-        var key = card['binding_values']['broadcast_media_key']['string_value'];
+        final values = card['binding_values'] as Map<String, dynamic>?;
+        var image = values?['broadcast_thumbnail$imageKey']?['image_value']?['url'] as String?;
+        var key = values?['broadcast_media_key']?['string_value'] as String?;
 
-        var width = double.parse(card['binding_values']['broadcast_width']['string_value']);
-        var height = double.parse(card['binding_values']['broadcast_height']['string_value']);
+        final width = double.tryParse('${values?['broadcast_width']?['string_value'] ?? ''}') ?? 16;
+        final height = double.tryParse('${values?['broadcast_height']?['string_value'] ?? ''}') ?? 9;
+        var aspectRatio = height == 0 ? 16 / 9 : width / height;
+        // Square thumbnails around a landscape stream used to leave a fat
+        // white bar under the player.
+        if (!aspectRatio.isFinite || aspectRatio <= 0 || aspectRatio < 1.2) {
+          aspectRatio = 16 / 9;
+        }
 
-        var aspectRatio = width / height;
+        if (key == null) {
+          return Container();
+        }
 
         var child = TweetVideo(
             username: 'username',
@@ -483,27 +491,15 @@ class _TweetCardState extends State<TweetCard> {
               return TweetVideoUrls(broadcast['source']['noRedirectPlaybackUrl'], null);
             }));
 
-        var username = card['binding_values']['broadcaster_username']['string_value'];
-        var title = card['binding_values']['broadcast_title']['string_value'];
-
-        // TODO: Figure out what states we can receive
-        //var state = card['binding_values']['broadcast_state']['string_value'];
-
-        // TODO: This opens the URL externally. Create a screen for it in XTA
-        return _createCard(
-            uri,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                child,
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                  child: _createListTile(context, title, '@$username', null),
-                ),
-              ],
-            ),
-            context);
+        // Just the player. Title/@username sat in a pale card under the video
+        // and read as a blank white bar; the tweet already has the text.
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(kTweetMediaRadius),
+            child: ColoredBox(color: Colors.black, child: child),
+          ),
+        );
       default:
         return Container();
     }

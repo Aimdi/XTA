@@ -38,6 +38,28 @@ String? articleIdIn(String? url) {
   return parts[2];
 }
 
+/// The broadcast id in an `x.com/i/broadcasts/…` link, or null if it is not one.
+///
+/// Spaces recordings and live broadcasts put this URL in the tweet text. The
+/// player already shows the stream, so the truncated orange link is noise.
+String? broadcastIdIn(String? url) {
+  if (url == null || url.isEmpty) {
+    return null;
+  }
+
+  final uri = Uri.tryParse(url);
+  if (uri == null || !_xHosts.contains(uri.host)) {
+    return null;
+  }
+
+  final parts = uri.pathSegments.where((e) => e.isNotEmpty).toList(growable: false);
+  if (parts.length < 3 || parts[0] != 'i' || parts[1] != 'broadcasts') {
+    return null;
+  }
+
+  return parts[2];
+}
+
 bool _isTrackingParam(String key, bool isXHost) =>
     key.startsWith('utm_') || _trackingParams.contains(key) || (isXHost && _xTrackingParams.contains(key));
 

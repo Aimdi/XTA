@@ -40,6 +40,34 @@ void main() {
     });
   });
 
+  group('broadcastIdIn', () {
+    test('takes the id out of a broadcast link', () {
+      expect(broadcastIdIn('https://x.com/i/broadcasts/1YqJvqJvqJvqJvqJvqJvqJ'), '1YqJvqJvqJvqJvqJvqJvqJ');
+    });
+
+    test('twitter.com and the www hosts count too', () {
+      for (final host in ['twitter.com', 'www.x.com', 'mobile.twitter.com']) {
+        expect(broadcastIdIn('https://$host/i/broadcasts/1abc'), '1abc', reason: host);
+      }
+    });
+
+    test('article links and statuses are not broadcasts', () {
+      for (final url in [
+        'https://x.com/i/article/42',
+        'https://x.com/someone/status/123',
+        'https://x.com/i/broadcasts',
+        'https://example.com/i/broadcasts/1abc',
+      ]) {
+        expect(broadcastIdIn(url), isNull, reason: url);
+      }
+    });
+
+    test('nothing at all is not a broadcast', () {
+      expect(broadcastIdIn(null), isNull);
+      expect(broadcastIdIn(''), isNull);
+    });
+  });
+
   group('firstArticleLink', () {
     test('finds the article among ordinary links', () {
       final urls = ['https://example.com', 'https://x.com/i/article/7', 'https://x.com/i/article/8'];

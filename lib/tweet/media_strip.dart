@@ -32,7 +32,36 @@ const double kMediaCardMaxWidthFactor = 0.86;
 /// shape too far outside the range would make every other card a sliver — but a
 /// picture with nothing beside it has nothing to agree with, and forcing it into
 /// that range puts a tall photo inside bars that are not part of it.
-double singleMediaAspect(double aspect) => (!aspect.isFinite || aspect <= 0) ? 1 : aspect;
+double singleMediaAspect(double aspect) =>
+    (!aspect.isFinite || aspect <= 0) ? 1 : aspect;
+
+/// Shape of one attached photo or video.
+///
+/// Videos must use `videoInfo.aspectRatio` when X sent it. Falling back to the
+/// thumbnail's `sizes` (or to 1.0 when those were missing) put 16:9 broadcasts
+/// inside a square and left a fat white bar under the player.
+double mediaItemAspect({
+  required String? type,
+  List<int>? videoAspect,
+  int? thumbW,
+  int? thumbH,
+}) {
+  if (type == 'video' || type == 'animated_gif') {
+    if (videoAspect != null && videoAspect.length >= 2 && videoAspect[1] != 0) {
+      final ratio = videoAspect[0] / videoAspect[1];
+      if (ratio.isFinite && ratio > 0) {
+        return ratio;
+      }
+    }
+  }
+  if (thumbW != null && thumbH != null && thumbH != 0) {
+    final ratio = thumbW / thumbH;
+    if (ratio.isFinite && ratio > 0) {
+      return ratio;
+    }
+  }
+  return 16 / 9;
+}
 
 double clampMediaAspect(double aspect) {
   if (!aspect.isFinite || aspect <= 0) {
@@ -50,7 +79,10 @@ typedef MediaStripLayout = ({double height, List<double> widths});
 /// carousel, and cropping it to a row height would lose the top and bottom of
 /// something nothing is competing with. Several share a height, and each is as
 /// wide as its shape at that height.
-MediaStripLayout mediaStripLayout({required double width, required List<double> aspects}) {
+MediaStripLayout mediaStripLayout({
+  required double width,
+  required List<double> aspects,
+}) {
   if (aspects.isEmpty) {
     return (height: 0, widths: const []);
   }
@@ -64,7 +96,10 @@ MediaStripLayout mediaStripLayout({required double width, required List<double> 
 
   return (
     height: height,
-    widths: [for (final aspect in aspects) math.min(height * clampMediaAspect(aspect), widest)],
+    widths: [
+      for (final aspect in aspects)
+        math.min(height * clampMediaAspect(aspect), widest),
+    ],
   );
 }
 
@@ -74,7 +109,11 @@ const double kMediaCardGap = 8;
 /// How far the row must be scrolled for the card at [index] to sit at its left
 /// edge. Used when a post is opened at a particular picture — from the media
 /// grid, say — so the one that was tapped is the one in view.
-double mediaStripOffsetOf(int index, List<double> widths, {double gap = kMediaCardGap}) {
+double mediaStripOffsetOf(
+  int index,
+  List<double> widths, {
+  double gap = kMediaCardGap,
+}) {
   var offset = 0.0;
   for (var i = 0; i < index && i < widths.length; i++) {
     offset += widths[i] + gap;

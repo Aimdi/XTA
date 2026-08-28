@@ -106,9 +106,10 @@ class UrlEntity extends Entity {
 
   @override
   InlineSpan getContent(EntitySpanContext context) {
-    // An article link is shown as a card under the text, so leaving the URL in
-    // the text too would say the same thing twice — once unreadably.
-    if (articleIdIn(url.expandedUrl) != null) {
+    // An article or broadcast link is shown as its own block under the text,
+    // so leaving the URL in the text too would say the same thing twice.
+    if (articleIdIn(url.expandedUrl) != null ||
+        broadcastIdIn(url.expandedUrl) != null) {
       return const TextSpan(text: '');
     }
 

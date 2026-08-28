@@ -4,6 +4,8 @@ import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/database/timeline_cache.dart';
+import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
+import 'package:xta/profile/posts_filter.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
@@ -21,6 +23,7 @@ class ProfileTweets extends StatefulWidget {
   final bool includeReplies;
   final List<String> pinnedTweets;
   final BasePrefService pref;
+  final PostsFilter filter;
 
   const ProfileTweets(
       {super.key,
@@ -28,7 +31,8 @@ class ProfileTweets extends StatefulWidget {
       required this.type,
       required this.includeReplies,
       required this.pinnedTweets,
-      required this.pref});
+      required this.pref,
+      this.filter = PostsFilter.all});
 
   @override
   State<ProfileTweets> createState() => _ProfileTweetsState();
@@ -54,13 +58,25 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   }
 
   @override
+  void didUpdateWidget(covariant ProfileTweets oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.filter != oldWidget.filter) {
+      _paging.dispose();
+      loadTweetsCounter = 0;
+      _paging = CursorPagingController<String, TweetChain>(_fetchPage);
+    }
+  }
+
+  @override
   void dispose() {
     _paging.dispose();
     super.dispose();
   }
 
   void incrementLoadTweetsCounter() {
-    ++loadTweetsCounter;
+    if (widget.filter == PostsFilter.all) {
+      ++loadTweetsCounter;
+    }
   }
 
   int getLoadTweetsCounter() {
@@ -117,11 +133,21 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   }
 
   Future<CursorPage<String, TweetChain>> _fetchPage(String? cursor) async {
-    var result = cursor == null ? await _loadFirstPage() : await _load(cursor);
+    if (widget.filter == PostsFilter.all) {
+      var result = cursor == null ? await _loadFirstPage() : await _load(cursor);
+      final next = result.cursorBottom;
+      return (items: result.chains, nextCursor: next == cursor ? null : next);
+    }
 
-    // Stop when the cursor doesn't advance (or is gone), keeping the chains.
-    final next = result.cursorBottom;
-    return (items: result.chains, nextCursor: next == cursor ? null : next);
+    return mediaPageWithLookahead<TweetChain>(
+      cursor,
+      (c) async {
+        final result = c == null ? await _loadFirstPage() : await _load(c);
+        final next = result.cursorBottom;
+        return (chains: result.chains, nextCursor: next == c ? null : next);
+      },
+      (chains) => chains.where(widget.filter.accepts).toList(),
+    );
   }
 
   @override

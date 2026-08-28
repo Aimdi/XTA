@@ -92,4 +92,24 @@ void main() {
       expect(mediaStripOffsetOf(9, const [100, 100], gap: 8), 100 + 8 + 100 + 8);
     });
   });
+
+  group('mediaItemAspect', () {
+    test('a video uses videoInfo, not the thumbnail size', () {
+      expect(
+        mediaItemAspect(type: 'video', videoAspect: [16, 9], thumbW: 1, thumbH: 1),
+        closeTo(16 / 9, 0.001),
+      );
+    });
+
+    test('a broadcast with no sizes is 16:9, not a square', () {
+      expect(
+        mediaItemAspect(type: 'video', videoAspect: null, thumbW: null, thumbH: null),
+        closeTo(16 / 9, 0.001),
+      );
+    });
+
+    test('a photo still uses its pixel size', () {
+      expect(mediaItemAspect(type: 'photo', thumbW: 4, thumbH: 5), closeTo(4 / 5, 0.001));
+    });
+  });
 }

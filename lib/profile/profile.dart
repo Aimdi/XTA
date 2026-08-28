@@ -13,6 +13,7 @@ import 'package:xta/profile/_tweets.dart';
 import 'package:xta/profile/profile_feed_settings.dart';
 import 'package:xta/profile/profile_model.dart';
 import 'package:xta/profile/profile_note.dart';
+import 'package:xta/profile/posts_filter.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
@@ -124,6 +125,8 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   late TabController _tabController;
 
   MediaFilter _mediaFilter = MediaFilter.all;
+  PostsFilter _postsFilter = PostsFilter.all;
+  bool _hasBroadcasts = false;
 
   bool _showBackToTopButton = false;
 
@@ -299,9 +302,15 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                 trailing: t.id == ProfileTabs.media
                                     ? _MediaFilterButton(
                                         value: _mediaFilter,
+                                        includeBroadcasts: _hasBroadcasts,
                                         onChanged: (filter) => setState(() => _mediaFilter = filter),
                                       )
-                                    : null,
+                                    : t.id == ProfileTabs.posts
+                                        ? _PostsFilterButton(
+                                            value: _postsFilter,
+                                            onChanged: (filter) => setState(() => _postsFilter = filter),
+                                          )
+                                        : null,
                               )),
                           ],
                           dividerColor: theme.colorScheme.surfaceBright.withAlpha(150),
@@ -645,14 +654,24 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                     type: 'profile',
                     includeReplies: false,
                     pinnedTweets: widget.profile.pinnedTweets,
-                    pref: prefs),
+                    pref: prefs,
+                    filter: _postsFilter),
                 ProfileTweets(
                     user: user,
                     type: 'profile',
                     includeReplies: true,
                     pinnedTweets: widget.profile.pinnedTweets,
                     pref: prefs),
-                ProfileMediaGrid(user: user, pref: prefs, filter: _mediaFilter),
+                ProfileMediaGrid(
+                  user: user,
+                  pref: prefs,
+                  filter: _mediaFilter,
+                  onBroadcastsFound: (found) {
+                    if (found && !_hasBroadcasts) {
+                      setState(() => _hasBroadcasts = true);
+                    }
+                  },
+                ),
                 ProfileSaved(user: user),
               ],
             ),
@@ -742,31 +761,42 @@ class _ProfileTabLabel extends StatelessWidget {
 /// tapping the tab still returns the grid to the top, as every other tab does.
 class _MediaFilterButton extends StatelessWidget {
   final MediaFilter value;
+  final bool includeBroadcasts;
   final ValueChanged<MediaFilter> onChanged;
 
-  const _MediaFilterButton({required this.value, required this.onChanged});
+  const _MediaFilterButton({
+    required this.value,
+    required this.onChanged,
+    this.includeBroadcasts = false,
+  });
 
   String _labelFor(BuildContext context, MediaFilter filter) => switch (filter) {
         MediaFilter.all => L10n.of(context).all,
         MediaFilter.photos => L10n.of(context).photos,
         MediaFilter.videos => L10n.of(context).videos,
+        MediaFilter.broadcasts => L10n.of(context).broadcasts,
       };
 
   IconData _iconFor(MediaFilter filter) => switch (filter) {
         MediaFilter.all => Icons.perm_media_outlined,
         MediaFilter.photos => Icons.photo_library_outlined,
         MediaFilter.videos => Icons.video_library_outlined,
+        MediaFilter.broadcasts => Icons.live_tv_outlined,
       };
 
   @override
   Widget build(BuildContext context) {
+    final options = [
+      for (final filter in MediaFilter.values)
+        if (filter != MediaFilter.broadcasts || includeBroadcasts || value == filter) filter,
+    ];
     return PopupMenuButton<MediaFilter>(
       initialValue: value,
       onSelected: onChanged,
       tooltip: L10n.of(context).media,
       padding: EdgeInsets.zero,
       itemBuilder: (context) => [
-        for (final filter in MediaFilter.values)
+        for (final filter in options)
           PopupMenuItem(
             value: filter,
             child: Row(
@@ -784,6 +814,57 @@ class _MediaFilterButton extends StatelessWidget {
           Icons.expand_more,
           size: 18,
           color: value == MediaFilter.all ? null : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// The chevron on the selected Posts tab: all / posts / retweets.
+class _PostsFilterButton extends StatelessWidget {
+  final PostsFilter value;
+  final ValueChanged<PostsFilter> onChanged;
+
+  const _PostsFilterButton({required this.value, required this.onChanged});
+
+  String _labelFor(BuildContext context, PostsFilter filter) => switch (filter) {
+        PostsFilter.all => L10n.of(context).all,
+        PostsFilter.posts => L10n.of(context).tweets,
+        PostsFilter.retweets => L10n.of(context).retweets,
+      };
+
+  IconData _iconFor(PostsFilter filter) => switch (filter) {
+        PostsFilter.all => Icons.wysiwyg_outlined,
+        PostsFilter.posts => Icons.article_outlined,
+        PostsFilter.retweets => Icons.repeat,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<PostsFilter>(
+      initialValue: value,
+      onSelected: onChanged,
+      tooltip: L10n.of(context).tweets,
+      padding: EdgeInsets.zero,
+      itemBuilder: (context) => [
+        for (final filter in PostsFilter.values)
+          PopupMenuItem(
+            value: filter,
+            child: Row(
+              children: [
+                Icon(_iconFor(filter), size: 20),
+                const SizedBox(width: 12),
+                Text(_labelFor(context, filter)),
+              ],
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Icon(
+          Icons.expand_more,
+          size: 18,
+          color: value == PostsFilter.all ? null : Theme.of(context).colorScheme.primary,
         ),
       ),
     );
