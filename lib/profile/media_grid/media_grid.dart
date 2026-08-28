@@ -199,6 +199,7 @@ class _MediaGridTileState extends State<_MediaGridTile> {
       GifGridItem() => 'GIF',
       PhotoGridItem() => 'photo',
       VideoGridItem() => 'video',
+      BroadcastGridItem() => 'broadcast',
     };
   }
 
