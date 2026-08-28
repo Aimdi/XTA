@@ -14,6 +14,7 @@ import 'package:xta/plugins/reddit/reddit_post_sheet.dart' show redditPostUrl;
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/plugins/reddit/reddit_text.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/errors.dart';
@@ -299,7 +300,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
           if (_visibleSelfText(post) case final selfText?) ...[
             const SizedBox(height: 10),
-            Text(selfText, style: theme.textTheme.bodyMedium),
+            RedditRichText(text: selfText, style: theme.textTheme.bodyMedium),
           ],
           const Divider(height: 24),
         ],
@@ -436,7 +437,10 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                 )
               else ...[
                 if (comment.body.isNotEmpty)
-                  Text(comment.body, style: theme.textTheme.bodyMedium),
+                  RedditRichText(
+                    text: comment.body,
+                    style: theme.textTheme.bodyMedium,
+                  ),
                 RedditCommentImages(urls: comment.mediaUrls),
               ],
             ],

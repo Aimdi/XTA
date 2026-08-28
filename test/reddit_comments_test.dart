@@ -228,6 +228,21 @@ void main() {
       expect(comment.mediaUrls, ['https://i.redd.it/abc.jpg']);
       expect(comment.body, 'nice one');
     });
+
+    test('markdown links to pages stay in the body so they can be opened', () {
+      final listing = _listing([
+        _t1(
+          id: 'link',
+          body:
+              'Download>> [OTs-14](https://drive.google.com/drive/folders/abc) [Source](https://x.com/foo/status/1)',
+        ),
+      ]);
+      final comment = commentsFromListing(Json(listing)).single;
+
+      expect(comment.mediaUrls, isEmpty);
+      expect(comment.body, contains('[OTs-14]('));
+      expect(comment.body, contains('[Source]('));
+    });
   });
 
   group('reading a thread', () {
@@ -280,6 +295,20 @@ void main() {
 
       expect(comment.mediaUrls, ['https://i.redd.it/abc.jpg']);
       expect(comment.body, 'look at this please');
+    });
+
+    test('a labelled page link is kept as markdown, not dumped as the URL', () {
+      const body =
+          'Download>> <a href="https://drive.google.com/drive/folders/abc">OTs-14</a> <a href="https://x.com/foo/status/1">Source</a>';
+      final comment = parseComments(
+        _page(_comment('a', 'someone', body)),
+      ).single;
+
+      expect(comment.mediaUrls, isEmpty);
+      expect(
+        comment.body,
+        'Download>> [OTs-14](https://drive.google.com/drive/folders/abc) [Source](https://x.com/foo/status/1)',
+      );
     });
 
     test('a link to a page is left as text', () {

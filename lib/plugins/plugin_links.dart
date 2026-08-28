@@ -31,6 +31,8 @@ import 'package:xta/plugins/threads/threads_thread_screen.dart';
 import 'package:xta/plugins/tiktok/tiktok_client.dart';
 import 'package:xta/plugins/tiktok/tiktok_player_screen.dart';
 import 'package:xta/plugins/tiktok/tiktok_profile_screen.dart';
+import 'package:xta/profile/profile.dart';
+import 'package:xta/status.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Opens [url] in a plugin screen when one can read it, otherwise the browser.
@@ -38,7 +40,52 @@ Future<void> openLink(BuildContext context, String url) async {
   if (await openWithPlugins(context, url) || !context.mounted) {
     return;
   }
+  if (await _openX(context, url) || !context.mounted) {
+    return;
+  }
   await openUri(context, url);
+}
+
+const _xHosts = {
+  'x.com',
+  'www.x.com',
+  'twitter.com',
+  'www.twitter.com',
+  'mobile.twitter.com',
+};
+
+/// An x.com / twitter.com status or profile, opened on the native screens
+/// rather than handed to the browser.
+Future<bool> _openX(BuildContext context, String url) async {
+  final uri = Uri.tryParse(url);
+  if (uri == null || !_xHosts.contains(uri.host.toLowerCase())) {
+    return false;
+  }
+  final parsed = await parseUri(uri);
+  if (!context.mounted) {
+    return true;
+  }
+  switch (parsed) {
+    case PostUriInfo(screenName: final screenName, id: final id):
+      await Navigator.pushNamed(
+        context,
+        routeStatus,
+        arguments: StatusScreenArguments(id: id, username: screenName),
+      );
+      return true;
+    case ProfileUriInfo(
+      screenName: final screenName,
+      profileTabIndex: final tab,
+    ):
+      await Navigator.pushNamed(
+        context,
+        routeProfile,
+        arguments: ProfileScreenArguments.fromScreenName(screenName, tab),
+      );
+      return true;
+    default:
+      return false;
+  }
 }
 
 /// Opens [url] inside XTA when an enabled plugin can read it, returning true

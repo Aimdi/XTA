@@ -9,6 +9,7 @@ import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_post_media.dart';
 import 'package:xta/plugins/reddit/reddit_post_sheet.dart';
+import 'package:xta/plugins/reddit/reddit_text.dart';
 import 'package:xta/plugins/reddit/reddit_thread_screen.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
@@ -70,10 +71,9 @@ class RedditPostCard extends StatelessWidget {
                   if (post.isSelf && post.showsSelfText)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-                      child: Text(
-                        post.displaySelfText!,
+                      child: RedditRichText(
+                        text: post.displaySelfText!,
                         maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
