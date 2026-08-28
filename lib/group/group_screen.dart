@@ -154,7 +154,7 @@ class _SubscriptionGroupScreenContentState
       }
       return;
     }
-    final disabled = filter!.state;
+    final disabled = filter.state;
     if (disabled.isEmpty) {
       if (mounted) {
         setState(() => _excludedProfiles = const {});
@@ -162,7 +162,7 @@ class _SubscriptionGroupScreenContentState
       return;
     }
     try {
-      final members = await groups!.listGroupMembers();
+      final members = await groups.listGroupMembers();
       final parents = await readGroupParents(await Repository.readOnly());
       if (!mounted) {
         return;

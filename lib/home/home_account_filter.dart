@@ -414,7 +414,7 @@ void showHomeAccountFilterSheet(
                         ),
                       if (groupFilter != null && groups.isNotEmpty)
                         ScopedBuilder<HomeGroupFilterStore, Set<String>>(
-                          store: groupFilter!,
+                          store: groupFilter,
                           onState: (_, disabledGroups) {
                             return Column(
                               mainAxisSize: MainAxisSize.min,
