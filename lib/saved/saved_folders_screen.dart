@@ -65,6 +65,16 @@ class _SavedFoldersScreenState extends State<SavedFoldersScreen> {
     if (token == savedTabFavorites) {
       return _builtInRow(token, L10n.of(context).favorites, optionSavedShowFavoritesTab, index);
     }
+    if (token == savedTabNotes) {
+      // Always on the strip — local notes are not a folder, so firstWhere
+      // below must never see this token.
+      return ListTile(
+        key: ValueKey(token),
+        contentPadding: const EdgeInsets.only(left: 24, right: 16),
+        title: Text(L10n.of(context).local_notes_tab),
+        trailing: _dragHandle(index),
+      );
+    }
 
     var folder = folders.firstWhere((f) => f.id == token);
     return ListTile(

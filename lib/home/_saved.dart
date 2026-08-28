@@ -25,6 +25,11 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/saved/library_on_device.dart';
 import 'package:xta/saved/saved_content_index.dart';
+import 'package:xta/saved/local_post_compose.dart';
+import 'package:xta/saved/local_post_logic.dart';
+import 'package:xta/saved/local_post_model.dart';
+import 'package:xta/saved/local_post_tile.dart';
+import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 
@@ -81,6 +86,7 @@ class _SavedScreenState extends State<SavedScreen>
     context.read<SavedTweetModel>().listSavedTweets();
     context.read<SavedTweetFolderModel>().listFolders();
     context.read<LikedTweetModel>().listLikedTweets();
+    context.read<LocalPostModel>().listLocalPosts();
     _loadGroupMembership();
   }
 
@@ -113,6 +119,7 @@ class _SavedScreenState extends State<SavedScreen>
         _filter == savedTabAll ||
         (_filter == savedTabUnfiled && showUnfiled && folders.isNotEmpty) ||
         (_filter == savedTabFavorites && showFavorites) ||
+        _filter == savedTabNotes ||
         folders.any((f) => f.id == _filter);
     if (reachable) {
       return;
@@ -130,6 +137,8 @@ class _SavedScreenState extends State<SavedScreen>
     // spinner runs, and swaps in the fresh data only once it is ready.
     if (_filter == savedTabFavorites) {
       await context.read<LikedTweetModel>().refreshLikedTweets();
+    } else if (_filter == savedTabNotes) {
+      await context.read<LocalPostModel>().refreshLocalPosts();
     } else {
       await context.read<SavedTweetModel>().refreshSavedTweets();
     }
@@ -138,6 +147,7 @@ class _SavedScreenState extends State<SavedScreen>
   Widget _buildEmptyState() {
     return SavedLibraryEmpty(
       kind: savedLibraryEmptyKind(query: _query, filter: _filter),
+      onWriteNote: _composeNote,
     );
   }
 
@@ -200,10 +210,11 @@ class _SavedScreenState extends State<SavedScreen>
   Widget _buildList({
     required int itemCount,
     required Widget Function(int) tileAt,
+    EdgeInsetsGeometry? padding,
   }) {
     return FeedListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(top: 4),
+      padding: padding ?? const EdgeInsets.only(top: 4),
       itemCount: itemCount,
       itemBuilder: (context, index) => tileAt(index),
     );
@@ -294,12 +305,6 @@ class _SavedScreenState extends State<SavedScreen>
           showFavorites: showFavorites,
         );
 
-        // With no folders, only show the strip when the Favorites tab is available to
-        // switch to — otherwise there is nothing to switch between (just "All").
-        if (folders.isEmpty && !showFavorites) {
-          return const SizedBox.shrink();
-        }
-
         var chips = <Widget>[];
         for (var token in orderedSavedTabs(folders, storedOrder)) {
           if (token == savedTabAll) {
@@ -325,6 +330,13 @@ class _SavedScreenState extends State<SavedScreen>
                   value: savedTabFavorites,
                 ),
               );
+          } else if (token == savedTabNotes) {
+            chips.add(
+              _folderChip(
+                label: L10n.of(context).local_notes_tab,
+                value: savedTabNotes,
+              ),
+            );
           } else {
             var matches = folders.where((f) => f.id == token);
             if (matches.isNotEmpty)
@@ -348,7 +360,7 @@ class _SavedScreenState extends State<SavedScreen>
   }
 
   Widget _folderChip({required String label, required String value}) {
-    var isFolder = value != savedTabAll && value != savedTabUnfiled;
+    var isFolder = !isBuiltInSavedTab(value);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -459,6 +471,74 @@ class _SavedScreenState extends State<SavedScreen>
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _composeNote([LocalPost? existing]) async {
+    final saved = await openLocalPostComposer(context, existing: existing);
+    if (saved != null && mounted) {
+      setState(() => _filter = savedTabNotes);
+    }
+  }
+
+  Future<void> _deleteNote(LocalPost post) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(L10n.of(context).are_you_sure),
+        content: Text(L10n.of(context).local_note_delete_confirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(L10n.of(context).cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(L10n.of(context).delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await context.read<LocalPostModel>().deleteLocalPost(post.id);
+    }
+  }
+
+  Widget _buildNotesBody() {
+    final model = context.read<LocalPostModel>();
+    return ScopedBuilder<LocalPostModel, List<LocalPost>>(
+      store: model,
+      onError: (_, e) => FullPageErrorWidget(
+        error: e,
+        stackTrace: null,
+        prefix: L10n.current.unable_to_load_the_tweets,
+        onRetry: () => model.listLocalPosts(),
+      ),
+      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      onState: (_, data) {
+        final filtered = _query.isEmpty
+            ? data
+            : data
+                  .where((post) => localPostMatchesQuery(post.body, _query))
+                  .toList();
+        return RefreshIndicator(
+          onRefresh: _refresh,
+          child: filtered.isEmpty
+              ? _buildEmptyState()
+              : _buildList(
+                  itemCount: filtered.length,
+                  padding: const EdgeInsets.only(
+                    top: 4,
+                    bottom: kPluginHomeNavClearance + 72,
+                  ),
+                  tileAt: (i) => LocalPostTile(
+                    post: filtered[i],
+                    onEdit: () => _composeNote(filtered[i]),
+                    onDelete: () => _deleteNote(filtered[i]),
+                  ),
+                ),
+        );
+      },
     );
   }
 
@@ -609,9 +689,20 @@ class _SavedScreenState extends State<SavedScreen>
 
     var prefs = PrefService.of(context, listen: false);
 
-    return NestedScrollView(
-      controller: widget.scrollController,
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: kPluginHomeNavClearance),
+        child: FloatingActionButton(
+          heroTag: 'local-note-compose',
+          tooltip: L10n.of(context).local_note_fab_tooltip,
+          onPressed: () => _composeNote(),
+          child: const Icon(Icons.edit_note),
+        ),
+      ),
+      body: NestedScrollView(
+        controller: widget.scrollController,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
           if (widget.showTitle != false)
             SliverAppBar(
@@ -635,13 +726,14 @@ class _SavedScreenState extends State<SavedScreen>
                     }
                   }),
                 ),
-                IconButton(
-                  isSelected: _mediaOnly,
-                  icon: const Icon(Icons.photo_library_outlined),
-                  selectedIcon: const Icon(Icons.photo_library),
-                  tooltip: L10n.current.only_show_posts_with_media,
-                  onPressed: () => setState(() => _mediaOnly = !_mediaOnly),
-                ),
+                if (_filter != savedTabNotes)
+                  IconButton(
+                    isSelected: _mediaOnly,
+                    icon: const Icon(Icons.photo_library_outlined),
+                    selectedIcon: const Icon(Icons.photo_library),
+                    tooltip: L10n.current.only_show_posts_with_media,
+                    onPressed: () => setState(() => _mediaOnly = !_mediaOnly),
+                  ),
                 IconButton(
                   icon: const Icon(Icons.folder_copy_outlined),
                   tooltip: L10n.current.manage_folders,
@@ -652,15 +744,16 @@ class _SavedScreenState extends State<SavedScreen>
                     }
                   },
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  tooltip: L10n.current.find_broken_bookmarks,
-                  onPressed: () => showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => const BrokenBookmarksDialog(),
+                if (_filter != savedTabNotes)
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: L10n.current.find_broken_bookmarks,
+                    onPressed: () => showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const BrokenBookmarksDialog(),
+                    ),
                   ),
-                ),
                 IconButton(
                   icon: const Icon(Icons.settings),
                   onPressed: () async {
@@ -680,16 +773,19 @@ class _SavedScreenState extends State<SavedScreen>
         child: Column(
           children: [
             _buildFolderStrip(),
-            SavedLibraryOnDeviceNotice(likes: _filter == savedTabFavorites),
+            SavedLibraryOnDeviceNotice(filter: _filter),
             if (_searching) _buildSearchField(),
             Expanded(
               child: _filter == savedTabFavorites
                   ? _buildFavoritesBody()
+                  : _filter == savedTabNotes
+                  ? _buildNotesBody()
                   : _buildSavedBody(model),
             ),
           ],
         ),
       ),
+    ),
     );
   }
 }

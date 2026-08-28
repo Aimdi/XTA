@@ -34,6 +34,7 @@ const _keys = {
   'accounts',
   'profileNotes',
   'antennas',
+  'localPosts',
   'booruSubscriptions',
   'ehFavorites',
   'ehHistory',

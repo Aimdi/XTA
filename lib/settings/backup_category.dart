@@ -33,4 +33,5 @@ enum BackupCategory {
   accounts,
   profileNotes,
   antennas,
+  localPosts,
 }

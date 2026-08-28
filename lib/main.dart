@@ -75,6 +75,7 @@ import 'package:xta/plugins/threads/threads_direct_client.dart';
 import 'package:xta/plugins/threads/threads_likes_store.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
+import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/saved_folders_screen.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
@@ -929,6 +930,7 @@ Future<void> main() async {
                 ChangeNotifierProvider(create: (context) => importDataModel),
                 Provider(create: (context) => subscriptionsModel),
                 Provider(create: (context) => SavedTweetModel()),
+                Provider(create: (context) => LocalPostModel()),
                 Provider(create: (context) => AntennaModel()),
                 Provider(create: (context) => SavedTweetFolderModel()),
                 Provider(create: (context) => LikedTweetModel()),

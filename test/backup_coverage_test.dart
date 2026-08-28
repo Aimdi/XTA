@@ -69,6 +69,7 @@ void main() {
         pluginRows: {for (final section in pluginBackupSections()) section.jsonKey: const []},
         profileNotes: const [],
         antennas: const [],
+        localPosts: const [],
         subscriptionGroups: const [],
         subscriptionGroupMembers: const [],
         searchGroupMembers: const [],

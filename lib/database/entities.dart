@@ -96,6 +96,54 @@ class ProfileNote with ToMappable {
   }
 }
 
+/// A note the reader wrote. It lives in SQLite and in backups / WebDAV —
+/// never on X.
+class LocalPost with ToMappable {
+  final String id;
+  final String body;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  LocalPost({
+    required this.id,
+    required this.body,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory LocalPost.fromMap(Map<String, Object?> map) {
+    return LocalPost(
+      id: map['id'] as String,
+      body: map['body'] as String? ?? '',
+      createdAt: _parseLocalPostTime(map['created_at']),
+      updatedAt: _parseLocalPostTime(map['updated_at']),
+    );
+  }
+
+  LocalPost copyWith({String? body, DateTime? updatedAt}) {
+    return LocalPost(
+      id: id,
+      body: body ?? this.body,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'body': body,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+    };
+  }
+}
+
+DateTime _parseLocalPostTime(Object? value) {
+  return DateTime.tryParse((value as String?) ?? '') ?? DateTime.now();
+}
+
 /// A saved keyword listener feed (Misskey antenna).
 class Antenna with ToMappable {
   final String id;

@@ -48,6 +48,7 @@ void main() {
         tableEhFavorite,
         tableEhHistory,
         tableRssSubscription,
+        tableLocalPost,
       ]),
     );
 
@@ -187,5 +188,47 @@ void main() {
       where: "type = 'table'",
     )).map((row) => row['name'] as String).toSet();
     expect(tables, contains(tableRssSubscription));
+  });
+
+  test('upgrade from v58 creates local_post', () async {
+    final path =
+        '${Directory.systemTemp.path}/xta_migrate_v58_${DateTime.now().microsecondsSinceEpoch}.db';
+    final plan = buildMigrationPlan();
+    var db = await openDatabase(
+      path,
+      version: 58,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    expect(
+      (await db.query(
+        'sqlite_master',
+        columns: ['name'],
+        where: "type = 'table' AND name = ?",
+        whereArgs: [tableLocalPost],
+      )),
+      isEmpty,
+    );
+    await db.close();
+
+    db = await openDatabase(
+      path,
+      version: databaseVersion,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    addTearDown(() async {
+      await db.close();
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    });
+
+    expect(await db.getVersion(), databaseVersion);
+    final tables = (await db.query(
+      'sqlite_master',
+      columns: ['name'],
+      where: "type = 'table'",
+    )).map((row) => row['name'] as String).toSet();
+    expect(tables, contains(tableLocalPost));
   });
 }

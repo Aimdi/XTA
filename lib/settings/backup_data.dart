@@ -65,6 +65,7 @@ class SettingsData {
   final List<Account>? accounts;
   final List<ProfileNote>? profileNotes;
   final List<Antenna>? antennas;
+  final List<LocalPost>? localPosts;
 
   SettingsData({
     this.formatVersion = backupFormatVersion,
@@ -86,6 +87,7 @@ class SettingsData {
     this.accounts,
     this.profileNotes,
     this.antennas,
+    this.localPosts,
   });
 
   factory SettingsData.fromJson(Map<String, dynamic> json) {
@@ -112,6 +114,7 @@ class SettingsData {
       accounts: _rows(json['accounts'], Account.fromMap),
       profileNotes: _rows(json['profileNotes'], ProfileNote.fromMap),
       antennas: _rows(json['antennas'], Antenna.fromMap),
+      localPosts: _rows(json['localPosts'], LocalPost.fromMap),
     );
   }
 
@@ -136,6 +139,7 @@ class SettingsData {
       'accounts': _maps(accounts),
       'profileNotes': _maps(profileNotes),
       'antennas': _maps(antennas),
+      'localPosts': _maps(localPosts),
     };
   }
 }
@@ -169,6 +173,7 @@ Map<BackupCategory, int> backupCounts(SettingsData data) {
     BackupCategory.accounts: data.accounts?.length,
     BackupCategory.profileNotes: data.profileNotes?.length,
     BackupCategory.antennas: data.antennas?.length,
+    BackupCategory.localPosts: data.localPosts?.length,
     for (final section in pluginBackupSections()) section.category: data.pluginRows?[section.jsonKey]?.length,
   };
 
@@ -205,6 +210,7 @@ Map<String, List<ToMappable>> backupTables(SettingsData data, {required bool inc
     tableAccounts: data.accounts,
     tableProfileNote: data.profileNotes,
     tableAntenna: data.antennas,
+    tableLocalPost: data.localPosts,
     if (includeReadPositions) tableFeedReadPosition: data.feedReadPositions,
     for (final section in pluginBackupSections()) section.table: data.pluginRows?[section.jsonKey],
   };

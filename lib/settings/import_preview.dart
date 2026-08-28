@@ -162,4 +162,5 @@ String _label(BuildContext context, BackupCategory category) =>
       BackupCategory.accounts => L10n.of(context).account,
       BackupCategory.profileNotes => L10n.of(context).profile_note_title,
       BackupCategory.antennas => L10n.of(context).antenna_title,
+      BackupCategory.localPosts => L10n.of(context).local_notes_backup,
     };
