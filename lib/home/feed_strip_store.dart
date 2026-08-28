@@ -193,6 +193,12 @@ class FeedStripStore extends Store<List<String>> {
     await setPlugins(state.where((e) => e != pluginId).toList());
   }
 
+  Future<void> reorder(int oldIndex, int newIndex) async {
+    final next = reorderFeedStripIds(state, oldIndex, newIndex);
+    if (_same(next, state)) return;
+    await setPlugins(next);
+  }
+
   /// Persist the implied list the first time the reader edits the strip.
   Future<void> ensurePersisted() async {
     if (stringListPref(prefs, optionHomeFeedStripPlugins) != null) return;
@@ -234,4 +240,19 @@ bool _same(List<String> a, List<String> b) {
     if (a[i] != b[i]) return false;
   }
   return true;
+}
+
+/// Moves one pin. [newIndex] is the slot after the item is taken out, matching
+/// [ReorderableListView.onReorderItem].
+List<String> reorderFeedStripIds(List<String> ids, int oldIndex, int newIndex) {
+  if (oldIndex == newIndex || oldIndex < 0 || oldIndex >= ids.length) {
+    return List<String>.from(ids);
+  }
+  final next = List<String>.from(ids);
+  final id = next.removeAt(oldIndex);
+  final to = newIndex < 0
+      ? 0
+      : (newIndex > next.length ? next.length : newIndex);
+  next.insert(to, id);
+  return next;
 }

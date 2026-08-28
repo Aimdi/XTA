@@ -61,103 +61,181 @@ class _FeedStripAddSheet extends StatelessWidget {
                       .toList(growable: false);
 
                   if (pinnedPlugins.isEmpty && candidates.isEmpty) {
+                    return _FeedStripEmpty(l10n: l10n);
+                  }
+
+                  if (pinnedPlugins.isEmpty) {
                     return ListView(
-                      padding: const EdgeInsets.all(24),
-                      children: [
-                        Text(
-                          l10n.feed_strip_add_empty,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        Center(
-                          child: FilledButton.icon(
-                            onPressed: () {
-                              final nav = Navigator.of(context);
-                              final storeTitle = l10n.plugin_store;
-                              nav.pop();
-                              nav.push(
-                                MaterialPageRoute(
-                                  builder: (_) => Scaffold(
-                                    appBar: AppBar(title: Text(storeTitle)),
-                                    body: const SettingsPluginStoreFragment(),
-                                  ),
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.extension_outlined),
-                            label: Text(l10n.plugin_store),
-                          ),
-                        ),
-                      ],
+                      children: _availableSection(context, l10n, strip, candidates),
                     );
                   }
 
-                  return ListView(
-                    children: [
-                      if (pinnedPlugins.isNotEmpty) ...[
-                        ListTile(
-                          title: Text(
-                            l10n.feed_strip_pinned,
-                            style: Theme.of(context).textTheme.titleSmall,
+                  return ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
+                    header: ListTile(
+                      title: Text(
+                        l10n.feed_strip_pinned,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                    footer: candidates.isEmpty
+                        ? null
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Divider(height: 1),
+                              ..._availableSection(
+                                context,
+                                l10n,
+                                strip,
+                                candidates,
+                              ),
+                            ],
                           ),
+                    itemCount: pinnedPlugins.length,
+                    onReorderItem: (oldIndex, newIndex) async {
+                      await strip.ensurePersisted();
+                      await strip.setPlugins(
+                        reorderFeedStripIds(
+                          [for (final plugin in pinnedPlugins) plugin.id],
+                          oldIndex,
+                          newIndex,
                         ),
-                        for (final plugin in pinnedPlugins)
-                          ListTile(
-                            leading: Icon(
-                              plugin.icon,
-                              color: plugin.brandColor,
-                            ),
-                            title: Text(plugin.title(context)),
-                            trailing: plugin.showsHomeTab(prefs)
-                                ? IconButton(
-                                    tooltip: l10n.feed_strip_remove,
-                                    icon: const Icon(
-                                      Icons.remove_circle_outline,
-                                    ),
-                                    onPressed: () async {
-                                      await strip.ensurePersisted();
-                                      await strip.remove(plugin.id);
-                                    },
-                                  )
-                                : null,
-                          ),
-                        const Divider(height: 1),
-                      ],
-                      if (candidates.isNotEmpty) ...[
-                        ListTile(
-                          title: Text(
-                            l10n.feed_strip_available,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                        ),
-                        for (final plugin in candidates)
-                          ListTile(
-                            leading: Icon(
-                              plugin.icon,
-                              color: plugin.brandColor,
-                            ),
-                            title: Text(plugin.title(context)),
-                            trailing: IconButton(
-                              tooltip: l10n.feed_strip_add,
-                              icon: const Icon(Icons.add_circle_outline),
-                              onPressed: () async {
-                                await strip.ensurePersisted();
-                                await strip.add(plugin.id);
-                              },
-                            ),
-                            onTap: () async {
-                              await strip.ensurePersisted();
-                              await strip.add(plugin.id);
-                            },
-                          ),
-                      ],
-                    ],
+                      );
+                    },
+                    itemBuilder: (context, i) {
+                      final plugin = pinnedPlugins[i];
+                      return _PinnedPluginTile(
+                        key: ValueKey(plugin.id),
+                        plugin: plugin,
+                        index: i,
+                        canRemove: plugin.showsHomeTab(prefs),
+                        onRemove: () async {
+                          await strip.ensurePersisted();
+                          await strip.remove(plugin.id);
+                        },
+                      );
+                    },
                   );
                 },
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+List<Widget> _availableSection(
+  BuildContext context,
+  L10n l10n,
+  FeedStripStore strip,
+  List<XtaPlugin> candidates,
+) {
+  return [
+    ListTile(
+      title: Text(
+        l10n.feed_strip_available,
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+    ),
+    for (final plugin in candidates)
+      ListTile(
+        leading: Icon(plugin.icon, color: plugin.brandColor),
+        title: Text(plugin.title(context)),
+        trailing: IconButton(
+          tooltip: l10n.feed_strip_add,
+          icon: const Icon(Icons.add_circle_outline),
+          onPressed: () async {
+            await strip.ensurePersisted();
+            await strip.add(plugin.id);
+          },
+        ),
+        onTap: () async {
+          await strip.ensurePersisted();
+          await strip.add(plugin.id);
+        },
+      ),
+  ];
+}
+
+class _FeedStripEmpty extends StatelessWidget {
+  final L10n l10n;
+
+  const _FeedStripEmpty({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(24),
+      children: [
+        Text(l10n.feed_strip_add_empty, textAlign: TextAlign.center),
+        const SizedBox(height: 16),
+        Center(
+          child: FilledButton.icon(
+            onPressed: () {
+              final nav = Navigator.of(context);
+              final storeTitle = l10n.plugin_store;
+              nav.pop();
+              nav.push(
+                MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    appBar: AppBar(title: Text(storeTitle)),
+                    body: const SettingsPluginStoreFragment(),
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.extension_outlined),
+            label: Text(l10n.plugin_store),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PinnedPluginTile extends StatelessWidget {
+  final XtaPlugin plugin;
+  final int index;
+  final bool canRemove;
+  final VoidCallback onRemove;
+
+  const _PinnedPluginTile({
+    super.key,
+    required this.plugin,
+    required this.index,
+    required this.canRemove,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return ListTile(
+      leading: Icon(plugin.icon, color: plugin.brandColor),
+      title: Text(plugin.title(context)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (canRemove)
+            IconButton(
+              tooltip: l10n.feed_strip_remove,
+              icon: const Icon(Icons.remove_circle_outline),
+              onPressed: onRemove,
+            ),
+          ReorderableDragStartListener(
+            index: index,
+            child: Tooltip(
+              message: l10n.feed_strip_reorder,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(Icons.drag_handle),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

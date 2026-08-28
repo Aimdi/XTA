@@ -63,13 +63,11 @@ void main() {
         FeedTab.foryou,
         FeedTab.reddit,
         FeedTab(pluginIdMastodon),
+        FeedTab(pluginIdPixiv),
       ]);
       expect(
-        overflowFeedTabs(
-          available: available,
-          visible: visible,
-        ).map((e) => e.id),
-        [FeedTab(pluginIdPixiv)],
+        overflowFeedTabs(available: available, visible: visible),
+        isEmpty,
       );
     });
   });

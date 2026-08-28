@@ -148,4 +148,35 @@ void main() {
       expect(FeedTab(pluginIdBluesky).icon, Icons.cloud);
     });
   });
+
+  group('reorderFeedStripIds', () {
+    test('moves a pin to the slot after it is taken out', () {
+      expect(reorderFeedStripIds(['a', 'b', 'c'], 0, 1), ['b', 'a', 'c']);
+      expect(reorderFeedStripIds(['a', 'b', 'c'], 0, 2), ['b', 'c', 'a']);
+      expect(reorderFeedStripIds(['a', 'b', 'c'], 2, 0), ['c', 'a', 'b']);
+    });
+
+    test('a no-op or out-of-range index leaves the list', () {
+      expect(reorderFeedStripIds(['a', 'b'], 0, 0), ['a', 'b']);
+      expect(reorderFeedStripIds(['a', 'b'], -1, 0), ['a', 'b']);
+      expect(reorderFeedStripIds(['a', 'b'], 2, 0), ['a', 'b']);
+    });
+  });
+
+  group('FeedStripStore.reorder', () {
+    test('persists the new pin order', () async {
+      final prefs = PrefServiceCache(
+        cache: {
+          optionHomeFeedStripPlugins: [pluginIdReddit, pluginIdMastodon],
+        },
+      );
+      final store = FeedStripStore(prefs);
+      await store.reorder(0, 1);
+      expect(store.state, [pluginIdMastodon, pluginIdReddit]);
+      expect(prefs.getStringList(optionHomeFeedStripPlugins), [
+        pluginIdMastodon,
+        pluginIdReddit,
+      ]);
+    });
+  });
 }
