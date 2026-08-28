@@ -17,7 +17,7 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_like_button.dart';
-import 'package:xta/tweet/quotes_screen.dart';
+import 'package:xta/tweet/quote_actions.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/database/entities.dart';
 import 'package:share_plus/share_plus.dart';
@@ -508,11 +508,10 @@ class TweetFooterBar extends StatelessWidget {
           String label(String? value) => fit.showCounts ? (value ?? '') : '';
 
           void openQuotes() {
-            Navigator.pushNamed(
-              context,
-              routeQuotes,
-              arguments: QuotesScreenArguments(id: tweet.idStr!),
-            );
+            if (tweet.idStr == null) {
+              return;
+            }
+            openQuotesAndRetweets(context, tweetId: tweet.idStr!);
           }
 
           final actions = <Widget>[
@@ -532,7 +531,13 @@ class TweetFooterBar extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onLongPress: tweet.idStr == null ? null : openQuotes,
+              onLongPressStart: tweet.idStr == null
+                  ? null
+                  : (details) => showQuoteActionMenu(
+                      context: context,
+                      tweet: tweet,
+                      globalPosition: details.globalPosition,
+                    ),
               child: tweetFooterTextButton(
                 Icons.format_quote,
                 label(repostLabel),

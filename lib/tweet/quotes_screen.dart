@@ -11,12 +11,13 @@ import 'package:xta/utils/paging.dart';
 
 class QuotesScreenArguments {
   final String id;
+  final int initialTab;
 
-  const QuotesScreenArguments({required this.id});
+  const QuotesScreenArguments({required this.id, this.initialTab = 0});
 
   @override
   String toString() {
-    return 'QuotesScreenArguments{id: $id}';
+    return 'QuotesScreenArguments{id: $id, initialTab: $initialTab}';
   }
 }
 
@@ -30,14 +31,15 @@ class QuotesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as QuotesScreenArguments;
-    return _QuotesScreen(id: args.id);
+    return _QuotesScreen(id: args.id, initialTab: args.initialTab);
   }
 }
 
 class _QuotesScreen extends StatelessWidget {
   final String id;
+  final int initialTab;
 
-  const _QuotesScreen({required this.id});
+  const _QuotesScreen({required this.id, this.initialTab = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,7 @@ class _QuotesScreen extends StatelessWidget {
         Theme.of(context).colorScheme.onSurface;
     return DefaultTabController(
       length: 2,
+      initialIndex: initialTab.clamp(0, 1),
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,

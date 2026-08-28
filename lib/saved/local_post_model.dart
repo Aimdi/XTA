@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/saved/local_post_files.dart';
 import 'package:xta/saved/local_post_logic.dart';
 
 class LocalPostModel extends Store<List<LocalPost>> {
@@ -15,25 +16,32 @@ class LocalPostModel extends Store<List<LocalPost>> {
     log.info('Listing local posts');
     await execute(() async {
       final database = await Repository.readOnly();
-      return (await database.query(tableLocalPost, orderBy: 'created_at DESC'))
-          .map(LocalPost.fromMap)
-          .toList(growable: false);
+      return (await database.query(
+        tableLocalPost,
+        orderBy: 'created_at DESC',
+      )).map(LocalPost.fromMap).toList(growable: false);
     });
   }
 
   Future<void> refreshLocalPosts() async {
     final database = await Repository.readOnly();
-    final posts = (await database.query(tableLocalPost, orderBy: 'created_at DESC'))
-        .map(LocalPost.fromMap)
-        .toList(growable: false);
+    final posts = (await database.query(
+      tableLocalPost,
+      orderBy: 'created_at DESC',
+    )).map(LocalPost.fromMap).toList(growable: false);
     update(posts, force: true);
   }
 
-  /// Returns null when [body] is empty after trim, so the composer can refuse
-  /// to close on a blank save.
-  Future<LocalPost?> saveLocalPost({String? id, required String body}) async {
-    final normalized = normalizeLocalPostBody(body);
-    if (normalized == null) {
+  /// Returns null when there is nothing to save (blank body and no media).
+  Future<LocalPost?> saveLocalPost({
+    String? id,
+    required String body,
+    List<LocalPostMedia> media = const [],
+    String? quotedTweetId,
+    String? quotedTweetJson,
+  }) async {
+    final normalized = normalizeLocalPostBody(body) ?? '';
+    if (!localPostHasContent(body, media)) {
       return null;
     }
 
@@ -54,8 +62,12 @@ class LocalPostModel extends Store<List<LocalPost>> {
       body: normalized,
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
+      media: media,
+      quotedTweetId: quotedTweetId ?? existing?.quotedTweetId,
+      quotedTweetJson: quotedTweetJson ?? existing?.quotedTweetJson,
     );
 
+    await deleteRemovedLocalPostMedia(post.id, media);
     await database.insert(
       tableLocalPost,
       post.toMap(),
@@ -75,9 +87,7 @@ class LocalPostModel extends Store<List<LocalPost>> {
   Future<void> deleteLocalPost(String id) async {
     final database = await Repository.writable();
     await database.delete(tableLocalPost, where: 'id = ?', whereArgs: [id]);
-    update(
-      state.where((e) => e.id != id).toList(growable: false),
-      force: true,
-    );
+    await deleteLocalPostMediaDir(id);
+    update(state.where((e) => e.id != id).toList(growable: false), force: true);
   }
 }

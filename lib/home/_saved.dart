@@ -519,7 +519,7 @@ class _SavedScreenState extends State<SavedScreen>
         final filtered = _query.isEmpty
             ? data
             : data
-                  .where((post) => localPostMatchesQuery(post.body, _query))
+                  .where((post) => localPostRecordMatches(post, _query))
                   .toList();
         return RefreshIndicator(
           onRefresh: _refresh,
