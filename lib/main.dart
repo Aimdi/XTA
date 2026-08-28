@@ -36,6 +36,7 @@ import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/antenna/antenna_feed_screen.dart';
@@ -458,6 +459,7 @@ Future<void> main() async {
       optionHomeInitialTab: 'feed',
       optionHomeDefaultFeedTab: feedTabs[0].id.name,
       optionHomeFeedDisabledAccountIds: '[]',
+      optionHomeFeedDisabledGroupIds: '[]',
       optionChromeAvatarRevision: 0,
       optionImageQuality: MediaQuality.medium.stored,
       optionMediaVideoQuality: MediaQuality.medium.stored,
@@ -966,6 +968,7 @@ Future<void> main() async {
                 Provider(create: (_) => FeedStripStore(prefService)),
                 Provider(create: (_) => NetworkRecentsStore(prefService)),
                 Provider(create: (_) => HomeAccountFilterStore(prefService)),
+                Provider(create: (_) => HomeGroupFilterStore(prefService)),
                 Provider(create: (_) => ChromeAvatarStore(prefService)),
                 Provider(create: (_) => substackClient),
                 Provider(create: (_) => substackPublications),

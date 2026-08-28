@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/home/home_group_filter.dart';
+import 'package:xta/database/repository.dart';
 import 'package:xta/group/feed_read_position.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/home_feed_unread.dart';
@@ -181,10 +184,28 @@ class _ForYouTweetsState extends State<ForYouTweets>
 
   Future<TweetPageResult> _loadTweets(String? cursor) async {
     final disabled = context.read<HomeAccountFilterStore>().state;
+    var excludedAuthors = Set<String>.from(disabled);
+    try {
+      final groupFilter = context.read<HomeGroupFilterStore>();
+      if (groupFilter.state.isNotEmpty) {
+        final members = await context.read<GroupsModel>().listGroupMembers();
+        final parents = await readGroupParents(await Repository.readOnly());
+        excludedAuthors.addAll(
+          profileIdsExcludedByGroups(
+            members: members,
+            disabledGroupIds: groupFilter.state,
+            parentOf: parents,
+          ),
+        );
+      }
+    } catch (_) {
+      // Group exclusion is best-effort; For you still loads.
+    }
     final accounts = await getAccounts();
     final result = await loadMergedForYouPage(
       accounts: accounts,
       disabledIds: disabled,
+      excludedAuthorIds: excludedAuthors,
       cursor: cursor,
       count: pageSize,
       includeReplies: widget.includeReplies,

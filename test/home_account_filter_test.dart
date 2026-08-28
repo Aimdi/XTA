@@ -57,6 +57,17 @@ void main() {
     expect(merged.map((c) => c.id), ['b', 'a']);
   });
 
+  test('dropChainsFromAuthors removes posts by turned-off logins', () {
+    final kept = _chain('kept', DateTime.utc(2024, 6, 1));
+    final dropped = _chain('gone', DateTime.utc(2024, 6, 2));
+    dropped.tweets.first.user!.idStr = 'qug9ik';
+    kept.tweets.first.user!.idStr = 'other';
+
+    final out = dropChainsFromAuthors([kept, dropped], {'qug9ik'});
+    expect(out.map((c) => c.id), ['kept']);
+    expect(dropChainsFromAuthors([kept], const {}), [kept]);
+  });
+
   test('home timeline cursors round-trip as JSON', () {
     expect(decodeHomeTimelineCursors(null), isEmpty);
     expect(decodeHomeTimelineCursors('plain-cursor'), isEmpty);
