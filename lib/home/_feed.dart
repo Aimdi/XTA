@@ -166,7 +166,7 @@ List<FeedTabOption> visibleFeedTabs({
 List<FeedTabOption> overflowFeedTabs({
   required List<FeedTabOption> available,
   required List<FeedTabOption> visible,
-) {
+}) {
   final shown = {for (final e in visible) e.id.id};
   return [
     for (final e in available)
