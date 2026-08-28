@@ -37,6 +37,7 @@ class XEndpoints {
   static const userByScreenName = 'UserByScreenName';
   static const following = 'Following';
   static const followers = 'Followers';
+  static const retweeters = 'Retweeters';
   static const listByRestId = 'ListByRestId';
   static const listMembers = 'ListMembers';
   static const tweetDetail = 'TweetDetail';
@@ -62,6 +63,7 @@ class XEndpoints {
     ),
     following: XEndpoint(name: following, operation: 'Following', queryId: 'F42cDX8PDFxkbjjq6JrM2w', host: 'x.com'),
     followers: XEndpoint(name: followers, operation: 'Followers', queryId: '_orfRBQae57vylFPH0Huhg', host: 'x.com'),
+    retweeters: XEndpoint(name: retweeters, operation: 'Retweeters', queryId: 'ROjiuYueotTnWoI8m2YaiQ', host: 'x.com'),
     listByRestId: XEndpoint(
       name: listByRestId,
       operation: 'ListByRestId',

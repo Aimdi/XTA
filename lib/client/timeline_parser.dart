@@ -14,6 +14,7 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:xta/client/tweet_models.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/iterables.dart';
+import 'package:xta/utils/json.dart';
 
 class TimelineParser {
   static PaginatedUsers parseUsersTimeline(dynamic instructions) {
@@ -43,6 +44,13 @@ class TimelineParser {
       }
     }
     return users;
+  }
+
+  /// GraphQL "Retweeters" — people who reposted a tweet, not the quote-tweets.
+  /// The timeline lives at `data.retweeters_timeline.timeline.instructions`,
+  /// then the same TimelineAddEntries / user_results shape as Followers.
+  static dynamic retweetersInstructions(dynamic body) {
+    return Json(body)['data']['retweeters_timeline']['timeline']['instructions'].raw;
   }
 
   // GraphQL "ListByRestId" — metadata of an X list. The name is null when the

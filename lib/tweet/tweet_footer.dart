@@ -320,8 +320,9 @@ TextButton tweetFooterTextButton(
 /// Engagement / save / share / translate strip under a tweet tile.
 ///
 /// XTA is a read-oriented frontend: these controls must not post to X.
-/// Comment opens the conversation, repeat opens quotes, heart/bookmark are
-/// local-only, share uses the OS sheet, translate works on loaded text.
+/// Comment opens the conversation, quote opens quotes and retweeters,
+/// heart/bookmark are local-only, share uses the OS sheet, translate works
+/// on loaded text.
 class TweetFooterBar extends StatelessWidget {
   final TweetWithCard tweet;
   final String tweetText;
@@ -506,6 +507,14 @@ class TweetFooterBar extends StatelessWidget {
 
           String label(String? value) => fit.showCounts ? (value ?? '') : '';
 
+          void openQuotes() {
+            Navigator.pushNamed(
+              context,
+              routeQuotes,
+              arguments: QuotesScreenArguments(id: tweet.idStr!),
+            );
+          }
+
           final actions = <Widget>[
             GestureDetector(
               onLongPress: () {
@@ -522,21 +531,18 @@ class TweetFooterBar extends StatelessWidget {
                 onOpenTweet,
               ),
             ),
-            tweetFooterTextButton(
-              Icons.format_quote,
-              label(repostLabel),
-              (tweet.quoteCount ?? 0) > 0
-                  ? Colors.green.harmonizeWith(
-                      Theme.of(context).colorScheme.primary,
-                    )
-                  : tint,
-              tweet.idStr == null
-                  ? null
-                  : () => Navigator.pushNamed(
-                      context,
-                      routeQuotes,
-                      arguments: QuotesScreenArguments(id: tweet.idStr!),
-                    ),
+            GestureDetector(
+              onLongPress: tweet.idStr == null ? null : openQuotes,
+              child: tweetFooterTextButton(
+                Icons.format_quote,
+                label(repostLabel),
+                (tweet.quoteCount ?? 0) > 0
+                    ? Colors.green.harmonizeWith(
+                        Theme.of(context).colorScheme.primary,
+                      )
+                    : tint,
+                tweet.idStr == null ? null : openQuotes,
+              ),
             ),
             ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
               store: likedModel,
