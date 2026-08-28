@@ -12,6 +12,7 @@ import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
 import 'package:xta/group/group_members.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/group/group_switcher.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
@@ -120,6 +121,7 @@ class _SubscriptionGroupScreenContentState
   // Cached tweets shown while the group's subscriptions load, so the feed
   // reveals its content instead of a full-screen spinner on cold start.
   CachedChains? _preview;
+  Set<String>? _excludedProfiles;
 
   @override
   void initState() {
@@ -129,6 +131,53 @@ class _SubscriptionGroupScreenContentState
     // loadGroup finishes) to avoid showing tweets from other groups.
     if (widget.id == '-1') {
       _loadPreview();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.id == '-1' && _excludedProfiles == null) {
+      _loadExcludedProfiles();
+    }
+  }
+
+  Future<void> _loadExcludedProfiles() async {
+    HomeGroupFilterStore? filter;
+    GroupsModel? groups;
+    try {
+      filter = context.read<HomeGroupFilterStore>();
+      groups = context.read<GroupsModel>();
+    } on ProviderNotFoundException {
+      if (mounted) {
+        setState(() => _excludedProfiles = const {});
+      }
+      return;
+    }
+    final disabled = filter.state;
+    if (disabled.isEmpty) {
+      if (mounted) {
+        setState(() => _excludedProfiles = const {});
+      }
+      return;
+    }
+    try {
+      final members = await groups.listGroupMembers();
+      final parents = await readGroupParents(await Repository.readOnly());
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _excludedProfiles = profileIdsExcludedByGroups(
+          members: members,
+          disabledGroupIds: disabled,
+          parentOf: parents,
+        );
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _excludedProfiles = const {});
+      }
     }
   }
 
@@ -169,6 +218,9 @@ class _SubscriptionGroupScreenContentState
         if (group.id.isEmpty) {
           return _loadingView();
         }
+        if (widget.id == '-1' && _excludedProfiles == null) {
+          return _loadingView();
+        }
         // A group leaves each filter unset (null) to follow the global default.
         final prefs = PrefService.of(context, listen: false);
         final includeReplies =
@@ -181,8 +233,11 @@ class _SubscriptionGroupScreenContentState
             true;
 
         // Split the users into chunks, oldest first, to prevent thrashing of all groups when a new user is added
+        final excluded = _excludedProfiles ?? const <String>{};
         final filteredUsers = group.id == '-1'
-            ? group.subscriptions.where((elm) => elm.inFeed)
+            ? group.subscriptions.where(
+                (elm) => subscriptionAllowedInFollowing(elm, excluded),
+              )
             : group.subscriptions;
         final members = filteredUsers
             .sorted((a, b) => a.createdAt.compareTo(b.createdAt))

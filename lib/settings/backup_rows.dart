@@ -146,3 +146,5 @@ Future<Map<String, List<ToMappable>>> readPluginRows() async {
 Future<List<ProfileNote>> readProfileNotes() => _readRows(tableProfileNote, ProfileNote.fromMap);
 
 Future<List<Antenna>> readAntennas() => _readRows(tableAntenna, Antenna.fromMap);
+
+Future<List<LocalPost>> readLocalPosts() => _readRows(tableLocalPost, LocalPost.fromMap);

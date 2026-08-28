@@ -4,7 +4,7 @@ import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/ui/empty_pane.dart';
 
 /// Which empty copy the Saved library should show.
-enum SavedLibraryEmptyKind { search, likes, saved, folder }
+enum SavedLibraryEmptyKind { search, likes, saved, folder, notes }
 
 SavedLibraryEmptyKind savedLibraryEmptyKind({
   required String query,
@@ -16,6 +16,9 @@ SavedLibraryEmptyKind savedLibraryEmptyKind({
   if (filter == savedTabFavorites) {
     return SavedLibraryEmptyKind.likes;
   }
+  if (filter == savedTabNotes) {
+    return SavedLibraryEmptyKind.notes;
+  }
   if (filter == savedTabAll) {
     return SavedLibraryEmptyKind.saved;
   }
@@ -24,19 +27,22 @@ SavedLibraryEmptyKind savedLibraryEmptyKind({
 
 /// Quiet reminder that this library never writes back to X.
 class SavedLibraryOnDeviceNotice extends StatelessWidget {
-  final bool likes;
+  final String filter;
 
-  const SavedLibraryOnDeviceNotice({super.key, required this.likes});
+  const SavedLibraryOnDeviceNotice({super.key, required this.filter});
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final message = filter == savedTabFavorites
+        ? l10n.likes_stay_on_device_notice
+        : filter == savedTabNotes
+        ? l10n.local_note_device_notice
+        : l10n.saves_stay_on_device_notice;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Text(
-        likes
-            ? l10n.likes_stay_on_device_notice
-            : l10n.saves_stay_on_device_notice,
+        message,
         style: Theme.of(
           context,
         ).textTheme.bodySmall?.copyWith(color: Theme.of(context).hintColor),
@@ -45,11 +51,12 @@ class SavedLibraryOnDeviceNotice extends StatelessWidget {
   }
 }
 
-/// Empty Saved / Likes / folder / search, with an icon instead of a lone line.
+/// Empty Saved / Likes / folder / search / notes, with an icon instead of a lone line.
 class SavedLibraryEmpty extends StatelessWidget {
   final SavedLibraryEmptyKind kind;
+  final VoidCallback? onWriteNote;
 
-  const SavedLibraryEmpty({super.key, required this.kind});
+  const SavedLibraryEmpty({super.key, required this.kind, this.onWriteNote});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +78,21 @@ class SavedLibraryEmpty extends StatelessWidget {
         icon: Icons.folder_open,
         message: l10n.folder_is_empty,
       ),
+      SavedLibraryEmptyKind.notes => (
+        icon: Icons.edit_note,
+        message: l10n.local_note_empty,
+      ),
     };
-    return EmptyPane(icon: icon, message: message);
+    return EmptyPane(
+      icon: icon,
+      message: message,
+      action: kind == SavedLibraryEmptyKind.notes && onWriteNote != null
+          ? FilledButton.icon(
+              onPressed: onWriteNote,
+              icon: const Icon(Icons.edit_note),
+              label: Text(l10n.local_note_fab),
+            )
+          : null,
+    );
   }
 }

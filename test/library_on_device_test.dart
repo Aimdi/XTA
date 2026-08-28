@@ -32,6 +32,10 @@ void main() {
       SavedLibraryEmptyKind.saved,
     );
     expect(
+      savedLibraryEmptyKind(query: '', filter: savedTabNotes),
+      SavedLibraryEmptyKind.notes,
+    );
+    expect(
       savedLibraryEmptyKind(query: '', filter: 'folder-1'),
       SavedLibraryEmptyKind.folder,
     );
@@ -64,7 +68,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(const SavedLibraryOnDeviceNotice(likes: true)),
+      _wrap(const SavedLibraryOnDeviceNotice(filter: savedTabFavorites)),
     );
     await tester.pumpAndSettle();
     expect(
@@ -73,12 +77,35 @@ void main() {
     );
 
     await tester.pumpWidget(
-      _wrap(const SavedLibraryOnDeviceNotice(likes: false)),
+      _wrap(const SavedLibraryOnDeviceNotice(filter: savedTabAll)),
     );
     await tester.pumpAndSettle();
     expect(
       find.text('Saves stay on this device. X can\'t see them.'),
       findsOneWidget,
     );
+
+    await tester.pumpWidget(
+      _wrap(const SavedLibraryOnDeviceNotice(filter: savedTabNotes)),
+    );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Backup and Nextcloud'), findsOneWidget);
+  });
+
+  testWidgets('notes empty state offers a way to write', (tester) async {
+    var wrote = false;
+    await tester.pumpWidget(
+      _wrap(
+        SavedLibraryEmpty(
+          kind: SavedLibraryEmptyKind.notes,
+          onWriteNote: () => wrote = true,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('No notes yet'), findsOneWidget);
+    await tester.tap(find.text('Note'));
+    expect(wrote, isTrue);
   });
 }

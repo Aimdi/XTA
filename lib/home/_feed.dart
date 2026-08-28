@@ -10,6 +10,7 @@ import 'package:xta/home/_for_you.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
@@ -20,7 +21,6 @@ import 'package:xta/group/feed_read_position.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_tab.dart';
-import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_registry.dart';
@@ -128,7 +128,11 @@ List<FeedTabOption> availableFeedTabsFromIds(
   return List.unmodifiable(options);
 }
 
-/// Following / For you first, then the recent plugin pins.
+/// Following / For you first, then every pinned plugin in pin order.
+///
+/// The strip scrolls, so extra networks stay on the row instead of hiding
+/// behind a globe. Recency still decides *which* pin would have been kept
+/// when a caller passes a smaller [pluginLimit].
 List<FeedTabOption> visibleFeedTabs({
   required List<FeedTabOption> available,
   required List<String> recent,
@@ -143,24 +147,26 @@ List<FeedTabOption> visibleFeedTabs({
     for (final e in available)
       if (e.id.isPlugin) e,
   ];
+  final limit = plugins.length > pluginLimit ? plugins.length : pluginLimit;
   final visibleIds = recentPluginTabIds(
     pinned: [for (final e in plugins) e.id.id],
     recent: recent,
     currentPluginId: current.isPlugin ? current.id : null,
-    limit: pluginLimit,
+    limit: limit,
   );
   final byId = {for (final e in plugins) e.id.id: e};
-  return [
-    ...xTabs,
-    for (final id in visibleIds)
-      if (byId[id] != null) byId[id]!,
-  ];
+  final visible = <FeedTabOption>[...xTabs];
+  for (final id in visibleIds) {
+    final option = byId[id];
+    if (option != null) visible.add(option);
+  }
+  return visible;
 }
 
 List<FeedTabOption> overflowFeedTabs({
   required List<FeedTabOption> available,
   required List<FeedTabOption> visible,
-) {
+}) {
   final shown = {for (final e in visible) e.id.id};
   return [
     for (final e in available)
@@ -217,10 +223,11 @@ class _FeedScreenState extends State<FeedScreen> {
   int _externalTabEpoch = 0;
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
-  NetworkRecentsStore? _recents;
   HomeAccountFilterStore? _accountFilter;
+  HomeGroupFilterStore? _groupFilter;
   Timer? _unreadReloadDebounce;
   Set<String> _lastDisabledAccountIds = const {};
+  Set<String> _lastDisabledGroupIds = const {};
   List<String> _lastStripPlugins = const [];
 
   @override
@@ -244,15 +251,6 @@ class _FeedScreenState extends State<FeedScreen> {
       strip.pinHiddenTabs();
     }
 
-    try {
-      final recents = context.read<NetworkRecentsStore>();
-      if (!identical(recents, _recents)) {
-        _recents = recents;
-      }
-    } on ProviderNotFoundException {
-      _recents = null;
-    }
-
     final filter = context.read<HomeAccountFilterStore>();
     if (!identical(filter, _accountFilter)) {
       _accountFilter = filter;
@@ -261,6 +259,17 @@ class _FeedScreenState extends State<FeedScreen> {
       // Remount For you whenever the set changes so a toggle on Following (or
       // in Settings) does not leave a KeepAlive'd For you showing spare accounts.
       filter.observer(onState: _onHomeAccountFilterChanged);
+    }
+
+    try {
+      final groupFilter = context.read<HomeGroupFilterStore>();
+      if (!identical(groupFilter, _groupFilter)) {
+        _groupFilter = groupFilter;
+        _lastDisabledGroupIds = Set<String>.from(groupFilter.state);
+        groupFilter.observer(onState: _onHomeGroupFilterChanged);
+      }
+    } on ProviderNotFoundException {
+      _groupFilter = null;
     }
   }
 
@@ -298,6 +307,20 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
     _lastDisabledAccountIds = Set<String>.from(disabled);
+    _reloadHomeFeeds();
+  }
+
+  void _onHomeGroupFilterChanged(Set<String> disabled) {
+    if (!mounted) {
+      return;
+    }
+    final same =
+        disabled.length == _lastDisabledGroupIds.length &&
+        disabled.every(_lastDisabledGroupIds.contains);
+    if (same) {
+      return;
+    }
+    _lastDisabledGroupIds = Set<String>.from(disabled);
     _reloadHomeFeeds();
   }
 
@@ -362,25 +385,6 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadUnreadSoon();
   }
 
-  Future<void> _openNetworks(
-    BuildContext context,
-    List<FeedTabOption> available,
-    FeedTab current,
-  ) async {
-    final plugins = pluginsForSwitcher([
-      for (final e in available)
-        if (e.id.isPlugin) e.id.id,
-    ]);
-    final picked = await showNetworkSwitcherSheet(
-      context,
-      plugins: plugins,
-      currentId: current.isPlugin ? current.id : null,
-      recentIds: _recents?.state ?? const [],
-    );
-    if (!mounted || picked == null) return;
-    _selectStripTab(FeedTab(picked));
-  }
-
   Future<void> _refreshActiveTab(FeedTab tab) async {
     await scrollToTop(context, widget.scrollController);
     if (!mounted) {
@@ -430,13 +434,11 @@ class _FeedScreenState extends State<FeedScreen> {
       tab = _tab = FeedTab.following;
     }
 
-    final recent = _recents?.state ?? const <String>[];
     final visible = visibleFeedTabs(
       available: available,
-      recent: recent,
+      recent: const [],
       current: tab,
     );
-    final overflow = overflowFeedTabs(available: available, visible: visible);
 
     // TabBar lives in its own DefaultTabController so a strip edit can remount
     // the indicator without recreating NestedScrollView (two outers on the
@@ -482,24 +484,14 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 ),
               ),
-              // Earth = switch among pinned plugin timelines. Plus = pin or
-              // unpin. They used to both end in the same add sheet when the
-              // networks list only offered "Add timeline".
-              if (available.any((e) => e.id.isPlugin))
-                IconButton(
-                  key: homeNetworksButtonKey,
-                  tooltip: L10n.of(context).home_networks_more,
-                  icon: const Icon(Icons.public),
-                  onPressed: () => _openNetworks(context, available, tab),
-                ),
               IconButton(
                 tooltip: L10n.of(context).feed_strip_add,
                 icon: const Icon(Icons.add),
                 onPressed: () async {
                   final pinnedId = await showFeedStripAddSheet(context);
-                  if (!mounted || pinnedId == null) return;
+                  if (!context.mounted || pinnedId == null) return;
                   await rememberNetwork(context, pinnedId);
-                  if (!mounted) return;
+                  if (!context.mounted) return;
                   _selectStripTab(FeedTab(pinnedId));
                 },
               ),
@@ -520,7 +512,8 @@ class _FeedScreenState extends State<FeedScreen> {
           // live in the drawer — except on For you, whose pull gesture cannot
           // rebuild the timeline, so it keeps the explicit refresh (#168).
           final model = context.read<GroupModel>();
-          final disabledCount = _lastDisabledAccountIds.length;
+          final disabledCount =
+              _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
           return defaultGroupActions(
             context,
             model: model,

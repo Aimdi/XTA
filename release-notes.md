@@ -4,6 +4,26 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi110
+
+**Install this build, not aimdi109.** Group feeds no longer go blank when X
+rate-limits SearchTimeline — they fall back to the other endpoints that still
+work.
+
+Notes live under Saved. They never leave this device unless you back up or
+sync to Nextcloud. X cannot see them.
+
+On Start, the people icon still filters logins. Turning one off now also
+drops that login's own posts from Für dich, so overlapping HomeTimelines
+do not make the toggle look broken. A new Groups section on the same sheet
+hides members of a group from Folgt; the group's own tab is unchanged.
+
+The globe next to Folgt / Für dich / Reddit is gone. Every pinned plugin
+stays on the strip (it scrolls). Plus adds a plugin timeline, removes it,
+or drags to reorder. Tapping plus and pinning a plugin switches to it.
+
+Existing databases keep working. No settings reset.
+
 ### Videos not playing after aimdi108
 
 **Install this build, not aimdi108.** aimdi108 stopped extra libmpv players

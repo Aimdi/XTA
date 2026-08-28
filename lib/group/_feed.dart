@@ -37,6 +37,7 @@ import 'package:xta/group/held_refresh.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/tweet/catch_up_split.dart';
 import 'package:xta/group/feed_rules.dart';
+import 'package:xta/group/feed_search_fallback.dart';
 import 'package:xta/group/group_media_page.dart';
 
 /// One chunk's contribution to a feed page: its chains, whether its gap-fill
@@ -726,6 +727,27 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return query;
   }
 
+  /// Profiles still load while SearchTimeline is exhausted. One page per
+  /// member, capped, so a 39-abo group does not open 39 UserTweets at once.
+  Future<List<TweetChain>> _fallbackUserTimelines(List<Subscription> users) {
+    return fetchUserTimelines(
+      users: users,
+      getTweets: (user) async {
+        final status = await Twitter.getTweets(
+          user.id,
+          'profile',
+          const <String>[],
+          count: 20,
+          includeReplies: widget.includeReplies,
+          includeRetweets: widget.includeRetweets,
+          getTweetsCounter: () => 0,
+          incrementTweetsCounter: () {},
+        );
+        return dropRetweetsIfNeeded(status.chains, widget.includeRetweets);
+      },
+    );
+  }
+
   /// Where a chunk's page starts: the stored chains to show under it (first
   /// page only) and the cursor the fresh search continues from.
   Future<TweetPageResult> _listTweets(String? cursorKey) async {
@@ -761,7 +783,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         // Use the latest chunk's top cursor to load any new tweets since the last time we checked
         var latestChunk = storedChunks.firstOrNull;
         if (latestChunk != null) {
-          searchCursor = latestChunk['cursor_top'] as String;
+          searchCursor = searchCursorFromStored(latestChunk['cursor_top']);
         } else {
           // Otherwise we need to perform a fresh load from scratch for this chunk
           searchCursor = null;
@@ -774,35 +796,48 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           whereArgs: [int.parse(cursorKey), hash],
         );
         if (storedChunks.isNotEmpty) {
-          searchCursor = storedChunks.first['cursor_bottom'] as String;
+          searchCursor = searchCursorFromStored(
+            storedChunks.first['cursor_bottom'],
+          );
         } else {
           searchCursor = null;
         }
       }
 
-      // Perform our search for the next page of results for this chunk, and add those tweets to our collection
+      // SearchTimeline is a different rate-limit bucket from UserTweets. A
+      // throw here used to abort every other chunk and replace the feed with
+      // the hourglass, even when profiles still loaded.
       var query = _buildSearchQuery(chunk.users);
-      TweetStatus result = await Twitter.searchTweets(
-        query,
-        widget.includeReplies,
-        cursor: searchCursor,
-      );
-      shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(
-        result,
-        chunk.users,
+      final network = await fetchChunkWithFallback(
+        search: () => Twitter.searchTweets(
+          query,
+          widget.includeReplies,
+          cursor: searchCursor,
+        ),
+        userTimelines: () => _fallbackUserTimelines(chunk.users),
       );
 
-      if (result.chains.isNotEmpty) {
-        tweets.addAll(result.chains);
+      var searchPage = network.search;
+      if (searchPage != null) {
+        shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(
+          searchPage,
+          chunk.users,
+        );
+      }
 
-        // Make sure we insert the set of cursors for this latest chunk, ready for the next time we paginate
+      final fresh = searchPage?.chains ?? network.fallbackChains;
+      if (fresh.isNotEmpty) {
+        tweets.addAll(fresh);
+
+        // Fallback rows store null cursors: UserTweets tokens are not
+        // SearchTimeline tokens, and mixing them poisons the next search.
         await repository.insert(tableFeedGroupChunk, {
           'cursor_id': int.parse(nextCursor),
           'hash': hash,
-          'cursor_top': result.cursorTop,
-          'cursor_bottom': result.cursorBottom,
+          'cursor_top': searchPage?.cursorTop,
+          'cursor_bottom': searchPage?.cursorBottom,
           'response': await encodeChunkBlob(
-            result.chains.map((e) => e.toJson()).toList(),
+            fresh.map((e) => e.toJson()).toList(),
           ),
         });
       }
@@ -810,50 +845,74 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       // A single fetch returns only the newest page, so a long absence
       // leaves a hole between it and the stored posts. Keep paging down
       // until the fresh content overlaps what was stored (bounded, so a
-      // week away can't trigger dozens of requests).
-      var page = result;
+      // week away can't trigger dozens of requests). Skip after fallback:
+      // those cursors belong to a different endpoint.
       var gapFills = 0;
-      while (shouldContinueGapFill(
-        storedNewestId: storedNewestId,
-        oldestFetchedId: oldestTweetIdOf(page.chains),
-        pageNonEmpty: page.chains.isNotEmpty,
-        hasCursor: page.cursorBottom != null,
-        gapFillsSoFar: gapFills,
-      )) {
-        page = await Twitter.searchTweets(
-          query,
-          widget.includeReplies,
-          cursor: page.cursorBottom,
-        );
-        gapFills++;
+      if (searchPage != null &&
+          !shouldSkipGapFill(
+            usedFallback: network.usedFallback,
+            searchFailed: network.searchFailed,
+          )) {
+        var page = searchPage;
+        try {
+          while (shouldContinueGapFill(
+            storedNewestId: storedNewestId,
+            oldestFetchedId: oldestTweetIdOf(page.chains),
+            pageNonEmpty: page.chains.isNotEmpty,
+            hasCursor: page.cursorBottom != null,
+            gapFillsSoFar: gapFills,
+          )) {
+            page = await Twitter.searchTweets(
+              query,
+              widget.includeReplies,
+              cursor: page.cursorBottom,
+            );
+            gapFills++;
 
-        if (page.chains.isNotEmpty) {
-          tweets.addAll(page.chains);
-          await repository.insert(tableFeedGroupChunk, {
-            'cursor_id': int.parse(nextCursor),
-            'hash': hash,
-            'cursor_top': page.cursorTop,
-            'cursor_bottom': page.cursorBottom,
-            'response': await encodeChunkBlob(
-              page.chains.map((e) => e.toJson()).toList(),
-            ),
-          });
+            if (page.chains.isNotEmpty) {
+              tweets.addAll(page.chains);
+              await repository.insert(tableFeedGroupChunk, {
+                'cursor_id': int.parse(nextCursor),
+                'hash': hash,
+                'cursor_top': page.cursorTop,
+                'cursor_bottom': page.cursorBottom,
+                'response': await encodeChunkBlob(
+                  page.chains.map((e) => e.toJson()).toList(),
+                ),
+              });
+            }
+          }
+        } catch (_) {
+          // A later gap-fill 429 must not discard the page we already have.
         }
+        searchPage = page;
       }
 
       // Whether the hole between the fresh posts and the stored ones was still
       // open when the allowance ran out. The catch-up card must not say the
       // reader is finished when posts in between were never loaded.
-      final gapCapped = shouldContinueGapFill(
-        storedNewestId: storedNewestId,
-        oldestFetchedId: oldestTweetIdOf(page.chains),
-        pageNonEmpty: page.chains.isNotEmpty,
-        hasCursor: page.cursorBottom != null,
-        gapFillsSoFar: 0,
-      );
+      final gapCapped =
+          searchPage != null &&
+          shouldContinueGapFill(
+            storedNewestId: storedNewestId,
+            oldestFetchedId: oldestTweetIdOf(searchPage.chains),
+            pageNonEmpty: searchPage.chains.isNotEmpty,
+            hasCursor: searchPage.cursorBottom != null,
+            gapFillsSoFar: 0,
+          );
 
-      return (chains: tweets, gapCapped: gapCapped);
+      return (chains: tweets, gapCapped: gapCapped, error: network.error);
     });
+
+    if (!chunkResults.any((e) => e.chains.isNotEmpty)) {
+      final error = feedErrorToRethrow([
+        for (final e in chunkResults)
+          if (e.error != null) e.error!,
+      ]);
+      if (error != null) {
+        throw error;
+      }
+    }
 
     // The stored chunks and the fresh fetch overlap at their window boundaries,
     // so drop repeated chains before display.

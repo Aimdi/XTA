@@ -7,6 +7,16 @@ import 'package:xta/database/entities.dart';
 const savedTabAll = 'all';
 const savedTabUnfiled = 'unfiled';
 const savedTabFavorites = 'favorites';
+const savedTabNotes = 'notes';
+
+const Set<String> savedBuiltInTabs = {
+  savedTabAll,
+  savedTabUnfiled,
+  savedTabFavorites,
+  savedTabNotes,
+};
+
+bool isBuiltInSavedTab(String token) => savedBuiltInTabs.contains(token);
 
 /// Resolves the ordered list of Saved tab tokens ([savedTabAll], [savedTabUnfiled]
 /// and folder ids), honouring a stored custom order.
@@ -15,8 +25,17 @@ const savedTabFavorites = 'favorites';
 /// the stored order (newly created folders, or the built-ins) is appended in its
 /// default position.
 List<String> orderedSavedTabs(List<SavedTweetFolder> folders, String? storedOrder) {
-  var defaults = [savedTabAll, ...folders.map((f) => f.id), savedTabUnfiled, savedTabFavorites];
-  var valid = {savedTabAll, savedTabUnfiled, savedTabFavorites, ...folders.map((f) => f.id)};
+  var defaults = [
+    savedTabAll,
+    ...folders.map((f) => f.id),
+    savedTabUnfiled,
+    savedTabFavorites,
+    savedTabNotes,
+  ];
+  var valid = {
+    ...savedBuiltInTabs,
+    ...folders.map((f) => f.id),
+  };
 
   List<String> stored;
   try {
