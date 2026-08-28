@@ -508,6 +508,7 @@ Future<void> main() async {
       optionWebDavLastSyncAt: '',
       optionOpenLinksInEmbeddedBrowser: true,
       optionExternalBrowser: '',
+      optionCleanLinks: true,
       optionEmbeddedBrowserReset: false,
       optionCrashReportsEnabled: false,
       optionCrashGithubRepo: defaultCrashGithubRepo,

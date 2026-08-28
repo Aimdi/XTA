@@ -426,6 +426,11 @@ const optionOpenLinksInEmbeddedBrowser = 'open_links_in_embedded_browser';
 /// whatever Android would have picked.
 const optionExternalBrowser = 'external_browser';
 
+/// Strip tracking parameters from a URL before it is opened or shared.
+///
+/// On by default: that is what the app already did, just without a switch.
+const optionCleanLinks = 'clean_links';
+
 /// Marks that links have been switched to the in-app browser once. The default
 /// alone does not reach an install that already stored the old one, which is
 /// every install this has ever run on.

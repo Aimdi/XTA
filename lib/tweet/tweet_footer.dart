@@ -223,14 +223,14 @@ Color? tweetFooterButtonsColor(Color? base) {
 Color? tweetFooterButtonsColorOf(BuildContext context) =>
     Theme.of(context).colorScheme.onSurfaceVariant;
 
-/// Replace t.co redirectors with cleaned destinations so shares skip X click tracking.
-String shareableTweetText(TweetWithCard tweet, String text) {
+/// Replace t.co redirectors with destinations so shares skip X click tracking.
+String shareableTweetText(TweetWithCard tweet, String text, {bool clean = true}) {
   var result = text;
   for (Url url in tweet.entities?.urls ?? []) {
     final short = url.url;
     final expanded = url.expandedUrl;
     if (short != null && expanded != null) {
-      result = result.replaceAll(short, cleanUrl(expanded));
+      result = result.replaceAll(short, clean ? cleanUrl(expanded) : expanded);
     }
   }
   for (Media media
@@ -238,7 +238,7 @@ String shareableTweetText(TweetWithCard tweet, String text) {
     final short = media.url;
     final expanded = media.expandedUrl;
     if (short != null && expanded != null) {
-      result = result.replaceAll(short, cleanUrl(expanded));
+      result = result.replaceAll(short, clean ? cleanUrl(expanded) : expanded);
     }
   }
   return result;
@@ -363,7 +363,8 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).share_tweet_content,
                   Icons.text_snippet,
                   () async {
-                    Share.share(shareableTweetText(tweet, tweetText));
+                    final clean = cleanLinksEnabled(PrefService.of(context, listen: false));
+                    Share.share(shareableTweetText(tweet, tweetText, clean: clean));
                     Navigator.pop(sheetContext);
                   },
                 ),
@@ -384,8 +385,9 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).share_tweet_content_and_link,
                   Icons.add_link,
                   () async {
+                    final clean = cleanLinksEnabled(PrefService.of(context, listen: false));
                     Share.share(
-                      '${shareableTweetText(tweet, tweetText)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
+                      '${shareableTweetText(tweet, tweetText, clean: clean)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
                     );
                     Navigator.pop(sheetContext);
                   },

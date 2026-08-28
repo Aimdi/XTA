@@ -25,6 +25,7 @@ class ArticleScreen extends StatefulWidget {
 class _ArticleScreenState extends State<ArticleScreen> {
   late final WebViewController _controller;
   var _loading = true;
+  var _requested = false;
 
   @override
   void initState() {
@@ -38,8 +39,18 @@ class _ArticleScreenState extends State<ArticleScreen> {
         onWebResourceError: (_) {
           if (mounted) setState(() => _loading = false);
         },
-      ))
-      ..loadRequest(Uri.parse(cleanUrl(widget.url)));
+      ));
+    // Prefs are not available until [didChangeDependencies]. The request is
+    // issued there so the clean-links switch is honoured on first load.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_requested) return;
+    _requested = true;
+    final url = prepareUrl(PrefService.of(context, listen: false), widget.url);
+    _controller.loadRequest(Uri.parse(url));
   }
 
   @override
@@ -53,7 +64,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
           IconButton(
             tooltip: l10n.share_link,
             icon: const Icon(Icons.share_outlined),
-            onPressed: () => SharePlus.instance.share(ShareParams(text: cleanUrl(widget.url))),
+            onPressed: () {
+              final url = prepareUrl(PrefService.of(context, listen: false), widget.url);
+              SharePlus.instance.share(ShareParams(text: url));
+            },
           ),
           // Still offered, because an article that will not render in here has
           // to be readable somewhere. Goes to the browser the reader chose, and
@@ -62,11 +76,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
           IconButton(
             tooltip: l10n.open_in_browser,
             icon: const Icon(Icons.open_in_new),
-            onPressed: () => openExternally(
-              cleanUrl(widget.url),
-              package: PrefService.of(context, listen: false).get<String>(optionExternalBrowser) ??
-                  systemDefaultBrowser,
-            ),
+            onPressed: () {
+              final prefs = PrefService.of(context, listen: false);
+              openExternally(
+                prepareUrl(prefs, widget.url),
+                package: prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser,
+              );
+            },
           ),
         ],
       ),
