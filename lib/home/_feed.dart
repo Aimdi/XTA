@@ -10,6 +10,7 @@ import 'package:xta/home/_for_you.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
@@ -219,8 +220,10 @@ class _FeedScreenState extends State<FeedScreen> {
   FeedStripStore? _stripStore;
   NetworkRecentsStore? _recents;
   HomeAccountFilterStore? _accountFilter;
+  HomeGroupFilterStore? _groupFilter;
   Timer? _unreadReloadDebounce;
   Set<String> _lastDisabledAccountIds = const {};
+  Set<String> _lastDisabledGroupIds = const {};
   List<String> _lastStripPlugins = const [];
 
   @override
@@ -262,6 +265,17 @@ class _FeedScreenState extends State<FeedScreen> {
       // in Settings) does not leave a KeepAlive'd For you showing spare accounts.
       filter.observer(onState: _onHomeAccountFilterChanged);
     }
+
+    try {
+      final groupFilter = context.read<HomeGroupFilterStore>();
+      if (!identical(groupFilter, _groupFilter)) {
+        _groupFilter = groupFilter;
+        _lastDisabledGroupIds = Set<String>.from(groupFilter.state);
+        groupFilter.observer(onState: _onHomeGroupFilterChanged);
+      }
+    } on ProviderNotFoundException {
+      _groupFilter = null;
+    }
   }
 
   void _onFeedChosenElsewhere(FeedTab tab) {
@@ -298,6 +312,20 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
     _lastDisabledAccountIds = Set<String>.from(disabled);
+    _reloadHomeFeeds();
+  }
+
+  void _onHomeGroupFilterChanged(Set<String> disabled) {
+    if (!mounted) {
+      return;
+    }
+    final same =
+        disabled.length == _lastDisabledGroupIds.length &&
+        disabled.every(_lastDisabledGroupIds.contains);
+    if (same) {
+      return;
+    }
+    _lastDisabledGroupIds = Set<String>.from(disabled);
     _reloadHomeFeeds();
   }
 
@@ -511,7 +539,8 @@ class _FeedScreenState extends State<FeedScreen> {
           // live in the drawer — except on For you, whose pull gesture cannot
           // rebuild the timeline, so it keeps the explicit refresh (#168).
           final model = context.read<GroupModel>();
-          final disabledCount = _lastDisabledAccountIds.length;
+          final disabledCount =
+              _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
           return defaultGroupActions(
             context,
             model: model,

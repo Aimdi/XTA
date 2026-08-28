@@ -28,6 +28,10 @@ const optionHomeRecentNetworks = 'home.recent_networks';
 /// until the reader turns them off.
 const optionHomeFeedDisabledAccountIds = 'home.feed_disabled_account_ids';
 
+/// Subscription groups whose members are hidden from home Following.
+/// Empty means every group still contributes. A group's own tab is unchanged.
+const optionHomeFeedDisabledGroupIds = 'home.feed_disabled_group_ids';
+
 /// Revision of the local chrome (upper-left) avatar. `0` = use the monogram.
 const optionChromeAvatarRevision = 'chrome.avatar_revision';
 

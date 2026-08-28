@@ -12,6 +12,8 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/client/login_webview.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/future_pool.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 
 const int homeTimelineMergeConcurrency = 2;
@@ -124,6 +126,36 @@ List<TweetChain> mergeHomeTimelineChains(Iterable<List<TweetChain>> batches) {
   return merged;
 }
 
+/// True when any tweet in [chain] was written by one of [authorIds].
+bool chainHasAuthor(TweetChain chain, Set<String> authorIds) {
+  if (authorIds.isEmpty) {
+    return false;
+  }
+  for (final tweet in chain.tweets) {
+    final id = tweet.user?.idStr;
+    if (id != null && authorIds.contains(id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/// Drops chains whose author is a login the reader turned off, or a member of
+/// a group they hid from Following. For you still fetches Home timelines; this
+/// is what actually takes those posts off the screen.
+List<TweetChain> dropChainsFromAuthors(
+  List<TweetChain> chains,
+  Set<String> authorIds,
+) {
+  if (authorIds.isEmpty) {
+    return chains;
+  }
+  return [
+    for (final chain in chains)
+      if (!chainHasAuthor(chain, authorIds)) chain,
+  ];
+}
+
 class _AccountTimelinePage {
   final String accountId;
   final List<TweetChain> chains;
@@ -145,6 +177,7 @@ Future<TweetPageResult> loadMergedForYouPage({
   required bool includeReplies,
   required int Function() getTweetsCounter,
   required void Function() incrementTweetsCounter,
+  Set<String> excludedAuthorIds = const {},
 }) async {
   final sources = enabledHomeAccounts(accounts, disabledIds);
   if (sources.isEmpty) {
@@ -162,7 +195,13 @@ Future<TweetPageResult> loadMergedForYouPage({
       getTweetsCounter: getTweetsCounter,
       incrementTweetsCounter: incrementTweetsCounter,
     );
-    return (chains: result.chains, nextCursor: result.cursorBottom);
+    return (
+      chains: dropChainsFromAuthors(result.chains, {
+        ...disabledIds,
+        ...excludedAuthorIds,
+      }),
+      nextCursor: result.cursorBottom,
+    );
   }
 
   final previous = cursor == null
@@ -207,7 +246,10 @@ Future<TweetPageResult> loadMergedForYouPage({
     },
   );
 
-  final chains = mergeHomeTimelineChains(pages.map((p) => p.chains));
+  final chains = dropChainsFromAuthors(
+    mergeHomeTimelineChains(pages.map((p) => p.chains)),
+    {...disabledIds, ...excludedAuthorIds},
+  );
   if (chains.isEmpty && lastError != null) {
     throw lastError!;
   }
@@ -283,8 +325,17 @@ void showHomeAccountFilterSheet(
   VoidCallback? onChanged,
 }) {
   final filter = context.read<HomeAccountFilterStore>();
+  HomeGroupFilterStore? groupFilter;
+  List<SubscriptionGroup> groups = const [];
+  try {
+    groupFilter = context.read<HomeGroupFilterStore>();
+    groups = context.read<GroupsModel>().state;
+  } on ProviderNotFoundException {
+    groupFilter = null;
+  }
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     builder: (sheetContext) {
       return SafeArea(
         child: FutureBuilder<List<Account>>(
@@ -361,6 +412,47 @@ void showHomeAccountFilterSheet(
                             },
                           ),
                         ),
+                      if (groupFilter != null && groups.isNotEmpty)
+                        ScopedBuilder<HomeGroupFilterStore, Set<String>>(
+                          store: groupFilter!,
+                          onState: (_, disabledGroups) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Divider(),
+                                ListTile(
+                                  title: Text(
+                                    L10n.of(context).home_feed_groups,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      L10n.of(
+                                        context,
+                                      ).home_feed_groups_description,
+                                    ),
+                                  ),
+                                ),
+                                ...groups.map(
+                                  (group) => HomeGroupToggleTile(
+                                    group: group,
+                                    disabled: disabledGroups,
+                                    onChanged: (value) async {
+                                      await groupFilter!.setEnabled(
+                                        group.id,
+                                        value,
+                                      );
+                                      onChanged?.call();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
                     ],
                   ),
                 );
@@ -404,6 +496,32 @@ class HomeAccountToggleTile extends StatelessWidget {
       ),
       value: enabled,
       onChanged: !enabled || canDisable ? onChanged : null,
+    );
+  }
+}
+
+/// One group on the home-feed filter. Off hides its members from Following.
+class HomeGroupToggleTile extends StatelessWidget {
+  final SubscriptionGroup group;
+  final Set<String> disabled;
+  final Future<void> Function(bool enabled) onChanged;
+
+  const HomeGroupToggleTile({
+    super.key,
+    required this.group,
+    required this.disabled,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = !disabled.contains(group.id);
+    return SwitchListTile(
+      secondary: Icon(group.iconData),
+      title: Text(group.name),
+      subtitle: Text(L10n.of(context).home_feed_include_in_following),
+      value: enabled,
+      onChanged: onChanged,
     );
   }
 }
