@@ -74,11 +74,6 @@ void main() {
                     icon: const Icon(Icons.add),
                     onPressed: () {},
                   ),
-                  IconButton(
-                    tooltip: L10n.of(context).home_networks_more,
-                    icon: const Icon(Icons.public),
-                    onPressed: () {},
-                  ),
                 ],
               ),
             );
@@ -94,7 +89,6 @@ void main() {
     expect(find.text('Reddit'), findsOneWidget);
     expect(find.text('RSS'), findsOneWidget);
     expect(find.byTooltip('Add timeline'), findsOneWidget);
-    expect(find.byTooltip('More networks'), findsOneWidget);
   });
 
   testWidgets('networks sheet builds with RSS on the strip', (tester) async {
