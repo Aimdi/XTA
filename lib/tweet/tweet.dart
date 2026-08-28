@@ -22,6 +22,7 @@ import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
 import 'package:xta/tweet/article_screen.dart';
+import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/cashtag_quotes.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/article/article.dart';
@@ -941,6 +942,8 @@ class TweetTileState extends State<TweetTile> {
         : null;
 
     final articleLink = _articleLink;
+    final skipBroadcastCard =
+        isBroadcastCard(tweet.card) && tweetHasVideoMedia(tweet);
 
     final bodyChildren = <Widget>[
       replyToTile,
@@ -959,7 +962,7 @@ class TweetTileState extends State<TweetTile> {
         ),
       media,
       quotedTweet,
-      TweetCard(tweet: tweet, card: tweet.card),
+      if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
       birdwatchQuoted,
       article,
       // A quoted tweet shows no action bar: its reply/repost/like counts belong

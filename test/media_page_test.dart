@@ -5,7 +5,7 @@ import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 
 /// Built from API-shaped JSON rather than by hand: these are the payloads the
 /// grid is handed in the app, so the mapping is exercised as it really runs.
-TweetWithCard _tweetWith(String id, List<String> types) {
+TweetWithCard _tweetWith(String id, List<String> types, {bool broadcast = false}) {
   final tweet = TweetWithCard();
   tweet.idStr = id;
   tweet.user = User.fromJson({'id_str': 'u$id', 'screen_name': 'someone'});
@@ -24,6 +24,18 @@ TweetWithCard _tweetWith(String id, List<String> types) {
         }
     ]
   });
+  if (broadcast) {
+    tweet.entities = Entities.fromJson({
+      'urls': [
+        {
+          'url': 'https://t.co/b',
+          'expanded_url': 'https://x.com/i/broadcasts/1abc',
+          'display_url': 'x.com/i/broadcasts/1…',
+          'indices': [0, 23],
+        }
+      ]
+    });
+  }
   return tweet;
 }
 
@@ -121,6 +133,17 @@ void main() {
 
     test('videos keeps GIFs too, since X serves them as video', () {
       expect(items.where(MediaFilter.videos.accepts), hasLength(2));
+    });
+
+    test('a video with a broadcasts link is a broadcast, not a video', () {
+      final broadcast = mediaItemsFromChains([
+        _chain(_tweetWith('b', ['video'], broadcast: true)),
+      ]);
+      expect(broadcast, hasLength(1));
+      expect(broadcast.single, isA<BroadcastGridItem>());
+      expect(MediaFilter.videos.accepts(broadcast.single), isFalse);
+      expect(MediaFilter.broadcasts.accepts(broadcast.single), isTrue);
+      expect(MediaFilter.all.accepts(broadcast.single), isTrue);
     });
   });
 

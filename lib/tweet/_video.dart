@@ -13,6 +13,7 @@ import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/tweet/video_fullscreen.dart';
 import 'package:xta/tweet/video_playback_policy.dart';
 import 'package:xta/tweet/video_quality.dart';
+import 'package:xta/tweet/media_strip.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/ui/capped_network_image.dart';
@@ -76,9 +77,12 @@ class TweetVideoMetadata {
   }
 
   factory TweetVideoMetadata.fromMedia(Media media) {
-    var aspectRatio = media.videoInfo?.aspectRatio == null
-        ? 1.0
-        : media.videoInfo!.aspectRatio![0] / media.videoInfo!.aspectRatio![1];
+    var aspectRatio = mediaItemAspect(
+      type: media.type,
+      videoAspect: media.videoInfo?.aspectRatio,
+      thumbW: media.sizes?.large?.w,
+      thumbH: media.sizes?.large?.h,
+    );
 
     var variants = media.videoInfo?.variants ?? [];
     var imageUrl = media.mediaUrlHttps!;
@@ -349,9 +353,11 @@ class _TweetVideoState extends State<TweetVideo> {
       }
     });
 
-    pooled.videoController.waitUntilFirstFrameRendered.then((_) {
-      if (mounted) setState(() => _firstFrameRendered = true);
-    }).catchError((_) {});
+    pooled.videoController.waitUntilFirstFrameRendered
+        .then((_) {
+          if (mounted) setState(() => _firstFrameRendered = true);
+        })
+        .catchError((_) {});
   }
 
   void _detachListeners() {
@@ -528,6 +534,8 @@ class _TweetVideoState extends State<TweetVideo> {
     final video = Video(
       controller: pooled.videoController,
       aspectRatio: widget.metadata.aspectRatio,
+      fill: Colors.black,
+      fit: BoxFit.contain,
       controls: widget.disableControls
           ? null
           : (state) => XtaControls(
@@ -586,15 +594,18 @@ class _TweetVideoState extends State<TweetVideo> {
   Widget _poster({Widget? child}) {
     return AspectRatio(
       aspectRatio: widget.metadata.aspectRatio,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          if (widget.metadata.imageUrl != null)
-            Positioned.fill(
-              child: CappedNetworkImage(url: widget.metadata.imageUrl!),
-            ),
-          ?child,
-        ],
+      child: ColoredBox(
+        color: Colors.black,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            if (widget.metadata.imageUrl != null)
+              Positioned.fill(
+                child: CappedNetworkImage(url: widget.metadata.imageUrl!),
+              ),
+            ?child,
+          ],
+        ),
       ),
     );
   }
@@ -771,14 +782,17 @@ class _TweetVideoState extends State<TweetVideo> {
 
         return AspectRatio(
           aspectRatio: widget.metadata.aspectRatio,
-          child: hasVideo
-              ? VisibilityDetector(
-                  key: _visibilityKey,
-                  onVisibilityChanged: (info) =>
-                      _onVisibilityChanged(info, pooled),
-                  child: _buildVideo(pooled, prefBackgroundPlayback),
-                )
-              : const SizedBox.shrink(),
+          child: ColoredBox(
+            color: Colors.black,
+            child: hasVideo
+                ? VisibilityDetector(
+                    key: _visibilityKey,
+                    onVisibilityChanged: (info) =>
+                        _onVisibilityChanged(info, pooled),
+                    child: _buildVideo(pooled, prefBackgroundPlayback),
+                  )
+                : const SizedBox.shrink(),
+          ),
         );
       },
     );

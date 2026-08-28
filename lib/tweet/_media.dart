@@ -294,7 +294,10 @@ class _TweetMediaState extends State<TweetMedia> {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(radius)),
           child: AspectRatio(
             aspectRatio: singleMediaAspect(_aspects().single),
-            child: _card(context, 0, fit: BoxFit.contain, showCounter: false),
+            child: ColoredBox(
+              color: Colors.black,
+              child: _card(context, 0, fit: BoxFit.contain, showCounter: false),
+            ),
           ),
         ),
       );
@@ -341,7 +344,12 @@ class _TweetMediaState extends State<TweetMedia> {
 
   /// The aspect ratio of every item, for the row to size itself from.
   List<double> _aspects() => widget.media
-      .map((e) => ((e.sizes?.large?.w ?? 1) / (e.sizes?.large?.h ?? 1)).toDouble())
+      .map((e) => mediaItemAspect(
+            type: e.type,
+            videoAspect: e.videoInfo?.aspectRatio,
+            thumbW: e.sizes?.large?.w,
+            thumbH: e.sizes?.large?.h,
+          ))
       .toList(growable: false);
 
   /// One piece of media, with the taps that belong to it.
