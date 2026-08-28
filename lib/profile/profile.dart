@@ -129,6 +129,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   double descriptionHeight = defaultHeight;
   double metadataHeight = defaultHeight;
+  double noteHeight = 40;
 
   bool descriptionResized = false;
   bool metadataResized = false;
@@ -247,8 +248,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       },
     );
 
-    // The height of the app bar should be all the inner components, plus any margins
-    var appBarHeight = profileStuffTop + avatarHeight + metadataHeight + 8 + descriptionHeight;
+    // Include the private-note chip. Leaving it out let the tab bar cover the
+    // field, clip "Private note", and hide Save.
+    var appBarHeight = profileStuffTop + avatarHeight + metadataHeight + 8 + descriptionHeight + noteHeight;
 
     var metadataTextStyle = const TextStyle(fontSize: 12.5);
     var prefs = PrefService.of(context, listen: false);
@@ -545,7 +547,18 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                                           )))
                                                 ]),
                                           )),
-                                      if (user.idStr != null) ProfileNoteCard(userId: user.idStr!),
+                                      if (user.idStr != null)
+                                        MeasureSize(
+                                          onChange: (size) {
+                                            if ((size.height - noteHeight).abs() < 0.5) {
+                                              return;
+                                            }
+                                            setState(() {
+                                              noteHeight = size.height;
+                                            });
+                                          },
+                                          child: ProfileNoteCard(userId: user.idStr!),
+                                        ),
                                     ],
                                   ),
                                 ),
