@@ -71,7 +71,7 @@ class RedditPostCard extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
                       child: Text(
-                        post.selfText!,
+                        post.displaySelfText!,
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
@@ -79,15 +79,13 @@ class RedditPostCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  RedditPostMedia(post: post),
-                  _RedditPostFooter(
-                    post: post,
-                    onComments: () => _open(context),
-                  ),
                 ],
               ),
             ),
           ),
+          // Outside the card InkWell so a tap opens the picture, not the thread.
+          RedditPostMedia(post: post),
+          _RedditPostFooter(post: post, onComments: () => _open(context)),
           tweetHairlineDivider(context),
         ],
       ),
@@ -98,7 +96,7 @@ class RedditPostCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Text(
-        post.title,
+        post.displayTitle,
         maxLines: 6,
         overflow: TextOverflow.ellipsis,
         style: Theme.of(context).textTheme.titleMedium!.copyWith(

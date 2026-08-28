@@ -218,6 +218,16 @@ void main() {
       expect(comment.mediaUrls, ['https://i.redd.it/abc.jpg']);
       expect(comment.body, isEmpty);
     });
+
+    test('a caption next to a picture keeps the words, not the URL', () {
+      final listing = _listing([
+        _t1(id: 'pic', body: 'nice one https://i.redd.it/abc.jpg'),
+      ]);
+      final comment = commentsFromListing(Json(listing)).single;
+
+      expect(comment.mediaUrls, ['https://i.redd.it/abc.jpg']);
+      expect(comment.body, 'nice one');
+    });
   });
 
   group('reading a thread', () {

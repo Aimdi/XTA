@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_search_body.dart';
 
 /// Searching Reddit for posts, subreddits and accounts.
@@ -46,6 +48,7 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final queryName = normaliseSubreddit(_query);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,6 +67,9 @@ class _RedditSearchScreenState extends State<RedditSearchScreen> {
           ),
           onSubmitted: _search,
         ),
+        actions: [
+          if (queryName != null) RedditFollowIconButton(subreddit: queryName),
+        ],
       ),
       body: RedditSearchBody(
         query: _query,

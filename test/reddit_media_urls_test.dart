@@ -197,6 +197,31 @@ void main() {
     });
   });
 
+  group('stripRedditMediaLinksFromText', () {
+    test('drops a preview.redd.it URL left in a meme title', () {
+      const title =
+          '"not a gooner bait" in question: https://preview.redd.it/aabro673w5mh1.jpeg?width=2400&format=pjpg&auto=webp&s=d16262017f25cb6c3bccc4639d5526e6c599bc41';
+      expect(
+        stripRedditMediaLinksFromText(title),
+        '"not a gooner bait" in question',
+      );
+    });
+
+    test('a title that is only the CDN URL becomes empty', () {
+      expect(
+        stripRedditMediaLinksFromText('https://i.redd.it/abc.jpg'),
+        isEmpty,
+      );
+    });
+
+    test('keeps a non-image link', () {
+      expect(
+        stripRedditMediaLinksFromText('see https://dart.dev/blog'),
+        'see https://dart.dev/blog',
+      );
+    });
+  });
+
   group('redditVRedditDashUrl', () {
     test('builds the DASH playlist from a bare v.redd.it id', () {
       expect(

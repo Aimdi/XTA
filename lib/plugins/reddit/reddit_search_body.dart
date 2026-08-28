@@ -62,12 +62,18 @@ class RedditSearchBody extends StatelessWidget {
                 RedditSearchTab<RedditSubredditResult>(
                   query: query,
                   search: (client, q) => _searchSubreddits(context, client, q),
-                  leadingBuilder: (context, q) => RedditNameRow(
-                    label: 'r/$q',
-                    icon: Icons.travel_explore,
-                    onTap: () =>
-                        _open(context, RedditListingScreen.subreddit(q)),
-                  ),
+                  leadingBuilder: (context, q) {
+                    final name = normaliseSubreddit(q);
+                    return RedditNameRow(
+                      label: 'r/$q',
+                      icon: Icons.travel_explore,
+                      trailing: name == null
+                          ? null
+                          : RedditFollowIconButton(subreddit: name),
+                      onTap: () =>
+                          _open(context, RedditListingScreen.subreddit(q)),
+                    );
+                  },
                   itemBuilder: (context, result) =>
                       RedditSubredditRow(result: result),
                 ),
@@ -298,7 +304,13 @@ class RedditSubredditRow extends StatelessWidget {
       subtitle: description == null
           ? null
           : Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
-      trailing: subscribers == null ? null : Text('$subscribers'),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (subscribers != null) Text('$subscribers'),
+          RedditFollowIconButton(subreddit: result.name),
+        ],
+      ),
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
@@ -313,16 +325,23 @@ class RedditNameRow extends StatelessWidget {
   final String label;
   final IconData icon;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   const RedditNameRow({
     super.key,
     required this.label,
     required this.icon,
     required this.onTap,
+    this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(leading: Icon(icon), title: Text(label), onTap: onTap);
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(label),
+      trailing: trailing,
+      onTap: onTap,
+    );
   }
 }

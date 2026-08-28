@@ -125,7 +125,7 @@ List<RedditComment> _repliesFromJson(Json replies, {String? parentPermalink}) {
     return (urls: urls, body: stripRedditMediaPlaceholderTokens(text));
   }
 
-  var withoutLinks = text;
+  var withoutLinks = stripRedditMediaLinksFromText(text);
   for (final link in linked) {
     withoutLinks = withoutLinks.replaceAll(link, '');
   }
@@ -134,10 +134,7 @@ List<RedditComment> _repliesFromJson(Json replies, {String? parentPermalink}) {
   }
   withoutLinks = stripRedditMediaPlaceholderTokens(withoutLinks);
 
-  return (
-    urls: urls,
-    body: withoutLinks.isEmpty ? '' : stripRedditMediaPlaceholderTokens(text),
-  );
+  return (urls: urls, body: withoutLinks);
 }
 
 final _httpUrl = RegExp(r'https?://[^\s\]\)>]+');

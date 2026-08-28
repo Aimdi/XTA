@@ -17,8 +17,11 @@ import 'package:xta/subscriptions/users_model.dart';
 ///
 /// Reddit is two screens now — its own tab and an entry in the home switcher —
 /// and the second one arrived with only the generic feed actions, so sorting,
-/// searching and adding a subreddit were all missing from it. They live here so
-/// there is one set rather than two that drift.
+/// searching and the list of followed communities were all missing from it.
+/// They live here so there is one set rather than two that drift.
+///
+/// Subreddits are added from search, not a second plus next to the lens.
+/// Sign-in stays in Reddit settings — the overflow is for how Reddit is read.
 ///
 /// Returns a Row so it can sit as a single entry in an `AppBar.actions` list.
 class RedditFeedActions extends StatefulWidget {
@@ -78,21 +81,6 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
         ),
         const PopupMenuDivider(),
         PopupMenuItem(
-          value: _menuSignIn,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(_signedIn ? Icons.logout : Icons.login),
-            title: Text(
-              _signedIn
-                  ? l10n.plugin_reddit_sign_out
-                  : l10n.plugin_reddit_sign_in,
-            ),
-          ),
-        ),
-        // The client id used to sit here on its own, which left the rest of
-        // Reddit's settings reachable only from the plugin store. One entry
-        // leads to all of them, the client id included.
-        PopupMenuItem(
           value: _menuPluginSettings,
           child: ListTile(
             contentPadding: EdgeInsets.zero,
@@ -114,14 +102,10 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
   }
 
   /// Values the menu uses for the actions that are not a source choice.
-  static const _menuSignIn = '_signIn';
   static const _menuPluginSettings = '_pluginSettings';
   static const _menuAppSettings = '_appSettings';
 
   Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
-    if (value == _menuSignIn) {
-      return _signedIn ? _signOutHere() : _signInHere();
-    }
     if (value == _menuPluginSettings) {
       await Navigator.push(
         context,
@@ -142,20 +126,6 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
       await _refreshActive();
     }
   }
-
-  bool get _signedIn => redditSignedIn(PrefService.of(context, listen: false));
-
-  Future<void> _signInHere() async {
-    await signInToReddit(context);
-    if (mounted) setState(() {});
-  }
-
-  Future<void> _signOutHere() async {
-    await signOutOfReddit(context);
-    if (mounted) setState(() {});
-  }
-
-  Future<void> _addSubreddit() => addRedditSubreddit(context);
 
   Future<void> _manageSubreddits() async {
     await showModalBottomSheet(
@@ -218,11 +188,6 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
             context,
             MaterialPageRoute(builder: (_) => const RedditSearchScreen()),
           ),
-        ),
-        IconButton(
-          tooltip: l10n.plugin_reddit_add,
-          icon: const Icon(Icons.add),
-          onPressed: _addSubreddit,
         ),
         IconButton(
           tooltip: l10n.subscriptions,

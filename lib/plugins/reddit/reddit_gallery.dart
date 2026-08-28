@@ -12,7 +12,18 @@ import 'package:xta/ui/capped_network_image.dart';
 class RedditGallery extends StatefulWidget {
   final List<String> images;
 
-  const RedditGallery({super.key, required this.images});
+  /// Opens the tapped page fullscreen. Null leaves paging as the only gesture.
+  final ValueChanged<int>? onOpen;
+
+  /// Long-press save of the visible page.
+  final ValueChanged<int>? onSave;
+
+  const RedditGallery({
+    super.key,
+    required this.images,
+    this.onOpen,
+    this.onSave,
+  });
 
   @override
   State<RedditGallery> createState() => _RedditGalleryState();
@@ -33,7 +44,8 @@ class _RedditGalleryState extends State<RedditGallery> {
     super.didUpdateWidget(old);
     // Recycled onto a different post: page one of the new album, not page four
     // of the old one.
-    if (!identical(old.images, widget.images) && _page >= widget.images.length) {
+    if (!identical(old.images, widget.images) &&
+        _page >= widget.images.length) {
       _page = 0;
       if (_controller.hasClients) {
         _controller.jumpToPage(0);
@@ -54,19 +66,33 @@ class _RedditGalleryState extends State<RedditGallery> {
             controller: _controller,
             itemCount: widget.images.length,
             onPageChanged: (page) => setState(() => _page = page),
-            itemBuilder: (context, index) => Semantics(
-              image: true,
-              label: l10n.photos,
-              // Contained, not cropped: an album mixes portrait and landscape,
-              // and the frame's tint is a better background for the odd one out
-              // than a crop through the middle of it.
-              child: CappedNetworkImage(url: widget.images[index], fit: BoxFit.contain),
+            itemBuilder: (context, index) => GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: widget.onOpen == null ? null : () => widget.onOpen!(index),
+              onLongPress: widget.onSave == null
+                  ? null
+                  : () => widget.onSave!(index),
+              child: Semantics(
+                image: true,
+                button: widget.onOpen != null,
+                label: l10n.photos,
+                // Contained, not cropped: an album mixes portrait and landscape,
+                // and the frame's tint is a better background for the odd one out
+                // than a crop through the middle of it.
+                child: CappedNetworkImage(
+                  url: widget.images[index],
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
           ),
           Positioned(
             top: 8,
             right: 8,
-            child: _RedditGalleryCounter(page: _page, total: widget.images.length),
+            child: _RedditGalleryCounter(
+              page: _page,
+              total: widget.images.length,
+            ),
           ),
         ],
       ),
@@ -84,12 +110,18 @@ class _RedditGalleryCounter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Text(
         '${page + 1}/$total',
         // Taken from the theme rather than fixed at 12px, so it grows with the
         // reader's text size like everything else on the card.
-        style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.labelMedium!.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

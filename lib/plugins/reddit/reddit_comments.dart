@@ -264,13 +264,13 @@ String _bodyOf(Element? markdown, _CommentMedia media) {
     return stripRedditMediaPlaceholderTokens(text);
   }
 
-  var withoutLinks = text;
+  var withoutLinks = stripRedditMediaLinksFromText(text);
   for (final url in media.urls) {
     withoutLinks = withoutLinks.replaceAll(url, '');
   }
   withoutLinks = stripRedditMediaPlaceholderTokens(withoutLinks);
 
-  return withoutLinks.isEmpty ? '' : stripRedditMediaPlaceholderTokens(text);
+  return withoutLinks;
 }
 
 /// The comments nested directly inside [thing].

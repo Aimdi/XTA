@@ -551,6 +551,7 @@ Future<void> main() async {
       optionPluginRedditTimeFilter: redditTimeFilterDay,
       optionPluginRedditFeedMode: redditFeedModeFollowing,
       optionPluginRedditNsfwMode: redditNsfwModeTap,
+      optionPluginRedditShowSpoilers: false,
       optionPluginRedditSavedPosts: '[]',
       optionPluginRedditSource: redditSourceAuto,
       optionPluginRedditSubreddits: '[]',

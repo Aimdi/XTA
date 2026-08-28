@@ -273,17 +273,35 @@ class RedditPost {
   bool get hasVisualMedia =>
       hasPlayableVideo || imageUrl != null || galleryImages.length > 1;
 
-  /// Whether the title is worth showing above the card.
-  bool get showsTitle =>
-      !(hasVisualMedia && isRedditMediaPlaceholderTitle(title));
+  /// Title with CDN image URLs removed when the picture is already on the card.
+  String get displayTitle =>
+      hasVisualMedia ? stripRedditMediaLinksFromText(title) : title;
 
-  /// Selftext that is only `>image>` next to a picture the card already shows.
-  bool get showsSelfText {
-    final text = selfText?.trim() ?? '';
+  /// Selftext with those same URLs removed.
+  String? get displaySelfText {
+    final text = selfText;
+    if (text == null) {
+      return null;
+    }
+    return hasVisualMedia ? stripRedditMediaLinksFromText(text) : text;
+  }
+
+  /// Whether the title is worth showing above the card.
+  bool get showsTitle {
+    final text = displayTitle;
     if (text.isEmpty) {
       return false;
     }
-    return !(hasVisualMedia && isRedditMediaPlaceholderTitle(text));
+    return !isRedditMediaPlaceholderTitle(text);
+  }
+
+  /// Selftext that is only `>image>` next to a picture the card already shows.
+  bool get showsSelfText {
+    final text = displaySelfText?.trim() ?? '';
+    if (text.isEmpty) {
+      return false;
+    }
+    return !isRedditMediaPlaceholderTitle(text);
   }
 
   /// DASH URL for inline playback — JSON `secure_media`, or derived from a

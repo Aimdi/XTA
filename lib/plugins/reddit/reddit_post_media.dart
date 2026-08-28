@@ -8,10 +8,14 @@ import 'package:xta/plugins/reddit/reddit_gallery.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_media_frame.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
+import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/downloads.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:path/path.dart' as path;
 
 /// The picture, video or link that goes with a Reddit post, at the width a
 /// tweet's media gets rather than as a 70px thumbnail beside the title.
@@ -64,13 +68,29 @@ class RedditPostMedia extends StatelessWidget {
       return _gate(
         context,
         aspectRatio: kRedditGalleryAspectRatio,
-        child: RedditGallery(images: gallery),
+        child: RedditGallery(
+          images: gallery,
+          onOpen: (index) => openRedditImageViewer(
+            context,
+            urls: gallery,
+            initialIndex: index,
+            username: _redditMediaUser(post),
+          ),
+          onSave: (index) => downloadRedditImage(
+            context,
+            gallery[index],
+            username: _redditMediaUser(post),
+          ),
+        ),
       );
     }
 
     final image = post.imageUrl;
     if (image != null) {
-      return _gate(context, child: _RedditImage(url: image));
+      return _gate(
+        context,
+        child: _RedditImage(url: image, username: _redditMediaUser(post)),
+      );
     }
 
     final link = post.url;
@@ -85,11 +105,27 @@ class RedditPostMedia extends StatelessWidget {
           loader: context.read<RedditGalleryLoader>(),
           permalink: post.permalink,
           placeholder: card,
-          whenLoaded: (images) => _gate(
-            context,
-            aspectRatio: kRedditGalleryAspectRatio,
-            child: RedditGallery(images: collapseRedditImageUrls(images)),
-          ),
+          whenLoaded: (images) {
+            final gallery = collapseRedditImageUrls(images);
+            return _gate(
+              context,
+              aspectRatio: kRedditGalleryAspectRatio,
+              child: RedditGallery(
+                images: gallery,
+                onOpen: (index) => openRedditImageViewer(
+                  context,
+                  urls: gallery,
+                  initialIndex: index,
+                  username: _redditMediaUser(post),
+                ),
+                onSave: (index) => downloadRedditImage(
+                  context,
+                  gallery[index],
+                  username: _redditMediaUser(post),
+                ),
+              ),
+            );
+          },
         );
       }
       return card;
@@ -103,10 +139,11 @@ class RedditPostMedia extends StatelessWidget {
     required Widget child,
     double aspectRatio = kRedditSensitiveAspectRatio,
   }) {
+    final prefs = PrefService.of(context);
     return RedditSensitiveGate(
-      sensitive: _shouldGate(context, post),
+      sensitive: redditMediaShouldGate(post, prefs),
       revealKey: post.id,
-      kind: _gateKind(post),
+      kind: redditMediaGateKind(post, prefs),
       aspectRatio: aspectRatio,
       child: child,
     );
@@ -133,16 +170,24 @@ class RedditPostMedia extends StatelessWidget {
 /// within the frame's bounds.
 class _RedditImage extends StatelessWidget {
   final String url;
+  final String username;
 
-  const _RedditImage({required this.url});
+  const _RedditImage({required this.url, required this.username});
 
   @override
   Widget build(BuildContext context) {
-    return RedditMediaFrame(
-      child: Semantics(
-        image: true,
-        label: L10n.of(context).media,
-        child: CappedNetworkImage(url: url),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () =>
+          openRedditImageViewer(context, urls: [url], username: username),
+      onLongPress: () => downloadRedditImage(context, url, username: username),
+      child: RedditMediaFrame(
+        child: Semantics(
+          image: true,
+          button: true,
+          label: L10n.of(context).media,
+          child: CappedNetworkImage(url: url),
+        ),
       ),
     );
   }
@@ -177,29 +222,39 @@ class RedditCommentImages extends StatelessWidget {
         for (final url in urls)
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: kRedditCommentMediaMaxHeight,
-                ),
-                child: Semantics(
-                  image: true,
-                  label: label,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => Image.network(
-                      url,
-                      fit: BoxFit.contain,
-                      // Decoded at the width it is drawn at, which under an
-                      // indented reply is a good deal less than the screen.
-                      cacheWidth: constraints.hasBoundedWidth
-                          ? (constraints.maxWidth *
-                                    MediaQuery.devicePixelRatioOf(context))
-                                .ceil()
-                          : null,
-                      alignment: Alignment.centerLeft,
-                      errorBuilder: (context, error, stackTrace) =>
-                          RedditBrokenImage(url: url),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => openRedditImageViewer(
+                context,
+                urls: urls,
+                initialIndex: urls.indexOf(url),
+              ),
+              onLongPress: () => downloadRedditImage(context, url),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: kRedditCommentMediaMaxHeight,
+                  ),
+                  child: Semantics(
+                    image: true,
+                    button: true,
+                    label: label,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) => Image.network(
+                        url,
+                        fit: BoxFit.contain,
+                        // Decoded at the width it is drawn at, which under an
+                        // indented reply is a good deal less than the screen.
+                        cacheWidth: constraints.hasBoundedWidth
+                            ? (constraints.maxWidth *
+                                      MediaQuery.devicePixelRatioOf(context))
+                                  .ceil()
+                            : null,
+                        alignment: Alignment.centerLeft,
+                        errorBuilder: (context, error, stackTrace) =>
+                            RedditBrokenImage(url: url),
+                      ),
                     ),
                   ),
                 ),
@@ -353,10 +408,11 @@ class _RedditLinkCard extends StatelessWidget {
 
     // The poster frame of an over-18 post is the post: it is held back with the
     // same tile a picture would be.
+    final prefs = PrefService.of(context);
     return RedditSensitiveGate(
-      sensitive: _shouldGate(context, post),
+      sensitive: redditMediaShouldGate(post, prefs),
       revealKey: post.id,
-      kind: _gateKind(post),
+      kind: redditMediaGateKind(post, prefs),
       aspectRatio: kRedditMediaMaxAspectRatio,
       child: banner,
     );
@@ -366,6 +422,7 @@ class _RedditLinkCard extends StatelessWidget {
   /// of thing this is. A video gets a play badge over either.
   Widget _leading(BuildContext context, String? thumbnail) {
     final theme = Theme.of(context);
+    final gated = redditMediaShouldGate(post, PrefService.of(context));
 
     return SizedBox(
       width: 88,
@@ -374,13 +431,11 @@ class _RedditLinkCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           ColoredBox(color: theme.colorScheme.surfaceContainerHighest),
-          if (thumbnail != null && !_shouldGate(context, post))
+          if (thumbnail != null && !gated)
             CappedNetworkImage(url: thumbnail)
           else
             Icon(
-              _shouldGate(context, post)
-                  ? Icons.visibility_off_outlined
-                  : Icons.link,
+              gated ? Icons.visibility_off_outlined : Icons.link,
               color: theme.colorScheme.onSurfaceVariant,
             ),
           if (post.isVideo)
@@ -397,14 +452,82 @@ class _RedditLinkCard extends StatelessWidget {
   }
 }
 
-bool _shouldGate(BuildContext context, RedditPost post) {
-  if (post.spoiler) {
+/// Whether a post's media stays behind the cover tile.
+///
+/// Spoilers are covered unless the reader asked to see them. NSFW still
+/// follows [RedditNsfwMode]: hide/tap cover it, show does not. A post that is
+/// both uses the spoiler tile while spoilers are hidden, then the NSFW rule.
+bool redditMediaShouldGate(RedditPost post, BasePrefService prefs) {
+  if (post.spoiler && !storedRedditShowSpoilers(prefs)) {
     return true;
   }
-  final prefs = PrefService.of(context, listen: false);
   return post.over18 && storedRedditNsfwMode(prefs) != RedditNsfwMode.show;
 }
 
-RedditSensitiveGateKind _gateKind(RedditPost post) => post.spoiler
+RedditSensitiveGateKind redditMediaGateKind(
+  RedditPost post,
+  BasePrefService prefs,
+) => post.spoiler && !storedRedditShowSpoilers(prefs)
     ? RedditSensitiveGateKind.spoiler
     : RedditSensitiveGateKind.nsfw;
+
+String _redditMediaUser(RedditPost post) => post.author ?? post.subreddit;
+
+/// Fullscreen pictures without Twitter's `:orig` suffix — Reddit CDN URLs
+/// 404 if that is appended.
+Future<void> openRedditImageViewer(
+  BuildContext context, {
+  required List<String> urls,
+  int initialIndex = 0,
+  String username = 'reddit',
+}) async {
+  if (!context.mounted || urls.isEmpty) {
+    return;
+  }
+  final media = [for (final url in urls) createMediaFromUrl(url, null)];
+  final last = media.length - 1;
+  final index = initialIndex < 0
+      ? 0
+      : (initialIndex > last ? last : initialIndex);
+  await Navigator.push<void>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => TweetMediaView(
+        initialIndex: index,
+        media: media,
+        username: username,
+        tweetMedia: false,
+      ),
+    ),
+  );
+}
+
+/// Saves a Reddit image as-is. Do not reuse [downloadMediaItem]: that appends
+/// `:orig`, which is a Twitter original-size trick and breaks i.redd.it.
+Future<void> downloadRedditImage(
+  BuildContext context,
+  String url, {
+  String username = 'reddit',
+}) async {
+  if (!context.mounted) {
+    return;
+  }
+  final fileName = '$username-${path.basename(url)}';
+  await downloadUriToPickedFile(
+    context,
+    Uri.parse(url),
+    fileName,
+    prefs: PrefService.of(context, listen: false),
+    onStart: () {
+      showWorkingSnackBar(context, L10n.of(context).downloading_media);
+    },
+    onSuccess: () {
+      ScaffoldMessenger.of(
+        context,
+      ).hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(L10n.of(context).successfully_saved_the_media)),
+      );
+    },
+  );
+}

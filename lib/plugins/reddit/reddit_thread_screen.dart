@@ -269,7 +269,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
         children: [
           if (post.showsTitle) ...[
             Text(
-              post.title,
+              post.displayTitle,
               style: theme.textTheme.titleLarge!.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -297,17 +297,28 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           // The same block the feed card uses, so a picture post opens on its
           // picture rather than on a link to one.
           RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
-          if (_selfText != null &&
-              _selfText!.isNotEmpty &&
-              !(post.hasVisualMedia &&
-                  isRedditMediaPlaceholderTitle(_selfText!))) ...[
+          if (_visibleSelfText(post) case final selfText?) ...[
             const SizedBox(height: 10),
-            Text(_selfText!, style: theme.textTheme.bodyMedium),
+            Text(selfText, style: theme.textTheme.bodyMedium),
           ],
           const Divider(height: 24),
         ],
       ),
     );
+  }
+
+  /// Selftext worth printing under the media. CDN URLs that the picture
+  /// already shows are stripped first, so a leftover empty string is dropped.
+  String? _visibleSelfText(RedditPost post) {
+    final raw = _selfText;
+    if (raw == null || raw.isEmpty) {
+      return null;
+    }
+    final text = post.hasVisualMedia ? stripRedditMediaLinksFromText(raw) : raw;
+    if (text.isEmpty || isRedditMediaPlaceholderTitle(text)) {
+      return null;
+    }
+    return text;
   }
 
   /// A row that folds on tap. [hidden] is how many replies its fold is
