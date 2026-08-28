@@ -6,6 +6,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_group_filter.dart';
 
 UserSubscription _sub(String id, {bool inFeed = true}) {
