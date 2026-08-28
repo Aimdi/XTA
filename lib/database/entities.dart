@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/group/custom_feed_rules.dart';
@@ -103,12 +105,18 @@ class LocalPost with ToMappable {
   final String body;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<LocalPostMedia> media;
+  final String? quotedTweetId;
+  final String? quotedTweetJson;
 
   LocalPost({
     required this.id,
     required this.body,
     required this.createdAt,
     required this.updatedAt,
+    this.media = const [],
+    this.quotedTweetId,
+    this.quotedTweetJson,
   });
 
   factory LocalPost.fromMap(Map<String, Object?> map) {
@@ -117,15 +125,28 @@ class LocalPost with ToMappable {
       body: map['body'] as String? ?? '',
       createdAt: _parseLocalPostTime(map['created_at']),
       updatedAt: _parseLocalPostTime(map['updated_at']),
+      media: parseLocalPostMedia(map['media'] ?? map['media_json']),
+      quotedTweetId: map['quoted_tweet_id'] as String?,
+      quotedTweetJson: map['quoted_tweet_json'] as String?,
     );
   }
 
-  LocalPost copyWith({String? body, DateTime? updatedAt}) {
+  LocalPost copyWith({
+    String? body,
+    DateTime? updatedAt,
+    List<LocalPostMedia>? media,
+    String? quotedTweetId,
+    String? quotedTweetJson,
+    bool clearQuoted = false,
+  }) {
     return LocalPost(
       id: id,
       body: body ?? this.body,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      media: media ?? this.media,
+      quotedTweetId: clearQuoted ? null : (quotedTweetId ?? this.quotedTweetId),
+      quotedTweetJson: clearQuoted ? null : (quotedTweetJson ?? this.quotedTweetJson),
     );
   }
 
@@ -136,13 +157,97 @@ class LocalPost with ToMappable {
       'body': body,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'media_json': encodeLocalPostMedia(media),
+      'quoted_tweet_id': quotedTweetId,
+      'quoted_tweet_json': quotedTweetJson,
     };
   }
+
+  /// Backup JSON includes media bytes so Nextcloud / a file restore keeps photos.
+  Map<String, dynamic> toBackupMap() {
+    return {
+      ...toMap(),
+      'media': [for (final item in media) item.toJson(includeData: item.data != null)],
+    };
+  }
+}
+
+/// One file attached to a [LocalPost]. Bytes ([data]) travel with backups only.
+class LocalPostMedia {
+  final String id;
+  final String name;
+  final String mime;
+  final String? data;
+
+  const LocalPostMedia({
+    required this.id,
+    required this.name,
+    required this.mime,
+    this.data,
+  });
+
+  bool get isImage => mime.startsWith('image/');
+
+  bool get isVideo => mime.startsWith('video/');
+
+  LocalPostMedia withData(String? data) => LocalPostMedia(
+        id: id,
+        name: name,
+        mime: mime,
+        data: data,
+      );
+
+  Map<String, dynamic> toJson({bool includeData = false}) {
+    return {
+      'id': id,
+      'name': name,
+      'mime': mime,
+      if (includeData && data != null) 'data': data,
+    };
+  }
+
+  factory LocalPostMedia.fromJson(Map<String, dynamic> json) {
+    return LocalPostMedia(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      mime: json['mime'] as String? ?? 'application/octet-stream',
+      data: json['data'] as String?,
+    );
+  }
+}
+
+List<LocalPostMedia> parseLocalPostMedia(Object? raw) {
+  List<dynamic>? list;
+  if (raw is List) {
+    list = raw;
+  } else if (raw is String && raw.isNotEmpty) {
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        list = decoded;
+      }
+    } catch (_) {
+      return const [];
+    }
+  }
+  if (list == null) {
+    return const [];
+  }
+  return [
+    for (final item in list)
+      if (item is Map)
+        LocalPostMedia.fromJson(Map<String, dynamic>.from(item)),
+  ].where((item) => item.id.isNotEmpty).toList(growable: false);
+}
+
+String encodeLocalPostMedia(List<LocalPostMedia> media) {
+  return jsonEncode([for (final item in media) item.toJson()]);
 }
 
 DateTime _parseLocalPostTime(Object? value) {
   return DateTime.tryParse((value as String?) ?? '') ?? DateTime.now();
 }
+
 
 /// A saved keyword listener feed (Misskey antenna).
 class Antenna with ToMappable {

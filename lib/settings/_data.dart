@@ -10,6 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/import_data_model.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
+import 'package:xta/saved/local_post_files.dart';
 import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
@@ -82,6 +83,9 @@ Future<void> _applyBackup(BuildContext context, SettingsData data, ImportChoice 
   }
 
   await importModel.importData(backupTables(data, includeReadPositions: choice.includeReadPositions));
+  for (final post in data.localPosts ?? const <LocalPost>[]) {
+    await materializeLocalPostMedia(post);
+  }
   await groupModel.reloadGroups();
 
   if (context.mounted) {

@@ -1,5 +1,6 @@
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/saved/local_post_files.dart';
 import 'package:xta/settings/backup_data.dart';
 
 /// Rows of backed-up tables that have no entity in `database/entities.dart`,
@@ -147,4 +148,9 @@ Future<List<ProfileNote>> readProfileNotes() => _readRows(tableProfileNote, Prof
 
 Future<List<Antenna>> readAntennas() => _readRows(tableAntenna, Antenna.fromMap);
 
-Future<List<LocalPost>> readLocalPosts() => _readRows(tableLocalPost, LocalPost.fromMap);
+Future<List<LocalPost>> readLocalPosts() async {
+  final posts = await _readRows(tableLocalPost, LocalPost.fromMap);
+  return [
+    for (final post in posts) await hydrateLocalPostMediaData(post),
+  ];
+}

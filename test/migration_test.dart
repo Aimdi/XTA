@@ -231,4 +231,44 @@ void main() {
     )).map((row) => row['name'] as String).toSet();
     expect(tables, contains(tableLocalPost));
   });
+
+  test('upgrade from v59 adds media columns on local_post', () async {
+    final path =
+        '${Directory.systemTemp.path}/xta_migrate_v59_${DateTime.now().microsecondsSinceEpoch}.db';
+    final plan = buildMigrationPlan();
+    var db = await openDatabase(
+      path,
+      version: 59,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    await db.close();
+
+    db = await openDatabase(
+      path,
+      version: databaseVersion,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    addTearDown(() async {
+      await db.close();
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    });
+
+    expect(await db.getVersion(), databaseVersion);
+    final cols = (await db.rawQuery(
+      'PRAGMA table_info($tableLocalPost)',
+    )).map((row) => row['name'] as String).toSet();
+    expect(
+      cols,
+      containsAll([
+        'id',
+        'body',
+        'media_json',
+        'quoted_tweet_id',
+        'quoted_tweet_json',
+      ]),
+    );
+  });
 }

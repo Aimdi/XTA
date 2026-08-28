@@ -251,6 +251,27 @@ class Twitter {
     );
   }
 
+  // GraphQL "Retweeters" — people who reposted [tweetId]. Read-only; this does
+  // not create a repost. The web client pages with count=20.
+  static Future<Follows> getRetweeters(String tweetId, {String? cursor, int count = 20}) async {
+    final uri = XEndpoints.uri(XEndpoints.retweeters, {
+      'variables': jsonEncode({
+        'tweetId': tweetId,
+        'count': count,
+        'includePromotedContent': false,
+        'cursor': ?cursor,
+      }),
+      'features': jsonEncode(_followersFeatures),
+    });
+    final response = await _twitterApi.client.get(uri);
+    final users = TimelineParser.parseUsersTimeline(TimelineParser.retweetersInstructions(jsonDecode(response.body)));
+    return Follows(
+      cursorBottom: users.nextCursorStr,
+      cursorTop: users.previousCursorStr,
+      users: users.users?.map((e) => UserWithExtra.fromJson(e.toJson())).toList() ?? [],
+    );
+  }
+
   static const Map<String, dynamic> _followingFeatures = {
     "rweb_video_screen_enabled": false,
     "payments_enabled": false,

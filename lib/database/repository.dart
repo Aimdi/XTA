@@ -51,7 +51,7 @@ const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 const String tableLocalPost = 'local_post';
 
-const int databaseVersion = 59;
+const int databaseVersion = 60;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -838,6 +838,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       reverseSql: 'DROP TABLE $tableLocalPost',
     ),
   ],
+  60: [
+    // Media attachments and a quoted-post snapshot on reader notes. ALTER is
+    // tolerated if the column is already there — _addLocalPostMediaColumns is
+    // the same net for a database that skipped this step.
+    Migration(Operation(_addLocalPostMediaColumns)),
+  ],
 });
 
 /// Indexes added in migration 39, applied so that a failure cannot block the
@@ -958,10 +964,23 @@ Future<void> _ensureLocalPostTable(Database db) async {
       'id VARCHAR PRIMARY KEY, '
       'body TEXT NOT NULL, '
       'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
-      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+      'media_json TEXT, '
+      'quoted_tweet_id TEXT, '
+      'quoted_tweet_json TEXT)',
     );
   } catch (e) {
     Repository.log.warning('Could not ensure $tableLocalPost: $e');
+  }
+}
+
+Future<void> _addLocalPostMediaColumns(Database db) async {
+  for (final column in ['media_json TEXT', 'quoted_tweet_id TEXT', 'quoted_tweet_json TEXT']) {
+    try {
+      await db.execute('ALTER TABLE $tableLocalPost ADD COLUMN $column');
+    } catch (e) {
+      Repository.log.warning('Could not add $column to $tableLocalPost: $e');
+    }
   }
 }
 
@@ -1101,6 +1120,7 @@ class Repository {
     }
     try {
       await _ensureLocalPostTable(await writable());
+      await _addLocalPostMediaColumns(await writable());
     } catch (e) {
       log.warning('Could not ensure $tableLocalPost after migrate: $e');
     }

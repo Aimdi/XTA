@@ -139,7 +139,7 @@ class SettingsData {
       'accounts': _maps(accounts),
       'profileNotes': _maps(profileNotes),
       'antennas': _maps(antennas),
-      'localPosts': _maps(localPosts),
+      'localPosts': localPosts?.map((post) => post.toBackupMap()).toList(),
     };
   }
 }
