@@ -10,6 +10,7 @@ import 'package:xta/group/deck_groups.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/group/subscription_pack.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/subscription_source.dart';
 import 'package:xta/subscriptions/_group_add_member.dart';
@@ -722,7 +723,7 @@ class _SubscriptionGroupEditDialogState
                         Padding(
                           padding: const EdgeInsets.only(right: 6),
                           child: FilterChip(
-                            avatar: Icon(plugin.icon, size: 16),
+                            avatar: pluginMark(plugin, size: 16),
                             label: Text(plugin.title(context)),
                             selected: _sourceFilter == plugin.id,
                             onSelected: (_) =>

@@ -36,7 +36,7 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
   String? get homeTabPrefKey => optionPluginBooruShowTab;
 
   @override
-  IconData get icon => Icons.photo_library_outlined;
+  IconData get icon => Icons.inventory_2;
 
   @override
   PluginCategory get category => PluginCategory.art;
@@ -56,8 +56,8 @@ class BooruPlugin extends XtaPlugin with SubscriptionSource {
     return NavigationPage(
       pluginIdBooru,
       (c) => L10n.of(c).plugin_booru_title,
-      const Icon(Icons.photo_library_outlined),
-      const Icon(Icons.photo_library),
+      const Icon(Icons.inventory_2_outlined),
+      const Icon(Icons.inventory_2),
     );
   }
 

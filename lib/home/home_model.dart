@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/pref_lists.dart';
@@ -48,8 +49,8 @@ class HomeModel extends Store<List<HomePage>> {
             NavigationPage(
               plugin.id,
               (c) => plugin.title(c),
-              Icon(plugin.icon),
-              Icon(plugin.icon),
+              pluginMark(plugin, size: 22),
+              pluginMark(plugin, size: 22),
             ),
       ];
 

@@ -23,6 +23,7 @@ import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_tab.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/ui/scroll_to_top.dart';
@@ -67,8 +68,9 @@ class FeedTabOption {
   final FeedTab id;
   final FeedTabTitleBuilder titleBuilder;
   final IconData? icon;
+  final Widget? mark;
 
-  FeedTabOption(this.id, this.titleBuilder, {this.icon});
+  FeedTabOption(this.id, this.titleBuilder, {this.icon, this.mark});
 }
 
 /// House for Following, spark for For you — matches the chip-style tab row.
@@ -122,6 +124,7 @@ List<FeedTabOption> availableFeedTabsFromIds(
         FeedTab(pluginId),
         (c) => plugin.title(c),
         icon: plugin.icon,
+        mark: pluginMark(plugin, size: 16),
       ),
     );
   }
@@ -474,6 +477,7 @@ class _FeedScreenState extends State<FeedScreen> {
                           child: FeedStripTab(
                             title: e.titleBuilder(context),
                             icon: e.icon ?? e.id.icon,
+                            mark: e.mark,
                             unread: unreadIds.contains(_unreadKeyFor(e.id)),
                           ),
                         ),
@@ -500,69 +504,69 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
       ),
       actionsBuilder: (context) {
-          // Reddit brings its own bar: sorting, search and adding a subreddit
-          // are what this feed is steered with, and the generic feed actions
-          // steer nothing here. Its overflow carries the app settings so they
-          // stay reachable from this tab too.
-          if (tab == FeedTab.reddit) {
-            return const [RedditFeedActions(showAppSettings: true)];
-          }
+        // Reddit brings its own bar: sorting, search and adding a subreddit
+        // are what this feed is steered with, and the generic feed actions
+        // steer nothing here. Its overflow carries the app settings so they
+        // stay reachable from this tab too.
+        if (tab == FeedTab.reddit) {
+          return const [RedditFeedActions(showAppSettings: true)];
+        }
 
-          // Only the feed filters. Refresh is the pull gesture and settings
-          // live in the drawer — except on For you, whose pull gesture cannot
-          // rebuild the timeline, so it keeps the explicit refresh (#168).
-          final model = context.read<GroupModel>();
-          final disabledCount =
-              _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
-          return defaultGroupActions(
-            context,
-            model: model,
-            showMore: tab == FeedTab.following,
-            showRefresh: tab == FeedTab.foryou,
-            onRefresh: () => _refreshActiveTab(tab),
-            showSettings: false,
-            extra: [
-              IconButton(
-                icon: Badge(
-                  isLabelVisible: disabledCount > 0,
-                  smallSize: 8,
-                  child: Icon(
-                    disabledCount > 0
-                        ? Icons.manage_accounts
-                        : Icons.manage_accounts_outlined,
-                  ),
+        // Only the feed filters. Refresh is the pull gesture and settings
+        // live in the drawer — except on For you, whose pull gesture cannot
+        // rebuild the timeline, so it keeps the explicit refresh (#168).
+        final model = context.read<GroupModel>();
+        final disabledCount =
+            _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
+        return defaultGroupActions(
+          context,
+          model: model,
+          showMore: tab == FeedTab.following,
+          showRefresh: tab == FeedTab.foryou,
+          onRefresh: () => _refreshActiveTab(tab),
+          showSettings: false,
+          extra: [
+            IconButton(
+              icon: Badge(
+                isLabelVisible: disabledCount > 0,
+                smallSize: 8,
+                child: Icon(
+                  disabledCount > 0
+                      ? Icons.manage_accounts
+                      : Icons.manage_accounts_outlined,
                 ),
-                tooltip: L10n.of(context).home_feed_accounts,
-                // Store observer remounts For you; sheet only needs to open.
-                onPressed: () => showHomeAccountFilterSheet(context),
               ),
-            ],
-          );
-        },
+              tooltip: L10n.of(context).home_feed_accounts,
+              // Store observer remounts For you; sheet only needs to open.
+              onPressed: () => showHomeAccountFilterSheet(context),
+            ),
+          ],
+        );
+      },
       bodyBuilder: (context) {
-          if (tab == FeedTab.following) {
-            // With a cache key this feed survives a trip to another tab, the
-            // way a pushed group route already does. Without one, every
-            // Following -> For you -> Following swipe rebuilt the whole
-            // per-chunk fan-out. Namespaced so it never shares state with the
-            // pushed route for the same group.
-            return SubscriptionGroupScreenContent(
-              key: ValueKey(_followingEpoch),
-              id: widget.id,
-              cacheKey: homeFollowingCacheKey(widget.id),
-            );
-          }
-          if (tab == FeedTab.foryou) {
-            return ForYouTweets(
-              _forYouFeed,
-              key: ValueKey(_forYouEpoch),
-              type: 'profile',
-              includeReplies: false,
-              pref: prefs,
-            );
-          }
-          return _pluginBody(tab);
-        },
+        if (tab == FeedTab.following) {
+          // With a cache key this feed survives a trip to another tab, the
+          // way a pushed group route already does. Without one, every
+          // Following -> For you -> Following swipe rebuilt the whole
+          // per-chunk fan-out. Namespaced so it never shares state with the
+          // pushed route for the same group.
+          return SubscriptionGroupScreenContent(
+            key: ValueKey(_followingEpoch),
+            id: widget.id,
+            cacheKey: homeFollowingCacheKey(widget.id),
+          );
+        }
+        if (tab == FeedTab.foryou) {
+          return ForYouTweets(
+            _forYouFeed,
+            key: ValueKey(_forYouEpoch),
+            type: 'profile',
+            includeReplies: false,
+            pref: prefs,
+          );
+        }
+        return _pluginBody(tab);
+      },
     );
   }
 }

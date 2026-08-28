@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 
 /// Groups [plugins] under each category that has at least one entry.
 List<({PluginCategory category, List<XtaPlugin> plugins})>
@@ -85,8 +86,8 @@ Widget pluginBrandIcon(
       ),
       borderRadius: BorderRadius.circular(10),
     ),
-    child: Icon(
-      plugin.icon,
+    child: pluginMark(
+      plugin,
       size: size * 0.55,
       color: brand == scheme.onSurface ? scheme.primary : brand,
     ),
