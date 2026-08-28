@@ -80,6 +80,14 @@ SettingsData _full() {
     replyFilters: [UserFeedFilter(userId: '2', screenName: 'other')],
     feedReadPositions: [FeedReadPositionRow(groupId: 'g1', chainId: 'c1', chainCreatedAt: _seenAt)],
     accounts: [Account(id: 'a1', authHeader: '{"cookie":"x"}', screenName: 'reader')],
+    localPosts: [
+      LocalPost(
+        id: 'n1',
+        body: 'stays on device',
+        createdAt: _createdAt,
+        updatedAt: _createdAt,
+      ),
+    ],
   );
 }
 
@@ -134,6 +142,7 @@ void main() {
       expect(data.replyFilters?.single.userId, '2');
       expect(data.feedReadPositions?.single.chainCreatedAt, _seenAt);
       expect(data.accounts?.single.id, 'a1');
+      expect(data.localPosts?.single.body, 'stays on device');
     });
 
     test('says which format wrote it, from which build and when', () {
@@ -224,6 +233,7 @@ void main() {
       expect(counts[BackupCategory.threadsLikes], 1);
       expect(counts[BackupCategory.blueskyLikes], 1);
       expect(counts[BackupCategory.accounts], 1);
+      expect(counts[BackupCategory.localPosts], 1);
     });
 
     test('is empty when there is nothing to restore', () {
@@ -255,4 +265,5 @@ const _expectedTables = [
   tableReplyFilter,
   tableAccounts,
   tableFeedReadPosition,
+  tableLocalPost,
 ];

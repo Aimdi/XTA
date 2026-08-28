@@ -49,8 +49,9 @@ const String tableReplyFilter = 'reply_filter';
 const String tableFeedReadPosition = 'feed_read_position';
 const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
+const String tableLocalPost = 'local_post';
 
-const int databaseVersion = 58;
+const int databaseVersion = 59;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -825,6 +826,18 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       reverseSql: 'DROP TABLE $tableRssSubscription',
     ),
   ],
+  59: [
+    // Reader-authored notes that never leave the device unless a backup or
+    // WebDAV/Nextcloud copy carries them. Not an X compose path.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableLocalPost ('
+      'id VARCHAR PRIMARY KEY, '
+      'body TEXT NOT NULL, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableLocalPost',
+    ),
+  ],
 });
 
 /// Indexes added in migration 39, applied so that a failure cannot block the
@@ -935,6 +948,20 @@ Future<void> _ensureRssSubscriptionTable(Database db) async {
     );
   } catch (e) {
     Repository.log.warning('Could not ensure $tableRssSubscription: $e');
+  }
+}
+
+Future<void> _ensureLocalPostTable(Database db) async {
+  try {
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS $tableLocalPost ('
+      'id VARCHAR PRIMARY KEY, '
+      'body TEXT NOT NULL, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not ensure $tableLocalPost: $e');
   }
 }
 
@@ -1071,6 +1098,11 @@ class Repository {
       await _ensureRssSubscriptionTable(await writable());
     } catch (e) {
       log.warning('Could not ensure $tableRssSubscription after migrate: $e');
+    }
+    try {
+      await _ensureLocalPostTable(await writable());
+    } catch (e) {
+      log.warning('Could not ensure $tableLocalPost after migrate: $e');
     }
 
     // The weekly cache cleanup walks the largest tables in the schema, and it

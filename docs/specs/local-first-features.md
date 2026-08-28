@@ -37,13 +37,14 @@ Read-only, local-first. No writes to X or any remote service.
 10. **Deck** — landscape/tablet multi-column of pinned groups.
 11. **Calm mode** — pref; footer hides count labels (stronger than zen for engagement vanity).
 12. **Topic follow** — hashtag long-press / action → `SearchSubscription` for `#tag`.
+13. **Local notes** — reader-authored posts that never go to X. SQLite `local_post` (migration 59); Saved tab + FAB; included in backup / WebDAV (Nextcloud).
 
 ## Backup
 
-Bump awareness only if needed; include `profileNotes`, `antennas`, and `saved_tweet.note` via existing tweet rows. Packs are a separate share format, not the full backup.
+Bump awareness only if needed; include `profileNotes`, `antennas`, `localPosts`, and `saved_tweet.note` via existing tweet rows. Packs are a separate share format, not the full backup.
 
 ## Non-goals
 
-- No compose / like-on-X / remote mute.
+- No compose / like-on-X / remote mute. Local notes are on-device (and backup) only.
 - No rewrite of transport.
 - Deck is layout only.

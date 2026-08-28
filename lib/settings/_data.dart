@@ -10,6 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/import_data_model.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
+import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/settings/sync_screen.dart';
@@ -105,6 +106,9 @@ Future<void> _reloadAfterImport(BuildContext context) async {
   await subscriptions.reloadSubscriptions();
   await folders.listFolders();
   await likedTweets.listLikedTweets();
+  if (context.mounted) {
+    await context.read<LocalPostModel>().listLocalPosts();
+  }
   for (final source in sources) {
     if (!context.mounted) return;
     await source.reloadFromDatabase(context);
@@ -152,6 +156,7 @@ Future<SettingsData> collectBackup(BuildContext context, {required bool includeA
     accounts: includeAccounts ? await getAccounts() : null,
     profileNotes: await readProfileNotes(),
     antennas: await readAntennas(),
+    localPosts: await readLocalPosts(),
   );
 }
 
