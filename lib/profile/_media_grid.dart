@@ -12,14 +12,12 @@ class ProfileMediaGrid extends StatefulWidget {
   final UserWithExtra user;
   final BasePrefService pref;
   final MediaFilter filter;
-  final ValueChanged<bool>? onBroadcastsFound;
 
   const ProfileMediaGrid({
     super.key,
     required this.user,
     required this.pref,
     this.filter = MediaFilter.all,
-    this.onBroadcastsFound,
   });
 
   @override
@@ -99,9 +97,6 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid>
 
   List<MediaGridItem> _unseenItems(List<TweetChain> chains) {
     final raw = mediaItemsFromChains(chains);
-    if (raw.any((item) => item is BroadcastGridItem)) {
-      widget.onBroadcastsFound?.call(true);
-    }
     return raw
         .where(widget.filter.accepts)
         .where((m) => _seen.add('${m.tweetId}/${m.mediaIndex}'))

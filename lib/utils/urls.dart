@@ -36,7 +36,7 @@ const _trackingPrefixes = {'utm_', 'mtm_', 'pk_', 'hsa_'};
 // Share identifiers X appends to copied links; only meaningful on X hosts,
 // where stripping them cannot change what the link points to.
 const _xTrackingParams = {'s', 't', 'ref_src', 'ref_url'};
-const _xHosts = {'x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'};
+const _xHosts = {'x.com', 'www.x.com', 'mobile.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'};
 
 /// The article id in an `x.com/i/article/…` link, or null if it is not one.
 ///
@@ -62,26 +62,127 @@ String? articleIdIn(String? url) {
   return parts[2];
 }
 
-/// The broadcast id in an `x.com/i/broadcasts/…` link, or null if it is not one.
+/// The broadcast id in an `x.com/i/broadcasts/…` (or `/i/broadcast/…`,
+/// `pscp.tv/w/…`) link, or null if it is not one.
 ///
-/// Spaces recordings and live broadcasts put this URL in the tweet text. The
-/// player already shows the stream, so the truncated orange link is noise.
+/// Live video and Spaces recordings put this URL in the tweet. The media tab
+/// buckets those separately from ordinary clips. Display URLs are often
+/// scheme-less (`x.com/i/broadcasts/…`); truncated ones (`…`) are rejected
+/// because the id would be wrong.
 String? broadcastIdIn(String? url) {
+  final parsed = _liveLink(url);
+  if (parsed == null) {
+    return null;
+  }
+  if (parsed.pscp) {
+    return parsed.id;
+  }
+  if (parsed.kind == 'broadcasts' || parsed.kind == 'broadcast') {
+    return parsed.id;
+  }
+  return null;
+}
+
+/// Canonical watch URL for a broadcast id.
+String broadcastUrlFor(String id) => 'https://x.com/i/broadcasts/$id';
+
+/// First broadcast id found in free text, or null.
+String? broadcastIdInText(String? text) =>
+    _firstIdInText(text, broadcastIdIn, _broadcastTextPattern);
+
+/// The Space id in an `x.com/i/spaces/…` (or `/i/space/…`) link, or null.
+///
+/// Live audio rooms use this URL. Same hosts and scheme-less display URLs as
+/// broadcasts; truncated display URLs are rejected.
+String? spaceIdIn(String? url) {
+  final parsed = _liveLink(url);
+  if (parsed == null || parsed.pscp) {
+    return null;
+  }
+  if (parsed.kind == 'spaces' || parsed.kind == 'space') {
+    return parsed.id;
+  }
+  return null;
+}
+
+/// Canonical listen URL for a Space id.
+String spaceUrlFor(String id) => 'https://x.com/i/spaces/$id';
+
+/// First Space id found in free text, or null.
+String? spaceIdInText(String? text) =>
+    _firstIdInText(text, spaceIdIn, _spaceTextPattern);
+
+final _broadcastTextPattern = RegExp(
+  r'(?:https?://)?(?:(?:www|mobile)\.)?(?:x\.com|twitter\.com)/i/broadcasts?/\S+'
+  r'|https?://(?:www\.)?(?:pscp|periscope)\.tv/w/\S+',
+  caseSensitive: false,
+);
+
+final _spaceTextPattern = RegExp(
+  r'(?:https?://)?(?:(?:www|mobile)\.)?(?:x\.com|twitter\.com)/i/spaces?/\S+',
+  caseSensitive: false,
+);
+
+String? _firstIdInText(
+  String? text,
+  String? Function(String?) parse,
+  RegExp pattern,
+) {
+  if (text == null || text.isEmpty) {
+    return null;
+  }
+  for (final match in pattern.allMatches(text)) {
+    final id = parse(match.group(0));
+    if (id != null) {
+      return id;
+    }
+  }
+  return null;
+}
+
+class _LiveLink {
+  final String id;
+  final String kind;
+  final bool pscp;
+  const _LiveLink({required this.id, required this.kind, this.pscp = false});
+}
+
+/// Parse an X live/Space/broadcast URL. Truncated display URLs return null.
+_LiveLink? _liveLink(String? url) {
   if (url == null || url.isEmpty) {
     return null;
   }
-
-  final uri = Uri.tryParse(url);
-  if (uri == null || !_xHosts.contains(uri.host)) {
+  var trimmed = url.trim().replaceAll(RegExp(r'[.,);]+$'), '');
+  if (trimmed.contains('…') || trimmed.contains('...')) {
     return null;
   }
-
+  if (!trimmed.contains('://')) {
+    trimmed = 'https://$trimmed';
+  }
+  final uri = Uri.tryParse(trimmed);
+  if (uri == null) {
+    return null;
+  }
+  final host = uri.host.toLowerCase();
   final parts = uri.pathSegments.where((e) => e.isNotEmpty).toList(growable: false);
-  if (parts.length < 3 || parts[0] != 'i' || parts[1] != 'broadcasts') {
+
+  if (host == 'pscp.tv' ||
+      host == 'www.pscp.tv' ||
+      host == 'periscope.tv' ||
+      host == 'www.periscope.tv') {
+    if (parts.length >= 2 && parts[0] == 'w' && parts[1].isNotEmpty) {
+      return _LiveLink(id: parts[1], kind: 'pscp', pscp: true);
+    }
     return null;
   }
 
-  return parts[2];
+  if (!_xHosts.contains(host)) {
+    return null;
+  }
+  if (parts.length < 3 || parts[0] != 'i' || parts[2].isEmpty) {
+    return null;
+  }
+  return _LiveLink(id: parts[2], kind: parts[1]);
 }
 
 bool _isTrackingParam(String key, bool isXHost) =>

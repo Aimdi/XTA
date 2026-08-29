@@ -7,6 +7,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/_follows.dart';
 import 'package:xta/profile/_media_grid.dart';
+import 'package:xta/profile/archive_filter.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/_saved.dart';
 import 'package:xta/profile/_tweets.dart';
@@ -126,7 +127,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   MediaFilter _mediaFilter = MediaFilter.all;
   PostsFilter _postsFilter = PostsFilter.all;
-  bool _hasBroadcasts = false;
+  ArchiveFilter _archiveFilter = ArchiveFilter.all;
 
   bool _showBackToTopButton = false;
 
@@ -316,7 +317,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                 trailing: t.id == ProfileTabs.media
                                     ? _MediaFilterButton(
                                         value: _mediaFilter,
-                                        includeBroadcasts: _hasBroadcasts,
                                         onChanged: (filter) => setState(() => _mediaFilter = filter),
                                       )
                                     : t.id == ProfileTabs.posts
@@ -324,7 +324,12 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                             value: _postsFilter,
                                             onChanged: (filter) => setState(() => _postsFilter = filter),
                                           )
-                                        : null,
+                                        : t.id == ProfileTabs.saved
+                                            ? _ArchiveFilterButton(
+                                                value: _archiveFilter,
+                                                onChanged: (filter) => setState(() => _archiveFilter = filter),
+                                              )
+                                            : null,
                               )),
                           ],
                           dividerColor: theme.colorScheme.surfaceBright.withAlpha(150),
@@ -691,13 +696,8 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                   user: user,
                   pref: prefs,
                   filter: _mediaFilter,
-                  onBroadcastsFound: (found) {
-                    if (found && !_hasBroadcasts) {
-                      setState(() => _hasBroadcasts = true);
-                    }
-                  },
                 ),
-                ProfileSaved(user: user),
+                ProfileSaved(user: user, filter: _archiveFilter),
               ],
             ),
           ),
@@ -786,13 +786,11 @@ class _ProfileTabLabel extends StatelessWidget {
 /// tapping the tab still returns the grid to the top, as every other tab does.
 class _MediaFilterButton extends StatelessWidget {
   final MediaFilter value;
-  final bool includeBroadcasts;
   final ValueChanged<MediaFilter> onChanged;
 
   const _MediaFilterButton({
     required this.value,
     required this.onChanged,
-    this.includeBroadcasts = false,
   });
 
   String _labelFor(BuildContext context, MediaFilter filter) => switch (filter) {
@@ -811,17 +809,13 @@ class _MediaFilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = [
-      for (final filter in MediaFilter.values)
-        if (filter != MediaFilter.broadcasts || includeBroadcasts || value == filter) filter,
-    ];
     return PopupMenuButton<MediaFilter>(
       initialValue: value,
       onSelected: onChanged,
       tooltip: L10n.of(context).media,
       padding: EdgeInsets.zero,
       itemBuilder: (context) => [
-        for (final filter in options)
+        for (final filter in MediaFilter.values)
           PopupMenuItem(
             value: filter,
             child: Row(
@@ -890,6 +884,57 @@ class _PostsFilterButton extends StatelessWidget {
           Icons.expand_more,
           size: 18,
           color: value == PostsFilter.all ? null : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// The chevron on the selected Archive tab: all / likes / bookmarks.
+class _ArchiveFilterButton extends StatelessWidget {
+  final ArchiveFilter value;
+  final ValueChanged<ArchiveFilter> onChanged;
+
+  const _ArchiveFilterButton({required this.value, required this.onChanged});
+
+  String _labelFor(BuildContext context, ArchiveFilter filter) => switch (filter) {
+        ArchiveFilter.all => L10n.of(context).all,
+        ArchiveFilter.likes => L10n.of(context).favorites,
+        ArchiveFilter.bookmarks => L10n.of(context).plugin_category_bookmarks,
+      };
+
+  IconData _iconFor(ArchiveFilter filter) => switch (filter) {
+        ArchiveFilter.all => Icons.inventory_2_outlined,
+        ArchiveFilter.likes => Icons.favorite_border,
+        ArchiveFilter.bookmarks => Icons.bookmark_border,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<ArchiveFilter>(
+      initialValue: value,
+      onSelected: onChanged,
+      tooltip: L10n.of(context).saved,
+      padding: EdgeInsets.zero,
+      itemBuilder: (context) => [
+        for (final filter in ArchiveFilter.values)
+          PopupMenuItem(
+            value: filter,
+            child: Row(
+              children: [
+                Icon(_iconFor(filter), size: 20),
+                const SizedBox(width: 12),
+                Text(_labelFor(context, filter)),
+              ],
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Icon(
+          Icons.expand_more,
+          size: 18,
+          color: value == ArchiveFilter.all ? null : Theme.of(context).colorScheme.primary,
         ),
       ),
     );

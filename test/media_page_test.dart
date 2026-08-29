@@ -141,9 +141,124 @@ void main() {
       ]);
       expect(broadcast, hasLength(1));
       expect(broadcast.single, isA<BroadcastGridItem>());
+      expect((broadcast.single as BroadcastGridItem).broadcastId, '1abc');
+      expect(
+        (broadcast.single as BroadcastGridItem).broadcastUrl,
+        'https://x.com/i/broadcasts/1abc',
+      );
       expect(MediaFilter.videos.accepts(broadcast.single), isFalse);
       expect(MediaFilter.broadcasts.accepts(broadcast.single), isTrue);
       expect(MediaFilter.all.accepts(broadcast.single), isTrue);
+    });
+
+    test('UserMedia video whose expanded_url is the broadcast is not a clip', () {
+      final tweet = TweetWithCard();
+      tweet.idStr = 'vod1';
+      tweet.user = User.fromJson({'id_str': 'u1', 'screen_name': 'someone'});
+      tweet.extendedEntities = Entities.fromJson({
+        'media': [
+          {
+            'type': 'video',
+            'media_url_https': 'https://pbs.example/vod.jpg',
+            'expanded_url': 'https://x.com/i/broadcasts/1usermedia',
+            'sizes': {
+              'large': {'w': 16, 'h': 9},
+            },
+            'video_info': {
+              'aspect_ratio': [16, 9],
+            },
+          },
+        ],
+      });
+      final items = mediaItemsFromChains([
+        TweetChain(id: 'vod1', tweets: [tweet], isPinned: false),
+      ]);
+      expect(items, hasLength(1));
+      expect(items.single, isA<BroadcastGridItem>());
+      expect((items.single as BroadcastGridItem).broadcastId, '1usermedia');
+      expect(MediaFilter.videos.accepts(items.single), isFalse);
+    });
+
+    test('a card-only broadcast still gets a tile', () {
+      final tweet = TweetWithCard();
+      tweet.idStr = 'c1';
+      tweet.user = User.fromJson({'id_str': 'u1', 'screen_name': 'someone'});
+      tweet.card = {
+        'name': '745291183405076480:broadcast',
+        'binding_values': {
+          'broadcast_id': {'string_value': '1solo'},
+          'broadcast_thumbnail': {
+            'image_value': {'url': 'https://pbs.example/live.jpg'},
+          },
+        },
+      };
+      final items = mediaItemsFromChains([
+        TweetChain(id: 'c1', tweets: [tweet], isPinned: false),
+      ]);
+      expect(items, hasLength(1));
+      expect(items.single, isA<BroadcastGridItem>());
+      expect((items.single as BroadcastGridItem).broadcastId, '1solo');
+    });
+
+    test('a spaces link on a video is a live tile, not a clip', () {
+      final tweet = TweetWithCard();
+      tweet.idStr = 's1';
+      tweet.user = User.fromJson({'id_str': 'u1', 'screen_name': 'someone'});
+      tweet.entities = Entities.fromJson({
+        'urls': [
+          {
+            'url': 'https://t.co/s',
+            'expanded_url': 'https://x.com/i/spaces/1room',
+            'display_url': 'x.com/i/spaces/1room',
+            'indices': [0, 23],
+          }
+        ]
+      });
+      tweet.extendedEntities = Entities.fromJson({
+        'media': [
+          {
+            'type': 'video',
+            'media_url_https': 'https://pbs.example/s.jpg',
+            'sizes': {
+              'large': {'w': 16, 'h': 9}
+            },
+            'video_info': {
+              'aspect_ratio': [16, 9]
+            },
+          }
+        ]
+      });
+      final items = mediaItemsFromChains([
+        TweetChain(id: 's1', tweets: [tweet], isPinned: false),
+      ]);
+      expect(items, hasLength(1));
+      expect(items.single, isA<BroadcastGridItem>());
+      expect((items.single as BroadcastGridItem).spaceId, '1room');
+      expect((items.single as BroadcastGridItem).watchUrl, 'https://x.com/i/spaces/1room');
+      expect(MediaFilter.videos.accepts(items.single), isFalse);
+      expect(MediaFilter.broadcasts.accepts(items.single), isTrue);
+    });
+
+    test('a card-only Space still gets a tile', () {
+      final tweet = TweetWithCard();
+      tweet.idStr = 's2';
+      tweet.user = User.fromJson({'id_str': 'u1', 'screen_name': 'someone'});
+      tweet.card = {
+        'name': '326813241626781184:audiospace',
+        'binding_values': {
+          'id': {'string_value': '1soloSpace'},
+          'thumbnail_image': {
+            'image_value': {'url': 'https://pbs.example/space.jpg'},
+          },
+        },
+      };
+      final items = mediaItemsFromChains([
+        TweetChain(id: 's2', tweets: [tweet], isPinned: false),
+      ]);
+      expect(items, hasLength(1));
+      expect(items.single, isA<BroadcastGridItem>());
+      expect((items.single as BroadcastGridItem).spaceId, '1soloSpace');
+      expect((items.single as BroadcastGridItem).watchUrl, 'https://x.com/i/spaces/1soloSpace');
     });
   });
 

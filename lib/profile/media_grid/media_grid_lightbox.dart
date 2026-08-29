@@ -4,6 +4,8 @@ import 'package:xta/constants.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/broadcasts.dart';
+import 'package:xta/utils/urls.dart';
 
 /// Fullscreen swipeable viewer paging across all loaded items of a media
 /// grid, with an "open post" escape hatch to the tweet a page belongs to.
@@ -92,5 +94,40 @@ void openMediaLightbox(BuildContext context,
       builder: (_) =>
           MediaGridLightbox(controller: controller, staticItems: staticItems, initialIndex: initialIndex),
     ),
+  );
+}
+
+/// Broadcasts open `x.com/i/broadcasts/{id}`. Spaces open `x.com/i/spaces/{id}`.
+void openMediaGridItem(
+  BuildContext context, {
+  required MediaGridItem item,
+  required int index,
+  PagingController<int, MediaGridItem>? controller,
+  List<MediaGridItem> staticItems = const [],
+}) {
+  if (item is BroadcastGridItem) {
+    final url = item.watchUrl ??
+        (item.tweet == null ? null : liveUrlOf(item.tweet!));
+    if (url != null) {
+      openUri(context, url);
+      return;
+    }
+    Navigator.pushNamed(
+      context,
+      routeStatus,
+      arguments: StatusScreenArguments(
+        id: item.tweetId,
+        username: item.username,
+        tweetOpened: true,
+        initialTweet: item.tweet,
+      ),
+    );
+    return;
+  }
+  openMediaLightbox(
+    context,
+    controller: controller,
+    staticItems: staticItems,
+    initialIndex: index,
   );
 }

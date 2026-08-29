@@ -52,6 +52,65 @@ void main() {
     expect(isBroadcastCard({'name': 'player'}), isFalse);
   });
 
+  test('a broadcast_url on the card is enough, even without the name', () {
+    final tweet = _tweet(
+      card: {
+        'binding_values': {
+          'broadcast_url': {
+            'string_value': 'https://x.com/i/broadcasts/1card',
+          },
+          'broadcast_thumbnail': {
+            'image_value': {'url': 'https://pbs.example/thumb.jpg'},
+          },
+        },
+      },
+    );
+    expect(broadcastIdOf(tweet), '1card');
+    expect(tweetHasBroadcast(tweet), isTrue);
+    expect(broadcastUrlOf(tweet), 'https://x.com/i/broadcasts/1card');
+    expect(broadcastThumbnailFromCard(tweet.card), 'https://pbs.example/thumb.jpg');
+  });
+
+  test('the link in the post body counts when entities omit it', () {
+    final tweet = TweetWithCard();
+    tweet.idStr = '1';
+    tweet.fullText = 'live at https://x.com/i/broadcast/1txt';
+    expect(broadcastIdOf(tweet), '1txt');
+  });
+
+  test('a video whose expanded_url is the broadcast link is a broadcast', () {
+    final tweet = TweetWithCard();
+    tweet.idStr = '1';
+    tweet.extendedEntities = Entities.fromJson({
+      'media': [
+        {
+          'type': 'video',
+          'media_url_https': 'https://pbs.example/1.jpg',
+          'expanded_url': 'https://x.com/i/broadcasts/1vod',
+          'display_url': 'x.com/i/broadcasts/1vod',
+        },
+      ],
+    });
+    expect(broadcastIdOf(tweet), '1vod');
+    expect(tweetHasBroadcast(tweet), isTrue);
+  });
+
+  test('GraphQL list-shaped card bindings still yield the id', () {
+    final tweet = _tweet(
+      card: {
+        'binding_values': [
+          {
+            'key': 'broadcast_url',
+            'value': {
+              'string_value': 'https://x.com/i/broadcasts/1list',
+            },
+          },
+        ],
+      },
+    );
+    expect(broadcastIdOf(tweet), '1list');
+  });
+
   test('an ordinary post is not a broadcast', () {
     expect(tweetHasBroadcast(_tweet()), isFalse);
   });
@@ -59,5 +118,37 @@ void main() {
   test('video media is detected separately from the link', () {
     expect(tweetHasVideoMedia(_tweet(video: true)), isTrue);
     expect(tweetHasVideoMedia(_tweet()), isFalse);
+  });
+
+  test('a spaces URL marks the tweet as a Space', () {
+    final tweet = _tweet(broadcastUrl: 'https://x.com/i/spaces/1room');
+    expect(tweetHasSpace(tweet), isTrue);
+    expect(tweetHasBroadcast(tweet), isFalse);
+    expect(tweetIsLive(tweet), isTrue);
+    expect(spaceIdOf(tweet), '1room');
+    expect(spaceUrlOf(tweet), 'https://x.com/i/spaces/1room');
+    expect(liveUrlOf(tweet), 'https://x.com/i/spaces/1room');
+  });
+
+  test('the audiospace card name and id mark the tweet', () {
+    final tweet = _tweet(
+      card: {
+        'name': '326813241626781184:audiospace',
+        'binding_values': {
+          'id': {'string_value': '1cardspace'},
+          'title': {'string_value': 'late night'},
+          'thumbnail_image': {
+            'image_value': {'url': 'https://pbs.example/space.jpg'},
+          },
+        },
+      },
+    );
+    expect(isAudioSpaceCard(tweet.card), isTrue);
+    expect(spaceIdOf(tweet), '1cardspace');
+    expect(tweetHasSpace(tweet), isTrue);
+    expect(
+      broadcastThumbnailFromCard(tweet.card),
+      'https://pbs.example/space.jpg',
+    );
   });
 }
