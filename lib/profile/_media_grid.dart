@@ -76,13 +76,18 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid>
       _seen.clear();
     }
 
-    return mediaPageWithLookahead(cursor, _chainsAfter, _unseenItems);
+    return mediaPageWithLookahead(
+      cursor,
+      _chainsAfter,
+      _unseenItems,
+      maxLookahead: mediaLookaheadFor(widget.filter),
+    );
   }
 
   Future<ChainPage> _chainsAfter(String? cursor) async {
     var result = await Twitter.getTweets(
       widget.user.idStr!,
-      'media',
+      mediaTimelineTypeFor(widget.filter),
       const [],
       cursor: cursor,
       count: pageSize,

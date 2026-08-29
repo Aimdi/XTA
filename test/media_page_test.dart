@@ -135,6 +135,28 @@ void main() {
       expect(items.where(MediaFilter.videos.accepts), hasLength(2));
     });
 
+    test('Livestreams reads posts, not UserMedia', () {
+      expect(mediaTimelineTypeFor(MediaFilter.broadcasts), 'profile');
+      expect(mediaTimelineTypeFor(MediaFilter.all), 'media');
+      expect(mediaTimelineTypeFor(MediaFilter.photos), 'media');
+      expect(mediaTimelineTypeFor(MediaFilter.videos), 'media');
+    });
+
+    test('Livestreams looks further because broadcasts are sparse', () {
+      expect(mediaLookaheadFor(MediaFilter.broadcasts), 12);
+      expect(mediaLookaheadFor(MediaFilter.all), 4);
+    });
+
+    test('a photo post that is a broadcast is one live tile, not a still', () {
+      final tweet = _tweetWith('p1', ['photo'], broadcast: true);
+      final items = mediaItemsFromChains([_chain(tweet)]);
+      expect(items, hasLength(1));
+      expect(items.single, isA<BroadcastGridItem>());
+      expect((items.single as BroadcastGridItem).broadcastId, '1abc');
+      expect(MediaFilter.photos.accepts(items.single), isFalse);
+      expect(MediaFilter.broadcasts.accepts(items.single), isTrue);
+    });
+
     test('a video with a broadcasts link is a broadcast, not a video', () {
       final broadcast = mediaItemsFromChains([
         _chain(_tweetWith('b', ['video'], broadcast: true)),
