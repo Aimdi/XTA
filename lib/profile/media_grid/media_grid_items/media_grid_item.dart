@@ -138,6 +138,19 @@ enum MediaFilter {
   };
 }
 
+/// Livestreams are ordinary posts with an `x.com/i/broadcasts/` (or Spaces)
+/// card. UserMedia is photos and clips and drops those posts, so filtering
+/// UserMedia for broadcasts paints an empty grid on a profile that streams
+/// a lot. Posts (`profile` → UserTweets) is where those links actually live.
+String mediaTimelineTypeFor(MediaFilter filter) =>
+    filter == MediaFilter.broadcasts ? 'profile' : 'media';
+
+/// Broadcasts are sparse on UserTweets, so the Livestreams filter looks
+/// further than photos/videos on UserMedia.
+int mediaLookaheadFor(MediaFilter filter) =>
+    filter == MediaFilter.broadcasts ? 12 : 4;
+
+
 CursorPage<String, MediaGridItem> mediaPageFromStatus(
   TweetStatus status,
   String? cursor,
@@ -192,15 +205,16 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
   final out = <MediaGridItem>[];
   for (final chain in chains) {
     for (final tweet in chain.tweets) {
-      final medias = tweet.extendedEntities?.media;
       final tweetId = tweet.idStr;
       final username = tweet.user?.screenName;
       if (tweetId == null || username == null) continue;
-      if (medias == null || medias.isEmpty) {
-        final cardOnly = _broadcastItemFromCard(tweet, tweetId, username);
-        if (cardOnly != null) out.add(cardOnly);
+      if (tweetIsLive(tweet)) {
+        final live = _liveGridItem(tweet, tweetId, username);
+        if (live != null) out.add(live);
         continue;
       }
+      final medias = tweet.extendedEntities?.media;
+      if (medias == null || medias.isEmpty) continue;
       for (var i = 0; i < medias.length; i++) {
         final item = _itemFor(medias[i], tweetId, username, i, tweet);
         if (item != null) out.add(item);
@@ -210,8 +224,12 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
   return out;
 }
 
-/// Live video / Spaces posts that carry the card but no native video.
-MediaGridItem? _broadcastItemFromCard(
+/// One Livestreams tile for a broadcast/Space post.
+///
+/// Prefers a native video thumb, then a still, then the card image. A live
+/// post that also carries photos must not fall through to PhotoGridItem —
+/// those would vanish when the Livestreams filter runs.
+MediaGridItem? _liveGridItem(
   TweetWithCard tweet,
   String tweetId,
   String username,
@@ -219,24 +237,45 @@ MediaGridItem? _broadcastItemFromCard(
   if (!tweetIsLive(tweet)) {
     return null;
   }
-  final thumb = broadcastThumbnailFromCard(tweet.card) ?? '';
-  final media = Media.fromJson({
-    'id_str': tweetId,
-    'type': 'video',
-    'media_url_https': thumb.isEmpty ? 'https://abs.twimg.com/favicons/twitter-blue.ico' : thumb,
-    'sizes': {
-      'large': {'w': 16, 'h': 9},
-    },
-    'video_info': {
-      'aspect_ratio': [16, 9],
-    },
-  });
+  final medias = tweet.extendedEntities?.media ?? const <Media>[];
+  Media? thumbMedia;
+  for (final m in medias) {
+    if (m.type == 'video' && m.mediaUrlHttps != null) {
+      thumbMedia = m;
+      break;
+    }
+  }
+  if (thumbMedia == null) {
+    for (final m in medias) {
+      if (m.mediaUrlHttps != null) {
+        thumbMedia = m;
+        break;
+      }
+    }
+  }
+  final thumb = thumbMedia?.mediaUrlHttps ??
+      broadcastThumbnailFromCard(tweet.card) ??
+      '';
+  final media = thumbMedia ??
+      Media.fromJson({
+        'id_str': tweetId,
+        'type': 'video',
+        'media_url_https': thumb.isEmpty
+            ? 'https://abs.twimg.com/favicons/twitter-blue.ico'
+            : thumb,
+        'sizes': {
+          'large': {'w': 16, 'h': 9},
+        },
+        'video_info': {
+          'aspect_ratio': [16, 9],
+        },
+      });
   return BroadcastGridItem(
     tweet: tweet,
     tweetId: tweetId,
     username: username,
     thumbnailUrl: thumb,
-    aspectRatio: 16 / 9,
+    aspectRatio: thumbMedia != null ? _aspectRatioFor(thumbMedia) : 16 / 9,
     mediaIndex: 0,
     media: media,
     broadcastId: broadcastIdOf(tweet),
