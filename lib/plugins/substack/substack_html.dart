@@ -176,6 +176,65 @@ String buildSubstackSpeakText({
   return parts.join('\n\n');
 }
 
+/// Long-press a paragraph → post the rest of the article to [XtaTts].
+///
+/// The reader screen installs that channel. Body HTML is still stripped of
+/// scripts and `on*` handlers; this is the only script on the page.
+const substackTtsFromHereJs = r'''
+(function(){
+  if (window.__xtaTtsFromHere) return;
+  window.__xtaTtsFromHere = true;
+  function post(text){
+    if (!text || !window.XtaTts || !XtaTts.postMessage) return;
+    XtaTts.postMessage(text);
+  }
+  function blockOf(node){
+    var n = node && node.nodeType === 3 ? node.parentElement : node;
+    while (n && n !== document.body) {
+      var t = n.tagName;
+      if (t && /^(P|H1|H2|H3|H4|H5|H6|LI|BLOCKQUOTE|PRE|FIGCAPTION)$/.test(t)) return n;
+      if (n.classList && (n.classList.contains('title') || n.classList.contains('subtitle'))) return n;
+      n = n.parentElement;
+    }
+    return node;
+  }
+  function fromHere(el){
+    var root = document.querySelector('article') || document.body;
+    var blocks = root.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,.title,.subtitle');
+    var started = false;
+    var parts = [];
+    for (var i = 0; i < blocks.length; i++) {
+      var b = blocks[i];
+      if (b === el || b.contains(el) || (el && el.contains && el.contains(b))) started = true;
+      if (started) {
+        var t = (b.innerText || '').trim();
+        if (t) parts.push(t);
+      }
+    }
+    if (!parts.length) {
+      var all = (root.innerText || '').trim();
+      var needle = ((el && el.innerText) || '').trim().slice(0, 80);
+      var at = needle ? all.indexOf(needle) : -1;
+      post(at >= 0 ? all.slice(at) : (needle || all));
+      return;
+    }
+    post(parts.join('\n\n'));
+  }
+  var timer = 0;
+  document.addEventListener('touchstart', function(e){
+    if (e.touches.length !== 1) return;
+    var target = e.target;
+    timer = setTimeout(function(){ fromHere(blockOf(target)); }, 450);
+  }, {passive:true});
+  document.addEventListener('touchend', function(){ clearTimeout(timer); });
+  document.addEventListener('touchmove', function(){ clearTimeout(timer); });
+  document.addEventListener('contextmenu', function(e){
+    e.preventDefault();
+    fromHere(blockOf(e.target));
+  });
+})();
+''';
+
 String wrapSubstackHtml({
   required String title,
   required String body,
@@ -333,6 +392,7 @@ String wrapSubstackHtml({
     font-size: 0.9em;
   }
   .preview-end p { margin: 0.4em 0; }
+  body { -webkit-touch-callout: none; }
 </style>
 </head>
 <body>
@@ -343,6 +403,7 @@ String wrapSubstackHtml({
     <div class="content">$cleanBody</div>
     ${_footerHtml(footer, footerLink, footerLinkLabel)}
   </article>
+  <script>$substackTtsFromHereJs</script>
 </body>
 </html>
 ''';

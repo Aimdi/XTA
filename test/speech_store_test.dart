@@ -39,6 +39,35 @@ void main() {
     });
   });
 
+  group('starting Vorlesen from a held paragraph', () {
+    const article = 'Title\n\nAuthor\n\nFirst paragraph is here.\n\nSecond paragraph follows.';
+
+    test('starts at the held paragraph and keeps the rest', () {
+      expect(
+        textFromHere(article, 'Second paragraph follows.'),
+        'Second paragraph follows.',
+      );
+    });
+
+    test('starts at a needle in the middle of the article', () {
+      expect(
+        textFromHere(article, 'First paragraph is here.'),
+        'First paragraph is here.\n\nSecond paragraph follows.',
+      );
+    });
+
+    test('uses the remainder the web view sent when the article does not match', () {
+      expect(
+        textFromHere(article, 'A paragraph only in the page'),
+        'A paragraph only in the page',
+      );
+    });
+
+    test('empty needle keeps the whole article', () {
+      expect(textFromHere(article, '  '), article);
+    });
+  });
+
   group('what the bar is told', () {
     test('nothing is playing to begin with', () {
       expect(SpeechPlayback.idle.speaking, isFalse);

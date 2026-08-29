@@ -56,12 +56,18 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
     // Seed speech from whatever we already know — title and excerpt — so Listen
     // is available before the body finishes loading.
     _speakText = _fallbackSpeakText(_post);
-    // Off until something needs it. The article this screen usually shows is a
-    // page we build ourselves out of prose, and prose does not need scripting;
-    // the live site fallback below turns it back on because a real website
-    // does.
+    // Scripting is on only so a long-press can tell us which paragraph to
+    // start Vorlesen from. Post HTML is still stripped of <script> and on*
+    // handlers before it is loaded.
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.disabled);
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
+    _controller.addJavaScriptChannel(
+      'XtaTts',
+      onMessageReceived: (message) {
+        if (!mounted) return;
+        _speakFromHere(message.message);
+      },
+    );
     _stopSpinnerWhenLoaded();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SubstackReadStore>().markRead(_post.id);
@@ -166,6 +172,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
           setState(() => _loading = false);
           if (extractLiveText) {
             await _extractLiveSpeakText();
+            try {
+              await _controller.runJavaScript(substackTtsFromHereJs);
+            } catch (_) {}
           }
         },
       ),
@@ -284,9 +293,9 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
             : null,
       );
 
-      // Explicit rather than assumed: a retry after the live-site fallback
-      // would otherwise render the article with scripting still on.
-      await _controller.setJavaScriptMode(JavaScriptMode.disabled);
+      // Article HTML is sanitized; JS stays on so a long-press can start
+      // Vorlesen from that paragraph.
+      await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
       await _controller.loadHtmlString(page);
       if (mounted) setState(() {});
       return;
@@ -342,6 +351,27 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
     final spoke = await speech.speak(
       title: _post.title,
       text: text,
+      choice: choice,
+    );
+    if (!spoke && mounted) {
+      await _onTtsFailed(speech, choice);
+    }
+  }
+
+  Future<void> _speakFromHere(String needle) async {
+    if (!mounted) return;
+    final speech = context.read<SpeechStore>();
+    final from = textFromHere(_speakText ?? '', needle);
+    if (from.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(L10n.of(context).plugin_substack_tts_no_text)),
+      );
+      return;
+    }
+    final choice = readTtsChoice(PrefService.of(context, listen: false));
+    final spoke = await speech.speak(
+      title: _post.title,
+      text: from,
       choice: choice,
     );
     if (!spoke && mounted) {

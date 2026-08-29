@@ -53,8 +53,18 @@ class SpeechStore extends Store<SpeechPlayback> {
     : _tts = tts ?? FlutterTts(),
       super(SpeechPlayback.idle) {
     _tts.awaitSpeakCompletion(true);
-    _tts.setCancelHandler(_finished);
-    _tts.setErrorHandler((_) => _finished());
+    // stop() already clears the bar. Treating platform cancel as "finished"
+    // raced the next speak(): a leftover cancel from the previous stop killed
+    // the new reading before the first chunk, which is why Vorlesen sometimes
+    // did nothing.
+    _tts.setCancelHandler(() {});
+    _tts.setErrorHandler((_) {
+      final seen = _generation;
+      Future<void>.microtask(() {
+        if (seen != _generation) return;
+        _finished();
+      });
+    });
   }
 
   /// Exposed for the voice picker, which has to ask the platform what it can
@@ -63,7 +73,9 @@ class SpeechStore extends Store<SpeechPlayback> {
 
   void _finished() {
     audioHandler?.clearSession();
-    update(SpeechPlayback.idle);
+    if (state.speaking) {
+      update(SpeechPlayback.idle);
+    }
   }
 
   /// Reads [text] aloud, replacing whatever was being read.
@@ -96,7 +108,7 @@ class SpeechStore extends Store<SpeechPlayback> {
 
     await _prepareSpeechAudio();
 
-    final generation = ++_generation;
+    final generation = _generation;
     // Bind a lockscreen stop control, but do not mark the media session
     // playing: that requests exclusive AUDIOFOCUS_GAIN and mutes Sherpa,
     // which speaks from another process.
@@ -112,13 +124,20 @@ class SpeechStore extends Store<SpeechPlayback> {
     update(SpeechPlayback(title: title, speaking: true));
 
     try {
+      var first = true;
       for (final chunk in chunks) {
         if (generation != _generation) {
           return true;
         }
-        final result = await _tts.speak(chunk, focus: true);
-        if (result == 0 || result == false) {
-          // Platform reported failure to queue the utterance.
+        var result = await _queueUtterance(chunk);
+        if (_speakFailed(result) && first && generation == _generation) {
+          // Engine sometimes refuses the first queue after setEngine.
+          await _applyVoice(choice);
+          await _prepareSpeechAudio();
+          result = await _queueUtterance(chunk);
+        }
+        first = false;
+        if (_speakFailed(result)) {
           if (generation == _generation) {
             _finished();
           }
@@ -136,6 +155,14 @@ class SpeechStore extends Store<SpeechPlayback> {
       _finished();
     }
     return true;
+  }
+
+  Future<dynamic> _queueUtterance(String chunk) async {
+    try {
+      return await _tts.speak(chunk, focus: true);
+    } catch (_) {
+      return await _tts.speak(chunk);
+    }
   }
 
   Future<void> stop() async {
@@ -182,6 +209,31 @@ class SpeechStore extends Store<SpeechPlayback> {
       // Tests and desktop have no session; speaking still works.
     }
   }
+}
+
+bool _speakFailed(dynamic result) => result == 0 || result == false;
+
+/// The rest of [full] starting at [needle] (a paragraph the reader held).
+///
+/// If the needle is not in the article, the needle itself is what to speak —
+/// the web view already sent the remainder from that block.
+String textFromHere(String full, String needle) {
+  final clip = needle.trim();
+  final hay = full.trim();
+  if (clip.isEmpty) return hay;
+  if (hay.isEmpty) return clip;
+
+  var i = hay.indexOf(clip);
+  if (i < 0) {
+    final line = clip.split(RegExp(r'\n+')).first.trim();
+    if (line.length >= 12) i = hay.indexOf(line);
+  }
+  if (i < 0) {
+    final short = clip.length > 48 ? clip.substring(0, 48) : clip;
+    i = hay.indexOf(short);
+  }
+  if (i <= 0) return i == 0 ? hay : clip;
+  return hay.substring(i);
 }
 
 /// Splits text into utterances the platform will actually finish.
