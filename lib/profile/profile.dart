@@ -158,6 +158,18 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
       descriptionHeight = 0;
       descriptionResized = true;
     }
+
+    // MeasureSize sometimes never fires (header not laid out yet). The overlay
+    // used to cover the profile forever. Drop it after one frame-plus so the
+    // posts tab can paint even if the header is still measuring.
+    Future<void>.delayed(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      if (descriptionResized && metadataResized) return;
+      setState(() {
+        descriptionResized = true;
+        metadataResized = true;
+      });
+    });
   }
 
   @override

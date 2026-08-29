@@ -531,6 +531,22 @@ class _StatusScreenState extends State<_StatusScreen> {
   }
 
   Widget _buildFlatList(BuildContext context, PagingState<int, TweetChain> state, NextPageCallback fetchNextPage) {
+    if (pagingAwaitingFirstPage(state)) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (state.items == null) {
+      return FullPageErrorWidget(
+        error: pagingErrorOf(state)?.error,
+        stackTrace: pagingErrorOf(state)?.stackTrace,
+        prefix: L10n.of(context).unable_to_load_the_tweet,
+        onRetry: fetchNextPage,
+      );
+    }
+    if (state.items!.isEmpty) {
+      return Center(
+        child: Text(L10n.of(context).could_not_find_any_tweets_by_this_user),
+      );
+    }
     return PagedListView<int, TweetChain>(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
       state: state,
@@ -539,25 +555,12 @@ class _StatusScreenState extends State<_StatusScreen> {
       addAutomaticKeepAlives: false,
       builderDelegate: PagedChildBuilderDelegate(
         itemBuilder: (context, chain, index) => _conversationTile(context, chain, index),
-        firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-          error: pagingErrorOf(state)?.error,
-          stackTrace: pagingErrorOf(state)?.stackTrace,
-          prefix: L10n.of(context).unable_to_load_the_tweet,
-          onRetry: fetchNextPage,
-        ),
         newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
           error: pagingErrorOf(state)?.error,
           stackTrace: pagingErrorOf(state)?.stackTrace,
           prefix: L10n.of(context).unable_to_load_the_next_page_of_replies,
           onRetry: fetchNextPage,
         ),
-        noItemsFoundIndicatorBuilder: (context) {
-          return Center(
-            child: Text(
-              L10n.of(context).could_not_find_any_tweets_by_this_user,
-            ),
-          );
-        },
         noMoreItemsIndicatorBuilder: (_) => _threadEndIndicator(context),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 /// Carries an error together with its stack trace through
@@ -19,6 +20,45 @@ class PagingError implements Exception {
 PagingError? pagingErrorOf(PagingState state) {
   final error = state.error;
   return error is PagingError ? error : null;
+}
+
+/// True while the first page has not arrived and has not failed.
+bool pagingAwaitingFirstPage(PagingState state) =>
+    state.items == null && state.error == null;
+
+/// PagedListView fetches page 0 when it mounts. Kick that ourselves when the
+/// list is not mounted yet — a skeleton, or a TabBarView first-page slot.
+void scheduleFirstPageFetch<PageKeyType, ItemType>(
+  PagingController<PageKeyType, ItemType> controller, {
+  required bool alreadyStarted,
+  required VoidCallback markStarted,
+  required bool Function() isMounted,
+}) {
+  if (alreadyStarted) return;
+  if (!pagingAwaitingFirstPage(controller.value)) return;
+  markStarted();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (isMounted()) controller.fetchNextPage();
+  });
+}
+
+/// Scrollable stand-in used instead of PagedListView's first-page slot.
+///
+/// That slot is a [SliverFillRemaining] and freezes inside NestedScrollView /
+/// TabBarView. A real ListView is pull-to-refreshable and is the single inner
+/// scrollable NestedScrollView expects.
+Widget pagingFill({required Widget child}) {
+  return LayoutBuilder(
+    builder: (context, constraints) => ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: constraints.hasBoundedHeight ? constraints.maxHeight : 200,
+          child: child,
+        ),
+      ],
+    ),
+  );
 }
 
 /// One fetched page: the items to append and the cursor for the *next* page.

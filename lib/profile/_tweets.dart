@@ -41,12 +41,13 @@ class ProfileTweets extends StatefulWidget {
 class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveClientMixin<ProfileTweets> {
   static final log = Logger('ProfileTweets');
 
-  late final CursorPagingController<String, TweetChain> _paging;
+  late CursorPagingController<String, TweetChain> _paging;
   PagingController<int, TweetChain> get _pagingController => _paging.pagingController;
 
   static const int pageSize = 20;
   int loadTweetsCounter = 0;
   bool _bypassCache = false;
+  bool _firstLoadStarted = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -63,6 +64,7 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
     if (widget.filter != oldWidget.filter) {
       _paging.dispose();
       loadTweetsCounter = 0;
+      _firstLoadStarted = false;
       _paging = CursorPagingController<String, TweetChain>(_fetchPage);
     }
   }
@@ -71,6 +73,15 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   void dispose() {
     _paging.dispose();
     super.dispose();
+  }
+
+  void _maybeStartFirstLoad() {
+    scheduleFirstPageFetch(
+      _pagingController,
+      alreadyStarted: _firstLoadStarted,
+      markStarted: () => _firstLoadStarted = true,
+      isMounted: () => mounted,
+    );
   }
 
   void incrementLoadTweetsCounter() {
@@ -153,6 +164,7 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _maybeStartFirstLoad();
 
     return SensitiveMediaGate(
       sensitive: widget.user.possiblySensitive ?? false,
@@ -165,47 +177,58 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
         },
         child: PagingListener<int, TweetChain>(
           controller: _pagingController,
-          builder: (context, state, fetchNextPage) => PagedListView<int, TweetChain>(
-            padding: EdgeInsets.zero,
-            state: state,
-            fetchNextPage: fetchNextPage,
-            addAutomaticKeepAlives: false,
-            builderDelegate: PagedChildBuilderDelegate(
-              itemBuilder: (context, chain, index) {
-                // Keyed by chain id so a refreshed page gives each changed
-                // conversation a fresh state instead of recycling the one that
-                // happened to sit at the same index.
-                return TweetConversation(
-                    key: ValueKey(chain.id),
-                    id: chain.id,
-                    tweets: chain.tweets,
-                    username: widget.user.screenName!,
-                    isPinned: chain.isPinned);
-              },
-              firstPageProgressIndicatorBuilder: (context) =>
-                  const TweetFeedSkeleton(primary: false),
-              newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
-              firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+          builder: (context, state, fetchNextPage) {
+            // NestedScrollView + TabBarView freeze when PagedListView's first-page
+            // slot (SliverFillRemaining) is the inner scrollable. Show skeleton /
+            // error / empty outside it, and only mount the list once posts exist.
+            if (pagingAwaitingFirstPage(state)) {
+              return const TweetFeedSkeleton();
+            }
+            if (state.items == null) {
+              return FullPageErrorWidget(
                 error: pagingErrorOf(state)?.error,
                 stackTrace: pagingErrorOf(state)?.stackTrace,
                 prefix: L10n.of(context).unable_to_load_the_tweets,
                 onRetry: fetchNextPage,
-              ),
-              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-                onRetry: fetchNextPage,
-              ),
-              noItemsFoundIndicatorBuilder: (context) {
-                return Center(
+              );
+            }
+            if (state.items!.isEmpty) {
+              return pagingFill(
+                child: Center(
                   child: Text(
                     L10n.of(context).could_not_find_any_tweets_by_this_user,
                   ),
-                );
-              },
-            ),
-          ),
+                ),
+              );
+            }
+            return PagedListView<int, TweetChain>(
+              padding: EdgeInsets.zero,
+              state: state,
+              fetchNextPage: fetchNextPage,
+              addAutomaticKeepAlives: false,
+              builderDelegate: PagedChildBuilderDelegate(
+                itemBuilder: (context, chain, index) {
+                  // Keyed by chain id so a refreshed page gives each changed
+                  // conversation a fresh state instead of recycling the one that
+                  // happened to sit at the same index.
+                  return TweetConversation(
+                      key: ValueKey(chain.id),
+                      id: chain.id,
+                      tweets: chain.tweets,
+                      username: widget.user.screenName!,
+                      isPinned: chain.isPinned);
+                },
+                newPageProgressIndicatorBuilder: (context) =>
+                    const TweetSkeletonTile(),
+                newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+                  error: pagingErrorOf(state)?.error,
+                  stackTrace: pagingErrorOf(state)?.stackTrace,
+                  prefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+                  onRetry: fetchNextPage,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
