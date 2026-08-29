@@ -888,7 +888,7 @@ class _ArchiveFilterButton extends StatelessWidget {
   String _labelFor(BuildContext context, ArchiveFilter filter) => switch (filter) {
         ArchiveFilter.all => L10n.of(context).all,
         ArchiveFilter.likes => L10n.of(context).favorites,
-        ArchiveFilter.bookmarks => L10n.of(context).saved,
+        ArchiveFilter.bookmarks => L10n.of(context).plugin_category_bookmarks,
       };
 
   IconData _iconFor(ArchiveFilter filter) => switch (filter) {
