@@ -1,3 +1,14 @@
+## XTA aimdi114
+
+What's new in XTA aimdi114:
+  - Built on aimdi113. Not QuaX.
+  - Long-press a paragraph to start Vorlesen from there
+  - Retweets and other lists no longer freeze on the first-page spinner
+  - Reply to your own local notes
+  - Medien Livestreams: broadcasts and Spaces
+  - Profile Archive: All / Likes / Bookmarks
+  - Everything from aimdi113
+
 ## XTA aimdi113
 
 What's new in XTA aimdi113:

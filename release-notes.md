@@ -4,6 +4,18 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi114
+
+**XTA, built on aimdi113. Not QuaX.**
+
+Install **`xta-aimdi114_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 113.
+
+- Long-press a paragraph in a Substack article to start Vorlesen from there
+- Retweets no longer stick on a spinner; lists across the app stop freezing on the first page
+- Reply to your own notes. They stay on this device
+- Medien has a Livestreams filter for broadcasts (`x.com/i/broadcasts/…`) and Spaces (`x.com/i/spaces/…`)
+- Profile Archive chevron: All / Likes / Bookmarks
+
 ### aimdi113
 
 **XTA, built on aimdi111. Not QuaX.**
