@@ -108,6 +108,8 @@ class LocalPost with ToMappable {
   final List<LocalPostMedia> media;
   final String? quotedTweetId;
   final String? quotedTweetJson;
+  /// Parent note this is a reply to. Null for a top-level note. Local only.
+  final String? inReplyToId;
 
   LocalPost({
     required this.id,
@@ -117,6 +119,7 @@ class LocalPost with ToMappable {
     this.media = const [],
     this.quotedTweetId,
     this.quotedTweetJson,
+    this.inReplyToId,
   });
 
   factory LocalPost.fromMap(Map<String, Object?> map) {
@@ -128,6 +131,7 @@ class LocalPost with ToMappable {
       media: parseLocalPostMedia(map['media'] ?? map['media_json']),
       quotedTweetId: map['quoted_tweet_id'] as String?,
       quotedTweetJson: map['quoted_tweet_json'] as String?,
+      inReplyToId: _nonEmpty(map['in_reply_to_id'] as String?),
     );
   }
 
@@ -137,7 +141,9 @@ class LocalPost with ToMappable {
     List<LocalPostMedia>? media,
     String? quotedTweetId,
     String? quotedTweetJson,
+    String? inReplyToId,
     bool clearQuoted = false,
+    bool clearReply = false,
   }) {
     return LocalPost(
       id: id,
@@ -147,6 +153,7 @@ class LocalPost with ToMappable {
       media: media ?? this.media,
       quotedTweetId: clearQuoted ? null : (quotedTweetId ?? this.quotedTweetId),
       quotedTweetJson: clearQuoted ? null : (quotedTweetJson ?? this.quotedTweetJson),
+      inReplyToId: clearReply ? null : (inReplyToId ?? this.inReplyToId),
     );
   }
 
@@ -160,6 +167,7 @@ class LocalPost with ToMappable {
       'media_json': encodeLocalPostMedia(media),
       'quoted_tweet_id': quotedTweetId,
       'quoted_tweet_json': quotedTweetJson,
+      'in_reply_to_id': inReplyToId,
     };
   }
 
@@ -246,6 +254,11 @@ String encodeLocalPostMedia(List<LocalPostMedia> media) {
 
 DateTime _parseLocalPostTime(Object? value) {
   return DateTime.tryParse((value as String?) ?? '') ?? DateTime.now();
+}
+
+String? _nonEmpty(String? value) {
+  if (value == null || value.isEmpty) return null;
+  return value;
 }
 
 

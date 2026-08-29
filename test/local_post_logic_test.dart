@@ -112,6 +112,19 @@ void main() {
       });
       expect(post.media, isEmpty);
       expect(post.quotedTweetId, isNull);
+      expect(post.inReplyToId, isNull);
+    });
+
+    test('round-trips a reply id', () {
+      final at = DateTime.utc(2026, 8, 29, 3);
+      final post = LocalPost(
+        id: 'r1',
+        body: 'later',
+        createdAt: at,
+        updatedAt: at,
+        inReplyToId: 'n1',
+      );
+      expect(LocalPost.fromMap(post.toMap()).inReplyToId, 'n1');
     });
   });
 
@@ -120,6 +133,72 @@ void main() {
       expect(parseQuotedTweet(null), isNull);
       expect(parseQuotedTweet(''), isNull);
       expect(parseQuotedTweet('{'), isNull);
+    });
+  });
+
+  group('local note threads', () {
+    LocalPost note(String id, {String? reply, DateTime? at}) {
+      final time = at ?? DateTime.utc(2026, 8, 29, 3, int.tryParse(id) ?? 0);
+      return LocalPost(
+        id: id,
+        body: id,
+        createdAt: time,
+        updatedAt: time,
+        inReplyToId: reply,
+      );
+    }
+
+    test('roots skip replies whose parent is still around', () {
+      final posts = [note('a'), note('b', reply: 'a'), note('c')];
+      expect(localPostRoots(posts).map((p) => p.id), ['a', 'c']);
+    });
+
+    test('a reply whose parent is gone becomes a root', () {
+      final posts = [note('b', reply: 'missing')];
+      expect(localPostRoots(posts).single.id, 'b');
+    });
+
+    test('direct reply count ignores nested grandchildren', () {
+      final posts = [
+        note('a'),
+        note('b', reply: 'a'),
+        note('c', reply: 'b'),
+        note('d', reply: 'a'),
+      ];
+      expect(localPostDirectReplyCount(posts, 'a'), 2);
+      expect(localPostDirectReplyCount(posts, 'b'), 1);
+    });
+
+    test('thread walks replies under each parent, oldest first', () {
+      final t1 = DateTime.utc(2026, 8, 29, 3, 1);
+      final t2 = DateTime.utc(2026, 8, 29, 3, 2);
+      final t3 = DateTime.utc(2026, 8, 29, 3, 3);
+      final posts = [
+        note('a', at: t1),
+        note('c', reply: 'a', at: t3),
+        note('b', reply: 'a', at: t2),
+        note('d', reply: 'b', at: t3),
+      ];
+      final thread = localPostThread(posts, 'a');
+      expect([for (final row in thread) row.post.id], ['a', 'b', 'd', 'c']);
+      expect([for (final row in thread) row.depth], [0, 1, 2, 1]);
+    });
+
+    test('thread root walks up to the oldest living ancestor', () {
+      final posts = [
+        note('a'),
+        note('b', reply: 'a'),
+        note('c', reply: 'b'),
+      ];
+      expect(localPostThreadRootId(posts, 'c'), 'a');
+      expect(localPostThreadRootId(posts, 'a'), 'a');
+    });
+
+    test('a cycle does not hang the thread walk', () {
+      final posts = [note('a', reply: 'b'), note('b', reply: 'a')];
+      final thread = localPostThread(posts, 'a');
+      expect(thread.map((row) => row.post.id).toSet(), {'a', 'b'});
+      expect(localPostThreadRootId(posts, 'a'), 'a');
     });
   });
 }

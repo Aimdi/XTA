@@ -12,18 +12,25 @@ import 'package:xta/saved/local_post_files.dart';
 import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/tweet/tweet.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 
 class LocalPostTile extends StatelessWidget {
   final LocalPost post;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback? onReply;
+  final VoidCallback? onOpen;
+  final int replyCount;
 
   const LocalPostTile({
     super.key,
     required this.post,
     required this.onEdit,
     required this.onDelete,
+    this.onReply,
+    this.onOpen,
+    this.replyCount = 0,
   });
 
   @override
@@ -32,6 +39,7 @@ class LocalPostTile extends StatelessWidget {
     final l10n = L10n.of(context);
     final quoted = parseQuotedTweet(post.quotedTweetJson);
     final prefs = PrefService.of(context, listen: false);
+    final open = onOpen;
 
     return tweetFlatCard(
       color: theme.cardTheme.color ?? theme.colorScheme.surface,
@@ -49,7 +57,7 @@ class LocalPostTile extends StatelessWidget {
                   : l10n.local_note_author;
               final handle = account?.screenName;
               return ListTile(
-                onTap: onEdit,
+                onTap: open,
                 leading: ChromeAvatarMark(account: account, size: 48),
                 title: Text(
                   name,
@@ -89,13 +97,20 @@ class LocalPostTile extends StatelessWidget {
                 ),
                 trailing: PopupMenuButton<String>(
                   onSelected: (value) {
-                    if (value == 'edit') {
+                    if (value == 'reply') {
+                      onReply?.call();
+                    } else if (value == 'edit') {
                       onEdit();
                     } else if (value == 'delete') {
                       onDelete();
                     }
                   },
                   itemBuilder: (context) => [
+                    if (onReply != null)
+                      PopupMenuItem(
+                        value: 'reply',
+                        child: Text(l10n.local_note_reply_action),
+                      ),
                     PopupMenuItem(
                       value: 'edit',
                       child: Text(l10n.local_note_edit_title),
@@ -108,7 +123,7 @@ class LocalPostTile extends StatelessWidget {
           ),
           if (post.body.isNotEmpty)
             InkWell(
-              onTap: onEdit,
+              onTap: open,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: Text(post.body, style: theme.textTheme.bodyLarge),
@@ -144,8 +159,40 @@ class LocalPostTile extends StatelessWidget {
                 ),
               ),
             ),
+          _NoteFooter(
+            replyCount: replyCount,
+            onReply: onReply,
+          ),
           tweetHairlineDivider(context),
         ],
+      ),
+    );
+  }
+}
+
+class _NoteFooter extends StatelessWidget {
+  final int replyCount;
+  final VoidCallback? onReply;
+
+  const _NoteFooter({required this.replyCount, required this.onReply});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final tint = tweetFooterButtonsColorOf(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Tooltip(
+          message: l10n.local_note_reply_action,
+          child: tweetFooterTextButton(
+            Icons.chat_bubble_outline,
+            replyCount > 0 ? '$replyCount' : '',
+            tint,
+            onReply,
+          ),
+        ),
       ),
     );
   }
