@@ -1,12 +1,14 @@
 import 'package:dart_twitter_api/api/media/data/media.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/_video_controls.dart';
 import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/media_strip.dart';
 import 'package:xta/ui/capped_network_image.dart';
 import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/urls.dart';
 
 part 'gif_grid_item.dart';
 part 'video_grid_item.dart';
@@ -56,7 +58,13 @@ MediaGridItem? _itemFor(
   final url = m.mediaUrlHttps;
   if (url == null) return null;
   final ar = _aspectRatioFor(m);
-  final broadcast = tweet != null && tweetHasBroadcast(tweet);
+  final broadcastId = tweet != null
+      ? broadcastIdOf(tweet)
+      : broadcastIdIn(m.expandedUrl) ??
+          broadcastIdIn(m.displayUrl) ??
+          broadcastIdIn(m.url);
+  final broadcast =
+      broadcastId != null || (tweet != null && isBroadcastCard(tweet.card));
   switch (m.type) {
     case 'photo':
       return PhotoGridItem(
@@ -88,6 +96,7 @@ MediaGridItem? _itemFor(
           aspectRatio: ar,
           mediaIndex: mediaIndex,
           media: m,
+          broadcastId: broadcastId,
         );
       }
       return VideoGridItem(
@@ -179,10 +188,14 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
   for (final chain in chains) {
     for (final tweet in chain.tweets) {
       final medias = tweet.extendedEntities?.media;
-      if (medias == null || medias.isEmpty) continue;
       final tweetId = tweet.idStr;
       final username = tweet.user?.screenName;
       if (tweetId == null || username == null) continue;
+      if (medias == null || medias.isEmpty) {
+        final cardOnly = _broadcastItemFromCard(tweet, tweetId, username);
+        if (cardOnly != null) out.add(cardOnly);
+        continue;
+      }
       for (var i = 0; i < medias.length; i++) {
         final item = _itemFor(medias[i], tweetId, username, i, tweet);
         if (item != null) out.add(item);
@@ -190,4 +203,40 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
     }
   }
   return out;
+}
+
+/// Live / Spaces posts that carry the broadcast card but no native video.
+MediaGridItem? _broadcastItemFromCard(
+  TweetWithCard tweet,
+  String tweetId,
+  String username,
+) {
+  if (!tweetHasBroadcast(tweet)) {
+    return null;
+  }
+  final thumb = broadcastThumbnailFromCard(tweet.card);
+  if (thumb == null || thumb.isEmpty) {
+    return null;
+  }
+  final media = Media.fromJson({
+    'id_str': tweetId,
+    'type': 'video',
+    'media_url_https': thumb,
+    'sizes': {
+      'large': {'w': 16, 'h': 9},
+    },
+    'video_info': {
+      'aspect_ratio': [16, 9],
+    },
+  });
+  return BroadcastGridItem(
+    tweet: tweet,
+    tweetId: tweetId,
+    username: username,
+    thumbnailUrl: thumb,
+    aspectRatio: 16 / 9,
+    mediaIndex: 0,
+    media: media,
+    broadcastId: broadcastIdOf(tweet),
+  );
 }

@@ -126,7 +126,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   MediaFilter _mediaFilter = MediaFilter.all;
   PostsFilter _postsFilter = PostsFilter.all;
-  bool _hasBroadcasts = false;
 
   bool _showBackToTopButton = false;
 
@@ -304,7 +303,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                                 trailing: t.id == ProfileTabs.media
                                     ? _MediaFilterButton(
                                         value: _mediaFilter,
-                                        includeBroadcasts: _hasBroadcasts,
                                         onChanged: (filter) => setState(() => _mediaFilter = filter),
                                       )
                                     : t.id == ProfileTabs.posts
@@ -679,11 +677,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                   user: user,
                   pref: prefs,
                   filter: _mediaFilter,
-                  onBroadcastsFound: (found) {
-                    if (found && !_hasBroadcasts) {
-                      setState(() => _hasBroadcasts = true);
-                    }
-                  },
                 ),
                 ProfileSaved(user: user),
               ],
@@ -774,13 +767,11 @@ class _ProfileTabLabel extends StatelessWidget {
 /// tapping the tab still returns the grid to the top, as every other tab does.
 class _MediaFilterButton extends StatelessWidget {
   final MediaFilter value;
-  final bool includeBroadcasts;
   final ValueChanged<MediaFilter> onChanged;
 
   const _MediaFilterButton({
     required this.value,
     required this.onChanged,
-    this.includeBroadcasts = false,
   });
 
   String _labelFor(BuildContext context, MediaFilter filter) => switch (filter) {
@@ -799,17 +790,13 @@ class _MediaFilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = [
-      for (final filter in MediaFilter.values)
-        if (filter != MediaFilter.broadcasts || includeBroadcasts || value == filter) filter,
-    ];
     return PopupMenuButton<MediaFilter>(
       initialValue: value,
       onSelected: onChanged,
       tooltip: L10n.of(context).media,
       padding: EdgeInsets.zero,
       itemBuilder: (context) => [
-        for (final filter in options)
+        for (final filter in MediaFilter.values)
           PopupMenuItem(
             value: filter,
             child: Row(

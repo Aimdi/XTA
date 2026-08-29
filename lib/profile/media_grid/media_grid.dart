@@ -81,7 +81,12 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
                 item: item,
                 gifGate: _gifGate,
                 radius: config.radius,
-                onTap: () => openMediaLightbox(context, controller: widget.controller, initialIndex: index)),
+                onTap: () => openMediaGridItem(
+                      context,
+                      item: item,
+                      index: index,
+                      controller: widget.controller,
+                    )),
             firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
               error: pagingErrorOf(state)?.error,
               stackTrace: pagingErrorOf(state)?.stackTrace,
@@ -153,7 +158,12 @@ class _StaticMediaGridState extends State<StaticMediaGrid> {
           item: widget.items[index],
           gifGate: _gifGate,
           radius: config.radius,
-          onTap: () => openMediaLightbox(context, staticItems: widget.items, initialIndex: index),
+          onTap: () => openMediaGridItem(
+                context,
+                item: widget.items[index],
+                index: index,
+                staticItems: widget.items,
+              ),
           onLongPress: widget.onLongPressItem == null ? null : () => widget.onLongPressItem!(widget.items[index])),
     );
   }

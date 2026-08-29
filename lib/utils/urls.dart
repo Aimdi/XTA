@@ -36,7 +36,7 @@ const _trackingPrefixes = {'utm_', 'mtm_', 'pk_', 'hsa_'};
 // Share identifiers X appends to copied links; only meaningful on X hosts,
 // where stripping them cannot change what the link points to.
 const _xTrackingParams = {'s', 't', 'ref_src', 'ref_url'};
-const _xHosts = {'x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'};
+const _xHosts = {'x.com', 'www.x.com', 'mobile.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'};
 
 /// The article id in an `x.com/i/article/…` link, or null if it is not one.
 ///
@@ -62,26 +62,79 @@ String? articleIdIn(String? url) {
   return parts[2];
 }
 
-/// The broadcast id in an `x.com/i/broadcasts/…` link, or null if it is not one.
+/// The broadcast id in an `x.com/i/broadcasts/…` (or `/i/broadcast/…`,
+/// `pscp.tv/w/…`) link, or null if it is not one.
 ///
-/// Spaces recordings and live broadcasts put this URL in the tweet text. The
-/// player already shows the stream, so the truncated orange link is noise.
+/// Spaces recordings and live broadcasts put this URL in the tweet. The
+/// media tab buckets those separately from ordinary clips. Display URLs are
+/// often scheme-less (`x.com/i/broadcasts/…`); truncated ones (`…`) are
+/// rejected because the id would be wrong.
 String? broadcastIdIn(String? url) {
   if (url == null || url.isEmpty) {
     return null;
   }
 
-  final uri = Uri.tryParse(url);
-  if (uri == null || !_xHosts.contains(uri.host)) {
+  var trimmed = url.trim().replaceAll(RegExp(r'[.,);]+$'), '');
+  if (trimmed.contains('…') || trimmed.contains('...')) {
+    return null;
+  }
+  if (!trimmed.contains('://')) {
+    trimmed = 'https://$trimmed';
+  }
+
+  final uri = Uri.tryParse(trimmed);
+  if (uri == null) {
     return null;
   }
 
+  final host = uri.host.toLowerCase();
   final parts = uri.pathSegments.where((e) => e.isNotEmpty).toList(growable: false);
-  if (parts.length < 3 || parts[0] != 'i' || parts[1] != 'broadcasts') {
+
+  if (host == 'pscp.tv' ||
+      host == 'www.pscp.tv' ||
+      host == 'periscope.tv' ||
+      host == 'www.periscope.tv') {
+    if (parts.length >= 2 && parts[0] == 'w' && parts[1].isNotEmpty) {
+      return parts[1];
+    }
     return null;
   }
 
-  return parts[2];
+  if (!_xHosts.contains(host)) {
+    return null;
+  }
+
+  if (parts.length < 3 || parts[0] != 'i') {
+    return null;
+  }
+  if (parts[1] != 'broadcasts' && parts[1] != 'broadcast') {
+    return null;
+  }
+
+  final id = parts[2];
+  return id.isEmpty ? null : id;
+}
+
+/// Canonical watch URL for a broadcast id.
+String broadcastUrlFor(String id) => 'https://x.com/i/broadcasts/$id';
+
+/// First broadcast id found in free text, or null.
+String? broadcastIdInText(String? text) {
+  if (text == null || text.isEmpty) {
+    return null;
+  }
+  final pattern = RegExp(
+    r'(?:https?://)?(?:(?:www|mobile)\.)?(?:x\.com|twitter\.com)/i/broadcasts?/\S+'
+    r'|https?://(?:www\.)?(?:pscp|periscope)\.tv/w/\S+',
+    caseSensitive: false,
+  );
+  for (final match in pattern.allMatches(text)) {
+    final id = broadcastIdIn(match.group(0));
+    if (id != null) {
+      return id;
+    }
+  }
+  return null;
 }
 
 bool _isTrackingParam(String key, bool isXHost) =>

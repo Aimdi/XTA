@@ -52,6 +52,65 @@ void main() {
     expect(isBroadcastCard({'name': 'player'}), isFalse);
   });
 
+  test('a broadcast_url on the card is enough, even without the name', () {
+    final tweet = _tweet(
+      card: {
+        'binding_values': {
+          'broadcast_url': {
+            'string_value': 'https://x.com/i/broadcasts/1card',
+          },
+          'broadcast_thumbnail': {
+            'image_value': {'url': 'https://pbs.example/thumb.jpg'},
+          },
+        },
+      },
+    );
+    expect(broadcastIdOf(tweet), '1card');
+    expect(tweetHasBroadcast(tweet), isTrue);
+    expect(broadcastUrlOf(tweet), 'https://x.com/i/broadcasts/1card');
+    expect(broadcastThumbnailFromCard(tweet.card), 'https://pbs.example/thumb.jpg');
+  });
+
+  test('the link in the post body counts when entities omit it', () {
+    final tweet = TweetWithCard();
+    tweet.idStr = '1';
+    tweet.fullText = 'live at https://x.com/i/broadcast/1txt';
+    expect(broadcastIdOf(tweet), '1txt');
+  });
+
+  test('a video whose expanded_url is the broadcast link is a broadcast', () {
+    final tweet = TweetWithCard();
+    tweet.idStr = '1';
+    tweet.extendedEntities = Entities.fromJson({
+      'media': [
+        {
+          'type': 'video',
+          'media_url_https': 'https://pbs.example/1.jpg',
+          'expanded_url': 'https://x.com/i/broadcasts/1vod',
+          'display_url': 'x.com/i/broadcasts/1vod',
+        },
+      ],
+    });
+    expect(broadcastIdOf(tweet), '1vod');
+    expect(tweetHasBroadcast(tweet), isTrue);
+  });
+
+  test('GraphQL list-shaped card bindings still yield the id', () {
+    final tweet = _tweet(
+      card: {
+        'binding_values': [
+          {
+            'key': 'broadcast_url',
+            'value': {
+              'string_value': 'https://x.com/i/broadcasts/1list',
+            },
+          },
+        ],
+      },
+    );
+    expect(broadcastIdOf(tweet), '1list');
+  });
+
   test('an ordinary post is not a broadcast', () {
     expect(tweetHasBroadcast(_tweet()), isFalse);
   });
