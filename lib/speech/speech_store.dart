@@ -1,3 +1,4 @@
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/media/xta_audio_handler.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -93,10 +94,12 @@ class SpeechStore extends Store<SpeechPlayback> {
       return false;
     }
 
+    await _prepareSpeechAudio();
+
     final generation = ++_generation;
-    // The media session is what keeps speech alive past the foreground and
-    // puts a stop button on the lockscreen. Read-aloud cannot pause mid-
-    // utterance, so stop is all it offers.
+    // Bind a lockscreen stop control, but do not mark the media session
+    // playing: that requests exclusive AUDIOFOCUS_GAIN and mutes Sherpa,
+    // which speaks from another process.
     audioHandler?.bindSession(
       title: title,
       binding: (
@@ -106,7 +109,6 @@ class SpeechStore extends Store<SpeechPlayback> {
         onSeek: null,
       ),
     );
-    audioHandler?.updateSession(playing: true);
     update(SpeechPlayback(title: title, speaking: true));
 
     try {
@@ -114,8 +116,8 @@ class SpeechStore extends Store<SpeechPlayback> {
         if (generation != _generation) {
           return true;
         }
-        final result = await _tts.speak(chunk);
-        if (result == 0) {
+        final result = await _tts.speak(chunk, focus: true);
+        if (result == 0 || result == false) {
           // Platform reported failure to queue the utterance.
           if (generation == _generation) {
             _finished();
@@ -145,61 +147,41 @@ class SpeechStore extends Store<SpeechPlayback> {
     await _tts.stop();
   }
 
-  /// The reader's chosen engine and voice, falling back to the app's language
-  /// when they have not chosen one — or when what they chose has gone.
+  /// The reader's chosen engine and voice, falling back to a language the
+  /// bound engine actually speaks — never insist on de-DE when the voice is
+  /// English-only Sherpa / Next-gen Kaldi.
   Future<bool> _applyVoice(TtsChoice choice) async {
-    final resolved = await _resolveChoice(choice);
-    final applied = await applyTtsChoice(_tts, resolved);
-    if (applied && (resolved.hasVoice || isSherpaEngine(resolved.engine))) {
-      return true;
-    }
+    final applied = await applyTtsChoice(_tts, choice);
     if (isSherpaEngine(choice.engine) && !applied) {
       return false;
     }
 
-    try {
-      await _tts.setLanguage(_languageForCurrentLocale());
-    } catch (_) {
-      await _tts.setLanguage('en-US');
+    final language = await pickSpeakLanguage(
+      _tts,
+      voiceLocale: choice.voiceLocale,
+      appLocale: languageTagForShortLocale(
+        Intl.shortLocale(Intl.getCurrentLocale()),
+      ),
+    );
+    if (language != null) {
+      try {
+        await _tts.setLanguage(language);
+      } catch (_) {}
     }
     await _tts.setSpeechRate(choice.rate);
     return true;
   }
 
-  Future<TtsChoice> _resolveChoice(TtsChoice choice) async {
-    if (!isSherpaEngine(choice.engine)) return choice;
+  /// Drop exclusive media focus so a third-party engine (Sherpa) can be heard.
+  Future<void> _prepareSpeechAudio() async {
     try {
-      final options = await loadTtsOptions(_tts);
-      return TtsChoice(
-        engine: resolveSherpaEngineId(options.engines),
-        voiceName: choice.voiceName,
-        voiceLocale: choice.voiceLocale,
-        rate: choice.rate,
-      );
+      final session = await AudioSession.instance;
+      await session.configure(AudioSessionConfiguration.speech());
+      await session.setActive(true);
     } catch (_) {
-      return TtsChoice(
-        engine: sherpaOnnxTtsEngine,
-        voiceName: choice.voiceName,
-        voiceLocale: choice.voiceLocale,
-        rate: choice.rate,
-      );
+      // Tests and desktop have no session; speaking still works.
     }
   }
-}
-
-/// The BCP 47 tag the platform wants for the language the app is in.
-String _languageForCurrentLocale() {
-  final locale = Intl.shortLocale(Intl.getCurrentLocale());
-
-  return switch (locale) {
-    'zh' => 'zh-CN',
-    'nb' => 'nb-NO',
-    'pt' => 'pt-BR',
-    _ =>
-      locale.contains('_')
-          ? locale.replaceAll('_', '-')
-          : '$locale-${locale.toUpperCase()}',
-  };
 }
 
 /// Splits text into utterances the platform will actually finish.

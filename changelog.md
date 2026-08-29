@@ -1,3 +1,10 @@
+## XTA aimdi113
+
+What's new in XTA aimdi113:
+  - Built on aimdi111. Not QuaX.
+  - Vorlesen speaks with Sherpa / Next-gen Kaldi (Android 11 can see the engine; English-only voices are not asked for German)
+  - Everything from aimdi111
+
 ## XTA aimdi110
 
 What's new in XTA aimdi110:

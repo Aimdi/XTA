@@ -4,6 +4,16 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi113
+
+**XTA, built on aimdi111. Not QuaX.**
+
+Install **`xta-aimdi113_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 111.
+
+Vorlesen was silent because Android 11 hid Next-gen Kaldi from XTA, and the app
+forced German onto an English-only voice. This build declares TTS engines, binds
+the preferred module, and picks a language that engine can actually speak.
+
 ### aimdi111
 
 **Install this build, not aimdi110.** Six open feature PRs landed on main.
