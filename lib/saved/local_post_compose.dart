@@ -19,22 +19,32 @@ Future<LocalPost?> openLocalPostComposer(
   BuildContext context, {
   LocalPost? existing,
   TweetWithCard? quotedTweet,
+  LocalPost? replyTo,
 }) {
   return showModalBottomSheet<LocalPost>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
-    builder: (sheetContext) =>
-        LocalPostComposeSheet(existing: existing, quotedTweet: quotedTweet),
+    builder: (sheetContext) => LocalPostComposeSheet(
+      existing: existing,
+      quotedTweet: quotedTweet,
+      replyTo: replyTo,
+    ),
   );
 }
 
 class LocalPostComposeSheet extends StatefulWidget {
   final LocalPost? existing;
   final TweetWithCard? quotedTweet;
+  final LocalPost? replyTo;
 
-  const LocalPostComposeSheet({super.key, this.existing, this.quotedTweet});
+  const LocalPostComposeSheet({
+    super.key,
+    this.existing,
+    this.quotedTweet,
+    this.replyTo,
+  });
 
   @override
   State<LocalPostComposeSheet> createState() => _LocalPostComposeSheetState();
@@ -129,6 +139,7 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
         quotedTweetJson: quoted != null
             ? encodeQuotedTweet(quoted)
             : widget.existing?.quotedTweetJson,
+        inReplyToId: widget.replyTo?.id ?? widget.existing?.inReplyToId,
       );
       if (!mounted) {
         return;
@@ -148,6 +159,12 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
     final theme = Theme.of(context);
     final editing = widget.existing != null;
     final quoted = _quoted;
+    final replyTo = widget.replyTo;
+    final title = editing
+        ? l10n.local_note_edit_title
+        : replyTo != null
+        ? l10n.local_note_reply_title
+        : l10n.local_note_compose_title;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -161,9 +178,7 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              editing
-                  ? l10n.local_note_edit_title
-                  : l10n.local_note_compose_title,
+              title,
               style: theme.textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
@@ -174,6 +189,10 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
               ),
             ),
             const SizedBox(height: 16),
+            if (replyTo != null) ...[
+              _ReplyParentPreview(parent: replyTo),
+              const SizedBox(height: 12),
+            ],
             TextField(
               controller: _controller,
               autofocus: quoted == null && _media.isEmpty,
@@ -318,6 +337,44 @@ class _ComposeMediaThumb extends StatelessWidget {
         }
         return ClipRRect(borderRadius: BorderRadius.circular(12), child: child);
       },
+    );
+  }
+}
+
+class _ReplyParentPreview extends StatelessWidget {
+  final LocalPost parent;
+
+  const _ReplyParentPreview({required this.parent});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final snippet = parent.body.isNotEmpty
+        ? parent.body
+        : l10n.local_note_attach;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: quoteCardDecoration(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.local_note_replying_to,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            snippet,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
     );
   }
 }

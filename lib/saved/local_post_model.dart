@@ -39,6 +39,7 @@ class LocalPostModel extends Store<List<LocalPost>> {
     List<LocalPostMedia> media = const [],
     String? quotedTweetId,
     String? quotedTweetJson,
+    String? inReplyToId,
   }) async {
     final normalized = normalizeLocalPostBody(body) ?? '';
     if (!localPostHasContent(body, media)) {
@@ -65,6 +66,7 @@ class LocalPostModel extends Store<List<LocalPost>> {
       media: media,
       quotedTweetId: quotedTweetId ?? existing?.quotedTweetId,
       quotedTweetJson: quotedTweetJson ?? existing?.quotedTweetJson,
+      inReplyToId: inReplyToId ?? existing?.inReplyToId,
     );
 
     await deleteRemovedLocalPostMedia(post.id, media);

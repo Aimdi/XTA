@@ -29,6 +29,7 @@ import 'package:xta/saved/local_post_compose.dart';
 import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/local_post_tile.dart';
+import 'package:xta/saved/local_note_thread.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -481,6 +482,21 @@ class _SavedScreenState extends State<SavedScreen>
     }
   }
 
+  Future<void> _replyToNote(LocalPost parent) async {
+    final saved = await openLocalPostComposer(context, replyTo: parent);
+    if (saved == null || !mounted) {
+      return;
+    }
+    setState(() => _filter = savedTabNotes);
+    await openLocalNoteThread(
+      context,
+      rootId: localPostThreadRootId(
+        context.read<LocalPostModel>().state,
+        parent.id,
+      ),
+    );
+  }
+
   Future<void> _deleteNote(LocalPost post) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -521,21 +537,31 @@ class _SavedScreenState extends State<SavedScreen>
             : data
                   .where((post) => localPostRecordMatches(post, _query))
                   .toList();
+        final roots = localPostRoots(filtered);
         return RefreshIndicator(
           onRefresh: _refresh,
-          child: filtered.isEmpty
+          child: roots.isEmpty
               ? _buildEmptyState()
               : _buildList(
-                  itemCount: filtered.length,
+                  itemCount: roots.length,
                   padding: const EdgeInsets.only(
                     top: 4,
                     bottom: kPluginHomeNavClearance + 72,
                   ),
-                  tileAt: (i) => LocalPostTile(
-                    post: filtered[i],
-                    onEdit: () => _composeNote(filtered[i]),
-                    onDelete: () => _deleteNote(filtered[i]),
-                  ),
+                  tileAt: (i) {
+                    final post = roots[i];
+                    return LocalPostTile(
+                      post: post,
+                      replyCount: localPostDirectReplyCount(data, post.id),
+                      onEdit: () => _composeNote(post),
+                      onDelete: () => _deleteNote(post),
+                      onReply: () => _replyToNote(post),
+                      onOpen: () => openLocalNoteThread(
+                        context,
+                        rootId: localPostThreadRootId(data, post.id),
+                      ),
+                    );
+                  },
                 ),
         );
       },

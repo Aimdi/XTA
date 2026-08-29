@@ -268,7 +268,39 @@ void main() {
         'media_json',
         'quoted_tweet_id',
         'quoted_tweet_json',
+        'in_reply_to_id',
       ]),
     );
+  });
+
+  test('upgrade from v60 adds in_reply_to_id on local_post', () async {
+    final path =
+        '${Directory.systemTemp.path}/xta_migrate_v60_${DateTime.now().microsecondsSinceEpoch}.db';
+    final plan = buildMigrationPlan();
+    var db = await openDatabase(
+      path,
+      version: 60,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    await db.close();
+
+    db = await openDatabase(
+      path,
+      version: databaseVersion,
+      onCreate: plan.call,
+      onUpgrade: plan.call,
+    );
+    addTearDown(() async {
+      await db.close();
+      final f = File(path);
+      if (await f.exists()) await f.delete();
+    });
+
+    expect(await db.getVersion(), databaseVersion);
+    final cols = (await db.rawQuery(
+      'PRAGMA table_info($tableLocalPost)',
+    )).map((row) => row['name'] as String).toSet();
+    expect(cols, contains('in_reply_to_id'));
   });
 }

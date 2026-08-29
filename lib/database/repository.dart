@@ -51,7 +51,7 @@ const String tableProfileNote = 'profile_note';
 const String tableAntenna = 'antenna';
 const String tableLocalPost = 'local_post';
 
-const int databaseVersion = 60;
+const int databaseVersion = 61;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -844,6 +844,10 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // the same net for a database that skipped this step.
     Migration(Operation(_addLocalPostMediaColumns)),
   ],
+  61: [
+    // Replies between reader notes. Local only — this is not an X reply path.
+    Migration(Operation(_addLocalPostReplyColumn)),
+  ],
 });
 
 /// Indexes added in migration 39, applied so that a failure cannot block the
@@ -967,10 +971,21 @@ Future<void> _ensureLocalPostTable(Database db) async {
       'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
       'media_json TEXT, '
       'quoted_tweet_id TEXT, '
-      'quoted_tweet_json TEXT)',
+      'quoted_tweet_json TEXT, '
+      'in_reply_to_id TEXT)',
     );
   } catch (e) {
     Repository.log.warning('Could not ensure $tableLocalPost: $e');
+  }
+}
+
+Future<void> _addLocalPostReplyColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableLocalPost ADD COLUMN in_reply_to_id TEXT',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not add in_reply_to_id to $tableLocalPost: $e');
   }
 }
 
@@ -1121,6 +1136,7 @@ class Repository {
     try {
       await _ensureLocalPostTable(await writable());
       await _addLocalPostMediaColumns(await writable());
+      await _addLocalPostReplyColumn(await writable());
     } catch (e) {
       log.warning('Could not ensure $tableLocalPost after migrate: $e');
     }
