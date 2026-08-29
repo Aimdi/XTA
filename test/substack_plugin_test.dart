@@ -265,6 +265,7 @@ void main() {
     expect(html, contains('<p>Body</p>'));
     expect(html, isNot(contains('<button')));
     expect(html, contains('font-family: Georgia'));
+    expect(html, contains('XtaTts.postMessage'));
   });
 
   test('sanitize and plain text keep readable content', () {
