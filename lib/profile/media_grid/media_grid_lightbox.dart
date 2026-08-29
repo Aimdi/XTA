@@ -97,7 +97,7 @@ void openMediaLightbox(BuildContext context,
   );
 }
 
-/// Broadcasts open `x.com/i/broadcasts/{id}`. Everything else is the lightbox.
+/// Broadcasts open `x.com/i/broadcasts/{id}`. Spaces open `x.com/i/spaces/{id}`.
 void openMediaGridItem(
   BuildContext context, {
   required MediaGridItem item,
@@ -106,8 +106,8 @@ void openMediaGridItem(
   List<MediaGridItem> staticItems = const [],
 }) {
   if (item is BroadcastGridItem) {
-    final url = item.broadcastUrl ??
-        (item.tweet == null ? null : broadcastUrlOf(item.tweet!));
+    final url = item.watchUrl ??
+        (item.tweet == null ? null : liveUrlOf(item.tweet!));
     if (url != null) {
       openUri(context, url);
       return;

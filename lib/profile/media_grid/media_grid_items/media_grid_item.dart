@@ -58,13 +58,17 @@ MediaGridItem? _itemFor(
   final url = m.mediaUrlHttps;
   if (url == null) return null;
   final ar = _aspectRatioFor(m);
+  final spaceId = tweet != null
+      ? spaceIdOf(tweet)
+      : spaceIdIn(m.expandedUrl) ?? spaceIdIn(m.displayUrl) ?? spaceIdIn(m.url);
   final broadcastId = tweet != null
       ? broadcastIdOf(tweet)
       : broadcastIdIn(m.expandedUrl) ??
           broadcastIdIn(m.displayUrl) ??
           broadcastIdIn(m.url);
-  final broadcast =
-      broadcastId != null || (tweet != null && isBroadcastCard(tweet.card));
+  final live = spaceId != null ||
+      broadcastId != null ||
+      (tweet != null && (isBroadcastCard(tweet.card) || isAudioSpaceCard(tweet.card)));
   switch (m.type) {
     case 'photo':
       return PhotoGridItem(
@@ -87,7 +91,7 @@ MediaGridItem? _itemFor(
         media: m,
       );
     case 'video':
-      if (broadcast) {
+      if (live) {
         return BroadcastGridItem(
           tweet: tweet,
           tweetId: tweetId,
@@ -97,6 +101,7 @@ MediaGridItem? _itemFor(
           mediaIndex: mediaIndex,
           media: m,
           broadcastId: broadcastId,
+          spaceId: spaceId,
         );
       }
       return VideoGridItem(
@@ -116,9 +121,9 @@ MediaGridItem? _itemFor(
 /// Which media a grid shows.
 ///
 /// Animated GIFs are served as video by X and play like one, so they belong
-/// with the videos rather than in a category of their own. Broadcasts /
-/// Spaces recordings are their own bucket — they look like videos but the
-/// tweet is marked by an `x.com/i/broadcasts/` link.
+/// with the videos rather than in a category of their own. Broadcasts and
+/// Spaces are their own bucket — they look like videos but the tweet is
+/// marked by an `x.com/i/broadcasts/` or `x.com/i/spaces/` link.
 enum MediaFilter {
   all,
   photos,
@@ -205,23 +210,20 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
   return out;
 }
 
-/// Live / Spaces posts that carry the broadcast card but no native video.
+/// Live video / Spaces posts that carry the card but no native video.
 MediaGridItem? _broadcastItemFromCard(
   TweetWithCard tweet,
   String tweetId,
   String username,
 ) {
-  if (!tweetHasBroadcast(tweet)) {
+  if (!tweetIsLive(tweet)) {
     return null;
   }
-  final thumb = broadcastThumbnailFromCard(tweet.card);
-  if (thumb == null || thumb.isEmpty) {
-    return null;
-  }
+  final thumb = broadcastThumbnailFromCard(tweet.card) ?? '';
   final media = Media.fromJson({
     'id_str': tweetId,
     'type': 'video',
-    'media_url_https': thumb,
+    'media_url_https': thumb.isEmpty ? 'https://abs.twimg.com/favicons/twitter-blue.ico' : thumb,
     'sizes': {
       'large': {'w': 16, 'h': 9},
     },
@@ -238,5 +240,6 @@ MediaGridItem? _broadcastItemFromCard(
     mediaIndex: 0,
     media: media,
     broadcastId: broadcastIdOf(tweet),
+    spaceId: spaceIdOf(tweet),
   );
 }

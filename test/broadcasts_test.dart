@@ -119,4 +119,36 @@ void main() {
     expect(tweetHasVideoMedia(_tweet(video: true)), isTrue);
     expect(tweetHasVideoMedia(_tweet()), isFalse);
   });
+
+  test('a spaces URL marks the tweet as a Space', () {
+    final tweet = _tweet(broadcastUrl: 'https://x.com/i/spaces/1room');
+    expect(tweetHasSpace(tweet), isTrue);
+    expect(tweetHasBroadcast(tweet), isFalse);
+    expect(tweetIsLive(tweet), isTrue);
+    expect(spaceIdOf(tweet), '1room');
+    expect(spaceUrlOf(tweet), 'https://x.com/i/spaces/1room');
+    expect(liveUrlOf(tweet), 'https://x.com/i/spaces/1room');
+  });
+
+  test('the audiospace card name and id mark the tweet', () {
+    final tweet = _tweet(
+      card: {
+        'name': '326813241626781184:audiospace',
+        'binding_values': {
+          'id': {'string_value': '1cardspace'},
+          'title': {'string_value': 'late night'},
+          'thumbnail_image': {
+            'image_value': {'url': 'https://pbs.example/space.jpg'},
+          },
+        },
+      },
+    );
+    expect(isAudioSpaceCard(tweet.card), isTrue);
+    expect(spaceIdOf(tweet), '1cardspace');
+    expect(tweetHasSpace(tweet), isTrue);
+    expect(
+      broadcastThumbnailFromCard(tweet.card),
+      'https://pbs.example/space.jpg',
+    );
+  });
 }

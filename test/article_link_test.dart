@@ -96,6 +96,43 @@ void main() {
     });
   });
 
+  group('spaceIdIn', () {
+    test('takes the id out of a spaces link', () {
+      expect(spaceIdIn('https://x.com/i/spaces/1MnxnMDeQLeJO'), '1MnxnMDeQLeJO');
+    });
+
+    test('the singular /i/space/ path counts too', () {
+      expect(spaceIdIn('https://x.com/i/space/1abc'), '1abc');
+    });
+
+    test('twitter.com and the www hosts count too', () {
+      for (final host in ['twitter.com', 'www.x.com', 'mobile.twitter.com', 'mobile.x.com']) {
+        expect(spaceIdIn('https://$host/i/spaces/1abc'), '1abc', reason: host);
+      }
+    });
+
+    test('a scheme-less display URL counts', () {
+      expect(spaceIdIn('x.com/i/spaces/1disp'), '1disp');
+    });
+
+    test('a truncated display URL is not an id', () {
+      expect(spaceIdIn('x.com/i/spaces/1Owx…'), isNull);
+    });
+
+    test('broadcast links are not spaces', () {
+      expect(spaceIdIn('https://x.com/i/broadcasts/1abc'), isNull);
+      expect(broadcastIdIn('https://x.com/i/spaces/1abc'), isNull);
+    });
+
+    test('spaceIdInText finds the link in a post body', () {
+      expect(
+        spaceIdInText('join https://x.com/i/spaces/1abc now'),
+        '1abc',
+      );
+      expect(spaceIdInText('live at x.com/i/spaces/1txt'), '1txt');
+    });
+  });
+
   group('firstArticleLink', () {
     test('finds the article among ordinary links', () {
       final urls = ['https://example.com', 'https://x.com/i/article/7', 'https://x.com/i/article/8'];
