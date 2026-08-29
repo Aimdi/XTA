@@ -1,3 +1,10 @@
+## XTA aimdi115
+
+What's new in XTA aimdi115:
+  - Built on aimdi114. Not QuaX.
+  - Medien Livestreams actually loads broadcasts and Spaces (from posts, not the photo/video timeline)
+  - Everything from aimdi114
+
 ## XTA aimdi114
 
 What's new in XTA aimdi114:

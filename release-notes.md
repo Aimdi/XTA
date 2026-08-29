@@ -4,6 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi115
+
+**XTA, built on aimdi114. Not QuaX.**
+
+Install **`xta-aimdi115_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 114.
+
+Medien → Livestreams was empty because it asked X for photos and clips. Broadcasts are posts with `x.com/i/broadcasts/…` (or Spaces). That filter now reads posts.
+
 ### aimdi114
 
 **XTA, built on aimdi113. Not QuaX.**
