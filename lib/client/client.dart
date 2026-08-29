@@ -264,7 +264,17 @@ class Twitter {
       'features': jsonEncode(_followersFeatures),
     });
     final response = await _twitterApi.client.get(uri);
-    final users = TimelineParser.parseUsersTimeline(TimelineParser.retweetersInstructions(jsonDecode(response.body)));
+    final decoded = jsonDecode(response.body);
+    final instructions = TimelineParser.retweetersInstructions(decoded);
+    if (instructions == null) {
+      final errors = decoded is Map ? decoded['errors'] : null;
+      if (errors is List && errors.isNotEmpty) {
+        final first = errors.first;
+        final message = first is Map ? (first['message'] as String? ?? 'Retweeters failed') : 'Retweeters failed';
+        throw Exception(message);
+      }
+    }
+    final users = TimelineParser.parseUsersTimeline(instructions);
     return Follows(
       cursorBottom: users.nextCursorStr,
       cursorTop: users.previousCursorStr,

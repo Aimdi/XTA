@@ -51,6 +51,15 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
   bool get wantKeepAlive => true;
 
   final GifPlaybackGate _gifGate = GifPlaybackGate();
+  bool _firstLoadStarted = false;
+
+  @override
+  void didUpdateWidget(covariant MediaGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      _firstLoadStarted = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -58,9 +67,19 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
     super.dispose();
   }
 
+  void _maybeStartFirstLoad() {
+    scheduleFirstPageFetch(
+      widget.controller,
+      alreadyStarted: _firstLoadStarted,
+      markStarted: () => _firstLoadStarted = true,
+      isMounted: () => mounted,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _maybeStartFirstLoad();
 
     var config = mediaGridConfigOf(context);
 
@@ -68,35 +87,48 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
       onRefresh: () async => widget.controller.refresh(),
       child: PagingListener<int, MediaGridItem>(
         controller: widget.controller,
-        builder: (context, state, fetchNextPage) => PagedMasonryGridView<int, MediaGridItem>.count(
-          state: state,
-          fetchNextPage: fetchNextPage,
-          padding: EdgeInsets.all(config.spacing),
-          crossAxisCount: config.columns,
-          mainAxisSpacing: config.spacing,
-          crossAxisSpacing: config.spacing,
-          addAutomaticKeepAlives: false,
-          builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
-            itemBuilder: (context, item, index) => _MediaGridTile(
-                item: item,
-                gifGate: _gifGate,
-                radius: config.radius,
-                onTap: () => openMediaLightbox(context, controller: widget.controller, initialIndex: index)),
-            firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+        builder: (context, state, fetchNextPage) {
+          if (pagingAwaitingFirstPage(state)) {
+            return pagingFill(
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (state.items == null) {
+            return FullPageErrorWidget(
               error: pagingErrorOf(state)?.error,
               stackTrace: pagingErrorOf(state)?.stackTrace,
               prefix: widget.firstPageErrorPrefix,
               onRetry: fetchNextPage,
+            );
+          }
+          if (state.items!.isEmpty) {
+            return pagingFill(
+              child: Center(child: Text(widget.emptyMessage)),
+            );
+          }
+          return PagedMasonryGridView<int, MediaGridItem>.count(
+            state: state,
+            fetchNextPage: fetchNextPage,
+            padding: EdgeInsets.all(config.spacing),
+            crossAxisCount: config.columns,
+            mainAxisSpacing: config.spacing,
+            crossAxisSpacing: config.spacing,
+            addAutomaticKeepAlives: false,
+            builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
+              itemBuilder: (context, item, index) => _MediaGridTile(
+                  item: item,
+                  gifGate: _gifGate,
+                  radius: config.radius,
+                  onTap: () => openMediaLightbox(context, controller: widget.controller, initialIndex: index)),
+              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+                error: pagingErrorOf(state)?.error,
+                stackTrace: pagingErrorOf(state)?.stackTrace,
+                prefix: widget.newPageErrorPrefix,
+                onRetry: fetchNextPage,
+              ),
             ),
-            newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-              error: pagingErrorOf(state)?.error,
-              stackTrace: pagingErrorOf(state)?.stackTrace,
-              prefix: widget.newPageErrorPrefix,
-              onRetry: fetchNextPage,
-            ),
-            noItemsFoundIndicatorBuilder: (context) => Center(child: Text(widget.emptyMessage)),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

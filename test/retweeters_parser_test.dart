@@ -47,6 +47,25 @@ void main() {
       expect(users.nextCursorStr, 'cursor-next');
     });
 
+    test(
+      'reads people nested in a TimelineTimelineModule, including userResults',
+      () {
+        final body = _fixture('Retweeters/module.json');
+        final users = TimelineParser.parseUsersTimeline(
+          TimelineParser.retweetersInstructions(body),
+        );
+
+        expect(users.users, hasLength(2));
+        expect(users.users![0].idStr, '9');
+        expect(users.users![0].screenName, 'dana');
+        expect(users.users![0].name, 'Dana');
+        expect(users.users![1].idStr, '10');
+        expect(users.users![1].screenName, 'erin');
+        expect(users.users![1].verified, isTrue);
+        expect(users.nextCursorStr, 'cursor-module-next');
+      },
+    );
+
     test('missing or reshaped JSON is empty, not an exception', () {
       expect(TimelineParser.retweetersInstructions(null), isNull);
       expect(

@@ -68,7 +68,7 @@ class _QuotesScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             _QuotesList(id: id),
-            _RetweetersList(tweetId: id),
+            RetweetersList(tweetId: id),
           ],
         ),
       ),
@@ -129,22 +129,27 @@ class _QuotesListState extends State<_QuotesList>
   }
 }
 
-class _RetweetersList extends StatefulWidget {
+/// People who reposted [tweetId]. Optional [loadPage] is for tests; the
+/// screen otherwise calls [Twitter.getRetweeters].
+class RetweetersList extends StatefulWidget {
   final String tweetId;
+  final CursorPageFetcher<String, UserWithExtra>? loadPage;
 
-  const _RetweetersList({required this.tweetId});
+  const RetweetersList({super.key, required this.tweetId, this.loadPage});
 
   @override
-  State<_RetweetersList> createState() => _RetweetersListState();
+  State<RetweetersList> createState() => _RetweetersListState();
 }
 
-class _RetweetersListState extends State<_RetweetersList>
-    with AutomaticKeepAliveClientMixin<_RetweetersList> {
+class _RetweetersListState extends State<RetweetersList>
+    with AutomaticKeepAliveClientMixin<RetweetersList> {
   late final CursorPagingController<String, UserWithExtra> _paging;
   PagingController<int, UserWithExtra> get _pagingController =>
       _paging.pagingController;
+  late final ScrollController _scrollController;
 
   final Set<String> _seenIds = {};
+  bool _firstLoadStarted = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -152,19 +157,33 @@ class _RetweetersListState extends State<_RetweetersList>
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _paging = CursorPagingController<String, UserWithExtra>(_fetchPage);
   }
 
   @override
   void dispose() {
     _paging.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
+  void _maybeStartFirstLoad() {
+    if (_firstLoadStarted) return;
+    final state = _pagingController.value;
+    if (state.items != null || state.error != null) return;
+    _firstLoadStarted = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _pagingController.fetchNextPage();
+    });
+  }
+
   Future<CursorPage<String, UserWithExtra>> _fetchPage(String? cursor) async {
-    final result = await Twitter.getRetweeters(widget.tweetId, cursor: cursor);
-    final next = result.cursorBottom;
-    final fresh = result.users
+    final result = widget.loadPage != null
+        ? await widget.loadPage!(cursor)
+        : await _loadFromTwitter(cursor);
+    final next = result.nextCursor;
+    final fresh = result.items
         .where((u) => u.idStr != null && _seenIds.add(u.idStr!))
         .toList();
     final end =
@@ -176,40 +195,60 @@ class _RetweetersListState extends State<_RetweetersList>
     return (items: fresh, nextCursor: end ? null : next);
   }
 
+  Future<CursorPage<String, UserWithExtra>> _loadFromTwitter(
+    String? cursor,
+  ) async {
+    final result = await Twitter.getRetweeters(widget.tweetId, cursor: cursor);
+    return (items: result.users, nextCursor: result.cursorBottom);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _maybeStartFirstLoad();
     final l10n = L10n.of(context);
     return PagingListener<int, UserWithExtra>(
       controller: _pagingController,
-      builder: (context, state, fetchNextPage) =>
-          PagedListView<int, UserWithExtra>(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom,
-            ),
-            state: state,
-            fetchNextPage: fetchNextPage,
-            addAutomaticKeepAlives: false,
-            builderDelegate: PagedChildBuilderDelegate(
-              itemBuilder: (context, user, index) =>
-                  UserTile(user: UserSubscription.fromUser(user)),
-              firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: l10n.unable_to_load_the_list_of_retweets,
-                onRetry: fetchNextPage,
-              ),
-              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: l10n.unable_to_load_the_next_page_of_retweets,
-                onRetry: fetchNextPage,
-              ),
-              noItemsFoundIndicatorBuilder: (context) => Center(
-                child: Text(l10n.could_not_find_any_retweets_of_this_post),
-              ),
+      builder: (context, state, fetchNextPage) {
+        // Do not put a spinner, empty message, or error inside PagedListView's
+        // indicator slots: those are SliverFillRemaining and freeze this tab.
+        if (state.items == null && state.error == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state.items == null) {
+          return FullPageErrorWidget(
+            error: pagingErrorOf(state)?.error,
+            stackTrace: pagingErrorOf(state)?.stackTrace,
+            prefix: l10n.unable_to_load_the_list_of_retweets,
+            onRetry: fetchNextPage,
+          );
+        }
+        if (state.items!.isEmpty) {
+          return Center(
+            child: Text(l10n.could_not_find_any_retweets_of_this_post),
+          );
+        }
+        return PagedListView<int, UserWithExtra>(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).padding.bottom,
+          ),
+          state: state,
+          fetchNextPage: fetchNextPage,
+          scrollController: _scrollController,
+          primary: false,
+          addAutomaticKeepAlives: false,
+          builderDelegate: PagedChildBuilderDelegate(
+            itemBuilder: (context, user, index) =>
+                UserTile(user: UserSubscription.fromUser(user)),
+            newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+              error: pagingErrorOf(state)?.error,
+              stackTrace: pagingErrorOf(state)?.stackTrace,
+              prefix: l10n.unable_to_load_the_next_page_of_retweets,
+              onRetry: fetchNextPage,
             ),
           ),
+        );
+      },
     );
   }
 }

@@ -19,7 +19,7 @@ import 'package:xta/utils/json.dart';
 class TimelineParser {
   static PaginatedUsers parseUsersTimeline(dynamic instructions) {
     var users = PaginatedUsers()..users = [];
-    if (instructions == null) {
+    if (instructions is! Iterable) {
       return users;
     }
     for (final instruction in instructions) {
@@ -31,19 +31,52 @@ class TimelineParser {
       users.previousCursorStr = getCursor(entries, [], 'cursor-top', 'Top');
       for (final entry in entries) {
         if (entry is! Map) continue;
-        final userResult = entry["content"]?["itemContent"]?["user_results"]?["result"];
-        if (userResult is! Map) continue;
-        var user = UserWithExtra()
-          ..screenName = userResult["core"]?["screen_name"]
-          ..name = userResult["core"]?["name"]
-          ..profileImageUrlHttps = userResult["avatar"]?["image_url"]
-          ..verified = userResult["is_blue_verified"]
-          ..createdAt = convertTwitterDateTime(userResult["core"]?["created_at"])
-          ..idStr = userResult["rest_id"];
-        users.users!.add(user);
+        for (final result in _userResultsInEntry(entry)) {
+          final user = _userFromGraphqlResult(result);
+          if (user != null) users.users!.add(user);
+        }
       }
     }
     return users;
+  }
+
+  /// User nodes carried by one timeline entry. X has shipped both a single
+  /// `itemContent.user_results` on the entry and a `TimelineTimelineModule`
+  /// of those items — Retweeters uses both. Unreadable entries yield nothing.
+  static Iterable<Map> _userResultsInEntry(Map entry) {
+    final content = entry['content'];
+    if (content is! Map) return const [];
+    final direct = _userResultOf(content['itemContent']);
+    if (direct != null) return [direct];
+    final items = content['items'];
+    if (items is! List) return const [];
+    return [
+      for (final item in items)
+        if (item is Map) _userResultOf(item['item']?['itemContent'] ?? item['itemContent']),
+    ].whereType<Map>();
+  }
+
+  static Map? _userResultOf(dynamic itemContent) {
+    if (itemContent is! Map) return null;
+    final result = itemContent['user_results']?['result'] ?? itemContent['userResults']?['result'];
+    return result is Map ? result : null;
+  }
+
+  static UserWithExtra? _userFromGraphqlResult(Map userResult) {
+    final map = _asStringKeyedMap(userResult);
+    if (map == null) return null;
+    try {
+      final user = UserWithExtra.fromNonLegacyJson(map);
+      user.idStr ??= map['rest_id'] as String?;
+      if (user.idStr == null) return null;
+      user.verified = user.verified ?? false;
+      user.name ??= '';
+      user.screenName ??= '';
+      user.createdAt ??= DateTime.fromMillisecondsSinceEpoch(0);
+      return user;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// GraphQL "Retweeters" — people who reposted a tweet, not the quote-tweets.

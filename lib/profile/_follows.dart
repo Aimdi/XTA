@@ -24,6 +24,7 @@ class _ProfileFollowsState extends State<ProfileFollows> with AutomaticKeepAlive
 
   final int _pageSize = 200;
   final Set<String> _seenIds = {};
+  bool _firstLoadStarted = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -40,6 +41,15 @@ class _ProfileFollowsState extends State<ProfileFollows> with AutomaticKeepAlive
     super.dispose();
   }
 
+  void _maybeStartFirstLoad() {
+    scheduleFirstPageFetch(
+      _pagingController,
+      alreadyStarted: _firstLoadStarted,
+      markStarted: () => _firstLoadStarted = true,
+      isMounted: () => mounted,
+    );
+  }
+
   Future<CursorPage<String, UserWithExtra>> _fetchPage(String? cursor) async {
     var result = await Twitter.getProfileFollows(widget.user.screenName!, widget.type,
         cursor: cursor, count: _pageSize, id: widget.user.idStr);
@@ -53,43 +63,51 @@ class _ProfileFollowsState extends State<ProfileFollows> with AutomaticKeepAlive
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _maybeStartFirstLoad();
+    final l10n = L10n.of(context);
+    final emptyText = widget.type == 'following'
+        ? l10n.this_user_does_not_follow_anyone
+        : l10n.this_user_does_not_have_anyone_following_them;
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.type == 'following' ? L10n.of(context).following : L10n.of(context).followers),
-        ),
-        body: PagingListener<int, UserWithExtra>(
-          controller: _pagingController,
-          builder: (context, state, fetchNextPage) => PagedListView<int, UserWithExtra>(
+      appBar: AppBar(
+        title: Text(widget.type == 'following' ? l10n.following : l10n.followers),
+      ),
+      body: PagingListener<int, UserWithExtra>(
+        controller: _pagingController,
+        builder: (context, state, fetchNextPage) {
+          if (pagingAwaitingFirstPage(state)) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.items == null) {
+            return FullPageErrorWidget(
+              error: pagingErrorOf(state)?.error,
+              stackTrace: pagingErrorOf(state)?.stackTrace,
+              prefix: l10n.unable_to_load_the_list_of_follows,
+              onRetry: fetchNextPage,
+            );
+          }
+          if (state.items!.isEmpty) {
+            return Center(child: Text(emptyText));
+          }
+          return PagedListView<int, UserWithExtra>(
             padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
             state: state,
             fetchNextPage: fetchNextPage,
             addAutomaticKeepAlives: false,
             builderDelegate: PagedChildBuilderDelegate(
-              itemBuilder: (context, user, index) => UserTile(user: UserSubscription.fromUser(user)),
-              firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_list_of_follows,
-                onRetry: fetchNextPage,
-              ),
+              itemBuilder: (context, user, index) =>
+                  UserTile(user: UserSubscription.fromUser(user)),
               newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
                 error: pagingErrorOf(state)?.error,
                 stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_next_page_of_follows,
+                prefix: l10n.unable_to_load_the_next_page_of_follows,
                 onRetry: fetchNextPage,
               ),
-              noItemsFoundIndicatorBuilder: (context) {
-                var text = widget.type == 'following'
-                    ? L10n.of(context).this_user_does_not_follow_anyone
-                    : L10n.of(context).this_user_does_not_have_anyone_following_them;
-
-                return Center(
-                  child: Text(text),
-                );
-              },
             ),
-          ),
-        ));
+          );
+        },
+      ),
+    );
   }
 }
