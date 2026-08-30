@@ -15,6 +15,19 @@ double get threadRailAvatarCenterY => kThreadRailTopGap + kThreadRailAvatarSize 
 
 double get threadRailBodyIndent => kThreadRailLeft + kThreadRailAvatarSize;
 
+/// Extra left inset for a reply at [depth] in the status-thread tree.
+///
+/// Depth 0 is the opened tweet. Depth 1 is a direct reply — those sit flush
+/// with the opened tweet, the way X lays them out. Only a reply-to-a-reply
+/// (depth 2+) steps in, so a conversation does not open with a blank strip
+/// down the left of every answer.
+double threadNestedIndent(int depth) {
+  if (depth <= 1) {
+    return 0;
+  }
+  return (depth - 1) * kThreadLevelWidth;
+}
+
 /// Vertical connector segments aligned through the avatar column.
 class ThreadRailLines extends StatelessWidget {
   final bool connectTop;
