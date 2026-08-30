@@ -4,6 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi118
+
+**XTA, built on aimdi117. Not QuaX.**
+
+Install **`xta-aimdi118_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 117.
+
+The Abos ⋮ menu was a wall of unlabeled rows. Tap the tune icon for a sheet: board/list, columns, sort with a check, then import / antennas / settings.
+
 ### aimdi117
 
 **XTA, built on aimdi116. Not QuaX.**

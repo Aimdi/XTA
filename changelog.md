@@ -1,3 +1,10 @@
+## XTA aimdi118
+
+What's new in XTA aimdi118:
+  - Built on aimdi117. Not QuaX.
+  - Abos menu is a grouped sheet (view, sort, actions) instead of twelve unlabeled rows
+  - Everything from aimdi117
+
 ## XTA aimdi117
 
 What's new in XTA aimdi117:
