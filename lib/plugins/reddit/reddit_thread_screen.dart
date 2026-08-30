@@ -152,9 +152,8 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     final indent = kRedditIndentPerLevel * (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(12 + indent, 6, 12, 6),
+      padding: EdgeInsets.fromLTRB(16 + indent, 6, 16, 6),
       child: Container(
-        padding: EdgeInsets.only(left: depth == 0 ? 0 : 8),
         decoration: depth == 0
             ? null
             : BoxDecoration(
