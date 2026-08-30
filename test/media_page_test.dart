@@ -281,6 +281,38 @@ void main() {
       expect(items.single, isA<BroadcastGridItem>());
       expect((items.single as BroadcastGridItem).spaceId, '1soloSpace');
       expect((items.single as BroadcastGridItem).watchUrl, 'https://x.com/i/spaces/1soloSpace');
+      expect((items.single as BroadcastGridItem).canPlayInApp, isFalse);
+    });
+
+    test('a VOD with variants plays in-app; a card-only Space does not', () {
+      final vod = _tweetWith('v1', ['video'], broadcast: true);
+      vod.extendedEntities = Entities.fromJson({
+        'media': [
+          {
+            'type': 'video',
+            'media_url_https': 'https://pbs.example/v.jpg',
+            'expanded_url': 'https://x.com/i/broadcasts/1abc',
+            'video_info': {
+              'aspect_ratio': [16, 9],
+              'variants': [
+                {
+                  'url': 'https://video.twimg.com/ext_tw_video/1.mp4',
+                  'content_type': 'video/mp4',
+                  'bitrate': 832000,
+                }
+              ],
+            },
+          }
+        ]
+      });
+      final vodItem = mediaItemsFromChains([_chain(vod)]).single as BroadcastGridItem;
+      expect(vodItem.canPlayInApp, isTrue);
+
+      final cardOnly = mediaItemsFromChains([
+        _chain(_tweetWith('c1', const [], broadcast: true)),
+      ]).single as BroadcastGridItem;
+      expect(cardOnly.canPlayInApp, isFalse);
+      expect(cardOnly.watchUrl, 'https://x.com/i/broadcasts/1abc');
     });
   });
 

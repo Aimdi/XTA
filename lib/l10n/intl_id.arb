@@ -3127,6 +3127,8 @@
   "videos": "Video",
   "broadcasts": "Siaran",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Lihat di GitHub",
   "@view_on_github": {},

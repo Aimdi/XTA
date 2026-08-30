@@ -3127,6 +3127,8 @@
   "videos": "影片",
   "broadcasts": "直播",
   "@broadcasts": {},
+  "spaces": "空間",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "在 GitHub 上檢視",
   "@view_on_github": {},

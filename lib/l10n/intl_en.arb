@@ -3181,6 +3181,8 @@
   "videos": "Videos",
   "broadcasts": "Broadcasts",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "View on GitHub",
   "@view_on_github": {},

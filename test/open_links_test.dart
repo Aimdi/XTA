@@ -100,6 +100,20 @@ void main() {
     expect(recorder.calls.map((c) => c.url), everyElement('https://example.com/a?keep=1'));
   });
 
+  testWidgets('a Spaces link launches instead of bouncing back into XTA', (tester) async {
+    await _tapOpen(tester, embedded: true, url: 'https://x.com/i/spaces/1room');
+
+    expect(recorder.calls, hasLength(1));
+    expect(recorder.calls.single.url, 'https://x.com/i/spaces/1room');
+  });
+
+  testWidgets('a broadcasts link with no named browser still launches', (tester) async {
+    await _tapOpen(tester, embedded: false, url: 'https://x.com/i/broadcasts/1abc');
+
+    expect(recorder.calls, hasLength(1));
+    expect(recorder.calls.single.url, 'https://x.com/i/broadcasts/1abc');
+  });
+
   test('prepareUrl follows the switch and defaults to stripping', () {
     const dirty = 'https://example.com/a?utm_source=x&keep=1';
     const clean = 'https://example.com/a?keep=1';

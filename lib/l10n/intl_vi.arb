@@ -3127,6 +3127,8 @@
   "videos": "Video",
   "broadcasts": "Phát sóng",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Xem ở Github",
   "@view_on_github": {},

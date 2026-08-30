@@ -1382,6 +1382,11 @@ class _DefaultPageState extends State<DefaultPage> {
           ),
         );
         return;
+      case LiveUriInfo(url: final watchUrl):
+        // Broadcasts and Spaces are not a profile or a post. Open them in
+        // a real browser — a generic x.com VIEW would bounce back here.
+        await openLiveUrl(context, watchUrl);
+        return;
       case UnknownResult():
         showDialog(
           context: context,

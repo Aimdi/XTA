@@ -3127,6 +3127,8 @@
   "videos": "동영상",
   "broadcasts": "방송",
   "@broadcasts": {},
+  "spaces": "스페이스",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "GitHub에서 보기",
   "@view_on_github": {},
