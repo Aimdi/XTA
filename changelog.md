@@ -1,3 +1,10 @@
+## XTA aimdi122
+
+What's new in XTA aimdi122:
+  - Built on aimdi121. Not QuaX.
+  - Substack follows a newsletter that moved to Beehiiv (paste the new site, not the old Substack)
+  - Everything from aimdi121
+
 ## XTA aimdi121
 
 What's new in XTA aimdi121:

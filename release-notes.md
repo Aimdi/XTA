@@ -4,6 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi122
+
+**XTA, built on aimdi121. Not QuaX.**
+
+Install **`xta-aimdi122_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 121.
+
+A Substack newsletter that moved to Beehiiv (Garbage Day / garbageday.email) used to add the old Substack archive. Paste the new site and the plugin follows that one.
+
 ### aimdi121
 
 **XTA, built on aimdi120. Not QuaX.**
