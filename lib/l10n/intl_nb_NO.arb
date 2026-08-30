@@ -3127,6 +3127,8 @@
   "videos": "Videoer",
   "broadcasts": "Sendinger",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Se på GitHub",
   "@view_on_github": {},

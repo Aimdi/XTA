@@ -3127,6 +3127,8 @@
   "videos": "動画",
   "broadcasts": "配信",
   "@broadcasts": {},
+  "spaces": "スペース",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "View on GitHub",
   "@view_on_github": {},

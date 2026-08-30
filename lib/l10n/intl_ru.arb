@@ -3127,6 +3127,8 @@
   "videos": "Видео",
   "broadcasts": "Трансляции",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Просмотреть на GitHub",
   "@view_on_github": {},

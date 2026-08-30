@@ -3127,6 +3127,8 @@
   "videos": "Videa",
   "broadcasts": "Vysílání",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Zobrazit na GitHubu",
   "@view_on_github": {},

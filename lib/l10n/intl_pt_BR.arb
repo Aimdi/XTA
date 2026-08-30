@@ -3127,6 +3127,8 @@
   "videos": "Vídeos",
   "broadcasts": "Transmissões",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Ver no GitHub",
   "@view_on_github": {},

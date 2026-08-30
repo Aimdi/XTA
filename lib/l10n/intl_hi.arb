@@ -3127,6 +3127,8 @@
   "videos": "वीडियो",
   "broadcasts": "प्रसारण",
   "@broadcasts": {},
+  "spaces": "स्पेसेज़",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "GitHub पर देखें",
   "@view_on_github": {},

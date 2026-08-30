@@ -225,8 +225,9 @@ String prepareUrl(BasePrefService prefs, String url) => cleanLinksEnabled(prefs)
 
 /// Hands a link to the system browser, bypassing the reader's choice.
 ///
-/// Kept for a caller that genuinely needs to leave the app; nothing does today,
-/// and [openUri] is what a link in the feed should go through.
+/// Used for live video and Spaces: XTA is the handler for x.com, so a
+/// generic VIEW of `x.com/i/broadcasts/…` or `/i/spaces/…` bounces back
+/// here and looks like a broken tap.
 Future<void> openInDefaultBrowser(String url) async {
   final packageName = await browserChannel.invokeMethod<String>('getDefaultBrowser');
   final intent = AndroidIntent(
@@ -237,10 +238,71 @@ Future<void> openInDefaultBrowser(String url) async {
   await intent.launch();
 }
 
+/// True when [url] is an X broadcast, Periscope watch link, or Space.
+///
+/// Those cannot be opened as a profile or a post inside XTA. Tapping one
+/// has to leave for a browser, and that VIEW must name a browser so it
+/// does not bounce back through our x.com intent-filter.
+bool isLiveWatchUrl(String? url) =>
+    spaceIdIn(url) != null || broadcastIdIn(url) != null;
+
+const _xtaPackage = 'com.aimdi.xta';
+
+/// Opens a broadcast or Space in a real browser.
+///
+/// Custom Tabs and a named browser package never bounce back into XTA.
+/// The generic system VIEW would, because this app is the handler for x.com.
+Future<void> openLiveUrl(BuildContext context, String uri) async {
+  final prefs = PrefService.of(context, listen: false);
+  final url = prepareUrl(prefs, uri);
+
+  final named = prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser;
+  if (named.isNotEmpty) {
+    try {
+      await openExternally(url, package: named);
+      return;
+    } catch (_) {
+      // Through to Custom Tabs / default browser below.
+    }
+  }
+
+  if (prefs.get(optionOpenLinksInEmbeddedBrowser) == true) {
+    await launchUrlString(url, mode: LaunchMode.inAppBrowserView);
+    return;
+  }
+
+  try {
+    final packageName = await browserChannel.invokeMethod<String>('getDefaultBrowser');
+    if (packageName != null &&
+        packageName.isNotEmpty &&
+        packageName != _xtaPackage) {
+      await AndroidIntent(
+        action: 'android.intent.action.VIEW',
+        data: url,
+        package: packageName,
+      ).launch();
+      return;
+    }
+  } catch (_) {
+    // Through to Custom Tabs: a missing plugin or an empty resolver
+    // must not look like a dead tap.
+  }
+
+  await launchUrlString(url, mode: LaunchMode.inAppBrowserView);
+}
+
 /// Opens [uri] outside the feed: in an in-app browser view when the reader
 /// asked for that in settings, otherwise in the browser they named — or the
 /// system default, if they named none.
+///
+/// Broadcasts and Spaces always go through [openLiveUrl]: a generic VIEW of
+/// x.com would reopen this app and show "unable to open link".
 Future<void> openUri(BuildContext context, String uri) async {
+  if (isLiveWatchUrl(uri)) {
+    await openLiveUrl(context, uri);
+    return;
+  }
+
   final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
@@ -376,6 +438,30 @@ Future<String?> _resolveShortUrl(Uri shortUrl) async {
 
 class UnknownResult extends UriParseResult {}
 
+/// An `x.com/i/broadcasts/{id}` or `x.com/i/spaces/{id}` (or pscp.tv) link.
+///
+/// XTA is a read frontend — it cannot host or play a live room in-app when
+/// there is no VOD — so these open in a browser rather than a native screen.
+class LiveUriInfo extends UriParseResult {
+  /// Canonical watch URL: `/i/broadcasts/{id}` or `/i/spaces/{id}`.
+  final String url;
+  final bool isSpace;
+
+  LiveUriInfo(this.url, {this.isSpace = false});
+}
+
+LiveUriInfo? _parseAsLiveLink(Uri link) {
+  final spaceId = spaceIdIn(link.toString());
+  if (spaceId != null) {
+    return LiveUriInfo(spaceUrlFor(spaceId), isSpace: true);
+  }
+  final broadcastId = broadcastIdIn(link.toString());
+  if (broadcastId != null) {
+    return LiveUriInfo(broadcastUrlFor(broadcastId));
+  }
+  return null;
+}
+
 Future<UriParseResult> parseUri(Uri link) async {
   if (link.host == 't.co') {
     String? lnk = await _resolveShortUrl(link);
@@ -392,6 +478,10 @@ Future<UriParseResult> parseUri(Uri link) async {
   final listInfo = _parseAsListLink(parts);
   if (listInfo != null) {
     return listInfo;
+  }
+  final liveInfo = _parseAsLiveLink(link);
+  if (liveInfo != null) {
+    return liveInfo;
   }
   final profileInfo = _parseAsProfileLink(parts);
   if (profileInfo != null) {

@@ -20,4 +20,34 @@ void main() {
     expect(await parseUri(Uri.parse('https://x.com/i/topics/tweet/9')), isA<PostUriInfo>());
     expect(await parseUri(Uri.parse('https://x.com/i/flow/login')), isA<UnknownResult>());
   });
+
+  test('parseUri routes broadcasts and Spaces instead of failing open', () async {
+    final broadcast = await parseUri(Uri.parse('https://x.com/i/broadcasts/1abc'));
+    expect(broadcast, isA<LiveUriInfo>());
+    expect((broadcast as LiveUriInfo).isSpace, isFalse);
+    expect(broadcast.url, 'https://x.com/i/broadcasts/1abc');
+
+    final space = await parseUri(Uri.parse('https://x.com/i/spaces/1room'));
+    expect(space, isA<LiveUriInfo>());
+    expect((space as LiveUriInfo).isSpace, isTrue);
+    expect(space.url, 'https://x.com/i/spaces/1room');
+
+    final singular = await parseUri(Uri.parse('https://twitter.com/i/space/1solo'));
+    expect(singular, isA<LiveUriInfo>());
+    expect((singular as LiveUriInfo).url, 'https://x.com/i/spaces/1solo');
+
+    final pscp = await parseUri(Uri.parse('https://pscp.tv/w/1vod'));
+    expect(pscp, isA<LiveUriInfo>());
+    expect((pscp as LiveUriInfo).url, 'https://x.com/i/broadcasts/1vod');
+  });
+
+  test('isLiveWatchUrl covers broadcasts, Spaces, and Periscope', () {
+    expect(isLiveWatchUrl('https://x.com/i/broadcasts/1abc'), isTrue);
+    expect(isLiveWatchUrl('https://x.com/i/spaces/1room'), isTrue);
+    expect(isLiveWatchUrl('https://www.x.com/i/space/1room'), isTrue);
+    expect(isLiveWatchUrl('https://pscp.tv/w/1abc'), isTrue);
+    expect(isLiveWatchUrl('https://x.com/someone/status/1'), isFalse);
+    expect(isLiveWatchUrl('https://x.com/i/lists/1'), isFalse);
+    expect(isLiveWatchUrl(null), isFalse);
+  });
 }

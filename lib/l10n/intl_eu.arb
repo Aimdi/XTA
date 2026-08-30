@@ -3127,6 +3127,8 @@
   "videos": "Bideoak",
   "broadcasts": "Emisioak",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Ikusi GitHuben",
   "@view_on_github": {},

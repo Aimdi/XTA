@@ -83,6 +83,9 @@ Future<bool> _openX(BuildContext context, String url) async {
         arguments: ProfileScreenArguments.fromScreenName(screenName, tab),
       );
       return true;
+    case LiveUriInfo(url: final watchUrl):
+      await openLiveUrl(context, watchUrl);
+      return true;
     default:
       return false;
   }

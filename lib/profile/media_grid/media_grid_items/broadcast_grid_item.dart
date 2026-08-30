@@ -35,6 +35,17 @@ class BroadcastGridItem extends MediaGridItem {
 
   bool get isSpace => spaceId != null;
 
+  /// Whether the in-app player can actually start this tile.
+  ///
+  /// A VOD carries video variants. Card-only live rooms and Spaces do not —
+  /// those open `watchUrl` in a browser instead of a silent player.
+  bool get canPlayInApp {
+    final variants = media.videoInfo?.variants;
+    return media.type == 'video' &&
+        variants != null &&
+        variants.any((v) => v.url != null && v.url!.isNotEmpty);
+  }
+
   @override
   Widget toWidget(BuildContext context) {
     return Stack(
@@ -74,7 +85,9 @@ class BroadcastGridItem extends MediaGridItem {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  L10n.of(context).broadcasts,
+                  isSpace
+                      ? L10n.of(context).spaces
+                      : L10n.of(context).broadcasts,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 10,

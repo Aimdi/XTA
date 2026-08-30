@@ -3127,6 +3127,8 @@
   "videos": "مقاطع فيديو",
   "broadcasts": "البث",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "عرض على GitHub",
   "@view_on_github": {},

@@ -3127,6 +3127,8 @@
   "videos": "Videoclipuri",
   "broadcasts": "Transmisiuni",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Vizualizați pe GitHub",
   "@view_on_github": {},

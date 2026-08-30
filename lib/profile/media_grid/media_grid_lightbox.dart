@@ -97,7 +97,9 @@ void openMediaLightbox(BuildContext context,
   );
 }
 
-/// Broadcasts open `x.com/i/broadcasts/{id}`. Spaces open `x.com/i/spaces/{id}`.
+/// Broadcasts with a playable VOD open in the in-app player. Live rooms
+/// and Spaces with no video open `x.com/i/broadcasts/{id}` or
+/// `x.com/i/spaces/{id}` in a real browser (not a bounce back into XTA).
 void openMediaGridItem(
   BuildContext context, {
   required MediaGridItem item,
@@ -106,10 +108,19 @@ void openMediaGridItem(
   List<MediaGridItem> staticItems = const [],
 }) {
   if (item is BroadcastGridItem) {
+    if (item.canPlayInApp) {
+      openMediaLightbox(
+        context,
+        controller: controller,
+        staticItems: staticItems,
+        initialIndex: index,
+      );
+      return;
+    }
     final url = item.watchUrl ??
         (item.tweet == null ? null : liveUrlOf(item.tweet!));
     if (url != null) {
-      openUri(context, url);
+      openLiveUrl(context, url);
       return;
     }
     Navigator.pushNamed(

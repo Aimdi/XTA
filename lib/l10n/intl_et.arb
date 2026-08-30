@@ -3127,6 +3127,8 @@
   "videos": "Videod",
   "broadcasts": "Ülekanded",
   "@broadcasts": {},
+  "spaces": "Spaces",
+  "@spaces": {},
   "@videos": {},
   "view_on_github": "Vaata GitHubis",
   "@view_on_github": {},
