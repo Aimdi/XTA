@@ -221,7 +221,7 @@ class TweetCard extends StatelessWidget {
               'width': media['original_info']['width'],
               'height': media['original_info']['height'],
             },
-            BoxFit.contain);
+            BoxFit.cover);
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       case 'video_website':
         // https://twitter.com/yenisafak/status/1560244349451096064
@@ -306,7 +306,7 @@ class TweetCard extends StatelessWidget {
             _findCardUrl(card),
             Row(
               children: [
-                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.contain)),
+                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover)),
                 Expanded(
                     flex: 4,
                     child: _createListTile(
@@ -326,7 +326,7 @@ class TweetCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.contain),
+                _createImage(imageSize, image, BoxFit.cover),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                   child: _createListTile(
@@ -381,7 +381,7 @@ class TweetCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.contain),
+                _createImage(imageSize, image, BoxFit.cover),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                   child: _createListTile(context, title, null, vanityUrl),
@@ -408,7 +408,7 @@ class TweetCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.contain),
+                _createImage(imageSize, image, BoxFit.cover),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                   child: _createListTile(context, card['binding_values']['event_title']['string_value'],
