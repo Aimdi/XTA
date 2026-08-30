@@ -566,9 +566,9 @@ class _StatusScreenState extends State<_StatusScreen> {
     );
   }
 
-  // Reddit-style nested replies: the opened tweet on top, replies indented
-  // under their parent. Renders the flattened tree in a lazy list, keeping the
-  // paging controller for loading more.
+  // Nested replies: the opened tweet on top, direct replies flush with it,
+  // replies-to-replies stepped in. Renders the flattened tree in a lazy list,
+  // keeping the paging controller for loading more.
   Widget _buildThreadedList(BuildContext context, PagingState<int, TweetChain> state, NextPageCallback fetchNextPage) {
     final items = state.items ?? const <TweetChain>[];
     if (items.isEmpty) {

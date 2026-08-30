@@ -9,6 +9,18 @@ Widget _inAList(Widget child) => MaterialApp(
 );
 
 void main() {
+  group('threadNestedIndent', () {
+    test('the opened tweet and its direct replies sit flush left', () {
+      expect(threadNestedIndent(0), 0);
+      expect(threadNestedIndent(1), 0);
+    });
+
+    test('only a reply-to-a-reply steps in', () {
+      expect(threadNestedIndent(2), kThreadLevelWidth);
+      expect(threadNestedIndent(3), 2 * kThreadLevelWidth);
+    });
+  });
+
   group('ThreadRailBody', () {
     testWidgets('a tile with a rail below it is as tall as its content', (tester) async {
       await tester.pumpWidget(
@@ -63,6 +75,28 @@ void main() {
 
       expect(height.isFinite, isTrue);
       expect(height, 120);
+    });
+
+    testWidgets('a direct reply lines up with the opened tweet', (tester) async {
+      await tester.pumpWidget(
+        _inAList(
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ThreadIndent(depth: 0, child: SizedBox(key: Key('root'), width: 20, height: 20)),
+              ThreadIndent(depth: 1, child: SizedBox(key: Key('reply'), width: 20, height: 20)),
+              ThreadIndent(depth: 2, child: SizedBox(key: Key('nested'), width: 20, height: 20)),
+            ],
+          ),
+        ),
+      );
+
+      final root = tester.getTopLeft(find.byKey(const Key('root')));
+      final reply = tester.getTopLeft(find.byKey(const Key('reply')));
+      final nested = tester.getTopLeft(find.byKey(const Key('nested')));
+
+      expect(reply.dx, root.dx, reason: 'direct replies must not leave a blank strip on the left');
+      expect(nested.dx, root.dx + kThreadLevelWidth);
     });
   });
 }

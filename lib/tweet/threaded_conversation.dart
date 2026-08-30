@@ -200,6 +200,8 @@ bool _hasThreadChildBelow(ThreadDisplayNode node, int index, List<ThreadDisplayI
 }
 
 /// Wraps a reply with avatar-column rails for its [depth] on the status screen.
+/// Direct replies (depth 1) are flush with the opened tweet; only deeper
+/// nesting steps in.
 class ThreadIndent extends StatelessWidget {
   final int depth;
   final bool connectTop;
@@ -216,11 +218,12 @@ class ThreadIndent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (depth <= 0 && !connectTop && !connectBottom) {
+    final indent = threadNestedIndent(depth);
+    if (indent <= 0 && !connectTop && !connectBottom) {
       return child;
     }
     return Padding(
-      padding: EdgeInsets.only(left: depth * kThreadLevelWidth),
+      padding: EdgeInsets.only(left: indent),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -251,7 +254,7 @@ class ThreadContinueRow extends StatelessWidget {
       onTap: onTap,
       child: Padding(
         padding: EdgeInsets.only(
-          left: indentDepth * kThreadLevelWidth + kThreadRailLeft,
+          left: threadNestedIndent(indentDepth) + kThreadRailLeft,
           top: 8,
           bottom: 8,
           right: 16,
