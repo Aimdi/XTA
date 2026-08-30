@@ -4,6 +4,18 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi116
+
+**XTA, built on aimdi115. Not QuaX.**
+
+Install **`xta-aimdi116_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 115.
+
+- Tapping Medien → Livestreams or a Space opens it. VODs play here; live rooms and Spaces open in a browser instead of “Link kann nicht geöffnet werden”
+- Reddit communities show their real icon, not a generated face
+- Bookmark a Reddit post into an Archiv folder (tap saves, long-press picks the folder)
+- Local Reddit upvotes appear under Archiv → Gefällt mir
+- Bluesky profiles have a Saved tab of likes that stay on this device
+
 ### aimdi115
 
 **XTA, built on aimdi114. Not QuaX.**
