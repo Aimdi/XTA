@@ -20,7 +20,7 @@ Widget _app(Widget child) {
   );
 }
 
-const _alice = BlueskyProfile(
+final _alice = BlueskyProfile(
   did: 'did:plc:abc',
   handle: 'alice.bsky.social',
   displayName: 'Alice',
@@ -49,7 +49,7 @@ void main() {
   testWidgets('profile identity matches the X header: name, handle, joined, counts', (
     tester,
   ) async {
-    await tester.pumpWidget(_app(const BlueskyProfileCard(profile: _alice)));
+    await tester.pumpWidget(_app(BlueskyProfileCard(profile: _alice)));
     await tester.pumpAndSettle();
 
     expect(find.text('Alice'), findsOneWidget);
