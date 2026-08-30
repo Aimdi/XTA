@@ -20,16 +20,23 @@ class SubstackScreen extends StatefulWidget {
 }
 
 class _SubstackScreenState extends State<SubstackScreen> {
+  bool _isInitialLoad = true;
+  bool _hasLoaded = false;
+
   @override
   void initState() {
     super.initState();
+    // Only load publications and read state on first init
+    // DON'T auto-refresh feed - only refresh on explicit pull-to-refresh
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final pubs = context.read<SubstackPublicationsStore>();
-      final feed = context.read<SubstackFeedStore>();
       final read = context.read<SubstackReadStore>();
       await pubs.load();
       await read.load();
-      await feed.refresh();
+      _isInitialLoad = false;
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -119,6 +126,17 @@ class _SubstackScreenState extends State<SubstackScreen> {
               ),
               onLoading: (_) => const Center(child: CircularProgressIndicator()),
               onState: (context, snapshot) {
+                // Auto-refresh feed only on first load or when returning to top
+                if (!_hasLoaded) {
+                  _hasLoaded = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    if (!mounted) return;
+                    if (snapshot.posts.isEmpty) {
+                      await feed.refresh();
+                    }
+                  });
+                }
+                
                 final children = <Widget>[
                   _FollowedStrip(
                     publications: publications,

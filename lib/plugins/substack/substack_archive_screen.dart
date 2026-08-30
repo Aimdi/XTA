@@ -18,6 +18,8 @@ class SubstackArchiveScreen extends StatefulWidget {
 
 class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
   SubstackArchiveStore? _store;
+  bool _isInitialLoad = true;
+  bool _hasLoaded = false;
 
   @override
   void initState() {
@@ -25,7 +27,8 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final store = SubstackArchiveStore(context.read(), widget.publication);
       setState(() => _store = store);
-      store.refresh();
+      // DON'T auto-refresh on init - only refresh on explicit pull-to-refresh
+      _isInitialLoad = false;
     });
   }
 
@@ -57,6 +60,17 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
         ),
         onLoading: (_) => const Center(child: CircularProgressIndicator()),
         onState: (context, snapshot) {
+          // Auto-refresh only on first load
+          if (!_hasLoaded) {
+            _hasLoaded = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (!mounted) return;
+              if (snapshot.posts.isEmpty) {
+                await store.refresh();
+              }
+            });
+          }
+          
           if (snapshot.posts.isEmpty) {
             return Center(child: Text(L10n.of(context).plugin_substack_feed_empty));
           }
