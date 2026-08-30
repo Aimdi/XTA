@@ -10,6 +10,7 @@ import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_login_webview.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -359,5 +360,160 @@ class _PixivSettingsScreenState extends State<PixivSettingsScreen> {
 
   void _unmuteIllust(int id) {
     context.read<PixivMuteStore>().unmuteIllust(id);
+  }
+}
+
+/// Flare-style More list: account, history, preferences, mute, about, logout.
+class PixivMorePane extends StatefulWidget {
+  final VoidCallback onAuthChanged;
+
+  const PixivMorePane({super.key, required this.onAuthChanged});
+
+  @override
+  State<PixivMorePane> createState() => _PixivMorePaneState();
+}
+
+class _PixivMorePaneState extends State<PixivMorePane> {
+  String? _signedInName;
+  var _signingIn = false;
+  var _revealToken = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadName());
+  }
+
+  bool get _signedIn =>
+      (PrefService.of(
+                context,
+                listen: false,
+              ).get<String>(optionPluginPixivRefreshToken) ??
+              '')
+          .trim()
+          .isNotEmpty;
+
+  Future<void> _loadName() async {
+    if (!_signedIn) return;
+    try {
+      final user = await context.read<PixivClient>().verify();
+      if (mounted) setState(() => _signedInName = user.displayName);
+    } catch (_) {}
+  }
+
+  String _maskedToken(String raw) {
+    if (raw.length < 8) return '••••';
+    return '${raw.substring(0, 4)}••••${raw.substring(raw.length - 4)}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final prefs = PrefService.of(context, listen: false);
+    final token = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '')
+        .trim();
+    final name = _signedInName;
+
+    return ListView(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.person_outline),
+          title: Text(l10n.plugin_pixiv_more_account),
+          subtitle: Text(
+            _revealToken && token.isNotEmpty
+                ? _maskedToken(token)
+                : _signedIn
+                ? (name == null || name.isEmpty
+                      ? l10n.plugin_pixiv_title
+                      : l10n.plugin_pixiv_signed_in(name))
+                : l10n.plugin_pixiv_not_configured,
+          ),
+          trailing: _signedIn
+              ? TextButton(
+                  onPressed: () => setState(() => _revealToken = !_revealToken),
+                  child: Text(l10n.plugin_pixiv_reveal),
+                )
+              : null,
+          onTap: _signedIn
+              ? () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PixivSettingsScreen(),
+                  ),
+                )
+              : () async {
+                  setState(() => _signingIn = true);
+                  try {
+                    await runPixivSignIn(context);
+                    if (mounted) {
+                      await _loadName();
+                      widget.onAuthChanged();
+                    }
+                  } finally {
+                    if (mounted) setState(() => _signingIn = false);
+                  }
+                },
+        ),
+        if (_signingIn)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Center(
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          ),
+        ListTile(
+          leading: const Icon(Icons.history),
+          title: Text(l10n.plugin_pixiv_search_history),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PixivSearchScreen()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.tune),
+          title: Text(l10n.plugin_pixiv_more_preferences),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PixivSettingsScreen()),
+            );
+            if (mounted) widget.onAuthChanged();
+          },
+        ),
+        ListTile(
+          leading: const Icon(Icons.volume_off_outlined),
+          title: Text(l10n.plugin_pixiv_more_mute),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const PixivSettingsScreen()),
+          ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.info_outline),
+          title: Text(l10n.plugin_pixiv_more_about),
+          subtitle: Text(l10n.plugin_pixiv_description),
+        ),
+        if (_signedIn)
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: Text(l10n.plugin_pixiv_sign_out),
+            onTap: () async {
+              await context.read<PixivClient>().signOut();
+              if (!mounted) return;
+              context.read<PixivFeedStore>().update(const []);
+              context.read<PixivBookmarkStore>().update(const {});
+              setState(() {
+                _signedInName = null;
+                _revealToken = false;
+              });
+              widget.onAuthChanged();
+            },
+          ),
+      ],
+    );
   }
 }

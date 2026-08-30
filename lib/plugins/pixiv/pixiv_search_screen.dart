@@ -20,8 +20,13 @@ import 'package:xta/ui/errors.dart';
 /// Tag / keyword / user search — Pixez's second home.
 class PixivSearchScreen extends StatefulWidget {
   final String? initialQuery;
+  final bool embedded;
 
-  const PixivSearchScreen({super.key, this.initialQuery});
+  const PixivSearchScreen({
+    super.key,
+    this.initialQuery,
+    this.embedded = false,
+  });
 
   @override
   State<PixivSearchScreen> createState() => _PixivSearchScreenState();
@@ -262,38 +267,52 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _query,
-          textInputAction: TextInputAction.search,
-          autofocus: (widget.initialQuery ?? '').isEmpty,
-          decoration: InputDecoration(
-            hintText: l10n.plugin_pixiv_search_hint,
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              tooltip: l10n.search,
-              onPressed: _search,
-              icon: const Icon(Icons.search),
-            ),
-          ),
-          onChanged: _onQueryChanged,
-          onSubmitted: (_) => _search(),
-        ),
-        bottom: TabBar(
-          controller: _tabs,
-          tabs: [
-            Tab(text: l10n.plugin_pixiv_tab_illusts),
-            Tab(text: l10n.plugin_pixiv_tab_users),
-          ],
+    final field = TextField(
+      controller: _query,
+      textInputAction: TextInputAction.search,
+      autofocus: !widget.embedded && (widget.initialQuery ?? '').isEmpty,
+      decoration: InputDecoration(
+        hintText: l10n.plugin_pixiv_search_hint,
+        border: InputBorder.none,
+        suffixIcon: IconButton(
+          tooltip: l10n.search,
+          onPressed: _search,
+          icon: const Icon(Icons.search),
         ),
       ),
-      body: _suggestions.isEmpty
-          ? TabBarView(
-              controller: _tabs,
-              children: [_illustTab(l10n), _usersTab(l10n)],
-            )
-          : _suggestionList(),
+      onChanged: _onQueryChanged,
+      onSubmitted: (_) => _search(),
+    );
+    final tabs = TabBar(
+      controller: _tabs,
+      tabs: [
+        Tab(text: l10n.plugin_pixiv_tab_illusts),
+        Tab(text: l10n.plugin_pixiv_tab_users),
+      ],
+    );
+    final body = _suggestions.isEmpty
+        ? TabBarView(
+            controller: _tabs,
+            children: [_illustTab(l10n), _usersTab(l10n)],
+          )
+        : _suggestionList();
+
+    if (widget.embedded) {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 8, 0),
+            child: field,
+          ),
+          tabs,
+          Expanded(child: body),
+        ],
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: field, bottom: tabs),
+      body: body,
     );
   }
 

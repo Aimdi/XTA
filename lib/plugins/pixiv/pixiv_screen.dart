@@ -21,7 +21,7 @@ import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
-/// Flare-style Pixiv home: Following / Recommended / Ranking / Bookmarks + search.
+/// Flare-style Pixiv home: Home / Rankings / Favorites / Search / More.
 class PixivScreen extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -41,6 +41,7 @@ class _PixivScreenState extends State<PixivScreen>
   var _rankingMode = 'day';
   DateTime? _rankingDate;
   var _bookmarksRestrict = 'public';
+  var _homeSource = 0;
 
   /// Ranking modes Flare pins as first-class feeds, plus XTA's existing set.
   static const _rankingModes = [
@@ -57,7 +58,7 @@ class _PixivScreenState extends State<PixivScreen>
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 4, vsync: this);
+    _tabs = TabController(length: 5, vsync: this);
     _tabs.addListener(() {
       if (_tabs.indexIsChanging) return;
       _ensureTabLoaded(_tabs.index);
@@ -129,18 +130,18 @@ class _PixivScreenState extends State<PixivScreen>
     }
     switch (index) {
       case 0:
-        if (context.read<PixivFeedStore>().state.isEmpty) {
-          context.read<PixivFeedStore>().refresh();
-        }
-      case 1:
-        if (_recommended.state.isEmpty) {
+        if (_homeSource == 0) {
+          if (context.read<PixivFeedStore>().state.isEmpty) {
+            context.read<PixivFeedStore>().refresh();
+          }
+        } else if (_recommended.state.isEmpty) {
           _recommended.refresh();
         }
-      case 2:
+      case 1:
         if (_ranking.state.isEmpty) {
           _ranking.refresh();
         }
-      case 3:
+      case 2:
         if (_bookmarks.state.isEmpty) {
           _bookmarks.refresh();
         }
@@ -200,6 +201,11 @@ class _PixivScreenState extends State<PixivScreen>
     await _bookmarks.refresh();
   }
 
+  void _selectTab(int index) {
+    if (_tabs.index == index) return;
+    _tabs.index = index;
+  }
+
   String _rankingLabel(L10n l10n, String mode) => switch (mode) {
     'week' => l10n.plugin_pixiv_ranking_week,
     'month' => l10n.plugin_pixiv_ranking_month,
@@ -219,71 +225,76 @@ class _PixivScreenState extends State<PixivScreen>
         .trim()
         .isNotEmpty;
 
-    final actions = <Widget>[
-      if (hasToken)
-        IconButton(
-          icon: const Icon(Icons.search),
-          tooltip: l10n.search,
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PixivSearchScreen()),
-          ),
-        ),
-      IconButton(
-        icon: const Icon(Icons.settings_outlined),
-        tooltip: l10n.settings,
-        onPressed: () async {
-          final feed = context.read<PixivFeedStore>();
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PixivSettingsScreen()),
-          );
-          if (!mounted) return;
-          await feed.refresh();
-          if (!mounted) return;
-          _ensureTabLoaded(_tabs.index);
-        },
-      ),
-    ];
-
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      appBar: pluginHomeTabAppBar(
-        tabs: hasToken
-            ? TabBar(
-                controller: _tabs,
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                tabs: [
-                  Tab(text: l10n.plugin_pixiv_tab_following),
-                  Tab(text: l10n.plugin_pixiv_tab_recommended),
-                  Tab(text: l10n.plugin_pixiv_tab_ranking),
-                  Tab(text: l10n.plugin_pixiv_tab_bookmarks),
-                ],
-              )
-            : const SizedBox.shrink(),
-        actions: actions,
+      body: Column(
+        children: [
+          PixivHomeChrome(index: _tabs.index, onSelect: _selectTab),
+          const Divider(height: 1),
+          Expanded(
+            child: !hasToken && _tabs.index != 4
+                ? _signInBody(l10n)
+                : PluginLazyTabs(
+                    index: _tabs.index,
+                    children: [
+                      (_) => _homeTab(l10n),
+                      (_) => _rankingTab(l10n),
+                      (_) => _bookmarksTab(l10n),
+                      (_) => const PixivSearchScreen(embedded: true),
+                      (_) => PixivMorePane(
+                        onAuthChanged: () {
+                          if (mounted) setState(() {});
+                        },
+                      ),
+                    ],
+                  ),
+          ),
+        ],
       ),
-      // TabBarView kept every board mounted. Each masonry attached the home
-      // NestedScrollView's *inner* controller, then NestedScrollView.position
-      // threw `Too many elements` on the first filled frame.
-      body: !hasToken
-          ? _signInBody(l10n)
-          : PluginLazyTabs(
-              index: _tabs.index,
-              children: [
-                (_) => _feedTab(
+    );
+  }
+
+  Widget _homeTab(L10n l10n) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+          child: Row(
+            children: [
+              ChoiceChip(
+                label: Text(l10n.plugin_pixiv_tab_following),
+                selected: _homeSource == 0,
+                onSelected: (_) {
+                  if (_homeSource == 0) return;
+                  setState(() => _homeSource = 0);
+                  _ensureTabLoaded(0);
+                },
+              ),
+              const SizedBox(width: 8),
+              ChoiceChip(
+                label: Text(l10n.plugin_pixiv_tab_recommended),
+                selected: _homeSource == 1,
+                onSelected: (_) {
+                  if (_homeSource == 1) return;
+                  setState(() => _homeSource = 1);
+                  _ensureTabLoaded(0);
+                },
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _homeSource == 0
+              ? _feedTab(
                   store: context.read<PixivFeedStore>(),
                   empty: l10n.plugin_pixiv_empty,
-                ),
-                (_) => _feedTab(
+                )
+              : _feedTab(
                   store: _recommended,
                   empty: l10n.plugin_pixiv_recommended_empty,
                 ),
-                (_) => _rankingTab(l10n),
-                (_) => _bookmarksTab(l10n),
-              ],
-            ),
+        ),
+      ],
     );
   }
 
@@ -530,4 +541,57 @@ class _ThumbPrefetchState extends State<_ThumbPrefetch> {
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+/// Icon tabs matching Flare's Home / Rankings / Favorites / Search / More,
+/// sitting under the Start strip instead of a nested AppBar that never painted.
+class PixivHomeChrome extends StatelessWidget {
+  final int index;
+  final ValueChanged<int> onSelect;
+
+  const PixivHomeChrome({
+    super.key,
+    required this.index,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return PluginHomeChrome(
+      accent: const Color(0xFF0096FA),
+      tabs: [
+        PluginHomeTab(
+          icon: Icons.home_outlined,
+          label: l10n.home,
+          selected: index == 0,
+          onTap: () => onSelect(0),
+        ),
+        PluginHomeTab(
+          icon: Icons.bar_chart,
+          label: l10n.plugin_pixiv_tab_ranking,
+          selected: index == 1,
+          onTap: () => onSelect(1),
+        ),
+        PluginHomeTab(
+          icon: Icons.favorite_border,
+          label: l10n.plugin_pixiv_tab_favorites,
+          selected: index == 2,
+          onTap: () => onSelect(2),
+        ),
+        PluginHomeTab(
+          icon: Icons.search,
+          label: l10n.search,
+          selected: index == 3,
+          onTap: () => onSelect(3),
+        ),
+        PluginHomeTab(
+          icon: Icons.menu,
+          label: l10n.plugin_pixiv_tab_more,
+          selected: index == 4,
+          onTap: () => onSelect(4),
+        ),
+      ],
+    );
+  }
 }
