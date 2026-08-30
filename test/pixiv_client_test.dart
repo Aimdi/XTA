@@ -516,6 +516,43 @@ void main() {
       expect(kept.illusts.map((e) => e.id), [1, 2]);
       expect(kept.nextUrl, contains('offset=30'));
     });
+
+    test(
+      'ranking is /v1/illust/ranking; likes are bookmarks with user_id',
+      () async {
+        await prefs.set(optionPluginPixivAccessToken, 'access-1');
+        await prefs.set(
+          optionPluginPixivAccessExpiresAt,
+          DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
+        );
+
+        final asked = <Uri>[];
+        final client = PixivClient(
+          prefs,
+          httpClient: MockClient((request) async {
+            asked.add(request.url);
+            return _json({'illusts': [], 'next_url': null}, 200);
+          }),
+        );
+
+        await client.ranking(mode: 'day');
+        await client.bookmarks(userId: 123);
+
+        expect(asked.map((u) => u.path), [
+          '/v1/illust/ranking',
+          '/v1/user/bookmarks/illust',
+        ]);
+        expect(
+          asked.map((u) => u.path),
+          isNot(contains('/v1/ranking/illust')),
+        );
+        expect(
+          asked.map((u) => u.path),
+          isNot(contains('/v1/user/like/illust')),
+        );
+        expect(asked.last.queryParameters['user_id'], '123');
+      },
+    );
   });
 }
 
