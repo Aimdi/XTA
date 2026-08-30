@@ -21,27 +21,39 @@ class SubstackClient {
   static const _rssPaths = ['/feed', '/rss', '/feed.xml'];
 
   Future<SubstackPublication> fetchPublication(Uri base) async {
-    final bases = substackHostCandidates(base);
-    for (final candidate in bases) {
+    final requested = requestedPublicationHosts(base);
+    final leftover = leftoverSubstackHosts(base);
+
+    for (final candidate in requested) {
       final fromJson = await _publicationFromListing(candidate);
       if (fromJson != null) return _bindFollowedHost(fromJson, base);
-    }
-    for (final candidate in bases) {
+      final fromBeehiiv = await _publicationFromBeehiiv(candidate);
+      if (fromBeehiiv != null) return _bindFollowedHost(fromBeehiiv, base);
       final rss = await _fetchRss(candidate);
       if (rss != null && _rssIsSubstack(candidate, rss)) {
         return _bindFollowedHost(_publicationFromRss(candidate, rss), base);
       }
     }
-    for (final candidate in bases) {
-      if (!isSubstackPublicationHost(candidate.host)) continue;
+
+    for (final candidate in leftover) {
+      final fromJson = await _publicationFromListing(candidate);
+      if (fromJson != null) return _bindFollowedHost(fromJson, base);
+    }
+    for (final candidate in leftover) {
+      final rss = await _fetchRss(candidate);
+      if (rss != null && _rssIsSubstack(candidate, rss)) {
+        return _bindFollowedHost(_publicationFromRss(candidate, rss), base);
+      }
+    }
+    for (final candidate in leftover) {
       final fromHtml = await _publicationFromHomepage(candidate);
       if (fromHtml != null) return _bindFollowedHost(fromHtml, base);
     }
     throw SubstackNotPublicationException();
   }
 
-  /// Handle, share URL, @profile, custom domain, or leftover domain after a
-  /// newsletter left Substack — always a host that still serves Substack.
+  /// Handle, share URL, @profile, custom domain, leftover Substack twin, or a
+  /// living Beehiiv site that used to be on Substack.
   Future<SubstackPublication> resolvePublication(String input) async {
     final trimmed = input.trim();
     final tried = <String>{};
@@ -85,29 +97,64 @@ class SubstackClient {
     int limit = 12,
     int offset = 0,
   }) async {
-    final bases = publicationFetchBases(publication);
-    if (bases.isEmpty) {
+    final split = _splitBases(publication);
+    if (split.requested.isEmpty && split.leftover.isEmpty) {
       throw SubstackNotPublicationException();
     }
 
     var reachable = false;
-    for (final base in bases) {
-      try {
-        final posts = await _postsFromJson(
-          base,
-          publication,
-          limit: limit,
-          offset: offset,
-        );
+
+    Future<List<SubstackPost>?> fromSubstackJson(List<Uri> hosts) async {
+      for (final base in hosts) {
+        try {
+          final posts = await _postsFromJson(
+            base,
+            publication,
+            limit: limit,
+            offset: offset,
+          );
+          reachable = true;
+          if (posts.isNotEmpty || offset > 0) return posts;
+        } catch (e) {
+          log.info('JSON posts failed for $base: $e — trying next host');
+        }
+      }
+      return null;
+    }
+
+    final requestedJson = await fromSubstackJson(split.requested);
+    if (requestedJson != null) return requestedJson;
+
+    for (final base in split.requested) {
+      final posts = await _postsFromBeehiiv(
+        base,
+        publication,
+        limit: limit,
+        offset: offset,
+      );
+      if (posts != null) {
         reachable = true;
-        if (posts.isNotEmpty || offset > 0) return posts;
-      } catch (e) {
-        log.info('JSON posts failed for $base: $e — trying next host');
+        return posts;
       }
     }
 
-    if (offset > 0) return const [];
-    for (final base in bases) {
+    if (offset > 0) {
+      final leftoverJson = await fromSubstackJson(split.leftover);
+      if (leftoverJson != null) return leftoverJson;
+      return const [];
+    }
+
+    for (final base in split.requested) {
+      final rss = await _fetchRss(base, publication: publication);
+      if (rss != null && _rssIsSubstack(base, rss) && rss.posts.isNotEmpty) {
+        return rss.posts.take(limit).toList(growable: false);
+      }
+    }
+
+    final leftoverJson = await fromSubstackJson(split.leftover);
+    if (leftoverJson != null) return leftoverJson;
+
+    for (final base in split.leftover) {
       final rss = await _fetchRss(base, publication: publication);
       if (rss != null && _rssIsSubstack(base, rss) && rss.posts.isNotEmpty) {
         return rss.posts.take(limit).toList(growable: false);
@@ -121,7 +168,9 @@ class SubstackClient {
     SubstackPublication publication,
     String slug,
   ) async {
-    for (final base in publicationFetchBases(publication)) {
+    final split = _splitBases(publication);
+
+    for (final base in split.requested) {
       try {
         final post = await _postFromJson(base, publication, slug);
         if (post != null) return post;
@@ -130,7 +179,27 @@ class SubstackClient {
       }
     }
 
-    for (final base in publicationFetchBases(publication)) {
+    for (final base in split.requested) {
+      final post = await _postFromBeehiivPage(base, publication, slug);
+      if (post != null) return post;
+    }
+
+    for (final base in split.requested) {
+      final rss = await _fetchRss(base, publication: publication);
+      final match = rss?.posts.where((p) => p.slug == slug).firstOrNull;
+      if (match != null) return match;
+    }
+
+    for (final base in split.leftover) {
+      try {
+        final post = await _postFromJson(base, publication, slug);
+        if (post != null) return post;
+      } catch (e) {
+        log.info('JSON post failed for $slug at $base: $e');
+      }
+    }
+
+    for (final base in split.leftover) {
       final rss = await _fetchRss(base, publication: publication);
       final match = rss?.posts.where((p) => p.slug == slug).firstOrNull;
       if (match != null) return match;
@@ -357,11 +426,155 @@ class SubstackClient {
         },
       );
       if (response.statusCode != 200) return null;
-      return publicationFromHomepageHtml(utf8.decode(response.bodyBytes), base);
+      final html = utf8.decode(response.bodyBytes);
+      return publicationFromBeehiivHomepageHtml(html, base) ??
+          publicationFromHomepageHtml(html, base);
     } catch (e) {
       log.info('Homepage probe failed for $base: $e');
       return null;
     }
+  }
+
+  Future<SubstackPublication?> _publicationFromBeehiiv(Uri base) async {
+    final listing = await _fetchBeehiivListingMaps(base, page: 1);
+    if (listing == null) return null;
+    final fromHtml = await _publicationFromHomepage(base);
+    if (fromHtml != null) return fromHtml;
+    return SubstackPublication(
+      subdomain: subdomainOf(base),
+      baseUrl: base.origin,
+      name: subdomainOf(base),
+    );
+  }
+
+  Future<List<SubstackPost>?> _postsFromBeehiiv(
+    Uri base,
+    SubstackPublication publication, {
+    required int limit,
+    required int offset,
+  }) async {
+    final first = await _fetchBeehiivListingMaps(base, page: 1);
+    if (first == null) return null;
+
+    final out = <SubstackPost>[];
+    var skipped = 0;
+    var page = 1;
+    var current = first;
+    while (true) {
+      for (final raw in current.posts) {
+        final post = postFromBeehiivJson(
+          raw,
+          publicationBaseUrl: publication.baseUrl,
+          publicationName: publication.displayName,
+        );
+        if (post.title.isEmpty || post.slug.isEmpty) continue;
+        if (skipped < offset) {
+          skipped++;
+          continue;
+        }
+        out.add(post);
+        if (out.length >= limit) return out;
+      }
+      if (page >= current.totalPages || current.posts.isEmpty) break;
+      page++;
+      final next = await _fetchBeehiivListingMaps(base, page: page);
+      if (next == null) break;
+      current = next;
+    }
+    return out;
+  }
+
+  Future<SubstackPost?> _postFromBeehiivPage(
+    Uri base,
+    SubstackPublication publication,
+    String slug,
+  ) async {
+    final uri = base.replace(path: '/p/$slug', queryParameters: {});
+    try {
+      final response = await httpClient.get(
+        uri,
+        headers: {
+          'Accept': 'text/html,application/xhtml+xml',
+          'User-Agent': _ua,
+        },
+      );
+      if (response.statusCode != 200) return null;
+      return postFromBeehiivHtml(
+        utf8.decode(response.bodyBytes),
+        slug: slug,
+        publicationBaseUrl: publication.baseUrl,
+        publicationName: publication.displayName,
+      );
+    } catch (e) {
+      log.info('Beehiiv post page failed for $uri: $e');
+      return null;
+    }
+  }
+
+  Future<_BeehiivListing?> _fetchBeehiivListingMaps(
+    Uri base, {
+    required int page,
+  }) async {
+    final uri = base.replace(
+      path: '/posts',
+      queryParameters: {'page': '$page'},
+    );
+    try {
+      final response = await httpClient.get(
+        uri,
+        headers: {
+          'Accept': 'application/json, text/javascript, */*;q=0.1',
+          'User-Agent': _ua,
+        },
+      );
+      if (response.statusCode != 200) return null;
+      final body = utf8.decode(response.bodyBytes);
+      if (!body.trimLeft().startsWith('{')) return null;
+      final decoded = jsonDecode(body);
+      if (!looksLikeBeehiivPostsJson(decoded)) return null;
+      final map = Map<String, dynamic>.from(decoded as Map);
+      final posts = (map['posts'] as List)
+          .whereType<Map>()
+          .map((e) => Map<String, dynamic>.from(e))
+          .toList();
+      final pagination = map['pagination'];
+      var totalPages = 1;
+      if (pagination is Map && pagination['total_pages'] is num) {
+        totalPages = (pagination['total_pages'] as num).toInt();
+        if (totalPages < 1) totalPages = 1;
+      }
+      return _BeehiivListing(posts: posts, totalPages: totalPages);
+    } catch (e) {
+      log.info('Beehiiv listing failed for $base: $e');
+      return null;
+    }
+  }
+
+  ({List<Uri> requested, List<Uri> leftover}) _splitBases(
+    SubstackPublication publication,
+  ) {
+    final parsed = Uri.tryParse(publication.baseUrl);
+    final hinted = parsed != null && parsed.host.isNotEmpty
+        ? parsed
+        : (publication.subdomain.isEmpty
+              ? null
+              : Uri(
+                  scheme: 'https',
+                  host: '${publication.subdomain}.substack.com',
+                ));
+    if (hinted == null) {
+      return (requested: const <Uri>[], leftover: const <Uri>[]);
+    }
+    return (
+      requested: requestedPublicationHosts(
+        hinted,
+        subdomainHint: publication.subdomain,
+      ),
+      leftover: leftoverSubstackHosts(
+        hinted,
+        subdomainHint: publication.subdomain,
+      ),
+    );
   }
 
   SubstackPublication _bindFollowedHost(
@@ -722,6 +935,13 @@ class SubstackClient {
     if (finalUrl == null || finalUrl.host.isEmpty) return fallback;
     return Uri(scheme: 'https', host: finalUrl.host);
   }
+}
+
+class _BeehiivListing {
+  final List<Map<String, dynamic>> posts;
+  final int totalPages;
+
+  const _BeehiivListing({required this.posts, required this.totalPages});
 }
 
 class _PostsResult {

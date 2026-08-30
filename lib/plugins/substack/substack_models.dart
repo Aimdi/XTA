@@ -739,6 +739,291 @@ SubstackPublication? publicationFromHomepageHtml(String html, Uri base) {
   );
 }
 
+/// Beehiiv (and other Remix) sites hydrate `window.__remixContext`.
+Object? parseRemixContext(String html) {
+  const marker = 'window.__remixContext';
+  final idx = html.indexOf(marker);
+  if (idx < 0) return null;
+  final start = html.indexOf('{', idx);
+  if (start < 0) return null;
+  final literal = jsonObjectLiteralAt(html, start);
+  if (literal == null) return null;
+  try {
+    return jsonDecode(literal);
+  } catch (_) {
+    return null;
+  }
+}
+
+/// The `{...}` starting at [start], aware of quoted strings so nested braces
+/// inside JSON values do not end the object early.
+String? jsonObjectLiteralAt(String source, int start) {
+  if (start < 0 || start >= source.length || source[start] != '{') {
+    return null;
+  }
+  var depth = 0;
+  var inString = false;
+  var escape = false;
+  for (var i = start; i < source.length; i++) {
+    final c = source[i];
+    if (inString) {
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (c == r'\') {
+        escape = true;
+        continue;
+      }
+      if (c == '"') inString = false;
+      continue;
+    }
+    if (c == '"') {
+      inString = true;
+      continue;
+    }
+    if (c == '{') depth++;
+    if (c == '}') {
+      depth--;
+      if (depth == 0) return source.substring(start, i + 1);
+    }
+  }
+  return null;
+}
+
+bool htmlLooksLikeBeehiiv(String html) =>
+    html.toLowerCase().contains('beehiiv');
+
+/// Beehiiv's public `/posts` listing: `{ "posts": [...], "pagination": {...} }`.
+bool looksLikeBeehiivPostsJson(Object? decoded) {
+  if (decoded is! Map) return false;
+  final posts = decoded['posts'];
+  if (posts is! List) return false;
+  if (decoded['pagination'] is! Map) return false;
+  if (posts.isEmpty) return true;
+  final first = posts.first;
+  return first is Map &&
+      first['slug'] != null &&
+      (first['web_title'] != null || first['title'] != null);
+}
+
+/// Name / logo / blurb from Beehiiv Remix, then OG tags if the page is Beehiiv.
+SubstackPublication? publicationFromBeehiivHomepageHtml(String html, Uri base) {
+  final fromRemix = publicationFromBeehiivRemix(parseRemixContext(html), base);
+  if (fromRemix != null) return fromRemix;
+  if (!htmlLooksLikeBeehiiv(html)) return null;
+  return publicationFromHomepageHtml(html, base);
+}
+
+SubstackPublication? publicationFromBeehiivRemix(Object? remix, Uri base) {
+  if (remix is! Map) return null;
+  final state = remix['state'];
+  if (state is! Map) return null;
+  final loader = state['loaderData'];
+  if (loader is! Map) return null;
+  Map<String, dynamic>? pub;
+  final root = loader['root'];
+  if (root is Map && root['publication'] is Map) {
+    pub = Map<String, dynamic>.from(root['publication'] as Map);
+  }
+  if (pub == null) return null;
+  final name = (pub['name'] as String?)?.trim();
+  if (name == null || name.isEmpty || publicationNameLooksGeneric(name)) {
+    return null;
+  }
+  String? logo;
+  final logoRaw = pub['logo'];
+  if (logoRaw is Map) {
+    logo = (logoRaw['url'] as String?)?.trim();
+  }
+  if (logo == null || logo.isEmpty) {
+    final thumb = pub['thumbnail'];
+    if (thumb is Map) logo = (thumb['url'] as String?)?.trim();
+  }
+  final description = (pub['description'] as String?)?.trim();
+  return SubstackPublication(
+    subdomain: subdomainOf(base),
+    baseUrl: base.origin,
+    name: name,
+    description: description == null || description.isEmpty
+        ? null
+        : description,
+    logoUrl: logo == null || logo.isEmpty ? null : logo,
+  );
+}
+
+SubstackPost postFromBeehiivJson(
+  Map<String, dynamic> json, {
+  required String publicationBaseUrl,
+  required String publicationName,
+}) {
+  final slug = (json['slug'] as String?)?.trim() ?? '';
+  final title =
+      (json['web_title'] as String?)?.trim() ??
+      (json['title'] as String?)?.trim() ??
+      '';
+  String? author;
+  final authors = json['authors'];
+  if (authors is List && authors.isNotEmpty && authors.first is Map) {
+    author = (authors.first['name'] as String?)?.trim();
+  }
+  final premium =
+      json['is_premium'] == true ||
+      (json['audience'] as String?)?.toLowerCase() == 'premium';
+  final date =
+      json['override_scheduled_at'] as String? ?? json['created_at'] as String?;
+  final image = (json['image_url'] as String?)?.trim();
+  final subtitle = (json['web_subtitle'] as String?)?.trim();
+  final origin = Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
+  return SubstackPost(
+    id: '${json['id'] ?? slug}',
+    title: title,
+    subtitle: subtitle == null || subtitle.isEmpty ? null : subtitle,
+    slug: slug,
+    postDate: date,
+    canonicalUrl: slug.isEmpty ? null : '$origin/p/$slug',
+    coverImage: image == null || image.isEmpty ? null : image,
+    audience: premium ? 'only_paid' : 'everyone',
+    authorName: author == null || author.isEmpty ? null : author,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+}
+
+/// A Beehiiv (or Beehiiv-shaped) `/p/slug` page: Remix, JSON-LD, or OG article.
+SubstackPost? postFromBeehiivHtml(
+  String html, {
+  required String slug,
+  required String publicationBaseUrl,
+  required String publicationName,
+}) {
+  final fromRemix = postFromBeehiivRemix(
+    parseRemixContext(html),
+    slug: slug,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+  if (fromRemix != null) return fromRemix;
+
+  final ld = _jsonLdArticle(html);
+  if (ld != null) {
+    final title =
+        (ld['headline'] as String?)?.trim() ??
+        (ld['name'] as String?)?.trim() ??
+        '';
+    if (title.isNotEmpty) {
+      String? author;
+      final authorRaw = ld['author'];
+      if (authorRaw is Map) {
+        author = (authorRaw['name'] as String?)?.trim();
+      }
+      String? image;
+      final imageRaw = ld['image'];
+      if (imageRaw is Map) {
+        image = (imageRaw['url'] as String?)?.trim();
+      } else if (imageRaw is String) {
+        image = imageRaw.trim();
+      }
+      final origin =
+          Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
+      return SubstackPost(
+        id: slug,
+        title: title,
+        subtitle: (ld['description'] as String?)?.trim(),
+        slug: slug,
+        postDate: ld['datePublished'] as String?,
+        canonicalUrl: (ld['url'] as String?)?.trim().isNotEmpty == true
+            ? ld['url'] as String
+            : '$origin/p/$slug',
+        coverImage: image == null || image.isEmpty ? null : image,
+        audience: ld['isAccessibleForFree'] == false ? 'only_paid' : 'everyone',
+        authorName: author == null || author.isEmpty ? null : author,
+        publicationBaseUrl: publicationBaseUrl,
+        publicationName: publicationName,
+      );
+    }
+  }
+
+  final ogType = _metaContent(html, 'og:type')?.toLowerCase();
+  final title = _metaContent(html, 'og:title')?.trim();
+  if (ogType != 'article' || title == null || title.isEmpty) return null;
+  final origin = Uri.tryParse(publicationBaseUrl)?.origin ?? publicationBaseUrl;
+  final image = _metaContent(html, 'og:image');
+  final author = _metaContent(html, 'article:author');
+  return SubstackPost(
+    id: slug,
+    title: title,
+    subtitle: _metaContent(html, 'og:description'),
+    slug: slug,
+    postDate: _metaContent(html, 'article:published_time'),
+    canonicalUrl: _metaContent(html, 'og:url') ?? '$origin/p/$slug',
+    coverImage: image == null || image.isEmpty ? null : image,
+    audience: 'everyone',
+    authorName: author == null || author.isEmpty ? null : author,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+}
+
+SubstackPost? postFromBeehiivRemix(
+  Object? remix, {
+  required String slug,
+  required String publicationBaseUrl,
+  required String publicationName,
+}) {
+  if (remix is! Map) return null;
+  final state = remix['state'];
+  if (state is! Map) return null;
+  final loader = state['loaderData'];
+  if (loader is! Map) return null;
+  Map<String, dynamic>? post;
+  final named = loader['routes/p/\$slug'];
+  if (named is Map && named['post'] is Map) {
+    post = Map<String, dynamic>.from(named['post'] as Map);
+  } else {
+    for (final value in loader.values) {
+      if (value is Map && value['post'] is Map) {
+        post = Map<String, dynamic>.from(value['post'] as Map);
+        break;
+      }
+    }
+  }
+  if (post == null) return null;
+  final postSlug = (post['slug'] as String?)?.trim() ?? slug;
+  if (postSlug != slug) return null;
+  return postFromBeehiivJson(
+    post,
+    publicationBaseUrl: publicationBaseUrl,
+    publicationName: publicationName,
+  );
+}
+
+Map<String, dynamic>? _jsonLdArticle(String html) {
+  final matches = RegExp(
+    r'<script[^>]*type=["'
+    "'"
+    r']application/ld\+json["'
+    "'"
+    r'][^>]*>(.*?)</script>',
+    caseSensitive: false,
+    dotAll: true,
+  ).allMatches(html);
+  for (final match in matches) {
+    final raw = match.group(1);
+    if (raw == null || raw.trim().isEmpty) continue;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map) {
+        final type = '${decoded['@type'] ?? ''}'.toLowerCase();
+        if (type == 'article' || type == 'newsarticle') {
+          return Map<String, dynamic>.from(decoded);
+        }
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+
 /// `@casey` / `substack.com/@casey` — a profile, not a publication host.
 String? resolveSubstackProfileHandle(String input) {
   final trimmed = input.trim();
@@ -855,6 +1140,36 @@ List<Uri> publicationFetchBases(SubstackPublication publication) {
               ));
   if (hinted == null) return const [];
   return substackHostCandidates(hinted, subdomainHint: publication.subdomain);
+}
+
+/// Hosts that are the pasted/followed site, not `{label}.substack.com`.
+///
+/// A living Beehiiv (or other) custom domain must be fully resolved here
+/// before anyone asks the leftover Substack twin.
+List<Uri> requestedPublicationHosts(Uri base, {String? subdomainHint}) {
+  return [
+    for (final uri in substackHostCandidates(
+      base,
+      subdomainHint: subdomainHint,
+    ))
+      if (!isLeftoverSubstackTwin(uri.host, base.host)) uri,
+  ];
+}
+
+/// `{label}.substack.com` for a custom domain that used to live on Substack.
+List<Uri> leftoverSubstackHosts(Uri base, {String? subdomainHint}) {
+  return [
+    for (final uri in substackHostCandidates(
+      base,
+      subdomainHint: subdomainHint,
+    ))
+      if (isLeftoverSubstackTwin(uri.host, base.host)) uri,
+  ];
+}
+
+bool isLeftoverSubstackTwin(String candidateHost, String followedHost) {
+  return isSubstackPublicationHost(candidateHost) &&
+      !isSubstackPublicationHost(followedHost);
 }
 
 /// Hosts to probe for a pasted or followed publication URL.

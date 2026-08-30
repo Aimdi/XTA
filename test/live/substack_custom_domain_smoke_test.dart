@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 
-/// Live smoke against Garbage Day's leftover custom domain.
+/// Live smoke against Garbage Day's custom domain (Beehiiv, not leftover Substack).
 /// Opt in with:
 ///   fvm flutter test test/live/substack_custom_domain_smoke_test.dart --dart-define=RUN_LIVE=true
 void main() {
@@ -18,6 +18,7 @@ void main() {
 
       expect(pub.name, 'Garbage Day');
       expect(pub.subdomain, 'garbageday');
+      expect(pub.baseUrl, contains('garbageday.email'));
       expect(publicationNameLooksGeneric(pub.name), isFalse);
       expect(pub.logoUrl, isNotNull);
 
@@ -34,6 +35,7 @@ void main() {
         reason: 'custom-domain follow must not look empty',
       );
       expect(posts.first.title, isNotEmpty);
+      expect(posts.first.canonicalUrl, contains('garbageday.email'));
     },
     skip: enabled ? false : 'Set RUN_LIVE=true to hit live Substack hosts',
   );

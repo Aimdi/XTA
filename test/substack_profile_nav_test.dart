@@ -101,6 +101,12 @@ void main() {
     expect(hosts, contains('garbageday.substack.com'));
     expect(hosts, contains('garbageday.email'));
     expect(hosts, isNot(contains('www.substack.com')));
+    expect(
+      requestedPublicationHosts(
+        Uri.parse('https://www.garbageday.email'),
+      ).map((e) => e.host),
+      isNot(contains('garbageday.substack.com')),
+    );
   });
 
   test('publicationForPost keeps a tappable in-app profile', () {
@@ -155,6 +161,52 @@ void main() {
     expect(posts, isNotEmpty);
     expect(posts.first.title, 'Hello');
     expect(posts.first.publicationName, isNot('www'));
+  });
+
+  test('resolvePublication follows a living Beehiiv custom domain', () async {
+    final client = SubstackClient(
+      httpClient: MockClient((request) async {
+        if (request.url.host.contains('substack.com')) {
+          fail('must not fall back to leftover Substack: ${request.url}');
+        }
+        if (request.url.path == '/posts') {
+          return _json({
+            'posts': [
+              {
+                'id': '1',
+                'web_title': 'Hello from Beehiiv',
+                'slug': 'hello-from-beehiiv',
+                'audience': 'both',
+                'is_premium': false,
+              },
+            ],
+            'pagination': {'page': 1, 'total_pages': 1},
+          });
+        }
+        if (request.url.path.isEmpty || request.url.path == '/') {
+          return http.Response(
+            '''
+            <html><head>
+              <meta property="og:site_name" content="Garbage Day">
+              <meta property="og:image" content="https://media.beehiiv.com/logo.png">
+            </head><body>Powered by beehiiv</body></html>
+            ''',
+            200,
+            headers: {'content-type': 'text/html'},
+          );
+        }
+        return http.Response('nope', 404);
+      }),
+    );
+
+    final pub = await client.resolvePublication('https://www.garbageday.email');
+    expect(pub.displayName, 'Garbage Day');
+    expect(pub.baseUrl, 'https://www.garbageday.email');
+    expect(pub.subdomain, 'garbageday');
+
+    final posts = await client.fetchPosts(pub);
+    expect(posts.single.title, 'Hello from Beehiiv');
+    expect(posts.single.canonicalUrl, contains('garbageday.email/p/'));
   });
 
   testWidgets('tapping the publication name opens the in-app profile', (

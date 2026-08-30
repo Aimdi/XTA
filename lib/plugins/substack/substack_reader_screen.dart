@@ -247,18 +247,6 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
     // publication chose to give away. Refusing to render any of it because the
     // post is marked paid threw away what had already been sent, and left a
     // lock icon where there was something to read.
-    if (post.isPaywalled && !hasBody) {
-      setState(() {
-        _paywalled = true;
-        _partial = false;
-        _empty = false;
-        _loading = false;
-        _liveSite = false;
-        _speakText = _fallbackSpeakText(post);
-      });
-      return;
-    }
-
     if (hasBody) {
       _paywalled = false;
       _empty = false;
@@ -307,6 +295,18 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> {
       _empty = false;
       _speakText = _fallbackSpeakText(post);
       await _loadLiveSite(post.canonicalUrl!);
+      return;
+    }
+
+    if (post.isPaywalled) {
+      setState(() {
+        _paywalled = true;
+        _partial = false;
+        _empty = false;
+        _loading = false;
+        _liveSite = false;
+        _speakText = _fallbackSpeakText(post);
+      });
       return;
     }
 

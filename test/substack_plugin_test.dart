@@ -119,6 +119,18 @@ void main() {
       ).map((e) => e.host).toList(),
       ['www.garbageday.email', 'garbageday.email', 'garbageday.substack.com'],
     );
+    expect(
+      requestedPublicationHosts(
+        Uri.parse('https://www.garbageday.email'),
+      ).map((e) => e.host).toList(),
+      ['www.garbageday.email', 'garbageday.email'],
+    );
+    expect(
+      leftoverSubstackHosts(
+        Uri.parse('https://www.garbageday.email'),
+      ).map((e) => e.host).toList(),
+      ['garbageday.substack.com'],
+    );
   });
 
   test('publicationFromHomepageHtml reads the real title and avatar', () {
@@ -136,6 +148,115 @@ void main() {
     expect(pub?.name, 'Garbage Day');
     expect(pub?.subdomain, 'garbageday');
     expect(pub?.logoUrl, 'https://example.com/logo.png');
+  });
+
+  test('looksLikeBeehiivPostsJson requires the /posts listing shape', () {
+    expect(
+      looksLikeBeehiivPostsJson({
+        'posts': [
+          {'web_title': 'Hello', 'slug': 'hello'},
+        ],
+        'pagination': {'page': 1, 'total_pages': 1},
+      }),
+      isTrue,
+    );
+    expect(
+      looksLikeBeehiivPostsJson({
+        'posts': <Object>[],
+        'pagination': {'total_pages': 1},
+      }),
+      isTrue,
+    );
+    expect(
+      looksLikeBeehiivPostsJson([
+        {'title': 'Hello', 'slug': 'hello'},
+      ]),
+      isFalse,
+    );
+  });
+
+  test('postFromBeehiivJson maps premium audience and the /p/slug URL', () {
+    final post = postFromBeehiivJson(
+      {
+        'id': 'abc',
+        'web_title': 'Miles Morales probably couldn’t happen now',
+        'web_subtitle': 'Read to the end for a very good dog video',
+        'slug': 'miles-morales-probably-couldn-t-happen-now',
+        'image_url': 'https://media.beehiiv.com/cover.png',
+        'audience': 'premium',
+        'is_premium': true,
+        'override_scheduled_at': '2026-08-28T18:54:19.460Z',
+        'authors': [
+          {'name': 'Adam Bumas'},
+        ],
+      },
+      publicationBaseUrl: 'https://www.garbageday.email',
+      publicationName: 'Garbage Day',
+    );
+    expect(post.title, contains('Miles Morales'));
+    expect(post.slug, 'miles-morales-probably-couldn-t-happen-now');
+    expect(post.isPaywalled, isTrue);
+    expect(post.authorName, 'Adam Bumas');
+    expect(
+      post.canonicalUrl,
+      'https://www.garbageday.email/p/miles-morales-probably-couldn-t-happen-now',
+    );
+    expect(post.publicationName, 'Garbage Day');
+  });
+
+  test('postFromBeehiivHtml reads OG article tags', () {
+    const html = '''
+      <html><head>
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="Microdramas are the death rattle of Hollywood">
+        <meta property="og:description" content="Read to the end">
+        <meta property="og:image" content="https://example.com/cover.png">
+        <meta property="og:url" content="https://www.garbageday.email/p/microdramas">
+        <meta property="article:author" content="Ryan Broderick">
+        <meta property="article:published_time" content="2026-08-26T19:49:07.448Z">
+      </head><body>Powered by beehiiv</body></html>
+    ''';
+    final post = postFromBeehiivHtml(
+      html,
+      slug: 'microdramas',
+      publicationBaseUrl: 'https://www.garbageday.email',
+      publicationName: 'Garbage Day',
+    );
+    expect(post?.title, contains('Microdramas'));
+    expect(post?.authorName, 'Ryan Broderick');
+    expect(post?.coverImage, 'https://example.com/cover.png');
+    expect(post?.canonicalUrl, 'https://www.garbageday.email/p/microdramas');
+  });
+
+  test('publicationFromBeehiivRemix reads name and logo', () {
+    final remix = {
+      'state': {
+        'loaderData': {
+          'root': {
+            'publication': {
+              'name': 'Garbage Day',
+              'description': 'A newsletter about having fun online',
+              'logo': {'url': 'https://media.beehiiv.com/logo.png'},
+            },
+          },
+        },
+      },
+    };
+    final pub = publicationFromBeehiivRemix(
+      remix,
+      Uri.parse('https://www.garbageday.email'),
+    );
+    expect(pub?.name, 'Garbage Day');
+    expect(pub?.description, contains('fun online'));
+    expect(pub?.logoUrl, 'https://media.beehiiv.com/logo.png');
+    expect(pub?.subdomain, 'garbageday');
+    expect(pub?.baseUrl, 'https://www.garbageday.email');
+  });
+
+  test('jsonObjectLiteralAt does not end on a brace inside a string', () {
+    const source = '{"a":"x{y}z","b":{"c":1}} trailing';
+    expect(jsonObjectLiteralAt(source, 0), '{"a":"x{y}z","b":{"c":1}}');
+    expect(parseRemixContext('window.__remixContext = {"k":"v"};'), {'k': 'v'});
   });
 
   test('publicationFromProfileJson reads primaryPublication', () {
@@ -458,6 +579,129 @@ void main() {
       expect(posts, isNotEmpty);
       expect(posts.first.title, contains('MrBeast'));
       expect(posts.first.publicationName, 'Garbage Day');
+    },
+  );
+
+  test(
+    'fetchPublication prefers a living Beehiiv host over the leftover Substack',
+    () async {
+      const beehiivHome = '''
+        <html><head>
+          <title>Home | Garbage Day</title>
+          <meta property="og:site_name" content="Garbage Day">
+          <meta property="og:image" content="https://media.beehiiv.com/logo.png">
+        </head><body>Powered by beehiiv</body></html>
+      ''';
+      const beehiivPosts = {
+        'posts': [
+          {
+            'id': '6a30a3a4-6dff-4ec9-a5e6-d519df5271f4',
+            'web_title': 'Miles Morales probably couldn’t happen now',
+            'web_subtitle': 'Read to the end for a very good dog video',
+            'slug': 'miles-morales-probably-couldn-t-happen-now',
+            'image_url': 'https://media.beehiiv.com/cover.png',
+            'audience': 'both',
+            'is_premium': false,
+            'override_scheduled_at': '2026-08-28T18:54:19.460Z',
+            'authors': [
+              {'name': 'Adam Bumas'},
+            ],
+          },
+        ],
+        'pagination': {'page': 1, 'per_page': 30, 'total': 1, 'total_pages': 1},
+      };
+
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.host.contains('substack.com')) {
+            fail(
+              'leftover Substack twin must not be probed for a living Beehiiv host: ${request.url}',
+            );
+          }
+          expect(request.url.host.endsWith('garbageday.email'), isTrue);
+          if (request.url.path == '/posts') {
+            return http.Response(
+              jsonEncode(beehiivPosts),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          if (request.url.path.isEmpty || request.url.path == '/') {
+            return http.Response(
+              beehiivHome,
+              200,
+              headers: {'content-type': 'text/html'},
+            );
+          }
+          return http.Response('Not found', 404);
+        }),
+      );
+
+      final pub = await client.fetchPublication(
+        Uri.parse('https://www.garbageday.email'),
+      );
+      expect(pub.name, 'Garbage Day');
+      expect(pub.subdomain, 'garbageday');
+      expect(pub.baseUrl, 'https://www.garbageday.email');
+      expect(pub.logoUrl, 'https://media.beehiiv.com/logo.png');
+
+      final posts = await client.fetchPosts(pub);
+      expect(posts, hasLength(1));
+      expect(posts.first.title, contains('Miles Morales'));
+      expect(posts.first.authorName, 'Adam Bumas');
+      expect(
+        posts.first.canonicalUrl,
+        'https://www.garbageday.email/p/miles-morales-probably-couldn-t-happen-now',
+      );
+      expect(posts.first.publicationBaseUrl, 'https://www.garbageday.email');
+    },
+  );
+
+  test(
+    'fetchPost reads a Beehiiv /p/slug page instead of leftover Substack',
+    () async {
+      const article = '''
+      <html><head>
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="Miles Morales probably couldn’t happen now">
+        <meta property="og:description" content="Read to the end for a very good dog video">
+        <meta property="og:image" content="https://media.beehiiv.com/cover.png">
+        <meta property="og:url" content="https://www.garbageday.email/p/miles-morales-probably-couldn-t-happen-now">
+        <meta property="article:author" content="Adam Bumas">
+        <meta property="article:published_time" content="2026-08-28T18:54:19.460Z">
+      </head><body>Powered by beehiiv</body></html>
+    ''';
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.host.contains('substack.com')) {
+            fail(
+              'leftover Substack twin must not be probed for a living Beehiiv post: ${request.url}',
+            );
+          }
+          if (request.url.path ==
+              '/p/miles-morales-probably-couldn-t-happen-now') {
+            return http.Response(
+              article,
+              200,
+              headers: {'content-type': 'text/html'},
+            );
+          }
+          return http.Response('Not found', 404);
+        }),
+      );
+
+      final post = await client.fetchPost(
+        const SubstackPublication(
+          subdomain: 'garbageday',
+          baseUrl: 'https://www.garbageday.email',
+          name: 'Garbage Day',
+        ),
+        'miles-morales-probably-couldn-t-happen-now',
+      );
+      expect(post.title, contains('Miles Morales'));
+      expect(post.authorName, 'Adam Bumas');
+      expect(post.canonicalUrl, contains('garbageday.email/p/'));
+      expect(post.publicationName, 'Garbage Day');
     },
   );
 
