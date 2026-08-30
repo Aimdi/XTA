@@ -64,6 +64,22 @@ class RedditIcons {
   }
 }
 
+/// Artwork URL for [RedditSubredditAvatar] from an about.json future.
+///
+/// Null while the future is still in flight so a disk-cached icon can paint.
+/// Empty string once about.json answered with no artwork, so lookup is not
+/// started again. Passing `''` *while loading* used to skip the cache and
+/// lock the generated tile in.
+String? redditAvatarUrlFromAbout({
+  required bool hasData,
+  String? iconUrl,
+}) {
+  if (!hasData) {
+    return null;
+  }
+  return iconUrl ?? '';
+}
+
 /// A subreddit's picture, the way Reddit's own apps show it.
 ///
 /// Falls back to the generated tile when the subreddit has no artwork, so the

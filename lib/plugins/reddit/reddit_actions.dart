@@ -325,20 +325,43 @@ class _RedditCommunitiesSheet extends StatelessWidget {
   }
 }
 
-class _RedditCommunityTile extends StatelessWidget {
+class _RedditCommunityTile extends StatefulWidget {
   final String name;
   final BuildContext opener;
 
   const _RedditCommunityTile({required this.name, required this.opener});
 
   @override
+  State<_RedditCommunityTile> createState() => _RedditCommunityTileState();
+}
+
+class _RedditCommunityTileState extends State<_RedditCommunityTile> {
+  Future<RedditSubredditAbout?>? _about;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _about ??= _communityAbout(context, widget.name);
+  }
+
+  @override
+  void didUpdateWidget(_RedditCommunityTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.name != widget.name) {
+      _about = _communityAbout(context, widget.name);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
     final store = context.read<RedditSubredditsStore>();
+    final name = widget.name;
+    final opener = widget.opener;
 
     return FutureBuilder<RedditSubredditAbout?>(
-      future: _communityAbout(context, name),
+      future: _about,
       builder: (context, snapshot) {
         final about = snapshot.data;
         return ListTile(
@@ -346,7 +369,10 @@ class _RedditCommunityTile extends StatelessWidget {
           leading: RedditSubredditAvatar(
             subreddit: name,
             size: 44,
-            url: snapshot.hasData ? (about?.iconUrl ?? '') : '',
+            url: redditAvatarUrlFromAbout(
+              hasData: snapshot.hasData,
+              iconUrl: about?.iconUrl,
+            ),
           ),
           title: Text(
             'r/$name',

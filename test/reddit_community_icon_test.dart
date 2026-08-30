@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 
 http.Response _json(Object body) => http.Response(
       jsonEncode(body),
@@ -139,6 +140,33 @@ void main() {
       expect(
         asked.any((u) => u.host == 'old.reddit.com' && u.path.contains('about.json')),
         isTrue,
+      );
+    });
+  });
+  group('redditAvatarUrlFromAbout', () {
+    test('null while loading so a disk cache can still paint', () {
+      expect(redditAvatarUrlFromAbout(hasData: false, iconUrl: null), isNull);
+      expect(
+        redditAvatarUrlFromAbout(
+          hasData: false,
+          iconUrl: 'https://styles.redditmedia.com/a.png',
+        ),
+        isNull,
+      );
+    });
+
+    test('empty string after a miss so lookup is not repeated', () {
+      expect(redditAvatarUrlFromAbout(hasData: true, iconUrl: null), '');
+      expect(redditAvatarUrlFromAbout(hasData: true, iconUrl: ''), '');
+    });
+
+    test('the community icon when about.json had one', () {
+      expect(
+        redditAvatarUrlFromAbout(
+          hasData: true,
+          iconUrl: 'https://styles.redditmedia.com/a.png',
+        ),
+        'https://styles.redditmedia.com/a.png',
       );
     });
   });
