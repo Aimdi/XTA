@@ -25,7 +25,7 @@ const _alice = BlueskyProfile(
   handle: 'alice.bsky.social',
   displayName: 'Alice',
   description: 'Hello from the other side',
-  createdAt: DateTime(2023, 4, 13),
+  createdAt: DateTime.utc(2023, 4, 13),
   followersCount: 340,
   followsCount: 12,
 );
