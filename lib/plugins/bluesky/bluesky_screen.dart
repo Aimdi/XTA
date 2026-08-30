@@ -28,6 +28,11 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
+/// Home remounts used to poll the AppView whenever the ten-minute TTL expired.
+/// Only a pull-to-refresh, or the first empty paint, should hit the network.
+bool blueskyHomeShouldFetch({required bool force, required bool feedEmpty}) =>
+    force || feedEmpty;
+
 /// The Bluesky tab: local follows feed, plus a device-only Liked library.
 class BlueskyScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -77,9 +82,12 @@ class _BlueskyScreenState extends State<BlueskyScreen>
       if (accounts.state.isEmpty) accounts.load(),
       if (likes.state.isEmpty) likes.load(),
     ]);
-    // The store no-ops when the first page is still fresh. Pull-to-refresh
-    // passes [force] so it still gets past the ten-minute cache.
-    await feed.refresh(force: force);
+    // Remounts used to poll whenever the ten-minute TTL expired, which
+    // jumped the list and flashed a "N more accounts" count. Only a
+    // pull-to-refresh, or the first empty paint, should hit the AppView.
+    if (blueskyHomeShouldFetch(force: force, feedEmpty: feed.state.isEmpty)) {
+      await feed.refresh(force: force);
+    }
   }
 
   Future<void> _searchPeople() async {
@@ -280,15 +288,10 @@ class _HomePane extends StatelessWidget {
     if (posts.isEmpty) {
       // Scrollable and refreshable even when empty: with more follows than one
       // load's budget, an empty first batch is exactly when the reader needs
-      // the pull — and the note that says more accounts are still to come used
-      // to be hidden in precisely that state.
+      // the pull.
       return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
         store: context.read<BlueskyAccountsStore>(),
         onState: (context, accounts) {
-          final pending = context.read<BlueskyFeedStore>().pending(
-            accounts.map((e) => e.actor).toList(growable: false),
-          );
-
           return EmptyPane(
             icon: Icons.cloud_outlined,
             message: accounts.isEmpty
@@ -296,9 +299,6 @@ class _HomePane extends StatelessWidget {
                 : l10n.plugin_bluesky_no_posts,
             scrollController: scrollController,
             onRefresh: onRefresh,
-            leading: pending > 0
-                ? _PendingAccountsNote(pending: pending)
-                : null,
             action: _emptyActions(context, l10n, accounts.isEmpty),
           );
         },
@@ -307,23 +307,19 @@ class _HomePane extends StatelessWidget {
 
     return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
       store: context.read<BlueskyAccountsStore>(),
-      onState: (context, accounts) {
-        final pending = context.read<BlueskyFeedStore>().pending(
-          accounts.map((e) => e.actor).toList(growable: false),
-        );
+      onState: (context, _) {
         final people = peopleToFollowFromBluesky(
           posts: posts,
           alreadyFollows: context.read<BlueskyAccountsStore>().follows,
         );
         final peopleOffset = people.isEmpty ? 0 : 1;
-        final pendingOffset = pending > 0 ? 1 : 0;
         return RefreshIndicator(
           onRefresh: onRefresh,
           child: FeedListView(
             key: const PageStorageKey<String>('bluesky-home-feed'),
             controller: pluginInnerScrollController(context, scrollController),
             padding: pluginFeedPadding(context),
-            itemCount: posts.length + peopleOffset + pendingOffset,
+            itemCount: posts.length + peopleOffset,
             itemBuilder: (context, index) {
               if (peopleOffset == 1 && index == 0) {
                 return PluginFeedPeopleStrip(
@@ -348,11 +344,7 @@ class _HomePane extends StatelessWidget {
                       ),
                 );
               }
-              final afterPeople = index - peopleOffset;
-              if (pendingOffset == 1 && afterPeople == 0) {
-                return _PendingAccountsNote(pending: pending);
-              }
-              final post = posts[afterPeople - pendingOffset];
+              final post = posts[index - peopleOffset];
               return BlueskyPostCard(
                 key: ValueKey(blueskyFeedRowKey(post)),
                 post: post,
@@ -431,37 +423,6 @@ class _HomePane extends StatelessWidget {
         height: 20,
         fit: BoxFit.cover,
         cacheWidth: (20 * MediaQuery.devicePixelRatioOf(context)).ceil(),
-      ),
-    );
-  }
-}
-
-/// Says that more followed accounts are still to be read, and that pulling to
-/// refresh reads the next batch of them.
-class _PendingAccountsNote extends StatelessWidget {
-  final int pending;
-
-  const _PendingAccountsNote({required this.pending});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Row(
-        children: [
-          Icon(Icons.hourglass_bottom, size: 16, color: theme.hintColor),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              L10n.of(context).plugin_bluesky_accounts_pending(pending),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.hintColor,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
