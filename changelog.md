@@ -1,3 +1,11 @@
+## XTA aimdi119
+
+What's new in XTA aimdi119:
+  - Built on aimdi118. Not QuaX.
+  - Bluesky profiles use the same banner / avatar / tabs as X
+  - Bluesky following only refreshes on pull-to-refresh (no count of new posts)
+  - Everything from aimdi118
+
 ## XTA aimdi118
 
 What's new in XTA aimdi118:

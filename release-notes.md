@@ -4,6 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi119
+
+**XTA, built on aimdi118. Not QuaX.**
+
+Install **`xta-aimdi119_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 118.
+
+Bluesky profiles match the X header (banner, overlapping avatar, underline tabs). The following timeline only refreshes when you pull down, and no longer shows how many new posts are waiting.
+
 ### aimdi118
 
 **XTA, built on aimdi117. Not QuaX.**
