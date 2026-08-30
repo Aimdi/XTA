@@ -47,36 +47,43 @@ class SubstackPostCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        tweetFlatCard(
-          color: Theme.of(context).cardColor,
-          child: InkWell(
-            onTap: () => _open(context),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _header(context, date),
-                  const SizedBox(height: 8),
-                  Text(
-                    post.title,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium!
-                        .copyWith(fontWeight: unread ? FontWeight.w700 : FontWeight.w500),
-                  ),
-                  if (post.excerpt != null) ...[
-                    const SizedBox(height: 4),
-                    Text(post.excerpt!,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        Container(
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: theme.colorScheme.outline, width: 0.5),
+            ),
+          ),
+          child: tweetFlatCard(
+            color: Theme.of(context).cardColor,
+            child: InkWell(
+              onTap: () => _open(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _header(context, date),
+                    const SizedBox(height: 8),
+                    Text(
+                      post.title,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium!
+                          .copyWith(fontWeight: unread ? FontWeight.w700 : FontWeight.w500),
+                    ),
+                    if (post.excerpt != null) ...[
+                      const SizedBox(height: 4),
+                      Text(post.excerpt!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    ],
+                    if (post.coverImage != null) ...[
+                      const SizedBox(height: 12),
+                      _cover(context),
+                    ],
                   ],
-                  if (post.coverImage != null) ...[
-                    const SizedBox(height: 12),
-                    _cover(context),
-                  ],
-                ],
+                ),
               ),
             ),
           ),
