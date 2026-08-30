@@ -1,3 +1,13 @@
+## XTA aimdi120
+
+What's new in XTA aimdi120:
+  - Built on aimdi119. Not QuaX.
+  - Livestreams and Spaces play in the app. A browser is only offered if the stream cannot be fetched
+  - Add a Reddit community to a group from the post sheet or the community header
+  - Link preview images fill their frame (no white bars)
+  - Reddit comments no longer sit in a blank strip on the left
+  - Everything from aimdi119
+
 ## XTA aimdi119
 
 What's new in XTA aimdi119:

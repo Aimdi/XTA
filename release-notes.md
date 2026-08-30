@@ -4,6 +4,17 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi120
+
+**XTA, built on aimdi119. Not QuaX.**
+
+Install **`xta-aimdi120_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 119.
+
+- Livestreams and Spaces play here. A browser is only offered if the stream cannot be fetched
+- Add a Reddit community to a group from the post sheet or the community header
+- Link preview images fill their frame instead of leaving a white bar
+- Reddit comments no longer sit in a blank strip on the left
+
 ### aimdi119
 
 **XTA, built on aimdi118. Not QuaX.**
