@@ -12,7 +12,7 @@ import 'package:sqflite/sqflite.dart';
 List<TweetChain> chainsFromStoredChunks(List<Map<String, Object?>> storedChunks) {
   return storedChunks
       .map((e) => jsonDecode(e['response'] as String))
-      .map((e) => List.from(e))
+      .map((e) => e as List)
       .expand((e) => e.map((c) => TweetChain.fromJson(c)))
       .toList();
 }

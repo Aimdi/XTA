@@ -36,7 +36,7 @@ class TimelineParser {
     }
     for (final instruction in instructions) {
       if (instruction["type"] != "TimelineAddEntries" || instruction["entries"] == null) continue;
-      var entries = List.from(instruction["entries"]);
+      var entries = instruction["entries"] as List? ?? [];
       users.nextCursorStr = getCursor(entries, [], 'cursor-bottom', 'Bottom');
       users.previousCursorStr = getCursor(entries, [], 'cursor-top', 'Top');
       for (final entry in entries) {
@@ -189,7 +189,7 @@ class TimelineParser {
         }
       } else if (entryId.startsWith('profile-grid-')) {
         // We got a tweet queried from the media tab
-        for (var mediaTweet in List.from(entry['content']?['items'] ?? [])) {
+        for (var mediaTweet in entry['content']?['items'] as List? ?? []) {
           var result = usableResult(mediaTweet['item']);
           if (result != null) {
             replies.add(
@@ -213,14 +213,12 @@ class TimelineParser {
   }
 
   static TweetStatus createChainsFromGridModule(Map<String, dynamic> timeline) {
-    var instructions = List.from(timeline['timeline']?['instructions'] ?? []);
-    var addEntries = List.from(
-      instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddEntries')?['entries'] ?? [],
-    );
-    var addModItems = List.from(
-      instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddToModule')?['moduleItems'] ?? [],
-    );
-    var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
+    var instructions = timeline['timeline']?['instructions'] as List? ?? [];
+    var addEntries = instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddEntries')?['entries'] as List? ?? [];
+    
+    var addModItems = instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddToModule')?['moduleItems'] as List? ?? [];
+    
+    var repEntries = instructions.where((e) => e['type'] == 'TimelineReplaceEntry').toList();
 
     String? cursorBottom = getCursor(addEntries, repEntries, 'cursor-bottom', 'Bottom');
     String? cursorTop = getCursor(addEntries, repEntries, 'cursor-top', 'Top');
@@ -228,7 +226,7 @@ class TimelineParser {
     var moduleItems = [
       ...addEntries
           .where((e) => e['content']?['entryType'] == 'TimelineTimelineModule')
-          .expand((e) => List.from(e['content']?['items'] ?? [])),
+          .expand((e) => e['content']?['items'] as List? ?? []),
       ...addModItems,
     ];
 
@@ -326,13 +324,13 @@ class TimelineParser {
     bool mapToThreads,
     bool includeReplies,
   ) {
-    var instructions = List.from(result['timeline']['instructions']);
+    var instructions = result['timeline']['instructions'] as List;
     if (instructions.isEmpty || !instructions.any((e) => e['type'] == 'TimelineAddEntries')) {
       return TweetStatus(chains: [], cursorBottom: null, cursorTop: null);
     }
 
-    var addEntries = List.from(instructions.firstWhere((e) => e['type'] == 'TimelineAddEntries')['entries']);
-    var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
+    var addEntries = instructions.firstWhere((e) => e['type'] == 'TimelineAddEntries')['entries'] as List;
+    var repEntries = instructions.where((e) => e['type'] == 'TimelineReplaceEntry').toList();
 
     String? cursorBottom = getCursor(addEntries, repEntries, 'cursor-bottom', 'Bottom');
     String? cursorTop = getCursor(addEntries, repEntries, 'cursor-top', 'Top');
@@ -364,7 +362,7 @@ class TimelineParser {
 
     // Order all the conversations by newest first (assuming the ID is an incrementing key), and create a chain from them
     for (var conversation in conversations.entries.sorted((a, b) => b.key.compareTo(a.key))) {
-      var chainTweets = conversation.value.sorted((a, b) => a.idStr!.compareTo(b.idStr!)).toList();
+      var chainTweets = conversation.value.sorted((a, b) => a.idStr!.compareTo(b.idStr!));
 
       chains.add(TweetChain(id: conversation.key, tweets: chainTweets, isPinned: false));
     }
@@ -394,18 +392,18 @@ class TimelineParser {
   ) {
     final timeline =
         result["data"]?["user"]?["result"]?["timeline_v2"] ?? result["data"]?["user"]?["result"]?["timeline"];
-    var instructions = List.from(timeline?['timeline']?['instructions'] ?? []);
+    var instructions = timeline?['timeline']?['instructions'] as List? ?? [];
     var addEntriesInstructions = instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddEntries');
     var addModEntriesInstructions = instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddToModule');
-    List addModEntries = List.from(addModEntriesInstructions?['moduleItems'] ?? []);
+    List addModEntries = addModEntriesInstructions?['moduleItems'] as List? ?? [];
 
     if (addEntriesInstructions == null && addModEntries.isEmpty) {
       return TweetStatus(chains: [], cursorBottom: null, cursorTop: null);
     }
 
     var addPinnedTweetsInstructions = instructions.firstWhereOrNull((e) => e['type'] == 'TimelinePinEntry');
-    var addEntries = List.from(addEntriesInstructions?['entries'] ?? []);
-    var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
+    var addEntries = addEntriesInstructions?['entries'] as List? ?? [];
+    var repEntries = instructions.where((e) => e['type'] == 'TimelineReplaceEntry').toList();
     List addPinnedEntries = List<dynamic>.empty(growable: true);
     if (addPinnedTweetsInstructions != null) {
       addPinnedEntries.add(addPinnedTweetsInstructions['entry']);
@@ -458,14 +456,14 @@ class TimelineParser {
     int Function() getTweetsCounter,
     void Function() increaseTweetCounter,
   ) {
-    var instructions = List.from(result["data"]["home"]["home_timeline_urt"]['instructions']);
+    var instructions = result["data"]["home"]["home_timeline_urt"]['instructions'] as List;
     var addEntriesInstructions = instructions.firstWhereOrNull((e) => e['type'] == 'TimelineAddEntries');
     if (addEntriesInstructions == null) {
       return TweetStatus(chains: [], cursorBottom: null, cursorTop: null);
     }
     var addPinnedTweetsInstructions = instructions.firstWhereOrNull((e) => e['type'] == 'TimelinePinEntry');
-    var addEntries = List.from(addEntriesInstructions['entries']);
-    var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
+    var addEntries = addEntriesInstructions['entries'] as List;
+    var repEntries = instructions.where((e) => e['type'] == 'TimelineReplaceEntry').toList();
     List addPinnedEntries = List<dynamic>.empty(growable: true);
     if (addPinnedTweetsInstructions != null) {
       addPinnedEntries.add(addPinnedTweetsInstructions['entry']);
@@ -515,16 +513,14 @@ class TimelineParser {
 
     var filteredTweets = allTweets.where(includeTweet);
 
-    var globalTweets = List.from(
-      filteredTweets.map((e) {
-        var elm = e['content']['itemContent']['tweet_results']['result'];
-        if (elm['rest_id'] == null && elm['tweet'] != null) {
-          elm = elm['tweet'];
-        }
+    var globalTweets = filteredTweets.map((e) {
+      var elm = e['content']['itemContent']['tweet_results']['result'];
+      if (elm['rest_id'] == null && elm['tweet'] != null) {
+        elm = elm['tweet'];
+      }
 
-        return elm;
-      }),
-    );
+      return elm;
+    }).toList();
 
     var tweets = [];
     try {

@@ -318,7 +318,7 @@ class TweetChain {
   TweetChain({required this.id, required this.tweets, required this.isPinned});
 
   factory TweetChain.fromJson(Map<String, dynamic> e) {
-    var tweets = List.from(e['tweets']).map((e) => TweetWithCard.fromJson(e)).toList();
+    var tweets = (e['tweets'] as List).map((e) => TweetWithCard.fromJson(e)).toList();
 
     return TweetChain(id: e['id'], tweets: tweets, isPinned: e['isPinned']);
   }

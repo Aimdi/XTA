@@ -67,11 +67,11 @@ class EntityMapParser {
                   final variantsJson = res["media_info"]?["variants"];
                   List<Variant> variants = [];
                   if (variantsJson is List<dynamic>) {
-                    variants = List.from(variantsJson.map((e) =>
+                    variants = variantsJson.map((e) =>
                       Variant()
                         ..bitrate = e['bit_rate'] as int?
                         ..contentType = e['content_type'] as String?
-                        ..url = e['url'] as String?));
+                        ..url = e['url'] as String?).toList();
                   }
                   result[key] = VideoEntity(
                     metadata: TweetVideoMetadata(

@@ -8,7 +8,7 @@ import 'package:quax/database/repository.dart';
 Future<List<Account>> getAccounts() async {
   var database = await Repository.readOnly();
   var query = await database.query(tableAccounts);
-  return List.from(query).map((e) => Account.fromMap(e)).toList();
+  return (query as List).map((e) => Account.fromMap(e)).toList();
 }
 
 /// Decoded auth header for a single healthy account, or null if none is usable.

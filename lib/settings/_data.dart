@@ -46,25 +46,25 @@ class SettingsData {
     return SettingsData(
         settings: json['settings'],
         searchSubscriptions: json['searchSubscriptions'] != null
-            ? List.from(json['searchSubscriptions']).map((e) => SearchSubscription.fromMap(e)).toList()
+            ? (json['searchSubscriptions'] as List? ?? []).map((e) => SearchSubscription.fromMap(e)).toList()
             : null,
         userSubscriptions: json['subscriptions'] != null
-            ? List.from(json['subscriptions']).map((e) => UserSubscription.fromMap(e)).toList()
+            ? (json['subscriptions'] as List? ?? []).map((e) => UserSubscription.fromMap(e)).toList()
             : null,
         subscriptionGroups: json['subscriptionGroups'] != null
-            ? List.from(json['subscriptionGroups']).map((e) => SubscriptionGroup.fromMap(e)).toList()
+            ? (json['subscriptionGroups'] as List? ?? []).map((e) => SubscriptionGroup.fromMap(e)).toList()
             : null,
         subscriptionGroupMembers: json['subscriptionGroupMembers'] != null
-            ? List.from(json['subscriptionGroupMembers']).map((e) => SubscriptionGroupMember.fromMap(e)).toList()
+            ? (json['subscriptionGroupMembers'] as List? ?? []).map((e) => SubscriptionGroupMember.fromMap(e)).toList()
             : null,
-        tweets: json['tweets'] != null ? List.from(json['tweets']).map((e) => SavedTweet.fromMap(e)).toList() : null,
+        tweets: json['tweets'] != null ? (json['tweets'] as List).map((e) => SavedTweet.fromMap(e)).toList() : null,
         savedTweetFolders: json['savedTweetFolders'] != null
-            ? List.from(json['savedTweetFolders']).map((e) => SavedTweetFolder.fromMap(e)).toList()
+            ? (json['savedTweetFolders'] as List? ?? []).map((e) => SavedTweetFolder.fromMap(e)).toList()
             : null,
         likedTweets: json['likedTweets'] != null
-            ? List.from(json['likedTweets']).map((e) => LikedTweet.fromMap(e)).toList()
+            ? (json['likedTweets'] as List? ?? []).map((e) => LikedTweet.fromMap(e)).toList()
             : null,
-        accounts: json['accounts'] != null ? List.from(json['accounts']).map((e) => Account.fromMap(e)).toList() : null);
+        accounts: json['accounts'] != null ? (json['accounts'] as List).map((e) => Account.fromMap(e)).toList() : null);
   }
 
   Map<String, dynamic> toJson() {

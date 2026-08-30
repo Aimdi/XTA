@@ -623,7 +623,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (!widget.group.popular) {
       return sortChainsNewestFirst(chains);
     }
-    return chains.sorted((a, b) => _likesOf(b).compareTo(_likesOf(a))).toList();
+    return chains.sorted((a, b) => _likesOf(b).compareTo(_likesOf(a)));
   }
 
   // In zen mode the feed is finite: pagination pauses after this many pages

@@ -143,7 +143,7 @@ class Twitter {
 
     var hasErrors = content.containsKey('errors');
     if (hasErrors && content['errors'] != null) {
-      var errors = List.from(content['errors']);
+      var errors = content['errors'] as List? ?? [];
       if (errors.isEmpty) {
         throw TwitterError(code: 0, message: 'Unknown error', uri: uri.toString());
       } else {
@@ -422,7 +422,7 @@ class Twitter {
 
     var result = json.decode(response.body);
 
-    var instructions = List.from(result?['data']?['threaded_conversation_with_injections_v2']?['instructions'] ?? []);
+    var instructions = result?['data']?['threaded_conversation_with_injections_v2']?['instructions'] as List? ?? [];
     if (instructions.isEmpty) {
       return TweetStatus(chains: [], cursorBottom: null, cursorTop: null);
     }
@@ -432,8 +432,8 @@ class Twitter {
       return TweetStatus(chains: [], cursorBottom: null, cursorTop: null);
     }
 
-    var addEntries = List.from(addEntriesInstructions['entries']);
-    var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
+    var addEntries = addEntriesInstructions['entries'] as List;
+    var repEntries = instructions.where((e) => e['type'] == 'TimelineReplaceEntry').toList();
 
     // Use createUnconversationedChains for better thread handling when available
     // This provides more accurate conversation grouping and reply handling
@@ -592,15 +592,13 @@ class Twitter {
       return [];
     }
 
-    List instructions = List.from(
-      result?['data']?['search_by_raw_query']?['search_timeline']?['timeline']?['instructions'] ?? [],
-    );
+    List instructions = result?['data']?['search_by_raw_query']?['search_timeline']?['timeline']?['instructions'] as List? ?? [];
+    
     if (instructions.isEmpty) {
       return [];
     }
-    List addEntries = List.from(
-      instructions.firstWhere((e) => e['type'] == 'TimelineAddEntries', orElse: () => null)?['entries'] ?? [],
-    );
+    List addEntries = instructions.firstWhere((e) => e['type'] == 'TimelineAddEntries', orElse: () => null)?['entries'] as List? ?? [];
+    
     if (addEntries.isEmpty) {
       return [];
     }
@@ -626,7 +624,7 @@ class Twitter {
       return jsonEncode(locations.map((e) => e.toJson()).toList());
     });
 
-    return List.from(jsonDecode(result)).map((e) => TrendLocation.fromJson(e)).toList(growable: false);
+    return (jsonDecode(result) as List).map((e) => TrendLocation.fromJson(e)).toList(growable: false);
   }
 
   static Future<List<Trends>> getTrends(int location) async {
@@ -636,7 +634,7 @@ class Twitter {
       return jsonEncode(trends.map((e) => e.toJson()).toList());
     });
 
-    return List.from(jsonDecode(result)).map((e) => Trends.fromJson(e)).toList(growable: false);
+    return (jsonDecode(result) as List).map((e) => Trends.fromJson(e)).toList(growable: false);
   }
 
   static Future<TweetStatus> getTimelineTweets(

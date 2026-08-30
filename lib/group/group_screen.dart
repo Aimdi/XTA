@@ -170,7 +170,7 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
 
         // Split the users into chunks, oldest first, to prevent thrashing of all groups when a new user is added
         final filteredUsers = group.id == '-1' ? group.subscriptions.where((elm) => elm.inFeed) : group.subscriptions;
-        final members = filteredUsers.sorted((a, b) => a.createdAt.compareTo(b.createdAt)).toList();
+        final members = filteredUsers.sorted((a, b) => a.createdAt.compareTo(b.createdAt));
 
         // Substack publications are members of the group but they are not
         // searched on X: they have their own source, and leaving them in a

@@ -51,7 +51,7 @@ class Article {
     final coverMediaJson = articleResult["cover_media"]?["media_info"]?["original_img_url"];
 
     final coverMedia = coverMediaJson == null ? null : ImageEntity(imageUrl: coverMediaJson);
-    return Article(title, previewText, List.from(blocks.map((e) => blockToRichText(e))), entities, coverMedia);
+    return Article(title, previewText, blocks.map((e) => blockToRichText(e)).toList(), entities, coverMedia);
   }
 }
 
