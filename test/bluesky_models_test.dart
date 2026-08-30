@@ -449,6 +449,37 @@ void main() {
       expect(profile.followersCount, 12);
       expect(profile.toAccount().actor, 'did:plc:abc');
     });
+
+    test('reads banner and createdAt from the AppView', () {
+      final profile = BlueskyProfile.fromJson({
+        'did': 'did:plc:abc',
+        'handle': 'alice.bsky.social',
+        'displayName': 'Alice',
+        'avatar': 'https://example.org/a.jpg',
+        'banner': 'https://example.org/b.jpg',
+        'createdAt': '2023-04-13T12:00:00.000Z',
+        'description': 'Hi',
+        'followersCount': 12,
+        'followsCount': 3,
+        'postsCount': 40,
+      });
+
+      expect(profile.bannerUrl, 'https://example.org/b.jpg');
+      expect(profile.createdAt, isNotNull);
+      expect(profile.createdAt!.toUtc(), DateTime.utc(2023, 4, 13, 12));
+    });
+
+    test('blank banner and createdAt stay null', () {
+      final profile = BlueskyProfile.fromJson({
+        'did': 'did:plc:abc',
+        'handle': 'alice.bsky.social',
+        'banner': '  ',
+        'createdAt': 'not-a-date',
+      });
+
+      expect(profile.bannerUrl, isNull);
+      expect(profile.createdAt, isNull);
+    });
   });
 
   group('parseBlueskyListRef', () {

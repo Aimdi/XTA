@@ -249,7 +249,9 @@ class BlueskyProfile {
   final String handle;
   final String displayName;
   final String? avatarUrl;
+  final String? bannerUrl;
   final String description;
+  final DateTime? createdAt;
   final int followersCount;
   final int followsCount;
   final int postsCount;
@@ -260,6 +262,8 @@ class BlueskyProfile {
     required this.displayName,
     required this.description,
     this.avatarUrl,
+    this.bannerUrl,
+    this.createdAt,
     this.followersCount = 0,
     this.followsCount = 0,
     this.postsCount = 0,
@@ -270,13 +274,17 @@ class BlueskyProfile {
     final handle = data['handle'].string?.trim() ?? '';
     final name = data['displayName'].string?.trim();
     final avatar = data['avatar'].string?.trim();
+    final banner = data['banner'].string?.trim();
+    final created = data['createdAt'].string;
 
     return BlueskyProfile(
       did: data['did'].string ?? '',
       handle: handle,
       displayName: (name == null || name.isEmpty) ? handle : name,
       avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
+      bannerUrl: banner == null || banner.isEmpty ? null : banner,
       description: data['description'].string?.trim() ?? '',
+      createdAt: DateTime.tryParse(created ?? '')?.toLocal(),
       followersCount: data['followersCount'].integer ?? 0,
       followsCount: data['followsCount'].integer ?? 0,
       postsCount: data['postsCount'].integer ?? 0,

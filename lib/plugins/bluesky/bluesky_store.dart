@@ -135,10 +135,11 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
 
   /// Reads the followed accounts and merges them.
   ///
-  /// Home-strip remounts call this on every swipe. A second poll inside the
-  /// cache window must not rebuild an unchanged first page — that jumped the
-  /// list to the top and flashed every card. Pending accounts still fill in
-  /// (the budget only asks for unread handles). Pull-to-refresh passes [force].
+  /// The Bluesky tab only calls this on pull-to-refresh or the first empty
+  /// paint. A second poll inside the cache window must not rebuild an unchanged
+  /// first page — that jumped the list to the top and flashed every card.
+  /// Pending accounts still fill in (the budget only asks for unread handles).
+  /// Pull-to-refresh passes [force].
   Future<void> refresh({bool force = false}) async {
     final actors = accounts.state.map((e) => e.actor).toList(growable: false);
     if (!force &&
