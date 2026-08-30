@@ -3,6 +3,8 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_listing_body.dart';
@@ -12,6 +14,7 @@ import 'package:xta/plugins/reddit/reddit_search_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/user.dart';
 
 /// A list of Reddit posts under a title.
 ///
@@ -65,6 +68,11 @@ class RedditListingScreen extends StatelessWidget {
               icon: const Icon(Icons.info_outline),
               tooltip: L10n.of(context).plugin_reddit_about_community,
               onPressed: () => showRedditAboutSheet(context, subreddit),
+            ),
+            IconButton(
+              icon: const Icon(Icons.group_add_outlined),
+              tooltip: L10n.of(context).add_to_group,
+              onPressed: () => addRedditSubredditToGroup(context, subreddit),
             ),
             RedditFollowButton(subreddit: subreddit),
           ],
@@ -151,6 +159,44 @@ Future<void> toggleRedditFollow(
 
   followed ? await store.remove(subreddit) : await store.add(subreddit);
   await subscriptions.reloadSubscriptions();
+}
+
+/// Follows [subreddit] if needed, then opens the group-membership sheet.
+///
+/// Same path RSS / Substack / Bluesky profiles use. A community that is not
+/// already followed has to be, or the group feed would name a subreddit the
+/// plugin is not watching.
+Future<void> addRedditSubredditToGroup(
+  BuildContext context,
+  String subreddit,
+) async {
+  final store = context.read<RedditSubredditsStore>();
+  final subscriptions = context.read<SubscriptionsModel>();
+  final groupsModel = context.read<GroupsModel>();
+  final followed = isFollowedSubreddit(store.state, subreddit);
+
+  if (!followed) {
+    await store.add(subreddit);
+    await subscriptions.reloadSubscriptions();
+  }
+  if (!context.mounted) return;
+
+  final normalised = normaliseSubreddit(subreddit) ?? subreddit;
+  final user = RedditSubscription(
+    id: normalised.toLowerCase(),
+    name: normalised,
+    createdAt: DateTime.now(),
+    inFeed: true,
+  );
+  final groups = await groupsModel.listGroupsForUser(user.id);
+  if (!context.mounted) return;
+
+  await pickUserGroups(
+    context,
+    user: user,
+    followed: true,
+    groupsForUser: groups,
+  );
 }
 
 /// The sidebar as a sheet: what the community is, how many read it, and its

@@ -69,6 +69,7 @@ class _RedditPostSheet extends StatelessWidget {
         ),
         _RedditFollowAction(subreddit: post.subreddit),
         _RedditSaveAction(post: post),
+        _RedditAddToGroupAction(subreddit: post.subreddit),
         _RedditSheetAction(
           icon: Icons.open_in_new,
           label: l10n.open_in_browser,
@@ -197,6 +198,27 @@ class _RedditFollowAction extends StatelessWidget {
             navigator.pop();
           },
         );
+      },
+    );
+  }
+}
+
+/// Follows the community if needed, then opens the group-membership sheet.
+class _RedditAddToGroupAction extends StatelessWidget {
+  final String subreddit;
+
+  const _RedditAddToGroupAction({required this.subreddit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+
+    return _RedditSheetAction(
+      icon: Icons.group_add,
+      label: l10n.add_to_group,
+      onTap: () async {
+        await addRedditSubredditToGroup(context, subreddit);
+        if (context.mounted) Navigator.pop(context);
       },
     );
   }
