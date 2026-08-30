@@ -668,7 +668,6 @@ class Twitter {
 
     var response = await _twitterApi.client.get(XEndpoints.uri(XEndpoints.homeTimeline, defaultUserTweetsParam));
     var result = json.decode(response.body);
-    //if this page is not first one on the profile page, dont add pinned tweet
     if (variables['cursor'] != null) showPinnedTweet = false;
     return TimelineParser.createTimelineChains(
       result,
@@ -852,7 +851,6 @@ class Twitter {
 
     var result = json.decode(response.body);
 
-    //if this page is not first one on the profile page, dont add pinned tweet
     if (variables['cursor'] != null) showPinnedTweet = false;
     return TimelineParser.createUnconversationedChains(
       result,

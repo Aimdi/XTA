@@ -456,7 +456,6 @@ class TweetTileState extends State<TweetTile> with SingleTickerProviderStateMixi
     if (!isQuotedTweet && (tweet.isQuoteStatus ?? false)) {
       Widget quotedContent;
       if (tweet.quotedStatusWithCard != null) {
-        // if we got the full tweet in the reply
         quotedContent = TweetTile(
             clickable: true,
             tweet: tweet.quotedStatusWithCard!,

@@ -442,7 +442,6 @@ class TweetCard extends StatelessWidget {
 
         // Documented card states: live, ended, upcoming, replay
         // For now, we handle all states with the same UI
-        //var state = card['binding_values']['broadcast_state']?['string_value'];
 
         // Open URL in in-app browser for better user experience and security
         return _createCard(

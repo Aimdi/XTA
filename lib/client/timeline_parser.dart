@@ -415,8 +415,6 @@ class TimelineParser {
     String? cursorTop = getCursor(addEntries, repEntries, 'cursor-top', 'Top');
 
     var chains = createTweets(addEntries);
-    // var debugTweets = json.encode(chains);
-    //var debugTweets2 = json.encode(addEntries);
     var pinnedChains = createTweets(addPinnedEntries, true);
 
     for (final addModEntry in addModEntries) {
@@ -440,10 +438,7 @@ class TimelineParser {
     if (pinnedTweets.isNotEmpty & showPinnedTweet) {
       chains.insertAll(0, pinnedChains);
     }
-    //To prevent infinte loading of tweets while filtering via regex , we have to count added tweets.
-    //(infinite loading originating in paged_silver_builder.dart at line 246)
-    //As soon as there is no tweet left that passes regex critera and we also reached maximum attemps
-    //to find them, than stop loading more.
+
     if (chains.length < 5) {
       increaseTweetCounter();
       if (getTweetsCounter() > 5) {
@@ -479,18 +474,13 @@ class TimelineParser {
     String? cursorBottom = getCursor(addEntries, repEntries, 'cursor-bottom', 'Bottom');
     String? cursorTop = getCursor(addEntries, repEntries, 'cursor-top', 'Top');
     var chains = createTweets(addEntries);
-    // var debugTweets = json.encode(chains);
-    //var debugTweets2 = json.encode(addEntries);
     var pinnedChains = createTweets(addPinnedEntries, true);
 
     //If we want to show pinned tweets, add them before the others that we already have
     if (pinnedTweets.isNotEmpty & showPinnedTweet) {
       chains.insertAll(0, pinnedChains);
     }
-    //To prevent infinte loading of tweets while filtering via regex , we have to count added tweets.
-    //(infinite loading originating in paged_silver_builder.dart at line 246)
-    //As soon as there is no tweet left that passes regex critera and we also reached maximum attemps
-    //to find them, than stop loading more.
+
     if (chains.length < 5) {
       increaseTweetCounter();
       if (getTweetsCounter() > 5) {
