@@ -5,7 +5,7 @@ import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/broadcasts.dart';
-import 'package:xta/utils/urls.dart';
+import 'package:xta/tweet/live_player_screen.dart';
 
 /// Fullscreen swipeable viewer paging across all loaded items of a media
 /// grid, with an "open post" escape hatch to the tweet a page belongs to.
@@ -97,9 +97,8 @@ void openMediaLightbox(BuildContext context,
   );
 }
 
-/// Broadcasts with a playable VOD open in the in-app player. Live rooms
-/// and Spaces with no video open `x.com/i/broadcasts/{id}` or
-/// `x.com/i/spaces/{id}` in a real browser (not a bounce back into XTA).
+/// Broadcasts with a playable VOD open in the in-app lightbox. Live rooms
+/// and Spaces open the in-app HLS player (same stream the tweet card uses).
 void openMediaGridItem(
   BuildContext context, {
   required MediaGridItem item,
@@ -108,7 +107,7 @@ void openMediaGridItem(
   List<MediaGridItem> staticItems = const [],
 }) {
   if (item is BroadcastGridItem) {
-    if (item.canPlayInApp) {
+    if (item.hasVodVariants) {
       openMediaLightbox(
         context,
         controller: controller,
@@ -117,10 +116,9 @@ void openMediaGridItem(
       );
       return;
     }
-    final url = item.watchUrl ??
-        (item.tweet == null ? null : liveUrlOf(item.tweet!));
-    if (url != null) {
-      openLiveUrl(context, url);
+    final request = _liveRequestFor(item);
+    if (request.canResolve) {
+      openLivePlayer(context, request);
       return;
     }
     Navigator.pushNamed(
@@ -140,5 +138,21 @@ void openMediaGridItem(
     controller: controller,
     staticItems: staticItems,
     initialIndex: index,
+  );
+}
+
+LivePlayRequest _liveRequestFor(BroadcastGridItem item) {
+  final thumb = item.thumbnailUrl.isEmpty ? null : item.thumbnailUrl;
+  if (item.tweet != null) {
+    return LivePlayRequest.fromTweet(item.tweet!).copyWith(
+      imageUrl: thumb,
+      aspectRatio: item.aspectRatio,
+    );
+  }
+  return LivePlayRequest(
+    broadcastId: item.broadcastId,
+    spaceId: item.spaceId,
+    imageUrl: thumb,
+    aspectRatio: item.aspectRatio,
   );
 }

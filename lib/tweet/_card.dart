@@ -9,6 +9,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/poll.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -468,6 +469,7 @@ class _TweetCardState extends State<TweetCard> {
         final values = card['binding_values'] as Map<String, dynamic>?;
         var image = values?['broadcast_thumbnail$imageKey']?['image_value']?['url'] as String?;
         var key = values?['broadcast_media_key']?['string_value'] as String?;
+        final broadcastId = broadcastIdFromCard(card);
 
         final width = double.tryParse('${values?['broadcast_width']?['string_value'] ?? ''}') ?? 16;
         final height = double.tryParse('${values?['broadcast_height']?['string_value'] ?? ''}') ?? 9;
@@ -478,18 +480,23 @@ class _TweetCardState extends State<TweetCard> {
           aspectRatio = 16 / 9;
         }
 
-        if (key == null) {
+        if (key == null && broadcastId == null) {
           return Container();
         }
 
         var child = TweetVideo(
             username: 'username',
             loop: false,
-            metadata: TweetVideoMetadata(aspectRatio, image, () async {
-              var broadcast = await Twitter.getBroadcastDetails(key);
-
-              return TweetVideoUrls(broadcast['source']['noRedirectPlaybackUrl'], null);
-            }));
+            metadata: TweetVideoMetadata.live(
+              aspectRatio: aspectRatio,
+              imageUrl: image,
+              playbackUrl: () => livePlaybackUrl(
+                LivePlayRequest(
+                  mediaKey: key,
+                  broadcastId: broadcastId,
+                ),
+              ),
+            ));
 
         // Just the player. Title/@username sat in a pale card under the video
         // and read as a blank white bar; the tweet already has the text.
@@ -501,8 +508,37 @@ class _TweetCardState extends State<TweetCard> {
           ),
         );
       default:
+        if (isAudioSpaceCard(card)) {
+          return _createAudioSpacePlayer(card);
+        }
         return Container();
     }
+  }
+
+  Widget _createAudioSpacePlayer(Map<String, dynamic> card) {
+    final spaceId = spaceIdFromCard(card);
+    if (spaceId == null) {
+      return Container();
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(kTweetMediaRadius),
+        child: ColoredBox(
+          color: Colors.black,
+          child: TweetVideo(
+            username: widget.tweet.user?.screenName ?? 'space',
+            loop: false,
+            metadata: TweetVideoMetadata.live(
+              imageUrl: broadcastThumbnailFromCard(card),
+              playbackUrl: () => livePlaybackUrl(
+                LivePlayRequest.fromTweet(widget.tweet),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

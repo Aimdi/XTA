@@ -27,6 +27,14 @@ void main() {
       expect(uri.queryParameters['variables'], '{}');
     });
 
+    test('AudioSpaceById is a shipped GraphQL operation', () {
+      final uri = XEndpoints.uri(XEndpoints.audioSpaceById, {'variables': '{}'});
+
+      expect(uri.host, 'x.com');
+      expect(uri.path, endsWith('/AudioSpaceById'));
+      expect(queryIdPattern.hasMatch(XEndpoints.queryId(XEndpoints.audioSpaceById)), isTrue);
+    });
+
     test('the two SearchTimeline call sites keep distinct hosts and registry keys', () {
       final tweets = XEndpoints.uri(XEndpoints.searchTimeline, {});
       final users = XEndpoints.uri(XEndpoints.searchTimelineUsers, {});

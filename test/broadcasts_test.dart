@@ -151,4 +151,85 @@ void main() {
       'https://pbs.example/space.jpg',
     );
   });
+
+  test('broadcastMediaKeyOf reads the card binding', () {
+    final tweet = _tweet(
+      card: {
+        'name': '745291183405076480:broadcast',
+        'binding_values': {
+          'broadcast_media_key': {'string_value': '28_1abc'},
+        },
+      },
+    );
+    expect(broadcastMediaKeyOf(tweet), '28_1abc');
+    expect(broadcastMediaKeyOf(_tweet()), isNull);
+  });
+
+  test('playbackUrlFromBroadcastStatus reads HLS and ignores junk', () {
+    expect(
+      playbackUrlFromBroadcastStatus({
+        'source': {'noRedirectPlaybackUrl': 'https://video.example/live.m3u8'},
+      }),
+      'https://video.example/live.m3u8',
+    );
+    expect(playbackUrlFromBroadcastStatus({'source': {}}), isNull);
+    expect(playbackUrlFromBroadcastStatus(null), isNull);
+    expect(playbackUrlFromBroadcastStatus([]), isNull);
+  });
+
+  test('mediaKeyFromAudioSpace and broadcasts/show parsers', () {
+    expect(
+      mediaKeyFromAudioSpace({
+        'data': {
+          'audioSpace': {
+            'metadata': {'media_key': '28_space'},
+          },
+        },
+      }),
+      '28_space',
+    );
+    expect(mediaKeyFromAudioSpace({'data': {}}), isNull);
+    expect(
+      mediaKeyFromBroadcastsShow({
+        'broadcasts': {
+          '1abc': {'media_key': '28_1abc'},
+        },
+      }, '1abc'),
+      '28_1abc',
+    );
+    expect(mediaKeyFromBroadcastsShow({'broadcasts': {}}, '1abc'), isNull);
+  });
+
+  test('LivePlayRequest.fromUrl distinguishes Spaces from broadcasts', () {
+    final space = LivePlayRequest.fromUrl('https://x.com/i/spaces/1room');
+    expect(space.isSpace, isTrue);
+    expect(space.spaceId, '1room');
+    expect(space.canResolve, isTrue);
+    expect(space.watchUrl, 'https://x.com/i/spaces/1room');
+
+    final live = LivePlayRequest.fromUrl('https://x.com/i/broadcasts/1abc');
+    expect(live.isSpace, isFalse);
+    expect(live.broadcastId, '1abc');
+    expect(live.canResolve, isTrue);
+
+    expect(LivePlayRequest.fromUrl('https://x.com/someone/status/1').canResolve, isFalse);
+  });
+
+  test('LivePlayRequest.fromTweet carries the card media_key', () {
+    final tweet = _tweet(
+      card: {
+        'name': '745291183405076480:broadcast',
+        'binding_values': {
+          'broadcast_media_key': {'string_value': '28_fromcard'},
+          'broadcast_url': {
+            'string_value': 'https://x.com/i/broadcasts/1card',
+          },
+        },
+      },
+    );
+    final request = LivePlayRequest.fromTweet(tweet);
+    expect(request.mediaKey, '28_fromcard');
+    expect(request.broadcastId, '1card');
+    expect(request.canResolve, isTrue);
+  });
 }

@@ -960,4 +960,30 @@ class Twitter {
 
     return json.decode(response.body);
   }
+
+  /// `broadcasts/show.json` for a Periscope/X broadcast id. Yields `media_key`.
+  static Future<Object?> fetchBroadcastsShow(String broadcastId) async {
+    final response = await _twitterApi.client.get(
+      Uri.https('twitter.com', '/i/api/1.1/broadcasts/show.json', {'ids': broadcastId}),
+    );
+    return json.decode(response.body);
+  }
+
+  /// GraphQL AudioSpaceById — metadata (including `media_key`) for a Space.
+  static Future<Object?> fetchAudioSpace(String spaceId) async {
+    final uri = XEndpoints.uri(XEndpoints.audioSpaceById, {
+      'variables': jsonEncode({
+        'id': spaceId,
+        'isMetatagsQuery': true,
+        'withReplays': true,
+        'withListeners': true,
+      }),
+      'features': jsonEncode({
+        'spaces_2022_h2_clipping': true,
+        'spaces_2022_h2_spaces_communities': true,
+      }),
+    });
+    final response = await _twitterApi.client.get(uri);
+    return json.decode(response.body);
+  }
 }

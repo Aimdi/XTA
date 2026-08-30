@@ -35,15 +35,28 @@ class BroadcastGridItem extends MediaGridItem {
 
   bool get isSpace => spaceId != null;
 
-  /// Whether the in-app player can actually start this tile.
+  /// Whether this tile already has MP4/HLS variants on the tweet media.
   ///
-  /// A VOD carries video variants. Card-only live rooms and Spaces do not —
-  /// those open `watchUrl` in a browser instead of a silent player.
-  bool get canPlayInApp {
+  /// Those play in the media lightbox. Live rooms without variants still
+  /// play in-app: [LivePlayerScreen] fetches HLS from the broadcast/Space id.
+  bool get hasVodVariants {
     final variants = media.videoInfo?.variants;
     return media.type == 'video' &&
         variants != null &&
         variants.any((v) => v.url != null && v.url!.isNotEmpty);
+  }
+
+  /// Whether tapping this tile can start an in-app player (lightbox or live).
+  bool get canPlayInApp {
+    if (hasVodVariants) {
+      return true;
+    }
+    if (tweet != null &&
+        (broadcastMediaKeyOf(tweet!) != null || spaceMediaKeyOf(tweet!) != null)) {
+      return true;
+    }
+    return (broadcastId != null && broadcastId!.isNotEmpty) ||
+        (spaceId != null && spaceId!.isNotEmpty);
   }
 
   @override

@@ -47,6 +47,7 @@ class XEndpoints {
   static const userMedia = 'UserMedia';
   static const userTweetsAndReplies = 'UserTweetsAndReplies';
   static const userTweets = 'UserTweets';
+  static const audioSpaceById = 'AudioSpaceById';
 
   static const Map<String, XEndpoint> shipped = {
     userByRestId: XEndpoint(
@@ -112,6 +113,12 @@ class XEndpoints {
       host: 'x.com',
     ),
     userTweets: XEndpoint(name: userTweets, operation: 'UserTweets', queryId: '36rb3Xj3iJ64Q-9wKDjCcQ', host: 'x.com'),
+    audioSpaceById: XEndpoint(
+      name: audioSpaceById,
+      operation: 'AudioSpaceById',
+      queryId: 'Bh0L6azTQoMs9rJKeCF4wQ',
+      host: 'x.com',
+    ),
   };
 
   static Map<String, String> _overrides = const {};
