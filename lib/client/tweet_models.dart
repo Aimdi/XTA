@@ -273,7 +273,8 @@ class TweetWithCard extends Tweet {
 
     tweet.displayTextRange = (e['display_text_range'] as List<dynamic>?)?.map((e) => e as int).toList();
 
-    // TODO(perf): Consider removing unused legacy fields (coordinates, truncated, place, etc.)
+    // Legacy fields that are no longer used by the Twitter API v2
+    // These are kept as null for backwards compatibility with older data
     tweet.coordinates = null;
     tweet.truncated = null;
     tweet.place = null;

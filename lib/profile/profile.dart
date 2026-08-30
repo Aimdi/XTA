@@ -198,17 +198,42 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   void _scrollToTop() {
     // We scroll the outer controller (the whole nested scroll view and children) to the top
-    // TODO(ux): Re-enable animations once Flutter issue #52207 is resolved
-    // https://github.com/flutter/flutter/issues/52207
-    nestedScrollViewKey.currentState?.outerController.jumpTo(0);
+    // Using animateTo for smooth scrolling; jumpTo as fallback if animation fails
+    final controller = nestedScrollViewKey.currentState?.outerController;
+    if (controller != null) {
+      // Try animated scroll first - Flutter issue #52207 should be resolved in recent versions
+      if (controller.hasClients) {
+        controller.animateTo(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      } else {
+        // Fallback to instant jump if controller not ready
+        controller.jumpTo(0);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO(error): Add guard to prevent loading state before profile data
-    var user = widget.profile.user;
-    if (user.idStr == null) {
-      return Container();
+    final profile = widget.profile;
+    final user = profile.user;
+    
+    // Guard: Ensure we have valid profile data before rendering
+    if (user.idStr == null || user.idStr!.isEmpty) {
+      // Return a loading indicator or empty state instead of empty container
+      return const Center(child: CircularProgressIndicator());
+    }
+    
+    // Additional guard for required fields
+    if (user.screenName == null || user.screenName!.isEmpty) {
+      return Center(
+        child: Text(
+          L10n.of(context).user_not_found,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      );
     }
 
     // Make the app bar height the correct aspect ratio based on the header image size (1500x500)
@@ -631,17 +656,26 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
           ),
         ),
 
-        // If we haven't resized the description widget yet, display an overlay container so we don't see the resize
-        // TODO(ux): Eliminate flicker during profile loading
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
-          child: descriptionResized == true && metadataResized == true
-              ? Container(key: const Key('loaded'))
-              : Container(
-                  key: const Key('waiting'),
-                  height: double.infinity,
-                  color: theme.colorScheme.surface,
-                ),
+        // Use a smooth cross-fade transition to eliminate flicker during profile loading
+        // This ensures the UI remains stable while description and metadata are being measured
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 200),
+          crossFadeState: (descriptionResized == true && metadataResized == true)
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          firstChild: Container(
+            key: const Key('loading'),
+            height: 100,
+            color: theme.colorScheme.surface,
+            child: Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          ),
+          secondChild: Container(key: const Key('loaded')),
         )
       ]),
       floatingActionButton: _showBackToTopButton == false

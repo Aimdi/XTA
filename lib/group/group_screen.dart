@@ -142,9 +142,26 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
       onError: (_, error) =>
           ScaffoldErrorWidget(error: error, stackTrace: null, prefix: L10n.current.unable_to_load_the_group),
       onState: (_, group) {
-        // TODO(ui): Implement proper "no data" state instead of empty widget
+        // Handle empty state with proper UI feedback
         if (group.id.isEmpty) {
-          return _loadingView();
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.group_outlined, size: 48, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(
+                  L10n.of(context).group_not_found,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  L10n.of(context).try_creating_new_group,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          );
         }
         // A group leaves each filter unset (null) to follow the global default.
         final prefs = PrefService.of(context);

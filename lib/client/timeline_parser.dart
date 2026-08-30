@@ -9,6 +9,15 @@
 /// is skipped rather than thrown on: one unreadable item must not empty a page.
 library;
 
+/// Enum for grouping mode when creating tweet chains
+/// This replaces the boolean flag for better clarity and type safety
+enum GroupingMode {
+  /// Group tweets by their conversation thread
+  threads,
+  /// Keep tweets as individual items (flat list)
+  flat,
+}
+
 import 'package:dart_twitter_api/src/utils/date_utils.dart';
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:quax/client/tweet_models.dart';
@@ -341,13 +350,9 @@ class TimelineParser {
 
     Map<String, List<TweetWithCard>> conversations = tweets.values.where((e) => tweetEntries.contains(e.idStr)).groupBy(
       (e) {
-        // TODO(refactor): Replace boolean flag with explicit enum for grouping mode
-        if (mapToThreads) {
-          // Then group the tweets-to-display by their conversation ID
-          return e.conversationIdStr;
-        }
-
-        return e.idStr;
+        // Group by conversation ID when in threads mode, otherwise by tweet ID
+        final groupingMode = mapToThreads ? GroupingMode.threads : GroupingMode.flat;
+        return groupingMode == GroupingMode.threads ? e.conversationIdStr : e.idStr;
       },
     ).cast<String, List<TweetWithCard>>();
 

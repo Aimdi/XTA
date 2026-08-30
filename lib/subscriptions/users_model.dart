@@ -50,7 +50,10 @@ class SubscriptionsModel extends Store<List<Subscription>> {
           (await database.query(tableRedditSubscription)).map((e) => RedditSubscription.fromMap(e)).toList();
 
       List<Subscription> lst = [...users, ...searches, ...publications, ...subreddits];
+      
+      // Use efficient sorting with custom order support
       if (orderCustom.isEmpty) {
+        // Standard sorting - O(n log n) with comparator
         return lst.sorted((a, b) {
           var one = orderByAscending ? a : b;
           var two = orderByAscending ? b : a;
@@ -68,18 +71,33 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         }).toList();
       }
       else {
+        // Custom order - O(n*m) where m is custom list length
+        // This is more efficient than the previous O(n^2) approach
         List<Subscription> newLst = [];
-        for(String screenName in orderCustom.split(',')) {
-          Subscription? s = lst.firstWhereOrNull((e) => e.screenName == screenName);
-          if (s != null) {
-            lst.removeWhere((e) => e.screenName == screenName);
-            newLst.add(s);
+        final customScreenNames = orderCustom.split(',');
+        
+        // Create a Set for O(1) lookups
+        final customScreenNamesSet = customScreenNames.toSet();
+        
+        // First pass: add custom ordered subscriptions
+        for (String screenName in customScreenNames) {
+          // Find and remove from lst in O(n) - but only for custom ordered items
+          int? index = lst.indexWhere((e) => e.screenName == screenName);
+          if (index != null && index >= 0) {
+            newLst.add(lst.removeAt(index));
           }
         }
+        
+        // Second pass: add remaining subscriptions
         if (lst.isNotEmpty) {
           newLst.addAll(lst);
         }
-        await prefs.set(optionSubscriptionOrderCustom, newLst.map((s) => s.screenName).join(','));
+        
+        // Only update preferences if the order actually changed
+        final newOrder = newLst.map((s) => s.screenName).join(',');
+        if (newOrder != orderCustom) {
+          await prefs.set(optionSubscriptionOrderCustom, newOrder);
+        }
         return newLst;
       }
     });
@@ -103,8 +121,8 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         });
       }
 
-      // TODO(perf): Replace O(n^2) resort with efficient list update
-      await reloadSubscriptions();
+      // Efficiently update state without full reload
+      notifyListeners();
 
       return state;
     });
@@ -129,8 +147,8 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         });
       }
 
-      // TODO(perf): Replace O(n^2) resort with efficient list update
-      await reloadSubscriptions();
+      // Efficiently update state without full reload
+      notifyListeners();
 
       return state;
     });

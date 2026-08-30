@@ -30,16 +30,20 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
   @override
   bool get wantKeepAlive => true;
 
+  bool _isInitialLoad = true;
+  bool _hasLoaded = false;
+
   @override
   void initState() {
     super.initState();
-    // The store is shared, so this is the first mount's job wherever that
-    // happens to be — the tab, or the switcher entry.
+    // Only load subreddits on first init, but DON'T auto-refresh feed
+    // This prevents constant reloading when switching between tabs
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       await context.read<RedditSubredditsStore>().load();
+      _isInitialLoad = false;
       if (mounted) {
-        await context.read<RedditFeedStore>().refresh();
+        setState(() {});
       }
     });
   }
@@ -51,7 +55,10 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
     final feed = context.read<RedditFeedStore>();
 
     return RefreshIndicator(
-      onRefresh: feed.refresh,
+      onRefresh: () async {
+        // Only refresh when user explicitly pulls down
+        await feed.refresh();
+      },
       child: ScopedBuilder<RedditFeedStore, List<RedditPost>>.transition(
         store: feed,
         onError: (_, error) => FullPageErrorWidget(
@@ -67,6 +74,18 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
   }
 
   Widget _list(List<RedditPost> posts) {
+    // Auto-refresh feed only on first load or when returning to top
+    if (!_hasLoaded) {
+      _hasLoaded = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        final feed = context.read<RedditFeedStore>();
+        if (feed.state.isEmpty) {
+          await feed.refresh();
+        }
+      });
+    }
+    
     return ListView.builder(
       controller: widget.scrollController,
       itemCount: posts.length,

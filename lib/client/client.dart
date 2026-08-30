@@ -435,8 +435,15 @@ class Twitter {
     var addEntries = List.from(addEntriesInstructions['entries']);
     var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
 
-    // TODO(perf): Consider using createUnconversationedChains for better thread handling
-    var chains = TimelineParser.createTweetChains(addEntries);
+    // Use createUnconversationedChains for better thread handling when available
+    // This provides more accurate conversation grouping and reply handling
+    var chains = TimelineParser.createUnconversationedChainsGraphql(
+      {'timeline': {'instructions': instructions}},
+      'tweet-',
+      [],
+      false,
+      true,
+    ).chains;
 
     String? cursorBottom = TimelineParser.getCursor(addEntries, repEntries, 'cursor-bottom', 'Bottom');
     String? cursorTop = TimelineParser.getCursor(addEntries, repEntries, 'cursor-top', 'Top');

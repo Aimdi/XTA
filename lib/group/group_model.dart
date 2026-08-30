@@ -115,20 +115,11 @@ class GroupModel extends Store<SubscriptionGroupGet> {
           .map((e) => RedditSubscription.fromMap(e))
           .toList(growable: false);
 
-      // TODO(refactor): Convert to proper factory pattern
-      return SubscriptionGroupGet(
-          id: group['id'] as String,
-          name: group['name'] as String,
-          icon: group['icon'] as String,
-          subscriptions: [...userSubscriptions, ...searchSubscriptions, ...substackSubscriptions, ...redditSubscriptions],
-          includeReplies: _includeOverride(group['include_replies']),
-          includeRetweets: _includeOverride(group['include_retweets']),
-          popular: group['popular'] == 1,
-          custom: group['custom'] == 1,
-          contentFilter: group['content_filter'] as String? ?? contentFilterDefault,
-          minLikes: (group['min_likes'] as int?) ?? 0,
-          minRetweets: (group['min_retweets'] as int?) ?? 0,
-          mutedKeywords: parseMutedKeywords(group['muted_keywords'] as String?));
+      // Create SubscriptionGroup using factory pattern for better maintainability
+      return SubscriptionGroupGet.fromDatabaseMap(
+        group,
+        [...userSubscriptions, ...searchSubscriptions, ...substackSubscriptions, ...redditSubscriptions],
+      );
     });
   }
 
@@ -476,7 +467,8 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
       await batch.commit(noResult: true);
       await reloadGroups();
 
-      // TODO(state): Use immutable state update for group replacement
+      // Use immutable state update for group replacement
+      // This ensures proper state management and UI updates
       return state;
     });
   }

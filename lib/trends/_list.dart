@@ -40,8 +40,25 @@ class _TrendsListState extends State<TrendsList> {
       onLoading: (context) => const Center(child: CircularProgressIndicator()),
       onState: (context, state) {
         if (state.isEmpty) {
-          // TODO(ui): Add empty state widget for trends list
-          return Container();
+          // Empty state for trends list
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.trending_up, size: 48, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(
+                  L10n.of(context).no_trends_available,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  L10n.of(context).pull_to_refresh,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          );
         }
 
         var trends = state[0].trends;

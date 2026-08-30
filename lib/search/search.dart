@@ -76,7 +76,20 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
     _lastDispatchedQuery = initialQuery;
     _queryController.addListener(_onQueryChanged);
 
-    // TODO(ux): Fix focus behavior that resets selection to start
+    // Fix focus behavior: preserve cursor position when regaining focus
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && _queryController.selection.isValid) {
+        // Store the current cursor position when focus is lost
+        final text = _queryController.text;
+        final selection = _queryController.selection;
+        // When focus is regained, restore the cursor position
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_focusNode.hasFocus && text == _queryController.text) {
+            _queryController.selection = selection;
+          }
+        });
+      }
+    });
 
     // The tweet tabs' first-page requests are fired automatically by their
     // PagedListViews using the initial query above; the user-search Store
