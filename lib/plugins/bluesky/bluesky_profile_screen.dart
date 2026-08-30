@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_follows_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
@@ -69,6 +70,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     PluginProfileFeedTab.posts => kBlueskyAuthorFeedPosts,
     PluginProfileFeedTab.replies => kBlueskyAuthorFeedReplies,
     PluginProfileFeedTab.media => kBlueskyAuthorFeedMedia,
+    PluginProfileFeedTab.saved => kBlueskyAuthorFeedPosts,
   };
 
   List<BlueskyPost> _applyTabFilter(
@@ -130,13 +132,48 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
       return;
     }
     setState(() => _tab = tab);
+    if (tab == PluginProfileFeedTab.saved) {
+      await _loadSaved();
+      return;
+    }
     final feed = _feeds[tab]!;
     if (!feed.loaded && !feed.loading) {
       await _loadTab(tab, reset: true);
     }
   }
 
+  /// Device likes by this author. Cheap to rebuild from the in-memory store.
+  Future<void> _loadSaved() async {
+    final feed = _feeds[PluginProfileFeedTab.saved]!;
+    setState(() => feed.loading = true);
+    final likes = context.read<BlueskyLikesStore>();
+    if (likes.state.isEmpty) {
+      await likes.load();
+    }
+    if (!mounted) {
+      return;
+    }
+    final profile = _profile;
+    final posts = profile == null
+        ? const <BlueskyPost>[]
+        : blueskyLikesByAuthor(
+            likes.likedPosts,
+            did: profile.did,
+            handle: profile.handle,
+          );
+    setState(() {
+      feed.posts = posts;
+      feed.cursor = null;
+      feed.loaded = true;
+      feed.loading = false;
+    });
+  }
+
   Future<void> _loadTab(PluginProfileFeedTab tab, {required bool reset}) async {
+    if (tab == PluginProfileFeedTab.saved) {
+      await _loadSaved();
+      return;
+    }
     final feed = _feeds[tab]!;
     if (feed.loading) {
       return;
@@ -289,6 +326,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
     final feed = _feeds[_tab]!;
     final posts = feed.posts;
     final showMore = feed.cursor != null;
+    final empty = posts.isEmpty && !feed.loading && feed.loaded;
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
@@ -307,7 +345,9 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
       child: FeedListView(
         padding: const EdgeInsets.only(bottom: 24),
         itemCount:
-            2 + posts.length + (feed.loadingMore || feed.loading ? 1 : 0),
+            2 +
+            (empty ? 1 : posts.length) +
+            (feed.loadingMore || (feed.loading && posts.isEmpty) ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
@@ -321,7 +361,22 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> {
             );
           }
           if (index == 1) {
-            return PluginProfileTabBar(selected: _tab, onSelected: _selectTab);
+            return PluginProfileTabBar(
+              selected: _tab,
+              onSelected: _selectTab,
+              tabs: PluginProfileFeedTab.values,
+            );
+          }
+          if (empty) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              child: Text(
+                _tab == PluginProfileFeedTab.saved
+                    ? l10n.plugin_bluesky_liked_empty
+                    : l10n.plugin_bluesky_no_posts,
+                textAlign: TextAlign.center,
+              ),
+            );
           }
           final postIndex = index - 2;
           if (postIndex < posts.length) {

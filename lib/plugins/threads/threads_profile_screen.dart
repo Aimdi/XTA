@@ -334,6 +334,7 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
         for (final post in _posts)
           if (post.hasMedia) post,
       ],
+      PluginProfileFeedTab.saved => const [],
     };
   }
 }
