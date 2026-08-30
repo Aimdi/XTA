@@ -4,6 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi117
+
+**XTA, built on aimdi116. Not QuaX.**
+
+Install **`xta-aimdi117_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 116.
+
+Replies under an opened post sat in a blank strip down the left. They now line up with the post. A reply to a reply still steps in.
+
 ### aimdi116
 
 **XTA, built on aimdi115. Not QuaX.**

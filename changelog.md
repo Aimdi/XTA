@@ -1,3 +1,10 @@
+## XTA aimdi117
+
+What's new in XTA aimdi117:
+  - Built on aimdi116. Not QuaX.
+  - Replies under an opened post sit flush with it (no blank strip on the left)
+  - Everything from aimdi116
+
 ## XTA aimdi116
 
 What's new in XTA aimdi116:
