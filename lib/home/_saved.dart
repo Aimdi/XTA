@@ -31,6 +31,8 @@ import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/local_post_tile.dart';
 import 'package:xta/saved/local_note_thread.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 
@@ -597,6 +599,7 @@ class _SavedScreenState extends State<SavedScreen>
                   tileAt: (i) => SavedClipTile(
                     saved: filtered[i],
                     tweet: model.contentOf(filtered[i].id)?.tweet,
+                    reddit: model.contentOf(filtered[i].id)?.reddit,
                     onNoteChanged: (note) =>
                         model.setNote(filtered[i].id, note),
                   ),
@@ -654,6 +657,7 @@ class _SavedScreenState extends State<SavedScreen>
           key: ValueKey(like.id),
           id: like.id,
           tweet: model.contentOf(like.id)?.tweet,
+          reddit: model.contentOf(like.id)?.reddit,
         );
       },
     );
@@ -701,6 +705,7 @@ class _SavedScreenState extends State<SavedScreen>
                   tileAt: (i) => SavedTweetTile(
                     id: filtered[i].id,
                     tweet: model.contentOf(filtered[i].id)?.tweet,
+                    reddit: model.contentOf(filtered[i].id)?.reddit,
                   ),
                 ),
         );
@@ -820,12 +825,14 @@ class _SavedScreenState extends State<SavedScreen>
 class SavedClipTile extends StatefulWidget {
   final SavedTweet saved;
   final TweetWithCard? tweet;
+  final RedditPost? reddit;
   final Future<void> Function(String?) onNoteChanged;
 
   const SavedClipTile({
     super.key,
     required this.saved,
-    required this.tweet,
+    this.tweet,
+    this.reddit,
     required this.onNoteChanged,
   });
 
@@ -870,7 +877,11 @@ class _SavedClipTileState extends State<SavedClipTile> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SavedTweetTile(id: widget.saved.id, tweet: widget.tweet),
+        SavedTweetTile(
+          id: widget.saved.id,
+          tweet: widget.tweet,
+          reddit: widget.reddit,
+        ),
         if (_editing)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -922,12 +933,25 @@ class SavedTweetTile extends StatelessWidget {
   final String id;
   final String? content;
   final TweetWithCard? tweet;
+  final RedditPost? reddit;
 
-  const SavedTweetTile({super.key, required this.id, this.content, this.tweet});
+  const SavedTweetTile({
+    super.key,
+    required this.id,
+    this.content,
+    this.tweet,
+    this.reddit,
+  });
 
   @override
   Widget build(BuildContext context) {
-    var parsed = tweet ?? parseSavedContent(content).tweet;
+    final stored = parseSavedContent(content);
+    final redditPost = reddit ?? stored.reddit;
+    if (redditPost != null) {
+      return RedditPostCard(post: redditPost, showSourceBadge: true);
+    }
+
+    var parsed = tweet ?? stored.tweet;
     if (parsed == null || parsed.idStr == null) {
       // The tweet is probably too big to fit inside the cursor and has been removed from the result set
       return SavedTweetTooLarge(id: id);

@@ -68,6 +68,9 @@ void main() {
               'subscribers': 104532,
               'active_user_count': 1204,
               'over18': false,
+              'community_icon':
+                  'https://styles.redditmedia.com/t5_2s30g/styles/communityIcon.png',
+              'icon_img': '',
             },
           }, 200);
         }),
@@ -83,6 +86,10 @@ void main() {
       expect(about.description, 'All things Dart.');
       expect(about.subscribers, 104532);
       expect(about.activeUsers, 1204);
+      expect(
+        about.iconUrl,
+        'https://styles.redditmedia.com/t5_2s30g/styles/communityIcon.png',
+      );
     });
 
     test('without any credential, the sidebar is scraped instead', () async {

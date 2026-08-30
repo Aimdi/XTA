@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -14,7 +16,10 @@ import 'package:xta/plugins/reddit/reddit_post_sheet.dart' show redditPostUrl;
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/plugins/reddit/reddit_votes_store.dart';
+import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/plugins/reddit/reddit_text.dart';
+import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/errors.dart';
@@ -291,7 +296,9 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
                   Text(createRelativeDate(date)),
                 ],
                 const Spacer(),
-                Text('${post.score} · ${post.commentCount}'),
+                _ThreadUpvoteButton(post: post),
+                const SizedBox(width: 8),
+                Text('${post.commentCount}'),
               ],
             ),
           ),
@@ -511,6 +518,54 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
   }
 }
 
+class _ThreadUpvoteButton extends StatelessWidget {
+  final RedditPost post;
+
+  const _ThreadUpvoteButton({required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    final votes = context.read<RedditVotesStore>();
+
+    return ScopedBuilder<RedditVotesStore, Set<String>>(
+      store: votes,
+      distinct: (_) => votes.isUpvoted(post.id),
+      onState: (context, state) {
+        final upvoted = state.contains(post.id);
+        final color = upvoted ? theme.colorScheme.primary : muted;
+        return TextButton.icon(
+          style: footerButtonStyle,
+          onPressed: () async {
+            await votes.toggle(post.id);
+            if (!context.mounted) {
+              return;
+            }
+            await syncRedditLikeToArchive(
+              context,
+              post,
+              upvoted: votes.isUpvoted(post.id),
+            );
+          },
+          icon: Icon(
+            upvoted ? Icons.arrow_circle_up : Icons.arrow_upward,
+            size: 18,
+            color: color,
+          ),
+          label: Text(
+            '${post.score + (upvoted ? 1 : 0)}',
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: color,
+              fontWeight: upvoted ? FontWeight.w700 : null,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _ThreadSaveButton extends StatelessWidget {
   final RedditPost post;
 
@@ -518,9 +573,40 @@ class _ThreadSaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final saved = context.read<RedditSavedStore>();
     final l10n = L10n.of(context);
+    SavedTweetModel? archive;
+    try {
+      archive = context.read<SavedTweetModel>();
+    } on ProviderNotFoundException {
+      archive = null;
+    }
+    if (archive != null) {
+      return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+        store: archive,
+        distinct: (_) => archive!.isSaved(redditArchiveId(post.id)),
+        onState: (context, _) {
+          final isSaved = archive!.isSaved(redditArchiveId(post.id));
+          return GestureDetector(
+            onLongPress: () => pickRedditPostFolder(context, post),
+            child: IconButton(
+              tooltip: isSaved
+                  ? l10n.unsave_from_this_device
+                  : l10n.save_on_this_device,
+              icon: Icon(isSaved ? Icons.bookmark : Icons.bookmark_border),
+              onPressed: () async {
+                if (isSaved) {
+                  await unfileRedditPost(context, post);
+                } else {
+                  await fileRedditPost(context, post);
+                }
+              },
+            ),
+          );
+        },
+      );
+    }
 
+    final saved = context.read<RedditSavedStore>();
     return ScopedBuilder<RedditSavedStore, List<RedditPost>>(
       store: saved,
       onState: (context, posts) {

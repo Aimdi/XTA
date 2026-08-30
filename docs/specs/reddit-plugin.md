@@ -61,13 +61,15 @@ user token (home/group interleave, subreddit listing) now go through it, so
 signing in helps every subreddit listing — not only the Reddit tab.
 
 Comment threads use `RedditReadSession` (OAuth JSON when signed in,
-old.reddit scrape when anonymous). Search, user posts, and icons still scrape
-publicly.
+old.reddit scrape when anonymous). Search and user posts still scrape
+publicly. Community icons read `about.json` (`community_icon` / `icon_img`)
+from oauth, then www, then old.reddit, and fall back to HTML. Signed
+`?width=&s=` query strings are stripped so the CDN serves the original file.
 
 ## Known gaps (not P0)
 
 - Comment `more` expansion / collapse / markdown
-- Search / user posts / icons still scrape publicly (OAuth wiring follow-up)
+- Search / user posts still scrape publicly (OAuth wiring follow-up)
 - Scrape/OAuth media parity; gallery pager (same-file preview/i.redd.it width
   variants are collapsed — no more low+high double display)
 - User profile beyond submitted posts

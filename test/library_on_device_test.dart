@@ -72,7 +72,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(
-      find.text('Likes stay on this device. X can\'t see them.'),
+      find.text('Likes stay on this device. Nothing is sent anywhere.'),
       findsOneWidget,
     );
 
@@ -81,7 +81,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(
-      find.text('Saves stay on this device. X can\'t see them.'),
+      find.text('Saves stay on this device. Nothing is sent anywhere.'),
       findsOneWidget,
     );
 

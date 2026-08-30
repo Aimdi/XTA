@@ -12,7 +12,7 @@ import 'package:xta/settings/backup_category.dart';
 import 'package:xta/plugins/reddit/reddit_interleaved.dart';
 import 'package:xta/plugins/subscription_source.dart';
 import 'package:xta/tweet/interleaved_items.dart';
-import 'package:xta/plugins/reddit/reddit_avatar.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
@@ -118,8 +118,7 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
   @override
   String subtitleFor(Subscription subscription) => 'r/${subscription.name}';
 
-  /// A subreddit's picture is not a URL this app holds — it is fetched and
-  /// cached separately, and drawn from the name.
+  /// Community artwork is fetched and cached by [RedditSubredditAvatar].
   @override
   GroupMemberPreview previewOf(Subscription subscription) => GroupMemberPreview(
     id: subscription.id,
@@ -129,7 +128,7 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   Widget avatarFor(Subscription subscription, {double size = 40}) =>
-      RedditAvatar(name: 'r/${subscription.name}', size: size);
+      RedditSubredditAvatar(subreddit: subscription.name, size: size);
 
   @override
   Widget Function()? destinationFor(Subscription subscription) =>

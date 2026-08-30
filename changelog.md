@@ -4,6 +4,9 @@ What's new in XTA aimdi115:
   - Built on aimdi114. Not QuaX.
   - Medien Livestreams actually loads broadcasts and Spaces (from posts, not the photo/video timeline)
   - Tapping a Livestream or Space opens it (VODs play here; live rooms and Spaces open x.com in a browser instead of "Link kann nicht geöffnet werden")
+  - Reddit communities show their real icon (not a generated face)
+  - Bookmark a Reddit post into an Archiv folder (tap saves, long-press picks the folder)
+  - Reddit upvotes also appear under Archiv → Gefällt mir
   - Everything from aimdi114
 
 ## XTA aimdi114
