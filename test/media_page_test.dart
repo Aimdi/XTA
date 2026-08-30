@@ -281,6 +281,7 @@ void main() {
       expect(items.single, isA<BroadcastGridItem>());
       expect((items.single as BroadcastGridItem).spaceId, '1soloSpace');
       expect((items.single as BroadcastGridItem).watchUrl, 'https://x.com/i/spaces/1soloSpace');
+      expect((items.single as BroadcastGridItem).canPlayInApp, isFalse);
     });
 
     test('a VOD with variants plays in-app; a card-only Space does not', () {

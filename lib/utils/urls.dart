@@ -225,9 +225,8 @@ String prepareUrl(BasePrefService prefs, String url) => cleanLinksEnabled(prefs)
 
 /// Hands a link to the system browser, bypassing the reader's choice.
 ///
-/// Used for live video and Spaces: XTA is the handler for x.com, so a
-/// generic VIEW of `x.com/i/broadcasts/…` or `/i/spaces/…` bounces back
-/// here and looks like a broken tap.
+/// Kept for a caller that genuinely needs to leave the app; nothing does today,
+/// and [openUri] is what a link in the feed should go through.
 Future<void> openInDefaultBrowser(String url) async {
   final packageName = await browserChannel.invokeMethod<String>('getDefaultBrowser');
   final intent = AndroidIntent(
@@ -248,22 +247,34 @@ bool isLiveWatchUrl(String? url) =>
 
 const _xtaPackage = 'com.aimdi.xta';
 
+/// VIEW that names a browser. A package-less VIEW of x.com comes back here.
+Future<bool> _openInNamedBrowser(String url, String? package) async {
+  if (package == null || package.isEmpty || package == _xtaPackage) {
+    return false;
+  }
+  try {
+    await AndroidIntent(
+      action: 'android.intent.action.VIEW',
+      data: url,
+      package: package,
+    ).launch();
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
 /// Opens a broadcast or Space in a real browser.
 ///
 /// Custom Tabs and a named browser package never bounce back into XTA.
-/// The generic system VIEW would, because this app is the handler for x.com.
+/// [openExternally] is not used: its fallback is a generic VIEW of x.com.
 Future<void> openLiveUrl(BuildContext context, String uri) async {
   final prefs = PrefService.of(context, listen: false);
   final url = prepareUrl(prefs, uri);
 
   final named = prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser;
-  if (named.isNotEmpty) {
-    try {
-      await openExternally(url, package: named);
-      return;
-    } catch (_) {
-      // Through to Custom Tabs / default browser below.
-    }
+  if (await _openInNamedBrowser(url, named)) {
+    return;
   }
 
   if (prefs.get(optionOpenLinksInEmbeddedBrowser) == true) {
@@ -272,15 +283,8 @@ Future<void> openLiveUrl(BuildContext context, String uri) async {
   }
 
   try {
-    final packageName = await browserChannel.invokeMethod<String>('getDefaultBrowser');
-    if (packageName != null &&
-        packageName.isNotEmpty &&
-        packageName != _xtaPackage) {
-      await AndroidIntent(
-        action: 'android.intent.action.VIEW',
-        data: url,
-        package: packageName,
-      ).launch();
+    final defaultBrowser = await browserChannel.invokeMethod<String>('getDefaultBrowser');
+    if (await _openInNamedBrowser(url, defaultBrowser)) {
       return;
     }
   } catch (_) {

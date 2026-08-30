@@ -36,6 +36,17 @@ void main() {
     expect(singular, isA<LiveUriInfo>());
     expect((singular as LiveUriInfo).url, 'https://x.com/i/spaces/1solo');
 
+    final singularBroadcast = await parseUri(Uri.parse('https://x.com/i/broadcast/1solo'));
+    expect(singularBroadcast, isA<LiveUriInfo>());
+    expect((singularBroadcast as LiveUriInfo).url, 'https://x.com/i/broadcasts/1solo');
+
+    final mobileSpace = await parseUri(Uri.parse('https://mobile.x.com/i/spaces/1room'));
+    expect(mobileSpace, isA<LiveUriInfo>());
+    expect((mobileSpace as LiveUriInfo).isSpace, isTrue);
+
+    expect(await parseUri(Uri.parse('https://x.com/i/broadcasts/1YqJvq…')), isA<UnknownResult>());
+    expect(await parseUri(Uri.parse('https://x.com/i/spaces/1Owx...')), isA<UnknownResult>());
+
     final pscp = await parseUri(Uri.parse('https://pscp.tv/w/1vod'));
     expect(pscp, isA<LiveUriInfo>());
     expect((pscp as LiveUriInfo).url, 'https://x.com/i/broadcasts/1vod');
@@ -43,9 +54,12 @@ void main() {
 
   test('isLiveWatchUrl covers broadcasts, Spaces, and Periscope', () {
     expect(isLiveWatchUrl('https://x.com/i/broadcasts/1abc'), isTrue);
+    expect(isLiveWatchUrl('https://x.com/i/broadcast/1solo'), isTrue);
     expect(isLiveWatchUrl('https://x.com/i/spaces/1room'), isTrue);
     expect(isLiveWatchUrl('https://www.x.com/i/space/1room'), isTrue);
+    expect(isLiveWatchUrl('x.com/i/spaces/1disp'), isTrue);
     expect(isLiveWatchUrl('https://pscp.tv/w/1abc'), isTrue);
+    expect(isLiveWatchUrl('https://x.com/i/broadcasts/1YqJvq…'), isFalse);
     expect(isLiveWatchUrl('https://x.com/someone/status/1'), isFalse);
     expect(isLiveWatchUrl('https://x.com/i/lists/1'), isFalse);
     expect(isLiveWatchUrl(null), isFalse);
