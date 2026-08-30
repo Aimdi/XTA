@@ -7,6 +7,9 @@ import 'package:quax/plugins/reddit/reddit_client.dart';
 import 'package:quax/plugins/reddit/reddit_listing_screen.dart';
 import 'package:quax/plugins/reddit/reddit_store.dart';
 import 'package:quax/utils/urls.dart';
+import 'package:quax/database/entities.dart';
+import 'package:quax/group/group_model.dart';
+import 'package:quax/subscriptions/users_model.dart';
 
 /// Everywhere a post can take you, without leaving the feed to find out.
 ///
@@ -61,6 +64,7 @@ class _RedditPostSheet extends StatelessWidget {
           onTap: () => _push(context, RedditListingScreen.subreddit(post.subreddit)),
         ),
         _RedditFollowAction(subreddit: post.subreddit),
+        _RedditAddToGroupAction(subreddit: post.subreddit),
         _RedditSheetAction(
           icon: Icons.open_in_new,
           label: l10n.open_in_browser,
@@ -119,6 +123,85 @@ class _RedditFollowAction extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+/// Add subreddit to a group.
+class _RedditAddToGroupAction extends StatelessWidget {
+  final String subreddit;
+
+  const _RedditAddToGroupAction({required this.subreddit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+
+    return _RedditSheetAction(
+      icon: Icons.group_add,
+      label: l10n.add_to_group,
+      onTap: () async {
+        final navigator = Navigator.of(context);
+        await _addToGroup(context, subreddit);
+        navigator.pop();
+      },
+    );
+  }
+
+  Future<void> _addToGroup(BuildContext context, String subreddit) async {
+    final groupsModel = context.read<GroupsModel>();
+    final subscriptionsModel = context.read<SubscriptionsModel>();
+    final l10n = L10n.of(context);
+    
+    // Show group selection dialog
+    final groups = groupsModel.state;
+    if (groups.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.no_groups_create_one)),
+      );
+      return;
+    }
+    
+    // Show dialog to select which group to add the subreddit to
+    final selectedGroupId = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.add_to_group),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: groups.length,
+              itemBuilder: (context, index) {
+                final group = groups[index];
+                return ListTile(
+                  title: Text(group.name),
+                  onTap: () => Navigator.pop(dialogContext, group.id),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.cancel),
+            ),
+          ],
+        );
+      },
+    );
+    
+    if (selectedGroupId == null) return;
+    
+    // Add subreddit to the selected group
+    await groupsModel.add(selectedGroupId, GroupMemberPreview(
+      id: subreddit.toLowerCase(),
+      name: subreddit,
+      avatarUrl: null,
+      subreddit: subreddit,
+    ));
+    
+    await subscriptionsModel.reloadSubscriptions();
   }
 }
 
