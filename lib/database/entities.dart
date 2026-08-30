@@ -485,6 +485,31 @@ class SubscriptionGroupGet {
         minRetweets: minRetweets ?? this.minRetweets,
         mutedKeywords: mutedKeywords ?? this.mutedKeywords);
   }
+
+  /// Factory method to create SubscriptionGroupGet from database map
+  /// This provides a clean way to instantiate groups with all their subscriptions
+  factory SubscriptionGroupGet.fromDatabaseMap(
+    Map<String, dynamic> group,
+    List<Subscription> subscriptions,
+  ) {
+    return SubscriptionGroupGet(
+      id: group['id'] as String,
+      name: group['name'] as String,
+      icon: group['icon'] as String,
+      subscriptions: subscriptions,
+      includeReplies: _includeOverride(group['include_replies']),
+      includeRetweets: _includeOverride(group['include_retweets']),
+      popular: group['popular'] == 1,
+      custom: group['custom'] == 1,
+      contentFilter: group['content_filter'] as String? ?? contentFilterDefault,
+      minLikes: (group['min_likes'] as int?) ?? 0,
+      minRetweets: (group['min_retweets'] as int?) ?? 0,
+      mutedKeywords: parseMutedKeywords(group['muted_keywords'] as String?),
+    );
+  }
+
+  /// Helper to convert database value to nullable bool
+  static bool? _includeOverride(Object? value) => value == null ? null : value == 1;
 }
 
 class SubscriptionGroupEdit {
