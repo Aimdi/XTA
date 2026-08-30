@@ -95,6 +95,7 @@ import 'package:xta/subscriptions/_import_list.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/trends/trends_model.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/live_player_screen.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -1383,9 +1384,7 @@ class _DefaultPageState extends State<DefaultPage> {
         );
         return;
       case LiveUriInfo(url: final watchUrl):
-        // Broadcasts and Spaces are not a profile or a post. Open them in
-        // a real browser — a generic x.com VIEW would bounce back here.
-        await openLiveUrl(context, watchUrl);
+        await openLivePlayerFromUrl(context, watchUrl);
         return;
       case UnknownResult():
         showDialog(

@@ -33,11 +33,16 @@ import 'package:xta/plugins/tiktok/tiktok_player_screen.dart';
 import 'package:xta/plugins/tiktok/tiktok_profile_screen.dart';
 import 'package:xta/profile/profile.dart';
 import 'package:xta/status.dart';
+import 'package:xta/tweet/live_player_screen.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Opens [url] in a plugin screen when one can read it, otherwise the browser.
 Future<void> openLink(BuildContext context, String url) async {
   if (await openWithPlugins(context, url) || !context.mounted) {
+    return;
+  }
+  if (isLiveWatchUrl(url)) {
+    await openLivePlayerFromUrl(context, url);
     return;
   }
   if (await _openX(context, url) || !context.mounted) {
@@ -84,7 +89,7 @@ Future<bool> _openX(BuildContext context, String url) async {
       );
       return true;
     case LiveUriInfo(url: final watchUrl):
-      await openLiveUrl(context, watchUrl);
+      await openLivePlayerFromUrl(context, watchUrl);
       return true;
     default:
       return false;

@@ -1,4 +1,5 @@
 import 'package:xta/client/client.dart';
+import 'package:xta/utils/json.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Whether [tweet] is a live video, Space, or recording of either.
@@ -194,3 +195,141 @@ bool tweetHasVideoMedia(TweetWithCard tweet) {
   }
   return media.any((item) => item.type == 'video');
 }
+
+/// Card `broadcast_media_key` — what `/live_video_stream/status` actually wants.
+String? broadcastMediaKeyOf(TweetWithCard tweet) {
+  final card = tweet.card;
+  if (card == null) {
+    return null;
+  }
+  final key = _cardString(card, 'broadcast_media_key');
+  if (key == null || key.isEmpty) {
+    return null;
+  }
+  return key;
+}
+
+/// Some Space cards already carry a `media_key` binding.
+String? spaceMediaKeyOf(TweetWithCard tweet) {
+  final card = tweet.card;
+  if (card == null) {
+    return null;
+  }
+  final key = _cardString(card, 'media_key');
+  if (key == null || key.isEmpty) {
+    return null;
+  }
+  return key;
+}
+
+/// HLS URL in `/live_video_stream/status/{mediaKey}`.
+String? playbackUrlFromBroadcastStatus(Object? json) {
+  return Json(json)['source']['noRedirectPlaybackUrl'].string;
+}
+
+/// `media_key` in GraphQL AudioSpaceById.
+String? mediaKeyFromAudioSpace(Object? json) {
+  return Json(json)['data']['audioSpace']['metadata']['media_key'].string;
+}
+
+/// `media_key` in `/1.1/broadcasts/show.json`.
+String? mediaKeyFromBroadcastsShow(Object? json, String id) {
+  return Json(json)['broadcasts'][id]['media_key'].string;
+}
+
+/// Ids and keys needed to start a live/VOD stream in the in-app player.
+class LivePlayRequest {
+  final String? mediaKey;
+  final String? broadcastId;
+  final String? spaceId;
+  final String? imageUrl;
+  final double aspectRatio;
+
+  const LivePlayRequest({
+    this.mediaKey,
+    this.broadcastId,
+    this.spaceId,
+    this.imageUrl,
+    this.aspectRatio = 16 / 9,
+  });
+
+  bool get isSpace => spaceId != null && spaceId!.isNotEmpty;
+
+  bool get canResolve {
+    bool present(String? value) => value != null && value.isNotEmpty;
+    return present(mediaKey) || present(broadcastId) || present(spaceId);
+  }
+
+  String? get watchUrl {
+    if (isSpace) {
+      return spaceUrlFor(spaceId!);
+    }
+    if (broadcastId != null && broadcastId!.isNotEmpty) {
+      return broadcastUrlFor(broadcastId!);
+    }
+    return null;
+  }
+
+  factory LivePlayRequest.fromUrl(String url) {
+    final spaceId = spaceIdIn(url);
+    if (spaceId != null) {
+      return LivePlayRequest(spaceId: spaceId);
+    }
+    return LivePlayRequest(broadcastId: broadcastIdIn(url));
+  }
+
+  factory LivePlayRequest.fromTweet(TweetWithCard tweet) {
+    return LivePlayRequest(
+      mediaKey: broadcastMediaKeyOf(tweet) ?? spaceMediaKeyOf(tweet),
+      broadcastId: broadcastIdOf(tweet),
+      spaceId: spaceIdOf(tweet),
+      imageUrl: broadcastThumbnailFromCard(tweet.card),
+    );
+  }
+
+  LivePlayRequest copyWith({
+    String? mediaKey,
+    String? broadcastId,
+    String? spaceId,
+    String? imageUrl,
+    double? aspectRatio,
+  }) {
+    return LivePlayRequest(
+      mediaKey: mediaKey ?? this.mediaKey,
+      broadcastId: broadcastId ?? this.broadcastId,
+      spaceId: spaceId ?? this.spaceId,
+      imageUrl: imageUrl ?? this.imageUrl,
+      aspectRatio: aspectRatio ?? this.aspectRatio,
+    );
+  }
+}
+
+/// Resolves an HLS playlist for a live room, Space, or recorded broadcast.
+///
+/// Same `/live_video_stream/status` path the tweet card already uses. A card
+/// `media_key` is enough; otherwise the broadcast id or Space id is turned
+/// into one first.
+Future<String?> livePlaybackUrl(LivePlayRequest request) async {
+  try {
+    var key = request.mediaKey;
+    if (!_present(key) && _present(request.broadcastId)) {
+      key = mediaKeyFromBroadcastsShow(
+        await Twitter.fetchBroadcastsShow(request.broadcastId!),
+        request.broadcastId!,
+      );
+    }
+    if (!_present(key) && _present(request.spaceId)) {
+      key = mediaKeyFromAudioSpace(await Twitter.fetchAudioSpace(request.spaceId!));
+    }
+    key ??= _present(request.broadcastId) ? '28_${request.broadcastId}' : request.broadcastId;
+    if (!_present(key)) {
+      return null;
+    }
+    return playbackUrlFromBroadcastStatus(await Twitter.getBroadcastDetails(key!));
+  } catch (_) {
+    return null;
+  }
+}
+
+bool _present(String? value) => value != null && value.isNotEmpty;
+

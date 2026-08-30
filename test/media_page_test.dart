@@ -281,10 +281,11 @@ void main() {
       expect(items.single, isA<BroadcastGridItem>());
       expect((items.single as BroadcastGridItem).spaceId, '1soloSpace');
       expect((items.single as BroadcastGridItem).watchUrl, 'https://x.com/i/spaces/1soloSpace');
-      expect((items.single as BroadcastGridItem).canPlayInApp, isFalse);
+      expect((items.single as BroadcastGridItem).canPlayInApp, isTrue);
+      expect((items.single as BroadcastGridItem).hasVodVariants, isFalse);
     });
 
-    test('a VOD with variants plays in-app; a card-only Space does not', () {
+    test('a VOD with variants uses the lightbox; a card-only live still plays in-app', () {
       final vod = _tweetWith('v1', ['video'], broadcast: true);
       vod.extendedEntities = Entities.fromJson({
         'media': [
@@ -306,12 +307,14 @@ void main() {
         ]
       });
       final vodItem = mediaItemsFromChains([_chain(vod)]).single as BroadcastGridItem;
+      expect(vodItem.hasVodVariants, isTrue);
       expect(vodItem.canPlayInApp, isTrue);
 
       final cardOnly = mediaItemsFromChains([
         _chain(_tweetWith('c1', const [], broadcast: true)),
       ]).single as BroadcastGridItem;
-      expect(cardOnly.canPlayInApp, isFalse);
+      expect(cardOnly.hasVodVariants, isFalse);
+      expect(cardOnly.canPlayInApp, isTrue);
       expect(cardOnly.watchUrl, 'https://x.com/i/broadcasts/1abc');
     });
   });

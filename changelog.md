@@ -1,3 +1,10 @@
+## XTA aimdi117
+
+What's new in XTA aimdi117:
+  - Built on aimdi116. Not QuaX.
+  - Livestreams and Spaces play in XTA (live rooms use the same HLS player as the tweet card; a browser is only a fallback)
+  - Everything from aimdi116
+
 ## XTA aimdi116
 
 What's new in XTA aimdi116:

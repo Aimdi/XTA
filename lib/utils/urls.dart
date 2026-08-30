@@ -239,9 +239,9 @@ Future<void> openInDefaultBrowser(String url) async {
 
 /// True when [url] is an X broadcast, Periscope watch link, or Space.
 ///
-/// Those cannot be opened as a profile or a post inside XTA. Tapping one
-/// has to leave for a browser, and that VIEW must name a browser so it
-/// does not bounce back through our x.com intent-filter.
+/// In-app playback goes through the live player screen. A generic VIEW of
+/// x.com would bounce back through our intent-filter, so the leftover path
+/// that still leaves the app (openLiveUrl) always names a real browser.
 bool isLiveWatchUrl(String? url) =>
     spaceIdIn(url) != null || broadcastIdIn(url) != null;
 
@@ -444,8 +444,8 @@ class UnknownResult extends UriParseResult {}
 
 /// An `x.com/i/broadcasts/{id}` or `x.com/i/spaces/{id}` (or pscp.tv) link.
 ///
-/// XTA is a read frontend — it cannot host or play a live room in-app when
-/// there is no VOD — so these open in a browser rather than a native screen.
+/// In-app playback is the live player screen. parseUri still returns this so
+/// a tap is never "unable to open link".
 class LiveUriInfo extends UriParseResult {
   /// Canonical watch URL: `/i/broadcasts/{id}` or `/i/spaces/{id}`.
   final String url;

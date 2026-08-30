@@ -93,6 +93,21 @@ class TweetVideoMetadata {
       streamUrlsBuilderFromVariants(variants),
     );
   }
+
+  /// HLS (or any URL) resolved asynchronously — live rooms and Spaces.
+  factory TweetVideoMetadata.live({
+    double aspectRatio = 16 / 9,
+    String? imageUrl,
+    required Future<String?> Function() playbackUrl,
+  }) {
+    return TweetVideoMetadata(aspectRatio, imageUrl, () async {
+      final url = await playbackUrl();
+      if (url == null || url.isEmpty) {
+        throw StateError('no live stream');
+      }
+      return TweetVideoUrls(url, null);
+    });
+  }
 }
 
 class TweetVideo extends StatefulWidget {
