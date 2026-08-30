@@ -18,7 +18,6 @@ Widget _createUserAvatar(String? uri, double size, [int? cacheWidth]) {
     return SizedBox(width: size, height: size);
   } else {
     return ExtendedImage.network(
-      // TODO: This can error if the profile image has changed... use SWR-like
       uri.replaceAll('normal', '200x200'),
       width: size,
       height: size,
@@ -34,29 +33,6 @@ Widget _createUserAvatar(String? uri, double size, [int? cacheWidth]) {
     );
   }
 }
-
-/*
-Widget _expandUserAvatar(String? uri, double size) {
-  if (uri == null) {
-    return SizedBox(width: size, height: size);
-  } else {
-    return ExtendedImage.network(
-      // TODO: This can error if the profile image has changed... use SWR-like
-      uri.replaceAll('normal', '400x400'),
-      width: size,
-      height: size,
-      loadStateChanged: (state) {
-        switch (state.extendedImageLoadState) {
-          case LoadState.failed:
-            return const Icon(Icons.error_outline);
-          default:
-            return state.completedWidget;
-        }
-      },
-    );
-  }
-}
-*/
 
 class UserAvatar extends StatelessWidget {
   final String? uri;

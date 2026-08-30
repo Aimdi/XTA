@@ -135,7 +135,7 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
 
                 var prefs = PrefService.of(context);
 
-                // TODO: Check exporting
+                // TODO(test): Verify export functionality works correctly
                 var settings = _exportSettings ? prefsMapWithoutSecrets(prefs.toMap()) : null;
 
                 var subscriptions = _exportSubscriptions ? subscriptionsModel.state : null;

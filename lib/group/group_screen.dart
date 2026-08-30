@@ -142,7 +142,7 @@ class _SubscriptionGroupScreenContentState extends State<SubscriptionGroupScreen
       onError: (_, error) =>
           ScaffoldErrorWidget(error: error, stackTrace: null, prefix: L10n.current.unable_to_load_the_group),
       onState: (_, group) {
-        // TODO: This is pretty gross. Figure out how to have a "no data" state
+        // TODO(ui): Implement proper "no data" state instead of empty widget
         if (group.id.isEmpty) {
           return _loadingView();
         }

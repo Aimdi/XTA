@@ -115,9 +115,8 @@ const optionSubscriptionGroupsOrderByAscending = 'subscription_groups.order_by.a
 const optionSubscriptionGroupsOrderByField = 'subscription_groups.order_by.field';
 // How many tile columns the groups board shows (2 = bold, 3 = compact).
 const optionSubscriptionGroupsColumns = 'subscription_groups.columns';
-// How the groups tab is laid out. This used to be implied by the sort order —
-// picking "custom" silently switched to the list and back again — so the
-// layout looked as though it could not be chosen.
+// How the groups tab is laid out. Previously implied by the sort order,
+// which made the layout seem unchangeable.
 const optionSubscriptionGroupsLayout = 'subscription_groups.layout';
 const subscriptionGroupsLayoutBoard = 'board';
 const subscriptionGroupsLayoutList = 'list';

@@ -401,7 +401,7 @@ class TweetCard extends StatelessWidget {
         var url = card['binding_values']['card_url']['string_value'];
         var image = card['binding_values']['event_thumbnail$imageKey']?['image_value'];
 
-        // TODO: This opens the URL externally. Create a screen for it in QuaX
+        // TODO(feature): Implement in-app browser for external URLs
         return _createCard(
             url,
             Column(
@@ -440,10 +440,10 @@ class TweetCard extends StatelessWidget {
         var username = card['binding_values']['broadcaster_username']['string_value'];
         var title = card['binding_values']['broadcast_title']['string_value'];
 
-        // TODO: Figure out what states we can receive
+        // TODO(feature): Document all possible card states and handle them
         //var state = card['binding_values']['broadcast_state']['string_value'];
 
-        // TODO: This opens the URL externally. Create a screen for it in QuaX
+        // TODO(feature): Implement in-app browser for external URLs
         return _createCard(
             uri,
             Column(

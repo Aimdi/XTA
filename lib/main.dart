@@ -419,15 +419,13 @@ Future<void> main() async {
     // Everything above only constructs; the reads all happen here. They were a
     // chain of awaits, each waiting on the last for no reason — none of them
     // depends on another's result — so the slowest used to be the sum rather
-    // than the max.
-    //
-    // A disabled plugin's store is skipped entirely: it has no home tab and no
+    // than the max. A disabled plugin's store is skipped entirely: it has no home tab and no
     // screen, so nothing can read it, and its screen loads the store itself on
     // mount if the plugin is turned on later.
     // The one read that cannot join them: it moves the followed subreddits out
     // of preferences and into the database, and the subscription list below
-    // reads that table. Run in parallel, whether a subreddit could be added to
-    // a group came down to which of the two finished first.
+    // reads that table. Run in parallel, whether a subreddit could be added to a group
+    // came down to which of the two finished first.
     if (prefService.get<bool>(optionPluginRedditEnabled) == true) {
       await redditSubreddits.load();
     }

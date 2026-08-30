@@ -103,7 +103,7 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         });
       }
 
-      // TODO: This is hardcore, but we need to resort the list and this is the easiest way
+      // TODO(perf): Replace O(n^2) resort with efficient list update
       await reloadSubscriptions();
 
       return state;
@@ -129,7 +129,7 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         });
       }
 
-      // TODO: This is hardcore, but we need to resort the list and this is the easiest way
+      // TODO(perf): Replace O(n^2) resort with efficient list update
       await reloadSubscriptions();
 
       return state;

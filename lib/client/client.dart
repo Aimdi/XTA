@@ -435,7 +435,7 @@ class Twitter {
     var addEntries = List.from(addEntriesInstructions['entries']);
     var repEntries = List.from(instructions.where((e) => e['type'] == 'TimelineReplaceEntry'));
 
-    // TODO: Could this use createUnconversationedChains at some point?
+    // TODO(perf): Consider using createUnconversationedChains for better thread handling
     var chains = TimelineParser.createTweetChains(addEntries);
 
     String? cursorBottom = TimelineParser.getCursor(addEntries, repEntries, 'cursor-bottom', 'Bottom');

@@ -69,7 +69,6 @@ class HomeModel extends Store<List<HomePage>> {
       // Switching a plugin on should put its tab in the bar. Only Substack did
       // that, so enabling any other plugin registered a tab and then left it
       // hidden behind Settings > Home pages, looking like nothing had happened.
-      //
       // Seeded once, and remembered: a tab the reader then removes has to stay
       // removed rather than coming back on the next launch.
       final seeded = prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];

@@ -320,7 +320,6 @@ class RedditClient {
     // A signed-in reader gets their own account's rate limits, which is the
     // most reliable route Reddit offers; otherwise app-only auth when a client
     // id is set, and failing that the public endpoints, which need nothing.
-    //
     // [preferPublic] overrides all of that: a reader who asked for the
     // account-free route gets it even when a credential is sitting there.
     final anonymous = preferPublic || (userToken == null && clientId.trim().isEmpty);
@@ -358,11 +357,9 @@ class RedditClient {
     }
 
     if (response.statusCode != 200) {
-      // Both public hosts refused. This used to be reported as "add a client
-      // id", which was true once and is not now: Reddit turns away almost every
-      // new app registration, so that advice sent readers somewhere they cannot
-      // get to. Report what actually happened instead — a refusal usually
-      // passes, and signing in is the real way around a persistent one.
+      // Both public hosts refused. Previously reported as "add a client id",
+      // but Reddit now rejects most new app registrations. Report the actual error
+      // instead: refusals usually pass, and signing in is the real solution.
       if (response.statusCode == 403) {
         throw RedditException(RedditErrorKind.blocked, 'HTTP 403 from both public hosts');
       }

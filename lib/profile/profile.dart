@@ -198,13 +198,14 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   void _scrollToTop() {
     // We scroll the outer controller (the whole nested scroll view and children) to the top
-    // TODO: No animation due to Flutter crashing on huge lists (https://github.com/flutter/flutter/issues/52207) (#607)
+    // TODO(ux): Re-enable animations once Flutter issue #52207 is resolved
+    // https://github.com/flutter/flutter/issues/52207
     nestedScrollViewKey.currentState?.outerController.jumpTo(0);
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: This shouldn't happen before the profile is loaded
+    // TODO(error): Add guard to prevent loading state before profile data
     var user = widget.profile.user;
     if (user.idStr == null) {
       return Container();
@@ -631,7 +632,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
         ),
 
         // If we haven't resized the description widget yet, display an overlay container so we don't see the resize
-        // TODO: This flickers
+        // TODO(ux): Eliminate flicker during profile loading
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 150),
           child: descriptionResized == true && metadataResized == true

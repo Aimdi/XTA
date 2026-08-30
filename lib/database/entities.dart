@@ -146,7 +146,7 @@ class SearchSubscription extends Subscription {
 
   @override
   Map<String, dynamic> toMap() {
-    // TODO: Created at date format
+    // TODO(i18n): Standardize date format for created_at field
     return {'id': id, 'created_at': sqliteDateFormat.format(createdAt)};
   }
 }

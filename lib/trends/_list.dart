@@ -40,7 +40,7 @@ class _TrendsListState extends State<TrendsList> {
       onLoading: (context) => const Center(child: CircularProgressIndicator()),
       onState: (context, state) {
         if (state.isEmpty) {
-          // TODO: Empty state
+          // TODO(ui): Add empty state widget for trends list
           return Container();
         }
 

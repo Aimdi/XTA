@@ -49,7 +49,7 @@ class TranslationAPIResult {
   TranslationAPIResult({required this.success, required this.body, this.errorMessage});
 }
 
-// TODO
+// TODO(i18n): Complete translation implementation
 class TranslationAPI {
   static final log = Logger('TranslationAPI');
 

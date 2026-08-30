@@ -140,10 +140,6 @@ class TimelineParser {
         }
       }
 
-      if (entryId.startsWith('cursor-bottom') || entryId.startsWith('cursor-showMore')) {
-        // TODO: Use as the "next page" cursor
-      }
-
       if (entryId.startsWith('conversationthread')) {
         replies.add(
           TweetChain(
@@ -188,10 +184,6 @@ class TimelineParser {
             );
           }
         }
-      }
-
-      if (entryId.startsWith('cursor-bottom') || entryId.startsWith('cursor-showMore')) {
-        // TODO: Use as the "next page" cursor
       }
 
       if (entryId.startsWith('profile-conversation')) {
@@ -349,7 +341,7 @@ class TimelineParser {
 
     Map<String, List<TweetWithCard>> conversations = tweets.values.where((e) => tweetEntries.contains(e.idStr)).groupBy(
       (e) {
-        // TODO: I don't think a flag is the right way to handle this
+        // TODO(refactor): Replace boolean flag with explicit enum for grouping mode
         if (mapToThreads) {
           // Then group the tweets-to-display by their conversation ID
           return e.conversationIdStr;

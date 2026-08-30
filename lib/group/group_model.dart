@@ -115,7 +115,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
           .map((e) => RedditSubscription.fromMap(e))
           .toList(growable: false);
 
-      // TODO: Factory
+      // TODO(refactor): Convert to proper factory pattern
       return SubscriptionGroupGet(
           id: group['id'] as String,
           name: group['name'] as String,
@@ -476,7 +476,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
       await batch.commit(noResult: true);
       await reloadGroups();
 
-      // TODO: Replace the group in the state instead
+      // TODO(state): Use immutable state update for group replacement
       return state;
     });
   }

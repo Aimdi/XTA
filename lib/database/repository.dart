@@ -463,12 +463,10 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   39: [
     // The schema had no indexes at all. Most queries are by a declared PRIMARY
     // KEY and so get an implicit one, but these did not:
-    //
     // $tableFeedGroupChunk has no primary key and holds a week of feed JSON,
     // yet every feed load queries it by hash — a full scan over large TEXT rows
     // that grows with use. Both of its query shapes are covered: `hash = ?`
     // ordered by created_at, and `cursor_id = ? AND hash = ?`.
-    //
     // profile_id is the *second* column of the group-member composite key, so
     // looking a subscription up by it could not use that index.
     Migration(Operation(_createIndexes), reverse: Operation(_dropIndexes)),
@@ -478,7 +476,6 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // could not join a subscription group: group membership joins profile ids
     // against subscription tables, and a blob has no rows to join. They are a
     // third kind of subscription now, alongside users and saved searches.
-    //
     // The blob is left where it is; it is imported on first read rather than
     // migrated here, because the preferences are not reachable from a
     // migration.
@@ -576,12 +573,9 @@ class Repository {
   static Future<Database>? _readOnly;
 
   /// A read-only handle on the database, shared by every reader.
-  ///
-  /// This used to be `openDatabase(..., singleInstance: false)`, which tells
-  /// sqflite *not* to reuse the connection: each of the 59 call sites opened a
-  /// fresh one and nothing ever closed it. `getAccounts()` runs on every single
-  /// request, so a scrolling session leaked a file descriptor per API call and
-  /// paid for a file open plus header parse on the hot path.
+  /// Previously used `openDatabase(..., singleInstance: false)`, which caused each of the 59 call
+  /// sites to open a new connection (never closed). This leaked file descriptors and added
+  /// overhead to every request.
   ///
   /// The connection cannot simply switch to `singleInstance: true`, because
   /// sqflite caches by path: whichever of the read-only and writable opens

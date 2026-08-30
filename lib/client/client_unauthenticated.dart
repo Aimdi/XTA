@@ -17,11 +17,8 @@ int guestTokenRemaining = -1;
 int guestTokenLimit = -1;
 
 /// Whether the cached guest token is still worth sending.
-///
-/// This used to be dead code: the values it consulted were `const int = -1`, so
-/// the first branch was always true and the token was reused forever, expiry
-/// and quota alike ignored. The counters `fetchUnauthenticated` actually
-/// maintained were never read.
+/// Tracks rate-limit headers to avoid expired/quota-exhausted tokens.
+/// Previously, the counters were hardcoded to -1, making this a no-op.
 bool guestTokenUsable({required int resetAtMillis, required int remaining, required int nowMillis}) {
   // Nothing observed yet — no request has come back with rate-limit headers, so
   // there is no reason to distrust the token.
