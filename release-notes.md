@@ -4,6 +4,14 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi121
+
+**XTA, built on aimdi120. Not QuaX.**
+
+Install **`xta-aimdi121_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 120.
+
+Pixiv had a blank strip under the Start tabs. It now has Home / Rankings / Favorites / Search / More, like the Pixiv apps. More is account, history, preferences, mute, about, and logout.
+
 ### aimdi120
 
 **XTA, built on aimdi119. Not QuaX.**

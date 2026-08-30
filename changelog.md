@@ -1,3 +1,10 @@
+## XTA aimdi121
+
+What's new in XTA aimdi121:
+  - Built on aimdi120. Not QuaX.
+  - Pixiv has its own bar under the Start strip: Home, Rankings, Favorites, Search, More
+  - Everything from aimdi120
+
 ## XTA aimdi120
 
 What's new in XTA aimdi120:
