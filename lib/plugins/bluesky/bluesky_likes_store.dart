@@ -68,3 +68,25 @@ class BlueskyLikesStore extends Store<List<BlueskyPost>> {
     update(posts);
   }
 }
+
+/// Local likes this profile wrote — the Saved tab on a Bluesky profile.
+///
+/// Likes are device-only and belong to the reader, so another author's
+/// profile only lists the posts of theirs that were hearted here.
+List<BlueskyPost> blueskyLikesByAuthor(
+  Iterable<BlueskyPost> liked, {
+  String did = '',
+  String handle = '',
+}) {
+  final didKey = did.trim();
+  final handleKey = handle.trim().toLowerCase();
+  if (didKey.isEmpty && handleKey.isEmpty) {
+    return const [];
+  }
+  return [
+    for (final post in liked)
+      if ((didKey.isNotEmpty && post.did == didKey) ||
+          (handleKey.isNotEmpty && post.handle.toLowerCase() == handleKey))
+        post,
+  ];
+}

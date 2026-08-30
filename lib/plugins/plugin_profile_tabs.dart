@@ -1,45 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 
-/// Posts / Replies / Media — the same three tabs official clients show.
-enum PluginProfileFeedTab { posts, replies, media }
+/// Posts / Replies / Media, plus Saved on Bluesky (local likes by that author).
+enum PluginProfileFeedTab { posts, replies, media, saved }
 
 class PluginProfileTabBar extends StatelessWidget {
   const PluginProfileTabBar({
     super.key,
     required this.selected,
     required this.onSelected,
+    this.tabs = const [
+      PluginProfileFeedTab.posts,
+      PluginProfileFeedTab.replies,
+      PluginProfileFeedTab.media,
+    ],
   });
 
   final PluginProfileFeedTab selected;
   final ValueChanged<PluginProfileFeedTab> onSelected;
 
+  /// Threads keeps Posts / Replies / Media. Bluesky also shows [saved].
+  final List<PluginProfileFeedTab> tabs;
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    String label(PluginProfileFeedTab tab) => switch (tab) {
+      PluginProfileFeedTab.posts => l10n.tweets,
+      PluginProfileFeedTab.replies => l10n.plugin_profile_replies,
+      PluginProfileFeedTab.media => l10n.media,
+      PluginProfileFeedTab.saved => l10n.saved,
+    };
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: SegmentedButton<PluginProfileFeedTab>(
-        showSelectedIcon: false,
-        segments: [
-          ButtonSegment(
-            value: PluginProfileFeedTab.posts,
-            label: Text(l10n.tweets),
-          ),
-          ButtonSegment(
-            value: PluginProfileFeedTab.replies,
-            label: Text(l10n.plugin_profile_replies),
-          ),
-          ButtonSegment(
-            value: PluginProfileFeedTab.media,
-            label: Text(l10n.media),
-          ),
-        ],
-        selected: {selected},
-        onSelectionChanged: (next) {
-          if (next.isNotEmpty) {
-            onSelected(next.first);
-          }
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minWidth: constraints.maxWidth),
+              child: SegmentedButton<PluginProfileFeedTab>(
+                showSelectedIcon: false,
+                segments: [
+                  for (final tab in tabs)
+                    ButtonSegment(value: tab, label: Text(label(tab))),
+                ],
+                selected: {selected},
+                onSelectionChanged: (next) {
+                  if (next.isNotEmpty) {
+                    onSelected(next.first);
+                  }
+                },
+              ),
+            ),
+          );
         },
       ),
     );
