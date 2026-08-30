@@ -124,6 +124,24 @@ void main() {
       },
     );
 
+    test(
+      'an empty feed still fetches — remount skip only applies when posts are already there',
+      () async {
+        final client = _Client()..feeds['alice.bsky.social'] = [_post('a')];
+        final store = _store(client, [alice]);
+        expect(store.state, isEmpty);
+        expect(store.fetchedAt, isNull);
+
+        await store.refresh();
+
+        expect(client.calls, 1);
+        expect(store.state.map((e) => e.uri), [
+          'at://did:plc:a/app.bsky.feed.post/a',
+        ]);
+        expect(store.fetchedAt, isNotNull);
+      },
+    );
+
     test('the first-page cursor is not reset on a later poll', () async {
       final client = _Client()..feeds['alice.bsky.social'] = [_post('a')];
       final store = _store(client, [alice]);
