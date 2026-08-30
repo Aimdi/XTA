@@ -476,6 +476,7 @@ class PixivClient {
 
   /// Daily / weekly / monthly ranking — Pixez's discovery surface.
   ///
+  /// This is the popular board. Pixiv has no `/v1/ranking/illust`.
   /// [date] (`YYYY-MM-DD`) opens that day's archived board; null is today's.
   Future<PixivIllustPage> ranking({
     String mode = 'day',
@@ -553,6 +554,9 @@ class PixivClient {
   }
 
   /// Bookmarks for [userId] (usually the signed-in account).
+  ///
+  /// Pixiv likes *are* bookmarks — there is no `/v1/user/like/illust`.
+  /// [userId] is required; omitting it 404s.
   ///
   /// Own bookmarks always keep R-18 works: the reader saved them on purpose,
   /// and filtering them out left only Pixiv's "deleted or private" stubs.
