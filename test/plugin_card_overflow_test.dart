@@ -37,7 +37,12 @@ class _NoIcons implements RedditIcons {
   RedditClient get client => throw UnimplementedError();
 
   @override
-  Future<String?> iconFor(String subreddit) async => null;
+  Future<String?> iconFor(
+    String subreddit, {
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
+  }) async => null;
 }
 
 Widget _german(Widget child) {

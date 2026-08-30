@@ -17,6 +17,7 @@ typedef RedditSubredditResult = ({
   String name,
   int? subscribers,
   String? description,
+  String? iconUrl,
 });
 
 /// An account a search turned up.
@@ -167,6 +168,7 @@ RedditSubredditResult? _subredditFrom(Element element) {
     description: description == null || description.isEmpty
         ? null
         : description,
+    iconUrl: null,
   );
 }
 

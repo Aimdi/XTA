@@ -8,6 +8,7 @@ import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -299,7 +300,11 @@ class RedditSubredditRow extends StatelessWidget {
     final description = result.description;
 
     return ListTile(
-      leading: const Icon(Icons.travel_explore),
+      leading: RedditSubredditAvatar(
+        subreddit: result.name,
+        size: 40,
+        url: result.iconUrl,
+      ),
       title: Text('r/${result.name}'),
       subtitle: description == null
           ? null

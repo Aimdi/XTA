@@ -325,98 +325,127 @@ class _RedditCommunitiesSheet extends StatelessWidget {
   }
 }
 
-class _RedditCommunityTile extends StatelessWidget {
+class _RedditCommunityTile extends StatefulWidget {
   final String name;
   final BuildContext opener;
 
   const _RedditCommunityTile({required this.name, required this.opener});
 
   @override
+  State<_RedditCommunityTile> createState() => _RedditCommunityTileState();
+}
+
+class _RedditCommunityTileState extends State<_RedditCommunityTile> {
+  Future<RedditSubredditAbout?>? _about;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _about ??= _communityAbout(context, widget.name);
+  }
+
+  @override
+  void didUpdateWidget(_RedditCommunityTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.name != widget.name) {
+      _about = _communityAbout(context, widget.name);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
     final store = context.read<RedditSubredditsStore>();
+    final name = widget.name;
+    final opener = widget.opener;
 
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      leading: RedditSubredditAvatar(subreddit: name, size: 44),
-      title: Text(
-        'r/$name',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: theme.textTheme.titleSmall!.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      subtitle: _RedditCommunityCount(name: name),
-      trailing: IconButton(
-        tooltip: l10n.delete,
-        icon: const Icon(Icons.delete_outline),
-        onPressed: () async {
-          await store.remove(name);
-          if (context.mounted) {
-            await refreshAfterRedditChange(context);
-          }
-        },
-      ),
-      onTap: () {
-        Navigator.pop(context);
-        if (!opener.mounted) {
-          return;
-        }
-        Navigator.push(
-          opener,
-          MaterialPageRoute(
-            builder: (_) => RedditListingScreen.subreddit(name),
+    return FutureBuilder<RedditSubredditAbout?>(
+      future: _about,
+      builder: (context, snapshot) {
+        final about = snapshot.data;
+        return ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          leading: RedditSubredditAvatar(
+            subreddit: name,
+            size: 44,
+            url: redditAvatarUrlFromAbout(
+              hasData: snapshot.hasData,
+              iconUrl: about?.iconUrl,
+            ),
           ),
+          title: Text(
+            'r/$name',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleSmall!.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: _communitySubscriberLine(context, about),
+          trailing: IconButton(
+            tooltip: l10n.delete,
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () async {
+              await store.remove(name);
+              if (context.mounted) {
+                await refreshAfterRedditChange(context);
+              }
+            },
+          ),
+          onTap: () {
+            Navigator.pop(context);
+            if (!opener.mounted) {
+              return;
+            }
+            Navigator.push(
+              opener,
+              MaterialPageRoute(
+                builder: (_) => RedditListingScreen.subreddit(name),
+              ),
+            );
+          },
         );
       },
     );
   }
 }
 
-class _RedditCommunityCount extends StatelessWidget {
-  final String name;
-
-  const _RedditCommunityCount({required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    final theme = Theme.of(context);
-    final client = context.read<RedditClient>();
-    final prefs = PrefService.of(context, listen: false);
-
-    return FutureBuilder<RedditSubredditAbout>(
-      future: RedditReadSession.resolve(
-        prefs: prefs,
-      ).then((session) => session.fetchSubredditAbout(client, name)),
-      builder: (context, snapshot) {
-        final count = snapshot.data?.subscribers;
-        if (count == null) {
-          return const SizedBox(height: 16);
-        }
-        return DefaultTextStyle.merge(
-          style: theme.textTheme.bodySmall!.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.people_outline, size: 16),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  '${compactCount(count)} ${l10n.followers.toLowerCase()}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+Future<RedditSubredditAbout?> _communityAbout(BuildContext context, String name) async {
+  try {
+    final session = await RedditReadSession.resolve(
+      prefs: PrefService.of(context, listen: false),
     );
+    return session.fetchSubredditAbout(context.read<RedditClient>(), name);
+  } catch (_) {
+    return null;
   }
+}
+
+Widget _communitySubscriberLine(BuildContext context, RedditSubredditAbout? about) {
+  final count = about?.subscribers;
+  if (count == null) {
+    return const SizedBox(height: 16);
+  }
+  final theme = Theme.of(context);
+  return DefaultTextStyle.merge(
+    style: theme.textTheme.bodySmall!.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    ),
+    child: Row(
+      children: [
+        const Icon(Icons.people_outline, size: 16),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            '${compactCount(count)} ${L10n.of(context).followers.toLowerCase()}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 /// Asks for a subreddit and follows it.

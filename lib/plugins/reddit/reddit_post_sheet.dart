@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/utils/urls.dart';
 
 /// Everywhere a post can take you, without leaving the feed to find out.
@@ -105,21 +108,65 @@ class _RedditSaveAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SavedTweetModel? archive;
+    try {
+      archive = context.read<SavedTweetModel>();
+    } on ProviderNotFoundException {
+      archive = null;
+    }
     final saved = context.read<RedditSavedStore>();
     final l10n = L10n.of(context);
 
-    return ScopedBuilder<RedditSavedStore, List<RedditPost>>(
-      store: saved,
-      onState: (context, posts) {
-        final isSaved = saved.isSaved(post);
-        return _RedditSheetAction(
-          icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
-          label: isSaved ? l10n.action_unsave_post : l10n.action_save_post,
-          onTap: () async {
-            final navigator = Navigator.of(context);
-            await saved.toggle(post);
-            navigator.pop();
-          },
+    if (archive == null) {
+      return ScopedBuilder<RedditSavedStore, List<RedditPost>>(
+        store: saved,
+        onState: (context, posts) {
+          final isSaved = saved.isSaved(post);
+          return _RedditSheetAction(
+            icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
+            label: isSaved ? l10n.action_unsave_post : l10n.action_save_post,
+            onTap: () async {
+              final navigator = Navigator.of(context);
+              await saved.toggle(post);
+              navigator.pop();
+            },
+          );
+        },
+      );
+    }
+
+    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+      store: archive,
+      distinct: (_) => archive!.isSaved(redditArchiveId(post.id)),
+      onState: (context, _) {
+        final isSaved = archive!.isSaved(redditArchiveId(post.id));
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _RedditSheetAction(
+              icon: isSaved ? Icons.bookmark : Icons.bookmark_border,
+              label: isSaved ? l10n.action_unsave_post : l10n.save_on_this_device,
+              onTap: () async {
+                final navigator = Navigator.of(context);
+                if (isSaved) {
+                  await unfileRedditPost(context, post);
+                } else {
+                  await fileRedditPost(context, post);
+                }
+                navigator.pop();
+              },
+            ),
+            _RedditSheetAction(
+              icon: Icons.create_new_folder_outlined,
+              label: l10n.save_to_folder,
+              onTap: () async {
+                await pickRedditPostFolder(context, post);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
         );
       },
     );

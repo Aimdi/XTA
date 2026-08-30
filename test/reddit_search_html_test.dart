@@ -110,6 +110,7 @@ void main() {
       expect(parsed.map((e) => e.name), ['dartlang', 'flutterdev']);
       expect(parsed.first.subscribers, 12345);
       expect(parsed.first.description, 'A place for Dart');
+      expect(parsed.first.iconUrl, isNull);
     });
 
     test('an entry with no name is skipped', () {
@@ -184,6 +185,8 @@ void main() {
                 'display_name': 'HuTaoMains',
                 'public_description': 'For Hu Tao',
                 'subscribers': 12000,
+                'community_icon':
+                    'https://styles.redditmedia.com/t5_ht/styles/communityIcon.png?width=64&s=sig',
               },
             },
           ],
@@ -193,6 +196,10 @@ void main() {
       expect(results.single.name, 'HuTaoMains');
       expect(results.single.subscribers, 12000);
       expect(results.single.description, 'For Hu Tao');
+      expect(
+        results.single.iconUrl,
+        'https://styles.redditmedia.com/t5_ht/styles/communityIcon.png',
+      );
     });
 
     test('users are read from t2 children', () {

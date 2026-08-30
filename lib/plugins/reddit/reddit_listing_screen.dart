@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_listing_body.dart';
 import 'package:xta/plugins/reddit/reddit_read_session.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
@@ -37,7 +38,17 @@ class RedditListingScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: subreddit == null
+            ? Text(title)
+            : Row(
+                children: [
+                  RedditSubredditAvatar(subreddit: subreddit, size: 28),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(title, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
         actions: [
           if (subreddit != null) ...[
             IconButton(
@@ -181,11 +192,23 @@ Future<void> showRedditAboutSheet(BuildContext context, String subreddit) {
             controller: controller,
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
             children: [
-              Text(
-                'r/${about.name}',
-                style: theme.textTheme.titleLarge!.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+              Row(
+                children: [
+                  RedditSubredditAvatar(
+                    subreddit: about.name,
+                    size: 48,
+                    url: about.iconUrl ?? '',
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'r/${about.name}',
+                      style: theme.textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               if (about.title != null && about.title != about.name) ...[
                 const SizedBox(height: 4),

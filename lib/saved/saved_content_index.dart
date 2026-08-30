@@ -9,6 +9,8 @@ library;
 import 'dart:convert';
 
 import 'package:xta/client/client.dart';
+import 'package:xta/plugins/reddit/reddit_archive.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
 
 /// One stored post, parsed: the model its tile renders and the lowercased text
 /// the saved-screen search matches against.
@@ -17,11 +19,14 @@ class SavedContent {
   /// when the blob no longer parses.
   final TweetWithCard? tweet;
 
+  /// A Reddit post filed in Archiv. Null for X posts.
+  final RedditPost? reddit;
+
   final String haystack;
 
-  const SavedContent({required this.tweet, required this.haystack});
+  const SavedContent({this.tweet, this.reddit, required this.haystack});
 
-  static const empty = SavedContent(tweet: null, haystack: '');
+  static const empty = SavedContent(haystack: '');
 
   /// [needle] must already be lowercased.
   bool matches(String needle) => haystack.contains(needle);
@@ -41,7 +46,12 @@ SavedContent parseSavedContent(String? blob) {
   }
 
   try {
-    var tweet = TweetWithCard.fromJson(jsonDecode(blob));
+    final decoded = jsonDecode(blob);
+    final reddit = redditPostFromArchive(decoded);
+    if (reddit != null) {
+      return SavedContent(reddit: reddit, haystack: redditArchiveHaystack(reddit));
+    }
+    var tweet = TweetWithCard.fromJson(decoded);
 
     return SavedContent(tweet: tweet, haystack: _haystackOf(tweet));
   } catch (_) {

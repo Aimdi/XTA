@@ -44,6 +44,10 @@ List<RedditSubredditResult> parseSubredditResultsJson(Object? raw) {
       description: description == null || description.isEmpty
           ? null
           : description,
+      iconUrl: redditCommunityIconUrl(
+        communityIcon: data['community_icon'].string,
+        iconImg: data['icon_img'].string,
+      ),
     ));
   }
   return results;

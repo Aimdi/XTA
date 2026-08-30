@@ -6,6 +6,7 @@ import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/ui/cleanup_dialog.dart';
 
@@ -15,6 +16,9 @@ class BrokenBookmarksDialog extends StatelessWidget {
   // A post still exists when its detail response contains the post itself;
   // deleted posts come back empty or as a tombstone entry.
   Future<CleanupCheck> _check(SavedTweet saved) async {
+    if (isRedditArchiveBlob(saved.content) || isRedditArchiveId(saved.id)) {
+      return CleanupOk();
+    }
     try {
       final status = await Twitter.getTweet(saved.id);
       final exists = status.chains
@@ -30,6 +34,10 @@ class BrokenBookmarksDialog extends StatelessWidget {
   String _label(SavedTweet saved) {
     try {
       final json = jsonDecode(saved.content ?? '{}');
+      final reddit = redditPostFromArchive(json);
+      if (reddit != null) {
+        return 'r/${reddit.subreddit}: ${reddit.title}';
+      }
       final screenName = json['user']?['screen_name'] as String?;
       final text = (json['full_text'] ?? json['text'] ?? '') as String;
       final snippet = text.length > 50 ? '${text.substring(0, 50)}…' : text;

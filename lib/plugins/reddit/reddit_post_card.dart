@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_votes_store.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -237,6 +240,7 @@ class _RedditPostFooter extends StatelessWidget {
             ),
           ),
           const Spacer(),
+          _RedditBookmarkButton(post: post),
           tweetFooterIconButton(
             context,
             Icons.open_in_new,
@@ -274,7 +278,17 @@ class _UpvoteButton extends StatelessWidget {
 
         return TextButton.icon(
           style: footerButtonStyle,
-          onPressed: () => votes.toggle(post.id),
+          onPressed: () async {
+            await votes.toggle(post.id);
+            if (!context.mounted) {
+              return;
+            }
+            await syncRedditLikeToArchive(
+              context,
+              post,
+              upvoted: votes.isUpvoted(post.id),
+            );
+          },
           icon: Icon(
             upvoted ? Icons.arrow_circle_up : Icons.arrow_upward,
             size: 18,
@@ -322,6 +336,55 @@ class _RedditFlair extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _RedditBookmarkButton extends StatelessWidget {
+  final RedditPost post;
+
+  const _RedditBookmarkButton({required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    SavedTweetModel saved;
+    try {
+      saved = context.read<SavedTweetModel>();
+    } on ProviderNotFoundException {
+      return const SizedBox.shrink();
+    }
+
+    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+      store: saved,
+      distinct: (_) => saved.isSaved(redditArchiveId(post.id)),
+      onState: (context, _) {
+        final isSaved = saved.isSaved(redditArchiveId(post.id));
+        final button = tweetFooterIconButton(
+          context,
+          isSaved ? Icons.bookmark : Icons.bookmark_border,
+          isSaved ? theme.colorScheme.primary : muted,
+          isSaved ? 1 : 0,
+          () async {
+            if (isSaved) {
+              await unfileRedditPost(context, post);
+            } else {
+              await fileRedditPost(context, post);
+              if (context.mounted) {
+                maybeShowFolderHint(context);
+              }
+            }
+          },
+          isSaved
+              ? L10n.of(context).unsave_from_this_device
+              : L10n.of(context).save_on_this_device,
+        );
+        return GestureDetector(
+          onLongPress: () => pickRedditPostFolder(context, post),
+          child: button,
+        );
+      },
     );
   }
 }

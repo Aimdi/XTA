@@ -52,6 +52,55 @@ class RedditException implements Exception {
   String toString() => 'RedditException($kind): $detail';
 }
 
+/// Community artwork from `about.json`: `community_icon`, then `icon_img`.
+///
+/// Reddit HTML-escapes these (ampersand as an entity) unless `raw_json=1`.
+/// The CDN rejects the escaped form. Empty, `default`, and the site snoo
+/// are not a community's picture.
+String? redditCommunityIconUrl({String? communityIcon, String? iconImg}) {
+  for (final raw in [communityIcon, iconImg]) {
+    final url = _qualityCommunityIconUrl(raw);
+    if (url != null) {
+      return url;
+    }
+  }
+  return null;
+}
+
+String? _qualityCommunityIconUrl(String? raw) {
+  if (raw == null) {
+    return null;
+  }
+  var trimmed = raw.trim().replaceAll('&' 'amp;', '&');
+  if (trimmed.isEmpty ||
+      trimmed == 'default' ||
+      trimmed == 'self' ||
+      trimmed == 'nsfw') {
+    return null;
+  }
+  if (trimmed.startsWith('//')) {
+    trimmed = 'https:$trimmed';
+  } else if (trimmed.startsWith('http://')) {
+    trimmed = 'https://${trimmed.substring(7)}';
+  } else if (!trimmed.contains('://')) {
+    return null;
+  }
+  final uri = Uri.tryParse(trimmed);
+  if (uri == null) {
+    return null;
+  }
+  final host = uri.host.toLowerCase();
+  if (host.contains('redditstatic.com')) {
+    return null;
+  }
+  // Reddit signs `?width=&s=`. Changing width keeps a stale signature and
+  // the CDN 403s. The file with the query stripped is the original artwork.
+  if (uri.hasQuery) {
+    return uri.replace(query: '').toString().replaceFirst(RegExp(r'\?$'), '');
+  }
+  return trimmed;
+}
+
 /// One post in a listing. Only what a reader needs; every field is parsed
 /// defensively because Reddit adds and removes keys without notice.
 class RedditPost {
@@ -591,6 +640,10 @@ class RedditSubredditAbout {
   final int? activeUsers;
   final bool over18;
 
+  /// `community_icon` or `icon_img`, already unescaped. Null when the
+  /// community has no artwork of its own.
+  final String? iconUrl;
+
   const RedditSubredditAbout({
     required this.name,
     this.title,
@@ -598,6 +651,7 @@ class RedditSubredditAbout {
     this.subscribers,
     this.activeUsers,
     this.over18 = false,
+    this.iconUrl,
   });
 }
 
@@ -669,9 +723,20 @@ class RedditClient {
   final Map<String, String> _icons = {};
 
   void _rememberIcon(String subreddit, String? icon) {
-    if (icon != null) {
-      _icons[subreddit.toLowerCase()] = icon;
+    final url = redditCommunityIconUrl(communityIcon: icon, iconImg: icon);
+    if (url == null) {
+      return;
     }
+    final key = subreddit.toLowerCase();
+    final existing = _icons[key];
+    // about.json's community_icon lives on styles.redditmedia.com. A later
+    // HTML scrape (the old header image) must not replace it.
+    if (existing != null &&
+        existing.contains('styles.redditmedia.com') &&
+        !url.contains('styles.redditmedia.com')) {
+      return;
+    }
+    _icons[key] = url;
   }
 
   /// Cookies the public hosts have set, kept for the life of the client.
@@ -1098,18 +1163,12 @@ class RedditClient {
       final uri = Uri.parse(
         '$_apiBase/r/$name/about.json',
       ).replace(queryParameters: {'raw_json': '1'});
-      final data = Json(_decode(await _read(uri, token)))['data'];
-      final publicDescription = data['public_description'].string?.trim();
-      return RedditSubredditAbout(
-        name: data['display_name'].string ?? name,
-        title: data['title'].string?.trim(),
-        description: publicDescription == null || publicDescription.isEmpty
-            ? data['description'].string?.trim()
-            : publicDescription,
-        subscribers: data['subscribers'].integer,
-        activeUsers: data['active_user_count'].integer,
-        over18: data['over18'].boolean ?? false,
-      );
+      return _aboutFromJson(Json(_decode(await _read(uri, token)))['data'], name);
+    }
+
+    final fromPublic = await _aboutFromPublicJson(name);
+    if (fromPublic != null) {
+      return fromPublic;
     }
 
     final body = await _scrape(
@@ -1124,12 +1183,15 @@ class RedditClient {
       );
     }
     final side = parseSubredditSidebar(body);
+    final iconUrl = parseSubredditIcon(body);
+    _rememberIcon(name, iconUrl);
     return RedditSubredditAbout(
       name: name,
       title: side.title,
       description: side.description,
       subscribers: side.subscribers,
       activeUsers: side.activeUsers,
+      iconUrl: iconUrl,
     );
   }
 
@@ -1313,14 +1375,18 @@ class RedditClient {
 
   /// A subreddit's own picture, or null when it has none to find.
   ///
-  /// Free when the feed has already read a page of that subreddit this session,
-  /// because the picture is on the page it read. Otherwise it costs one page —
-  /// asked for with `limit=1`, since the header is what is wanted and
-  /// twenty-five posts of markup underneath it are not.
+  /// Prefers `about.json` (`community_icon` / `icon_img`) because old.reddit
+  /// predates community icons and usually has nothing to scrape. Falls back
+  /// to the listing HTML when JSON is refused.
   ///
   /// Never throws: a timeline that failed to load because a picture could not
   /// be fetched would be a poor trade.
-  Future<String?> fetchSubredditIcon(String subreddit) async {
+  Future<String?> fetchSubredditIcon(
+    String subreddit, {
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
+  }) async {
     final name = normaliseSubreddit(subreddit);
     if (name == null) {
       return null;
@@ -1328,7 +1394,21 @@ class RedditClient {
 
     final known = _icons[name.toLowerCase()];
     if (known != null) {
-      return known;
+      return known.isEmpty ? null : known;
+    }
+
+    try {
+      final about = await fetchSubredditAbout(
+        name,
+        clientId: clientId,
+        userToken: userToken,
+        preferPublic: preferPublic,
+      );
+      if (about.iconUrl != null) {
+        return about.iconUrl;
+      }
+    } catch (_) {
+      // Through to the HTML scrape: about.json is often refused anonymously.
     }
 
     try {
@@ -1339,11 +1419,53 @@ class RedditClient {
       );
       final icon = body == null ? null : parseSubredditIcon(body);
       _rememberIcon(name, icon);
-
-      return icon;
+      return _icons[name.toLowerCase()];
     } catch (_) {
       return null;
     }
+  }
+
+  RedditSubredditAbout _aboutFromJson(Json data, String fallbackName) {
+    final publicDescription = data['public_description'].string?.trim();
+    final iconUrl = redditCommunityIconUrl(
+      communityIcon: data['community_icon'].string,
+      iconImg: data['icon_img'].string,
+    );
+    _rememberIcon(fallbackName, iconUrl);
+    return RedditSubredditAbout(
+      name: data['display_name'].string ?? fallbackName,
+      title: data['title'].string?.trim(),
+      description: publicDescription == null || publicDescription.isEmpty
+          ? data['description'].string?.trim()
+          : publicDescription,
+      subscribers: data['subscribers'].integer,
+      activeUsers: data['active_user_count'].integer,
+      over18: data['over18'].boolean ?? false,
+      iconUrl: iconUrl,
+    );
+  }
+
+  /// Guest `about.json`. www is often refused; old.reddit is a second door
+  /// onto the same JSON (`community_icon` included).
+  Future<RedditSubredditAbout?> _aboutFromPublicJson(String name) async {
+    for (final base in [_publicBase, _publicFallbackBase]) {
+      try {
+        final uri = Uri.parse('$base/r/$name/about.json')
+            .replace(queryParameters: {'raw_json': '1'});
+        final response = await _read(uri);
+        if (response.statusCode != 200) {
+          continue;
+        }
+        final data = Json(_decode(response))['data'];
+        if (!data.exists) {
+          continue;
+        }
+        return _aboutFromJson(data, name);
+      } catch (_) {
+        continue;
+      }
+    }
+    return null;
   }
 
   /// One page of old.reddit, with the over-18 gate answered, or null when the

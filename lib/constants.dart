@@ -169,7 +169,7 @@ const redditNsfwModeTap = 'tap';
 
 /// Where the subreddit artwork is kept, named here so the plugin can delete
 /// the same directory it fills.
-const redditIconsCacheName = 'reddit_icons';
+const redditIconsCacheName = 'reddit_icons_v3';
 
 /// Set once the reader signs in; the only long-lived Reddit credential kept.
 const optionPluginRedditRefreshToken = 'plugin.reddit.refresh_token';

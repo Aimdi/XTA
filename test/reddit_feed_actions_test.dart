@@ -20,7 +20,12 @@ class _Subs extends RedditSubredditsStore {
 
 class _Client extends RedditClient {
   @override
-  Future<String?> fetchSubredditIcon(String subreddit) async => null;
+  Future<String?> fetchSubredditIcon(
+    String subreddit, {
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
+  }) async => null;
 
   @override
   Future<RedditSubredditAbout> fetchSubredditAbout(
@@ -29,7 +34,11 @@ class _Client extends RedditClient {
     String? userToken,
     bool preferPublic = false,
   }) async {
-    return RedditSubredditAbout(name: subreddit, subscribers: 12000);
+    return RedditSubredditAbout(
+      name: subreddit,
+      subscribers: 12000,
+      iconUrl: 'https://styles.redditmedia.com/t5_$subreddit/icon.png',
+    );
   }
 
   @override
@@ -130,6 +139,12 @@ void main() {
     expect(find.text('r/girlsfrontline2'), findsOneWidget);
     expect(find.text('r/novelai'), findsOneWidget);
     expect(find.byType(RedditSubredditAvatar), findsNWidgets(2));
+    expect(
+      tester
+          .widgetList<RedditSubredditAvatar>(find.byType(RedditSubredditAvatar))
+          .every((avatar) => avatar.url != null && avatar.url!.isNotEmpty),
+      isTrue,
+    );
     expect(find.byIcon(Icons.people_outline), findsNWidgets(2));
     expect(find.text('Add subreddit'), findsOneWidget);
 
