@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
 import 'package:quax/ui/x_look_theme.dart';
 
 /// Placeholder tiles shown while the first feed page loads.
@@ -11,7 +12,7 @@ class TweetFeedSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.only(top: kTweetSpace1),
       itemCount: count,
       itemBuilder: (context, index) => const TweetSkeletonTile(),
     );
@@ -29,34 +30,75 @@ class TweetSkeletonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
-    final base = tokens?.border ?? Theme.of(context).colorScheme.surfaceContainerHighest;
-    final highlight = tokens?.divider ?? Theme.of(context).colorScheme.surfaceContainerHigh;
-    final avatarSize = tokens?.avatarSize ?? 40;
+    final base =
+        tokens?.border ?? Theme.of(context).colorScheme.surfaceContainerHighest;
+    final highlight =
+        tokens?.divider ?? Theme.of(context).colorScheme.surfaceContainerHigh;
+    final avatarSize = tokens?.avatarSize ?? kTweetAvatarSize;
 
     return RepaintBoundary(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _Bone(width: avatarSize, height: avatarSize, radius: avatarSize / 2, color: base, highlight: highlight),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _Bone(width: 140, height: 12, color: base, highlight: highlight),
-                  const SizedBox(height: 8),
-                  _Bone(width: double.infinity, height: 12, color: base, highlight: highlight),
-                  const SizedBox(height: 6),
-                  _Bone(width: 220, height: 12, color: base, highlight: highlight),
-                  const SizedBox(height: 12),
-                  _Bone(width: double.infinity, height: 120, radius: tokens?.mediaRadius ?? 16, color: base, highlight: highlight),
-                ],
-              ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: kTweetHorizontalPadding,
+              vertical: kTweetVerticalPadding,
             ),
-          ],
-        ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Bone(
+                  width: avatarSize,
+                  height: avatarSize,
+                  radius: avatarSize / 2,
+                  color: base,
+                  highlight: highlight,
+                ),
+                const SizedBox(width: kTweetSpace3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _Bone(
+                        width: 140,
+                        height: 12,
+                        color: base,
+                        highlight: highlight,
+                      ),
+                      const SizedBox(height: kTweetSpace2),
+                      _Bone(
+                        width: double.infinity,
+                        height: 12,
+                        color: base,
+                        highlight: highlight,
+                      ),
+                      const SizedBox(height: 6),
+                      _Bone(
+                        width: 220,
+                        height: 12,
+                        color: base,
+                        highlight: highlight,
+                      ),
+                      const SizedBox(height: kTweetSpace3),
+                      _Bone(
+                        width: double.infinity,
+                        height: 120,
+                        radius: tokens?.mediaRadius ?? kTweetMediaRadius,
+                        color: base,
+                        highlight: highlight,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Divider(
+            height: 0,
+            thickness: kTweetDividerThickness,
+            color: tokens?.divider ?? Theme.of(context).dividerColor,
+          ),
+        ],
       ),
     );
   }
@@ -82,8 +124,10 @@ class _Bone extends StatefulWidget {
 }
 
 class _BoneState extends State<_Bone> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))..repeat(reverse: true);
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1100),
+  )..repeat(reverse: true);
 
   @override
   void dispose() {
@@ -93,19 +137,24 @@ class _BoneState extends State<_Bone> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      return _buildBone(widget.color);
+    }
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
         final t = Curves.easeInOut.transform(_controller.value);
-        return Container(
-          width: widget.width == double.infinity ? null : widget.width,
-          height: widget.height,
-          decoration: BoxDecoration(
-            color: Color.lerp(widget.color, widget.highlight, t),
-            borderRadius: BorderRadius.circular(widget.radius),
-          ),
-        );
+        return _buildBone(Color.lerp(widget.color, widget.highlight, t)!);
       },
     );
   }
+
+  Widget _buildBone(Color color) => Container(
+    width: widget.width == double.infinity ? null : widget.width,
+    height: widget.height,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(widget.radius),
+    ),
+  );
 }
