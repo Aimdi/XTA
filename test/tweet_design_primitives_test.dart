@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quax/tweet/tweet_chrome.dart';
 import 'package:quax/tweet/tweet_header.dart';
 import 'package:quax/ui/theme_presets.dart';
+import 'package:quax/ui/x_look_theme.dart';
 
 void main() {
   final themes = <String, ThemeData>{

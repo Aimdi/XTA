@@ -363,8 +363,6 @@ class TweetTileState extends State<TweetTile>
     final hideAuthorInformation =
         !isTweetOnSameProfile && prefs.get(optionNonConfirmationBiasMode);
 
-    var theme = Theme.of(context);
-
     if (tweet.isTombstone ?? false) {
       return _buildErrorTweet(tweet.text!);
     }
@@ -481,7 +479,7 @@ class TweetTileState extends State<TweetTile>
       );
     }
 
-    var birdwatchQuoted = Container();
+    Widget birdwatchQuoted = Container();
     if (tweet.birdwatchQuotedStatus != null) {
       birdwatchQuoted = Padding(
         padding: const EdgeInsets.only(top: kTweetSpace2),
@@ -493,7 +491,7 @@ class TweetTileState extends State<TweetTile>
       );
     }
 
-    var quotedTweet = Container();
+    Widget quotedTweet = Container();
 
     // don't display a nested quoted tweet if we are already building a quoted tweet
     if (!isQuotedTweet && (tweet.isQuoteStatus ?? false)) {

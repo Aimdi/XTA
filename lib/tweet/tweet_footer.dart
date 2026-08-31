@@ -275,7 +275,7 @@ Widget tweetFooterIconButton(
   );
 }
 
-TextButton tweetFooterTextButton(
+Widget tweetFooterTextButton(
   BuildContext context,
   IconData icon,
   String label, [
@@ -283,12 +283,16 @@ TextButton tweetFooterTextButton(
   VoidCallback? onPressed,
   String? tooltip,
 ]) {
-  return TextButton.icon(
-    icon: Icon(icon, size: 20, color: color),
-    onPressed: onPressed,
-    semanticsLabel: tooltip,
-    label: Text(label, style: TextStyle(color: color, fontSize: 14)),
-    style: footerButtonStyleOf(context),
+  return Semantics(
+    label: tooltip,
+    button: onPressed != null,
+    excludeSemantics: tooltip != null,
+    child: TextButton.icon(
+      icon: Icon(icon, size: 20, color: color),
+      onPressed: onPressed,
+      label: Text(label, style: TextStyle(color: color, fontSize: 14)),
+      style: footerButtonStyleOf(context),
+    ),
   );
 }
 

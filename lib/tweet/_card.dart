@@ -42,9 +42,6 @@ class TweetCard extends StatelessWidget {
       onTap: url == null
           ? null
           : () async {
-              if (url == null) {
-                return;
-              }
               // A Substack card opens in the in-app reader when the plugin is on.
               if (await openWithPlugins(context, url)) {
                 return;
