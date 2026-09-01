@@ -885,7 +885,7 @@ class TweetTileState extends State<TweetTile> {
         ],
         if (createdAt != null)
           DefaultTextStyle(
-            style: metaStyle ?? theme.textTheme.bodySmall!,
+            style: metaStyle,
             child: Timestamp(
               timestamp: createdAt,
               absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
