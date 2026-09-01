@@ -167,7 +167,7 @@ class _SubscriptionGroupScreenContentState
               // Handle empty state with proper UI feedback
               if (group.id.isEmpty) {
                 return TweetEmptyState(
-                  message: L10n.of(context).group_not_found,
+                  message: L10n.of(context).unable_to_load_the_group,
                 );
               }
               // A group leaves each filter unset (null) to follow the global default.

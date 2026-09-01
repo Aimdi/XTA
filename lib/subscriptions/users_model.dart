@@ -121,9 +121,6 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         });
       }
 
-      // Efficiently update state without full reload
-      notifyListeners();
-
       return state;
     });
   }
@@ -146,9 +143,6 @@ class SubscriptionsModel extends Store<List<Subscription>> {
           'verified': user.verified ? 1 : 0
         });
       }
-
-      // Efficiently update state without full reload
-      notifyListeners();
 
       return state;
     });

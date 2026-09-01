@@ -419,7 +419,7 @@ class _SettingsPreferenceSelectorState<T>
   @override
   void initState() {
     super.initState();
-    _store = _SettingsSelectionStore<T>(widget.prefs.get<T>(widget.pref));
+    _store = _SettingsSelectionStore<T>(widget.prefs.get<T>(widget.pref) ?? widget.options.first.value);
   }
 
   @override

@@ -184,7 +184,7 @@ class _RedditPostFooter extends StatelessWidget {
         children: [
           _stat(context, Icons.arrow_upward, '${post.score}'),
           TextButton.icon(
-            style: footerButtonStyle,
+            style: footerButtonStyleOf(context),
             onPressed: onComments,
             icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
             label: Text('${post.commentCount}', style: theme.textTheme.bodySmall!.copyWith(color: muted)),

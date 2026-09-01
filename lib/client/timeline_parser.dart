@@ -358,7 +358,9 @@ class TimelineParser {
 
     // Order all the conversations by newest first (assuming the ID is an incrementing key), and create a chain from them
     for (var conversation in conversations.entries.sorted((a, b) => b.key.compareTo(a.key))) {
-      var chainTweets = conversation.value.sorted((a, b) => a.idStr!.compareTo(b.idStr!));
+      var chainTweets = conversation.value
+          .sorted((a, b) => a.idStr!.compareTo(b.idStr!))
+          .toList(growable: false);
 
       chains.add(TweetChain(id: conversation.key, tweets: chainTweets, isPinned: false));
     }

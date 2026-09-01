@@ -48,12 +48,12 @@ class _TrendsListState extends State<TrendsList> {
                 const Icon(Icons.trending_up, size: 48, color: Colors.grey),
                 const SizedBox(height: 16),
                 Text(
-                  L10n.of(context).no_trends_available,
+                  L10n.of(context).no_results,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  L10n.of(context).pull_to_refresh,
+                  L10n.of(context).there_were_no_trends_returned_this_is_unexpected_please_report_as_a_bug_if_possible,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
