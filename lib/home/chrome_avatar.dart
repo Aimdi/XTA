@@ -14,6 +14,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/_account_avatar.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// Fixed on-disk name for the chrome avatar inside the app documents directory.
 const chromeAvatarFileName = 'chrome_avatar';
@@ -178,6 +179,8 @@ Future<void> showChromeAvatarSheet(BuildContext context) async {
 
   await showModalBottomSheet<void>(
     context: context,
+    useSafeArea: true,
+    showDragHandle: true,
     builder: (sheetContext) {
       return SafeArea(
         child: ScopedBuilder<ChromeAvatarStore, int>(
@@ -187,17 +190,21 @@ Future<void> showChromeAvatarSheet(BuildContext context) async {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () => Navigator.of(sheetContext).pop(),
+                  title: Text(
+                    l10n.chrome_avatar_title,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  title: Text(l10n.chrome_avatar_title, style: Theme.of(context).textTheme.titleLarge),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    kTweetSpace4,
+                    0,
+                    kTweetSpace4,
+                    kTweetSpace2,
+                  ),
                   child: Text(
                     l10n.chrome_avatar_description,
-                    style: TextStyle(color: Theme.of(context).disabledColor),
+                    style: tweetMetadataStyle(context),
                   ),
                 ),
                 ListTile(
@@ -214,7 +221,9 @@ Future<void> showChromeAvatarSheet(BuildContext context) async {
                   ListTile(
                     leading: const Icon(Icons.cloud_download_outlined),
                     title: Text(l10n.chrome_avatar_from_account),
-                    subtitle: Text('@${accounts.first.screenName ?? l10n.unknown_username}'),
+                    subtitle: Text(
+                      '@${accounts.first.screenName ?? l10n.unknown_username}',
+                    ),
                     onTap: () async {
                       final name = accounts.first.screenName;
                       if (name == null || name.isEmpty) {
@@ -226,7 +235,9 @@ Future<void> showChromeAvatarSheet(BuildContext context) async {
                           Navigator.of(sheetContext).pop();
                         }
                       } catch (_) {
-                        messenger.showSnackBar(SnackBar(content: Text(l10n.chrome_avatar_error)));
+                        messenger.showSnackBar(
+                          SnackBar(content: Text(l10n.chrome_avatar_error)),
+                        );
                       }
                     },
                   ),

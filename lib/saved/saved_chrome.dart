@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const double kSavedControlBarHeight = 56;
 const double kSavedControlRadius = 12;
 const double kSavedSearchHeight = 48;
+const double kSavedLargeTextSearchHeight = 56;
 
 @immutable
 class SavedFolderOption {
@@ -130,6 +132,7 @@ class SavedChoiceChip extends StatelessWidget {
       selected: selected,
       button: true,
       child: Material(
+        animationDuration: xtaMotionDuration(context, kXtaMotionFast),
         color: selected
             ? tweetAccentColor(context).withValues(alpha: 0.12)
             : Colors.transparent,
@@ -137,7 +140,7 @@ class SavedChoiceChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(kSavedControlRadius),
           side: BorderSide(
             color: selected
-                ? tweetAccentColor(context)
+                ? tweetReadableAccentColor(context)
                 : tweetDividerColor(context),
           ),
         ),
@@ -156,7 +159,7 @@ class SavedChoiceChip extends StatelessWidget {
                     icon,
                     size: kTweetActionIconSize,
                     color: selected
-                        ? tweetAccentColor(context)
+                        ? tweetReadableAccentColor(context)
                         : tweetSecondaryColor(context),
                   ),
                   const SizedBox(width: kTweetSpace2),
@@ -208,20 +211,25 @@ class SavedSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background = Color.alphaBlend(
-      tweetPrimaryColor(context).withValues(alpha: 0.06),
-      XLookTokens.maybeOf(context)?.background ??
-          Theme.of(context).scaffoldBackgroundColor,
-    );
+    final searchHeight = MediaQuery.textScalerOf(context).scale(1) >= 1.3
+        ? kSavedLargeTextSearchHeight
+        : kSavedSearchHeight;
+    final tokens = XLookTokens.maybeOf(context);
+    final background = tokens == null
+        ? Color.alphaBlend(
+            tweetPrimaryColor(context).withValues(alpha: 0.06),
+            Theme.of(context).scaffoldBackgroundColor,
+          )
+        : xLookInsetSurface(tokens);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
+      padding: const EdgeInsetsDirectional.fromSTEB(
         kTweetHorizontalPadding,
         kTweetSpace1,
         kTweetHorizontalPadding,
         kTweetSpace2,
       ),
       child: SizedBox(
-        height: kSavedSearchHeight,
+        height: searchHeight,
         child: TextField(
           focusNode: focusNode,
           textInputAction: TextInputAction.search,
@@ -238,10 +246,10 @@ class SavedSearchField extends StatelessWidget {
             filled: true,
             fillColor: background,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(kSavedSearchHeight / 2),
+              borderRadius: BorderRadius.circular(searchHeight / 2),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(kSavedSearchHeight / 2),
+              borderRadius: BorderRadius.circular(searchHeight / 2),
               borderSide: BorderSide(color: tweetDividerColor(context)),
             ),
           ),
@@ -262,6 +270,7 @@ class SavedOverflowButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return PopupMenuButton<SavedOverflowAction>(
+      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
       icon: const Icon(Icons.more_vert),
       onSelected: onSelected,
       itemBuilder: (_) => [
@@ -315,9 +324,10 @@ class SavedFolderListSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color =
-        XLookTokens.maybeOf(context)?.border ??
-        Theme.of(context).colorScheme.surfaceContainerHighest;
+    final tokens = XLookTokens.maybeOf(context);
+    final color = tokens == null
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : xLookSkeletonSurface(tokens);
     return ListView.separated(
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: kTweetSpace2),

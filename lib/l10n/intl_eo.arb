@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Konservitaĵoj restas en ĉi tiu aparato. Nenio estas sendita ien ajn.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Rulumi supren",
+  "@scroll_to_top": {},
   "search": "Serĉi",
   "@search": {},
   "search_in_plugin": "Serĉi en {name}",

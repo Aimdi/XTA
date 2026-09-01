@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "保存はこの端末内にのみ残り、どこにも送信されません。",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "一番上までスクロール",
+  "@scroll_to_top": {},
   "search": "検索",
   "@search": {},
   "search_in_plugin": "{name}を検索",

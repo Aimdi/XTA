@@ -7,9 +7,11 @@ import 'package:path/path.dart' as path;
 import 'package:pref/pref.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 import 'package:xta/tweet/video_fullscreen.dart';
 import 'package:xta/tweet/video_quality.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
 
 Player _playerOf(BuildContext context) =>
@@ -128,7 +130,7 @@ class _XtaControlsState extends State<XtaControls> {
               onDoubleTap: _onDoubleTap,
               child: AnimatedOpacity(
                 opacity: _visible ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 200),
+                duration: xtaMotionDuration(context, kXtaMotionStandard),
                 child: Stack(
                   children: [
                     // IgnorePointer so the opaque scrim never swallows taps,
@@ -356,23 +358,31 @@ class _PlayPauseButtonState extends State<_PlayPauseButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final label = _completed
+        ? L10n.of(context).restart_video_player
+        : L10n.of(context).plugin_booru_video;
+    return Semantics(
+      button: true,
+      toggled: _playing,
+      label: label,
       onTap: _onTap,
-      child: Container(
-        width: 64,
-        height: 64,
-        decoration: const BoxDecoration(
-          color: Colors.black54,
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: _completed
-              ? const Icon(Icons.replay, color: Colors.white, size: 32)
-              : AnimatedPlayPause(
-                  playing: _playing,
-                  color: Colors.white,
-                  size: 32,
-                ),
+      child: ExcludeSemantics(
+        child: Container(
+          width: 64,
+          height: 64,
+          decoration: const BoxDecoration(
+            color: Colors.black54,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: _completed
+                ? const Icon(Icons.replay, color: Colors.white, size: 32)
+                : AnimatedPlayPause(
+                    playing: _playing,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+          ),
         ),
       ),
     );
@@ -402,6 +412,12 @@ class _AnimatedPlayPauseState extends State<AnimatedPlayPause>
     value: widget.playing ? 1 : 0,
     duration: const Duration(milliseconds: 250),
   );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _controller.duration = xtaMotionDuration(context, kXtaMotionStandard);
+  }
 
   @override
   void didUpdateWidget(AnimatedPlayPause oldWidget) {
@@ -566,6 +582,13 @@ class _SeekBarState extends State<_SeekBar> {
     setState(() => _dragFraction = null);
   }
 
+  void _seekBy(int seconds) {
+    var target = _position + Duration(seconds: seconds);
+    if (target < Duration.zero) target = Duration.zero;
+    if (target > _duration) target = _duration;
+    _playerOf(context).seek(target);
+  }
+
   @override
   Widget build(BuildContext context) {
     const trackHeight = 10.0;
@@ -597,40 +620,51 @@ class _SeekBarState extends State<_SeekBar> {
           ),
         );
 
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTapDown: (d) => update(d.localPosition.dx),
-          onTapUp: (_) => _commitSeek(),
-          onHorizontalDragUpdate: (d) => update(d.localPosition.dx),
-          onHorizontalDragEnd: (_) => _commitSeek(),
-          child: SizedBox(
-            width: width,
-            height: thumbSize + 12,
-            child: Stack(
-              alignment: Alignment.center,
-              // Clip.none lets the thumb overflow into the padding at the ends,
-              // so near 0 it isn't pinned and left lagging behind the played bar.
-              clipBehavior: Clip.none,
-              children: [
-                bar(width, trackColor),
-                bar(width * buffered, bufferColor),
-                bar(width * played, widget.accentColor),
-                Positioned(
-                  left: width * played - thumbSize / 2,
-                  top: 0,
-                  bottom: 0,
-                  child: Center(
-                    child: Container(
-                      width: thumbSize,
-                      height: thumbSize,
-                      decoration: BoxDecoration(
-                        color: widget.accentColor,
-                        shape: BoxShape.circle,
+        return Semantics(
+          slider: true,
+          label: L10n.of(context).plugin_booru_video,
+          value:
+              '${_PositionIndicatorState._fmt(_position)} / '
+              '${_PositionIndicatorState._fmt(_duration)}',
+          onIncrease: () => _seekBy(_kSeekSeconds),
+          onDecrease: () => _seekBy(-_kSeekSeconds),
+          child: ExcludeSemantics(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapDown: (d) => update(d.localPosition.dx),
+              onTapUp: (_) => _commitSeek(),
+              onHorizontalDragUpdate: (d) => update(d.localPosition.dx),
+              onHorizontalDragEnd: (_) => _commitSeek(),
+              child: SizedBox(
+                width: width,
+                height: kTweetTouchTarget,
+                child: Stack(
+                  alignment: Alignment.center,
+                  // Clip.none lets the thumb overflow into the padding at the
+                  // ends, so near 0 it stays aligned with the played bar.
+                  clipBehavior: Clip.none,
+                  children: [
+                    bar(width, trackColor),
+                    bar(width * buffered, bufferColor),
+                    bar(width * played, widget.accentColor),
+                    Positioned(
+                      left: width * played - thumbSize / 2,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: Container(
+                          width: thumbSize,
+                          height: thumbSize,
+                          decoration: BoxDecoration(
+                            color: widget.accentColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -674,12 +708,21 @@ class _MuteButtonState extends State<_MuteButton> {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      iconSize: 24.0,
-      color: Colors.white,
-      icon: Icon(_volume > 0 ? Icons.volume_up : Icons.volume_off),
-      onPressed: () => _playerOf(context).setVolume(
+    void toggle() => _playerOf(context).setVolume(
         _volume > 0 ? 0.0 : (_lastNonZero > 0 ? _lastNonZero : 100.0),
+      );
+    return Semantics(
+      button: true,
+      toggled: _volume == 0,
+      label: L10n.of(context).mute_videos,
+      onTap: toggle,
+      child: ExcludeSemantics(
+        child: IconButton(
+          iconSize: 24.0,
+          color: Colors.white,
+          icon: Icon(_volume > 0 ? Icons.volume_up : Icons.volume_off),
+          onPressed: toggle,
+        ),
       ),
     );
   }
@@ -694,6 +737,9 @@ class _FullscreenButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      tooltip: exit
+          ? MaterialLocalizations.of(context).expandedIconTapHint
+          : MaterialLocalizations.of(context).collapsedIconTapHint,
       iconSize: 24.0,
       color: Colors.white,
       icon: Icon(exit ? Icons.fullscreen_exit : Icons.fullscreen),
@@ -722,6 +768,7 @@ class _MoreButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
       iconSize: 24.0,
       color: Colors.white,
       icon: const Icon(Icons.more_vert),
@@ -954,31 +1001,43 @@ class FritterCenterPlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final label = isFinished
+        ? L10n.of(context).restart_video_player
+        : L10n.of(context).plugin_booru_video;
     return Container(
       color: Colors.transparent,
       child: Center(
         child: AnimatedOpacity(
           opacity: show ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 300),
-          child: GestureDetector(
-            onTap: onPressed,
-            child: Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: backgroundColor,
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                iconSize: size / 2,
-                icon: isFinished
-                    ? Icon(Icons.replay, color: iconColor)
-                    : AnimatedPlayPause(
-                        playing: isPlaying,
-                        color: iconColor,
-                        size: size / 2,
-                      ),
-                onPressed: onPressed,
+          duration: xtaMotionDuration(context, kXtaMotionStandard),
+          child: IgnorePointer(
+            ignoring: !show,
+            child: ExcludeSemantics(
+              excluding: !show,
+              child: Semantics(
+                button: onPressed != null,
+                toggled: isPlaying,
+                label: label,
+                onTap: onPressed,
+                child: ExcludeSemantics(
+                  child: Container(
+                    width: size,
+                    height: size,
+                    decoration: BoxDecoration(
+                      color: backgroundColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isFinished
+                          ? Icons.replay
+                          : isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: iconColor,
+                      size: size / 2,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

@@ -2781,6 +2781,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Saves stay on this device. Nothing is sent anywhere.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Scroll to top",
+  "@scroll_to_top": {},
   "search": "Search",
   "@search": {},
   "search_in_plugin": "Search {name}",

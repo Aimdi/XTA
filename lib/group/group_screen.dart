@@ -405,12 +405,16 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
         cacheKey: widget.cacheKey,
         mediaOnly: _mediaOnly,
       ),
-      bottomBuilder: widget.cacheKey == null ? null : _controls,
+      bottomBuilder: _controls,
       actionsBuilder: (context) => [
         ...defaultGroupActions(
           context,
           model: context.read<GroupModel>(),
-          scrollToTopController: widget.scrollController,
+          // A Home destination already scrolls to the top when reselected.
+          // Keep the explicit action only on the pushed Group route.
+          scrollToTopController: widget.onSwitchGroup == null
+              ? null
+              : widget.scrollController,
           showSettings: false,
           extra: widget.actions ?? const [],
         ),

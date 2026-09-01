@@ -644,7 +644,16 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("⚠️ ${L10n.of(context).feed_issue_detected}"),
+          title: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Text(L10n.of(context).feed_issue_detected)),
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -6,12 +6,18 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/home/edge_swipe.dart';
+import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_screen.dart';
 
 NavigationPage _page(String id, IconData icon) =>
     NavigationPage(id, (_) => id, Icon(icon), Icon(icon));
 
-Widget _scaffold({int pages = 4, bool disableAnimations = false}) {
+Widget _scaffold({
+  int pages = 4,
+  bool disableAnimations = false,
+  Widget Function(int index)? pageBuilder,
+}) {
   final prefs = PrefServiceCache(
     cache: {
       optionShowNavigationLabels: false,
@@ -40,7 +46,8 @@ Widget _scaffold({int pages = 4, bool disableAnimations = false}) {
           ],
           prefs: prefs,
           initialPage: 0,
-          builder: (index, _, _) => Center(child: Text('body$index')),
+          builder: (index, _, _) =>
+              pageBuilder?.call(index) ?? Center(child: Text('body$index')),
         ),
       ),
     ),
@@ -177,6 +184,43 @@ void main() {
   });
 
   group('swiping the navigation bar', () {
+    testWidgets('uses the shared non-overlaying Home navigation surface', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_scaffold());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HomeNavigationBar), findsOneWidget);
+      final scaffold = tester
+          .widgetList<Scaffold>(find.byType(Scaffold))
+          .firstWhere((candidate) => candidate.bottomNavigationBar != null);
+      expect(scaffold.extendBody, isFalse);
+    });
+
+    testWidgets('publishes edge-swipe handoff to nested page content', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _scaffold(
+          pages: 2,
+          pageBuilder: (index) => Builder(
+            builder: (context) => TextButton(
+              key: ValueKey('edge-page-$index'),
+              onPressed: () =>
+                  HomePageSwiper.maybeOf(context)!.movePage(1),
+              child: Text('edge$index'),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('edge-page-0')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('edge-page-1')), findsOneWidget);
+    });
+
     testWidgets('moves to the next tab and back', (tester) async {
       await tester.pumpWidget(_scaffold());
       await tester.pumpAndSettle();

@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Los guardados se quedan en este dispositivo. No se envía nada a ningún sitio.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Ir arriba",
+  "@scroll_to_top": {},
   "search": "Buscar",
   "@search": {},
   "search_in_plugin": "Buscar en {name}",

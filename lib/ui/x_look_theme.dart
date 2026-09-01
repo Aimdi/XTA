@@ -2,6 +2,7 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/ui/contrast.dart';
 
 /// X design-language tokens. Chirp is proprietary — we use Inter instead.
 @immutable
@@ -166,19 +167,46 @@ TextTheme _xLookTextTheme(Brightness brightness, Color onBg, Color secondary) {
       );
 }
 
-/// The fill for a surface that floats above the page — a menu, a dialog, a
-/// sheet, a snackbar, the home nav pill.
+/// Whether the active palette is the first-class OLED treatment.
 ///
-/// Lights Out makes card and background both pure black, so anything drawn on
-/// either would dissolve into the screen behind it. Lifting it a little keeps
-/// the edge readable without introducing Material's tonal wash.
+/// This is deliberately derived from the palette rather than a preference so
+/// widgets cannot drift out of sync with the ThemeData that actually rendered
+/// the screen.
+bool xLookIsLightsOut(XLookTokens tokens) =>
+    tokens.background == const Color(0xFF000000) &&
+    tokens.card == const Color(0xFF000000);
+
+Color _xLookLiftedSurface(XLookTokens tokens, double alpha) => Color.alphaBlend(
+  tokens.onBackground.withValues(alpha: alpha),
+  tokens.card,
+);
+
+/// The quiet fill for an inset control or nested surface.
+///
+/// In Lights Out this is only six percent above black: enough to locate an
+/// input or quoted post without making the reading canvas look grey.
+Color xLookInsetSurface(XLookTokens tokens) =>
+    tokens.card == tokens.background
+    ? _xLookLiftedSurface(tokens, 0.06)
+    : tokens.card;
+
+/// The fill for a surface that floats above the page — a menu, a dialog, a
+/// sheet, a snackbar, or the home nav pill.
+///
+/// Lights Out keeps the page and post surfaces at true black. Floating chrome
+/// gets a restrained ten-percent lift and an outline instead of elevation.
 Color xLookFloatingSurface(XLookTokens tokens) =>
     tokens.card == tokens.background
-    ? Color.alphaBlend(
-        tokens.onBackground.withValues(alpha: 0.10),
-        tokens.background,
-      )
+    ? _xLookLiftedSurface(tokens, 0.10)
     : tokens.card;
+
+/// Placeholder fill that remains visible without borrowing the much brighter
+/// divider colour as a solid surface in Lights Out.
+Color xLookSkeletonSurface(XLookTokens tokens) =>
+    xLookIsLightsOut(tokens) ? xLookFloatingSurface(tokens) : tokens.border;
+
+Color xLookSkeletonHighlight(XLookTokens tokens) =>
+    xLookIsLightsOut(tokens) ? xLookInsetSurface(tokens) : tokens.divider;
 
 ThemeData xLookThemeData(
   XLookTokens tokens,
@@ -186,14 +214,33 @@ ThemeData xLookThemeData(
 ) {
   final isLight = tokens.background.computeLuminance() > 0.5;
   final brightness = isLight ? Brightness.light : Brightness.dark;
+  final insetSurface = xLookInsetSurface(tokens);
+  final floatingSurface = xLookFloatingSurface(tokens);
+  final isLightsOut = xLookIsLightsOut(tokens);
+  final readableAccent = ensureContrast(
+    ensureContrast(tokens.accent, tokens.background),
+    floatingSurface,
+  );
+  final onAccent = contrastingForeground(tokens.accent);
+  final onReadableAccent = contrastingForeground(readableAccent);
+  final error = ensureContrast(
+    ensureContrast(const Color(0xFFF4212E), tokens.background),
+    floatingSurface,
+  );
+  final errorContainer = Color.alphaBlend(
+    error.withValues(alpha: 0.14),
+    tokens.background,
+  );
   final scheme = ColorScheme(
     brightness: brightness,
-    primary: tokens.accent,
-    onPrimary: Colors.white,
-    secondary: tokens.accent,
-    onSecondary: Colors.white,
-    error: const Color(0xFFF4212E),
-    onError: Colors.white,
+    primary: readableAccent,
+    onPrimary: onReadableAccent,
+    secondary: readableAccent,
+    onSecondary: onReadableAccent,
+    error: error,
+    onError: contrastingForeground(error),
+    errorContainer: errorContainer,
+    onErrorContainer: ensureContrast(error, errorContainer),
     surface: tokens.card,
     onSurface: tokens.onBackground,
     onSurfaceVariant: tokens.secondary,
@@ -201,9 +248,9 @@ ThemeData xLookThemeData(
     outlineVariant: tokens.divider,
     surfaceContainerLowest: tokens.background,
     surfaceContainerLow: tokens.card,
-    surfaceContainer: tokens.card,
-    surfaceContainerHigh: tokens.card,
-    surfaceContainerHighest: tokens.border,
+    surfaceContainer: isLightsOut ? insetSurface : tokens.card,
+    surfaceContainerHigh: isLightsOut ? insetSurface : tokens.card,
+    surfaceContainerHighest: isLightsOut ? floatingSurface : tokens.border,
     // Inset fill for FilledButton.tonal / plugin store — not a Material You wash.
     primaryContainer: Color.alphaBlend(
       tokens.accent.withValues(alpha: 0.14),
@@ -254,13 +301,13 @@ ThemeData xLookThemeData(
           fontFamily: 'Inter',
           fontSize: 11,
           fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-          color: selected ? tokens.accent : tokens.secondary,
+          color: selected ? readableAccent : tokens.secondary,
         );
       }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final selected = states.contains(WidgetState.selected);
         return IconThemeData(
-          color: selected ? tokens.accent : tokens.secondary,
+          color: selected ? readableAccent : tokens.secondary,
           size: 24,
         );
       }),
@@ -270,13 +317,13 @@ ThemeData xLookThemeData(
     snackBarTheme: SnackBarThemeData(
       // Lights Out makes card and background both pure black, so a snackbar
       // drawn on either would be invisible against the screen behind it.
-      backgroundColor: xLookFloatingSurface(tokens),
+      backgroundColor: floatingSurface,
       contentTextStyle: TextStyle(
         fontFamily: 'Inter',
         fontSize: 15,
         color: tokens.onBackground,
       ),
-      actionTextColor: tokens.accent,
+      actionTextColor: readableAccent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: BorderSide(color: tokens.border),
@@ -287,7 +334,7 @@ ThemeData xLookThemeData(
     // Left unset they were tinted like X but never shaped like it, which is
     // what made the menus and the settings panel read as a different app.
     popupMenuTheme: PopupMenuThemeData(
-      color: xLookFloatingSurface(tokens),
+      color: floatingSurface,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -301,7 +348,7 @@ ThemeData xLookThemeData(
     ),
     menuTheme: MenuThemeData(
       style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(xLookFloatingSurface(tokens)),
+        backgroundColor: WidgetStatePropertyAll(floatingSurface),
         elevation: const WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
@@ -318,7 +365,7 @@ ThemeData xLookThemeData(
         color: tokens.onBackground,
       ),
       menuStyle: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(xLookFloatingSurface(tokens)),
+        backgroundColor: WidgetStatePropertyAll(floatingSurface),
         elevation: const WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
@@ -329,7 +376,7 @@ ThemeData xLookThemeData(
       ),
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: xLookFloatingSurface(tokens),
+      backgroundColor: floatingSurface,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -349,9 +396,9 @@ ThemeData xLookThemeData(
       ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: xLookFloatingSurface(tokens),
+      backgroundColor: floatingSurface,
       surfaceTintColor: Colors.transparent,
-      modalBackgroundColor: xLookFloatingSurface(tokens),
+      modalBackgroundColor: floatingSurface,
       elevation: 0,
       modalElevation: 0,
       showDragHandle: true,
@@ -362,7 +409,7 @@ ThemeData xLookThemeData(
     ),
     tabBarTheme: TabBarThemeData(
       dividerColor: tokens.divider,
-      indicatorColor: tokens.accent,
+      indicatorColor: readableAccent,
       labelColor: tokens.onBackground,
       unselectedLabelColor: tokens.secondary,
       labelStyle: const TextStyle(
@@ -400,11 +447,17 @@ ThemeData xLookThemeData(
         fontSize: 14,
         color: tokens.onBackground,
       ),
+      secondaryLabelStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: onAccent,
+      ),
+      checkmarkColor: onAccent,
       showCheckmark: false,
     ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
-        color: xLookFloatingSurface(tokens),
+        color: floatingSurface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: tokens.border),
       ),
@@ -417,7 +470,7 @@ ThemeData xLookThemeData(
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
       fillColor: tokens.card == tokens.background
-          ? xLookFloatingSurface(tokens)
+          ? insetSurface
           : tokens.card,
       hintStyle: TextStyle(fontFamily: 'Inter', color: tokens.secondary),
       border: OutlineInputBorder(
@@ -430,12 +483,12 @@ ThemeData xLookThemeData(
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24),
-        borderSide: BorderSide(color: tokens.accent, width: 2),
+        borderSide: BorderSide(color: readableAccent, width: 2),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: tokens.accent,
+        foregroundColor: readableAccent,
         textStyle: const TextStyle(
           fontFamily: 'Inter',
           fontWeight: FontWeight.w700,
@@ -444,52 +497,52 @@ ThemeData xLookThemeData(
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: tokens.accent,
-      foregroundColor: Colors.white,
+      foregroundColor: onAccent,
       elevation: 2,
     ),
     progressIndicatorTheme: ProgressIndicatorThemeData(
-      color: tokens.accent,
+      color: readableAccent,
       linearTrackColor: tokens.divider,
       circularTrackColor: Colors.transparent,
     ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? Colors.white
+            ? onReadableAccent
             : tokens.secondary,
       ),
       trackColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? tokens.accent
+            ? readableAccent
             : Colors.transparent,
       ),
       trackOutlineColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? tokens.accent
+            ? readableAccent
             : tokens.border,
       ),
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? tokens.accent
+            ? readableAccent
             : Colors.transparent,
       ),
-      checkColor: const WidgetStatePropertyAll(Colors.white),
+      checkColor: WidgetStatePropertyAll(onReadableAccent),
       side: BorderSide(color: tokens.border, width: 2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     ),
     radioTheme: RadioThemeData(
       fillColor: WidgetStateProperty.resolveWith(
         (states) => states.contains(WidgetState.selected)
-            ? tokens.accent
+            ? readableAccent
             : tokens.border,
       ),
     ),
     sliderTheme: SliderThemeData(
-      activeTrackColor: tokens.accent,
+      activeTrackColor: readableAccent,
       inactiveTrackColor: tokens.divider,
-      thumbColor: tokens.accent,
+      thumbColor: readableAccent,
     ),
     segmentedButtonTheme: SegmentedButtonThemeData(
       style: ButtonStyle(
@@ -500,7 +553,7 @@ ThemeData xLookThemeData(
         ),
         foregroundColor: WidgetStateProperty.resolveWith(
           (states) => states.contains(WidgetState.selected)
-              ? Colors.white
+              ? onAccent
               : tokens.onBackground,
         ),
         side: WidgetStatePropertyAll(BorderSide(color: tokens.border)),
@@ -510,7 +563,7 @@ ThemeData xLookThemeData(
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         backgroundColor: tokens.accent,
-        foregroundColor: Colors.white,
+        foregroundColor: onAccent,
         elevation: 0,
         shape: const StadiumBorder(),
         textStyle: const TextStyle(
@@ -522,7 +575,7 @@ ThemeData xLookThemeData(
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: tokens.accent,
-        foregroundColor: Colors.white,
+        foregroundColor: onAccent,
         elevation: 0,
         shadowColor: Colors.transparent,
         shape: const StadiumBorder(),

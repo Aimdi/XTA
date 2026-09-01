@@ -6,6 +6,7 @@ import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// Plugin tabs that stay one tap on the home strip. The rest live in the
 /// networks sheet so Following / For you are never squeezed off.
@@ -149,7 +150,12 @@ class _NetworkSwitcherSheet extends StatelessWidget {
       child: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kTweetSpace4,
+              kTweetSpace2,
+              kTweetSpace4,
+              kTweetSpace1,
+            ),
             child: Text(
               l10n.home_networks,
               style: Theme.of(context).textTheme.titleLarge,
@@ -187,12 +193,25 @@ class _NetworkSwitcherSheet extends StatelessWidget {
   }
 
   Widget _row(BuildContext context, XtaPlugin plugin) {
-    return ListTile(
-      key: networkSwitcherRowKey(plugin.id),
-      leading: pluginBrandIcon(context, plugin, size: 28),
-      title: Text(plugin.title(context)),
-      trailing: plugin.id == currentId ? const Icon(Icons.check) : null,
-      onTap: () => Navigator.pop(context, plugin.id),
+    final selected = plugin.id == currentId;
+    return Semantics(
+      selected: selected,
+      child: ListTile(
+        key: networkSwitcherRowKey(plugin.id),
+        leading: pluginBrandIcon(context, plugin, size: 28),
+        title: Text(
+          plugin.title(context),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: selected
+            ? Icon(
+                Icons.check,
+                color: tweetReadableAccentColor(context),
+              )
+            : null,
+        onTap: () => Navigator.pop(context, plugin.id),
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/paging.dart';
 
@@ -47,29 +48,31 @@ class _QuotesScreen extends StatelessWidget {
     final tabColor =
         Theme.of(context).appBarTheme.foregroundColor ??
         Theme.of(context).colorScheme.onSurface;
-    return DefaultTabController(
-      length: 2,
-      initialIndex: initialTab.clamp(0, 1),
-      child: Scaffold(
-        appBar: AppBar(
-          titleSpacing: 0,
-          title: TabBar(
-            tabs: [
-              Tab(text: l10n.quotes),
-              Tab(text: l10n.retweets),
-            ],
-            labelColor: tabColor,
-            unselectedLabelColor: tabColor.withAlpha(153),
-            indicatorColor: tabColor,
-            indicatorSize: TabBarIndicatorSize.tab,
-            dividerColor: Colors.transparent,
+    return XtaSystemBars(
+      child: DefaultTabController(
+        length: 2,
+        initialIndex: initialTab.clamp(0, 1),
+        child: Scaffold(
+          appBar: AppBar(
+            titleSpacing: 0,
+            title: TabBar(
+              tabs: [
+                Tab(text: l10n.quotes),
+                Tab(text: l10n.retweets),
+              ],
+              labelColor: tabColor,
+              unselectedLabelColor: tabColor.withAlpha(153),
+              indicatorColor: tabColor,
+              indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: Colors.transparent,
+            ),
           ),
-        ),
-        body: TabBarView(
-          children: [
-            _QuotesList(id: id),
-            RetweetersList(tweetId: id),
-          ],
+          body: TabBarView(
+            children: [
+              _QuotesList(id: id),
+              RetweetersList(tweetId: id),
+            ],
+          ),
         ),
       ),
     );

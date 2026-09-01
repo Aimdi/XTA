@@ -6,6 +6,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/custom_feed_rules.dart';
 import 'package:xta/group/group_chrome.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 /// Full-screen customization for a group's custom feed mode, opened from the
 /// filter sheet — a bottom sheet is too cramped for these controls.
@@ -16,19 +18,24 @@ class GroupCustomSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(L10n.of(context).custom)),
-      body: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-        store: model,
-        onState: (_, state) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-          children: [
-            _ContentFilterSection(model: model, state: state),
-            const SizedBox(height: 12),
-            _EngagementSection(model: model, state: state),
-            const SizedBox(height: 12),
-            _MutedKeywordsSection(model: model, state: state),
-          ],
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(title: Text(L10n.of(context).custom)),
+        body: SafeArea(
+          top: false,
+          child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+            store: model,
+            onState: (_, state) => ListView(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              children: [
+                _ContentFilterSection(model: model, state: state),
+                const SizedBox(height: 12),
+                _EngagementSection(model: model, state: state),
+                const SizedBox(height: 12),
+                _MutedKeywordsSection(model: model, state: state),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -220,32 +227,39 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = Theme.of(context).colorScheme.primary;
-    final onSurface = Theme.of(context).colorScheme.onSurface;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? accent : Colors.transparent,
-          borderRadius: BorderRadius.circular(9999),
-          border: Border.all(
-            color: selected
-                ? accent
-                : Theme.of(context).colorScheme.outlineVariant,
+    final accent = tweetAccentColor(context);
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? accent : Colors.transparent,
+        shape: StadiumBorder(
+          side: BorderSide(
+            color: selected ? accent : tweetDividerColor(context),
           ),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected
-                ? (accent.computeLuminance() > 0.5
-                      ? Colors.black
-                      : Colors.white)
-                : onSurface,
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Center(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: selected
+                        ? FontWeight.w700
+                        : FontWeight.w500,
+                    color: selected
+                        ? tweetOnAccentColor(context)
+                        : tweetPrimaryColor(context),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -349,6 +363,7 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
               ),
               const SizedBox(width: 8),
               IconButton(
+                tooltip: l10n.custom_feed_muted_keywords_hint,
                 icon: const Icon(Icons.add),
                 color: Theme.of(context).colorScheme.primary,
                 onPressed: _add,

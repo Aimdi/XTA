@@ -21,8 +21,10 @@ class TweetAuthorBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (displayName == null && handle == null && timestamp == null) {
-      return Align(alignment: Alignment.centerRight, child: trailing);
+      return Align(alignment: AlignmentDirectional.centerEnd, child: trailing);
     }
+
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.3;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +40,7 @@ class TweetAuthorBlock extends StatelessWidget {
                     child: Text(
                       displayName ?? '',
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                      maxLines: largeText ? 2 : 1,
                       style: tweetDisplayNameStyle(context),
                     ),
                   ),
@@ -47,25 +49,27 @@ class TweetAuthorBlock extends StatelessWidget {
                     Icon(
                       Icons.verified,
                       size: 16,
-                      color: tweetAccentColor(context),
+                      color: tweetReadableAccentColor(context),
                     ),
                   ],
                 ],
               ),
-              if (handle != null || timestamp != null)
-                Row(
+              if (handle != null || timestamp != null) ...[
+                const SizedBox(height: kTweetSpace1),
+                Wrap(
+                  spacing: kTweetSpace1,
+                  runSpacing: kTweetSpace1,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     if (handle != null)
-                      Flexible(
-                        child: Text(
-                          '@$handle',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: tweetMetadataStyle(context),
-                        ),
+                      Text(
+                        '@$handle',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: tweetMetadataStyle(context),
                       ),
                     if (handle != null && timestamp != null)
-                      const SizedBox(width: kTweetSpace2),
+                      Text('·', style: tweetMetadataStyle(context)),
                     if (timestamp != null)
                       DefaultTextStyle.merge(
                         style: tweetMetadataStyle(context),
@@ -73,6 +77,7 @@ class TweetAuthorBlock extends StatelessWidget {
                       ),
                   ],
                 ),
+              ],
             ],
           ),
         ),
@@ -115,7 +120,7 @@ class TweetHeader extends StatelessWidget {
     final avatarSize = compact ? kTweetQuotedAvatarSize : kTweetAvatarSize;
     final top = compact ? kTweetSpace2 : kTweetVerticalPadding;
     return Padding(
-      padding: EdgeInsets.fromLTRB(
+      padding: EdgeInsetsDirectional.fromSTEB(
         kTweetHorizontalPadding,
         top,
         kTweetSpace2,
@@ -126,6 +131,9 @@ class TweetHeader extends StatelessWidget {
         children: [
           Semantics(
             button: true,
+            label: displayName,
+            excludeSemantics: true,
+            onTap: onOpenProfile,
             child: InkResponse(
               onTap: onOpenProfile,
               radius: kTweetTouchTarget / 2,

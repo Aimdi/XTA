@@ -8,24 +8,75 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/media_grid/gif_playback_gate.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/media_grid/media_grid_lightbox.dart';
+import 'package:xta/tweet/media_strip.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-typedef MediaGridConfig = ({int columns, double spacing, double radius});
+typedef MediaGridConfig = ({
+  int columns,
+  double spacing,
+  double radius,
+  EdgeInsetsGeometry padding,
+  double minAspectRatio,
+  double maxAspectRatio,
+});
 
 /// Resolves the media-layout preference: masonry follows the column-count
 /// setting; the feed layout is one full-width item per row (a timeline
 /// without text); the two-per-row layout is a roomier two-column masonry.
 MediaGridConfig mediaGridConfigOf(BuildContext context) {
-  var prefs = PrefService.of(context, listen: false);
-  var layout = prefs.get<String>(optionMediaGridLayout) ?? mediaGridLayoutMasonry;
+  final prefs = PrefService.of(context, listen: false);
+  final layout =
+      prefs.get<String>(optionMediaGridLayout) ?? mediaGridLayoutMasonry;
+  final mediaRadius = tweetMediaRadiusOf(context);
   return switch (layout) {
-    mediaGridLayoutFeed => (columns: 1, spacing: 8.0, radius: 12.0),
-    mediaGridLayoutTwoColumns => (columns: 2, spacing: 8.0, radius: 12.0),
-    _ => (columns: prefs.get<int>(optionMediaGridColumns) ?? 3, spacing: 2.0, radius: 8.0),
+    mediaGridLayoutFeed => (
+      columns: 1,
+      spacing: kTweetSpace3,
+      radius: mediaRadius,
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        kTweetSpace4,
+        kTweetSpace2,
+        kTweetSpace4,
+        kTweetSpace4,
+      ),
+      minAspectRatio: kMediaMinAspect,
+      maxAspectRatio: kMediaMaxAspect,
+    ),
+    mediaGridLayoutTwoColumns => (
+      columns: 2,
+      spacing: kTweetSpace2,
+      radius: mediaRadius.clamp(8.0, 12.0).toDouble(),
+      padding: const EdgeInsets.all(kTweetSpace2),
+      minAspectRatio: kMediaMinAspect,
+      maxAspectRatio: 3 / 2,
+    ),
+    _ => (
+      columns: (prefs.get<int>(optionMediaGridColumns) ?? 3)
+          .clamp(1, 5)
+          .toInt(),
+      spacing: kTweetMediaGap,
+      radius: mediaRadius.clamp(6.0, 8.0).toDouble(),
+      padding: const EdgeInsets.all(kTweetMediaGap),
+      minAspectRatio: 3 / 5,
+      maxAspectRatio: 2,
+    ),
   };
+}
+
+/// Thumbnail geometry is bounded for browsing; fullscreen keeps the source
+/// ratio. Invalid metadata falls back to square rather than breaking layout.
+double mediaGridAspectRatio(double aspectRatio, MediaGridConfig config) {
+  if (!aspectRatio.isFinite || aspectRatio <= 0) {
+    return 1;
+  }
+  return aspectRatio
+      .clamp(config.minAspectRatio, config.maxAspectRatio)
+      .toDouble();
 }
 
 class MediaGrid extends StatefulWidget {
@@ -46,7 +97,8 @@ class MediaGrid extends StatefulWidget {
   State<MediaGrid> createState() => _MediaGridState();
 }
 
-class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixin<MediaGrid> {
+class _MediaGridState extends State<MediaGrid>
+    with AutomaticKeepAliveClientMixin<MediaGrid> {
   @override
   bool get wantKeepAlive => true;
 
@@ -81,59 +133,164 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
     super.build(context);
     _maybeStartFirstLoad();
 
-    var config = mediaGridConfigOf(context);
+    final config = mediaGridConfigOf(context);
 
     return RefreshIndicator(
       onRefresh: () async => widget.controller.refresh(),
       child: PagingListener<int, MediaGridItem>(
         controller: widget.controller,
         builder: (context, state, fetchNextPage) {
+          late final Widget child;
           if (pagingAwaitingFirstPage(state)) {
-            return pagingFill(
-              child: const Center(child: CircularProgressIndicator()),
+            child = KeyedSubtree(
+              key: const ValueKey('media-grid-loading'),
+              child: pagingFill(
+                child: MediaGridSkeleton(config: config),
+              ),
             );
-          }
-          if (state.items == null) {
-            return FullPageErrorWidget(
-              error: pagingErrorOf(state)?.error,
-              stackTrace: pagingErrorOf(state)?.stackTrace,
-              prefix: widget.firstPageErrorPrefix,
-              onRetry: fetchNextPage,
-            );
-          }
-          if (state.items!.isEmpty) {
-            return pagingFill(
-              child: Center(child: Text(widget.emptyMessage)),
-            );
-          }
-          return PagedMasonryGridView<int, MediaGridItem>.count(
-            state: state,
-            fetchNextPage: fetchNextPage,
-            padding: EdgeInsets.all(config.spacing),
-            crossAxisCount: config.columns,
-            mainAxisSpacing: config.spacing,
-            crossAxisSpacing: config.spacing,
-            addAutomaticKeepAlives: false,
-            builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
-              itemBuilder: (context, item, index) => _MediaGridTile(
-                  item: item,
-                  gifGate: _gifGate,
-                  radius: config.radius,
-                  onTap: () => openMediaGridItem(
-                        context,
-                        item: item,
-                        index: index,
-                        controller: widget.controller,
-                      )),
-              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+          } else if (state.items == null) {
+            child = KeyedSubtree(
+              key: const ValueKey('media-grid-error'),
+              child: FullPageErrorWidget(
                 error: pagingErrorOf(state)?.error,
                 stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: widget.newPageErrorPrefix,
+                prefix: widget.firstPageErrorPrefix,
                 onRetry: fetchNextPage,
               ),
-            ),
-          );
+            );
+          } else if (state.items!.isEmpty) {
+            child = KeyedSubtree(
+              key: const ValueKey('media-grid-empty'),
+              child: pagingFill(
+                child: _MediaGridEmpty(message: widget.emptyMessage),
+              ),
+            );
+          } else {
+            child = KeyedSubtree(
+              key: const ValueKey('media-grid-content'),
+              child: PagedMasonryGridView<int, MediaGridItem>.count(
+                state: state,
+                fetchNextPage: fetchNextPage,
+                padding: config.padding,
+                crossAxisCount: config.columns,
+                mainAxisSpacing: config.spacing,
+                crossAxisSpacing: config.spacing,
+                addAutomaticKeepAlives: false,
+                builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
+                  itemBuilder: (context, item, index) => _MediaGridTile(
+                    item: item,
+                    gifGate: _gifGate,
+                    radius: config.radius,
+                    aspectRatio: mediaGridAspectRatio(
+                      item.aspectRatio,
+                      config,
+                    ),
+                    position: index + 1,
+                    total: state.items!.length,
+                    onTap: () => openMediaGridItem(
+                      context,
+                      item: item,
+                      index: index,
+                      controller: widget.controller,
+                    ),
+                  ),
+                  newPageErrorIndicatorBuilder: (context) =>
+                      FullPageErrorWidget(
+                        error: pagingErrorOf(state)?.error,
+                        stackTrace: pagingErrorOf(state)?.stackTrace,
+                        prefix: widget.newPageErrorPrefix,
+                        onRetry: fetchNextPage,
+                      ),
+                ),
+              ),
+            );
+          }
+          return XtaAnimatedSwitcher(child: child);
         },
+      ),
+    );
+  }
+}
+
+/// Media-shaped first-page placeholder shared by Profile, Search and Groups.
+/// It stays static so reduced-motion users and fast scrolling pay no ticker
+/// cost.
+class MediaGridSkeleton extends StatelessWidget {
+  final MediaGridConfig config;
+
+  const MediaGridSkeleton({super.key, required this.config});
+
+  static const _aspects = <double>[
+    4 / 5,
+    1,
+    3 / 2,
+    2 / 3,
+    4 / 3,
+    1,
+    5 / 4,
+    3 / 5,
+    16 / 9,
+    1,
+    4 / 5,
+    3 / 2,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Color.alphaBlend(
+      tweetSecondaryColor(context).withValues(alpha: 0.08),
+      tweetSurfaceColor(context),
+    );
+
+    return ExcludeSemantics(
+      child: MasonryGridView.count(
+        primary: false,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: config.padding,
+        crossAxisCount: config.columns,
+        mainAxisSpacing: config.spacing,
+        crossAxisSpacing: config.spacing,
+        itemCount: _aspects.length,
+        itemBuilder: (context, index) => AspectRatio(
+          aspectRatio: mediaGridAspectRatio(_aspects[index], config),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(config.radius),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MediaGridEmpty extends StatelessWidget {
+  final String message;
+
+  const _MediaGridEmpty({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(kTweetSpace6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.photo_library_outlined,
+              size: 40,
+              color: tweetSecondaryColor(context),
+            ),
+            const SizedBox(height: kTweetSpace3),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: tweetMetadataStyle(context).copyWith(fontSize: 14),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -148,7 +305,12 @@ class StaticMediaGrid extends StatefulWidget {
   // saved gallery to remove a bookmark, e.g. a dead "not available" one).
   final void Function(MediaGridItem item)? onLongPressItem;
 
-  const StaticMediaGrid({super.key, required this.items, required this.emptyMessage, this.onLongPressItem});
+  const StaticMediaGrid({
+    super.key,
+    required this.items,
+    required this.emptyMessage,
+    this.onLongPressItem,
+  });
 
   @override
   State<StaticMediaGrid> createState() => _StaticMediaGridState();
@@ -171,32 +333,41 @@ class _StaticMediaGridState extends State<StaticMediaGrid> {
           physics: const AlwaysScrollableScrollPhysics(),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Center(child: Text(widget.emptyMessage)),
+            child: _MediaGridEmpty(message: widget.emptyMessage),
           ),
         ),
       );
     }
 
-    var config = mediaGridConfigOf(context);
+    final config = mediaGridConfigOf(context);
 
     return MasonryGridView.count(
-      padding: EdgeInsets.all(config.spacing),
+      padding: config.padding,
       physics: const AlwaysScrollableScrollPhysics(),
       crossAxisCount: config.columns,
       mainAxisSpacing: config.spacing,
       crossAxisSpacing: config.spacing,
       itemCount: widget.items.length,
       itemBuilder: (context, index) => _MediaGridTile(
+        item: widget.items[index],
+        gifGate: _gifGate,
+        radius: config.radius,
+        aspectRatio: mediaGridAspectRatio(
+          widget.items[index].aspectRatio,
+          config,
+        ),
+        position: index + 1,
+        total: widget.items.length,
+        onTap: () => openMediaGridItem(
+          context,
           item: widget.items[index],
-          gifGate: _gifGate,
-          radius: config.radius,
-          onTap: () => openMediaGridItem(
-                context,
-                item: widget.items[index],
-                index: index,
-                staticItems: widget.items,
-              ),
-          onLongPress: widget.onLongPressItem == null ? null : () => widget.onLongPressItem!(widget.items[index])),
+          index: index,
+          staticItems: widget.items,
+        ),
+        onLongPress: widget.onLongPressItem == null
+            ? null
+            : () => widget.onLongPressItem!(widget.items[index]),
+      ),
     );
   }
 }
@@ -205,11 +376,22 @@ class _MediaGridTile extends StatefulWidget {
   final MediaGridItem item;
   final GifPlaybackGate gifGate;
   final double radius;
+  final double aspectRatio;
+  final int position;
+  final int total;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
 
-  const _MediaGridTile(
-      {required this.item, required this.gifGate, this.radius = 8, required this.onTap, this.onLongPress});
+  const _MediaGridTile({
+    required this.item,
+    required this.gifGate,
+    required this.radius,
+    required this.aspectRatio,
+    required this.position,
+    required this.total,
+    required this.onTap,
+    this.onLongPress,
+  });
 
   @override
   State<_MediaGridTile> createState() => _MediaGridTileState();
@@ -217,37 +399,86 @@ class _MediaGridTile extends StatefulWidget {
 
 class _MediaGridTileState extends State<_MediaGridTile> {
   bool _showMedia = false;
+  int _autoloadEpoch = 0;
 
   @override
   void initState() {
     super.initState();
+    _resolveAutoload();
+  }
 
-    var disableAutoload = PrefService.of(context, listen: false).get<bool>(optionMediaDisableAutoload) ?? false;
-    if (disableAutoload) {
-      cachedImageExists(widget.item.thumbnailUrl).then((value) {
-        if (mounted) {
-          setState(() {
-            _showMedia = value;
-          });
-        }
-      });
-    } else {
-      _showMedia = true;
+  @override
+  void didUpdateWidget(covariant _MediaGridTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.item.tweetId != widget.item.tweetId ||
+        oldWidget.item.mediaIndex != widget.item.mediaIndex ||
+        oldWidget.item.thumbnailUrl != widget.item.thumbnailUrl) {
+      _resolveAutoload();
     }
   }
 
-  String _getMediaTypeLabel(MediaGridItem item) {
+  void _resolveAutoload() {
+    final epoch = ++_autoloadEpoch;
+    final disableAutoload =
+        PrefService.of(
+          context,
+          listen: false,
+        ).get<bool>(optionMediaDisableAutoload) ??
+        false;
+    if (!disableAutoload) {
+      _showMedia = true;
+      return;
+    }
+
+    final thumbnailUrl = widget.item.thumbnailUrl;
+    if (thumbnailUrl.isEmpty) {
+      _showMedia = true;
+      return;
+    }
+
+    _showMedia = false;
+    cachedImageExists(thumbnailUrl).then((cached) {
+      if (!mounted || epoch != _autoloadEpoch) return;
+      setState(() => _showMedia = cached);
+    });
+  }
+
+  void _revealMedia() => setState(() => _showMedia = true);
+
+  String _mediaTypeLabel(BuildContext context, MediaGridItem item) {
+    final l10n = L10n.of(context);
     return switch (item) {
-      GifGridItem() => 'GIF',
-      PhotoGridItem() => 'photo',
-      VideoGridItem() => 'video',
-      BroadcastGridItem() => 'broadcast',
+      GifGridItem() || VideoGridItem() => l10n.videos,
+      PhotoGridItem() => l10n.photos,
+      BroadcastGridItem() => item.isSpace ? l10n.spaces : l10n.broadcasts,
     };
   }
+
+  Widget? _mediaIndicator(BuildContext context, MediaGridItem item) {
+    return switch (item) {
+      GifGridItem() => TweetMediaBadge(
+        icon: Icons.gif_box_outlined,
+        semanticLabel: L10n.of(context).videos,
+      ),
+      VideoGridItem() => TweetMediaBadge(
+        icon: Icons.videocam_outlined,
+        semanticLabel: L10n.of(context).videos,
+      ),
+      _ => null,
+    };
+  }
+
+  IconData _manualLoadIcon(MediaGridItem item) => switch (item) {
+    PhotoGridItem() => Icons.photo_outlined,
+    GifGridItem() => Icons.gif_box_outlined,
+    VideoGridItem() => Icons.play_circle_outline,
+    BroadcastGridItem() => Icons.live_tv_outlined,
+  };
 
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
+    final typeLabel = _mediaTypeLabel(context, item);
 
     Widget body;
     if (_showMedia) {
@@ -259,27 +490,79 @@ class _MediaGridTileState extends State<_MediaGridTile> {
             ? _GifGridCell(item: item, gate: widget.gifGate)
             : item.toWidget(context),
       );
+      final indicator = _mediaIndicator(context, item);
+      if (indicator != null) {
+        body = Stack(
+          fit: StackFit.expand,
+          children: [
+            body,
+            PositionedDirectional(
+              start: kTweetSpace2,
+              bottom: kTweetSpace2,
+              child: indicator,
+            ),
+          ],
+        );
+      }
     } else {
       body = GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => setState(() => _showMedia = true),
-        child: Container(
-          color: Colors.black26,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            L10n.of(context).tap_to_show_getMediaType_item_type(_getMediaTypeLabel(item)),
-            textAlign: TextAlign.center,
+        onTap: _revealMedia,
+        child: ColoredBox(
+          color: Color.alphaBlend(
+            tweetSecondaryColor(context).withValues(alpha: 0.08),
+            tweetSurfaceColor(context),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(kTweetSpace2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  _manualLoadIcon(item),
+                  color: tweetSecondaryColor(context),
+                ),
+                const SizedBox(height: kTweetSpace1),
+                Text(
+                  L10n.of(
+                    context,
+                  ).tap_to_show_getMediaType_item_type(typeLabel),
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: tweetMetadataStyle(context),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
-    return AspectRatio(
-      aspectRatio: item.aspectRatio,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(widget.radius),
-        child: body,
+    return Semantics(
+      container: true,
+      image: true,
+      button: true,
+      label:
+          '${L10n.of(context).media}: $typeLabel, '
+          '${widget.position}/${widget.total}',
+      onTap: _showMedia ? widget.onTap : _revealMedia,
+      onLongPress: _showMedia ? widget.onLongPress : null,
+      excludeSemantics: true,
+      child: AspectRatio(
+        aspectRatio: widget.aspectRatio,
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(widget.radius),
+            border: Border.all(
+              color: tweetDividerColor(context),
+              width: kTweetDividerThickness,
+            ),
+          ),
+          child: body,
+        ),
       ),
     );
   }
@@ -321,7 +604,8 @@ class _GifGridCellState extends State<_GifGridCell> {
   Widget build(BuildContext context) {
     return VisibilityDetector(
       key: _visibilityKey,
-      onVisibilityChanged: (info) => widget.gate.report(this, info.visibleFraction),
+      onVisibilityChanged: (info) =>
+          widget.gate.report(this, info.visibleFraction),
       child: widget.gate.isGranted(this)
           ? widget.item.toWidget(context)
           : CappedNetworkImage(url: widget.item.thumbnailUrl),

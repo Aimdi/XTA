@@ -8,6 +8,7 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/_plugin_store.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// Pick which installed plugin timelines sit next to For you.
 ///
@@ -18,6 +19,7 @@ Future<String?> showFeedStripAddSheet(BuildContext context) {
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    showDragHandle: true,
     builder: (_) => const _FeedStripAddSheet(),
   );
 }
@@ -40,14 +42,24 @@ class _FeedStripAddSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                kTweetSpace4,
+                kTweetSpace2,
+                kTweetSpace4,
+                kTweetSpace1,
+              ),
               child: Text(
                 l10n.feed_strip_add_title,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                kTweetSpace4,
+                0,
+                kTweetSpace4,
+                kTweetSpace2,
+              ),
               child: Text(
                 l10n.feed_strip_add_intro,
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -168,10 +180,10 @@ class _FeedStripEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(kTweetSpace6),
       children: [
         Text(l10n.feed_strip_add_empty, textAlign: TextAlign.center),
-        const SizedBox(height: 16),
+        const SizedBox(height: kTweetSpace4),
         Center(
           child: FilledButton.icon(
             onPressed: () {
@@ -232,8 +244,8 @@ class _PinnedPluginTile extends StatelessWidget {
             index: index,
             child: Tooltip(
               message: l10n.feed_strip_reorder,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+              child: const SizedBox.square(
+                dimension: kTweetTouchTarget,
                 child: Icon(Icons.drag_handle),
               ),
             ),

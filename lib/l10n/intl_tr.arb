@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Kayıtlar bu cihazda kalır. Hiçbir yere hiçbir şey gönderilmez.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "En üste kaydır",
+  "@scroll_to_top": {},
   "search": "Ara",
   "@search": {},
   "search_in_plugin": "{name} içinde ara",

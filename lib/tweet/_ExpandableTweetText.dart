@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 /// The line cap a post has to break before it is worth collapsing.
 ///
@@ -56,7 +57,9 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
     }
 
     final scaler = MediaQuery.textScalerOf(context);
-    if (identical(_memoSpans, widget.textSpans) && _memoWidth == maxWidth && _memoScaler == scaler) {
+    if (identical(_memoSpans, widget.textSpans) &&
+        _memoWidth == maxWidth &&
+        _memoScaler == scaler) {
       return _memoTruncated;
     }
 
@@ -80,7 +83,10 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
       painter.setPlaceholderDimensions(
         List.filled(
           placeholders,
-          PlaceholderDimensions(size: Size.square(side), alignment: PlaceholderAlignment.middle),
+          PlaceholderDimensions(
+            size: Size.square(side),
+            alignment: PlaceholderAlignment.middle,
+          ),
         ),
       );
     }
@@ -113,11 +119,28 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
   bool _isExpanded = false;
 
   @override
+  void didUpdateWidget(ExpandableTweetText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.textSpans, widget.textSpans)) {
+      _memoSpans = null;
+      _memoWidth = null;
+      _memoScaler = null;
+      _memoTruncated = false;
+      _isExpanded = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final style = DefaultTextStyle.of(context).style;
-        final clipped = !_isExpanded && _isTruncated(context, constraints.maxWidth, style);
+        final expandable = _isTruncated(
+          context,
+          constraints.maxWidth,
+          style,
+        );
+        final clipped = !_isExpanded && expandable;
 
         // While the fade is up, text taps must not navigate: the faded bottom
         // looks like part of the "show more" affordance, and on a nested quote
@@ -143,7 +166,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
                 ),
               );
 
-        return Column(
+        final content = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (clipped)
@@ -152,7 +175,12 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
                   return const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.black, Colors.black, Colors.black, Colors.transparent],
+                    colors: [
+                      Colors.black,
+                      Colors.black,
+                      Colors.black,
+                      Colors.transparent,
+                    ],
                     stops: [0.0, 0.6, 0.8, 1.0],
                   ).createShader(bounds);
                 },
@@ -163,28 +191,54 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
               text,
             if (clipped)
               Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    setState(() {
-                      _isExpanded = true;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8, left: 2, right: 12, bottom: 4),
-                    child: Text(
-                      L10n.of(context).clickToShowMore,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                alignment: AlignmentDirectional.centerStart,
+                child: Semantics(
+                  button: true,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _isExpanded = true;
+                      });
+                    },
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minHeight: kTweetTouchTarget,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.only(
+                          start: 2,
+                          end: 12,
+                          top: 8,
+                          bottom: 8,
+                        ),
+                        child: Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            L10n.of(context).clickToShowMore,
+                            style: TextStyle(
+                              color: tweetReadableAccentColor(context),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
           ],
+        );
+
+        // Most timeline posts are short. Avoid giving every tile an implicit
+        // animation controller for a transition it can never perform.
+        if (!expandable) return content;
+        return AnimatedSize(
+          duration: xtaMotionDuration(context, kXtaMotionFast),
+          curve: Curves.easeOutCubic,
+          alignment: AlignmentDirectional.topStart,
+          clipBehavior: Clip.hardEdge,
+          child: content,
         );
       },
     );

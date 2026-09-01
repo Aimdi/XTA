@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
@@ -43,7 +44,7 @@ class SettingsPageScaffold extends StatelessWidget {
               horizontal: kTweetHorizontalPadding,
             ),
             iconColor: tweetSecondaryColor(context),
-            selectedColor: tweetAccentColor(context),
+            selectedColor: tweetReadableAccentColor(context),
             child: body,
           ),
         ),
@@ -104,7 +105,7 @@ class SettingsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = destructive
         ? Theme.of(context).colorScheme.error
-        : tweetAccentColor(context);
+        : tweetReadableAccentColor(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: kTweetSpace3),
       child: Column(
@@ -238,7 +239,7 @@ class SettingsRow extends StatelessWidget {
                       value!,
                       style: tweetMetadataStyle(
                         context,
-                      ).copyWith(color: tweetAccentColor(context)),
+                      ).copyWith(color: tweetReadableAccentColor(context)),
                     ),
                 ],
               ),
@@ -481,15 +482,17 @@ class _SettingsChoice<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = tweetAccentColor(context);
+    final readableAccent = tweetReadableAccentColor(context);
     return Semantics(
       button: true,
       selected: selected,
       child: Material(
+        animationDuration: xtaMotionDuration(context, kXtaMotionFast),
         color: selected ? accent.withValues(alpha: 0.12) : Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kSettingsRowRadius),
           side: BorderSide(
-            color: selected ? accent : tweetDividerColor(context),
+            color: selected ? readableAccent : tweetDividerColor(context),
           ),
         ),
         child: InkWell(
@@ -516,7 +519,9 @@ class _SettingsChoice<T> extends StatelessWidget {
                     Icon(
                       option.icon,
                       size: kTweetActionIconSize,
-                      color: selected ? accent : tweetSecondaryColor(context),
+                      color: selected
+                          ? readableAccent
+                          : tweetSecondaryColor(context),
                     ),
                   if (option.color != null || option.icon != null)
                     const SizedBox(width: kTweetSpace2),
@@ -546,9 +551,10 @@ class SettingsListSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fill =
-        XLookTokens.maybeOf(context)?.border ??
-        Theme.of(context).colorScheme.surfaceContainerHighest;
+    final tokens = XLookTokens.maybeOf(context);
+    final fill = tokens == null
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : xLookSkeletonSurface(tokens);
     return SettingsList(
       children: [
         for (var index = 0; index < count; index++) ...[

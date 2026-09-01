@@ -33,6 +33,9 @@ void showFeedSettings(BuildContext context, GroupModel model) {
             children: [
               ListTile(
                 leading: IconButton(
+                  tooltip: MaterialLocalizations.of(
+                    context,
+                  ).backButtonTooltip,
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -117,6 +120,7 @@ void showFeedSettings(BuildContext context, GroupModel model) {
                             groupValue: _sortModeOf(model.state),
                             onChanged: (_) async => await model.toggleSubscriptionGroupCustom(true),
                             secondary: IconButton(
+                              tooltip: L10n.of(context).custom,
                               icon: const Icon(Icons.add_circle_outline),
                               onPressed: () async {
                                 if (!model.state.custom) {

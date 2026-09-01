@@ -19,8 +19,6 @@ class SettingsThemeFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final BasePrefService prefs = PrefService.of(context);
-
     return SettingsPageScaffold(
       title: L10n.current.theme,
       body: SettingsList(
@@ -78,22 +76,6 @@ class SettingsThemeFragment extends StatelessWidget {
                   ),
                 )
                 .toList(),
-          ),
-          PrefSwitch(
-            title: Text(L10n.of(context).true_black),
-            pref: optionThemeTrueBlack,
-            subtitle: Text(
-              L10n.of(context).use_true_black_for_the_dark_mode_theme,
-            ),
-            onChange: (bool changeValue) {
-              prefs.set(optionThemeTrueBlackTweetCards, changeValue);
-            },
-          ),
-          PrefSwitch(
-            title: Text(L10n.of(context).true_black_tweet_cards),
-            pref: optionThemeTrueBlackTweetCards,
-            disabled: !prefs.get(optionThemeTrueBlack),
-            subtitle: Text(L10n.of(context).use_true_black_for_tweet_cards),
           ),
           PrefSwitch(
             title: Text(L10n.of(context).show_navigation_labels),

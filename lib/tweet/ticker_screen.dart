@@ -18,6 +18,7 @@ import 'package:xta/tweet/ticker/ticker_range.dart';
 import 'package:xta/tweet/ticker/ticker_search.dart';
 import 'package:xta/tweet/ticker/ticker_stats.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 class TickerScreenArguments {
   /// The ticker without its `$`, e.g. `AAPL`.
@@ -309,29 +310,33 @@ class _TickerScreenState extends State<_TickerScreen> {
   Widget build(BuildContext context) {
     final chart = _chartSection(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('\$${widget.symbol.toUpperCase()}'),
-        actions: [_WatchlistButton(symbol: widget.symbol)],
-      ),
-      // Chart scrolls away so the cashtag feed — the StockTwits reason to open
-      // a symbol — owns most of the screen.
-      body: NestedScrollView(
-        headerSliverBuilder: (context, _) => [
-          if (chart != null) SliverToBoxAdapter(child: chart),
-          if (_news.isNotEmpty)
-            SliverToBoxAdapter(child: TickerNewsList(items: _news)),
-        ],
-        body: TweetContextScope(
-          child: PaginatedTweetList(
-            feed: _feed,
-            loadPage: _loadPage,
-            username: null,
-            firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
-            newPageErrorPrefix: L10n.of(
-              context,
-            ).unable_to_load_the_next_page_of_tweets,
-            emptyMessage: L10n.of(context).no_posts_match_your_search,
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('\$${widget.symbol.toUpperCase()}'),
+          actions: [_WatchlistButton(symbol: widget.symbol)],
+        ),
+        // Chart scrolls away so the cashtag feed — the StockTwits reason to open
+        // a symbol — owns most of the screen.
+        body: NestedScrollView(
+          headerSliverBuilder: (context, _) => [
+            if (chart != null) SliverToBoxAdapter(child: chart),
+            if (_news.isNotEmpty)
+              SliverToBoxAdapter(child: TickerNewsList(items: _news)),
+          ],
+          body: TweetContextScope(
+            child: PaginatedTweetList(
+              feed: _feed,
+              loadPage: _loadPage,
+              username: null,
+              firstPageErrorPrefix: L10n.of(
+                context,
+              ).unable_to_load_the_tweets,
+              newPageErrorPrefix: L10n.of(
+                context,
+              ).unable_to_load_the_next_page_of_tweets,
+              emptyMessage: L10n.of(context).no_posts_match_your_search,
+            ),
           ),
         ),
       ),

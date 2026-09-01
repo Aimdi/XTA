@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Zachavanaje zastajecca tolki na hetaj pryladzie. Ničoha nikudy nie adpraŭlajecca.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Prakrucić uvierch",
+  "@scroll_to_top": {},
   "search": "Pošuk",
   "@search": {},
   "search_in_plugin": "Pošuk u {name}",

@@ -7,6 +7,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/diagnostics_model.dart';
 import 'package:xta/settings/diagnostics_report.dart';
 import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 /// Makes the account-selection and endpoint machinery visible.
 ///
@@ -62,10 +63,13 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       ],
       body: RefreshIndicator(
         onRefresh: _model.load,
-        child: ScopedBuilder<DiagnosticsModel, DiagnosticsReport>.transition(
+        child: ScopedBuilder<DiagnosticsModel, DiagnosticsReport>(
           store: _model,
           onLoading: (_) => const Center(child: CircularProgressIndicator()),
-          onState: (_, report) => _DiagnosticsBody(report: report),
+          onState: (_, report) => XtaFadeIn(
+            key: const ValueKey('diagnostics-content'),
+            child: _DiagnosticsBody(report: report),
+          ),
         ),
       ),
     );

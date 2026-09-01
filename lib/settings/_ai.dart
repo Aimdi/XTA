@@ -128,6 +128,7 @@ class _SettingsAiFragmentState extends State<SettingsAiFragment> {
               helperText: grok ? l10n.ai_grok_key_hint : null,
               helperMaxLines: 3,
               suffixIcon: IconButton(
+                tooltip: _obscureKey ? l10n.show : l10n.hide,
                 icon: Icon(
                   _obscureKey ? Icons.visibility_off : Icons.visibility,
                 ),

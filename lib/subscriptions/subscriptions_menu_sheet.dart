@@ -5,6 +5,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_controls.dart';
 
 /// Replaces the old 12-row overflow menu: view, sort, and the rarer
@@ -373,40 +374,52 @@ class _ModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = xAccent(context);
+    final readableAccent = xReadableAccent(context);
     final onSurface = xOnSurface(context);
     final fill = selected
         ? accent.withValues(alpha: 0.16)
         : xControlFill(context);
-    final tint = selected ? accent : onSurface;
+    final tint = selected ? readableAccent : onSurface;
 
-    return Material(
-      color: fill,
-      shape: const StadiumBorder(),
-      child: InkWell(
-        customBorder: const StadiumBorder(),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 20, color: tint),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: tint,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    fontSize: 13,
-                    height: 1.15,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: fill,
+        shape: const StadiumBorder(),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              minHeight: kMinInteractiveDimension,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 20, color: tint),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: tint,
+                        fontWeight: selected
+                            ? FontWeight.w700
+                            : FontWeight.w500,
+                        fontSize: 13,
+                        height: 1.15,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -430,26 +443,27 @@ class _CountChip extends StatelessWidget {
     final accent = xAccent(context);
     final onSurface = xOnSurface(context);
 
-    return Material(
-      color: selected ? accent : xControlFill(context),
-      shape: const StadiumBorder(),
-      child: InkWell(
-        customBorder: const StadiumBorder(),
-        onTap: onTap,
-        child: SizedBox(
-          width: 44,
-          height: 36,
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: selected
-                    ? (accent.computeLuminance() > 0.5
-                        ? Colors.black
-                        : Colors.white)
-                    : onSurface,
-                fontWeight: FontWeight.w700,
-                fontSize: 15,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? accent : xControlFill(context),
+        shape: const StadiumBorder(),
+        child: InkWell(
+          customBorder: const StadiumBorder(),
+          onTap: onTap,
+          child: SizedBox.square(
+            dimension: kMinInteractiveDimension,
+            child: Center(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: selected
+                      ? contrastingForeground(accent)
+                      : onSurface,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
               ),
             ),
           ),
@@ -474,10 +488,11 @@ class _CheckRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = xAccent(context);
+    final accent = xReadableAccent(context);
     final tint = selected ? accent : xOnSurface(context);
 
     return ListTile(
+      selected: selected,
       leading: Icon(icon, color: tint),
       title: Text(
         label,

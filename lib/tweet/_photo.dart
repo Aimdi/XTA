@@ -1,5 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 List<double> _doubleTapScales = <double>[1.0, 4.0];
 
@@ -10,19 +13,21 @@ class TweetPhoto extends StatefulWidget {
   final bool pullToClose;
   final bool inPageView;
 
-  const TweetPhoto(
-      {super.key,
-      required this.uri,
-      this.fit = BoxFit.fitWidth,
-      required this.size,
-      required this.pullToClose,
-      required this.inPageView});
+  const TweetPhoto({
+    super.key,
+    required this.uri,
+    this.fit = BoxFit.fitWidth,
+    required this.size,
+    required this.pullToClose,
+    required this.inPageView,
+  });
 
   @override
   State<TweetPhoto> createState() => _TweetPhotoState();
 }
 
-class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateMixin {
+class _TweetPhotoState extends State<TweetPhoto>
+    with SingleTickerProviderStateMixin {
   Animation<double>? _doubleClickAnimation;
   late void Function() _doubleClickAnimationListener;
 
@@ -31,7 +36,10 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
   AnimationController? _doubleClickController;
 
   AnimationController get _doubleClick =>
-      _doubleClickController ??= AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
+      _doubleClickController ??= AnimationController(
+        duration: xtaMotionDuration(context, kXtaMotionFast),
+        vsync: this,
+      );
 
   @override
   void dispose() {
@@ -45,7 +53,7 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
 
     // Fullscreen viewer: full resolution, so pinch-zoom stays sharp.
     if (widget.inPageView) {
-      return _gestureImage(url, cacheWidth: null);
+      return _gestureImage(context, url, cacheWidth: null);
     }
 
     // Timeline tile: decode at layout width × DPR, and none of the gesture
@@ -55,13 +63,60 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
     // every single tap while it waits to see if a second one follows.
     return LayoutBuilder(builder: (context, constraints) {
       final maxW = constraints.maxWidth;
-      final cacheWidth = maxW.isFinite && maxW > 0 ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil() : null;
+      final cacheWidth = maxW.isFinite && maxW > 0
+          ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+          : null;
 
-      return ExtendedImage.network(url, cache: true, fit: widget.fit, cacheWidth: cacheWidth);
+      return ExtendedImage.network(
+        url,
+        cache: true,
+        fit: widget.fit,
+        cacheWidth: cacheWidth,
+        loadStateChanged: (state) => _loadState(context, state),
+      );
     });
   }
 
-  Widget _gestureImage(String url, {required int? cacheWidth}) {
+  Widget? _loadState(BuildContext context, ExtendedImageState state) {
+    return switch (state.extendedImageLoadState) {
+      LoadState.loading => const ColoredBox(
+        color: Colors.black,
+        child: Center(
+          child: SizedBox.square(
+            dimension: kTweetTouchTarget,
+            child: Padding(
+              padding: EdgeInsets.all(kTweetSpace3),
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ),
+      ),
+      LoadState.failed => Semantics(
+        image: true,
+        label: L10n.of(context).media,
+        child: const ColoredBox(
+          color: Colors.black,
+          child: Center(
+            child: Icon(
+              Icons.broken_image_outlined,
+              color: Colors.white70,
+              size: 32,
+            ),
+          ),
+        ),
+      ),
+      LoadState.completed => null,
+    };
+  }
+
+  Widget _gestureImage(
+    BuildContext context,
+    String url, {
+    required int? cacheWidth,
+  }) {
     return ExtendedImageSlidePage(
       slideAxis: SlideAxis.vertical,
       child: ExtendedImage.network(
@@ -70,6 +125,7 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
         fit: widget.fit,
         cacheWidth: cacheWidth,
         mode: ExtendedImageMode.gesture,
+        loadStateChanged: (state) => _loadState(context, state),
         enableSlideOutPage: widget.pullToClose,
         initGestureConfigHandler: (state) {
           return GestureConfig(
@@ -100,10 +156,15 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
           }
 
           _doubleClickAnimationListener = () {
-            state.handleDoubleTap(scale: _doubleClickAnimation!.value, doubleTapPosition: pointerDownPosition);
+            state.handleDoubleTap(
+              scale: _doubleClickAnimation!.value,
+              doubleTapPosition: pointerDownPosition,
+            );
           };
 
-          _doubleClickAnimation = _doubleClick.drive(Tween<double>(begin: begin, end: end));
+          _doubleClickAnimation = _doubleClick.drive(
+            Tween<double>(begin: begin, end: end),
+          );
           _doubleClickAnimation!.addListener(_doubleClickAnimationListener);
           _doubleClick.forward();
         },

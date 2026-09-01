@@ -298,17 +298,22 @@ List<Widget> defaultGroupActions(
   return [
     if (showMore)
       IconButton(
+        tooltip: L10n.of(context).filters,
         icon: const Icon(Icons.build_outlined),
         onPressed: () => showFeedSettings(context, model),
       ),
     if (scrollToTopController != null)
       IconButton(
+        tooltip: L10n.of(context).scroll_to_top,
         icon: const Icon(Icons.arrow_upward),
         onPressed: () async =>
             await scrollToTop(context, scrollToTopController),
       ),
     if (showRefresh)
       IconButton(
+        tooltip: MaterialLocalizations.of(
+          context,
+        ).refreshIndicatorSemanticLabel,
         icon: const Icon(Icons.refresh),
         onPressed:
             onRefresh ??
@@ -316,6 +321,7 @@ List<Widget> defaultGroupActions(
       ),
     if (showSettings)
       IconButton(
+        tooltip: L10n.of(context).settings,
         icon: const Icon(Icons.settings),
         onPressed: () => Navigator.pushNamed(context, routeSettings),
       ),

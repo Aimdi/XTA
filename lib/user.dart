@@ -11,6 +11,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/subscriptions/group_membership_sheet.dart';
 import 'package:xta/subscriptions/subscription_unfollow.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -151,12 +152,17 @@ class FollowButton extends StatelessWidget {
         var followed = state.any((element) => element.id == user.id);
         var inFeed = followed ? state.any((element) => element.id == user.id && element.inFeed) : false;
 
-        var icon = followed
-            ? (inFeed ? Icon(Icons.person_remove, color: color) : Icon(Icons.visibility_off))
-            : Icon(Icons.person_add, color: color);
+        final iconData = followed
+            ? (inFeed ? Icons.person_remove : Icons.visibility_off)
+            : Icons.person_add;
+        final icon = XtaAnimatedSwitcher(
+          duration: kXtaMotionFast,
+          child: Icon(iconData, key: ValueKey(iconData), color: color),
+        );
         var text = followed ? L10n.of(context).unsubscribe : L10n.of(context).subscribe;
 
         return PopupMenuButton<String>(
+          tooltip: text,
           icon: icon,
           itemBuilder: (context) => [
             PopupMenuItem(value: 'toggle_subscribe', child: Text(text)),

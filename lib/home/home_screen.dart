@@ -17,6 +17,7 @@ import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/_missing.dart';
 import 'package:xta/home/_saved.dart';
+import 'package:xta/home/edge_swipe.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/network_recents_store.dart';
@@ -26,10 +27,11 @@ import 'package:xta/search/search.dart';
 import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
 import 'package:xta/trends/trends_screen.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
-import 'package:xta/ui/x_look_theme.dart';
 
 typedef NavigationTitleBuilder = String Function(BuildContext context);
 
@@ -148,12 +150,14 @@ class _HomeScreenState extends State<_HomeScreen> {
     // which remounts every keep-alive'd feed when a group tab is added.
     return ScopedBuilder<HomeModel, List<HomePage>>(
       store: widget.model,
-      onError: (_, e) => ScaffoldErrorWidget(
-        prefix: L10n.current.unable_to_load_home_pages,
-        error: e,
-        stackTrace: null,
-        onRetry: () async => await widget.model.resetPages(),
-        retryText: L10n.current.reset_home_pages,
+      onError: (_, e) => XtaSystemBars(
+        child: ScaffoldErrorWidget(
+          prefix: L10n.current.unable_to_load_home_pages,
+          error: e,
+          stackTrace: null,
+          onRetry: () async => await widget.model.resetPages(),
+          retryText: L10n.current.reset_home_pages,
+        ),
       ),
       onLoading: (_) => const HomeLoadingState(),
       onState: (_, state) {
@@ -167,7 +171,7 @@ class _HomeScreenState extends State<_HomeScreen> {
               return SubscriptionGroupScreen(
                 scrollController: scrollControllers[index]!,
                 id: page.id.replaceAll('group-', ''),
-                name: '',
+                name: page.titleBuilder(context),
               );
             }
             switch (page.id) {
@@ -383,7 +387,12 @@ class _ScaffoldWithBottomNavigationState
                 if (groups.isNotEmpty) ...[
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      12,
+                      16,
+                      4,
+                    ),
                     child: Text(
                       l10n.groups,
                       style: Theme.of(context).textTheme.bodySmall,
@@ -413,7 +422,7 @@ class _ScaffoldWithBottomNavigationState
           onTap: () => _goFromDrawer(context, routeSettings),
           onLongPress: () => showChromeAvatarSheet(context),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -443,7 +452,6 @@ class _ScaffoldWithBottomNavigationState
     SubscriptionGroup group,
     Set<String> unreadIds,
   ) {
-    final theme = Theme.of(context);
     final unread = unreadIds.contains(group.id);
     return ListTile(
       leading: GroupUnreadBadge(
@@ -472,7 +480,11 @@ class _ScaffoldWithBottomNavigationState
         overflow: TextOverflow.ellipsis,
       ),
       trailing: group.pinned
-          ? Icon(Icons.push_pin, size: 16, color: theme.colorScheme.primary)
+          ? Icon(
+              Icons.push_pin,
+              size: 16,
+              color: tweetReadableAccentColor(context),
+            )
           : null,
       onTap: () => _goFromDrawer(
         context,
@@ -483,145 +495,71 @@ class _ScaffoldWithBottomNavigationState
   }
 
   Widget _buildScaffold(BuildContext context, L10n l10n) {
-    final theme = Theme.of(context);
-    final tokens = XLookTokens.maybeOf(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    // X chrome: tight capsule, hairline edge, accent on the glyph — not a
-    // frosted iOS glass blob. Theme tokens drive the fill so Dim / Lights Out
-    // stay consistent with menus and sheets.
-    final Color pillFill;
-    final Color pillBorder;
-    final Color accent;
-    if (tokens != null) {
-      pillFill = xLookFloatingSurface(tokens);
-      pillBorder = tokens.border.withValues(alpha: isDark ? 0.55 : 0.9);
-      accent = tokens.accent;
-    } else {
-      pillFill = theme.colorScheme.surfaceContainerHighest.withValues(
-        alpha: 0.94,
-      );
-      pillBorder = theme.colorScheme.outlineVariant.withValues(alpha: 0.7);
-      accent = theme.colorScheme.primary;
-    }
-
-    const radius = 24.0;
-
     return XtaSystemBars(
       child: Scaffold(
-        extendBody: true,
         drawer: _buildDrawer(context, l10n),
-        body: PageView.builder(
-          controller: _pageController,
-          // Tabs change from the bar and nowhere else. A drag anywhere in a page
-          // used to change them too, which meant every horizontal gesture in the
-          // app — a media carousel, a nested tab view, a slider — was competing
-          // with the pager for the same finger.
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _barPages.length,
-          onPageChanged: (page) {
-            final previous = _pageIndex.value;
-            _pageIndex.value = page;
-            _adoptSearchScope(previous, page);
-          },
-          itemBuilder: (context, index) {
-            return KeyedSubtree(
-              key: PageStorageKey<String>(_barPages[index].id),
-              child: widget.builder(index, _scrollControllers, _focusNodes),
-            );
-          },
+        body: HomePageSwiper(
+          movePage: _movePageBy,
+          child: PageView.builder(
+            controller: _pageController,
+            // Tabs change from the bar and nowhere else. A drag anywhere in a
+            // page used to make media, nested tabs and sliders compete with the
+            // pager. Edge-aware children explicitly hand off at their boundary.
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _barPages.length,
+            onPageChanged: (page) {
+              final previous = _pageIndex.value;
+              _pageIndex.value = page;
+              _adoptSearchScope(previous, page);
+            },
+            itemBuilder: (context, index) {
+              return KeyedSubtree(
+                key: PageStorageKey<String>(_barPages[index].id),
+                child: widget.builder(index, _scrollControllers, _focusNodes),
+              );
+            },
+          ),
         ),
-        // Floating capsule: swipe still changes tab; the page itself never does.
         // Labels pref is read here so a Settings toggle does not rebuild feeds.
         bottomNavigationBar: Builder(
           builder: (context) {
             final showLabels =
                 PrefService.of(context).get(optionShowNavigationLabels) == true;
-            final barHeight = showLabels ? 60.0 : 56.0;
-            return SafeArea(
-              minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onHorizontalDragStart: (_) => _dragDistance = 0,
-                onHorizontalDragUpdate: (details) =>
-                    _dragDistance += details.primaryDelta ?? 0,
-                onHorizontalDragEnd: (details) => _swipeNavigationBar(
-                  details.primaryVelocity ?? 0,
-                  _dragDistance,
-                ),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(radius),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(
-                          alpha: isDark ? 0.28 : 0.08,
-                        ),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
+            final disableAnimations =
+                PrefService.of(
+                  context,
+                  listen: false,
+                ).get<bool>(optionDisableAnimations) ==
+                true;
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragStart: (_) => _dragDistance = 0,
+              onHorizontalDragUpdate: (details) =>
+                  _dragDistance += details.primaryDelta ?? 0,
+              onHorizontalDragEnd: (details) => _swipeNavigationBar(
+                details.primaryVelocity ?? 0,
+                _dragDistance,
+              ),
+              child: ValueListenableBuilder<int>(
+                valueListenable: _pageIndex,
+                builder: (context, currentPage, _) {
+                  final slots = _bottomBarSlots(context);
+                  return HomeNavigationBar(
+                    selectedIndex: destinationIndexForPage(slots, currentPage),
+                    items: [
+                      for (final slot in slots)
+                        _navigationItemForSlot(context, slot),
                     ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(radius),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: pillFill,
-                        borderRadius: BorderRadius.circular(radius),
-                        border: Border.all(color: pillBorder, width: 0.5),
-                      ),
-                      child: ValueListenableBuilder<int>(
-                        valueListenable: _pageIndex,
-                        builder: (context, currentPage, _) {
-                          final slots = _bottomBarSlots(context);
-                          final selectedDest = destinationIndexForPage(
-                            slots,
-                            currentPage,
-                          );
-                          return NavigationBar(
-                            selectedIndex: selectedDest,
-                            labelBehavior: showLabels
-                                ? NavigationDestinationLabelBehavior.alwaysShow
-                                : NavigationDestinationLabelBehavior.alwaysHide,
-                            shadowColor: Colors.transparent,
-                            backgroundColor: Colors.transparent,
-                            surfaceTintColor: Colors.transparent,
-                            indicatorColor: Colors.transparent,
-                            overlayColor: WidgetStateProperty.resolveWith((
-                              states,
-                            ) {
-                              if (states.contains(WidgetState.pressed) ||
-                                  states.contains(WidgetState.focused)) {
-                                return accent.withValues(alpha: 0.08);
-                              }
-                              if (states.contains(WidgetState.hovered)) {
-                                return accent.withValues(alpha: 0.04);
-                              }
-                              return Colors.transparent;
-                            }),
-                            height: barHeight,
-                            destinations: [
-                              for (final slot in slots)
-                                _destinationForSlot(
-                                  context,
-                                  slot: slot,
-                                  currentPage: currentPage,
-                                  showLabels: showLabels,
-                                  tokens: tokens,
-                                ),
-                            ],
-                            onDestinationSelected: (index) => _onBarDestination(
-                              context,
-                              slots,
-                              index,
-                              currentPage,
-                            ),
-                          );
-                        },
-                      ),
+                    showLabels: showLabels,
+                    disableAnimations: disableAnimations,
+                    onSelected: (index) => _onBarDestination(
+                      context,
+                      slots,
+                      index,
+                      currentPage,
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             );
           },
@@ -662,47 +600,21 @@ class _ScaffoldWithBottomNavigationState
     ], recentPluginId: recentPluginId);
   }
 
-  NavigationDestination _destinationForSlot(
-    BuildContext context, {
-    required BottomBarSlot slot,
-    required int currentPage,
-    required bool showLabels,
-    required XLookTokens? tokens,
-  }) {
+  HomeNavigationItem _navigationItemForSlot(
+    BuildContext context,
+    BottomBarSlot slot,
+  ) {
     if (slot.isOverflow) {
-      return NavigationDestination(
+      return HomeNavigationItem(
         icon: const Icon(Icons.public_outlined),
         selectedIcon: const Icon(Icons.public),
         label: L10n.of(context).home_networks,
       );
     }
-    final index = slot.pageIndex!;
-    final page = _barPages[index];
-    final isSelected = currentPage == index;
-    final scale = (!showLabels && isSelected && tokens != null) ? 1.05 : 1.0;
-    final reduceMotion =
-        MediaQuery.disableAnimationsOf(context) ||
-        PrefService.of(
-              context,
-              listen: false,
-            ).get<bool>(optionDisableAnimations) ==
-            true;
-    final duration = Duration(
-      milliseconds: tokens != null && !reduceMotion ? 200 : 0,
-    );
-    return NavigationDestination(
-      icon: AnimatedScale(
-        scale: scale,
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: page.icon,
-      ),
-      selectedIcon: AnimatedScale(
-        scale: scale,
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: page.selectedIcon,
-      ),
+    final page = _barPages[slot.pageIndex!];
+    return HomeNavigationItem(
+      icon: page.icon,
+      selectedIcon: page.selectedIcon,
       label: page.titleBuilder(context),
     );
   }
@@ -767,17 +679,27 @@ class _ScaffoldWithBottomNavigationState
       velocity: velocity,
       distance: distance,
     );
-    if (target == _pageIndex.value) {
-      return;
-    }
+    _goToPage(target, animate: true);
+  }
 
+  void _movePageBy(int direction) {
+    final target = max(
+      0,
+      min(_pageIndex.value + direction, _barPages.length - 1),
+    );
+    _goToPage(target, animate: true);
+  }
+
+  void _goToPage(int target, {required bool animate}) {
+    if (target == _pageIndex.value) return;
     unfocusPages();
-    if (widget.prefs.get<bool>(optionDisableAnimations) == true) {
+    final reduceMotion = xtaReduceMotion(context);
+    if (!animate || reduceMotion) {
       _pageController.jumpToPage(target);
     } else {
       _pageController.animateToPage(
         target,
-        duration: const Duration(milliseconds: 250),
+        duration: kXtaMotionNavigation,
         curve: Curves.easeOut,
       );
     }

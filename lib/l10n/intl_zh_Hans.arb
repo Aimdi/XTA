@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "收藏仅保存在此设备上，不会发送到任何地方。",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "滚动到顶部",
+  "@scroll_to_top": {},
   "search": "搜索",
   "@search": {},
   "search_in_plugin": "搜索 {name}",

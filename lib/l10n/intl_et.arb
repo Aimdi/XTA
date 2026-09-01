@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Salvestised jäävad ainult sellesse seadmesse. Mitte kuhugi ei saadeta midagi.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Keri üles",
+  "@scroll_to_top": {},
   "search": "Otsi",
   "@search": {},
   "search_in_plugin": "Otsi: {name}",

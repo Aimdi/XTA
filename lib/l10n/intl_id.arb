@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Simpanan tetap di perangkat ini. Tidak ada yang dikirim ke mana pun.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Gulir ke atas",
+  "@scroll_to_top": {},
   "search": "Cari",
   "@search": {},
   "search_in_plugin": "Cari di {name}",

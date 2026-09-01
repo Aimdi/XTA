@@ -9,9 +9,13 @@ const double kThreadLevelWidth = 40;
 
 const int kThreadMaxVisualDepth = 2;
 
-double get threadRailLineX => kThreadRailLeft + kThreadRailAvatarSize / 2 - kThreadRailLineWidth / 2;
+double get threadRailLineX =>
+    kThreadRailLeft +
+    kThreadRailAvatarSize / 2 -
+    kThreadRailLineWidth / 2;
 
-double get threadRailAvatarCenterY => kThreadRailTopGap + kThreadRailAvatarSize / 2;
+double get threadRailAvatarCenterY =>
+    kThreadRailTopGap + kThreadRailAvatarSize / 2;
 
 double get threadRailBodyIndent => kThreadRailLeft + kThreadRailAvatarSize;
 
@@ -34,7 +38,12 @@ class ThreadRailLines extends StatelessWidget {
   final bool connectBottom;
   final Color? lineColor;
 
-  const ThreadRailLines({super.key, required this.connectTop, required this.connectBottom, this.lineColor});
+  const ThreadRailLines({
+    super.key,
+    required this.connectTop,
+    required this.connectBottom,
+    this.lineColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +51,27 @@ class ThreadRailLines extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final color = lineColor ?? Theme.of(context).colorScheme.outlineVariant;
-    Widget lineSeg() => Container(width: kThreadRailLineWidth, color: color);
+    Widget lineSeg() => SizedBox(
+      width: kThreadRailLineWidth,
+      child: ColoredBox(color: color),
+    );
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        if (connectTop) Positioned(left: threadRailLineX, top: 0, height: threadRailAvatarCenterY, child: lineSeg()),
-        if (connectBottom) Positioned(left: threadRailLineX, top: threadRailAvatarCenterY, bottom: 0, child: lineSeg()),
+        if (connectTop)
+          PositionedDirectional(
+            start: threadRailLineX,
+            top: 0,
+            height: threadRailAvatarCenterY,
+            child: lineSeg(),
+          ),
+        if (connectBottom)
+          PositionedDirectional(
+            start: threadRailLineX,
+            top: threadRailAvatarCenterY,
+            bottom: 0,
+            child: lineSeg(),
+          ),
       ],
     );
   }
@@ -84,7 +108,12 @@ class ThreadRailBody extends StatelessWidget {
         // that is infinity: the whole tile became infinitely tall, and every
         // post after it in the timeline was laid out off the bottom of the
         // world. A thread in the feed emptied the feed under it.
-        Positioned.fill(child: ThreadRailLines(connectTop: connectTop, connectBottom: connectBottom)),
+        Positioned.fill(
+          child: ThreadRailLines(
+            connectTop: connectTop,
+            connectBottom: connectBottom,
+          ),
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -99,7 +128,16 @@ class ThreadRailBody extends StatelessWidget {
                     SizedBox(
                       width: kThreadRailAvatarSize,
                       height: kThreadRailAvatarSize,
-                      child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: onTapProfile, child: avatar),
+                      child: Semantics(
+                        button: true,
+                        child: InkResponse(
+                          onTap: onTapProfile,
+                          radius: kThreadRailAvatarSize / 2,
+                          containedInkWell: true,
+                          customBorder: const CircleBorder(),
+                          child: avatar,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -108,8 +146,13 @@ class ThreadRailBody extends StatelessWidget {
             ),
             if (indentBody)
               Padding(
-                padding: EdgeInsets.only(left: threadRailBodyIndent),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: bodyChildren),
+                padding: EdgeInsetsDirectional.only(
+                  start: threadRailBodyIndent,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: bodyChildren,
+                ),
               ),
             if (!indentBody) ...bodyChildren,
           ],

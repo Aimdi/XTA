@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Zapisane zostają na tym urządzeniu. Nic nie jest wysyłane.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Przewiń na górę",
+  "@scroll_to_top": {},
   "search": "Szukaj",
   "@search": {},
   "search_in_plugin": "Szukaj w {name}",

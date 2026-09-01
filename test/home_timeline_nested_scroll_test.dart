@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/scroll_to_top.dart';
@@ -146,6 +147,43 @@ void main() {
   });
 
   group('scrollToTop', () {
+    testWidgets('jumps immediately when motion is disabled', (tester) async {
+      final controller = ScrollController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        PrefService(
+          service: PrefServiceCache(
+            cache: {optionDisableAnimations: true},
+          ),
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) => Column(
+                children: [
+                  TextButton(
+                    onPressed: () => scrollToTop(context, controller),
+                    child: const Text('Top'),
+                  ),
+                  Expanded(
+                    child: ListView(
+                      controller: controller,
+                      children: const [SizedBox(height: 1200)],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      controller.jumpTo(500);
+
+      await tester.tap(find.text('Top'));
+      await tester.pump();
+
+      expect(controller.offset, 0);
+    });
+
     testWidgets('does not animate when NestedScrollView has two positions', (
       tester,
     ) async {

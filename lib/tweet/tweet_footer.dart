@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:dart_twitter_api/twitter_api.dart' show Media, Url;
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
@@ -43,19 +42,18 @@ const footerButtonStyle = ButtonStyle(
   padding: WidgetStatePropertyAll(
     EdgeInsets.symmetric(horizontal: kFooterButtonPadding),
   ),
-  minimumSize: WidgetStatePropertyAll(Size(0, kFooterButtonHeight)),
+  minimumSize: WidgetStatePropertyAll(
+    Size(kTweetTouchTarget, kFooterButtonHeight),
+  ),
   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  visualDensity: VisualDensity.compact,
 );
 
 /// Fixed cost of one count action: padding, the 20dp glyph and the gap Material
 /// puts between an icon and its label.
-const double kFooterCountItemBase =
-    kFooterButtonPadding + 20 + 8 + kFooterButtonPadding;
+const double kFooterCountItemBase = kTweetTouchTarget;
 
 /// One icon-only action (bookmark, share).
-const double kFooterIconItem =
-    kFooterButtonPadding + 20 + kFooterButtonPadding + 8;
+const double kFooterIconItem = kTweetTouchTarget;
 
 /// Gap between the counts group and the icon group.
 const double kFooterGroupGap = 8;
@@ -72,8 +70,8 @@ class FooterFit {
   /// Whether the (non-interactive) view count is shown at all.
   final bool showViews;
 
-  /// Set when even a bare row of glyphs does not fit, so the caller scales the
-  /// strip down instead of letting it clip.
+  /// Set when even a bare row of glyphs does not fit, so the caller lets the
+  /// actions wrap rather than shrinking their touch targets.
   final bool mustScaleDown;
 
   const FooterFit({
@@ -165,12 +163,12 @@ class TweetTranslateButton extends StatelessWidget {
     final theme = Theme.of(context);
     final (color, tooltip, onPressed) = switch (status) {
       TranslationStatus.translated => (
-        theme.colorScheme.primary,
+        tweetReadableAccentColor(context),
         L10n.of(context).action_show_original_post,
         onShowOriginal,
       ),
       TranslationStatus.translationFailed => (
-        Colors.red.harmonizeWith(theme.colorScheme.primary),
+        theme.colorScheme.error,
         L10n.of(context).action_translate_post,
         onTranslate,
       ),
@@ -305,13 +303,14 @@ Widget tweetFooterIconButton(
   );
 }
 
-TextButton tweetFooterTextButton(
+Widget tweetFooterTextButton(
   IconData icon,
   String label, [
   Color? color,
   VoidCallback? onPressed,
+  String? semanticLabel,
 ]) {
-  return TextButton.icon(
+  final button = TextButton.icon(
     icon: Icon(icon, size: 20, color: color),
     onPressed: onPressed,
     label: Text(
@@ -319,6 +318,14 @@ TextButton tweetFooterTextButton(
       style: TextStyle(color: color, fontSize: kFooterLabelFontSize),
     ),
     style: footerButtonStyle,
+  );
+  if (label.trim().isNotEmpty || semanticLabel == null) {
+    return button;
+  }
+  return Semantics(
+    button: onPressed != null,
+    label: semanticLabel,
+    child: ExcludeSemantics(child: button),
   );
 }
 
@@ -541,6 +548,7 @@ class TweetFooterBar extends StatelessWidget {
                 label(replyLabel),
                 tint,
                 onOpenTweet,
+                L10n.of(context).open_post,
               ),
             ),
             GestureDetector(
@@ -554,12 +562,9 @@ class TweetFooterBar extends StatelessWidget {
               child: tweetFooterTextButton(
                 Icons.format_quote,
                 label(repostLabel),
-                (tweet.quoteCount ?? 0) > 0
-                    ? Colors.green.harmonizeWith(
-                        Theme.of(context).colorScheme.primary,
-                      )
-                    : tint,
+                tint,
                 tweet.idStr == null ? null : openQuotes,
+                L10n.of(context).quotes,
               ),
             ),
             ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
@@ -577,7 +582,7 @@ class TweetFooterBar extends StatelessWidget {
                 return LikeButton(
                   isLiked: isLiked,
                   label: label(likeLabel),
-                  color: isLiked ? Theme.of(context).colorScheme.primary : tint,
+                  color: isLiked ? tweetReadableAccentColor(context) : tint,
                   tooltip: isLiked
                       ? L10n.of(context).unlike_on_this_device
                       : L10n.of(context).like_on_this_device,
@@ -611,7 +616,7 @@ class TweetFooterBar extends StatelessWidget {
                     ? tweetFooterIconButton(
                         context,
                         Icons.bookmark,
-                        Theme.of(context).colorScheme.primary,
+                        tweetReadableAccentColor(context),
                         1,
                         () async {
                           await savedModel.deleteSavedTweet(tweet.idStr!);
@@ -668,12 +673,13 @@ class TweetFooterBar extends StatelessWidget {
             ),
           ];
 
-          // Last resort for extreme text scales: shrink the whole strip rather
-          // than clip a digit off the end of it.
+          // Last resort for a narrow window: preserve 48dp targets and let the
+          // actions take a second line. Scaling the strip made the controls fit
+          // visually while making every hit target too small.
           if (fit.mustScaleDown) {
-            return FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(mainAxisSize: MainAxisSize.min, children: actions),
+            return Wrap(
+              alignment: WrapAlignment.spaceEvenly,
+              children: actions,
             );
           }
 

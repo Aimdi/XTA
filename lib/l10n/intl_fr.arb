@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Les enregistrements restent sur cet appareil. Rien n’est envoyé nulle part.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Retour en haut",
+  "@scroll_to_top": {},
   "search": "Rechercher",
   "@search": {},
   "search_in_plugin": "Rechercher dans {name}",

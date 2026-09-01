@@ -148,7 +148,7 @@ class _GroupChoice extends StatelessWidget {
       ),
       side: BorderSide(
         color: selected
-            ? tweetAccentColor(context)
+            ? tweetReadableAccentColor(context)
             : tweetDividerColor(context),
       ),
       shape: RoundedRectangleBorder(
@@ -197,7 +197,7 @@ class GroupSettingsSection extends StatelessWidget {
               Icon(
                 icon,
                 size: kTweetActionIconSize,
-                color: tweetAccentColor(context),
+                color: tweetReadableAccentColor(context),
               ),
               const SizedBox(width: kTweetSpace2),
               Expanded(
@@ -239,6 +239,7 @@ class GroupOverflowButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return PopupMenuButton<GroupOverflowAction>(
+      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
       icon: const Icon(Icons.more_vert),
       onSelected: onSelected,
       itemBuilder: (_) => [

@@ -72,28 +72,24 @@ class _TweetCardState extends State<TweetCard> {
     }
   }
 
-  Container _createBaseCard(Widget child, BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        width: double.infinity,
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          color: Theme.of(context).colorScheme.inversePrimary,
-          elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kTweetMediaRadius)),
-          child: child,
-        ));
+  Widget _createBaseCard(
+    Widget child, {
+    VoidCallback? onTap,
+  }) {
+    return TweetEmbedSurface(
+      onTap: onTap,
+      child: SizedBox(width: double.infinity, child: child),
+    );
   }
 
-  GestureDetector _createCard(String? url, Widget child, BuildContext context) {
-    return GestureDetector(
-      child: _createBaseCard(child, context),
-      onTap: () async {
-        if (url == null) {
-          return;
-        }
-        await openLink(context, url);
-      },
+  Widget _createCard(String? url, Widget child, BuildContext context) {
+    return _createBaseCard(
+      child,
+      onTap: url == null
+          ? null
+          : () async {
+              await openLink(context, url);
+            },
     );
   }
 
@@ -127,49 +123,65 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  Container _createListTile(BuildContext context, String title, String? description, String? uri) {
-    return Container(
-      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
+  Widget _createListTile(
+    BuildContext context,
+    String title,
+    String? description,
+    String? uri,
+  ) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        kTweetSpace3,
+        kTweetSpace2,
+        kTweetSpace3,
+        kTweetSpace3,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            child: Text(
-              title,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium!
-                  .copyWith(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
-            ),
+          Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+            style: tweetLabelStyle(context),
           ),
-          if (description != null)
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              child: Text(
-                description,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 12),
-              ),
+          if (description != null) ...[
+            const SizedBox(height: kTweetSpace1),
+            Text(
+              description,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
+              style: tweetMetadataStyle(
+                context,
+              ).copyWith(color: tweetPrimaryColor(context)),
             ),
-          if (uri != null)
-            Container(
-              margin: EdgeInsets.only(top: description == null ? 4 : 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Icon(Icons.link, size: 12, color: Colors.white),
-                  const SizedBox(width: 4),
-                  Text(uri,
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Colors.white,
-                          )),
-                ],
-              ),
-            )
+          ],
+          if (uri != null) ...[
+            SizedBox(
+              height: description == null ? kTweetSpace1 : kTweetSpace2,
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.link,
+                  size: 14,
+                  color: tweetReadableAccentColor(context),
+                ),
+                const SizedBox(width: kTweetSpace1),
+                Expanded(
+                  child: Text(
+                    uri,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: tweetMetadataStyle(context).copyWith(
+                      color: tweetReadableAccentColor(context),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -201,7 +213,7 @@ class _TweetCardState extends State<TweetCard> {
             // by a progress indicator, so it keeps the rounded ends.
             Positioned.fill(
               child: FractionallySizedBox(
-                alignment: Alignment.centerLeft,
+                alignment: AlignmentDirectional.centerStart,
                 widthFactor: choice.share.clamp(0.0, 1.0),
                 child: Container(color: fill),
               ),
@@ -237,10 +249,11 @@ class _TweetCardState extends State<TweetCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             media,
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-              child: _createListTile(context, unifiedCard['component_objects']['details_1']['data']['title']['content'],
-                  unifiedCard['component_objects']['details_1']['data']['subtitle']['content'], null),
+            _createListTile(
+              context,
+              unifiedCard['component_objects']['details_1']['data']['title']['content'],
+              unifiedCard['component_objects']['details_1']['data']['subtitle']['content'],
+              null,
             ),
           ],
         ),
@@ -295,8 +308,8 @@ class _TweetCardState extends State<TweetCard> {
         ? null
         : timeago.format(endsAt, allowFromNow: true, locale: Intl.shortLocale(locale));
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+    return TweetEmbedSurface(
+      padding: const EdgeInsets.all(kTweetSpace3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -374,13 +387,11 @@ class _TweetCardState extends State<TweetCard> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _createImage(imageSize, image, BoxFit.cover),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                  child: _createListTile(
-                      context,
-                      card['binding_values']['title']['string_value'],
-                      card['binding_values']?['description']?['string_value'],
-                      card['binding_values']?['vanity_url']?['string_value']),
+                _createListTile(
+                  context,
+                  card['binding_values']['title']['string_value'],
+                  card['binding_values']?['description']?['string_value'],
+                  card['binding_values']?['vanity_url']?['string_value'],
                 ),
               ],
             ),
@@ -429,10 +440,7 @@ class _TweetCardState extends State<TweetCard> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _createImage(imageSize, image, BoxFit.cover),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                  child: _createListTile(context, title, null, vanityUrl),
-                ),
+                _createListTile(context, title, null, vanityUrl),
               ],
             ),
             context);
@@ -456,10 +464,11 @@ class _TweetCardState extends State<TweetCard> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _createImage(imageSize, image, BoxFit.cover),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                  child: _createListTile(context, card['binding_values']['event_title']['string_value'],
-                      card['binding_values']['event_subtitle']?['string_value'], null),
+                _createListTile(
+                  context,
+                  card['binding_values']['event_title']['string_value'],
+                  card['binding_values']['event_subtitle']?['string_value'],
+                  null,
                 ),
               ],
             ),
@@ -500,12 +509,8 @@ class _TweetCardState extends State<TweetCard> {
 
         // Just the player. Title/@username sat in a pale card under the video
         // and read as a blank white bar; the tweet already has the text.
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(kTweetMediaRadius),
-            child: ColoredBox(color: Colors.black, child: child),
-          ),
+        return TweetMediaFrame(
+          child: ColoredBox(color: Colors.black, child: child),
         );
       default:
         if (isAudioSpaceCard(card)) {
@@ -520,20 +525,16 @@ class _TweetCardState extends State<TweetCard> {
     if (spaceId == null) {
       return Container();
     }
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(kTweetMediaRadius),
-        child: ColoredBox(
-          color: Colors.black,
-          child: TweetVideo(
-            username: widget.tweet.user?.screenName ?? 'space',
-            loop: false,
-            metadata: TweetVideoMetadata.live(
-              imageUrl: broadcastThumbnailFromCard(card),
-              playbackUrl: () => livePlaybackUrl(
-                LivePlayRequest.fromTweet(widget.tweet),
-              ),
+    return TweetMediaFrame(
+      child: ColoredBox(
+        color: Colors.black,
+        child: TweetVideo(
+          username: widget.tweet.user?.screenName ?? 'space',
+          loop: false,
+          metadata: TweetVideoMetadata.live(
+            imageUrl: broadcastThumbnailFromCard(card),
+            playbackUrl: () => livePlaybackUrl(
+              LivePlayRequest.fromTweet(widget.tweet),
             ),
           ),
         ),

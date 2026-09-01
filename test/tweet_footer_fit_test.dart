@@ -82,20 +82,25 @@ void main() {
       expect(fit.showViews, isFalse);
     });
 
-    test('the reported layout fits on a 360dp phone', () {
+    test('preserves every interactive action on a 360dp phone', () {
       // The screenshot: 0 replies, 3 reposts, 6 likes and a view count, with
-      // bookmark, share and translate — on a 360dp screen less the 8dp margins.
+      // bookmark and share — translate lives in the header — on a 360dp
+      // screen less the 8dp margins.
       const available = 360.0 - 16;
 
       final fit = resolveFooterFit(
         available: available,
         countLabelWidths: narrowLabels,
         viewsLabelWidth: viewsLabel,
-        iconButtons: 3,
+        iconButtons: 2,
       );
 
       expect(fit.showCounts, isTrue);
-      expect(fit.showViews, isTrue, reason: 'the view count must not be pushed off the end any more');
+      expect(
+        fit.showViews,
+        isFalse,
+        reason: 'the read-only view count yields before a 48dp action target',
+      );
       expect(fit.mustScaleDown, isFalse);
     });
 
@@ -121,7 +126,7 @@ void main() {
         available: 360.0 - 16,
         countLabelWidths: wide,
         viewsLabelWidth: 28,
-        iconButtons: 3,
+        iconButtons: 2,
       );
 
       expect(fit.showCounts, isTrue);

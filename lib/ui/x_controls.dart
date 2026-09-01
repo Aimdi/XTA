@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 /// X-style controls: flat surfaces, full-round pills, no tonal containers and
@@ -10,13 +11,7 @@ import 'package:xta/ui/x_look_theme.dart';
 Color xControlFill(BuildContext context) {
   final tokens = XLookTokens.maybeOf(context);
   if (tokens != null) {
-    // X's own search fill: #EFF3F4 on white, a lifted slate on dim/lights out.
-    return tokens.background.computeLuminance() > 0.5
-        ? tokens.divider
-        : Color.alphaBlend(
-            tokens.onBackground.withValues(alpha: 0.10),
-            tokens.background,
-          );
+    return xLookInsetSurface(tokens);
   }
   final scheme = Theme.of(context).colorScheme;
   return Color.alphaBlend(
@@ -27,6 +22,10 @@ Color xControlFill(BuildContext context) {
 
 Color xAccent(BuildContext context) =>
     XLookTokens.maybeOf(context)?.accent ??
+    Theme.of(context).colorScheme.primary;
+
+/// Accent corrected for text, icons, and focus borders painted on the page.
+Color xReadableAccent(BuildContext context) =>
     Theme.of(context).colorScheme.primary;
 
 Color xOnSurface(BuildContext context) =>
@@ -43,9 +42,7 @@ ButtonStyle xPrimaryPillStyle(BuildContext context) {
   final accent = xAccent(context);
   return FilledButton.styleFrom(
     backgroundColor: accent,
-    foregroundColor: accent.computeLuminance() > 0.5
-        ? Colors.black
-        : Colors.white,
+    foregroundColor: contrastingForeground(accent),
     elevation: 0,
     shape: const StadiumBorder(),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -94,7 +91,7 @@ class _XSearchFieldState extends State<XSearchField> {
 
   @override
   Widget build(BuildContext context) {
-    final accent = xAccent(context);
+    final accent = xReadableAccent(context);
     final focused = _focusNode.hasFocus;
     final hasQuery = widget.controller.text.isNotEmpty;
     final border = OutlineInputBorder(
@@ -128,6 +125,7 @@ class _XSearchFieldState extends State<XSearchField> {
         ),
         suffixIcon: hasQuery
             ? IconButton(
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 icon: Icon(Icons.cancel, size: 18, color: xSecondary(context)),
                 onPressed: () {
                   widget.controller.clear();

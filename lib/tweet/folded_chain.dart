@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/conversation.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// A chain folded behind a one-line reason (Mastodon CW / local filter fold).
 class FoldedChain extends StatefulWidget {
@@ -9,7 +10,12 @@ class FoldedChain extends StatefulWidget {
   final String reason;
   final String? username;
 
-  const FoldedChain({super.key, required this.chain, required this.reason, this.username});
+  const FoldedChain({
+    super.key,
+    required this.chain,
+    required this.reason,
+    this.username,
+  });
 
   @override
   State<FoldedChain> createState() => _FoldedChainState();
@@ -24,13 +30,36 @@ class _FoldedChainState extends State<FoldedChain> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          InkWell(
-            onTap: () => setState(() => _expanded = false),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: Text(
-                L10n.of(context).filter_fold_hide_again,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
+          Semantics(
+            button: true,
+            child: InkWell(
+              onTap: () => setState(() => _expanded = false),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minHeight: kTweetTouchTarget,
+                ),
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.symmetric(
+                    horizontal: kTweetHorizontalPadding,
+                    vertical: kTweetSpace2,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.expand_less,
+                        size: kTweetActionIconSize,
+                        color: tweetReadableAccentColor(context),
+                      ),
+                      const SizedBox(width: kTweetSpace2),
+                      Text(
+                        L10n.of(context).filter_fold_hide_again,
+                        style: tweetLabelStyle(context).copyWith(
+                          color: tweetReadableAccentColor(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -44,24 +73,39 @@ class _FoldedChainState extends State<FoldedChain> {
       );
     }
 
-    return InkWell(
-      onTap: () => setState(() => _expanded = true),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Icon(Icons.visibility_off_outlined, size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                L10n.of(context).filter_fold_matched(widget.reason),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
+    return Semantics(
+      button: true,
+      child: InkWell(
+        onTap: () => setState(() => _expanded = true),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: kTweetHorizontalPadding,
+              vertical: kTweetSpace2,
             ),
-            Icon(Icons.expand_more, color: Theme.of(context).colorScheme.onSurfaceVariant),
-          ],
+            child: Row(
+              children: [
+                Icon(
+                  Icons.visibility_off_outlined,
+                  size: kTweetActionIconSize,
+                  color: tweetSecondaryColor(context),
+                ),
+                const SizedBox(width: kTweetSpace2),
+                Expanded(
+                  child: Text(
+                    L10n.of(context).filter_fold_matched(widget.reason),
+                    style: tweetMetadataStyle(context),
+                  ),
+                ),
+                Icon(
+                  Icons.expand_more,
+                  size: kTweetActionIconSize,
+                  color: tweetSecondaryColor(context),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

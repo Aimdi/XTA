@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Salvările rămân pe acest dispozitiv. Nu se trimite nimic nicăieri.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Derulează în partea de sus",
+  "@scroll_to_top": {},
   "search": "Căutare",
   "@search": {},
   "search_in_plugin": "Caută în {name}",

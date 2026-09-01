@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +15,11 @@ import 'package:xta/tweet/video_fullscreen.dart';
 import 'package:xta/tweet/video_playback_policy.dart';
 import 'package:xta/tweet/video_quality.dart';
 import 'package:xta/tweet/media_strip.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:xta/utils/media_quality.dart';
 import 'package:xta/ui/capped_network_image.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:provider/provider.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -583,7 +586,7 @@ class _TweetVideoState extends State<TweetVideo> {
         IgnorePointer(
           child: AnimatedOpacity(
             opacity: _firstFrameRendered ? 0.0 : 1.0,
-            duration: const Duration(milliseconds: 200),
+            duration: xtaMotionDuration(context, kXtaMotionStandard),
             onEnd: () {
               if (_firstFrameRendered && !_posterGone)
                 setState(() => _posterGone = true);
@@ -773,23 +776,39 @@ class _TweetVideoState extends State<TweetVideo> {
           }
           return AspectRatio(
             aspectRatio: widget.metadata.aspectRatio,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.white,
-                    size: 48,
+            child: ColoredBox(
+              color: Colors.black,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(kTweetSpace4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.white,
+                        size: 48,
+                      ),
+                      const SizedBox(height: kTweetSpace3),
+                      Text(
+                        L10n.of(context).failed_to_load_video,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      const SizedBox(height: kTweetSpace3),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: tweetAccentColor(context),
+                          foregroundColor: tweetOnAccentColor(context),
+                          minimumSize: const ui.Size(0, kTweetTouchTarget),
+                          elevation: 0,
+                        ),
+                        onPressed: () => _restartVideo(prefLoop),
+                        child: Text(L10n.of(context).restart_video_player),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(L10n.of(context).failed_to_load_video),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () => _restartVideo(prefLoop),
-                    child: Text(L10n.of(context).restart_video_player),
-                  ),
-                ],
+                ),
               ),
             ),
           );

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/search/advanced_search_model.dart';
+import 'package:xta/search/search_model.dart';
 
 void main() {
   test('advanced search composes every supported operator', () {
@@ -55,5 +56,60 @@ void main() {
 
     expect(store.state.query, isEmpty);
     expect(store.state.activeFilters, isEmpty);
+  });
+
+  test('result state keeps structured filters while the query matches', () {
+    final store = SearchViewStore(initialQuery: 'flutter');
+    addTearDown(store.destroy);
+    const advanced = AdvancedSearchState(
+      allWords: 'flutter',
+      hashtags: 'android',
+      onlyMedia: true,
+    );
+
+    store.applyAdvanced(advanced);
+    store.commitQuery(advanced.query);
+
+    expect(store.state.query, 'flutter #android filter:media');
+    expect(store.state.advanced.activeFilters, [
+      AdvancedSearchFilter.allWords,
+      AdvancedSearchFilter.hashtags,
+      AdvancedSearchFilter.onlyMedia,
+    ]);
+  });
+
+  test('editing a structured query clears stale filter metadata', () {
+    final store = SearchViewStore();
+    addTearDown(store.destroy);
+    store.applyAdvanced(
+      const AdvancedSearchState(allWords: 'flutter', onlyMedia: true),
+    );
+
+    store.invalidateAdvancedForDraft('flutter android');
+    store.commitQuery('flutter android');
+
+    expect(store.state.query, 'flutter android');
+    expect(store.state.advanced.activeFilters, isEmpty);
+  });
+
+  test('one advanced filter can be removed without clearing the others', () {
+    final store = SearchViewStore();
+    addTearDown(store.destroy);
+    store.applyAdvanced(
+      const AdvancedSearchState(
+        allWords: 'flutter',
+        hashtags: 'android',
+        onlyMedia: true,
+      ),
+    );
+
+    final advanced = store.clearFilter(AdvancedSearchFilter.hashtags);
+
+    expect(advanced.query, 'flutter filter:media');
+    expect(store.state.query, advanced.query);
+    expect(store.state.advanced.activeFilters, [
+      AdvancedSearchFilter.allWords,
+      AdvancedSearchFilter.onlyMedia,
+    ]);
   });
 }

@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Els desats es queden en aquest dispositiu. No s'envia res enlloc.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Ves a dalt",
+  "@scroll_to_top": {},
   "search": "Cerca",
   "@search": {},
   "search_in_plugin": "Cerca a {name}",

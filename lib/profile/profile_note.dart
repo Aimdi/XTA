@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/errors.dart';
 
 typedef ProfileNoteLoader = Future<ProfileNote?> Function(String userId);
@@ -42,6 +44,44 @@ Future<void> saveProfileNote(String userId, String note) async {
   );
 }
 
+@immutable
+class ProfileNoteState {
+  final String note;
+  final bool loading;
+
+  const ProfileNoteState({this.note = '', this.loading = true});
+}
+
+class ProfileNoteStore extends Store<ProfileNoteState> {
+  final String userId;
+  final ProfileNoteLoader loader;
+  bool _active = true;
+
+  ProfileNoteStore({required this.userId, required this.loader})
+    : super(const ProfileNoteState());
+
+  Future<void> load() async {
+    try {
+      final note = await loader(userId);
+      if (_active) {
+        update(ProfileNoteState(note: note?.note ?? '', loading: false));
+      }
+    } catch (_) {
+      if (_active) update(const ProfileNoteState(loading: false));
+    }
+  }
+
+  void setNote(String value) {
+    update(ProfileNoteState(note: value, loading: false));
+  }
+
+  @override
+  Future<void> destroy() {
+    _active = false;
+    return super.destroy();
+  }
+}
+
 /// Compact private-note row on a profile — local only, never synced.
 ///
 /// The old inline TextField lived in the collapsing [SliverAppBar] without
@@ -65,8 +105,7 @@ class ProfileNoteCard extends StatefulWidget {
 }
 
 class _ProfileNoteCardState extends State<ProfileNoteCard> {
-  String _note = '';
-  bool _loading = true;
+  late ProfileNoteStore _store;
 
   ProfileNoteLoader get _loader => widget.loader ?? loadProfileNote;
   ProfileNoteSaver get _saver => widget.saver ?? saveProfileNote;
@@ -74,41 +113,32 @@ class _ProfileNoteCardState extends State<ProfileNoteCard> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _createStore();
   }
 
   @override
   void didUpdateWidget(covariant ProfileNoteCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.userId != widget.userId) {
-      _load();
+      _store.destroy();
+      _createStore();
     }
   }
 
-  Future<void> _load() async {
-    if (mounted && !_loading) {
-      setState(() => _loading = true);
-    }
-    try {
-      final note = await _loader(widget.userId);
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _note = note?.note ?? '';
-        _loading = false;
-      });
-    } catch (_) {
-      if (mounted) {
-        setState(() => _loading = false);
-      }
-    }
+  void _createStore() {
+    _store = ProfileNoteStore(userId: widget.userId, loader: _loader);
+    _store.load();
+  }
+
+  @override
+  void dispose() {
+    _store.destroy();
+    super.dispose();
   }
 
   Future<void> _openEditor() async {
-    if (_loading) {
-      return;
-    }
+    final state = _store.state;
+    if (state.loading) return;
     final saved = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -116,62 +146,85 @@ class _ProfileNoteCardState extends State<ProfileNoteCard> {
       showDragHandle: true,
       builder: (sheetContext) => ProfileNoteEditorSheet(
         userId: widget.userId,
-        initial: _note,
+        initial: state.note,
         saver: _saver,
       ),
     );
-    if (!mounted || saved == null) {
-      return;
-    }
-    setState(() => _note = saved);
+    if (!mounted || saved == null) return;
+    _store.setNote(saved);
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    final theme = Theme.of(context);
-    final empty = _note.isEmpty;
-    final label = empty ? l10n.profile_note_title : _note;
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 4, bottom: 8),
-      child: Material(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(
-          alpha: 0.45,
-        ),
-        borderRadius: BorderRadius.circular(10),
-        child: InkWell(
-          key: const Key('profile_note_chip'),
-          onTap: _loading ? null : _openEditor,
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.sticky_note_2_outlined,
-                  size: 16,
-                  color: theme.colorScheme.onSurfaceVariant,
+    return ScopedBuilder<ProfileNoteStore, ProfileNoteState>(
+      store: _store,
+      onState: (context, state) {
+        final empty = state.note.isEmpty;
+        final label = empty ? L10n.of(context).profile_note_title : state.note;
+        return Padding(
+          padding: const EdgeInsets.only(top: kTweetSpace1),
+          child: Material(
+            color: Color.alphaBlend(
+              tweetSecondaryColor(context).withValues(alpha: 0.06),
+              tweetSurfaceColor(context),
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+              side: BorderSide(
+                color: tweetDividerColor(context),
+                width: kTweetDividerThickness,
+              ),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              key: const Key('profile_note_chip'),
+              onTap: state.loading ? null : _openEditor,
+              borderRadius: BorderRadius.circular(8),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minHeight: kTweetTouchTarget,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: empty
-                          ? theme.colorScheme.onSurfaceVariant
-                          : theme.colorScheme.onSurface,
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: kTweetSpace3,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.sticky_note_2_outlined,
+                        size: 18,
+                        color: tweetSecondaryColor(context),
+                      ),
+                      const SizedBox(width: kTweetSpace2),
+                      Expanded(
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: empty
+                              ? tweetMetadataStyle(context)
+                              : tweetBodyStyle(context).copyWith(fontSize: 13),
+                        ),
+                      ),
+                      if (state.loading)
+                        const SizedBox.square(
+                          dimension: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      else
+                        Icon(
+                          Icons.edit_outlined,
+                          size: 18,
+                          color: tweetSecondaryColor(context),
+                        ),
+                    ],
                   ),
                 ),
-                Icon(Icons.edit_outlined, size: 14, color: theme.hintColor),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -196,25 +249,25 @@ class ProfileNoteEditorSheet extends StatefulWidget {
 
 class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
   late final TextEditingController _controller;
-  bool _saving = false;
+  late final _ProfileNoteSavingStore _savingStore;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initial);
+    _savingStore = _ProfileNoteSavingStore();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _savingStore.destroy();
     super.dispose();
   }
 
   Future<void> _save() async {
-    if (_saving) {
-      return;
-    }
-    setState(() => _saving = true);
+    if (_savingStore.state) return;
+    _savingStore.setSaving(true);
     final trimmed = _controller.text.trim();
     try {
       await widget.saver(widget.userId, trimmed);
@@ -225,7 +278,7 @@ class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
       if (!mounted) {
         return;
       }
-      setState(() => _saving = false);
+      _savingStore.setSaving(false);
       showSnackBar(
         context,
         icon: '❌',
@@ -240,10 +293,11 @@ class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: MediaQuery.viewInsetsOf(context).bottom + 16,
+      padding: EdgeInsetsDirectional.fromSTEB(
+        kTweetHorizontalPadding,
+        0,
+        kTweetHorizontalPadding,
+        MediaQuery.viewInsetsOf(context).bottom + kTweetSpace4,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -251,14 +305,14 @@ class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(l10n.profile_note_title, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 4),
+            const SizedBox(height: kTweetSpace1),
             Text(
               l10n.profile_note_hint,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.hintColor,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: kTweetSpace3),
             TextField(
               key: const Key('profile_note_field'),
               controller: _controller,
@@ -274,20 +328,23 @@ class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.icon(
-                key: const Key('profile_note_save'),
-                onPressed: _saving ? null : _save,
-                icon: _saving
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.save_outlined, size: 18),
-                label: Text(l10n.profile_note_save),
+            const SizedBox(height: kTweetSpace3),
+            ScopedBuilder<_ProfileNoteSavingStore, bool>(
+              store: _savingStore,
+              onState: (_, saving) => Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.icon(
+                  key: const Key('profile_note_save'),
+                  onPressed: saving ? null : _save,
+                  icon: saving
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.save_outlined, size: 20),
+                  label: Text(l10n.profile_note_save),
+                ),
               ),
             ),
           ],
@@ -295,4 +352,10 @@ class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
       ),
     );
   }
+}
+
+class _ProfileNoteSavingStore extends Store<bool> {
+  _ProfileNoteSavingStore() : super(false);
+
+  void setSaving(bool value) => update(value);
 }

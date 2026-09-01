@@ -8,9 +8,11 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/folder_picker.dart';
+import 'package:xta/saved/saved_chrome.dart';
 import 'package:xta/saved/saved_tab_order.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 class SavedFoldersScreen extends StatefulWidget {
   const SavedFoldersScreen({super.key});
@@ -126,30 +128,46 @@ class _SavedFoldersScreenState extends State<SavedFoldersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(L10n.of(context).manage_folders),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.create_new_folder_outlined),
-            tooltip: L10n.of(context).create_new_folder,
-            onPressed: () => showCreateFolderDialog(context, _folderModel),
-          ),
-        ],
-      ),
-      body: ScopedBuilder<SavedTweetFolderModel, List<SavedTweetFolder>>(
-        store: _folderModel,
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
-        onState: (context, folders) {
-          var tokens = orderedSavedTabs(folders, PrefService.of(context, listen: false).get(optionSavedTabOrder));
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(L10n.of(context).manage_folders),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.create_new_folder_outlined),
+              tooltip: L10n.of(context).create_new_folder,
+              onPressed: () => showCreateFolderDialog(context, _folderModel),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          top: false,
+          child: ScopedBuilder<
+            SavedTweetFolderModel,
+            List<SavedTweetFolder>
+          >(
+            store: _folderModel,
+            onLoading: (_) => const SavedFolderListSkeleton(),
+            onState: (context, folders) {
+              final tokens = orderedSavedTabs(
+                folders,
+                PrefService.of(
+                  context,
+                  listen: false,
+                ).get(optionSavedTabOrder),
+              );
 
-          return ReorderableListView.builder(
-            buildDefaultDragHandles: false,
-            itemCount: tokens.length,
-            onReorderItem: (oldIndex, newIndex) => _onReorder(tokens, oldIndex, newIndex),
-            itemBuilder: (context, index) => _tabRow(tokens[index], folders, index),
-          );
-        },
+              return ReorderableListView.builder(
+                buildDefaultDragHandles: false,
+                itemCount: tokens.length,
+                onReorderItem: (oldIndex, newIndex) =>
+                    _onReorder(tokens, oldIndex, newIndex),
+                itemBuilder: (context, index) =>
+                    _tabRow(tokens[index], folders, index),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

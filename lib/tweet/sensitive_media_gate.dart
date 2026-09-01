@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 /// Initial hide-sensitive flag: respect global hide unless "always show" won.
 bool initialHideSensitive(BasePrefService prefs) {
@@ -46,10 +48,21 @@ class SensitiveMediaGate extends StatelessWidget {
 
     return Consumer<TweetContextState>(
       builder: (context, model, _) {
-        if (!model.hideSensitive) {
-          return content;
-        }
-        return _gate(context, PrefService.of(context), model: model);
+        return XtaAnimatedSwitcher(
+          child: model.hideSensitive
+              ? KeyedSubtree(
+                  key: const ValueKey('sensitive-gate'),
+                  child: _gate(
+                    context,
+                    PrefService.of(context),
+                    model: model,
+                  ),
+                )
+              : KeyedSubtree(
+                  key: const ValueKey('sensitive-content'),
+                  child: content,
+                ),
+        );
       },
     );
   }
@@ -62,32 +75,49 @@ class SensitiveMediaGate extends StatelessWidget {
     final l10n = L10n.of(context);
     final state = model ?? context.read<TweetContextState>();
     final body = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: const EdgeInsets.all(kTweetSpace4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Icon(
+            Icons.visibility_off_outlined,
+            size: 24,
+            color: tweetSecondaryColor(context),
+          ),
+          const SizedBox(height: kTweetSpace2),
           Text(
             l10n.possibly_sensitive,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18),
+            style: tweetLabelStyle(context),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: kTweetSpace1),
           Text(
             errorMessage ?? l10n.possibly_sensitive_tweet,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).hintColor),
+            style: tweetMetadataStyle(context),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: kTweetSpace3),
           Wrap(
             alignment: WrapAlignment.center,
-            spacing: 12,
-            runSpacing: 8,
+            spacing: kTweetSpace2,
+            runSpacing: kTweetSpace2,
             children: [
-              ElevatedButton(
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: tweetAccentColor(context),
+                  foregroundColor: tweetOnAccentColor(context),
+                  minimumSize: const Size(0, kTweetTouchTarget),
+                  elevation: 0,
+                  shape: const StadiumBorder(),
+                ),
                 onPressed: () => state.setHideSensitive(false),
                 child: Text(l10n.sensitive_media_show),
               ),
               TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: tweetReadableAccentColor(context),
+                  minimumSize: const Size(0, kTweetTouchTarget),
+                ),
                 onPressed: () => state.alwaysShowSensitive(prefs),
                 child: Text(l10n.sensitive_media_always_show),
               ),
@@ -100,6 +130,6 @@ class SensitiveMediaGate extends StatelessWidget {
     if (!wrapInCard) {
       return Center(child: body);
     }
-    return Card(child: Center(child: body));
+    return TweetEmbedSurface(child: Center(child: body));
   }
 }

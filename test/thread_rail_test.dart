@@ -98,5 +98,44 @@ void main() {
       expect(reply.dx, root.dx, reason: 'direct replies must not leave a blank strip on the left');
       expect(nested.dx, root.dx + kThreadLevelWidth);
     });
+
+    testWidgets('nested replies indent from the reading edge in RTL', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Directionality(
+              textDirection: TextDirection.rtl,
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ThreadIndent(
+                    depth: 0,
+                    child: SizedBox(
+                      key: Key('rtl-root'),
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                  ThreadIndent(
+                    depth: 2,
+                    child: SizedBox(
+                      key: Key('rtl-nested'),
+                      width: 20,
+                      height: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final root = tester.getTopRight(find.byKey(const Key('rtl-root')));
+      final nested = tester.getTopRight(find.byKey(const Key('rtl-nested')));
+      expect(nested.dx, root.dx - kThreadLevelWidth);
+    });
   });
 }

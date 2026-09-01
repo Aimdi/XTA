@@ -1215,6 +1215,12 @@ class _FritterAppState extends State<FritterApp> {
       });
     });
 
+    prefService.addKeyListener(optionDisableAnimations, () {
+      setState(() {
+        _disableAnimations = prefService.get(optionDisableAnimations);
+      });
+    });
+
     prefService.addKeyListener(optionDisableScreenshots, () {
       setState(() {
         _isSecure = prefService.get(optionDisableScreenshots);
@@ -1249,6 +1255,8 @@ class _FritterAppState extends State<FritterApp> {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(
         textScaler: TextScaler.linear(_textScaleFactor * systemScaleFactor),
+        disableAnimations:
+            _disableAnimations || MediaQuery.disableAnimationsOf(context),
       ),
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {

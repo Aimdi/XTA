@@ -13,6 +13,7 @@ import 'package:xta/subscriptions/_group_list_item.dart';
 import 'package:xta/subscriptions/_groups_edit.dart';
 import 'package:xta/subscriptions/widgets/group_tile.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:provider/provider.dart';
 
@@ -300,7 +301,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
           ).map((id) => byId[id]!).toList(growable: false);
         }
         final prefs = PrefService.of(context);
-        final animate = prefs.get<bool>(optionDisableAnimations) != true;
+        final animate = !xtaReduceMotion(context);
         final asList =
             prefs.get<String>(optionSubscriptionGroupsLayout) ==
             subscriptionGroupsLayoutList;

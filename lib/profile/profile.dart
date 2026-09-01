@@ -1,34 +1,39 @@
+import 'dart:ui' as ui;
+
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:xta/constants.dart';
-import 'package:xta/database/entities.dart';
-import 'package:xta/generated/l10n.dart';
-import 'package:xta/profile/_follows.dart';
-import 'package:xta/profile/_media_grid.dart';
-import 'package:xta/profile/archive_filter.dart';
-import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
-import 'package:xta/profile/_saved.dart';
-import 'package:xta/profile/_tweets.dart';
-import 'package:xta/profile/profile_feed_settings.dart';
-import 'package:xta/profile/profile_chrome.dart';
-import 'package:xta/profile/profile_model.dart';
-import 'package:xta/profile/profile_note.dart';
-import 'package:xta/profile/posts_filter.dart';
-import 'package:xta/search/search.dart';
-import 'package:xta/tweet/_media.dart';
-import 'package:xta/tweet/sensitive_media_gate.dart';
-import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/reader_chrome.dart';
-import 'package:xta/user.dart';
-import 'package:xta/plugins/plugin_links.dart';
-import 'package:xta/utils/rich_text.dart';
-import 'package:xta/utils/urls.dart';
 import 'package:intl/intl.dart';
-import 'package:measure_size/measure_size.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/profile/_follows.dart';
+import 'package:xta/profile/_media_grid.dart';
+import 'package:xta/profile/_saved.dart';
+import 'package:xta/profile/_tweets.dart';
+import 'package:xta/profile/archive_filter.dart';
+import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
+import 'package:xta/profile/posts_filter.dart';
+import 'package:xta/profile/profile_chrome.dart';
+import 'package:xta/profile/profile_feed_settings.dart';
+import 'package:xta/profile/profile_model.dart';
+import 'package:xta/profile/profile_note.dart';
+import 'package:xta/profile/profile_view_store.dart';
+import 'package:xta/search/search.dart';
+import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/sensitive_media_gate.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_context_scope.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/motion.dart';
+import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/user.dart';
+import 'package:xta/utils/rich_text.dart';
+import 'package:xta/utils/urls.dart';
 
 typedef TabTitleBuilder = String Function(BuildContext context);
 
@@ -37,28 +42,28 @@ class NavigationTab {
   final TabTitleBuilder titleBuilder;
   final IconData icon;
 
-  NavigationTab(this.id, this.titleBuilder, this.icon);
+  const NavigationTab(this.id, this.titleBuilder, this.icon);
 }
 
 final List<NavigationTab> profileTabs = [
   NavigationTab(
     ProfileTabs.posts,
-    (c) => L10n.of(c).tweets,
-    Icons.wysiwyg_outlined,
+    (context) => L10n.of(context).tweets,
+    Icons.article_outlined,
   ),
   NavigationTab(
     ProfileTabs.postsAndReplies,
-    (c) => L10n.of(c).tweets_and_replies,
+    (context) => L10n.of(context).tweets_and_replies,
     Icons.mode_comment_outlined,
   ),
   NavigationTab(
     ProfileTabs.media,
-    (c) => L10n.of(c).media,
-    Icons.smart_display_outlined,
+    (context) => L10n.of(context).media,
+    Icons.perm_media_outlined,
   ),
   NavigationTab(
     ProfileTabs.saved,
-    (c) => L10n.of(c).saved,
+    (context) => L10n.of(context).saved,
     Icons.bookmark_border,
   ),
 ];
@@ -124,25 +129,32 @@ class _ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return XtaSystemBars(
       child: Scaffold(
-        body: ScopedBuilder<ProfileModel, Profile>.transition(
+        body: ScopedBuilder<ProfileModel, Profile>(
           store: context.read<ProfileModel>(),
-          onError: (_, error) => FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: L10n.of(context).unable_to_load_the_profile,
-            onRetry: () {
-              if (id != null) {
-                return context.read<ProfileModel>().loadProfileById(id!);
-              } else {
+          onError: (_, error) => XtaFadeIn(
+            key: const ValueKey('profile-error'),
+            child: FullPageErrorWidget(
+              error: error,
+              stackTrace: null,
+              prefix: L10n.of(context).unable_to_load_the_profile,
+              onRetry: () {
+                if (id != null) {
+                  return context.read<ProfileModel>().loadProfileById(id!);
+                }
                 return context.read<ProfileModel>().loadProfileByScreenName(
                   screenName!,
                 );
-              }
-            },
+              },
+            ),
           ),
           onLoading: (_) => const ProfileLoadingSkeleton(),
-          onState: (_, state) =>
-              ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
+          onState: (_, state) => XtaFadeIn(
+            key: const ValueKey('profile-content'),
+            child: ProfileScreenBody(
+              profile: state,
+              defaultTabIndex: tabIndex,
+            ),
+          ),
         ),
       ),
     );
@@ -160,1101 +172,539 @@ class ProfileScreenBody extends StatefulWidget {
   });
 
   @override
-  State<StatefulWidget> createState() => _ProfileScreenBodyState();
+  State<ProfileScreenBody> createState() => _ProfileScreenBodyState();
 }
 
 class _ProfileScreenBodyState extends State<ProfileScreenBody>
     with TickerProviderStateMixin {
-  static const defaultHeight = 256.12345;
-
-  final GlobalKey<NestedScrollViewState> nestedScrollViewKey = GlobalKey();
+  final GlobalKey<NestedScrollViewState> _nestedScrollViewKey = GlobalKey();
+  final ProfileViewStore _viewStore = ProfileViewStore();
+  final ProfileScrollStore _scrollStore = ProfileScrollStore();
+  final NumberFormat _numberFormat = NumberFormat.compact();
 
   late TabController _tabController;
   bool _tabControllerInitialized = false;
-
-  MediaFilter _mediaFilter = MediaFilter.all;
-  PostsFilter _postsFilter = PostsFilter.all;
-  ArchiveFilter _archiveFilter = ArchiveFilter.all;
-
-  bool _showBackToTopButton = false;
-
-  double descriptionHeight = defaultHeight;
-  double metadataHeight = defaultHeight;
-  double noteHeight = 40;
-
-  bool descriptionResized = false;
-  bool metadataResized = false;
-
-  NumberFormat numberFormat = NumberFormat.compact();
+  List<RichTextPart> _descriptionParts = const [];
+  String? _descriptionSource;
+  Object? _descriptionEntitiesSource;
+  Color? _descriptionLinkColor;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var nestedScrollViewState = nestedScrollViewKey.currentState;
-      if (nestedScrollViewState == null) {
-        return;
-      }
-
-      nestedScrollViewState.innerController.addListener(_listen);
-    });
-
-    var description = widget.profile.user.description;
-    if (description == null || description.isEmpty) {
-      descriptionHeight = 0;
-      descriptionResized = true;
-    }
-
-    // MeasureSize sometimes never fires (header not laid out yet). The overlay
-    // used to cover the profile forever. Drop it after one frame-plus so the
-    // posts tab can paint even if the header is still measuring.
-    Future<void>.delayed(const Duration(milliseconds: 350), () {
-      if (!mounted) return;
-      if (descriptionResized && metadataResized) return;
-      setState(() {
-        descriptionResized = true;
-        metadataResized = true;
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nestedScrollViewKey.currentState?.innerController.addListener(
+        _listenToScroll,
+      );
     });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _initializeTabController();
+    _syncDescriptionParts();
+  }
+
+  @override
+  void didUpdateWidget(covariant ProfileScreenBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncDescriptionParts();
+  }
+
+  void _initializeTabController() {
     if (_tabControllerInitialized) return;
 
-    ProfileTabs defaultProfileTab = ProfileTabs.values.byName(
-      PrefService.of(context).get(optionDefaultProfileTab),
-    );
-    final int initialTabIdx =
-        widget.defaultTabIndex ??
-        profileTabs.indexWhere((e) => e.id == defaultProfileTab);
+    final storedName = PrefService.of(
+      context,
+    ).get<String>(optionDefaultProfileTab);
+    final storedTab = ProfileTabs.values
+        .where((tab) => tab.name == storedName)
+        .firstOrNull;
+    final storedIndex = profileTabs.indexWhere((tab) => tab.id == storedTab);
+    final requested = widget.defaultTabIndex ?? storedIndex;
+    final initialIndex = requested.clamp(0, profileTabs.length - 1).toInt();
 
     _tabController = TabController(
-      length: 4,
+      length: profileTabs.length,
       vsync: this,
-      initialIndex: initialTabIdx,
+      initialIndex: initialIndex,
     );
     _tabControllerInitialized = true;
   }
 
+  void _syncDescriptionParts() {
+    final description = widget.profile.user.description;
+    final entities = widget.profile.user.entities?.description;
+    final linkColor = Theme.of(context).colorScheme.secondary;
+    if (description == _descriptionSource &&
+        identical(entities, _descriptionEntitiesSource) &&
+        linkColor == _descriptionLinkColor) {
+      return;
+    }
+
+    disposeRichTextParts(_descriptionParts);
+    _descriptionSource = description;
+    _descriptionEntitiesSource = entities;
+    _descriptionLinkColor = linkColor;
+    _descriptionParts = description == null || description.isEmpty
+        ? const []
+        : buildRichText(context, description, entities);
+  }
+
   @override
   void dispose() {
-    nestedScrollViewKey.currentState?.innerController.removeListener(_listen);
-    _tabController.dispose();
+    _nestedScrollViewKey.currentState?.innerController.removeListener(
+      _listenToScroll,
+    );
+    disposeRichTextParts(_descriptionParts);
+    if (_tabControllerInitialized) _tabController.dispose();
+    _viewStore.destroy();
+    _scrollStore.destroy();
     super.dispose();
   }
 
-  void _listen() {
-    var nestedScrollViewState = nestedScrollViewKey.currentState;
-    if (nestedScrollViewState == null) {
-      return;
-    }
-
-    if (!nestedScrollViewState.innerController.hasClients) {
-      return;
-    }
-
-    // Show the "scroll to top" button if we scroll down a bit, and hide it if we go back above
-    if (nestedScrollViewState.innerController.positions.any(
-      (element) => element.pixels >= 400,
-    )) {
-      if (!_showBackToTopButton) {
-        setState(() {
-          _showBackToTopButton = true;
-        });
-      }
-    } else {
-      if (_showBackToTopButton) {
-        setState(() {
-          _showBackToTopButton = false;
-        });
-      }
-    }
+  void _listenToScroll() {
+    final inner = _nestedScrollViewKey.currentState?.innerController;
+    if (inner == null || !inner.hasClients) return;
+    _scrollStore.showBackToTop(
+      inner.positions.any((position) => position.pixels >= 400),
+    );
   }
 
   void _scrollToTop() {
-    // We scroll the outer controller (the whole nested scroll view and children) to the top
-    // TODO: No animation due to Flutter crashing on huge lists (https://github.com/flutter/flutter/issues/52207) (#607)
-    nestedScrollViewKey.currentState?.outerController.jumpTo(0);
+    _nestedScrollViewKey.currentState?.outerController.jumpTo(0);
+  }
+
+  void _openProfileMedia(String? url, String username) {
+    if (url == null || url.isEmpty) return;
+    pushTweetMediaViewer<void>(
+      context,
+      TweetMediaView(
+        initialIndex: 0,
+        media: [createMediaFromUrl(url, null)],
+        username: username,
+        tweetMedia: false,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: This shouldn't happen before the profile is loaded
-    var user = widget.profile.user;
-    if (user.idStr == null) {
-      return Container();
-    }
+    final user = widget.profile.user;
+    if (user.idStr == null) return const SizedBox.shrink();
 
-    // Make the app bar height the correct aspect ratio based on the header image size (1500x500)
-    var mediaQuery = MediaQuery.of(context);
-    var deviceSize = mediaQuery.size;
-    var bannerHeight = deviceSize.width * (500 / 1500);
-    var avatarHeight = 80;
-
-    var profileImageTop = bannerHeight + 16 - 36 - mediaQuery.padding.top;
-    var profileStuffTop = bannerHeight + 36;
-
-    var theme = Theme.of(context);
-
-    var banner = user.profileBannerUrl;
-    var bannerImage = ProfileBanner(
-      uri: banner,
-      height: bannerHeight,
-      onTap: banner == null
-          ? null
-          : () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TweetMediaView(
-                    initialIndex: 0,
-                    media: [
-                      createMediaFromUrl(user.profileBannerUrl, bannerHeight),
-                    ],
-                    username: user.screenName ?? L10n.of(context).unknown,
-                    tweetMedia: false,
-                  ),
-                ),
-              );
-            },
+    return ScopedBuilder<ProfileViewStore, ProfileViewState>(
+      store: _viewStore,
+      onState: (context, view) => _buildProfile(context, user, view),
     );
+  }
 
-    // Include the private-note chip. Leaving it out let the tab bar cover the
-    // field, clip "Private note", and hide Save.
-    var appBarHeight =
-        profileStuffTop +
-        avatarHeight +
-        metadataHeight +
-        8 +
-        descriptionHeight +
-        noteHeight;
-
-    var metadataTextStyle = const TextStyle(fontSize: 12.5);
-    var prefs = PrefService.of(context, listen: false);
-
-    var shareBaseUrlOption = prefs.get(optionShareBaseUrl);
-    var shareBaseUrl =
-        shareBaseUrlOption != null && shareBaseUrlOption.isNotEmpty
-        ? shareBaseUrlOption
-        : 'https://x.com';
-
-    List<RichTextPart> descParts = [];
-    if (user.description != null && user.description!.isNotEmpty) {
-      descParts = buildRichText(
-        context,
-        user.description!,
-        user.entities!.description!,
-      );
-    }
+  Widget _buildProfile(
+    BuildContext context,
+    UserWithExtra user,
+    ProfileViewState view,
+  ) {
+    final prefs = PrefService.of(context, listen: false);
+    final width = MediaQuery.sizeOf(context).width;
+    final bannerHeight = (width / 3)
+        .clamp(120.0, kProfileBannerHeight)
+        .toDouble();
+    final username = user.screenName ?? L10n.of(context).unknown;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          ExtendedNestedScrollView(
-            key: nestedScrollViewKey,
-            onlyOneScrollInBody: true,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  expandedHeight: appBarHeight,
-                  floating: true,
-                  pinned: true,
-                  snap: false,
-                  forceElevated: false,
-                  elevation: 0,
-                  surfaceTintColor: Colors.transparent,
-                  automaticallyImplyLeading: false,
-                  bottom: ProfileTabsBar(
-                    controller: _tabController,
-                    tabs: [
-                      for (final t in profileTabs)
-                        Tab(
-                          child: _ProfileTabLabel(
-                            tab: t,
-                            trailing: t.id == ProfileTabs.media
-                                ? _MediaFilterButton(
-                                    value: _mediaFilter,
-                                    onChanged: (filter) =>
-                                        setState(() => _mediaFilter = filter),
-                                  )
-                                : t.id == ProfileTabs.posts
-                                ? _PostsFilterButton(
-                                    value: _postsFilter,
-                                    onChanged: (filter) =>
-                                        setState(() => _postsFilter = filter),
-                                  )
-                                : t.id == ProfileTabs.saved
-                                ? _ArchiveFilterButton(
-                                    value: _archiveFilter,
-                                    onChanged: (filter) =>
-                                        setState(() => _archiveFilter = filter),
-                                  )
-                                : null,
-                          ),
-                        ),
-                    ],
-                  ),
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    background: SafeArea(
-                      top: false,
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                            alignment: Alignment.topCenter,
-                            child: bannerImage,
-                          ),
-                          DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: <Color>[
-                                  theme.colorScheme.surface,
-                                  Color.fromARGB(
-                                    100,
-                                    (theme.colorScheme.surface.r * 255.0)
-                                        .round(),
-                                    (theme.colorScheme.surface.g * 255.0)
-                                        .round(),
-                                    (theme.colorScheme.surface.b * 255.0)
-                                        .round(),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 0,
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Flexible(
-                                  child: Container(
-                                    margin: EdgeInsets.fromLTRB(
-                                      16,
-                                      profileStuffTop,
-                                      16,
-                                      0,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                user.name!,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                            if (user.verified ?? false)
-                                              const SizedBox(width: 6),
-                                            if (user.verified ?? false)
-                                              Icon(
-                                                Icons.verified,
-                                                size: 24,
-                                                color:
-                                                    theme.colorScheme.primary,
-                                              ),
-                                            if (user.protected ?? false)
-                                              const SizedBox(width: 6),
-                                            if (user.protected ?? false)
-                                              Icon(
-                                                Icons.lock,
-                                                size: 24,
-                                                color:
-                                                    theme.colorScheme.primary,
-                                              ),
-                                          ],
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.only(
-                                            bottom: 8,
-                                          ),
-                                          child: Text(
-                                            '@${(user.screenName!)}',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color:
-                                                  theme.brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white70
-                                                  : Colors.black54,
-                                            ),
-                                          ),
-                                        ),
-                                        if (user.description != null &&
-                                            user.description!.isNotEmpty)
-                                          MeasureSize(
-                                            onChange: (size) {
-                                              setState(() {
-                                                descriptionHeight = size.height;
-                                                descriptionResized = true;
-                                              });
-                                            },
-                                            child: Container(
-                                              margin: const EdgeInsets.only(
-                                                bottom: 8,
-                                              ),
-                                              child: SelectableText.rich(
-                                                minLines: 1,
-                                                maxLines: 5,
-                                                TextSpan(
-                                                  style: TextStyle(
-                                                    height: 1.4,
-                                                    color:
-                                                        theme.brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                  ),
-                                                  children: displayRichText(
-                                                    descParts,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        MeasureSize(
-                                          onChange: (size) {
-                                            setState(() {
-                                              metadataHeight = size.height;
-                                              metadataResized = true;
-                                            });
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                              bottom: 8.0,
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Scrollbar(
-                                                  child: SingleChildScrollView(
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    child: Row(
-                                                      children: [
-                                                        if (user.location !=
-                                                                null &&
-                                                            user
-                                                                .location!
-                                                                .isNotEmpty)
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  vertical: 2,
-                                                                  horizontal: 0,
-                                                                ),
-                                                            child: Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons
-                                                                      .location_on_outlined,
-                                                                  size: 14,
-                                                                  color: theme
-                                                                      .hintColor,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 4,
-                                                                ),
-                                                                Text(
-                                                                  user.location!,
-                                                                  style:
-                                                                      metadataTextStyle,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        if (user.url != null &&
-                                                            user
-                                                                .url!
-                                                                .isNotEmpty)
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  vertical: 2,
-                                                                  horizontal: 0,
-                                                                ),
-                                                            child: Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons.link,
-                                                                  size: 14,
-                                                                  color: theme
-                                                                      .hintColor,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 4,
-                                                                ),
-                                                                Builder(
-                                                                  builder: (context) {
-                                                                    var url = user
-                                                                        .entities
-                                                                        ?.url
-                                                                        ?.urls
-                                                                        ?.firstWhere(
-                                                                          (
-                                                                            element,
-                                                                          ) =>
-                                                                              element.url ==
-                                                                              user.url,
-                                                                        );
-
-                                                                    if (url ==
-                                                                        null) {
-                                                                      return Container();
-                                                                    }
-
-                                                                    var displayUrl =
-                                                                        url.displayUrl ??
-                                                                        url.url;
-                                                                    var expandedUrl =
-                                                                        url.expandedUrl ??
-                                                                        url.url;
-
-                                                                    var textStyle =
-                                                                        metadataTextStyle;
-                                                                    if (displayUrl ==
-                                                                            null ||
-                                                                        expandedUrl ==
-                                                                            null) {
-                                                                      return Text(
-                                                                        L10n
-                                                                            .current
-                                                                            .unsupported_url,
-                                                                        style: textStyle.copyWith(
-                                                                          color:
-                                                                              theme.hintColor,
-                                                                        ),
-                                                                      );
-                                                                    }
-
-                                                                    return InkWell(
-                                                                      child: Text(
-                                                                        displayUrl,
-                                                                        style: textStyle.copyWith(
-                                                                          color: Theme.of(
-                                                                            context,
-                                                                          ).colorScheme.primary,
-                                                                        ),
-                                                                      ),
-                                                                      onTap: () => openLink(
-                                                                        context,
-                                                                        expandedUrl,
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 8,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        if (user.createdAt !=
-                                                            null)
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets.symmetric(
-                                                                  vertical: 2,
-                                                                  horizontal: 0,
-                                                                ),
-                                                            child: Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              children: [
-                                                                Icon(
-                                                                  Icons
-                                                                      .calendar_today_outlined,
-                                                                  size: 14,
-                                                                  color: theme
-                                                                      .hintColor,
-                                                                ),
-                                                                const SizedBox(
-                                                                  width: 4,
-                                                                ),
-                                                                Text(
-                                                                  L10n.of(
-                                                                    context,
-                                                                  ).joined(
-                                                                    DateFormat(
-                                                                      'MMMM yyyy',
-                                                                    ).format(
-                                                                      user.createdAt!,
-                                                                    ),
-                                                                  ),
-                                                                  style:
-                                                                      metadataTextStyle,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                                Scrollbar(
-                                                  child: SingleChildScrollView(
-                                                    scrollDirection:
-                                                        Axis.horizontal,
-                                                    child: Row(
-                                                      children: [
-                                                        if (user.friendsCount !=
-                                                            null)
-                                                          InkWell(
-                                                            onTap: () =>
-                                                                Navigator.of(
-                                                                  context,
-                                                                ).push(
-                                                                  MaterialPageRoute(
-                                                                    builder:
-                                                                        ((
-                                                                          context,
-                                                                        ) => ProfileFollows(
-                                                                          user:
-                                                                              user,
-                                                                          type:
-                                                                              'following',
-                                                                        )),
-                                                                  ),
-                                                                ),
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets.symmetric(
-                                                                    vertical: 2,
-                                                                    horizontal:
-                                                                        0,
-                                                                  ),
-                                                              child: Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Text.rich(
-                                                                    TextSpan(
-                                                                      children: [
-                                                                        TextSpan(
-                                                                          text: numberFormat.format(
-                                                                            widget.profile.user.friendsCount,
-                                                                          ),
-                                                                          style: metadataTextStyle.copyWith(
-                                                                            fontWeight:
-                                                                                FontWeight.w700,
-                                                                          ),
-                                                                        ),
-                                                                        TextSpan(
-                                                                          text:
-                                                                              ' ${L10n.current.following.toLowerCase()}',
-                                                                          style:
-                                                                              metadataTextStyle,
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                  const SizedBox(
-                                                                    width: 8,
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        if (user.followersCount !=
-                                                            null)
-                                                          InkWell(
-                                                            onTap: () =>
-                                                                Navigator.of(
-                                                                  context,
-                                                                ).push(
-                                                                  MaterialPageRoute(
-                                                                    builder:
-                                                                        ((
-                                                                          context,
-                                                                        ) => ProfileFollows(
-                                                                          user:
-                                                                              user,
-                                                                          type:
-                                                                              'followers',
-                                                                        )),
-                                                                  ),
-                                                                ),
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets.symmetric(
-                                                                    vertical: 2,
-                                                                    horizontal:
-                                                                        0,
-                                                                  ),
-                                                              child: Row(
-                                                                crossAxisAlignment:
-                                                                    CrossAxisAlignment
-                                                                        .center,
-                                                                children: [
-                                                                  Text.rich(
-                                                                    TextSpan(
-                                                                      children: [
-                                                                        TextSpan(
-                                                                          text: numberFormat.format(
-                                                                            widget.profile.user.followersCount,
-                                                                          ),
-                                                                          style: metadataTextStyle.copyWith(
-                                                                            fontWeight:
-                                                                                FontWeight.w700,
-                                                                          ),
-                                                                        ),
-                                                                        TextSpan(
-                                                                          text:
-                                                                              ' ${L10n.current.followers.toLowerCase()}',
-                                                                          style:
-                                                                              metadataTextStyle,
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        if (user.idStr != null)
-                                          MeasureSize(
-                                            onChange: (size) {
-                                              if ((size.height - noteHeight)
-                                                      .abs() <
-                                                  0.5) {
-                                                return;
-                                              }
-                                              setState(() {
-                                                noteHeight = size.height;
-                                              });
-                                            },
-                                            child: ProfileNoteCard(
-                                              userId: user.idStr!,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // The follow / feed-settings controls sit by the
-                          // avatar, where X keeps its profile actions.
-                          Container(
-                            alignment: Alignment.topRight,
-                            margin: EdgeInsets.fromLTRB(
-                              128,
-                              profileImageTop + 64,
-                              16,
-                              16,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ProfileFeedSettingsButton(
-                                  user: user,
-                                  color: theme.colorScheme.primary,
-                                ),
-                                FollowButton(
-                                  user: UserSubscription.fromUser(user),
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Circular translucent buttons floating over the banner,
-                          // as on X: a back affordance a pushed profile otherwise
-                          // lacked on screen, then search and share.
-                          Positioned(
-                            top: 0,
-                            left: 4,
-                            right: 4,
-                            child: SafeArea(
-                              bottom: false,
-                              child: Row(
-                                children: [
-                                  _BannerButton(
-                                    icon: Icons.arrow_back,
-                                    tooltip: MaterialLocalizations.of(
-                                      context,
-                                    ).backButtonTooltip,
-                                    onPressed: () =>
-                                        Navigator.maybePop(context),
-                                  ),
-                                  const Spacer(),
-                                  _BannerButton(
-                                    icon: Icons.search,
-                                    tooltip: L10n.of(context).search,
-                                    onPressed: () => Navigator.pushNamed(
-                                      context,
-                                      routeSearch,
-                                      arguments: SearchArguments(
-                                        1,
-                                        focusInputOnOpen: true,
-                                        query: 'from:@${(user.screenName!)} ',
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  _BannerButton(
-                                    icon: Icons.share,
-                                    tooltip: L10n.of(context).share_link,
-                                    onPressed: () => Share.share(
-                                      "$shareBaseUrl/${user.screenName}",
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            alignment: Alignment.topLeft,
-                            margin: EdgeInsets.fromLTRB(
-                              16,
-                              profileImageTop,
-                              16,
-                              16,
-                            ),
-                            child: ProfileAvatar(
-                              uri: user.profileImageUrlHttps,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TweetMediaView(
-                                      initialIndex: 0,
-                                      media: [
-                                        createMediaFromUrl(
-                                          user.profileImageUrlHttps?.replaceAll(
-                                            "_normal",
-                                            "_400x400",
-                                          ),
-                                          null,
-                                        ),
-                                      ],
-                                      username:
-                                          user.screenName ??
-                                          L10n.of(context).unknown,
-                                      tweetMedia: false,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
+      body: ExtendedNestedScrollView(
+        key: _nestedScrollViewKey,
+        onlyOneScrollInBody: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          _buildAppBar(context, user, view, innerBoxIsScrolled),
+          SliverToBoxAdapter(
+            child: _buildIdentityHeader(
+              context,
+              user,
+              username,
+              bannerHeight,
+            ),
+          ),
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: ProfileTabsDelegate(
+              ProfileTabsBar(
+                controller: _tabController,
+                tabs: [
+                  for (final tab in profileTabs)
+                    Tab(
+                      child: _ProfileTabLabel(
+                        icon: tab.icon,
+                        label: tab.titleBuilder(context),
                       ),
                     ),
-                  ),
-                ),
-              ];
-            },
-            body: MultiProvider(
-              providers: [
-                ChangeNotifierProvider<TweetContextState>(
-                  create: (_) => TweetContextState.fromPrefs(prefs),
-                ),
-              ],
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  ProfileTweets(
-                    user: user,
-                    type: 'profile',
-                    includeReplies: false,
-                    pinnedTweets: widget.profile.pinnedTweets,
-                    pref: prefs,
-                    filter: _postsFilter,
-                  ),
-                  ProfileTweets(
-                    user: user,
-                    type: 'profile',
-                    includeReplies: true,
-                    pinnedTweets: widget.profile.pinnedTweets,
-                    pref: prefs,
-                  ),
-                  ProfileMediaGrid(
-                    user: user,
-                    pref: prefs,
-                    filter: _mediaFilter,
-                  ),
-                  ProfileSaved(user: user, filter: _archiveFilter),
                 ],
               ),
             ),
           ),
+        ],
+        body: TweetContextScope(
+          child: SafeArea(
+            top: false,
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                ProfileTweets(
+                  user: user,
+                  type: 'profile',
+                  includeReplies: false,
+                  pinnedTweets: widget.profile.pinnedTweets,
+                  pref: prefs,
+                  filter: view.postsFilter,
+                ),
+                ProfileTweets(
+                  user: user,
+                  type: 'profile',
+                  includeReplies: true,
+                  pinnedTweets: widget.profile.pinnedTweets,
+                  pref: prefs,
+                ),
+                ProfileMediaGrid(
+                  user: user,
+                  pref: prefs,
+                  filter: view.mediaFilter,
+                ),
+                ProfileSaved(user: user, filter: view.archiveFilter),
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButton: ScopedBuilder<ProfileScrollStore, bool>(
+        store: _scrollStore,
+        onState: (_, visible) => visible
+            ? FloatingActionButton(
+                onPressed: _scrollToTop,
+                child: const Icon(Icons.arrow_upward),
+              )
+            : const SizedBox.shrink(),
+      ),
+    );
+  }
 
-          // If we haven't resized the description widget yet, display an overlay container so we don't see the resize
-          // TODO: This flickers
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 150),
-            child: descriptionResized == true && metadataResized == true
-                ? Container(key: const Key('loaded'))
-                : Container(
-                    key: const Key('waiting'),
-                    height: double.infinity,
-                    color: theme.colorScheme.surface,
-                  ),
+  SliverAppBar _buildAppBar(
+    BuildContext context,
+    UserWithExtra user,
+    ProfileViewState view,
+    bool innerBoxIsScrolled,
+  ) {
+    final username = user.screenName ?? L10n.of(context).unknown;
+    return SliverAppBar(
+      pinned: true,
+      floating: false,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      titleSpacing: 0,
+      title: innerBoxIsScrolled
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  user.name ?? username,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: tweetLabelStyle(context),
+                ),
+                Text(
+                  '@$username',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textDirection: ui.TextDirection.ltr,
+                  style: tweetMetadataStyle(context).copyWith(fontSize: 11),
+                ),
+              ],
+            )
+          : null,
+      actions: [
+        AnimatedBuilder(
+          animation: _tabController,
+          builder: (context, _) =>
+              _filterForCurrentTab(context, view) ?? const SizedBox.shrink(),
+        ),
+        IconButton(
+          icon: const Icon(Icons.search),
+          tooltip: L10n.of(context).search,
+          onPressed: () => Navigator.pushNamed(
+            context,
+            routeSearch,
+            arguments: SearchArguments(
+              1,
+              focusInputOnOpen: true,
+              query: 'from:@$username ',
+            ),
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.share_outlined),
+          tooltip: L10n.of(context).share_link,
+          onPressed: () => Share.share('${_shareBaseUrl(context)}/$username'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIdentityHeader(
+    BuildContext context,
+    UserWithExtra user,
+    String username,
+    double bannerHeight,
+  ) {
+    final bannerUrl = user.profileBannerUrl;
+    final avatarUrl = user.profileImageUrlHttps?.replaceAll(
+      '_normal',
+      '_400x400',
+    );
+
+    return ProfileIdentityHeader(
+      banner: ProfileBanner(
+        uri: bannerUrl,
+        height: bannerHeight,
+        semanticLabel: user.name,
+        onTap: bannerUrl == null
+            ? null
+            : () => _openProfileMedia(bannerUrl, username),
+      ),
+      avatar: ProfileAvatar(
+        uri: user.profileImageUrlHttps,
+        semanticLabel: user.name,
+        onTap: avatarUrl == null
+            ? null
+            : () => _openProfileMedia(avatarUrl, username),
+      ),
+      actions: ProfileActionCluster(
+        children: [
+          ProfileFeedSettingsButton(
+            user: user,
+            color: tweetReadableAccentColor(context),
+          ),
+          FollowButton(
+            user: UserSubscription.fromUser(user),
+            color: tweetReadableAccentColor(context),
           ),
         ],
       ),
-      floatingActionButton: _showBackToTopButton == false
+      name: user.name ?? username,
+      handle: '@$username',
+      verified: user.verified ?? false,
+      protected: user.protected ?? false,
+      protectedLabel: L10n.of(context).private_profile,
+      bio: _descriptionParts.isEmpty
           ? null
-          : FloatingActionButton(
-              onPressed: _scrollToTop,
-              child: const Icon(Icons.arrow_upward),
+          : SelectableText.rich(
+              TextSpan(
+                style: tweetBodyStyle(context).copyWith(height: 1.45),
+                children: displayRichText(_descriptionParts),
+              ),
             ),
+      metadata: _profileMetadata(context, user),
+      counts: _profileCounts(context, user),
+      note: ProfileNoteCard(userId: user.idStr!),
     );
   }
-}
 
-/// A circular translucent button floating over the profile banner, the way X
-/// draws the back / search / more controls there — legible over any banner
-/// because it carries its own scrim rather than relying on the image behind it.
-class _BannerButton extends StatelessWidget {
-  final IconData icon;
-  final String tooltip;
-  final VoidCallback onPressed;
+  List<Widget> _profileMetadata(BuildContext context, UserWithExtra user) {
+    final result = <Widget>[];
+    final location = user.location;
+    if (location != null && location.isNotEmpty) {
+      result.add(
+        ProfileMetadataItem(
+          icon: Icons.location_on_outlined,
+          child: Text(location),
+        ),
+      );
+    }
 
-  const _BannerButton({
-    required this.icon,
-    required this.tooltip,
-    required this.onPressed,
-  });
+    final link = _profileLink(user);
+    if (link != null) {
+      result.add(
+        ProfileMetadataItem(
+          icon: Icons.link,
+          onTap: () => openLink(context, link.target),
+          child: Text(
+            link.label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(color: tweetReadableAccentColor(context)),
+          ),
+        ),
+      );
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.black38,
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      child: IconButton(
-        icon: Icon(icon, size: 20, color: Colors.white),
-        tooltip: tooltip,
-        onPressed: onPressed,
+    if (user.createdAt != null) {
+      result.add(
+        ProfileMetadataItem(
+          icon: Icons.calendar_today_outlined,
+          child: Text(
+            L10n.of(context).joined(
+              DateFormat('MMMM yyyy').format(user.createdAt!),
+            ),
+          ),
+        ),
+      );
+    }
+    return result;
+  }
+
+  List<Widget> _profileCounts(BuildContext context, UserWithExtra user) {
+    final result = <Widget>[];
+    if (user.friendsCount != null) {
+      result.add(
+        ProfileCountButton(
+          count: _numberFormat.format(user.friendsCount),
+          label: L10n.of(context).following,
+          onTap: () => _openFollows(context, user, 'following'),
+        ),
+      );
+    }
+    if (user.followersCount != null) {
+      result.add(
+        ProfileCountButton(
+          count: _numberFormat.format(user.followersCount),
+          label: L10n.of(context).followers,
+          onTap: () => _openFollows(context, user, 'followers'),
+        ),
+      );
+    }
+    return result;
+  }
+
+  void _openFollows(BuildContext context, UserWithExtra user, String type) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ProfileFollows(user: user, type: type),
       ),
     );
   }
+
+  ({String label, String target})? _profileLink(UserWithExtra user) {
+    final source = user.url;
+    final urls = user.entities?.url?.urls;
+    if (source == null || source.isEmpty || urls == null) return null;
+
+    for (final url in urls) {
+      if (url.url != source) continue;
+      final label = url.displayUrl ?? url.url;
+      final target = url.expandedUrl ?? url.url;
+      if (label != null && target != null) {
+        return (label: label, target: target);
+      }
+    }
+    return null;
+  }
+
+  String _shareBaseUrl(BuildContext context) {
+    final value = PrefService.of(
+      context,
+      listen: false,
+    ).get<String>(optionShareBaseUrl);
+    return value == null || value.isEmpty ? 'https://x.com' : value;
+  }
+
+  Widget? _filterForCurrentTab(
+    BuildContext context,
+    ProfileViewState view,
+  ) {
+    final tab = profileTabs[_tabController.index].id;
+    return switch (tab) {
+      ProfileTabs.posts => ProfileFilterMenu<PostsFilter>(
+        selected: view.postsFilter,
+        defaultValue: PostsFilter.all,
+        options: [
+          ProfileFilterOption(
+            value: PostsFilter.all,
+            label: L10n.of(context).all,
+            icon: Icons.article_outlined,
+          ),
+          ProfileFilterOption(
+            value: PostsFilter.posts,
+            label: L10n.of(context).tweets,
+            icon: Icons.notes_outlined,
+          ),
+          ProfileFilterOption(
+            value: PostsFilter.retweets,
+            label: L10n.of(context).retweets,
+            icon: Icons.repeat,
+          ),
+        ],
+        onSelected: _viewStore.selectPostsFilter,
+      ),
+      ProfileTabs.media => ProfileFilterMenu<MediaFilter>(
+        selected: view.mediaFilter,
+        defaultValue: MediaFilter.all,
+        options: [
+          ProfileFilterOption(
+            value: MediaFilter.all,
+            label: L10n.of(context).all,
+            icon: Icons.perm_media_outlined,
+          ),
+          ProfileFilterOption(
+            value: MediaFilter.photos,
+            label: L10n.of(context).photos,
+            icon: Icons.photo_library_outlined,
+          ),
+          ProfileFilterOption(
+            value: MediaFilter.videos,
+            label: L10n.of(context).videos,
+            icon: Icons.video_library_outlined,
+          ),
+          ProfileFilterOption(
+            value: MediaFilter.broadcasts,
+            label: L10n.of(context).broadcasts,
+            icon: Icons.live_tv_outlined,
+          ),
+        ],
+        onSelected: _viewStore.selectMediaFilter,
+      ),
+      ProfileTabs.saved => ProfileFilterMenu<ArchiveFilter>(
+        selected: view.archiveFilter,
+        defaultValue: ArchiveFilter.all,
+        options: [
+          ProfileFilterOption(
+            value: ArchiveFilter.all,
+            label: L10n.of(context).all,
+            icon: Icons.inventory_2_outlined,
+          ),
+          ProfileFilterOption(
+            value: ArchiveFilter.likes,
+            label: L10n.of(context).favorites,
+            icon: Icons.favorite_border,
+          ),
+          ProfileFilterOption(
+            value: ArchiveFilter.bookmarks,
+            label: L10n.of(context).plugin_category_bookmarks,
+            icon: Icons.bookmark_border,
+          ),
+        ],
+        onSelected: _viewStore.selectArchiveFilter,
+      ),
+      ProfileTabs.postsAndReplies => null,
+    };
+  }
 }
 
-/// Compact profile tab with an explicit text label at every selection state.
 class _ProfileTabLabel extends StatelessWidget {
-  final NavigationTab tab;
-  final Widget? trailing;
+  final IconData icon;
+  final String label;
 
-  const _ProfileTabLabel({required this.tab, this.trailing});
+  const _ProfileTabLabel({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(tab.icon, size: 22),
-        const SizedBox(width: 6),
-        Text(tab.titleBuilder(context), overflow: TextOverflow.ellipsis),
-        if (trailing != null) trailing!,
+        Icon(icon, size: kTweetActionIconSize),
+        const SizedBox(width: kTweetSpace2),
+        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
       ],
-    );
-  }
-}
-
-/// The chevron on the selected Media tab, which opens the photos/videos filter.
-///
-/// It is its own tap target rather than a second meaning for the tab itself:
-/// tapping the tab still returns the grid to the top, as every other tab does.
-class _MediaFilterButton extends StatelessWidget {
-  final MediaFilter value;
-  final ValueChanged<MediaFilter> onChanged;
-
-  const _MediaFilterButton({required this.value, required this.onChanged});
-
-  String _labelFor(BuildContext context, MediaFilter filter) =>
-      switch (filter) {
-        MediaFilter.all => L10n.of(context).all,
-        MediaFilter.photos => L10n.of(context).photos,
-        MediaFilter.videos => L10n.of(context).videos,
-        MediaFilter.broadcasts => L10n.of(context).broadcasts,
-      };
-
-  IconData _iconFor(MediaFilter filter) => switch (filter) {
-    MediaFilter.all => Icons.perm_media_outlined,
-    MediaFilter.photos => Icons.photo_library_outlined,
-    MediaFilter.videos => Icons.video_library_outlined,
-    MediaFilter.broadcasts => Icons.live_tv_outlined,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<MediaFilter>(
-      initialValue: value,
-      onSelected: onChanged,
-      tooltip: L10n.of(context).media,
-      padding: EdgeInsets.zero,
-      itemBuilder: (context) => [
-        for (final filter in MediaFilter.values)
-          PopupMenuItem(
-            value: filter,
-            child: Row(
-              children: [
-                Icon(_iconFor(filter), size: 20),
-                const SizedBox(width: 12),
-                Text(_labelFor(context, filter)),
-              ],
-            ),
-          ),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.only(left: 2),
-        child: Icon(
-          Icons.expand_more,
-          size: 18,
-          color: value == MediaFilter.all
-              ? null
-              : Theme.of(context).colorScheme.primary,
-        ),
-      ),
-    );
-  }
-}
-
-/// The chevron on the selected Posts tab: all / posts / retweets.
-class _PostsFilterButton extends StatelessWidget {
-  final PostsFilter value;
-  final ValueChanged<PostsFilter> onChanged;
-
-  const _PostsFilterButton({required this.value, required this.onChanged});
-
-  String _labelFor(BuildContext context, PostsFilter filter) =>
-      switch (filter) {
-        PostsFilter.all => L10n.of(context).all,
-        PostsFilter.posts => L10n.of(context).tweets,
-        PostsFilter.retweets => L10n.of(context).retweets,
-      };
-
-  IconData _iconFor(PostsFilter filter) => switch (filter) {
-    PostsFilter.all => Icons.wysiwyg_outlined,
-    PostsFilter.posts => Icons.article_outlined,
-    PostsFilter.retweets => Icons.repeat,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<PostsFilter>(
-      initialValue: value,
-      onSelected: onChanged,
-      tooltip: L10n.of(context).tweets,
-      padding: EdgeInsets.zero,
-      itemBuilder: (context) => [
-        for (final filter in PostsFilter.values)
-          PopupMenuItem(
-            value: filter,
-            child: Row(
-              children: [
-                Icon(_iconFor(filter), size: 20),
-                const SizedBox(width: 12),
-                Text(_labelFor(context, filter)),
-              ],
-            ),
-          ),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.only(left: 2),
-        child: Icon(
-          Icons.expand_more,
-          size: 18,
-          color: value == PostsFilter.all
-              ? null
-              : Theme.of(context).colorScheme.primary,
-        ),
-      ),
-    );
-  }
-}
-
-/// The chevron on the selected Archive tab: all / likes / bookmarks.
-class _ArchiveFilterButton extends StatelessWidget {
-  final ArchiveFilter value;
-  final ValueChanged<ArchiveFilter> onChanged;
-
-  const _ArchiveFilterButton({required this.value, required this.onChanged});
-
-  String _labelFor(BuildContext context, ArchiveFilter filter) =>
-      switch (filter) {
-        ArchiveFilter.all => L10n.of(context).all,
-        ArchiveFilter.likes => L10n.of(context).favorites,
-        ArchiveFilter.bookmarks => L10n.of(context).plugin_category_bookmarks,
-      };
-
-  IconData _iconFor(ArchiveFilter filter) => switch (filter) {
-    ArchiveFilter.all => Icons.inventory_2_outlined,
-    ArchiveFilter.likes => Icons.favorite_border,
-    ArchiveFilter.bookmarks => Icons.bookmark_border,
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<ArchiveFilter>(
-      initialValue: value,
-      onSelected: onChanged,
-      tooltip: L10n.of(context).saved,
-      padding: EdgeInsets.zero,
-      itemBuilder: (context) => [
-        for (final filter in ArchiveFilter.values)
-          PopupMenuItem(
-            value: filter,
-            child: Row(
-              children: [
-                Icon(_iconFor(filter), size: 20),
-                const SizedBox(width: 12),
-                Text(_labelFor(context, filter)),
-              ],
-            ),
-          ),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.only(left: 2),
-        child: Icon(
-          Icons.expand_more,
-          size: 18,
-          color: value == ArchiveFilter.all
-              ? null
-              : Theme.of(context).colorScheme.primary,
-        ),
-      ),
     );
   }
 }
