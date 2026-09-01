@@ -152,10 +152,11 @@ _LiveLink? _liveLink(String? url) {
   if (url == null || url.isEmpty) {
     return null;
   }
-  var trimmed = url.trim().replaceAll(RegExp(r'[.,);]+$'), '');
+  var trimmed = url.trim();
   if (trimmed.contains('…') || trimmed.contains('...')) {
     return null;
   }
+  trimmed = trimmed.replaceAll(RegExp(r'[.,);]+$'), '');
   if (!trimmed.contains('://')) {
     trimmed = 'https://$trimmed';
   }

@@ -51,7 +51,7 @@ void main() {
       isMounted: () => true,
     );
 
-    await tester.pump();
+    tester.binding.scheduleFrame();
     await tester.pump();
     expect(fetches, 1);
   });

@@ -341,7 +341,7 @@ class RedditPost {
     if (text.isEmpty) {
       return false;
     }
-    return !isRedditMediaPlaceholderTitle(text);
+    return !hasVisualMedia || !isRedditMediaPlaceholderTitle(text);
   }
 
   /// Selftext that is only `>image>` next to a picture the card already shows.

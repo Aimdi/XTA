@@ -8,6 +8,7 @@ import 'package:xta/utils/urls.dart';
 /// Records the launch requests `openUri` makes, so the mode it picks can be
 /// asserted without a platform channel actually opening anything.
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
+const MethodChannel _browserResolver = MethodChannel('browser_resolver');
 
 class _LaunchRecorder {
   final List<({String url, String method})> calls = [];
@@ -18,11 +19,15 @@ class _LaunchRecorder {
       calls.add((url: (call.arguments as Map)['url'] as String, method: call.method));
       return true;
     });
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_browserResolver, (_) async => null);
   }
 
   void remove() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(_channel, null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_browserResolver, null);
   }
 }
 

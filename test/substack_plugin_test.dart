@@ -680,10 +680,10 @@ void main() {
           }
           if (request.url.path ==
               '/p/miles-morales-probably-couldn-t-happen-now') {
-            return http.Response(
-              article,
+            return http.Response.bytes(
+              utf8.encode(article),
               200,
-              headers: {'content-type': 'text/html'},
+              headers: {'content-type': 'text/html; charset=utf-8'},
             );
           }
           return http.Response('Not found', 404);
