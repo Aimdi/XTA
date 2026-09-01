@@ -118,7 +118,10 @@ void main() {
       MaterialApp(
         theme: xLookLightTheme(null),
         home: MediaQuery(
-          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          data: const MediaQueryData(
+            size: Size(320, 800),
+            textScaler: TextScaler.linear(2),
+          ),
           child: Scaffold(
             body: SingleChildScrollView(
               child: ProfileIdentityHeader(

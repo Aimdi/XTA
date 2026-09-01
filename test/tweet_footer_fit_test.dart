@@ -82,7 +82,7 @@ void main() {
       expect(fit.showViews, isFalse);
     });
 
-    test('the reported layout fits on a 360dp phone', () {
+    test('preserves every interactive action on a 360dp phone', () {
       // The screenshot: 0 replies, 3 reposts, 6 likes and a view count, with
       // bookmark and share — translate lives in the header — on a 360dp
       // screen less the 8dp margins.
@@ -96,7 +96,11 @@ void main() {
       );
 
       expect(fit.showCounts, isTrue);
-      expect(fit.showViews, isTrue, reason: 'the view count must not be pushed off the end any more');
+      expect(
+        fit.showViews,
+        isFalse,
+        reason: 'the read-only view count yields before a 48dp action target',
+      );
       expect(fit.mustScaleDown, isFalse);
     });
 

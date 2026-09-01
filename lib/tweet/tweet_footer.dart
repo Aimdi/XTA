@@ -46,7 +46,6 @@ const footerButtonStyle = ButtonStyle(
     Size(kTweetTouchTarget, kFooterButtonHeight),
   ),
   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  visualDensity: VisualDensity.compact,
 );
 
 /// Fixed cost of one count action: padding, the 20dp glyph and the gap Material

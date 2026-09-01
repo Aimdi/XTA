@@ -45,6 +45,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookLightTheme(null),
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.delegate.supportedLocales,
         home: Scaffold(
           body: SearchFilterStrip(
             chips: [
@@ -115,6 +122,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookLightTheme(null),
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.delegate.supportedLocales,
         home: Scaffold(
           bottomNavigationBar: SearchApplyBar(
             enabled: true,
