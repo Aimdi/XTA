@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:quax/client/client.dart';
-import 'package:quax/profile/profile.dart';
 import 'package:quax/plugins/reddit/reddit_interleaved.dart';
 import 'package:quax/tweet/interleaved_items.dart';
 import 'package:quax/tweet/paginated_tweet_list.dart';
-import 'package:quax/ui/errors.dart';
+import 'package:quax/tweet/tweet_context_scope.dart';
 import 'package:quax/user.dart';
 import 'package:quax/generated/l10n.dart';
 import 'package:pref/pref.dart';
-import 'package:provider/provider.dart';
 import '../constants.dart';
 
 final UserWithExtra user = UserWithExtra.fromArguments(idStr: "1", possiblySensitive: false, screenName: "ForYou");
+
+class ForYouStore extends Store<List<InterleavedItem>> {
+  int _loadTweetsCounter = 0;
+
+  ForYouStore() : super(const []);
+
+  int get loadTweetsCounter => _loadTweetsCounter;
+
+  void incrementLoadTweetsCounter() => _loadTweetsCounter++;
+
+  void setRedditPosts(List<InterleavedItem> items) {
+    if (items.isNotEmpty) {
+      update(items);
+    }
+  }
+}
 
 class ForYouTweets extends StatefulWidget {
   final TweetFeedController feed;
@@ -19,8 +34,7 @@ class ForYouTweets extends StatefulWidget {
   final bool includeReplies;
   final BasePrefService pref;
 
-  const ForYouTweets(this.feed,
-      {super.key, required this.type, required this.includeReplies, required this.pref});
+  const ForYouTweets(this.feed, {super.key, required this.type, required this.includeReplies, required this.pref});
 
   @override
   State<ForYouTweets> createState() => _ForYouTweetsState();
@@ -28,28 +42,29 @@ class ForYouTweets extends StatefulWidget {
 
 class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClientMixin<ForYouTweets> {
   static const int pageSize = 20;
-  int loadTweetsCounter = 0;
+  late final ForYouStore _store;
+
   @override
   bool get wantKeepAlive => true;
-
-  /// Reddit posts mixed into this timeline, when the reader asked for them.
-  ///
-  /// Loaded once per mount and slotted between the chains by date: For you
-  /// pages on X's cursor, which nothing else can page on, and a subreddit
-  /// publishes at its own rate rather than X's.
-  List<InterleavedItem> _redditItems = const [];
 
   @override
   void initState() {
     super.initState();
+    _store = ForYouStore();
     widget.feed.pageCapProvider = _zenPageCap;
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadRedditPosts());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadRedditPosts();
+      }
+    });
   }
 
+  /// Loads Reddit once per mount and lets the Tweet list place those posts by
+  /// date without coupling Reddit's independent pagination to X's cursor.
   Future<void> _loadRedditPosts() async {
     final items = await loadRedditInterleaved(context, redditHomeSubreddits(context));
-    if (mounted && items.isNotEmpty) {
-      setState(() => _redditItems = items);
+    if (mounted) {
+      _store.setRedditPosts(items);
     }
   }
 
@@ -62,14 +77,6 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
     return widget.pref.get<int>(optionZenModePageCap);
   }
 
-  void incrementLoadTweetsCounter() {
-    ++loadTweetsCounter;
-  }
-
-  int getLoadTweetsCounter() {
-    return loadTweetsCounter;
-  }
-
   Future<TweetPageResult> _loadTweets(String? cursor) async {
     final result = await Twitter.getTimelineTweets(
       user.idStr!,
@@ -77,43 +84,35 @@ class _ForYouTweetsState extends State<ForYouTweets> with AutomaticKeepAliveClie
       cursor: cursor,
       count: pageSize,
       includeReplies: widget.includeReplies,
-      getTweetsCounter: getLoadTweetsCounter,
-      incrementTweetsCounter: incrementLoadTweetsCounter,
+      getTweetsCounter: () => _store.loadTweetsCounter,
+      incrementTweetsCounter: _store.incrementLoadTweetsCounter,
     );
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 
   @override
+  void dispose() {
+    _store.destroy();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<TweetContextState>(
-              create: (_) => TweetContextState(PrefService.of(context).get(optionTweetsHideSensitive)))
-        ],
-        builder: (context, child) {
-          return Consumer<TweetContextState>(builder: (context, model, child) {
-            if (model.hideSensitive && (user.possiblySensitive ?? false)) {
-              return EmojiErrorWidget(
-                emoji: '🍆🙈🍆',
-                message: L10n.current.possibly_sensitive,
-                errorMessage: L10n.current.possibly_sensitive_profile,
-                onRetry: () async => model.setHideSensitive(false),
-                retryText: L10n.current.yes_please,
-              );
-            }
-
-            return PaginatedTweetList(
-              feed: widget.feed,
-              loadPage: _loadTweets,
-              interleaved: _redditItems,
-              username: user.screenName,
-              onRefresh: () async {},
-              firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
-              newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-              emptyMessage: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
-            );
-          });
-        });
+    return TweetContextScope(
+      child: ScopedBuilder<ForYouStore, List<InterleavedItem>>(
+        store: _store,
+        onState: (context, redditItems) => PaginatedTweetList(
+          feed: widget.feed,
+          loadPage: _loadTweets,
+          interleaved: redditItems,
+          username: user.screenName,
+          onRefresh: () async {},
+          firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
+          newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+          emptyMessage: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+        ),
+      ),
+    );
   }
 }
