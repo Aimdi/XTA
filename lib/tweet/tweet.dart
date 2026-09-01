@@ -18,6 +18,7 @@ import 'package:xta/tweet/_card.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/thread_rail.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_header.dart';
 import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/tweet/article_link_card.dart';
@@ -406,19 +407,7 @@ class TweetTileState extends State<TweetTile> {
   }
 
   Widget _buildErrorTweet(String text) {
-    // create the layout of tombstones (deleted tweets) and other possible errors that we want to display as a tweet
-    return SizedBox(
-      width: double.infinity,
-      child: Card(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            text,
-            style: const TextStyle(fontStyle: FontStyle.italic),
-          ),
-        ),
-      ),
-    );
+    return TweetStateTile(icon: Icons.info_outline, message: text);
   }
 
   Future<Uint8List?> captureWidget() async {
@@ -554,7 +543,8 @@ class TweetTileState extends State<TweetTile> {
     }
 
     if (isBirdwatchQuote) {
-      return Card(
+      return TweetEmbedSurface(
+        margin: const EdgeInsets.all(kTweetSpace2),
         child: Container(
           // Fill the width so both RTL and LTR text are displayed correctly
           width: double.infinity,
@@ -660,10 +650,13 @@ class TweetTileState extends State<TweetTile> {
           L10n.of(context).could_not_retrieve_quoted_tweet,
         );
       }
-      quotedTweet = Container(
-        decoration: quoteCardDecoration(context),
-        clipBehavior: Clip.antiAlias,
-        margin: const EdgeInsets.all(8),
+      quotedTweet = TweetEmbedSurface(
+        margin: const EdgeInsets.fromLTRB(
+          kTweetHorizontalPadding,
+          kTweetSpace2,
+          kTweetHorizontalPadding,
+          0,
+        ),
         child: quotedContent,
       );
     }
@@ -675,7 +668,7 @@ class TweetTileState extends State<TweetTile> {
     final textEnd = tweet.displayTextRange?.elementAtOrNull(1);
     if (textEnd == null || textEnd != 0) {
       content = DefaultTextStyle.merge(
-        style: theme.textTheme.bodyLarge ?? theme.textTheme.bodyMedium,
+        style: tweetBodyStyle(context),
         child: Container(
           // Fill the width so both RTL and LTR text are displayed correctly
           width: double.infinity,
@@ -759,7 +752,9 @@ class TweetTileState extends State<TweetTile> {
 
     // A quoted tweet is subordinate to its host, so it gets a smaller avatar
     // and a denser header — otherwise it reads as another post in the timeline.
-    final avatarSize = isQuotedTweet ? 32.0 : 48.0;
+    final avatarSize = isQuotedTweet
+        ? kTweetQuotedAvatarSize
+        : kTweetAvatarSize;
     final plainAvatar = hideAuthorInformation
         ? Icon(Icons.account_circle, size: avatarSize)
         // UserAvatar clips itself; a second ClipRRect here was one more
@@ -854,10 +849,7 @@ class TweetTileState extends State<TweetTile> {
                   child: Text(
                     tweet.user!.name!,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: tweetDisplayNameStyle(context),
                   ),
                 ),
                 if (tweet.user!.verified ?? false) const SizedBox(width: 4),
@@ -873,9 +865,7 @@ class TweetTileState extends State<TweetTile> {
       ],
     );
 
-    final metaStyle = theme.textTheme.labelMedium?.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
+    final metaStyle = tweetMetadataStyle(context);
 
     final subtitleRow = Row(
       mainAxisAlignment: hideAuthorInformation
@@ -907,15 +897,21 @@ class TweetTileState extends State<TweetTile> {
       ],
     );
 
-    final headerTile = ListTile(
-      onTap: onTapProfile,
-      dense: isQuotedTweet,
-      visualDensity: isQuotedTweet ? VisualDensity.compact : null,
-      title: titleRow,
-      subtitle: subtitleRow,
-      // Profile picture
-      leading: avatar,
+    final headerTile = TweetHeader(
+      avatar: avatar,
+      onOpenProfile: onTapProfile,
+      displayName: hideAuthorInformation ? null : tweet.user!.name,
+      handle: hideAuthorInformation ? null : tweet.user!.screenName,
+      verified: !hideAuthorInformation && (tweet.user!.verified ?? false),
+      timestamp: createdAt == null
+          ? null
+          : Timestamp(
+              timestamp: createdAt,
+              absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
+              compact: !widget.tweetOpened,
+            ),
       trailing: isQuotedTweet ? null : translateButton,
+      compact: isQuotedTweet,
     );
 
     final pinnedBadge = isPinned

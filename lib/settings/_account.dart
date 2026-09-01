@@ -9,6 +9,7 @@ import 'package:xta/client/accounts.dart';
 import 'package:xta/home/_account_avatar.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/settings/settings_chrome.dart';
 
 class SettingsAccountFragment extends StatefulWidget {
   const SettingsAccountFragment({super.key});
@@ -99,19 +100,17 @@ class _SettingsAccountFragment extends State<SettingsAccountFragment> {
   Widget build(BuildContext context) {
     var model = XRegularAccount();
     final filter = context.read<HomeAccountFilterStore>();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(L10n.current.account),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),
-            ),
-            icon: const Icon(Icons.add),
+    return SettingsPageScaffold(
+      title: L10n.current.account,
+      actions: [
+        IconButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),
           ),
-        ],
-      ),
+          icon: const Icon(Icons.add),
+        ),
+      ],
       body: FutureBuilder(
         future: getAccounts(),
         builder: (BuildContext listContext, AsyncSnapshot snapshot) {

@@ -4,6 +4,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/custom_feed_rules.dart';
+import 'package:xta/group/group_chrome.dart';
 import 'package:xta/group/group_model.dart';
 
 /// Full-screen customization for a group's custom feed mode, opened from the
@@ -42,41 +43,20 @@ class _Section extends StatelessWidget {
   final String description;
   final Widget child;
 
-  const _Section({required this.icon, required this.title, required this.description, required this.child});
+  const _Section({
+    required this.icon,
+    required this.title,
+    required this.description,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            description,
-            style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 14),
-          child,
-        ],
-      ),
+    return GroupSettingsSection(
+      icon: icon,
+      title: title,
+      description: description,
+      child: child,
     );
   }
 }
@@ -92,12 +72,18 @@ class _ContentFilterSection extends StatelessWidget {
 
   const _ContentFilterSection({required this.model, required this.state});
 
-  static const _values = [contentFilterSfw, contentFilterDefault, contentFilterNsfw];
+  static const _values = [
+    contentFilterSfw,
+    contentFilterDefault,
+    contentFilterNsfw,
+  ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final current = _values.contains(state.contentFilter) ? state.contentFilter : contentFilterDefault;
+    final current = _values.contains(state.contentFilter)
+        ? state.contentFilter
+        : contentFilterDefault;
 
     return _Section(
       icon: Icons.filter_alt_outlined,
@@ -108,12 +94,22 @@ class _ContentFilterSection extends StatelessWidget {
         child: SegmentedButton<String>(
           showSelectedIcon: false,
           segments: [
-            ButtonSegment(value: contentFilterSfw, label: Text(l10n.content_filter_sfw)),
-            ButtonSegment(value: contentFilterDefault, label: Text(l10n.content_filter_default)),
-            ButtonSegment(value: contentFilterNsfw, label: Text(l10n.content_filter_nsfw)),
+            ButtonSegment(
+              value: contentFilterSfw,
+              label: Text(l10n.content_filter_sfw),
+            ),
+            ButtonSegment(
+              value: contentFilterDefault,
+              label: Text(l10n.content_filter_default),
+            ),
+            ButtonSegment(
+              value: contentFilterNsfw,
+              label: Text(l10n.content_filter_nsfw),
+            ),
           ],
           selected: {current},
-          onSelectionChanged: (selection) => model.setSubscriptionGroupContentFilter(selection.first),
+          onSelectionChanged: (selection) =>
+              model.setSubscriptionGroupContentFilter(selection.first),
         ),
       ),
     );
@@ -161,7 +157,11 @@ class _ThresholdRow extends StatelessWidget {
   final int value;
   final ValueChanged<int> onChanged;
 
-  const _ThresholdRow({required this.label, required this.value, required this.onChanged});
+  const _ThresholdRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
 
   static const choices = [0, 10, 50, 100, 500, 1000];
 
@@ -173,7 +173,12 @@ class _ThresholdRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -181,13 +186,20 @@ class _ThresholdRow extends StatelessWidget {
           children: [
             for (final choice in choices)
               _Pill(
-                label: choice == 0 ? l10n.custom_feed_threshold_off : '$choice+',
+                label: choice == 0
+                    ? l10n.custom_feed_threshold_off
+                    : '$choice+',
                 selected: value == choice,
                 onTap: () => onChanged(choice),
               ),
             // A value from an earlier edit that is not one of the presets stays
             // visible and selected rather than silently snapping to another.
-            if (!choices.contains(value)) _Pill(label: '$value+', selected: true, onTap: () => onChanged(value)),
+            if (!choices.contains(value))
+              _Pill(
+                label: '$value+',
+                selected: true,
+                onTap: () => onChanged(value),
+              ),
           ],
         ),
       ],
@@ -200,7 +212,11 @@ class _Pill extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _Pill({required this.label, required this.selected, required this.onTap});
+  const _Pill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -214,14 +230,22 @@ class _Pill extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? accent : Colors.transparent,
           borderRadius: BorderRadius.circular(9999),
-          border: Border.all(color: selected ? accent : Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(
+            color: selected
+                ? accent
+                : Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 13,
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? (accent.computeLuminance() > 0.5 ? Colors.black : Colors.white) : onSurface,
+            color: selected
+                ? (accent.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white)
+                : onSurface,
           ),
         ),
       ),
@@ -255,10 +279,14 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
       return;
     }
 
-    final existing = widget.state.mutedKeywords.map((e) => e.term.toLowerCase()).toSet();
+    final existing = widget.state.mutedKeywords
+        .map((e) => e.term.toLowerCase())
+        .toSet();
     final next = [
       ...widget.state.mutedKeywords,
-      ...terms.where((term) => !existing.contains(term.toLowerCase())).map((term) => MutedKeyword(term: term)),
+      ...terms
+          .where((term) => !existing.contains(term.toLowerCase()))
+          .map((term) => MutedKeyword(term: term)),
     ];
 
     _controller.clear();
@@ -266,14 +294,20 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
   }
 
   Future<void> _remove(MutedKeyword keyword) async {
-    final next = widget.state.mutedKeywords.where((e) => e.term != keyword.term).toList(growable: false);
+    final next = widget.state.mutedKeywords
+        .where((e) => e.term != keyword.term)
+        .toList(growable: false);
     await widget.model.setSubscriptionGroupMutedKeywords(next);
   }
 
   Future<void> _setExpiry(MutedKeyword keyword, Duration? duration) async {
     final until = duration == null ? null : DateTime.now().add(duration);
     final next = widget.state.mutedKeywords
-        .map((e) => e.term == keyword.term ? e.copyWith(until: until, clearUntil: duration == null) : e)
+        .map(
+          (e) => e.term == keyword.term
+              ? e.copyWith(until: until, clearUntil: duration == null)
+              : e,
+        )
         .toList(growable: false);
     await widget.model.setSubscriptionGroupMutedKeywords(next);
   }
@@ -297,18 +331,28 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
                   controller: _controller,
                   textInputAction: TextInputAction.done,
                   autocorrect: false,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 15,
+                  ),
                   decoration: InputDecoration(
                     isDense: true,
                     hintText: l10n.custom_feed_muted_keywords_hint,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
                     border: const UnderlineInputBorder(),
                   ),
                   onSubmitted: (_) => _add(),
                 ),
               ),
               const SizedBox(width: 8),
-              IconButton(icon: const Icon(Icons.add), color: Theme.of(context).colorScheme.primary, onPressed: _add),
+              IconButton(
+                icon: const Icon(Icons.add),
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: _add,
+              ),
             ],
           ),
           if (keywords.isNotEmpty) ...[
@@ -324,7 +368,9 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
                     onDeleted: () => _remove(keyword),
                     deleteIcon: const Icon(Icons.close, size: 16),
                     avatar: Icon(
-                      keyword.action == KeywordFilterAction.fold ? Icons.unfold_more : Icons.visibility_off_outlined,
+                      keyword.action == KeywordFilterAction.fold
+                          ? Icons.unfold_more
+                          : Icons.visibility_off_outlined,
                       size: 16,
                     ),
                   ),
@@ -337,14 +383,19 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
   }
 
   String _keywordChipLabel(L10n l10n, MutedKeyword keyword) {
-    final action = keyword.action == KeywordFilterAction.fold ? l10n.filter_action_fold : l10n.filter_action_hide;
+    final action = keyword.action == KeywordFilterAction.fold
+        ? l10n.filter_action_fold
+        : l10n.filter_action_hide;
     if (keyword.until == null) {
       return '${keyword.term} · $action';
     }
     return '${keyword.term} · $action · ${l10n.filter_until_short}';
   }
 
-  Future<void> _showKeywordOptions(BuildContext context, MutedKeyword keyword) async {
+  Future<void> _showKeywordOptions(
+    BuildContext context,
+    MutedKeyword keyword,
+  ) async {
     final l10n = L10n.of(context);
     await showModalBottomSheet<void>(
       context: context,
@@ -359,7 +410,11 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
                 Navigator.pop(sheetContext);
                 await widget.model.setSubscriptionGroupMutedKeywords(
                   widget.state.mutedKeywords
-                      .map((e) => e.term == keyword.term ? e.copyWith(action: KeywordFilterAction.hide) : e)
+                      .map(
+                        (e) => e.term == keyword.term
+                            ? e.copyWith(action: KeywordFilterAction.hide)
+                            : e,
+                      )
                       .toList(growable: false),
                 );
               },
@@ -371,7 +426,11 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
                 Navigator.pop(sheetContext);
                 await widget.model.setSubscriptionGroupMutedKeywords(
                   widget.state.mutedKeywords
-                      .map((e) => e.term == keyword.term ? e.copyWith(action: KeywordFilterAction.fold) : e)
+                      .map(
+                        (e) => e.term == keyword.term
+                            ? e.copyWith(action: KeywordFilterAction.fold)
+                            : e,
+                      )
                       .toList(growable: false),
                 );
               },

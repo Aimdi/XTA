@@ -14,6 +14,7 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/crash_reporter.dart';
 import 'package:xta/settings/backup_data.dart';
 import 'package:xta/settings/backup_rows.dart';
+import 'package:xta/settings/settings_chrome.dart';
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +40,8 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
   bool _exportAccounts = false;
 
   void toggleExportSubscriptionGroupMembersIfRequired() {
-    if (_exportSubscriptionGroupMembers && (!_exportSubscriptions || !_exportSubscriptionGroups)) {
+    if (_exportSubscriptionGroupMembers &&
+        (!_exportSubscriptions || !_exportSubscriptionGroups)) {
       setState(() {
         _exportSubscriptionGroupMembers = false;
       });
@@ -156,14 +158,22 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
       // upvotes and likes were all silently left out of a chosen export.
       pluginRows: _exportSubscriptions ? await readPluginRows() : null,
       subscriptionGroups: _exportSubscriptionGroups ? groupModel.state : null,
-      subscriptionGroupMembers: _exportSubscriptionGroupMembers ? await groupModel.listGroupMembers() : null,
-      searchGroupMembers: _exportSubscriptionGroupMembers ? await readSearchGroupMembers() : null,
+      subscriptionGroupMembers: _exportSubscriptionGroupMembers
+          ? await groupModel.listGroupMembers()
+          : null,
+      searchGroupMembers: _exportSubscriptionGroupMembers
+          ? await readSearchGroupMembers()
+          : null,
       tweets: _exportTweets ? savedTweetModel.state : null,
-      savedTweetFolders: _exportSavedFolders ? savedTweetFolderModel.state : null,
+      savedTweetFolders: _exportSavedFolders
+          ? savedTweetFolderModel.state
+          : null,
       likedTweets: _exportLikedTweets ? likedTweetModel.state : null,
       retweetFilters: _exportFilters ? await readRetweetFilters() : null,
       replyFilters: _exportFilters ? await readReplyFilters() : null,
-      feedReadPositions: _exportReadPositions ? await readFeedReadPositions() : null,
+      feedReadPositions: _exportReadPositions
+          ? await readFeedReadPositions()
+          : null,
       accounts: _exportAccounts ? await getAccounts() : null,
       profileNotes: _exportFilters ? await readProfileNotes() : null,
       antennas: _exportFilters ? await readAntennas() : null,
@@ -179,14 +189,16 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
     var fileName = 'xta-${dateFormat.format(DateTime.now())}.json';
 
     var path = await FlutterFileDialog.saveFile(
-        params: SaveFileDialogParams(fileName: fileName, data: Uint8List.fromList(utf8.encode(exportData))));
+      params: SaveFileDialogParams(
+        fileName: fileName,
+        data: Uint8List.fromList(utf8.encode(exportData)),
+      ),
+    );
 
     if (path != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            L10n.of(context).data_exported_to_fileName(fileName),
-          ),
+          content: Text(L10n.of(context).data_exported_to_fileName(fileName)),
         ),
       );
     }
@@ -194,10 +206,8 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(L10n.of(context).export),
-      ),
+    return SettingsPageScaffold(
+      title: L10n.of(context).export,
       floatingActionButton: noExportOptionSelected()
           ? null
           : FloatingActionButton(
@@ -208,54 +218,68 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-              child: SingleChildScrollView(
-                  child: Column(
-            children: [
-              CheckboxListTile(
-                  value: _exportSettings,
-                  title: Text(L10n.of(context).export_settings),
-                  onChanged: (v) => toggleExportSettings()),
-              CheckboxListTile(
-                  value: _exportSubscriptions,
-                  title: Text(L10n.of(context).export_subscriptions),
-                  onChanged: (v) => toggleExportSubscriptions()),
-              CheckboxListTile(
-                  value: _exportSubscriptionGroups,
-                  title: Text(L10n.of(context).export_subscription_groups),
-                  onChanged: (v) => toggleExportSubscriptionGroups()),
-              CheckboxListTile(
-                  value: _exportSubscriptionGroupMembers,
-                  title: Text(L10n.of(context).export_subscription_group_members),
-                  onChanged: _exportSubscriptions && _exportSubscriptionGroups
-                      ? (v) => toggleExportSubscriptionGroupMembers()
-                      : null),
-              CheckboxListTile(
-                  value: _exportTweets,
-                  title: Text(L10n.of(context).export_tweets),
-                  onChanged: (v) => toggleExportTweets()),
-              CheckboxListTile(
-                  value: _exportSavedFolders,
-                  title: Text(L10n.of(context).export_saved_folders),
-                  onChanged: (v) => toggleExportSavedFolders()),
-              CheckboxListTile(
-                  value: _exportLikedTweets,
-                  title: Text(L10n.of(context).export_liked_posts),
-                  onChanged: (v) => toggleExportLikedTweets()),
-              CheckboxListTile(
-                  value: _exportFilters,
-                  title: Text(L10n.of(context).export_feed_filters),
-                  onChanged: (v) => toggleExportFilters()),
-              CheckboxListTile(
-                  value: _exportReadPositions,
-                  title: Text(L10n.of(context).export_reading_positions),
-                  onChanged: (v) => toggleExportReadPositions()),
-              CheckboxListTile(
-                  value: _exportAccounts,
-                  title: Text(L10n.of(context).export_accounts),
-                  subtitle: Text(L10n.of(context).export_accounts_details),
-                  onChanged: (v) => toggleExportAccounts()),
-            ],
-          ))),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  CheckboxListTile(
+                    value: _exportSettings,
+                    title: Text(L10n.of(context).export_settings),
+                    onChanged: (v) => toggleExportSettings(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportSubscriptions,
+                    title: Text(L10n.of(context).export_subscriptions),
+                    onChanged: (v) => toggleExportSubscriptions(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportSubscriptionGroups,
+                    title: Text(L10n.of(context).export_subscription_groups),
+                    onChanged: (v) => toggleExportSubscriptionGroups(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportSubscriptionGroupMembers,
+                    title: Text(
+                      L10n.of(context).export_subscription_group_members,
+                    ),
+                    onChanged: _exportSubscriptions && _exportSubscriptionGroups
+                        ? (v) => toggleExportSubscriptionGroupMembers()
+                        : null,
+                  ),
+                  CheckboxListTile(
+                    value: _exportTweets,
+                    title: Text(L10n.of(context).export_tweets),
+                    onChanged: (v) => toggleExportTweets(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportSavedFolders,
+                    title: Text(L10n.of(context).export_saved_folders),
+                    onChanged: (v) => toggleExportSavedFolders(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportLikedTweets,
+                    title: Text(L10n.of(context).export_liked_posts),
+                    onChanged: (v) => toggleExportLikedTweets(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportFilters,
+                    title: Text(L10n.of(context).export_feed_filters),
+                    onChanged: (v) => toggleExportFilters(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportReadPositions,
+                    title: Text(L10n.of(context).export_reading_positions),
+                    onChanged: (v) => toggleExportReadPositions(),
+                  ),
+                  CheckboxListTile(
+                    value: _exportAccounts,
+                    title: Text(L10n.of(context).export_accounts),
+                    subtitle: Text(L10n.of(context).export_accounts_details),
+                    onChanged: (v) => toggleExportAccounts(),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

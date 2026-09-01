@@ -6,7 +6,7 @@ export 'package:xta/settings/backup_category.dart';
 import 'package:xta/settings/backup_category.dart';
 import 'package:xta/settings/backup_rows.dart';
 
-/// The backup document: what QuaX carries between devices, and the header that
+/// The backup document: what XTA carries between devices, and the header that
 /// says what it is.
 ///
 /// Left out on purpose: `feed_group_chunk`, `timeline_cache` and
@@ -39,12 +39,12 @@ const int legacyBackupFormatVersion = 0;
 
 bool isSupportedBackupVersion(int version) => version <= backupFormatVersion;
 
-
 class SettingsData {
   final int formatVersion;
   final DateTime? exportedAt;
   final String? appVersion;
   final Map<String, dynamic>? settings;
+
   /// Rows belonging to plugins, keyed by the section's `jsonKey`.
   ///
   /// Held generically so that adding a plugin cannot forget the backup: the
@@ -92,25 +92,45 @@ class SettingsData {
 
   factory SettingsData.fromJson(Map<String, dynamic> json) {
     return SettingsData(
-      formatVersion: (json['formatVersion'] as int?) ?? legacyBackupFormatVersion,
+      formatVersion:
+          (json['formatVersion'] as int?) ?? legacyBackupFormatVersion,
       exportedAt: DateTime.tryParse((json['exportedAt'] as String?) ?? ''),
       appVersion: json['appVersion'] as String?,
       settings: json['settings'] as Map<String, dynamic>?,
       pluginRows: {
         for (final section in pluginBackupSections())
-          if (_rows(json[section.jsonKey], section.fromMap) case final rows?) section.jsonKey: rows,
+          if (_rows(json[section.jsonKey], section.fromMap) case final rows?)
+            section.jsonKey: rows,
       },
-      searchSubscriptions: _rows(json['searchSubscriptions'], SearchSubscription.fromMap),
+      searchSubscriptions: _rows(
+        json['searchSubscriptions'],
+        SearchSubscription.fromMap,
+      ),
       userSubscriptions: _rows(json['subscriptions'], UserSubscription.fromMap),
-      subscriptionGroups: _rows(json['subscriptionGroups'], SubscriptionGroup.fromMap),
-      subscriptionGroupMembers: _rows(json['subscriptionGroupMembers'], SubscriptionGroupMember.fromMap),
-      searchGroupMembers: _rows(json['searchGroupMembers'], SearchGroupMember.fromMap),
+      subscriptionGroups: _rows(
+        json['subscriptionGroups'],
+        SubscriptionGroup.fromMap,
+      ),
+      subscriptionGroupMembers: _rows(
+        json['subscriptionGroupMembers'],
+        SubscriptionGroupMember.fromMap,
+      ),
+      searchGroupMembers: _rows(
+        json['searchGroupMembers'],
+        SearchGroupMember.fromMap,
+      ),
       tweets: _rows(json['tweets'], SavedTweet.fromMap),
-      savedTweetFolders: _rows(json['savedTweetFolders'], SavedTweetFolder.fromMap),
+      savedTweetFolders: _rows(
+        json['savedTweetFolders'],
+        SavedTweetFolder.fromMap,
+      ),
       likedTweets: _rows(json['likedTweets'], LikedTweet.fromMap),
       retweetFilters: _rows(json['retweetFilters'], UserFeedFilter.fromMap),
       replyFilters: _rows(json['replyFilters'], UserFeedFilter.fromMap),
-      feedReadPositions: _rows(json['feedReadPositions'], FeedReadPositionRow.fromMap),
+      feedReadPositions: _rows(
+        json['feedReadPositions'],
+        FeedReadPositionRow.fromMap,
+      ),
       accounts: _rows(json['accounts'], Account.fromMap),
       profileNotes: _rows(json['profileNotes'], ProfileNote.fromMap),
       antennas: _rows(json['antennas'], Antenna.fromMap),
@@ -124,7 +144,8 @@ class SettingsData {
       'exportedAt': exportedAt?.toIso8601String(),
       'appVersion': appVersion,
       'settings': settings,
-      for (final section in pluginBackupSections()) section.jsonKey: _maps(pluginRows?[section.jsonKey]),
+      for (final section in pluginBackupSections())
+        section.jsonKey: _maps(pluginRows?[section.jsonKey]),
       'searchSubscriptions': _maps(searchSubscriptions),
       'subscriptions': _maps(userSubscriptions),
       'subscriptionGroups': _maps(subscriptionGroups),
@@ -151,10 +172,14 @@ List<T>? _rows<T>(Object? json, T Function(Map<String, Object?>) fromMap) {
     return null;
   }
 
-  return json.whereType<Map>().map((row) => fromMap(Map<String, Object?>.from(row))).toList();
+  return json
+      .whereType<Map>()
+      .map((row) => fromMap(Map<String, Object?>.from(row)))
+      .toList();
 }
 
-List<Map<String, dynamic>>? _maps(List<ToMappable>? rows) => rows?.map((row) => row.toMap()).toList();
+List<Map<String, dynamic>>? _maps(List<ToMappable>? rows) =>
+    rows?.map((row) => row.toMap()).toList();
 
 /// What the file would restore, for the preview shown before anything is
 /// written. Categories the file is silent about, and empty ones, are left out:
@@ -162,9 +187,15 @@ List<Map<String, dynamic>>? _maps(List<ToMappable>? rows) => rows?.map((row) => 
 Map<BackupCategory, int> backupCounts(SettingsData data) {
   final counts = <BackupCategory, int?>{
     BackupCategory.settings: data.settings?.length,
-    BackupCategory.subscriptions: _total([data.userSubscriptions, data.searchSubscriptions]),
+    BackupCategory.subscriptions: _total([
+      data.userSubscriptions,
+      data.searchSubscriptions,
+    ]),
     BackupCategory.groups: data.subscriptionGroups?.length,
-    BackupCategory.groupMembers: _total([data.subscriptionGroupMembers, data.searchGroupMembers]),
+    BackupCategory.groupMembers: _total([
+      data.subscriptionGroupMembers,
+      data.searchGroupMembers,
+    ]),
     BackupCategory.savedPosts: data.tweets?.length,
     BackupCategory.folders: data.savedTweetFolders?.length,
     BackupCategory.likedPosts: data.likedTweets?.length,
@@ -174,11 +205,14 @@ Map<BackupCategory, int> backupCounts(SettingsData data) {
     BackupCategory.profileNotes: data.profileNotes?.length,
     BackupCategory.antennas: data.antennas?.length,
     BackupCategory.localPosts: data.localPosts?.length,
-    for (final section in pluginBackupSections()) section.category: data.pluginRows?[section.jsonKey]?.length,
+    for (final section in pluginBackupSections())
+      section.category: data.pluginRows?[section.jsonKey]?.length,
   };
 
   return Map.fromEntries(
-    counts.entries.where((entry) => (entry.value ?? 0) > 0).map((entry) => MapEntry(entry.key, entry.value!)),
+    counts.entries
+        .where((entry) => (entry.value ?? 0) > 0)
+        .map((entry) => MapEntry(entry.key, entry.value!)),
   );
 }
 
@@ -195,7 +229,10 @@ int? _total(List<List<Object>?> sections) {
 /// Reading positions are separate because restoring them is not obviously
 /// harmless: a position from another device marks posts as already seen that
 /// this reader never saw.
-Map<String, List<ToMappable>> backupTables(SettingsData data, {required bool includeReadPositions}) {
+Map<String, List<ToMappable>> backupTables(
+  SettingsData data, {
+  required bool includeReadPositions,
+}) {
   final sections = <String, List<ToMappable>?>{
     tableSearchSubscription: data.searchSubscriptions,
     tableSubscription: data.userSubscriptions,
@@ -212,10 +249,13 @@ Map<String, List<ToMappable>> backupTables(SettingsData data, {required bool inc
     tableAntenna: data.antennas,
     tableLocalPost: data.localPosts,
     if (includeReadPositions) tableFeedReadPosition: data.feedReadPositions,
-    for (final section in pluginBackupSections()) section.table: data.pluginRows?[section.jsonKey],
+    for (final section in pluginBackupSections())
+      section.table: data.pluginRows?[section.jsonKey],
   };
 
   return Map.fromEntries(
-    sections.entries.where((entry) => entry.value != null).map((entry) => MapEntry(entry.key, entry.value!)),
+    sections.entries
+        .where((entry) => entry.value != null)
+        .map((entry) => MapEntry(entry.key, entry.value!)),
   );
 }

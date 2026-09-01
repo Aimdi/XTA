@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/settings/settings_chrome.dart';
 
 /// Where an AI feature should send its requests, if the reader wants one.
 ///
@@ -78,9 +79,9 @@ class _SettingsAiFragmentState extends State<SettingsAiFragment> {
     final l10n = L10n.of(context);
     final grok = _baseUrlController.text.toLowerCase().contains('api.x.ai');
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.ai_provider)),
-      body: ListView(
+    return SettingsPageScaffold(
+      title: l10n.ai_provider,
+      body: SettingsList(
         padding: const EdgeInsets.all(16),
         children: [
           Text(

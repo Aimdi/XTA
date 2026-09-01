@@ -17,6 +17,7 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/_like_button.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/quote_actions.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/database/entities.dart';
@@ -34,7 +35,7 @@ const double kFooterButtonPadding = 6;
 
 /// How tall a footer button is. The glyphs are small on purpose, but the thing
 /// you press should not be: 44dp is a finger, 36dp was a guess.
-const double kFooterButtonHeight = 44;
+const double kFooterButtonHeight = kTweetTouchTarget;
 
 const footerButtonStyle = ButtonStyle(
   overlayColor: WidgetStatePropertyAll(Colors.transparent),
@@ -224,7 +225,11 @@ Color? tweetFooterButtonsColorOf(BuildContext context) =>
     Theme.of(context).colorScheme.onSurfaceVariant;
 
 /// Replace t.co redirectors with destinations so shares skip X click tracking.
-String shareableTweetText(TweetWithCard tweet, String text, {bool clean = true}) {
+String shareableTweetText(
+  TweetWithCard tweet,
+  String text, {
+  bool clean = true,
+}) {
   var result = text;
   for (Url url in tweet.entities?.urls ?? []) {
     final short = url.url;
@@ -364,8 +369,12 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).share_tweet_content,
                   Icons.text_snippet,
                   () async {
-                    final clean = cleanLinksEnabled(PrefService.of(context, listen: false));
-                    Share.share(shareableTweetText(tweet, tweetText, clean: clean));
+                    final clean = cleanLinksEnabled(
+                      PrefService.of(context, listen: false),
+                    );
+                    Share.share(
+                      shareableTweetText(tweet, tweetText, clean: clean),
+                    );
                     Navigator.pop(sheetContext);
                   },
                 ),
@@ -386,7 +395,9 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).share_tweet_content_and_link,
                   Icons.add_link,
                   () async {
-                    final clean = cleanLinksEnabled(PrefService.of(context, listen: false));
+                    final clean = cleanLinksEnabled(
+                      PrefService.of(context, listen: false),
+                    );
                     Share.share(
                       '${shareableTweetText(tweet, tweetText, clean: clean)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
                     );

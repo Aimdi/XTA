@@ -11,6 +11,8 @@ import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/feed_chunk_hash.dart';
 import 'package:xta/group/group_members.dart';
+import 'package:xta/group/group_chrome.dart';
+import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/group/group_switcher.dart';
@@ -345,13 +347,41 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
     }
   }
 
-  Widget _mediaOnlyToggle(BuildContext context) => IconButton(
-    isSelected: _mediaOnly,
-    icon: const Icon(Icons.photo_library_outlined),
-    selectedIcon: const Icon(Icons.photo_library),
-    tooltip: L10n.of(context).only_show_posts_with_media,
-    onPressed: _toggleMediaOnly,
-  );
+  Future<void> _selectOrder(GroupModel model, int order) async {
+    if (order == 2) {
+      await model.toggleSubscriptionGroupCustom(true);
+    } else {
+      await model.toggleSubscriptionGroupPopular(order == 1);
+    }
+  }
+
+  void _openCustomSettings(BuildContext context, GroupModel model) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GroupCustomSettingsScreen(model: model),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _controls(BuildContext context) {
+    final model = context.read<GroupModel>();
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kGroupControlBarHeight),
+      child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+        store: model,
+        onState: (_, group) => group.id.isEmpty
+            ? const SizedBox(height: kGroupControlBarHeight)
+            : GroupFeedControlBar(
+                group: group,
+                mediaOnly: _mediaOnly,
+                onOrderSelected: (order) => _selectOrder(model, order),
+                onMediaToggle: _toggleMediaOnly,
+                onCustomSettings: () => _openCustomSettings(context, model),
+              ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -375,8 +405,8 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
         cacheKey: widget.cacheKey,
         mediaOnly: _mediaOnly,
       ),
+      bottomBuilder: widget.cacheKey == null ? null : _controls,
       actionsBuilder: (context) => [
-        _mediaOnlyToggle(context),
         ...defaultGroupActions(
           context,
           model: context.read<GroupModel>(),

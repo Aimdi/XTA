@@ -4,6 +4,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/_data.dart';
+import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/utils/webdav_sync.dart';
 
 /// Carries the same payload as the backup export to a WebDAV server the reader
@@ -42,7 +43,11 @@ class _SyncScreenState extends State<SyncScreen> {
     super.dispose();
   }
 
-  WebDavConfig get _config => WebDavConfig(url: _url.text, username: _username.text, password: _password.text);
+  WebDavConfig get _config => WebDavConfig(
+    url: _url.text,
+    username: _username.text,
+    password: _password.text,
+  );
 
   Future<void> _persistFields() async {
     final prefs = PrefService.of(context, listen: false);
@@ -51,22 +56,29 @@ class _SyncScreenState extends State<SyncScreen> {
     await prefs.set(optionWebDavPassword, _password.text);
   }
 
-  String _message(BuildContext context, WebDavResult result) => switch (result.outcome) {
-    WebDavOutcome.success => L10n.of(context).sync_uploaded,
-    WebDavOutcome.notConfigured => L10n.of(context).sync_error_not_configured,
-    WebDavOutcome.insecureUrl => L10n.of(context).sync_error_insecure,
-    WebDavOutcome.unauthorized => L10n.of(context).sync_error_unauthorized,
-    WebDavOutcome.notFound => L10n.of(context).sync_error_not_found,
-    WebDavOutcome.serverError => L10n.of(context).sync_error_server,
-    WebDavOutcome.networkError => L10n.of(context).sync_error_network,
-  };
+  String _message(BuildContext context, WebDavResult result) =>
+      switch (result.outcome) {
+        WebDavOutcome.success => L10n.of(context).sync_uploaded,
+        WebDavOutcome.notConfigured => L10n.of(
+          context,
+        ).sync_error_not_configured,
+        WebDavOutcome.insecureUrl => L10n.of(context).sync_error_insecure,
+        WebDavOutcome.unauthorized => L10n.of(context).sync_error_unauthorized,
+        WebDavOutcome.notFound => L10n.of(context).sync_error_not_found,
+        WebDavOutcome.serverError => L10n.of(context).sync_error_server,
+        WebDavOutcome.networkError => L10n.of(context).sync_error_network,
+      };
 
   void _report(WebDavResult result) {
     if (!mounted) {
       return;
     }
-    final detail = result.isSuccess ? '' : ' (${result.detail ?? ''})'.replaceAll(' ()', '');
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${_message(context, result)}$detail')));
+    final detail = result.isSuccess
+        ? ''
+        : ' (${result.detail ?? ''})'.replaceAll(' ()', '');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${_message(context, result)}$detail')),
+    );
   }
 
   Future<void> _run(Future<WebDavResult> Function() action) async {
@@ -103,14 +115,19 @@ class _SyncScreenState extends State<SyncScreen> {
   @override
   Widget build(BuildContext context) {
     final prefs = PrefService.of(context);
-    final lastSync = DateTime.tryParse(prefs.get<String>(optionWebDavLastSyncAt) ?? '');
+    final lastSync = DateTime.tryParse(
+      prefs.get<String>(optionWebDavLastSyncAt) ?? '',
+    );
 
-    return Scaffold(
-      appBar: AppBar(title: Text(L10n.of(context).sync)),
-      body: ListView(
-        padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
+    return SettingsPageScaffold(
+      title: L10n.of(context).sync,
+      body: SettingsList(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
-          Text(L10n.of(context).sync_description, style: Theme.of(context).textTheme.bodyMedium),
+          Text(
+            L10n.of(context).sync_description,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _url,
@@ -126,13 +143,19 @@ class _SyncScreenState extends State<SyncScreen> {
           TextField(
             controller: _username,
             autocorrect: false,
-            decoration: InputDecoration(labelText: L10n.of(context).sync_username, border: const OutlineInputBorder()),
+            decoration: InputDecoration(
+              labelText: L10n.of(context).sync_username,
+              border: const OutlineInputBorder(),
+            ),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _password,
             obscureText: true,
-            decoration: InputDecoration(labelText: L10n.of(context).sync_password, border: const OutlineInputBorder()),
+            decoration: InputDecoration(
+              labelText: L10n.of(context).sync_password,
+              border: const OutlineInputBorder(),
+            ),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -145,9 +168,11 @@ class _SyncScreenState extends State<SyncScreen> {
           Text(
             lastSync == null
                 ? L10n.of(context).sync_never
-                : L10n.of(
-                    context,
-                  ).sync_last(DateFormat.yMd(Localizations.localeOf(context).toString()).add_Hm().format(lastSync)),
+                : L10n.of(context).sync_last(
+                    DateFormat.yMd(
+                      Localizations.localeOf(context).toString(),
+                    ).add_Hm().format(lastSync),
+                  ),
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 16),

@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/language_filter.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/settings/settings_chrome.dart';
 
 class SettingsPostsFragment extends StatefulWidget {
   const SettingsPostsFragment({super.key});
@@ -19,15 +20,20 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
   late final FocusNode _languageFocus;
   LanguageFilterAction _languageAction = LanguageFilterAction.off;
 
-  bool get _languageFilterActive => parseFeedLanguages(_languageController.text).isNotEmpty;
+  bool get _languageFilterActive =>
+      parseFeedLanguages(_languageController.text).isNotEmpty;
 
   @override
   void initState() {
     super.initState();
     final prefs = PrefService.of(context, listen: false);
-    _languageController = TextEditingController(text: prefs.get(optionFeedLanguages) as String? ?? '');
+    _languageController = TextEditingController(
+      text: prefs.get(optionFeedLanguages) as String? ?? '',
+    );
     _languageFocus = FocusNode()..addListener(_onLanguageFocusChange);
-    _languageAction = parseLanguageFilterAction(prefs.get(optionFeedLanguageAction) as String?);
+    _languageAction = parseLanguageFilterAction(
+      prefs.get(optionFeedLanguageAction) as String?,
+    );
     _loadOverrides();
   }
 
@@ -51,7 +57,9 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
     final trimmed = _languageController.text.trim();
     if (_languageController.text != trimmed) {
       _languageController.text = trimmed;
-      _languageController.selection = TextSelection.collapsed(offset: trimmed.length);
+      _languageController.selection = TextSelection.collapsed(
+        offset: trimmed.length,
+      );
     }
 
     final prefs = PrefService.of(context, listen: false);
@@ -59,7 +67,10 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
 
     if (trimmed.isEmpty && _languageAction != LanguageFilterAction.off) {
       setState(() => _languageAction = LanguageFilterAction.off);
-      await prefs.set(optionFeedLanguageAction, LanguageFilterAction.off.stored);
+      await prefs.set(
+        optionFeedLanguageAction,
+        LanguageFilterAction.off.stored,
+      );
     } else if (mounted) {
       setState(() {});
     }
@@ -70,7 +81,10 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
       return;
     }
     setState(() => _languageAction = action);
-    await PrefService.of(context, listen: false).set(optionFeedLanguageAction, action.stored);
+    await PrefService.of(
+      context,
+      listen: false,
+    ).set(optionFeedLanguageAction, action.stored);
   }
 
   Future<void> _loadOverrides() async {
@@ -90,8 +104,14 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
         title: Text(l10n.are_you_sure),
         content: Text(l10n.feed_defaults_apply_all_description),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.no)),
-          TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.yes)),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.yes),
+          ),
         ],
       ),
     );
@@ -109,13 +129,14 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
   @override
   Widget build(BuildContext context) {
     final overrides = _overrides;
-    final keepingOwnChoice = overrides == null ? 0 : (overrides.replies + overrides.retweets);
+    final keepingOwnChoice = overrides == null
+        ? 0
+        : (overrides.replies + overrides.retweets);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(L10n.current.tweets)),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ListView(children: [
+    return SettingsPageScaffold(
+      title: L10n.current.tweets,
+      body: SettingsList(
+        children: [
           PrefSwitch(
             pref: optionUseAbsoluteTimestamp,
             title: Text(L10n.of(context).use_absolute_timestamp),
@@ -123,7 +144,9 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
           ),
           PrefCheckbox(
             title: Text(L10n.of(context).hide_sensitive_tweets),
-            subtitle: Text(L10n.of(context).whether_to_hide_tweets_marked_as_sensitive),
+            subtitle: Text(
+              L10n.of(context).whether_to_hide_tweets_marked_as_sensitive,
+            ),
             pref: optionTweetsHideSensitive,
           ),
           PrefSwitch(
@@ -132,22 +155,36 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
           ),
           PrefSwitch(
             title: Text(L10n.of(context).always_show_full_tweet_contents),
-            subtitle: Text(L10n.of(context).always_show_full_tweet_contents_description),
+            subtitle: Text(
+              L10n.of(context).always_show_full_tweet_contents_description,
+            ),
             pref: alwaysShowFullTweetContents,
           ),
           PrefSwitch(
-            title: Text(L10n.of(context).activate_non_confirmation_bias_mode_label),
+            title: Text(
+              L10n.of(context).activate_non_confirmation_bias_mode_label,
+            ),
             pref: optionNonConfirmationBiasMode,
-            subtitle: Text(L10n.of(context).activate_non_confirmation_bias_mode_description),
+            subtitle: Text(
+              L10n.of(context).activate_non_confirmation_bias_mode_description,
+            ),
           ),
           PrefSwitch(
-            title: Text(L10n.of(context).disable_warnings_for_unrelated_posts_in_feed),
-            subtitle: Text(L10n.of(context).disable_warnings_for_unrelated_posts_in_feed_description),
+            title: Text(
+              L10n.of(context).disable_warnings_for_unrelated_posts_in_feed,
+            ),
+            subtitle: Text(
+              L10n.of(
+                context,
+              ).disable_warnings_for_unrelated_posts_in_feed_description,
+            ),
             pref: optionDisableWarningsForUnrelatedPostsInFeed,
           ),
           PrefSwitch(
             title: Text(L10n.of(context).show_subscribe_button_on_avatars),
-            subtitle: Text(L10n.of(context).show_subscribe_button_on_avatars_description),
+            subtitle: Text(
+              L10n.of(context).show_subscribe_button_on_avatars_description,
+            ),
             pref: optionTweetsShowSubscribeBadge,
           ),
           // The two feed defaults. They no longer touch a feed's own choice, so
@@ -204,7 +241,9 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
           ),
           PrefSwitch(
             title: Text(L10n.of(context).remember_reading_position),
-            subtitle: Text(L10n.of(context).remember_reading_position_description),
+            subtitle: Text(
+              L10n.of(context).remember_reading_position_description,
+            ),
             pref: optionFeedReadingPosition,
           ),
           ListTile(
@@ -230,7 +269,10 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: SegmentedButton<LanguageFilterAction>(
               segments: [
-                ButtonSegment(value: LanguageFilterAction.off, label: Text(L10n.of(context).language_filter_off)),
+                ButtonSegment(
+                  value: LanguageFilterAction.off,
+                  label: Text(L10n.of(context).language_filter_off),
+                ),
                 ButtonSegment(
                   value: LanguageFilterAction.hide,
                   enabled: _languageFilterActive,
@@ -248,15 +290,17 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
           ),
           ListTile(
             title: Text(L10n.of(context).language_filter_action),
-            subtitle: Text(
-              switch (_languageAction) {
-                LanguageFilterAction.hide => L10n.of(context).language_filter_hide,
-                LanguageFilterAction.fold => L10n.of(context).language_filter_fold,
-                LanguageFilterAction.off => L10n.of(context).language_filter_off,
-              },
-            ),
+            subtitle: Text(switch (_languageAction) {
+              LanguageFilterAction.hide => L10n.of(
+                context,
+              ).language_filter_hide,
+              LanguageFilterAction.fold => L10n.of(
+                context,
+              ).language_filter_fold,
+              LanguageFilterAction.off => L10n.of(context).language_filter_off,
+            }),
           ),
-        ]),
+        ],
       ),
     );
   }

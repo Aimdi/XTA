@@ -4,6 +4,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/settings/settings_chrome.dart';
 
 class SettingsHomeFragment extends StatelessWidget {
   const SettingsHomeFragment({super.key});
@@ -12,16 +13,15 @@ class SettingsHomeFragment extends StatelessWidget {
   Widget build(BuildContext context) {
     var model = context.read<HomeModel>();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(L10n.current.home),
-        actions: [
-          IconButton(
-              icon: const Icon(Icons.restart_alt),
-              tooltip: L10n.current.reset_home_pages,
-              onPressed: () async => await model.resetPages())
-        ],
-      ),
+    return SettingsPageScaffold(
+      title: L10n.current.home,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.restart_alt),
+          tooltip: L10n.current.reset_home_pages,
+          onPressed: () async => await model.resetPages(),
+        ),
+      ],
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: ScopedBuilder<HomeModel, List<HomePage>>.transition(
@@ -47,9 +47,15 @@ class SettingsHomeFragment extends StatelessWidget {
                   value: page.selected,
                   onChanged: (value) async {
                     var selected = value ?? false;
-                    if (selected == false && data.where((e) => e.selected).length == 2) {
-                      showSnackBar(context,
-                          icon: '🙊', message: L10n.current.you_must_have_at_least_2_home_screen_pages);
+                    if (selected == false &&
+                        data.where((e) => e.selected).length == 2) {
+                      showSnackBar(
+                        context,
+                        icon: '🙊',
+                        message: L10n
+                            .current
+                            .you_must_have_at_least_2_home_screen_pages,
+                      );
                       return;
                     }
 

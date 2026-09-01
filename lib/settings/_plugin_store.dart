@@ -11,6 +11,7 @@ import 'package:xta/plugins/plugin_catalogue.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/settings/_plugin_row.dart';
 
 /// What the reader has installed, then what is on offer grouped by purpose.
@@ -168,34 +169,32 @@ class _SettingsPluginStoreFragmentState
       isInstalled: (plugin) => plugin.isEnabled(prefs),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_store),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'private') {
-                final next =
-                    !(prefs.get<bool>(optionPluginStoreShowPrivate) == true);
-                await prefs.set(optionPluginStoreShowPrivate, next);
-                if (mounted) setState(() {});
-              }
-            },
-            itemBuilder: (context) => [
-              CheckedPopupMenuItem(
-                value: 'private',
-                checked: prefs.get<bool>(optionPluginStoreShowPrivate) == true,
-                child: Text(l10n.plugin_store_show_private),
-              ),
-            ],
-          ),
-          IconButton(
-            tooltip: l10n.retry,
-            icon: const Icon(Icons.refresh),
-            onPressed: _loading ? null : _refresh,
-          ),
-        ],
-      ),
+    return SettingsPageScaffold(
+      title: l10n.plugin_store,
+      actions: [
+        PopupMenuButton<String>(
+          onSelected: (value) async {
+            if (value == 'private') {
+              final next =
+                  !(prefs.get<bool>(optionPluginStoreShowPrivate) == true);
+              await prefs.set(optionPluginStoreShowPrivate, next);
+              if (mounted) setState(() {});
+            }
+          },
+          itemBuilder: (context) => [
+            CheckedPopupMenuItem(
+              value: 'private',
+              checked: prefs.get<bool>(optionPluginStoreShowPrivate) == true,
+              child: Text(l10n.plugin_store_show_private),
+            ),
+          ],
+        ),
+        IconButton(
+          tooltip: l10n.retry,
+          icon: const Icon(Icons.refresh),
+          onPressed: _loading ? null : _refresh,
+        ),
+      ],
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: ListView(

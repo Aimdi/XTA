@@ -13,6 +13,7 @@ import 'package:xta/settings/_plugin_store.dart';
 import 'package:xta/settings/_posts.dart';
 import 'package:xta/settings/_theme.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
+import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/speech/tts_settings.dart';
 import 'package:xta/ui/x_controls.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -141,9 +142,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       icon: Icons.import_export,
       title: l10n.data,
       description: l10n.settings_data_hint,
-      builder: (context) => Scaffold(
-        appBar: AppBar(title: Text(L10n.of(context).data)),
-        body: ListView(children: const [SettingsDataFragment()]),
+      builder: (context) => SettingsPageScaffold(
+        title: L10n.of(context).data,
+        body: SettingsList(children: const [SettingsDataFragment()]),
       ),
     );
   }
@@ -167,23 +168,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _entryTile(BuildContext context, _SettingsEntry entry) {
-    final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(entry.icon, color: theme.colorScheme.onSurfaceVariant),
-      title: Text(
-        entry.title,
-        style: theme.textTheme.titleMedium!.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      subtitle: Text(
-        entry.description,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: theme.textTheme.bodySmall!.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
+    return SettingsNavigationRow(
+      icon: entry.icon,
+      title: entry.title,
+      description: entry.description,
       onTap: () =>
           Navigator.push(context, MaterialPageRoute(builder: entry.builder)),
     );
@@ -227,12 +215,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final data = _dataEntry(context);
     final advanced = _advancedEntries(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.settings)),
-      body: ListView(
-        padding: EdgeInsets.only(
-          bottom: 16.0 + MediaQuery.of(context).padding.bottom,
-        ),
+    return SettingsPageScaffold(
+      title: l10n.settings,
+      body: SettingsList(
         children: [
           _searchField(l10n),
           if (query.isNotEmpty)
@@ -246,7 +231,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             for (final entry in everyday) _entryTile(context, entry),
             _entryTile(context, data),
             _advancedTile(context, advanced),
-            const Divider(),
+            const Divider(height: 1),
             _SectionLabel(l10n.app_info),
             SettingsAboutFragment(appVersion: appVersion),
           ],

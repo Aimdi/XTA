@@ -18,6 +18,7 @@ import 'package:xta/home/_feed.dart';
 import 'package:xta/home/_missing.dart';
 import 'package:xta/home/_saved.dart';
 import 'package:xta/home/home_model.dart';
+import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_registry.dart';
@@ -26,6 +27,7 @@ import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
 import 'package:xta/trends/trends_screen.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
@@ -153,7 +155,7 @@ class _HomeScreenState extends State<_HomeScreen> {
         onRetry: () async => await widget.model.resetPages(),
         retryText: L10n.current.reset_home_pages,
       ),
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      onLoading: (_) => const HomeLoadingState(),
       onState: (_, state) {
         return ScaffoldWithBottomNavigation(
           pages: _pages,
@@ -505,123 +507,125 @@ class _ScaffoldWithBottomNavigationState
 
     const radius = 24.0;
 
-    return Scaffold(
-      extendBody: true,
-      drawer: _buildDrawer(context, l10n),
-      body: PageView.builder(
-        controller: _pageController,
-        // Tabs change from the bar and nowhere else. A drag anywhere in a page
-        // used to change them too, which meant every horizontal gesture in the
-        // app — a media carousel, a nested tab view, a slider — was competing
-        // with the pager for the same finger.
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: _barPages.length,
-        onPageChanged: (page) {
-          final previous = _pageIndex.value;
-          _pageIndex.value = page;
-          _adoptSearchScope(previous, page);
-        },
-        itemBuilder: (context, index) {
-          return KeyedSubtree(
-            key: PageStorageKey<String>(_barPages[index].id),
-            child: widget.builder(index, _scrollControllers, _focusNodes),
-          );
-        },
-      ),
-      // Floating capsule: swipe still changes tab; the page itself never does.
-      // Labels pref is read here so a Settings toggle does not rebuild feeds.
-      bottomNavigationBar: Builder(
-        builder: (context) {
-          final showLabels =
-              PrefService.of(context).get(optionShowNavigationLabels) == true;
-          final barHeight = showLabels ? 60.0 : 56.0;
-          return SafeArea(
-            minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onHorizontalDragStart: (_) => _dragDistance = 0,
-              onHorizontalDragUpdate: (details) =>
-                  _dragDistance += details.primaryDelta ?? 0,
-              onHorizontalDragEnd: (details) => _swipeNavigationBar(
-                details.primaryVelocity ?? 0,
-                _dragDistance,
-              ),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: isDark ? 0.28 : 0.08,
-                      ),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+    return XtaSystemBars(
+      child: Scaffold(
+        extendBody: true,
+        drawer: _buildDrawer(context, l10n),
+        body: PageView.builder(
+          controller: _pageController,
+          // Tabs change from the bar and nowhere else. A drag anywhere in a page
+          // used to change them too, which meant every horizontal gesture in the
+          // app — a media carousel, a nested tab view, a slider — was competing
+          // with the pager for the same finger.
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _barPages.length,
+          onPageChanged: (page) {
+            final previous = _pageIndex.value;
+            _pageIndex.value = page;
+            _adoptSearchScope(previous, page);
+          },
+          itemBuilder: (context, index) {
+            return KeyedSubtree(
+              key: PageStorageKey<String>(_barPages[index].id),
+              child: widget.builder(index, _scrollControllers, _focusNodes),
+            );
+          },
+        ),
+        // Floating capsule: swipe still changes tab; the page itself never does.
+        // Labels pref is read here so a Settings toggle does not rebuild feeds.
+        bottomNavigationBar: Builder(
+          builder: (context) {
+            final showLabels =
+                PrefService.of(context).get(optionShowNavigationLabels) == true;
+            final barHeight = showLabels ? 60.0 : 56.0;
+            return SafeArea(
+              minimum: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onHorizontalDragStart: (_) => _dragDistance = 0,
+                onHorizontalDragUpdate: (details) =>
+                    _dragDistance += details.primaryDelta ?? 0,
+                onHorizontalDragEnd: (details) => _swipeNavigationBar(
+                  details.primaryVelocity ?? 0,
+                  _dragDistance,
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(radius),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: pillFill,
-                      borderRadius: BorderRadius.circular(radius),
-                      border: Border.all(color: pillBorder, width: 0.5),
-                    ),
-                    child: ValueListenableBuilder<int>(
-                      valueListenable: _pageIndex,
-                      builder: (context, currentPage, _) {
-                        final slots = _bottomBarSlots(context);
-                        final selectedDest = destinationIndexForPage(
-                          slots,
-                          currentPage,
-                        );
-                        return NavigationBar(
-                          selectedIndex: selectedDest,
-                          labelBehavior: showLabels
-                              ? NavigationDestinationLabelBehavior.alwaysShow
-                              : NavigationDestinationLabelBehavior.alwaysHide,
-                          shadowColor: Colors.transparent,
-                          backgroundColor: Colors.transparent,
-                          surfaceTintColor: Colors.transparent,
-                          indicatorColor: Colors.transparent,
-                          overlayColor: WidgetStateProperty.resolveWith((
-                            states,
-                          ) {
-                            if (states.contains(WidgetState.pressed) ||
-                                states.contains(WidgetState.focused)) {
-                              return accent.withValues(alpha: 0.08);
-                            }
-                            if (states.contains(WidgetState.hovered)) {
-                              return accent.withValues(alpha: 0.04);
-                            }
-                            return Colors.transparent;
-                          }),
-                          height: barHeight,
-                          destinations: [
-                            for (final slot in slots)
-                              _destinationForSlot(
-                                context,
-                                slot: slot,
-                                currentPage: currentPage,
-                                showLabels: showLabels,
-                                tokens: tokens,
-                              ),
-                          ],
-                          onDestinationSelected: (index) => _onBarDestination(
-                            context,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(radius),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(
+                          alpha: isDark ? 0.28 : 0.08,
+                        ),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(radius),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: pillFill,
+                        borderRadius: BorderRadius.circular(radius),
+                        border: Border.all(color: pillBorder, width: 0.5),
+                      ),
+                      child: ValueListenableBuilder<int>(
+                        valueListenable: _pageIndex,
+                        builder: (context, currentPage, _) {
+                          final slots = _bottomBarSlots(context);
+                          final selectedDest = destinationIndexForPage(
                             slots,
-                            index,
                             currentPage,
-                          ),
-                        );
-                      },
+                          );
+                          return NavigationBar(
+                            selectedIndex: selectedDest,
+                            labelBehavior: showLabels
+                                ? NavigationDestinationLabelBehavior.alwaysShow
+                                : NavigationDestinationLabelBehavior.alwaysHide,
+                            shadowColor: Colors.transparent,
+                            backgroundColor: Colors.transparent,
+                            surfaceTintColor: Colors.transparent,
+                            indicatorColor: Colors.transparent,
+                            overlayColor: WidgetStateProperty.resolveWith((
+                              states,
+                            ) {
+                              if (states.contains(WidgetState.pressed) ||
+                                  states.contains(WidgetState.focused)) {
+                                return accent.withValues(alpha: 0.08);
+                              }
+                              if (states.contains(WidgetState.hovered)) {
+                                return accent.withValues(alpha: 0.04);
+                              }
+                              return Colors.transparent;
+                            }),
+                            height: barHeight,
+                            destinations: [
+                              for (final slot in slots)
+                                _destinationForSlot(
+                                  context,
+                                  slot: slot,
+                                  currentPage: currentPage,
+                                  showLabels: showLabels,
+                                  tokens: tokens,
+                                ),
+                            ],
+                            onDestinationSelected: (index) => _onBarDestination(
+                              context,
+                              slots,
+                              index,
+                              currentPage,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -676,7 +680,16 @@ class _ScaffoldWithBottomNavigationState
     final page = _barPages[index];
     final isSelected = currentPage == index;
     final scale = (!showLabels && isSelected && tokens != null) ? 1.05 : 1.0;
-    final duration = Duration(milliseconds: tokens != null ? 200 : 0);
+    final reduceMotion =
+        MediaQuery.disableAnimationsOf(context) ||
+        PrefService.of(
+              context,
+              listen: false,
+            ).get<bool>(optionDisableAnimations) ==
+            true;
+    final duration = Duration(
+      milliseconds: tokens != null && !reduceMotion ? 200 : 0,
+    );
     return NavigationDestination(
       icon: AnimatedScale(
         scale: scale,

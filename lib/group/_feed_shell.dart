@@ -15,6 +15,7 @@ import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 class GroupFeedShell extends StatefulWidget {
   final ScrollController scrollController;
@@ -191,33 +192,35 @@ class _GroupFeedShellState extends State<GroupFeedShell>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Provider<GroupModel>.value(
-      value: _groupModel,
-      builder: (context, child) {
-        return Provider<FeedRefreshController>.value(
-          value: _feedRefreshController,
-          child: NestedScrollView(
-            controller: widget.scrollController,
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  pinned: true,
-                  centerTitle: widget.centerTitle,
-                  leading: widget.leading,
-                  title: widget.titleBuilder(context),
-                  actions: widget.actionsBuilder(context),
-                  bottom: _bottom(context),
-                ),
-              ];
-            },
-            body: KeyedSubtree(
-              key: ValueKey(_refreshCounter),
-              child: widget.bodyBuilder(context),
+    return XtaSystemBars(
+      child: Provider<GroupModel>.value(
+        value: _groupModel,
+        builder: (context, child) {
+          return Provider<FeedRefreshController>.value(
+            value: _feedRefreshController,
+            child: NestedScrollView(
+              controller: widget.scrollController,
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverAppBar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    pinned: true,
+                    centerTitle: widget.centerTitle,
+                    leading: widget.leading,
+                    title: widget.titleBuilder(context),
+                    actions: widget.actionsBuilder(context),
+                    bottom: _bottom(context),
+                  ),
+                ];
+              },
+              body: KeyedSubtree(
+                key: ValueKey(_refreshCounter),
+                child: widget.bodyBuilder(context),
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

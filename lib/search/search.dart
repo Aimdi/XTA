@@ -9,6 +9,7 @@ import 'package:xta/profile/profile.dart';
 import 'package:xta/search/advanced_search.dart';
 import 'package:xta/search/search_media_grid.dart';
 import 'package:xta/search/search_model.dart';
+import 'package:xta/search/search_chrome.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/ui/errors.dart';
@@ -170,141 +171,146 @@ class _ResultsScreenState extends State<_ResultsScreen>
   Widget build(BuildContext context) {
     var prefs = PrefService.of(context, listen: false);
 
-    return Scaffold(
-      // Needed as we're nesting Scaffolds, which causes Flutter to calculate keyboard height incorrectly
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 72,
-        flexibleSpace: Padding(
-          padding: EdgeInsets.fromLTRB(
-            8,
-            MediaQuery.paddingOf(context).top + 8,
-            8,
-            8,
-          ),
-          child: SearchBar(
-            controller: _queryController,
-            focusNode: _focusNode,
-            textInputAction: TextInputAction.search,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
+    return SearchSystemBars(
+      child: Scaffold(
+        // Needed as we're nesting Scaffolds, which causes Flutter to calculate keyboard height incorrectly
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          automaticallyImplyLeading: false,
+          toolbarHeight: 72,
+          flexibleSpace: Padding(
+            padding: EdgeInsets.fromLTRB(
+              8,
+              MediaQuery.paddingOf(context).top + 8,
+              8,
+              8,
             ),
-            trailing: [
-              IconButton(
-                icon: const Icon(Icons.sensors),
-                tooltip: L10n.of(context).antenna_title,
-                onPressed: () => Navigator.pushNamed(context, routeAntennas),
+            child: SearchBar(
+              controller: _queryController,
+              focusNode: _focusNode,
+              textInputAction: TextInputAction.search,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
               ),
-              IconButton(
-                icon: const Icon(Icons.tune),
-                tooltip: L10n.of(context).advanced_search,
-                onPressed: () async {
-                  final query = await Navigator.push<String>(
-                    context,
-                    MaterialPageRoute(
-                      fullscreenDialog: true,
-                      builder: (_) => const AdvancedSearchScreen(),
-                    ),
-                  );
-                  if (query != null && query.trim().isNotEmpty) {
-                    _queryController.text = query;
-                  }
-                },
-              ),
-              // Hidden while the field is empty: following a blank query
-              // saved a search that could never match anything.
-              ValueListenableBuilder<TextEditingValue>(
-                valueListenable: _queryController,
-                builder: (context, value, _) {
-                  final query = value.text.trim();
+              trailing: [
+                IconButton(
+                  icon: const Icon(Icons.sensors),
+                  tooltip: L10n.of(context).antenna_title,
+                  onPressed: () => Navigator.pushNamed(context, routeAntennas),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.tune),
+                  tooltip: L10n.of(context).advanced_search,
+                  onPressed: () async {
+                    final query = await Navigator.push<String>(
+                      context,
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        builder: (_) => const AdvancedSearchScreen(),
+                      ),
+                    );
+                    if (query != null && query.trim().isNotEmpty) {
+                      _queryController.text = query;
+                    }
+                  },
+                ),
+                // Hidden while the field is empty: following a blank query
+                // saved a search that could never match anything.
+                ValueListenableBuilder<TextEditingValue>(
+                  valueListenable: _queryController,
+                  builder: (context, value, _) {
+                    final query = value.text.trim();
 
-                  return query.isEmpty
-                      ? const SizedBox.shrink()
-                      : FollowButton(
-                          user: SearchSubscription(
-                            id: query,
-                            createdAt: DateTime.now(),
-                          ),
-                        );
-                },
+                    return query.isEmpty
+                        ? const SizedBox.shrink()
+                        : FollowButton(
+                            user: SearchSubscription(
+                              id: query,
+                              createdAt: DateTime.now(),
+                            ),
+                          );
+                  },
+                ),
+              ],
+            ),
+          ),
+          bottom: SearchResultsTabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(
+                icon: Tooltip(
+                  message: L10n.of(context).tweets,
+                  child: const Icon(Icons.trending_up),
+                ),
+              ),
+              Tab(
+                icon: Tooltip(
+                  message: L10n.of(context).recent,
+                  child: const Icon(Icons.access_time_outlined),
+                ),
+              ),
+              Tab(
+                icon: Tooltip(
+                  message: L10n.of(context).media,
+                  child: const Icon(Icons.image),
+                ),
+              ),
+              Tab(
+                icon: Tooltip(
+                  message: L10n.of(context).users,
+                  child: const Icon(Icons.person_search),
+                ),
               ),
             ],
           ),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(
-              icon: Tooltip(
-                message: L10n.of(context).tweets,
-                child: const Icon(Icons.trending_up),
-              ),
+        body: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<TweetContextState>(
+              create: (_) => TweetContextState.fromPrefs(prefs),
             ),
-            Tab(
-              icon: Tooltip(
-                message: L10n.of(context).recent,
-                child: const Icon(Icons.access_time_outlined),
-              ),
-            ),
-            Tab(
-              icon: Tooltip(
-                message: L10n.of(context).media,
-                child: const Icon(Icons.image),
-              ),
-            ),
-            const Tab(icon: Icon(Icons.person_search)),
-          ],
-          labelColor: Theme.of(context).appBarTheme.foregroundColor,
-          indicatorColor: Theme.of(context).appBarTheme.foregroundColor,
-          dividerColor: Theme.of(
-            context,
-          ).colorScheme.surfaceBright.withAlpha(150),
-        ),
-      ),
-      body: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<TweetContextState>(
-            create: (_) => TweetContextState.fromPrefs(prefs),
-          ),
-          ChangeNotifierProvider<VideoContextState>(
-            create: (_) => VideoContextState(prefs.get(optionMediaDefaultMute)),
-          ),
-        ],
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            PaginatedTweetList(
-              feed: _topTweets.feed,
-              loadPage: _topTweets.loadPage,
-              username: null,
-              firstPageErrorPrefix: L10n.of(
-                context,
-              ).unable_to_load_the_search_results,
-              newPageErrorPrefix: L10n.of(
-                context,
-              ).unable_to_load_the_next_page_of_tweets,
-              emptyMessage: L10n.of(context).no_results,
-            ),
-            PaginatedTweetList(
-              feed: _latestTweets.feed,
-              loadPage: _latestTweets.loadPage,
-              username: null,
-              firstPageErrorPrefix: L10n.of(
-                context,
-              ).unable_to_load_the_search_results,
-              newPageErrorPrefix: L10n.of(
-                context,
-              ).unable_to_load_the_next_page_of_tweets,
-              emptyMessage: L10n.of(context).no_results,
-            ),
-            SearchMediaGrid(model: _mediaResults),
-            _UserSearchResultList(
-              store: _searchUsersModel,
-              onRetry: _dispatchQuery,
+            ChangeNotifierProvider<VideoContextState>(
+              create: (_) =>
+                  VideoContextState(prefs.get(optionMediaDefaultMute)),
             ),
           ],
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              PaginatedTweetList(
+                feed: _topTweets.feed,
+                loadPage: _topTweets.loadPage,
+                username: null,
+                firstPageErrorPrefix: L10n.of(
+                  context,
+                ).unable_to_load_the_search_results,
+                newPageErrorPrefix: L10n.of(
+                  context,
+                ).unable_to_load_the_next_page_of_tweets,
+                emptyMessage: L10n.of(context).no_results,
+              ),
+              PaginatedTweetList(
+                feed: _latestTweets.feed,
+                loadPage: _latestTweets.loadPage,
+                username: null,
+                firstPageErrorPrefix: L10n.of(
+                  context,
+                ).unable_to_load_the_search_results,
+                newPageErrorPrefix: L10n.of(
+                  context,
+                ).unable_to_load_the_next_page_of_tweets,
+                emptyMessage: L10n.of(context).no_results,
+              ),
+              SearchMediaGrid(model: _mediaResults),
+              _UserSearchResultList(
+                store: _searchUsersModel,
+                onRetry: _dispatchQuery,
+              ),
+            ],
+          ),
         ),
       ),
     );
