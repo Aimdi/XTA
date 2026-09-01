@@ -35,11 +35,19 @@ class NavigationPage {
 
 final List<NavigationPage> defaultHomePages = [
   NavigationPage('feed', (c) => L10n.of(c).home, const Icon(Icons.home_outlined), const Icon(Icons.home)),
-  NavigationPage('subscriptions', (c) => L10n.of(c).subscriptions, const Icon(Icons.people_outlined),
-      const Icon(Icons.people)),
+  NavigationPage(
+    'subscriptions',
+    (c) => L10n.of(c).subscriptions,
+    const Icon(Icons.people_outlined),
+    const Icon(Icons.people),
+  ),
   NavigationPage('trending', (c) => L10n.of(c).search, const Icon(Icons.search_outlined), const Icon(Icons.search)),
   NavigationPage(
-      'saved', (c) => L10n.of(c).saved, const Icon(Icons.bookmark_border_outlined), const Icon(Icons.bookmark)),
+    'saved',
+    (c) => L10n.of(c).saved,
+    const Icon(Icons.bookmark_border_outlined),
+    const Icon(Icons.bookmark),
+  ),
 ];
 
 class HomeScreen extends StatelessWidget {
@@ -78,24 +86,13 @@ class HomeScreen extends StatelessWidget {
               }
               switch (page.id) {
                 case 'feed':
-                  return FeedScreen(
-                    scrollController: scrollControllers[index]!,
-                    id: '-1',
-                    name: L10n.current.feed,
-                  );
+                  return FeedScreen(scrollController: scrollControllers[index]!, id: '-1', name: L10n.current.feed);
                 case 'subscriptions':
-                  return SubscriptionsScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
+                  return SubscriptionsScreen(scrollController: scrollControllers[index]!);
                 case 'trending':
-                  return TrendsScreen(
-                    scrollController: scrollControllers[index]!,
-                    focusNode: focusNodes[index]!,
-                  );
+                  return TrendsScreen(scrollController: scrollControllers[index]!, focusNode: focusNodes[index]!);
                 case 'saved':
-                  return SavedScreen(
-                    scrollController: scrollControllers[index]!,
-                  );
+                  return SavedScreen(scrollController: scrollControllers[index]!);
                 default:
                   final plugin = pluginById(page.id);
                   final screen = plugin?.homeScreen(scrollController: scrollControllers[index]!);
@@ -120,10 +117,16 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   final List<NavigationPage> pages;
   final BasePrefService prefs;
   final int initialPage;
-  final List<Widget> Function(Map<int, ScrollController> scrollControllers, Map<int, FocusNode> focusNodes) builder; // changed here
+  final List<Widget> Function(Map<int, ScrollController> scrollControllers, Map<int, FocusNode> focusNodes)
+  builder; // changed here
 
-  const ScaffoldWithBottomNavigation(
-      {super.key, required this.pages, required this.prefs, required this.initialPage, required this.builder});
+  const ScaffoldWithBottomNavigation({
+    super.key,
+    required this.pages,
+    required this.prefs,
+    required this.initialPage,
+    required this.builder,
+  });
 
   @override
   State<ScaffoldWithBottomNavigation> createState() => _ScaffoldWithBottomNavigationState();
@@ -287,7 +290,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
               leading: const Icon(Icons.settings),
               title: Text(l10n.settings),
               onTap: () => Navigator.pushNamed(context, routeSettings),
-            )
+            ),
           ],
         ),
       ),
@@ -312,11 +315,13 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
           showLabels: widget.prefs.get(optionShowNavigationLabels),
           disableAnimations: widget.prefs.get<bool>(optionDisableAnimations) == true,
           items: widget.pages
-              .map((page) => HomeNavigationItem(
-                    label: page.titleBuilder(context),
-                    icon: page.icon,
-                    selectedIcon: page.selectedIcon,
-                  ))
+              .map(
+                (page) => HomeNavigationItem(
+                  label: page.titleBuilder(context),
+                  icon: page.icon,
+                  selectedIcon: page.selectedIcon,
+                ),
+              )
               .toList(growable: false),
           // Tapping the tab you are already on goes back to the top, whichever
           // tab it is. The Search tab grabbed its field instead, which put a

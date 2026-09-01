@@ -18,12 +18,7 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
   final List<HomeSwitcherOption<T>> options;
   final ValueChanged<T> onSelected;
 
-  const HomeFeedSwitcher({
-    super.key,
-    required this.selected,
-    required this.options,
-    required this.onSelected,
-  });
+  const HomeFeedSwitcher({super.key, required this.selected, required this.options, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +33,8 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
       tooltip: selectedOption.label,
       position: PopupMenuPosition.under,
       constraints: const BoxConstraints(minWidth: 200, maxWidth: 280),
-      itemBuilder: (context) => options
-          .map((option) => _menuItem(context, option, option.value == selected))
-          .toList(growable: false),
+      itemBuilder: (context) =>
+          options.map((option) => _menuItem(context, option, option.value == selected)).toList(growable: false),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
         child: Row(
@@ -83,9 +77,9 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isSelected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    ),
+                  color: isSelected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                ),
               ),
             ),
           ],
@@ -129,7 +123,9 @@ class HomeNavigationBar extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: tokens?.background ?? Theme.of(context).colorScheme.surface,
-        border: Border(top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness)),
+        border: Border(
+          top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
+        ),
       ),
       child: NavigationBar(
         selectedIndex: selectedIndex,
@@ -170,10 +166,7 @@ class HomeLoadingState extends StatelessWidget {
         child: Center(
           child: SizedBox.square(
             dimension: kTweetTouchTarget,
-            child: Padding(
-              padding: EdgeInsets.all(kTweetSpace3),
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
+            child: Padding(padding: EdgeInsets.all(kTweetSpace3), child: CircularProgressIndicator(strokeWidth: 2)),
           ),
         ),
       ),

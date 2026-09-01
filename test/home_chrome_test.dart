@@ -6,9 +6,9 @@ import 'package:quax/tweet/tweet_chrome.dart';
 import 'package:quax/ui/x_look_theme.dart';
 
 Widget _app(Widget child) => MaterialApp(
-      theme: xLookLightTheme(null),
-      home: Scaffold(appBar: AppBar(title: child)),
-    );
+  theme: xLookLightTheme(null),
+  home: Scaffold(appBar: AppBar(title: child)),
+);
 
 void main() {
   test('HomeSelectionStore only changes for a new selection', () {
@@ -59,11 +59,7 @@ void main() {
             disableAnimations: true,
             items: const [
               HomeNavigationItem(label: 'Home', icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home)),
-              HomeNavigationItem(
-                label: 'Search',
-                icon: Icon(Icons.search_outlined),
-                selectedIcon: Icon(Icons.search),
-              ),
+              HomeNavigationItem(label: 'Search', icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search)),
             ],
             onSelected: (value) => selected = value,
           ),

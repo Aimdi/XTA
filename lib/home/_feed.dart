@@ -39,8 +39,7 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) => feedTabs
     .where((e) => e.id != FeedTab.reddit || prefs.get<bool>(optionPluginRedditEnabled) == true)
     .toList(growable: false);
 
-FeedTab feedTabFromId(String? id) =>
-    FeedTab.values.firstWhere((e) => e.name == id, orElse: () => FeedTab.following);
+FeedTab feedTabFromId(String? id) => FeedTab.values.firstWhere((e) => e.name == id, orElse: () => FeedTab.following);
 
 class FeedScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -92,11 +91,8 @@ class _FeedScreenState extends State<FeedScreen> {
               .toList(growable: false),
           onSelected: _tabStore!.select,
         ),
-        actionsBuilder: (context) => defaultGroupActions(
-          context,
-          model: context.read<GroupModel>(),
-          showMore: tab == FeedTab.following,
-        ),
+        actionsBuilder: (context) =>
+            defaultGroupActions(context, model: context.read<GroupModel>(), showMore: tab == FeedTab.following),
         bodyBuilder: (context) => switch (tab) {
           FeedTab.following => SubscriptionGroupScreenContent(id: widget.id),
           FeedTab.reddit => RedditFeedList(scrollController: widget.scrollController),

@@ -34,8 +34,7 @@ class ForYouTweets extends StatefulWidget {
   final bool includeReplies;
   final BasePrefService pref;
 
-  const ForYouTweets(this.feed,
-      {super.key, required this.type, required this.includeReplies, required this.pref});
+  const ForYouTweets(this.feed, {super.key, required this.type, required this.includeReplies, required this.pref});
 
   @override
   State<ForYouTweets> createState() => _ForYouTweetsState();
