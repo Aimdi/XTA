@@ -11,14 +11,16 @@ import 'package:quax/group/group_screen.dart';
 import 'package:quax/home/_feed.dart';
 import 'package:quax/home/_missing.dart';
 import 'package:quax/home/_saved.dart';
+import 'package:quax/home/home_chrome.dart';
 import 'package:quax/home/home_model.dart';
+import 'package:quax/home/home_selection_store.dart';
 import 'package:quax/plugins/plugin_registry.dart';
 import 'package:quax/search/search.dart';
 import 'package:quax/subscriptions/subscriptions.dart';
 import 'package:quax/trends/trends_screen.dart';
 import 'package:quax/ui/errors.dart';
+import 'package:quax/ui/reader_chrome.dart';
 import 'package:quax/ui/scroll_to_top.dart';
-import 'package:quax/ui/x_look_theme.dart';
 
 typedef NavigationTitleBuilder = String Function(BuildContext context);
 
@@ -32,12 +34,30 @@ class NavigationPage {
 }
 
 final List<NavigationPage> defaultHomePages = [
-  NavigationPage('feed', (c) => L10n.of(c).home, const Icon(Icons.home_outlined), const Icon(Icons.home)),
-  NavigationPage('subscriptions', (c) => L10n.of(c).subscriptions, const Icon(Icons.people_outlined),
-      const Icon(Icons.people)),
-  NavigationPage('trending', (c) => L10n.of(c).search, const Icon(Icons.search_outlined), const Icon(Icons.search)),
   NavigationPage(
-      'saved', (c) => L10n.of(c).saved, const Icon(Icons.bookmark_border_outlined), const Icon(Icons.bookmark)),
+    'feed',
+    (c) => L10n.of(c).home,
+    const Icon(Icons.home_outlined),
+    const Icon(Icons.home),
+  ),
+  NavigationPage(
+    'subscriptions',
+    (c) => L10n.of(c).subscriptions,
+    const Icon(Icons.people_outlined),
+    const Icon(Icons.people),
+  ),
+  NavigationPage(
+    'trending',
+    (c) => L10n.of(c).search,
+    const Icon(Icons.search_outlined),
+    const Icon(Icons.search),
+  ),
+  NavigationPage(
+    'saved',
+    (c) => L10n.of(c).saved,
+    const Icon(Icons.bookmark_border_outlined),
+    const Icon(Icons.bookmark),
+  ),
 ];
 
 class HomeScreen extends StatelessWidget {
@@ -45,67 +65,31 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var prefs = PrefService.of(context);
-    var model = context.read<HomeModel>();
-
-    return _HomeScreen(prefs: prefs, model: model);
-  }
-}
-
-class _HomeScreen extends StatefulWidget {
-  final BasePrefService prefs;
-  final HomeModel model;
-
-  const _HomeScreen({required this.prefs, required this.model});
-
-  @override
-  State<_HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<_HomeScreen> {
-  int _initialPage = 0;
-  List<NavigationPage> _pages = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    _buildPages(widget.model.state);
-    widget.model.observer(onState: _buildPages);
-  }
-
-  void _buildPages(List<HomePage> state) {
-    var pages = state.where((element) => element.selected).map((e) => e.page).toList();
-
-    if (widget.prefs.getKeys().contains(optionHomeInitialTab)) {
-      _initialPage = max(0, pages.indexWhere((element) => element.id == widget.prefs.get(optionHomeInitialTab)));
-    }
-
-    setState(() {
-      _pages = pages;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    final prefs = PrefService.of(context);
+    final model = context.read<HomeModel>();
     return ScopedBuilder<HomeModel, List<HomePage>>.transition(
-      store: widget.model,
+      store: model,
       onError: (_, e) => ScaffoldErrorWidget(
         prefix: L10n.current.unable_to_load_home_pages,
         error: e,
         stackTrace: null,
-        onRetry: () async => await widget.model.resetPages(),
+        onRetry: () async => await model.resetPages(),
         retryText: L10n.current.reset_home_pages,
       ),
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
+      onLoading: (_) => const HomeLoadingState(),
       onState: (_, state) {
+        final pages = state
+            .where((entry) => entry.selected)
+            .map((entry) => entry.page)
+            .toList(growable: false);
+        final initialPage = _initialPage(prefs, pages);
         return ScaffoldWithBottomNavigation(
-          pages: _pages,
-          prefs: widget.prefs,
-          initialPage: _initialPage,
+          pages: pages,
+          prefs: prefs,
+          initialPage: initialPage,
           builder: (scrollControllers, focusNodes) {
-            return List.generate(_pages.length, (index) {
-              final page = _pages[index];
+            return List.generate(pages.length, (index) {
+              final page = pages[index];
               if (page.id.startsWith('group-')) {
                 return SubscriptionGroupScreen(
                   scrollController: scrollControllers[index]!,
@@ -135,7 +119,9 @@ class _HomeScreenState extends State<_HomeScreen> {
                   );
                 default:
                   final plugin = pluginById(page.id);
-                  final screen = plugin?.homeScreen(scrollController: scrollControllers[index]!);
+                  final screen = plugin?.homeScreen(
+                    scrollController: scrollControllers[index]!,
+                  );
                   return screen ?? const MissingScreen();
               }
             });
@@ -144,19 +130,39 @@ class _HomeScreenState extends State<_HomeScreen> {
       },
     );
   }
+
+  int _initialPage(BasePrefService prefs, List<NavigationPage> pages) {
+    if (!prefs.getKeys().contains(optionHomeInitialTab)) {
+      return 0;
+    }
+    return max(
+      0,
+      pages.indexWhere((page) => page.id == prefs.get(optionHomeInitialTab)),
+    );
+  }
 }
 
 class ScaffoldWithBottomNavigation extends StatefulWidget {
   final List<NavigationPage> pages;
   final BasePrefService prefs;
   final int initialPage;
-  final List<Widget> Function(Map<int, ScrollController> scrollControllers, Map<int, FocusNode> focusNodes) builder; // changed here
+  final List<Widget> Function(
+    Map<int, ScrollController> scrollControllers,
+    Map<int, FocusNode> focusNodes,
+  )
+  builder; // changed here
 
-  const ScaffoldWithBottomNavigation(
-      {super.key, required this.pages, required this.prefs, required this.initialPage, required this.builder});
+  const ScaffoldWithBottomNavigation({
+    super.key,
+    required this.pages,
+    required this.prefs,
+    required this.initialPage,
+    required this.builder,
+  });
 
   @override
-  State<ScaffoldWithBottomNavigation> createState() => _ScaffoldWithBottomNavigationState();
+  State<ScaffoldWithBottomNavigation> createState() =>
+      _ScaffoldWithBottomNavigationState();
 }
 
 /// Which page a swipe on the navigation bar should land on.
@@ -199,9 +205,10 @@ int pageAfterNavigationSwipe({
   return next;
 }
 
-class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation> {
+class _ScaffoldWithBottomNavigationState
+    extends State<ScaffoldWithBottomNavigation> {
   late PageController _pageController;
-  late int _currentPage;
+  late HomeSelectionStore<int> _pageStore;
   final Map<int, ScrollController> _scrollControllers = {};
   final Map<int, FocusNode> _focusNodes = {};
 
@@ -223,7 +230,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
   @override
   void initState() {
     super.initState();
-    _currentPage = widget.initialPage;
+    _pageStore = HomeSelectionStore<int>(widget.initialPage);
     _pageController = PageController(initialPage: widget.initialPage);
     for (int i = 0; i < widget.pages.length; i++) {
       _scrollControllers[i] = ScrollController();
@@ -236,11 +243,16 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     super.didUpdateWidget(oldWidget);
     if (widget.pages.length != oldWidget.pages.length) {
       // Dispose controllers that are no longer needed.
-      _scrollControllers.keys.where((k) => k >= widget.pages.length).toList().forEach((k) {
-        _scrollControllers[k]?.dispose();
-        _scrollControllers.remove(k);
-      });
-      _focusNodes.keys.where((k) => k >= widget.pages.length).toList().forEach((k) {
+      _scrollControllers.keys
+          .where((k) => k >= widget.pages.length)
+          .toList()
+          .forEach((k) {
+            _scrollControllers[k]?.dispose();
+            _scrollControllers.remove(k);
+          });
+      _focusNodes.keys.where((k) => k >= widget.pages.length).toList().forEach((
+        k,
+      ) {
         _focusNodes[k]?.dispose();
         _focusNodes.remove(k);
       });
@@ -249,23 +261,32 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
         _scrollControllers.putIfAbsent(i, () => ScrollController());
         _focusNodes.putIfAbsent(i, () => FocusNode());
       }
+      if (widget.pages.isNotEmpty && _pageStore.state >= widget.pages.length) {
+        final lastPage = widget.pages.length - 1;
+        _pageStore.select(lastPage);
+        _pageController.jumpToPage(lastPage);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-
-    return HomePageSwiper(
-      movePage: _movePage,
-      child: _buildScaffold(context, l10n),
+    return ScopedBuilder<HomeSelectionStore<int>, int>(
+      store: _pageStore,
+      onState: (context, currentPage) => HomePageSwiper(
+        movePage: _movePage,
+        child: _buildSystemBars(_buildScaffold(context, l10n, currentPage)),
+      ),
     );
   }
+
+  Widget _buildSystemBars(Widget child) => XtaSystemBars(child: child);
 
   /// Moves [direction] pages along, for a tab whose own content swallowed the
   /// swipe. Clamped, so the ends stay put rather than wrapping.
   void _movePage(int direction) {
-    final target = _currentPage + direction;
+    final target = _pageStore.state + direction;
     if (target < 0 || target >= widget.pages.length) {
       return;
     }
@@ -274,11 +295,15 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     if (widget.prefs.get<bool>(optionDisableAnimations) == true) {
       _pageController.jumpToPage(target);
     } else {
-      _pageController.animateToPage(target, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+      _pageController.animateToPage(
+        target,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     }
   }
 
-  Widget _buildScaffold(BuildContext context, L10n l10n) {
+  Widget _buildScaffold(BuildContext context, L10n l10n, int currentPage) {
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -286,24 +311,23 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
             ListTile(
               leading: const Icon(Icons.search),
               title: Text(l10n.search),
-              onTap: () =>
-                  Navigator.pushNamed(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: true)),
+              onTap: () => Navigator.pushNamed(
+                context,
+                routeSearch,
+                arguments: SearchArguments(0, focusInputOnOpen: true),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: Text(l10n.settings),
               onTap: () => Navigator.pushNamed(context, routeSettings),
-            )
+            ),
           ],
         ),
       ),
       body: PageView(
         controller: _pageController,
-        onPageChanged: (page) {
-          setState(() {
-            _currentPage = page;
-          });
-        },
+        onPageChanged: _pageStore.select,
         children: widget.builder(_scrollControllers, _focusNodes),
       ),
       // Swiping the bar itself always changes tab, which swiping the page
@@ -315,62 +339,46 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
         // DragEndDetails carries velocity but not how far the finger went, so
         // the distance has to be accumulated as the drag happens.
         onHorizontalDragStart: (_) => _dragDistance = 0,
-        onHorizontalDragUpdate: (details) => _dragDistance += details.primaryDelta ?? 0,
-        onHorizontalDragEnd: (details) => _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
-        child: NavigationBar(
-        selectedIndex: _currentPage,
-        labelBehavior: widget.prefs.get(optionShowNavigationLabels)
-            ? NavigationDestinationLabelBehavior.alwaysShow
-            : NavigationDestinationLabelBehavior.alwaysHide,
-        shadowColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        indicatorColor: Colors.transparent,
-        height: 64,
-        destinations: widget.pages.asMap().entries
-            .map(
-              (e) {
-                final index = e.key;
-                final page = e.value;
-                final isSelected = _currentPage == index;
-                final scale = widget.prefs.get(optionShowNavigationLabels) ? 1.0 : (isSelected ? 1.2 : 1.2);
-                return NavigationDestination(
-                  icon: AnimatedScale(
-                    scale: scale,
-                    duration: Duration(
-                        milliseconds: XLookTokens.maybeOf(context) != null ? 250 : 0),
-                    curve: Curves.easeOut,
-                    child: page.icon,
-                  ),
-                  selectedIcon: AnimatedScale(
-                    scale: scale,
-                    duration: Duration(
-                        milliseconds: XLookTokens.maybeOf(context) != null ? 250 : 0),
-                    curve: Curves.easeOut,
-                    child: page.selectedIcon,
-                  ),
+        onHorizontalDragUpdate: (details) =>
+            _dragDistance += details.primaryDelta ?? 0,
+        onHorizontalDragEnd: (details) =>
+            _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
+        child: HomeNavigationBar(
+          selectedIndex: currentPage,
+          showLabels: widget.prefs.get(optionShowNavigationLabels),
+          disableAnimations:
+              widget.prefs.get<bool>(optionDisableAnimations) == true,
+          items: widget.pages
+              .map(
+                (page) => HomeNavigationItem(
                   label: page.titleBuilder(context),
-                );
-              })
-            .toList(),
-        // Tapping the tab you are already on goes back to the top, whichever
-        // tab it is. The Search tab grabbed its field instead, which put a
-        // keyboard where a scroll was asked for; it now only takes focus once
-        // the list is already at the top, so reaching the search bar is a
-        // deliberate second tap rather than a surprise.
-        onDestinationSelected: (index) async {
-          if (index == _currentPage) {
-            final controller = _scrollControllers[_currentPage];
-            final atTop = controller == null || !controller.hasClients || controller.offset <= 0;
-            if (!atTop) {
-              await scrollToTop(context, controller);
-            } else if (widget.pages[index].id == 'trending') {
-              _focusNodes[_currentPage]?.requestFocus();
+                  icon: page.icon,
+                  selectedIcon: page.selectedIcon,
+                ),
+              )
+              .toList(growable: false),
+          // Tapping the tab you are already on goes back to the top, whichever
+          // tab it is. The Search tab grabbed its field instead, which put a
+          // keyboard where a scroll was asked for; it now only takes focus once
+          // the list is already at the top, so reaching the search bar is a
+          // deliberate second tap rather than a surprise.
+          onSelected: (index) async {
+            if (index == currentPage) {
+              final controller = _scrollControllers[currentPage];
+              final atTop =
+                  controller == null ||
+                  !controller.hasClients ||
+                  controller.offset <= 0;
+              if (!atTop) {
+                await scrollToTop(context, controller);
+              } else if (widget.pages[index].id == 'trending') {
+                _focusNodes[currentPage]?.requestFocus();
+              }
+              return;
             }
-            return;
-          }
-          unfocusPages();
-          _pageController.jumpToPage(index);
-        },
+            unfocusPages();
+            _pageController.jumpToPage(index);
+          },
         ),
       ),
     );
@@ -378,12 +386,12 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
 
   void _swipeNavigationBar(double velocity, double distance) {
     final target = pageAfterNavigationSwipe(
-      current: _currentPage,
+      current: _pageStore.state,
       pageCount: widget.pages.length,
       velocity: velocity,
       distance: distance,
     );
-    if (target == _currentPage) {
+    if (target == _pageStore.state) {
       return;
     }
 
@@ -391,13 +399,18 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     if (widget.prefs.get<bool>(optionDisableAnimations) == true) {
       _pageController.jumpToPage(target);
     } else {
-      _pageController.animateToPage(target, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+      _pageController.animateToPage(
+        target,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
     }
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _pageStore.destroy();
     for (final controller in _scrollControllers.values) {
       controller.dispose();
     }

@@ -48,7 +48,7 @@ class _TrendsSettingsState extends State<TrendsSettings> {
 
           var countries = state.sorted((a, b) => a.name!.compareTo(b.name!)).groupBy((e) => e.country);
 
-          var names = countries.keys.sorted((a, b) => a!.compareTo(b!));
+          var names = countries.keys.sorted((a, b) => a!.compareTo(b!)).toList(growable: false);
 
           createLocationTile(TrendLocation item) {
             var subtitle = item.parentid == 1 ? Text(L10n.of(context).country) : null;

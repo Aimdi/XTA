@@ -9,11 +9,16 @@ class SettingsCrashReportsSection extends StatelessWidget {
   const SettingsCrashReportsSection({super.key});
 
   PrefDialog _repoDialog(BuildContext context, BasePrefService prefs) {
-    final controller = TextEditingController(text: prefs.get(optionCrashGithubRepo) ?? defaultCrashGithubRepo);
+    final controller = TextEditingController(
+      text: prefs.get(optionCrashGithubRepo) ?? defaultCrashGithubRepo,
+    );
     return PrefDialog(
       title: Text(L10n.of(context).crash_reports_repo),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(L10n.of(context).cancel)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(L10n.of(context).cancel),
+        ),
         TextButton(
           onPressed: () async {
             await prefs.set(optionCrashGithubRepo, controller.text.trim());
@@ -35,11 +40,16 @@ class SettingsCrashReportsSection extends StatelessWidget {
   }
 
   PrefDialog _tokenDialog(BuildContext context, BasePrefService prefs) {
-    final controller = TextEditingController(text: prefs.get(optionCrashGithubToken) ?? '');
+    final controller = TextEditingController(
+      text: prefs.get(optionCrashGithubToken) ?? '',
+    );
     return PrefDialog(
       title: Text(L10n.of(context).crash_reports_token),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(L10n.of(context).cancel)),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(L10n.of(context).cancel),
+        ),
         TextButton(
           onPressed: () async {
             await prefs.set(optionCrashGithubToken, controller.text.trim());
@@ -54,7 +64,9 @@ class SettingsCrashReportsSection extends StatelessWidget {
           child: TextFormField(
             controller: controller,
             obscureText: true,
-            decoration: InputDecoration(hintText: L10n.of(context).crash_reports_token_hint),
+            decoration: InputDecoration(
+              hintText: L10n.of(context).crash_reports_token_hint,
+            ),
           ),
         ),
       ],
@@ -66,7 +78,9 @@ class SettingsCrashReportsSection extends StatelessWidget {
     final l10n = L10n.of(context);
     final reporter = CrashReporter.instance;
     if (reporter == null) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.crash_reports_test_failed)));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.crash_reports_test_failed)),
+      );
       return;
     }
     final result = await reporter.sendTestReport();
@@ -122,7 +136,9 @@ class SettingsCrashReportsSection extends StatelessWidget {
             ),
             PrefLabel(
               title: Text(L10n.of(context).crash_reports_send_test),
-              subtitle: Text(L10n.of(context).crash_reports_send_test_description),
+              subtitle: Text(
+                L10n.of(context).crash_reports_send_test_description,
+              ),
               onTap: () => _sendTest(context),
             ),
           ],

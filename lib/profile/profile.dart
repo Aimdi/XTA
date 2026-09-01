@@ -1,27 +1,31 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:intl/intl.dart';
+import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:quax/constants.dart';
 import 'package:quax/database/entities.dart';
 import 'package:quax/generated/l10n.dart';
+import 'package:quax/home/home_chrome.dart';
 import 'package:quax/profile/_follows.dart';
 import 'package:quax/profile/_media_grid.dart';
-import 'package:quax/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:quax/profile/_saved.dart';
 import 'package:quax/profile/_tweets.dart';
+import 'package:quax/profile/media_grid/media_grid_items/media_grid_item.dart';
+import 'package:quax/profile/profile_chrome.dart';
 import 'package:quax/profile/profile_feed_settings.dart';
 import 'package:quax/profile/profile_model.dart';
 import 'package:quax/search/search.dart';
 import 'package:quax/tweet/_media.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
+import 'package:quax/tweet/tweet_context_scope.dart';
 import 'package:quax/ui/errors.dart';
+import 'package:quax/ui/reader_chrome.dart';
+import 'package:quax/ui/x_look_theme.dart';
 import 'package:quax/user.dart';
-import 'package:quax/utils/urls.dart';
 import 'package:quax/utils/rich_text.dart';
-import 'package:intl/intl.dart';
-import 'package:measure_size/measure_size.dart';
-import 'package:pref/pref.dart';
-import 'package:provider/provider.dart';
+import 'package:quax/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 
 typedef TabTitleBuilder = String Function(BuildContext context);
@@ -31,14 +35,30 @@ class NavigationTab {
   final TabTitleBuilder titleBuilder;
   final IconData icon;
 
-  NavigationTab(this.id, this.titleBuilder, this.icon);
+  const NavigationTab(this.id, this.titleBuilder, this.icon);
 }
 
 final List<NavigationTab> profileTabs = [
-  NavigationTab(ProfileTabs.posts, (c) => L10n.of(c).tweets, Icons.wysiwyg_outlined),
-  NavigationTab(ProfileTabs.postsAndReplies, (c) => L10n.of(c).tweets_and_replies, Icons.mode_comment_outlined),
-  NavigationTab(ProfileTabs.media, (c) => L10n.of(c).media, Icons.smart_display_outlined),
-  NavigationTab(ProfileTabs.saved, (c) => L10n.of(c).saved, Icons.bookmark_border),
+  NavigationTab(
+    ProfileTabs.posts,
+    (c) => L10n.of(c).tweets,
+    Icons.article_outlined,
+  ),
+  NavigationTab(
+    ProfileTabs.postsAndReplies,
+    (c) => L10n.of(c).tweets_and_replies,
+    Icons.mode_comment_outlined,
+  ),
+  NavigationTab(
+    ProfileTabs.media,
+    (c) => L10n.of(c).media,
+    Icons.perm_media_outlined,
+  ),
+  NavigationTab(
+    ProfileTabs.saved,
+    (c) => L10n.of(c).saved,
+    Icons.bookmark_border,
+  ),
 ];
 
 class ProfileScreenArguments {
@@ -48,13 +68,13 @@ class ProfileScreenArguments {
 
   ProfileScreenArguments(this.id, this.screenName, this.tabIndex);
 
-  factory ProfileScreenArguments.fromId(String id, int? tabIndex) {
-    return ProfileScreenArguments(id, null, tabIndex);
-  }
+  factory ProfileScreenArguments.fromId(String id, int? tabIndex) =>
+      ProfileScreenArguments(id, null, tabIndex);
 
-  factory ProfileScreenArguments.fromScreenName(String screenName, int? tabIndex) {
-    return ProfileScreenArguments(null, screenName, tabIndex);
-  }
+  factory ProfileScreenArguments.fromScreenName(
+    String screenName,
+    int? tabIndex,
+  ) => ProfileScreenArguments(null, screenName, tabIndex);
 }
 
 class ProfileScreen extends StatelessWidget {
@@ -62,13 +82,24 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ProfileScreenArguments;
-
+    final args =
+        ModalRoute.of(context)!.settings.arguments as ProfileScreenArguments;
     return Provider(
-        create: (context) {
-          return ProfileModel()..loadProfileByScreenName(args.screenName!);
-        },
-        child: _ProfileScreen(id: args.id, screenName: args.screenName, tabIndex: args.tabIndex));
+      create: (_) {
+        final model = ProfileModel();
+        if (args.id != null) {
+          model.loadProfileById(args.id!);
+        } else {
+          model.loadProfileByScreenName(args.screenName!);
+        }
+        return model;
+      },
+      child: _ProfileScreen(
+        id: args.id,
+        screenName: args.screenName,
+        tabIndex: args.tabIndex,
+      ),
+    );
   }
 }
 
@@ -77,29 +108,37 @@ class _ProfileScreen extends StatelessWidget {
   final String? screenName;
   final int? tabIndex;
 
-  const _ProfileScreen({required this.id, required this.screenName, required this.tabIndex});
+  const _ProfileScreen({
+    required this.id,
+    required this.screenName,
+    required this.tabIndex,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ScopedBuilder<ProfileModel, Profile>.transition(
+    return XtaSystemBars(
+      child: ScopedBuilder<ProfileModel, Profile>.transition(
         store: context.read<ProfileModel>(),
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: L10n.of(context).unable_to_load_the_profile,
-          onRetry: () {
-            if (id != null) {
-              return context.read<ProfileModel>().loadProfileById(id!);
-            } else {
-              return context.read<ProfileModel>().loadProfileByScreenName(screenName!);
-            }
-          },
+        onError: (_, error) => Scaffold(
+          body: SafeArea(
+            child: FullPageErrorWidget(
+              error: error,
+              stackTrace: null,
+              prefix: L10n.of(context).unable_to_load_the_profile,
+              onRetry: () => _reload(context),
+            ),
+          ),
         ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
-        onState: (_, state) => ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
+        onLoading: (_) => const ProfileLoadingSkeleton(),
+        onState: (_, state) =>
+            ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
       ),
     );
+  }
+
+  Future<void> _reload(BuildContext context) {
+    if (id != null) return context.read<ProfileModel>().loadProfileById(id!);
+    return context.read<ProfileModel>().loadProfileByScreenName(screenName!);
   }
 }
 
@@ -107,655 +146,507 @@ class ProfileScreenBody extends StatefulWidget {
   final Profile profile;
   final int? defaultTabIndex;
 
-  const ProfileScreenBody({super.key, required this.profile, required this.defaultTabIndex});
+  const ProfileScreenBody({
+    super.key,
+    required this.profile,
+    required this.defaultTabIndex,
+  });
 
   @override
-  State<StatefulWidget> createState() => _ProfileScreenBodyState();
+  State<ProfileScreenBody> createState() => _ProfileScreenBodyState();
 }
 
-class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProviderStateMixin {
-  static const defaultHeight = 256.12345;
-
-  final GlobalKey<NestedScrollViewState> nestedScrollViewKey = GlobalKey();
-
-  late TabController _tabController;
-
-  MediaFilter _mediaFilter = MediaFilter.all;
-
-  bool _showBackToTopButton = false;
-
-  double descriptionHeight = defaultHeight;
-  double metadataHeight = defaultHeight;
-
-  bool descriptionResized = false;
-  bool metadataResized = false;
-
-  NumberFormat numberFormat = NumberFormat.compact();
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      var nestedScrollViewState = nestedScrollViewKey.currentState;
-      if (nestedScrollViewState == null) {
-        return;
-      }
-
-      nestedScrollViewState.innerController.addListener(_listen);
-    });
-
-
-    var description = widget.profile.user.description;
-    if (description == null || description.isEmpty) {
-      descriptionHeight = 0;
-      descriptionResized = true;
-    }
-  }
+class _ProfileScreenBodyState extends State<ProfileScreenBody>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<NestedScrollViewState> _scrollViewKey = GlobalKey();
+  final NumberFormat _numberFormat = NumberFormat.compact();
+  TabController? _tabController;
+  ProfileViewStore? _viewStore;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    ProfileTabs defaultProfileTab = ProfileTabs.values.byName(PrefService.of(context).get(optionDefaultProfileTab));
-    final int initialTabIdx = widget.defaultTabIndex ?? profileTabs.indexWhere((e) => e.id == defaultProfileTab);
-
-    _tabController = TabController(length: 4, vsync: this, initialIndex: initialTabIdx);
+    if (_tabController != null) return;
+    final defaultTab = ProfileTabs.values.byName(
+      PrefService.of(context).get(optionDefaultProfileTab),
+    );
+    final preferredIndex = profileTabs.indexWhere(
+      (tab) => tab.id == defaultTab,
+    );
+    final initialIndex = (widget.defaultTabIndex ?? preferredIndex)
+        .clamp(0, profileTabs.length - 1)
+        .toInt();
+    _viewStore = ProfileViewStore(initialIndex);
+    _tabController = TabController(
+      length: profileTabs.length,
+      vsync: this,
+      initialIndex: initialIndex,
+    )..addListener(_onTabChanged);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _attachScrollListener(),
+    );
   }
 
   @override
   void dispose() {
-    nestedScrollViewKey.currentState?.innerController.removeListener(_listen);
-
+    _scrollViewKey.currentState?.innerController.removeListener(
+      _onScrollChanged,
+    );
+    _tabController
+      ?..removeListener(_onTabChanged)
+      ..dispose();
+    _viewStore?.destroy();
     super.dispose();
   }
 
-  void _listen() {
-    var nestedScrollViewState = nestedScrollViewKey.currentState;
-    if (nestedScrollViewState == null) {
-      return;
-    }
+  void _attachScrollListener() => _scrollViewKey.currentState?.innerController
+      .addListener(_onScrollChanged);
 
-    if (!nestedScrollViewState.innerController.hasClients) {
-      return;
-    }
+  void _onTabChanged() => _viewStore?.selectTab(_tabController!.index);
 
-    // Show the "scroll to top" button if we scroll down a bit, and hide it if we go back above
-    if (nestedScrollViewState.innerController.positions.any((element) => element.pixels >= 400)) {
-      if (!_showBackToTopButton) {
-        setState(() {
-          _showBackToTopButton = true;
-        });
-      }
-    } else {
-      if (_showBackToTopButton) {
-        setState(() {
-          _showBackToTopButton = false;
-        });
-      }
-    }
+  void _onScrollChanged() {
+    final controller = _scrollViewKey.currentState?.innerController;
+    if (controller == null || !controller.hasClients) return;
+    final show = controller.positions.any((position) => position.pixels >= 400);
+    _viewStore?.setBackToTopVisible(show);
   }
 
   void _scrollToTop() {
-    // We scroll the outer controller (the whole nested scroll view and children) to the top
-    // Using animateTo for smooth scrolling; jumpTo as fallback if animation fails
-    final controller = nestedScrollViewKey.currentState?.outerController;
-    if (controller != null) {
-      // Try animated scroll first - Flutter issue #52207 should be resolved in recent versions
-      if (controller.hasClients) {
-        controller.animateTo(
-          0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      } else {
-        // Fallback to instant jump if controller not ready
-        controller.jumpTo(0);
-      }
+    final controller = _scrollViewKey.currentState?.outerController;
+    if (controller == null || !controller.hasClients) return;
+    final animationsDisabled =
+        PrefService.of(context, listen: false).get(optionDisableAnimations) ==
+            true ||
+        MediaQuery.disableAnimationsOf(context);
+    if (animationsDisabled) {
+      controller.jumpTo(0);
+    } else {
+      controller.animateTo(
+        0,
+        duration: const Duration(milliseconds: 240),
+        curve: Curves.easeOutCubic,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final profile = widget.profile;
-    final user = profile.user;
-    
-    // Guard: Ensure we have valid profile data before rendering
-    if (user.idStr == null || user.idStr!.isEmpty) {
-      // Return a loading indicator or empty state instead of empty container
-      return const Center(child: CircularProgressIndicator());
-    }
-    
-    // Additional guard for required fields
-    if (user.screenName == null || user.screenName!.isEmpty) {
-      return Center(
-        child: Text(
-          L10n.of(context).user_not_found,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+    final user = widget.profile.user;
+    if (user.idStr?.isNotEmpty != true || user.screenName?.isNotEmpty != true) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: TweetEmptyState(message: L10n.of(context).user_not_found),
       );
     }
-
-    // Make the app bar height the correct aspect ratio based on the header image size (1500x500)
-    var mediaQuery = MediaQuery.of(context);
-    var deviceSize = mediaQuery.size;
-    var bannerHeight = deviceSize.width * (500 / 1500);
-    var avatarHeight = 80;
-
-    var profileImageTop = bannerHeight + 16 - 36 - mediaQuery.padding.top;
-    var profileStuffTop = bannerHeight + 36;
-
-    var theme = Theme.of(context);
-
-    var banner = user.profileBannerUrl;
-    var bannerImage = banner == null
-        ? Container(height: bannerHeight, color: Colors.white)
-        : GestureDetector(
-      child: ExtendedImage.network(banner, fit: BoxFit.fitWidth, height: bannerHeight),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                TweetMediaView(
-                    initialIndex: 0,
-                    media: [createMediaFromUrl(user.profileBannerUrl, bannerHeight)],
-                    username: user.screenName ?? "Unknown",
-                    tweetMedia: false),
-          ),
-        );
-      },
+    return ScopedBuilder<ProfileViewStore, ProfileViewState>(
+      store: _viewStore!,
+      onState: (_, viewState) => _buildProfile(context, user, viewState),
     );
+  }
 
-    // The height of the app bar should be all the inner components, plus any margins
-    var appBarHeight = profileStuffTop + avatarHeight + metadataHeight + 8 + descriptionHeight;
-
-    var metadataTextStyle = const TextStyle(fontSize: 12.5);
-    var prefs = PrefService.of(context, listen: false);
-
-    var shareBaseUrlOption = prefs.get(optionShareBaseUrl);
-    var shareBaseUrl =
-        shareBaseUrlOption != null && shareBaseUrlOption.isNotEmpty ? shareBaseUrlOption : 'https://x.com';
-
-    List<RichTextPart> descParts = [];
-    if (user.description != null && user.description!.isNotEmpty) {
-      descParts = buildRichText(context, user.description!, user.entities!.description!);
-    }
-
+  Widget _buildProfile(
+    BuildContext context,
+    UserWithExtra user,
+    ProfileViewState viewState,
+  ) {
+    final prefs = PrefService.of(context, listen: false);
     return Scaffold(
-      body: Stack(children: [
-        ExtendedNestedScrollView(
-          key: nestedScrollViewKey,
-          onlyOneScrollInBody: true,
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                  expandedHeight: appBarHeight,
-                  floating: true,
-                  pinned: true,
-                  snap: false,
-                  forceElevated: innerBoxIsScrolled,
-                  automaticallyImplyLeading: false,
-                  bottom: AppBar(
-                      automaticallyImplyLeading: false,
-                      backgroundColor: theme.colorScheme.surface,
-                      flexibleSpace: AnimatedBuilder(
-                        animation: _tabController,
-                        builder: (context, _) => TabBar(
-                          controller: _tabController,
-                          indicator: UnderlineTabIndicator(
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
-                            borderSide: BorderSide(width: 3, color: theme.colorScheme.onSurface),
-                          ),
-                          indicatorSize: TabBarIndicatorSize.label,
-                          labelColor: theme.colorScheme.onSurface,
-                          unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                          tabs: [
-                            for (final (i, t) in profileTabs.indexed)
-                              Tab(
-                                  child: _ProfileTabLabel(
-                                tab: t,
-                                selected: _tabController.index == i,
-                                trailing: t.id == ProfileTabs.media
-                                    ? _MediaFilterButton(
-                                        value: _mediaFilter,
-                                        onChanged: (filter) => setState(() => _mediaFilter = filter),
-                                      )
-                                    : null,
-                              )),
-                          ],
-                          dividerColor: theme.colorScheme.surfaceBright.withAlpha(150),
-                        ),
-                      )),
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    background: SafeArea(
-                      top: false,
-                      child: Stack(children: <Widget>[
-                        Container(alignment: Alignment.topCenter, child: bannerImage),
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: <Color>[
-                                theme.colorScheme.surface,
-                                Color.fromARGB(
-                                    100,
-                                    (theme.colorScheme.surface.r * 255.0).round(),
-                                    (theme.colorScheme.surface.g * 255.0).round(),
-                                    (theme.colorScheme.surface.b * 255.0).round())
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Container(
-                                  margin: EdgeInsets.fromLTRB(16, profileStuffTop, 16, 0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            child: Text(user.name!,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                                          ),
-                                          if (user.verified ?? false) const SizedBox(width: 6),
-                                          if (user.verified ?? false)
-                                            Icon(Icons.verified, size: 24, color: theme.colorScheme.primary),
-                                          if (user.protected ?? false) const SizedBox(width: 6),
-                                          if (user.protected ?? false)
-                                            Icon(Icons.lock, size: 24, color: theme.colorScheme.primary)
-                                        ],
-                                      ),
-                                      Container(
-                                        margin: const EdgeInsets.only(bottom: 8),
-                                        child: Text('@${(user.screenName!)}',
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: theme.brightness == Brightness.dark
-                                                    ? Colors.white70
-                                                    : Colors.black54)),
-                                      ),
-                                      if (user.description != null && user.description!.isNotEmpty)
-                                        MeasureSize(
-                                          onChange: (size) {
-                                            setState(() {
-                                              descriptionHeight = size.height;
-                                              descriptionResized = true;
-                                            });
-                                          },
-                                          child: Container(
-                                              margin: const EdgeInsets.only(bottom: 8),
-                                              child: SelectableText.rich(
-                                                  minLines: 1,
-                                                  maxLines: 5,
-                                                  TextSpan(
-                                                      style: TextStyle(
-                                                          height: 1.4,
-                                                          color: theme.brightness == Brightness.dark
-                                                              ? Colors.white
-                                                              : Colors.black),
-                                                      children: displayRichText(descParts)
-                                                  ))),
-                                        ),
-                                      MeasureSize(
-                                          onChange: (size) {
-                                            setState(() {
-                                              metadataHeight = size.height;
-                                              metadataResized = true;
-                                            });
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(bottom: 8.0),
-                                            child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                  Scrollbar(
-                                                      child: SingleChildScrollView(
-                                                          scrollDirection: Axis.horizontal,
-                                                          child: Row(children: [
-                                                            if (user.location != null && user.location!.isNotEmpty)
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                    vertical: 2, horizontal: 0),
-                                                                child: Row(
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  children: [
-                                                                    Icon(Icons.location_on_outlined,
-                                                                        size: 14, color: theme.hintColor),
-                                                                    const SizedBox(width: 4),
-                                                                    Text(user.location!, style: metadataTextStyle),
-                                                                    const SizedBox(
-                                                                      width: 8,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            if (user.url != null && user.url!.isNotEmpty)
-                                                              Padding(
-                                                                  padding: const EdgeInsets.symmetric(
-                                                                      vertical: 2, horizontal: 0),
-                                                                  child: Row(
-                                                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                                                    children: [
-                                                                      Icon(Icons.link,
-                                                                          size: 14, color: theme.hintColor),
-                                                                      const SizedBox(width: 4),
-                                                                      Builder(builder: (context) {
-                                                                        var url = user.entities?.url?.urls?.firstWhere(
-                                                                            (element) => element.url == user.url);
-
-                                                                        if (url == null) {
-                                                                          return Container();
-                                                                        }
-
-                                                                        var displayUrl = url.displayUrl ?? url.url;
-                                                                        var expandedUrl = url.expandedUrl ?? url.url;
-
-                                                                        var textStyle = metadataTextStyle;
-                                                                        if (displayUrl == null || expandedUrl == null) {
-                                                                          return Text(L10n.current.unsupported_url,
-                                                                              style: textStyle.copyWith(
-                                                                                  color: theme.hintColor));
-                                                                        }
-
-                                                                        return InkWell(
-                                                                          child: Text(displayUrl,
-                                                                              style: textStyle.copyWith(
-                                                                                  color: Theme.of(context)
-                                                                                      .colorScheme
-                                                                                      .primary)),
-                                                                          onTap: () => openUri(context, expandedUrl),
-                                                                        );
-                                                                      }),
-                                                                      const SizedBox(
-                                                                        width: 8,
-                                                                      ),
-                                                                    ],
-                                                                  )),
-                                                            if (user.createdAt != null)
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(
-                                                                    vertical: 2, horizontal: 0),
-                                                                child: Row(
-                                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                                  children: [
-                                                                    Icon(Icons.calendar_today_outlined,
-                                                                        size: 14, color: theme.hintColor),
-                                                                    const SizedBox(width: 4),
-                                                                    Text(
-                                                                        L10n.of(context).joined(DateFormat('MMMM yyyy')
-                                                                            .format(user.createdAt!)),
-                                                                        style: metadataTextStyle),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                          ]))),
-                                                  Scrollbar(
-                                                      child: SingleChildScrollView(
-                                                          scrollDirection: Axis.horizontal,
-                                                          child: Row(
-                                                            children: [
-                                                              if (user.friendsCount != null)
-                                                                InkWell(
-                                                                    onTap: () => Navigator.of(context).push(
-                                                                        MaterialPageRoute(
-                                                                            builder: ((context) => ProfileFollows(
-                                                                                user: user, type: 'following')))),
-                                                                    child: Padding(
-                                                                      padding: const EdgeInsets.symmetric(
-                                                                          vertical: 2, horizontal: 0),
-                                                                      child: Row(
-                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                        children: [
-                                                                          Text.rich(TextSpan(children: [
-                                                                            TextSpan(
-                                                                                text: numberFormat.format(
-                                                                                    widget.profile.user.friendsCount),
-                                                                                style: metadataTextStyle.copyWith(
-                                                                                    fontWeight: FontWeight.w700)),
-                                                                            TextSpan(
-                                                                                text:
-                                                                                    ' ${L10n.current.following.toLowerCase()}',
-                                                                                style: metadataTextStyle)
-                                                                          ])),
-                                                                          const SizedBox(
-                                                                            width: 8,
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                    )),
-                                                              if (user.followersCount != null)
-                                                                InkWell(
-                                                                    onTap: () => Navigator.of(context).push(
-                                                                        MaterialPageRoute(
-                                                                            builder: ((context) => ProfileFollows(
-                                                                                user: user, type: 'followers')))),
-                                                                    child: Padding(
-                                                                      padding: const EdgeInsets.symmetric(
-                                                                          vertical: 2, horizontal: 0),
-                                                                      child: Row(
-                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                        children: [
-                                                                          Text.rich(TextSpan(children: [
-                                                                            TextSpan(
-                                                                                text: numberFormat.format(
-                                                                                    widget.profile.user.followersCount),
-                                                                                style: metadataTextStyle.copyWith(
-                                                                                    fontWeight: FontWeight.w700)),
-                                                                            TextSpan(
-                                                                                text:
-                                                                                    ' ${L10n.current.followers.toLowerCase()}',
-                                                                                style: metadataTextStyle)
-                                                                          ])),
-                                                                        ],
-                                                                      ),
-                                                                    )),
-                                                            ],
-                                                          )))
-                                                ]),
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.topRight,
-                          margin: EdgeInsets.fromLTRB(128, profileImageTop + 64, 16, 16),
-                          child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                            ProfileFeedSettingsButton(
-                              user: user,
-                              color: theme.colorScheme.primary,
-                            ),
-                            FollowButton(
-                              user: UserSubscription.fromUser(user),
-                              color: theme.colorScheme.primary,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.search),
-                              color: theme.colorScheme.primary,
-                              onPressed: () => Navigator.pushNamed(context, routeSearch,
-                                  arguments: SearchArguments(1,
-                                      focusInputOnOpen: true, query: 'from:@${(user.screenName!)} ')),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.share,
-                                color: theme.colorScheme.primary,
-                              ),
-                              onPressed: () => Share.share("$shareBaseUrl/${user.screenName}"),
-                            ),
-                          ]),
-                        ),
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.fromLTRB(16, profileImageTop, 16, 16),
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.white,
-                            child: GestureDetector(
-                              child: UserAvatar(uri: user.profileImageUrlHttps, size: 96),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        TweetMediaView(
-                                            initialIndex: 0,
-                                            media: [createMediaFromUrl(user.profileImageUrlHttps?.replaceAll("_normal", "_400x400"), null)],
-                                            username: user.screenName ?? "Unknown",
-                                            tweetMedia: false),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        )
-                      ]),
-                    ),
-                  ))
-            ];
-          },
-          body: MultiProvider(
-            providers: [
-              ChangeNotifierProvider<TweetContextState>(
-                  create: (_) => TweetContextState(prefs.get(optionTweetsHideSensitive)))
-            ],
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                ProfileTweets(
-                    user: user,
-                    type: 'profile',
-                    includeReplies: false,
-                    pinnedTweets: widget.profile.pinnedTweets,
-                    pref: prefs),
-                ProfileTweets(
-                    user: user,
-                    type: 'profile',
-                    includeReplies: true,
-                    pinnedTweets: widget.profile.pinnedTweets,
-                    pref: prefs),
-                ProfileMediaGrid(user: user, pref: prefs, filter: _mediaFilter),
-                ProfileSaved(user: user),
-              ],
+      body: ExtendedNestedScrollView(
+        key: _scrollViewKey,
+        onlyOneScrollInBody: true,
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            pinned: true,
+            title: Text(
+              _displayName(user),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ),
-
-        // Use a smooth cross-fade transition to eliminate flicker during profile loading
-        // This ensures the UI remains stable while description and metadata are being measured
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 200),
-          crossFadeState: (descriptionResized == true && metadataResized == true)
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-          firstChild: Container(
-            key: const Key('loading'),
-            height: 100,
-            color: theme.colorScheme.surface,
-            child: Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
+          SliverToBoxAdapter(child: _buildBanner(context, user)),
+          SliverToBoxAdapter(child: _buildIdentity(context, user)),
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: ProfileTabsDelegate(
+              ProfileTabsBar(
+                controller: _tabController!,
+                tabs: profileTabs
+                    .map((tab) => _ProfileTabLabel(tab: tab))
+                    .toList(growable: false),
               ),
             ),
           ),
-          secondChild: Container(key: const Key('loaded')),
-        )
-      ]),
-      floatingActionButton: _showBackToTopButton == false
-          ? null
-          : FloatingActionButton(
+        ],
+        body: TweetContextScope(
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              ProfileTweets(
+                user: user,
+                type: 'profile',
+                includeReplies: false,
+                pinnedTweets: widget.profile.pinnedTweets,
+                pref: prefs,
+              ),
+              ProfileTweets(
+                user: user,
+                type: 'profile',
+                includeReplies: true,
+                pinnedTweets: widget.profile.pinnedTweets,
+                pref: prefs,
+              ),
+              _ProfileMediaSection(
+                user: user,
+                pref: prefs,
+                filter: viewState.mediaFilter,
+                onChanged: _viewStore!.selectMediaFilter,
+              ),
+              ProfileSaved(user: user),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: viewState.showBackToTop
+          ? FloatingActionButton.small(
               onPressed: _scrollToTop,
+              tooltip: MaterialLocalizations.of(context).reorderItemToStart,
               child: const Icon(Icons.arrow_upward),
-            ),
+            )
+          : null,
     );
   }
-}
 
-/// X-style profile tab: always shows its symbol, and expands with the
-/// localized label while selected.
-class _ProfileTabLabel extends StatelessWidget {
-  final NavigationTab tab;
-  final bool selected;
-  final Widget? trailing;
+  Widget _buildBanner(BuildContext context, UserWithExtra user) {
+    return SizedBox(
+      height: kProfileBannerHeight,
+      child: ProfileBanner(
+        uri: user.profileBannerUrl,
+        semanticLabel: _displayName(user),
+        onTap: user.profileBannerUrl == null
+            ? null
+            : () => _openMedia(
+                context,
+                user,
+                user.profileBannerUrl!,
+                kProfileBannerHeight,
+              ),
+      ),
+    );
+  }
 
-  const _ProfileTabLabel({required this.tab, required this.selected, this.trailing});
+  Widget _buildIdentity(BuildContext context, UserWithExtra user) {
+    final description = user.description?.trim();
+    final parts = description == null || description.isEmpty
+        ? const <RichTextPart>[]
+        : buildRichText(context, description, user.entities?.description);
+    final background =
+        XLookTokens.maybeOf(context)?.background ??
+        Theme.of(context).scaffoldBackgroundColor;
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(tab.icon, size: 22),
-        if (selected) ...[
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(tab.titleBuilder(context),
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w700)),
+    return ColoredBox(
+      color: background,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              kTweetHorizontalPadding,
+              52,
+              kTweetHorizontalPadding,
+              kTweetSpace3,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildName(context, user),
+                const SizedBox(height: kTweetSpace1),
+                Text('@${user.screenName}', style: tweetMetadataStyle(context)),
+                if (parts.isNotEmpty) ...[
+                  const SizedBox(height: kTweetSpace3),
+                  SelectableText.rich(
+                    TextSpan(
+                      style: tweetBodyStyle(context).copyWith(height: 1.45),
+                      children: displayRichText(parts),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: kTweetSpace3),
+                _buildMetadata(context, user),
+                _buildCounts(context, user),
+              ],
+            ),
           ),
-          if (trailing != null) trailing!,
+          PositionedDirectional(
+            top: -kProfileAvatarSize / 2,
+            start: kTweetHorizontalPadding,
+            child: ProfileAvatar(
+              uri: user.profileImageUrlHttps,
+              semanticLabel: _displayName(user),
+              onTap: user.profileImageUrlHttps == null
+                  ? null
+                  : () => _openMedia(
+                      context,
+                      user,
+                      user.profileImageUrlHttps!.replaceAll(
+                        '_normal',
+                        '_400x400',
+                      ),
+                      null,
+                    ),
+            ),
+          ),
+          PositionedDirectional(
+            top: kTweetSpace1,
+            end: kTweetSpace2,
+            child: _buildActions(context, user),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildName(BuildContext context, UserWithExtra user) {
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            _displayName(user),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(height: 1.18),
+          ),
+        ),
+        if (user.verified ?? false) ...[
+          const SizedBox(width: kTweetSpace1),
+          Icon(Icons.verified, size: 18, color: tweetAccentColor(context)),
+        ],
+        if (user.protected ?? false) ...[
+          const SizedBox(width: kTweetSpace1),
+          Icon(
+            Icons.lock_outline,
+            size: 18,
+            color: tweetSecondaryColor(context),
+          ),
         ],
       ],
     );
   }
-}
 
-/// The chevron on the selected Media tab, which opens the photos/videos filter.
-///
-/// It is its own tap target rather than a second meaning for the tab itself:
-/// tapping the tab still returns the grid to the top, as every other tab does.
-class _MediaFilterButton extends StatelessWidget {
-  final MediaFilter value;
-  final ValueChanged<MediaFilter> onChanged;
-
-  const _MediaFilterButton({required this.value, required this.onChanged});
-
-  String _labelFor(BuildContext context, MediaFilter filter) => switch (filter) {
-        MediaFilter.all => L10n.of(context).all,
-        MediaFilter.photos => L10n.of(context).photos,
-        MediaFilter.videos => L10n.of(context).videos,
-      };
-
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton<MediaFilter>(
-      initialValue: value,
-      onSelected: onChanged,
-      tooltip: L10n.of(context).media,
-      padding: EdgeInsets.zero,
-      itemBuilder: (context) => [
-        for (final filter in MediaFilter.values)
-          PopupMenuItem(value: filter, child: Text(_labelFor(context, filter))),
+  Widget _buildMetadata(BuildContext context, UserWithExtra user) {
+    final url = _profileUrl(user);
+    return Wrap(
+      children: [
+        if (user.location?.isNotEmpty == true)
+          ProfileMetadataItem(
+            icon: Icons.location_on_outlined,
+            child: Text(user.location!),
+          ),
+        if (url != null)
+          ProfileMetadataItem(
+            icon: Icons.link,
+            child: InkWell(
+              onTap: () => openUri(context, url.expanded),
+              child: Text(
+                url.display,
+                style: tweetMetadataStyle(
+                  context,
+                ).copyWith(color: tweetAccentColor(context)),
+              ),
+            ),
+          ),
+        if (user.createdAt != null)
+          ProfileMetadataItem(
+            icon: Icons.calendar_today_outlined,
+            child: Text(
+              L10n.of(context).joined(
+                DateFormat.yMMMM(
+                  Localizations.localeOf(context).toString(),
+                ).format(user.createdAt!),
+              ),
+            ),
+          ),
       ],
-      child: Padding(
-        padding: const EdgeInsets.only(left: 2),
-        child: Icon(
-          Icons.expand_more,
-          size: 18,
-          color: value == MediaFilter.all ? null : Theme.of(context).colorScheme.primary,
+    );
+  }
+
+  Widget _buildCounts(BuildContext context, UserWithExtra user) {
+    return Wrap(
+      children: [
+        if (user.friendsCount != null)
+          ProfileCountButton(
+            count: _numberFormat.format(user.friendsCount),
+            label: L10n.of(context).following,
+            onTap: () => _openFollows(context, user, 'following'),
+          ),
+        if (user.followersCount != null)
+          ProfileCountButton(
+            count: _numberFormat.format(user.followersCount),
+            label: L10n.of(context).followers,
+            onTap: () => _openFollows(context, user, 'followers'),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildActions(BuildContext context, UserWithExtra user) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        FollowButton(user: UserSubscription.fromUser(user)),
+        ProfileFeedSettingsButton(user: user),
+        IconButton(
+          tooltip: L10n.of(context).search,
+          icon: const Icon(Icons.search),
+          onPressed: () => Navigator.pushNamed(
+            context,
+            routeSearch,
+            arguments: SearchArguments(
+              1,
+              focusInputOnOpen: true,
+              query: 'from:@${user.screenName} ',
+            ),
+          ),
+        ),
+        IconButton(
+          tooltip: L10n.of(context).share_link,
+          icon: const Icon(Icons.share_outlined),
+          onPressed: () =>
+              Share.share('${_shareBaseUrl(context)}/${user.screenName}'),
+        ),
+      ],
+    );
+  }
+
+  String _displayName(UserWithExtra user) {
+    final name = user.name?.trim();
+    return name == null || name.isEmpty ? '@${user.screenName}' : name;
+  }
+
+  ({String display, String expanded})? _profileUrl(UserWithExtra user) {
+    final urls = user.entities?.url?.urls;
+    if (urls == null) return null;
+    for (final candidate in urls) {
+      if (candidate.url != user.url) continue;
+      final display = candidate.displayUrl ?? candidate.url;
+      final expanded = candidate.expandedUrl ?? candidate.url;
+      if (display != null && expanded != null)
+        return (display: display, expanded: expanded);
+    }
+    return null;
+  }
+
+  String _shareBaseUrl(BuildContext context) {
+    final configured = PrefService.of(
+      context,
+      listen: false,
+    ).get(optionShareBaseUrl);
+    return configured != null && configured.isNotEmpty
+        ? configured
+        : 'https://x.com';
+  }
+
+  void _openFollows(BuildContext context, UserWithExtra user, String type) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ProfileFollows(user: user, type: type),
+      ),
+    );
+  }
+
+  void _openMedia(
+    BuildContext context,
+    UserWithExtra user,
+    String uri,
+    double? height,
+  ) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TweetMediaView(
+          initialIndex: 0,
+          media: [createMediaFromUrl(uri, height)],
+          username: user.screenName!,
+          tweetMedia: false,
         ),
       ),
     );
   }
 }
 
+class _ProfileTabLabel extends StatelessWidget {
+  final NavigationTab tab;
+
+  const _ProfileTabLabel({required this.tab});
+
+  @override
+  Widget build(BuildContext context) {
+    return Tab(
+      height: kProfileTabHeight,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(tab.icon, size: kTweetActionIconSize),
+          const SizedBox(width: kTweetSpace2),
+          Text(tab.titleBuilder(context)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileMediaSection extends StatelessWidget {
+  final UserWithExtra user;
+  final BasePrefService pref;
+  final MediaFilter filter;
+  final ValueChanged<MediaFilter> onChanged;
+
+  const _ProfileMediaSection({
+    required this.user,
+    required this.pref,
+    required this.filter,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String label(MediaFilter value) => switch (value) {
+      MediaFilter.all => L10n.of(context).all,
+      MediaFilter.photos => L10n.of(context).photos,
+      MediaFilter.videos => L10n.of(context).videos,
+    };
+    return Column(
+      children: [
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: kTweetHorizontalPadding,
+            ),
+            child: HomeFeedSwitcher<MediaFilter>(
+              selected: filter,
+              options: MediaFilter.values
+                  .map(
+                    (value) =>
+                        HomeSwitcherOption(value: value, label: label(value)),
+                  )
+                  .toList(growable: false),
+              onSelected: onChanged,
+            ),
+          ),
+        ),
+        tweetHairlineDivider(context),
+        Expanded(
+          child: ProfileMediaGrid(user: user, pref: pref, filter: filter),
+        ),
+      ],
+    );
+  }
+}
+
+/// Legacy context state consumed by Tweet media in several existing modules.
+/// Profile uses [TweetContextScope] rather than constructing this notifier.
 class TweetContextState extends ChangeNotifier {
   bool hideSensitive;
 

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:quax/constants.dart';
 import 'package:quax/generated/l10n.dart';
-import 'package:pref/pref.dart';
+import 'package:quax/settings/settings_chrome.dart';
+import 'package:quax/settings/settings_view_store.dart';
 import 'package:quax/utils/download_directory.dart';
 
 class SettingsMediaFragment extends StatelessWidget {
@@ -9,115 +12,133 @@ class SettingsMediaFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var prefs = PrefService.of(context);
+    final prefs = PrefService.of(context);
+    final l10n = L10n.of(context);
+    final qualityItems = [
+      DropdownMenuItem(value: 'thumb', child: Text(l10n.quality_low)),
+      DropdownMenuItem(value: 'small', child: Text(l10n.quality_medium)),
+      DropdownMenuItem(value: 'medium', child: Text(l10n.quality_high)),
+      DropdownMenuItem(value: 'large', child: Text(l10n.quality_maximum)),
+    ];
 
-    List<DropdownMenuItem<String>> qualityItems() => [
-          DropdownMenuItem(value: 'thumb', child: Text(L10n.of(context).quality_low)),
-          DropdownMenuItem(value: 'small', child: Text(L10n.of(context).quality_medium)),
-          DropdownMenuItem(value: 'medium', child: Text(L10n.of(context).quality_high)),
-          DropdownMenuItem(value: 'large', child: Text(L10n.of(context).quality_maximum)),
-        ];
-
-    return Scaffold(
-      appBar: AppBar(title: Text(L10n.current.media)),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: ListView(children: [
-          PrefSwitch(
-            pref: optionMediaDisableAutoload,
-            title: Text(L10n.of(context).load_media_manually),
-            subtitle: Text(L10n.of(context).load_media_manually_description),
-          ),
-          PrefDropdown(
-              fullWidth: false,
-              title: Text(L10n.of(context).image_quality),
-              subtitle: Text(L10n.of(context).save_bandwidth_using_smaller_images),
-              pref: optionImageQuality,
-              items: qualityItems()),
-          PrefDropdown(
-              fullWidth: false,
-              title: Text(L10n.of(context).video_quality),
-              subtitle: Text(L10n.of(context).video_quality_description),
-              pref: optionMediaVideoQuality,
-              items: qualityItems()),
-          PrefDropdown(
-              fullWidth: false,
-              title: Text(L10n.of(context).media_grid_columns),
-              subtitle: Text(L10n.of(context).media_grid_columns_description),
-              pref: optionMediaGridColumns,
-              items: [
-                for (var count in [1, 2, 3, 4, 5])
-                  DropdownMenuItem(
-                    value: count,
-                    child: Text('$count'),
-                  ),
-              ]),
-          ExpansionTile(
-            leading: const Icon(Icons.grid_view),
-            title: Text(L10n.of(context).media_layout),
+    return SettingsPageScaffold(
+      title: l10n.media,
+      body: SettingsList(
+        children: [
+          SettingsSection(
+            title: l10n.image_quality,
             children: [
-              PrefRadio<String>(
-                title: Text(L10n.of(context).media_layout_masonry),
-                value: mediaGridLayoutMasonry,
-                pref: optionMediaGridLayout,
+              PrefSwitch(
+                pref: optionMediaDisableAutoload,
+                title: Text(l10n.load_media_manually),
+                subtitle: Text(l10n.load_media_manually_description),
               ),
-              PrefRadio<String>(
-                title: Text(L10n.of(context).media_layout_feed),
-                value: mediaGridLayoutFeed,
-                pref: optionMediaGridLayout,
+              PrefDropdown<String>(
+                fullWidth: false,
+                title: Text(l10n.image_quality),
+                subtitle: Text(l10n.save_bandwidth_using_smaller_images),
+                pref: optionImageQuality,
+                items: qualityItems,
               ),
-              PrefRadio<String>(
-                title: Text(L10n.of(context).media_layout_two_columns),
-                value: mediaGridLayoutTwoColumns,
-                pref: optionMediaGridLayout,
+              PrefDropdown<String>(
+                fullWidth: false,
+                title: Text(l10n.video_quality),
+                subtitle: Text(l10n.video_quality_description),
+                pref: optionMediaVideoQuality,
+                items: qualityItems,
+              ),
+              PrefDropdown<int>(
+                fullWidth: false,
+                title: Text(l10n.media_grid_columns),
+                subtitle: Text(l10n.media_grid_columns_description),
+                pref: optionMediaGridColumns,
+                items: [
+                  for (var count in [1, 2, 3, 4, 5])
+                    DropdownMenuItem(value: count, child: Text('$count')),
+                ],
               ),
             ],
           ),
-          PrefSwitch(
-            pref: optionMediaDefaultMute,
-            title: Text(L10n.of(context).mute_videos),
-            subtitle: Text(L10n.of(context).mute_video_description),
-          ),
-          PrefSwitch(
-            pref: optionMediaDefaultLoop,
-            title: Text(L10n.of(context).loop_videos),
-            subtitle: Text(L10n.of(context).loop_videos_description),
-          ),
-          PrefSwitch(
-            pref: optionMediaDefaultAutoPlay,
-            title: Text(L10n.of(context).autoplay_videos),
-            subtitle: Text(L10n.of(context).autoplay_videos_description),
-          ),
-          PrefDropdown(
-              fullWidth: false,
-              title: Text(L10n.of(context).video_prefetch),
-              subtitle: Text(L10n.of(context).video_prefetch_description),
-              pref: optionMediaVideoPrefetchSeconds,
-              items: [
-                DropdownMenuItem(
-                  value: 0,
-                  child: Text(L10n.of(context).video_prefetch_unlimited),
-                ),
-                for (var seconds in [1, 5, 15, 30, 60])
-                  DropdownMenuItem(
-                    value: seconds,
-                    child: Text(L10n.of(context).video_prefetch_seconds(seconds)),
+          SettingsSection(
+            title: l10n.media_layout,
+            children: [
+              SettingsPreferenceSelector<String>(
+                prefs: prefs,
+                pref: optionMediaGridLayout,
+                options: [
+                  SettingsOption(
+                    value: mediaGridLayoutMasonry,
+                    label: l10n.media_layout_masonry,
+                    icon: Icons.dashboard_outlined,
                   ),
-              ]),
-          PrefSwitch(
-            pref: optionMediaBackgroundPlayback,
-            title: Text(L10n.of(context).allow_background_play),
-            subtitle: Text(L10n.of(context).allow_background_play_description),
+                  SettingsOption(
+                    value: mediaGridLayoutFeed,
+                    label: l10n.media_layout_feed,
+                    icon: Icons.view_agenda_outlined,
+                  ),
+                  SettingsOption(
+                    value: mediaGridLayoutTwoColumns,
+                    label: l10n.media_layout_two_columns,
+                    icon: Icons.grid_view_outlined,
+                  ),
+                ],
+              ),
+            ],
           ),
-          PrefSwitch(
-            pref: optionMediaAllowBackgroundPlayOtherApps,
-            title: Text(L10n.of(context).allow_background_play_other_apps),
-            subtitle: Text(L10n.of(context).allow_background_play_other_apps_description),
+          SettingsSection(
+            title: l10n.video_quality,
+            children: [
+              PrefSwitch(
+                pref: optionMediaDefaultMute,
+                title: Text(l10n.mute_videos),
+                subtitle: Text(l10n.mute_video_description),
+              ),
+              PrefSwitch(
+                pref: optionMediaDefaultLoop,
+                title: Text(l10n.loop_videos),
+                subtitle: Text(l10n.loop_videos_description),
+              ),
+              PrefSwitch(
+                pref: optionMediaDefaultAutoPlay,
+                title: Text(l10n.autoplay_videos),
+                subtitle: Text(l10n.autoplay_videos_description),
+              ),
+              PrefDropdown<int>(
+                fullWidth: false,
+                title: Text(l10n.video_prefetch),
+                subtitle: Text(l10n.video_prefetch_description),
+                pref: optionMediaVideoPrefetchSeconds,
+                items: [
+                  DropdownMenuItem(
+                    value: 0,
+                    child: Text(l10n.video_prefetch_unlimited),
+                  ),
+                  for (var seconds in [1, 5, 15, 30, 60])
+                    DropdownMenuItem(
+                      value: seconds,
+                      child: Text(l10n.video_prefetch_seconds(seconds)),
+                    ),
+                ],
+              ),
+              PrefSwitch(
+                pref: optionMediaBackgroundPlayback,
+                title: Text(l10n.allow_background_play),
+                subtitle: Text(l10n.allow_background_play_description),
+              ),
+              PrefSwitch(
+                pref: optionMediaAllowBackgroundPlayOtherApps,
+                title: Text(l10n.allow_background_play_other_apps),
+                subtitle: Text(
+                  l10n.allow_background_play_other_apps_description,
+                ),
+              ),
+            ],
           ),
-          DownloadTypeSetting(
-            prefs: prefs,
+          SettingsSection(
+            title: l10n.download_handling,
+            children: [DownloadTypeSetting(prefs: prefs)],
           ),
-        ]),
+        ],
       ),
     );
   }
@@ -129,58 +150,79 @@ class DownloadTypeSetting extends StatefulWidget {
   const DownloadTypeSetting({super.key, required this.prefs});
 
   @override
-  DownloadTypeSettingState createState() => DownloadTypeSettingState();
+  State<DownloadTypeSetting> createState() => DownloadTypeSettingState();
 }
 
 class DownloadTypeSettingState extends State<DownloadTypeSetting> {
+  late final SettingsRevisionStore _viewStore;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewStore = SettingsRevisionStore();
+  }
+
+  @override
+  void dispose() {
+    _viewStore.destroy();
+    super.dispose();
+  }
+
+  Future<void> _pickDirectory() async {
+    final treeUri = await DownloadDirectory.pick();
+    if (treeUri == null) return;
+    await widget.prefs.set(optionDownloadTreeUri, treeUri);
+    await widget.prefs.set(
+      optionDownloadPath,
+      DownloadDirectory.displayName(treeUri),
+    );
+    if (!mounted) return;
+    _viewStore.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var downloadPath = widget.prefs.get<String>(optionDownloadPath) ?? '';
-    var treeUri = widget.prefs.get<String>(optionDownloadTreeUri) ?? '';
-
-    return Column(
-      children: [
-        PrefDropdown(
-          onChange: (value) {
-            setState(() {});
-          },
-          fullWidth: false,
-          title: Text(L10n.current.download_handling),
-          subtitle: Text(L10n.current.download_handling_description),
-          pref: optionDownloadType,
-          items: [
-            DropdownMenuItem(value: optionDownloadTypeAsk, child: Text(L10n.current.download_handling_type_ask)),
-            DropdownMenuItem(
-                value: optionDownloadTypeDirectory, child: Text(L10n.current.download_handling_type_directory)),
-          ],
-        ),
-        if (widget.prefs.get(optionDownloadType) == optionDownloadTypeDirectory)
-          PrefButton(
-            onTap: () async {
-              // The system picker, which also hands over lasting write access.
-              // A bare path cannot be written to on Android 11 and later.
-              final treeUri = await DownloadDirectory.pick();
-              if (treeUri == null) {
-                return;
-              }
-              setState(() {
-                widget.prefs.set(optionDownloadTreeUri, treeUri);
-                widget.prefs.set(optionDownloadPath, DownloadDirectory.displayName(treeUri));
-              });
-            },
-            title: Text(L10n.current.download_path),
-            subtitle: Text(
-              treeUri.isEmpty && downloadPath.isEmpty
-                  ? L10n.current.not_set
-                  : (treeUri.isEmpty
-                      // Chosen by an older build, so it cannot be written to
-                      // any more; say so instead of failing at save time.
-                      ? '$downloadPath — ${L10n.current.download_path_needs_reselect}'
-                      : DownloadDirectory.displayName(treeUri)),
+    return ScopedBuilder<SettingsRevisionStore, int>(
+      store: _viewStore,
+      onState: (_, __) {
+        final downloadPath = widget.prefs.get<String>(optionDownloadPath) ?? '';
+        final treeUri = widget.prefs.get<String>(optionDownloadTreeUri) ?? '';
+        return Column(
+          children: [
+            PrefDropdown<String>(
+              onChange: (_) => _viewStore.refresh(),
+              fullWidth: false,
+              title: Text(L10n.current.download_handling),
+              subtitle: Text(L10n.current.download_handling_description),
+              pref: optionDownloadType,
+              items: [
+                DropdownMenuItem(
+                  value: optionDownloadTypeAsk,
+                  child: Text(L10n.current.download_handling_type_ask),
+                ),
+                DropdownMenuItem(
+                  value: optionDownloadTypeDirectory,
+                  child: Text(L10n.current.download_handling_type_directory),
+                ),
+              ],
             ),
-            child: Text(L10n.current.choose),
-          )
-      ],
+            if (widget.prefs.get(optionDownloadType) ==
+                optionDownloadTypeDirectory)
+              PrefButton(
+                onTap: _pickDirectory,
+                title: Text(L10n.current.download_path),
+                subtitle: Text(
+                  treeUri.isEmpty && downloadPath.isEmpty
+                      ? L10n.current.not_set
+                      : treeUri.isEmpty
+                      ? '$downloadPath — ${L10n.current.download_path_needs_reselect}'
+                      : DownloadDirectory.displayName(treeUri),
+                ),
+                child: Text(L10n.current.choose),
+              ),
+          ],
+        );
+      },
     );
   }
 }

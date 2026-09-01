@@ -18,7 +18,6 @@ class SubstackArchiveScreen extends StatefulWidget {
 
 class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
   SubstackArchiveStore? _store;
-  bool _isInitialLoad = true;
   bool _hasLoaded = false;
 
   @override
@@ -28,7 +27,6 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
       final store = SubstackArchiveStore(context.read(), widget.publication);
       setState(() => _store = store);
       // DON'T auto-refresh on init - only refresh on explicit pull-to-refresh
-      _isInitialLoad = false;
     });
   }
 

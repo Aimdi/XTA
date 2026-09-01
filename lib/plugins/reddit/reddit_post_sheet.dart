@@ -7,7 +7,6 @@ import 'package:quax/plugins/reddit/reddit_client.dart';
 import 'package:quax/plugins/reddit/reddit_listing_screen.dart';
 import 'package:quax/plugins/reddit/reddit_store.dart';
 import 'package:quax/utils/urls.dart';
-import 'package:quax/database/entities.dart';
 import 'package:quax/group/group_model.dart';
 import 'package:quax/subscriptions/users_model.dart';
 
@@ -156,7 +155,7 @@ class _RedditAddToGroupAction extends StatelessWidget {
     final groups = groupsModel.state;
     if (groups.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.no_groups_create_one)),
+        SnackBar(content: Text(l10n.no_subscription_groups_yet)),
       );
       return;
     }
@@ -193,14 +192,15 @@ class _RedditAddToGroupAction extends StatelessWidget {
     
     if (selectedGroupId == null) return;
     
-    // Add subreddit to the selected group
-    await groupsModel.add(selectedGroupId, GroupMemberPreview(
-      id: subreddit.toLowerCase(),
-      name: subreddit,
-      avatarUrl: null,
-      subreddit: subreddit,
-    ));
-    
+    // A group member must also exist in the local subscriptions table. Follow
+    // the subreddit first, then preserve any groups it already belongs to.
+    final subredditId = subreddit.toLowerCase();
+    await context.read<RedditSubredditsStore>().add(subreddit);
+    final memberships = await groupsModel.listGroupsForUser(subredditId);
+    if (!memberships.contains(selectedGroupId)) {
+      await groupsModel.saveUserGroupMembership(subredditId, [...memberships, selectedGroupId]);
+    }
+
     await subscriptionsModel.reloadSubscriptions();
   }
 }

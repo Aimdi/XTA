@@ -6,7 +6,6 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:quax/home/edge_swipe.dart';
 import 'package:quax/constants.dart';
 import 'package:quax/generated/l10n.dart';
 import 'package:quax/profile/profile.dart';
@@ -14,7 +13,6 @@ import 'package:quax/tweet/_photo.dart';
 import 'package:quax/tweet/_video.dart';
 import 'package:quax/tweet/tweet_chrome.dart';
 import 'package:quax/ui/errors.dart';
-import 'package:quax/ui/x_look_theme.dart';
 import 'package:quax/utils/downloads.dart';
 import 'package:path/path.dart' as path;
 import 'package:pref/pref.dart';
@@ -23,20 +21,17 @@ import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
 
 class _TweetMediaItem extends StatefulWidget {
-  final int index;
   final int mediaIndex;
-  final int total;
   final Media media;
   final String username;
   final String? tweetId;
 
-  const _TweetMediaItem(
-      {required this.index,
-      required this.mediaIndex,
-      required this.total,
-      required this.media,
-      required this.username,
-      this.tweetId});
+  const _TweetMediaItem({
+    required this.mediaIndex,
+    required this.media,
+    required this.username,
+    this.tweetId,
+  });
 
   @override
   State<_TweetMediaItem> createState() => _TweetMediaItemState();
@@ -49,7 +44,12 @@ class _TweetMediaItemState extends State<_TweetMediaItem> {
   void initState() {
     super.initState();
 
-    var disableAutoload = PrefService.of(context, listen: false).get<bool>(optionMediaDisableAutoload) ?? false;
+    var disableAutoload =
+        PrefService.of(
+          context,
+          listen: false,
+        ).get<bool>(optionMediaDisableAutoload) ??
+        false;
     if (disableAutoload) {
       // If the image is cached already, show the media
       cachedImageExists(widget.media.mediaUrlHttps!).then((value) {
@@ -90,20 +90,23 @@ class _TweetMediaItemState extends State<_TweetMediaItem> {
 
     if (_showMedia) {
       media = _TweetMediaThing(
-          item: item,
-          username: widget.username,
-          size: size,
-          pullToClose: false,
-          inPageView: false,
-          tweetId: widget.tweetId,
-          mediaIndex: widget.mediaIndex);
+        item: item,
+        username: widget.username,
+        size: size,
+        pullToClose: false,
+        inPageView: false,
+        tweetId: widget.tweetId,
+        mediaIndex: widget.mediaIndex,
+      );
     } else {
       media = GestureDetector(
         child: Container(
           color: Colors.black26,
           child: Center(
             child: Text(
-              L10n.of(context).tap_to_show_getMediaType_item_type(getMediaType(item.type)),
+              L10n.of(
+                context,
+              ).tap_to_show_getMediaType_item_type(getMediaType(item.type)),
             ),
           ),
         ),
@@ -113,32 +116,17 @@ class _TweetMediaItemState extends State<_TweetMediaItem> {
       );
     }
 
-    // If there's only one item in this media collection, don't show the page counter
-    if (widget.total == 1) {
-      return media;
-    }
-
-    return Stack(
-      children: [
-        Center(child: media),
-        Positioned(
-          right: 0,
-          child: Container(
-            alignment: Alignment.topRight,
-            color: Colors.black38,
-            margin: const EdgeInsets.all(8),
-            padding: const EdgeInsets.all(8),
-            child: Text('${widget.index} / ${widget.total}'),
-          ),
-        )
-      ],
-    );
+    return media;
   }
 }
 
 /// Downloads a media item's original file, with the same progress snackbars
 /// as the fullscreen viewer's download button.
-Future<void> downloadMediaItem(BuildContext context, Media media, String username) async {
+Future<void> downloadMediaItem(
+  BuildContext context,
+  Media media,
+  String username,
+) async {
   final mediaUrl = media.mediaUrlHttps;
   if (mediaUrl == null) {
     return;
@@ -155,10 +143,12 @@ Future<void> downloadMediaItem(BuildContext context, Media media, String usernam
       showWorkingSnackBar(context, L10n.of(context).downloading_media);
     },
     onSuccess: () {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(L10n.of(context).successfully_saved_the_media),
-      ));
+      ScaffoldMessenger.of(
+        context,
+      ).hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(L10n.of(context).successfully_saved_the_media)),
+      );
     },
   );
 }
@@ -171,107 +161,198 @@ class TweetMedia extends StatefulWidget {
   // Used (with the media index) to cache/reuse video controllers across screens.
   final String? tweetId;
 
-  const TweetMedia(
-      {super.key,
-      required this.sensitive,
-      required this.media,
-      required this.username,
-      this.initialMediaIndex = 0,
-      this.tweetId});
+  const TweetMedia({
+    super.key,
+    required this.sensitive,
+    required this.media,
+    required this.username,
+    this.initialMediaIndex = 0,
+    this.tweetId,
+  });
 
   @override
   State<TweetMedia> createState() => _TweetMediaState();
 }
 
 class _TweetMediaState extends State<TweetMedia> {
-  late final PageController _controller;
+  double _aspectRatioOf(Media item) {
+    final size = item.sizes?.large;
+    final width = size?.w;
+    final height = size?.h;
+    if (width == null || height == null || width <= 0 || height <= 0) {
+      return 16 / 9;
+    }
+    return (width / height).clamp(0.75, 1.9);
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController(initialPage: widget.initialMediaIndex);
+  Widget _mediaItem(BuildContext context, int index) {
+    final item = widget.media[index];
+    final isVideo = item.type == 'video';
+    return Semantics(
+      button: !isVideo,
+      image: !isVideo,
+      child: GestureDetector(
+        onTap: isVideo
+            ? null
+            : () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TweetMediaView(
+                    initialIndex: index,
+                    media: widget.media,
+                    username: widget.username,
+                    tweetId: widget.tweetId,
+                  ),
+                ),
+              ),
+        onLongPress: item.type == 'photo'
+            ? () => downloadMediaItem(context, item, widget.username)
+            : null,
+        child: _TweetMediaItem(
+          media: item,
+          mediaIndex: index,
+          username: widget.username,
+          tweetId: widget.tweetId,
+        ),
+      ),
+    );
+  }
+
+  Widget _multiMediaGrid(BuildContext context) {
+    final items = widget.media.take(4).toList(growable: false);
+    Widget cell(int index) => Expanded(child: _mediaItem(context, index));
+
+    if (items.length == 2) {
+      return AspectRatio(
+        aspectRatio: 2,
+        child: Row(
+          children: [
+            cell(0),
+            const SizedBox(width: kTweetMediaGap),
+            cell(1),
+          ],
+        ),
+      );
+    }
+
+    if (items.length == 3) {
+      return AspectRatio(
+        aspectRatio: 4 / 3,
+        child: Row(
+          children: [
+            cell(0),
+            const SizedBox(width: kTweetMediaGap),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(child: _mediaItem(context, 1)),
+                  const SizedBox(height: kTweetMediaGap),
+                  Expanded(child: _mediaItem(context, 2)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Column(
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                cell(0),
+                const SizedBox(width: kTweetMediaGap),
+                cell(1),
+              ],
+            ),
+          ),
+          const SizedBox(height: kTweetMediaGap),
+          Expanded(
+            child: Row(
+              children: [
+                cell(2),
+                const SizedBox(width: kTweetMediaGap),
+                cell(3),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _visibleMedia(BuildContext context) {
+    if (widget.media.length > 1) {
+      return _multiMediaGrid(context);
+    }
+    return AspectRatio(
+      aspectRatio: _aspectRatioOf(widget.media.first),
+      child: _mediaItem(context, 0),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    var largestAspectRatio =
-    widget.media.map((e) => ((e.sizes!.large!.w) ?? 1) / ((e.sizes!.large!.h) ?? 1)).reduce(math.min);
+    if (widget.media.isEmpty) return const SizedBox.shrink();
 
-    return Consumer<TweetContextState>(builder: (context, model, child) {
-      if (model.hideSensitive && (widget.sensitive ?? false)) {
-        return Card(
-          child: Center(
-              child: EmojiErrorWidget(
-            emoji: '🍆🙈🍆',
-            message: L10n.current.possibly_sensitive,
-            errorMessage: L10n.current.possibly_sensitive_tweet,
-            retryText: L10n.current.yes_please,
-            onRetry: () async => model.setHideSensitive(false),
-          )),
-        );
-      }
-
-      final tokens = XLookTokens.maybeOf(context);
-      final radius = tokens?.mediaRadius ?? kTweetMediaRadius;
-
-      return RepaintBoundary(
-        child: Container(
-          margin: const EdgeInsets.only(top: 8, left: 16, right: 16),
-          clipBehavior: Clip.antiAlias,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(radius)),
-          child: AspectRatio(
-            aspectRatio: largestAspectRatio,
-            // A carousel of several images owns horizontal drags that start on
-            // it, so without this a swipe over a post's media could not reach
-            // the home page view. (One image scrolls nowhere, so Flutter never
-            // gives it a drag recogniser and it already passes them through.)
-            child: edgeSwipeToChangeHomePage(
-              context,
-              PageView.builder(
-              controller: _controller,
-              scrollDirection: Axis.horizontal,
-              itemCount: widget.media.length,
-              itemBuilder: (context, index) {
-                var item = widget.media[index];
-
-                // A video has its own tap controls and must never open the
-                // fullscreen media viewer. Photos and GIFs still open it.
-                final isVideo = item.type == 'video';
-
-                return GestureDetector(
-                  onTap: isVideo
-                      ? null
-                      : () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TweetMediaView(
-                                  initialIndex: index,
-                                  media: widget.media,
-                                  username: widget.username,
-                                  tweetId: widget.tweetId))),
-                  onLongPress:
-                      item.type == 'photo' ? () => downloadMediaItem(context, item, widget.username) : null,
-                  child: _TweetMediaItem(
-                      media: item,
-                      index: index + 1,
-                      mediaIndex: index,
-                      total: widget.media.length,
-                      username: widget.username,
-                      tweetId: widget.tweetId),
-                );
-              },
+    return Consumer<TweetContextState>(
+      builder: (context, model, child) {
+        if (model.hideSensitive && (widget.sensitive ?? false)) {
+          return TweetMediaFrame(
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(kTweetSpace4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.visibility_off_outlined,
+                        size: 32,
+                        color: tweetSecondaryColor(context),
+                      ),
+                      const SizedBox(height: kTweetSpace2),
+                      Text(
+                        L10n.current.possibly_sensitive,
+                        style: tweetLabelStyle(context),
+                      ),
+                      const SizedBox(height: kTweetSpace1),
+                      Text(
+                        L10n.current.possibly_sensitive_tweet,
+                        textAlign: TextAlign.center,
+                        style: tweetMetadataStyle(context),
+                      ),
+                      const SizedBox(height: kTweetSpace2),
+                      TextButton(
+                        onPressed: () => model.setHideSensitive(false),
+                        child: Text(L10n.current.yes_please),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      );
-    });
+          );
+        }
+
+        return TweetMediaFrame(child: _visibleMedia(context));
+      },
+    );
   }
 }
 
 /// One page of the fullscreen viewer, carrying the tweet context its media
 /// belongs to — pages can span different tweets in the grid lightbox.
-typedef MediaViewEntry = ({Media media, String username, String? tweetId, int mediaIndex});
+typedef MediaViewEntry = ({
+  Media media,
+  String username,
+  String? tweetId,
+  int mediaIndex,
+});
 
 class TweetMediaView extends StatefulWidget {
   final int initialIndex;
@@ -285,26 +366,33 @@ class TweetMediaView extends StatefulWidget {
   final VoidCallback? onNearEnd;
 
   /// Single-tweet viewer: all pages share one username/tweetId.
-  TweetMediaView(
-      {super.key,
-      required this.initialIndex,
-      required List<Media> media,
-      required String username,
-      this.tweetMedia = true,
-      String? tweetId})
-      : entries = [
-          for (var i = 0; i < media.length; i++) (media: media[i], username: username, tweetId: tweetId, mediaIndex: i)
-        ],
-        onOpenPost = null,
-        onNearEnd = null;
+  TweetMediaView({
+    super.key,
+    required this.initialIndex,
+    required List<Media> media,
+    required String username,
+    this.tweetMedia = true,
+    String? tweetId,
+  }) : entries = [
+         for (var i = 0; i < media.length; i++)
+           (
+             media: media[i],
+             username: username,
+             tweetId: tweetId,
+             mediaIndex: i,
+           ),
+       ],
+       onOpenPost = null,
+       onNearEnd = null;
 
-  const TweetMediaView.entries(
-      {super.key,
-      required this.initialIndex,
-      required this.entries,
-      this.tweetMedia = true,
-      this.onOpenPost,
-      this.onNearEnd});
+  const TweetMediaView.entries({
+    super.key,
+    required this.initialIndex,
+    required this.entries,
+    this.tweetMedia = true,
+    this.onOpenPost,
+    this.onNearEnd,
+  });
 
   @override
   State<TweetMediaView> createState() => _TweetMediaViewState();
@@ -328,7 +416,9 @@ class _TweetMediaViewState extends State<TweetMediaView> {
   static const _fetchAhead = 3;
 
   late int _currentIndex;
-  late final ExtendedPageController _pageController = ExtendedPageController(initialPage: widget.initialIndex);
+  late final ExtendedPageController _pageController = ExtendedPageController(
+    initialPage: widget.initialIndex,
+  );
 
   MediaViewEntry get _current => widget.entries[_currentIndex];
 
@@ -355,7 +445,10 @@ class _TweetMediaViewState extends State<TweetMediaView> {
 
   String originalMediaUrl() {
     final media = _current.media;
-    return (widget.tweetMedia ? '${media.mediaUrlHttps}:orig' : media.mediaUrlHttps) ?? "";
+    return (widget.tweetMedia
+            ? '${media.mediaUrlHttps}:orig'
+            : media.mediaUrlHttps) ??
+        "";
   }
 
   @override
@@ -370,7 +463,10 @@ class _TweetMediaViewState extends State<TweetMediaView> {
     }
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
         actions: [
           if (widget.onOpenPost != null)
             IconButton(
@@ -381,7 +477,11 @@ class _TweetMediaViewState extends State<TweetMediaView> {
           AsyncButtonBuilder(
             child: const Icon(Icons.download),
             builder: (context, child, callback, buttonState) {
-              return IconButton(onPressed: callback, icon: child);
+              return IconButton(
+                onPressed: callback,
+                icon: child,
+                tooltip: L10n.of(context).save,
+              );
             },
             onPressed: () async {
               var url = path.basename(_current.media.mediaUrlHttps!);
@@ -394,13 +494,22 @@ class _TweetMediaViewState extends State<TweetMediaView> {
                 fileName,
                 prefs: prefs,
                 onStart: () {
-                  showWorkingSnackBar(context, L10n.of(context).downloading_media);
+                  showWorkingSnackBar(
+                    context,
+                    L10n.of(context).downloading_media,
+                  );
                 },
                 onSuccess: () {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(L10n.of(context).successfully_saved_the_media),
-                  ));
+                  ScaffoldMessenger.of(
+                    context,
+                  ).hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        L10n.of(context).successfully_saved_the_media,
+                      ),
+                    ),
+                  );
                 },
               );
             },
@@ -408,7 +517,11 @@ class _TweetMediaViewState extends State<TweetMediaView> {
           AsyncButtonBuilder(
             showSuccess: false,
             builder: (context, child, callback, buttonState) {
-              return IconButton(onPressed: callback, icon: child);
+              return IconButton(
+                onPressed: callback,
+                icon: child,
+                tooltip: L10n.of(context).share_link,
+              );
             },
             onPressed: () async {
               var uri = Uri.parse(originalMediaUrl());
@@ -445,18 +558,20 @@ class _TweetMediaViewState extends State<TweetMediaView> {
           // mediaIndex is the index *within the entry's tweet* (it keys the
           // pooled video controllers), not the page index.
           return _TweetMediaThing(
-              item: entry.media,
-              username: entry.username,
-              size: size,
-              pullToClose: true,
-              inPageView: true,
-              tweetId: entry.tweetId,
-              mediaIndex: entry.mediaIndex);
+            item: entry.media,
+            username: entry.username,
+            size: size,
+            pullToClose: true,
+            inPageView: true,
+            tweetId: entry.tweetId,
+            mediaIndex: entry.mediaIndex,
+          );
         },
         controller: _pageController,
         onPageChanged: (index) {
           setState(() => _currentIndex = index);
-          if (widget.onNearEnd != null && index >= widget.entries.length - _fetchAhead) {
+          if (widget.onNearEnd != null &&
+              index >= widget.entries.length - _fetchAhead) {
             widget.onNearEnd!();
           }
         },
@@ -474,37 +589,45 @@ class _TweetMediaThing extends StatelessWidget {
   final String? tweetId;
   final int mediaIndex;
 
-  const _TweetMediaThing(
-      {required this.item,
-      required this.username,
-      required this.size,
-      required this.pullToClose,
-      required this.inPageView,
-      this.tweetId,
-      this.mediaIndex = 0});
+  const _TweetMediaThing({
+    required this.item,
+    required this.username,
+    required this.size,
+    required this.pullToClose,
+    required this.inPageView,
+    this.tweetId,
+    this.mediaIndex = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
     Widget media;
     if (item.type == 'animated_gif') {
       media = TweetVideo(
-          metadata: TweetVideoMetadata.fromMedia(item),
-          loop: true,
-          username: username,
-          alwaysPlay: true,
-          disableControls: true,
-          tweetId: tweetId,
-          mediaIndex: mediaIndex);
+        metadata: TweetVideoMetadata.fromMedia(item),
+        loop: true,
+        username: username,
+        alwaysPlay: true,
+        disableControls: true,
+        tweetId: tweetId,
+        mediaIndex: mediaIndex,
+      );
     } else if (item.type == 'video') {
       media = TweetVideo(
-          metadata: TweetVideoMetadata.fromMedia(item),
-          loop: false,
-          username: username,
-          tweetId: tweetId,
-          mediaIndex: mediaIndex);
+        metadata: TweetVideoMetadata.fromMedia(item),
+        loop: false,
+        username: username,
+        tweetId: tweetId,
+        mediaIndex: mediaIndex,
+      );
     } else if (item.type == 'photo') {
       media = TweetPhoto(
-          size: size, uri: item.mediaUrlHttps!, fit: BoxFit.contain, pullToClose: pullToClose, inPageView: inPageView);
+        size: size,
+        uri: item.mediaUrlHttps!,
+        fit: inPageView ? BoxFit.contain : BoxFit.cover,
+        pullToClose: pullToClose,
+        inPageView: inPageView,
+      );
     } else {
       media = Text(L10n.of(context).unknown);
     }

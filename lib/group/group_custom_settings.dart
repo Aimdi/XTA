@@ -4,7 +4,10 @@ import 'package:quax/constants.dart';
 import 'package:quax/database/entities.dart';
 import 'package:quax/generated/l10n.dart';
 import 'package:quax/group/custom_feed_rules.dart';
+import 'package:quax/group/group_chrome.dart';
 import 'package:quax/group/group_model.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
+import 'package:quax/ui/reader_chrome.dart';
 
 /// Full-screen customization for a group's custom feed mode, opened from the
 /// filter sheet — a bottom sheet is too cramped for these controls.
@@ -15,19 +18,22 @@ class GroupCustomSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(L10n.of(context).custom)),
-      body: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-        store: model,
-        onState: (_, state) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-          children: [
-            _ContentFilterSection(model: model, state: state),
-            const SizedBox(height: 12),
-            _EngagementSection(model: model, state: state),
-            const SizedBox(height: 12),
-            _MutedKeywordsSection(model: model, state: state),
-          ],
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(title: Text(L10n.of(context).custom)),
+        body: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+          store: model,
+          onState: (_, state) => SafeArea(
+            top: false,
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: kTweetSpace6),
+              children: [
+                _ContentFilterSection(model: model, state: state),
+                _EngagementSection(model: model, state: state),
+                _MutedKeywordsSection(model: model, state: state),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -51,37 +57,11 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(description, style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          const SizedBox(height: 14),
-          child,
-        ],
-      ),
+    return GroupSettingsSection(
+      icon: icon,
+      title: title,
+      description: description,
+      child: child,
     );
   }
 }
@@ -97,28 +77,49 @@ class _ContentFilterSection extends StatelessWidget {
 
   const _ContentFilterSection({required this.model, required this.state});
 
-  static const _values = [contentFilterSfw, contentFilterDefault, contentFilterNsfw];
+  static const _values = [
+    contentFilterSfw,
+    contentFilterDefault,
+    contentFilterNsfw,
+  ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final current = _values.contains(state.contentFilter) ? state.contentFilter : contentFilterDefault;
+    final current = _values.contains(state.contentFilter)
+        ? state.contentFilter
+        : contentFilterDefault;
 
     return _Section(
       icon: Icons.filter_alt_outlined,
       title: l10n.content_filter,
       description: l10n.content_filter_description,
-      child: SizedBox(
-        width: double.infinity,
-        child: SegmentedButton<String>(
-          showSelectedIcon: false,
-          segments: [
-            ButtonSegment(value: contentFilterSfw, label: Text(l10n.content_filter_sfw)),
-            ButtonSegment(value: contentFilterDefault, label: Text(l10n.content_filter_default)),
-            ButtonSegment(value: contentFilterNsfw, label: Text(l10n.content_filter_nsfw)),
-          ],
-          selected: {current},
-          onSelectionChanged: (selection) => model.setSubscriptionGroupContentFilter(selection.first),
+      child: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: constraints.maxWidth),
+            child: SegmentedButton<String>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: contentFilterSfw,
+                  label: Text(l10n.content_filter_sfw),
+                ),
+                ButtonSegment(
+                  value: contentFilterDefault,
+                  label: Text(l10n.content_filter_default),
+                ),
+                ButtonSegment(
+                  value: contentFilterNsfw,
+                  label: Text(l10n.content_filter_nsfw),
+                ),
+              ],
+              selected: {current},
+              onSelectionChanged: (selection) =>
+                  model.setSubscriptionGroupContentFilter(selection.first),
+            ),
+          ),
         ),
       ),
     );
@@ -166,7 +167,11 @@ class _ThresholdRow extends StatelessWidget {
   final int value;
   final ValueChanged<int> onChanged;
 
-  const _ThresholdRow({required this.label, required this.value, required this.onChanged});
+  const _ThresholdRow({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
 
   static const choices = [0, 10, 50, 100, 500, 1000];
 
@@ -178,7 +183,12 @@ class _ThresholdRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -186,14 +196,20 @@ class _ThresholdRow extends StatelessWidget {
           children: [
             for (final choice in choices)
               _Pill(
-                label: choice == 0 ? l10n.custom_feed_threshold_off : '$choice+',
+                label: choice == 0
+                    ? l10n.custom_feed_threshold_off
+                    : '$choice+',
                 selected: value == choice,
                 onTap: () => onChanged(choice),
               ),
             // A value from an earlier edit that is not one of the presets stays
             // visible and selected rather than silently snapping to another.
             if (!choices.contains(value))
-              _Pill(label: '$value+', selected: true, onTap: () => onChanged(value)),
+              _Pill(
+                label: '$value+',
+                selected: true,
+                onTap: () => onChanged(value),
+              ),
           ],
         ),
       ],
@@ -206,28 +222,47 @@ class _Pill extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _Pill({required this.label, required this.selected, required this.onTap});
+  const _Pill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final accent = Theme.of(context).colorScheme.primary;
     final onSurface = Theme.of(context).colorScheme.onSurface;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? accent : Colors.transparent,
-          borderRadius: BorderRadius.circular(9999),
-          border: Border.all(color: selected ? accent : Theme.of(context).colorScheme.outlineVariant),
+    return Material(
+      color: selected ? accent : Colors.transparent,
+      shape: StadiumBorder(
+        side: BorderSide(
+          color: selected
+              ? accent
+              : Theme.of(context).colorScheme.outlineVariant,
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            color: selected ? (accent.computeLuminance() > 0.5 ? Colors.black : Colors.white) : onSurface,
+      ),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const StadiumBorder(),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Center(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected
+                      ? (accent.computeLuminance() > 0.5
+                            ? Colors.black
+                            : Colors.white)
+                      : onSurface,
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -261,7 +296,9 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
       return;
     }
 
-    final existing = widget.state.mutedKeywords.map((e) => e.toLowerCase()).toSet();
+    final existing = widget.state.mutedKeywords
+        .map((e) => e.toLowerCase())
+        .toSet();
     final next = [
       ...widget.state.mutedKeywords,
       ...terms.where((term) => !existing.contains(term.toLowerCase())),
@@ -272,7 +309,9 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
   }
 
   Future<void> _remove(String term) async {
-    final next = widget.state.mutedKeywords.where((e) => e != term).toList(growable: false);
+    final next = widget.state.mutedKeywords
+        .where((e) => e != term)
+        .toList(growable: false);
     await widget.model.setSubscriptionGroupMutedKeywords(next);
   }
 
@@ -295,11 +334,17 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
                   controller: _controller,
                   textInputAction: TextInputAction.done,
                   autocorrect: false,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 15,
+                  ),
                   decoration: InputDecoration(
                     isDense: true,
                     hintText: l10n.custom_feed_muted_keywords_hint,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 14,
+                    ),
                     border: const UnderlineInputBorder(),
                   ),
                   onSubmitted: (_) => _add(),
@@ -307,6 +352,7 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
               ),
               const SizedBox(width: 8),
               IconButton(
+                tooltip: l10n.custom_feed_muted_keywords_hint,
                 icon: const Icon(Icons.add),
                 color: Theme.of(context).colorScheme.primary,
                 onPressed: _add,

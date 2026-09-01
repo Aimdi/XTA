@@ -17,40 +17,46 @@ class ArticleLinkCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(kTweetMediaRadius),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.outline),
-            borderRadius: BorderRadius.circular(kTweetMediaRadius),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.article_outlined, size: 20, color: theme.colorScheme.onSurfaceVariant),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(L10n.of(context).article_on_x, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    Text(
-                      Uri.tryParse(url)?.host ?? url,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
+    return TweetEmbedSurface(
+      onTap: onTap,
+      semanticLabel: L10n.of(context).article_on_x,
+      padding: const EdgeInsets.all(kTweetSpace3),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+        child: Row(
+          children: [
+            Icon(
+              Icons.article_outlined,
+              size: kTweetActionIconSize,
+              color: tweetSecondaryColor(context),
+            ),
+            const SizedBox(width: kTweetSpace3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    L10n.of(context).article_on_x,
+                    style: tweetLabelStyle(context),
+                  ),
+                  const SizedBox(height: kTweetSpace1),
+                  Text(
+                    Uri.tryParse(url)?.host ?? url,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: tweetMetadataStyle(context),
+                  ),
+                ],
               ),
-              Icon(Icons.chevron_right, size: 20, color: theme.colorScheme.onSurfaceVariant),
-            ],
-          ),
+            ),
+            const SizedBox(width: kTweetSpace2),
+            Icon(
+              Icons.chevron_right,
+              size: kTweetActionIconSize,
+              color: tweetSecondaryColor(context),
+            ),
+          ],
         ),
       ),
     );

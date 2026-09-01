@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quax/generated/l10n.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
 
 /// The line cap a post has to break before it is worth collapsing.
 ///
@@ -60,7 +61,8 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final style = DefaultTextStyle.of(context).style;
-        final clipped = !_isExpanded && _isTruncated(context, constraints.maxWidth, style);
+        final clipped =
+            !_isExpanded && _isTruncated(context, constraints.maxWidth, style);
 
         final text = SelectableText.rich(
           TextSpan(children: widget.textSpans),
@@ -96,20 +98,30 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
             if (clipped)
               Align(
                 alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _isExpanded = true;
-                    });
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8, left: 2),
-                    child: Text(
-                      L10n.of(context).clickToShowMore,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                child: Semantics(
+                  button: true,
+                  child: InkWell(
+                    onTap: () {
+                      setState(() {
+                        _isExpanded = true;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(kTweetMediaRadius),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minHeight: kTweetTouchTarget,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: kTweetSpace3),
+                          child: Text(
+                            L10n.of(context).clickToShowMore,
+                            style: tweetLabelStyle(
+                              context,
+                            ).copyWith(color: tweetAccentColor(context)),
+                          ),
+                        ),
                       ),
                     ),
                   ),

@@ -148,6 +148,7 @@ class FollowButton extends StatelessWidget {
         var text = followed ? L10n.of(context).unsubscribe : L10n.of(context).subscribe;
 
         return PopupMenuButton<String>(
+          tooltip: text,
           icon: icon,
           itemBuilder: (context) => [
             PopupMenuItem(value: 'toggle_subscribe', child: Text(text)),

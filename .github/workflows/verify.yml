@@ -10,6 +10,7 @@ on:
     branches:
       - master
       - main
+      - claude/main
 
 concurrency:
   group: verify-${{ github.ref }}
@@ -37,6 +38,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install and set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '21.0.10'
+
       - name: Install and set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -46,10 +53,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate icons
+        run: |
+          python -mvenv .venv
+          source ./.venv/bin/activate
+          pip install -r requirements.txt
+          python generate_icons.py
+          deactivate
+
       # lib/generated and lib/oss_licenses.dart are gitignored, so analysis
       # would drown in missing-import errors without generating them first.
       - name: Generate sources
         run: |
+          dart run flutter_launcher_icons
           dart run dart_pubspec_licenses:generate
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
@@ -75,5 +91,27 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
-      - name: Test
+      - name: Test redesigned modules
+        run: |
+          flutter test --reporter expanded \
+            test/tweet_design_primitives_test.dart \
+            test/home_chrome_test.dart \
+            test/profile_design_primitives_test.dart \
+            test/advanced_search_test.dart \
+            test/search_chrome_test.dart \
+            test/group_chrome_test.dart \
+            test/saved_design_primitives_test.dart \
+            test/settings_design_primitives_test.dart
+
+      - name: Test full suite
         run: flutter test --reporter expanded
+
+      - name: Build debug APK
+        run: flutter build apk --debug
+
+      - name: Archive debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: xta-debug-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7

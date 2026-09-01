@@ -30,7 +30,6 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
   @override
   bool get wantKeepAlive => true;
 
-  bool _isInitialLoad = true;
   bool _hasLoaded = false;
 
   @override
@@ -41,7 +40,6 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       await context.read<RedditSubredditsStore>().load();
-      _isInitialLoad = false;
       if (mounted) {
         setState(() {});
       }

@@ -23,6 +23,7 @@ import 'package:quax/profile/profile_feed_settings.dart';
 import 'package:quax/tweet/interleaved_items.dart';
 import 'package:quax/tweet/paginated_tweet_list.dart';
 import 'package:quax/tweet/tweet_context_scope.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
 import 'package:quax/utils/iterables.dart';
 import 'package:quax/utils/paging.dart';
 import 'package:pref/pref.dart';
@@ -31,14 +32,20 @@ import 'package:sqflite/sqflite.dart';
 import 'package:quax/utils/urls.dart';
 import 'package:quax/group/custom_feed_rules.dart';
 
-Iterable<BigInt> _tweetIdsOf(Iterable<TweetChain> chains) =>
-    chains.expand((c) => c.tweets).map((t) => t.idStr).whereType<String>().map(BigInt.tryParse).whereType<BigInt>();
+Iterable<BigInt> _tweetIdsOf(Iterable<TweetChain> chains) => chains
+    .expand((c) => c.tweets)
+    .map((t) => t.idStr)
+    .whereType<String>()
+    .map(BigInt.tryParse)
+    .whereType<BigInt>();
 
-BigInt? _newestTweetIdOf(Iterable<TweetChain> chains) =>
-    _tweetIdsOf(chains).fold<BigInt?>(null, (max, id) => max == null || id > max ? id : max);
+BigInt? _newestTweetIdOf(Iterable<TweetChain> chains) => _tweetIdsOf(
+  chains,
+).fold<BigInt?>(null, (max, id) => max == null || id > max ? id : max);
 
-BigInt? _oldestTweetIdOf(Iterable<TweetChain> chains) =>
-    _tweetIdsOf(chains).fold<BigInt?>(null, (min, id) => min == null || id < min ? id : min);
+BigInt? _oldestTweetIdOf(Iterable<TweetChain> chains) => _tweetIdsOf(
+  chains,
+).fold<BigInt?>(null, (min, id) => min == null || id < min ? id : min);
 
 class SubscriptionGroupFeed extends StatefulWidget {
   final SubscriptionGroupGet group;
@@ -66,17 +73,18 @@ class SubscriptionGroupFeed extends StatefulWidget {
   /// as the publications: their own source, their own pagination.
   final List<RedditSubscription> subreddits;
 
-  const SubscriptionGroupFeed(
-      {super.key,
-      required this.group,
-      required this.chunks,
-      required this.includeReplies,
-      required this.includeRetweets,
-      required this.mediaOnly,
-      this.cacheKey,
-      this.initialPreview,
-      this.publications = const [],
-      this.subreddits = const []});
+  const SubscriptionGroupFeed({
+    super.key,
+    required this.group,
+    required this.chunks,
+    required this.includeReplies,
+    required this.includeRetweets,
+    required this.mediaOnly,
+    this.cacheKey,
+    this.initialPreview,
+    this.publications = const [],
+    this.subreddits = const [],
+  });
 
   @override
   State<SubscriptionGroupFeed> createState() => _SubscriptionGroupFeedState();
@@ -148,7 +156,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
     for (final publication in widget.publications) {
       try {
-        final posts = await client.fetchPosts(publicationOf(publication), limit: substackFeedPageSize);
+        final posts = await client.fetchPosts(
+          publicationOf(publication),
+          limit: substackFeedPageSize,
+        );
         for (final post in posts) {
           final date = post.publishedAt;
           if (date == null) {
@@ -156,7 +167,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           }
           items.add((
             date: date,
-            build: (context) => SubstackPostCard(post: post, logoUrl: publication.logoUrl),
+            build: (context) =>
+                SubstackPostCard(post: post, logoUrl: publication.logoUrl),
           ));
         }
       } catch (e) {
@@ -176,9 +188,11 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   bool get _tracksReadPosition =>
       !widget.group.popular &&
       !widget.mediaOnly &&
-      PrefService.of(context, listen: false).get(optionFeedReadingPosition) == true;
+      PrefService.of(context, listen: false).get(optionFeedReadingPosition) ==
+          true;
 
-  bool _isSeen(TweetChain chain) => _lastSeen != null && isChainSeen(chain, _lastSeen!);
+  bool _isSeen(TweetChain chain) =>
+      _lastSeen != null && isChainSeen(chain, _lastSeen!);
 
   CursorPagingController<String, MediaGridItem> get _mediaController =>
       _mediaPaging ??= CursorPagingController(_loadMediaPage);
@@ -205,7 +219,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   Future<void> _loadPreview() async {
     var repository = await Repository.readOnly();
-    var cached = await readCachedChainsForHashes(repository, widget.chunks.map((e) => e.hash));
+    var cached = await readCachedChainsForHashes(
+      repository,
+      widget.chunks.map((e) => e.hash),
+    );
     cached = filterHiddenRetweets(cached, await hiddenRetweetScreenNames());
     cached = filterHiddenReplies(cached, await hiddenReplyScreenNames());
     if (!mounted) return;
@@ -238,7 +255,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   bool _onScrollNotification(ScrollNotification notification) {
     // Any user-driven scroll cancels an in-flight caught-up restore, so it
     // never yanks the list out from under the reader.
-    if (notification is UserScrollNotification && notification.direction != ScrollDirection.idle) {
+    if (notification is UserScrollNotification &&
+        notification.direction != ScrollDirection.idle) {
       _userHasScrolled = true;
     }
     if (notification is! ScrollEndNotification) {
@@ -249,7 +267,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       _cache!.saveOffset(widget.cacheKey!, metrics.pixels);
     }
     // Scrolled back up to the top: everything currently loaded counts as read.
-    if (_tracksReadPosition && metrics.hasPixels && metrics.pixels <= feedReadPositionTopThresholdPx) {
+    if (_tracksReadPosition &&
+        metrics.hasPixels &&
+        metrics.pixels <= feedReadPositionTopThresholdPx) {
       final items = _feedController.items;
       if (items != null && items.isNotEmpty) {
         _recordReadPosition(items);
@@ -272,11 +292,14 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   bool get _atTop {
     final position = _scrollPosition;
-    return position == null || position.pixels <= feedReadPositionTopThresholdPx;
+    return position == null ||
+        position.pixels <= feedReadPositionTopThresholdPx;
   }
 
   void _recordReadPosition(List<TweetChain> threads) {
-    final newest = threads.where((c) => c.tweets.firstOrNull?.createdAt != null).firstOrNull;
+    final newest = threads
+        .where((c) => c.tweets.firstOrNull?.createdAt != null)
+        .firstOrNull;
     if (newest == null || newest.id == _lastRecordedChainId) {
       return;
     }
@@ -293,8 +316,12 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   void _onFirstPageLoaded(List<TweetChain> threads) {
     if (!_caughtUpRestoreEvaluated) {
       _caughtUpRestoreEvaluated = true;
-      final sessionOffset = _usesCache ? _cache!.readOffset(widget.cacheKey!) : null;
-      final boundary = _lastSeen == null ? null : caughtUpBoundaryIndex(threads, _lastSeen!);
+      final sessionOffset = _usesCache
+          ? _cache!.readOffset(widget.cacheKey!)
+          : null;
+      final boundary = _lastSeen == null
+          ? null
+          : caughtUpBoundaryIndex(threads, _lastSeen!);
       if (boundary != null && (sessionOffset == null || sessionOffset <= 0)) {
         _scheduleCaughtUpRestore(boundary, threads.length);
         return; // The newer posts haven't been seen yet — don't record.
@@ -313,12 +340,16 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   void _scheduleCaughtUpRestore(int index, int itemCount, [int attempts = 0]) {
     if (_userHasScrolled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _userHasScrolled || attempts >= maxCaughtUpRestoreFrames) {
+      if (!mounted ||
+          _userHasScrolled ||
+          attempts >= maxCaughtUpRestoreFrames) {
         return;
       }
       final position = _scrollPosition;
       // Wait until the real list (not the preview) is mounted and laid out.
-      if (position == null || !position.haveDimensions || !_feedController.hasItems) {
+      if (position == null ||
+          !position.haveDimensions ||
+          !_feedController.hasItems) {
         _scheduleCaughtUpRestore(index, itemCount, attempts + 1);
         return;
       }
@@ -333,7 +364,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         _scheduleCaughtUpRestore(index, itemCount, attempts + 1);
         return;
       }
-      final estimated = (position.maxScrollExtent * index / itemCount).clamp(0.0, position.maxScrollExtent);
+      final estimated = (position.maxScrollExtent * index / itemCount).clamp(
+        0.0,
+        position.maxScrollExtent,
+      );
       position.jumpTo(estimated);
     });
   }
@@ -381,14 +415,18 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         oldWidget.includeRetweets != widget.includeRetweets ||
         oldWidget.group.popular != widget.group.popular ||
         oldWidget.group.custom != widget.group.custom ||
-        oldWidget.group.customRules.cacheKey != widget.group.customRules.cacheKey ||
+        oldWidget.group.customRules.cacheKey !=
+            widget.group.customRules.cacheKey ||
         !_chunksMatch(oldWidget.chunks, widget.chunks)) {
       _feedController.controller.refresh();
       _mediaPaging?.pagingController.refresh();
     }
   }
 
-  bool _chunksMatch(List<SubscriptionGroupFeedChunk> a, List<SubscriptionGroupFeedChunk> b) {
+  bool _chunksMatch(
+    List<SubscriptionGroupFeedChunk> a,
+    List<SubscriptionGroupFeedChunk> b,
+  ) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
       if (a[i].hash != b[i].hash) return false;
@@ -397,55 +435,72 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   }
 
   Future<String> createCursor(Database repository) async {
-    return (await repository.insert(tableFeedGroupCursor, {}, nullColumnHack: 'id')).toString();
+    return (await repository.insert(
+      tableFeedGroupCursor,
+      {},
+      nullColumnHack: 'id',
+    )).toString();
   }
 
-  bool feedContainsUnrelatedTweets(TweetStatus tweets, List<Subscription> users) {
+  bool feedContainsUnrelatedTweets(
+    TweetStatus tweets,
+    List<Subscription> users,
+  ) {
     final screenNames = users.map((e) => e.screenName).toSet();
     return tweets.chains.any(
-        (chain) => chain.tweets.any((tweet) => tweet.user != null && !screenNames.contains(tweet.user!.screenName)));
+      (chain) => chain.tweets.any(
+        (tweet) =>
+            tweet.user != null && !screenNames.contains(tweet.user!.screenName),
+      ),
+    );
   }
 
   Future<void> showUnrelatedPostsInFeedWarning() async {
     await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("⚠️ ${L10n.of(context).feed_issue_detected}"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(L10n.of(context).feed_contains_unrelated_tweets),
-                SizedBox(height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 2),
-                PrefCheckbox(
-                  title: Text(
-                    L10n.of(context).never_show_again,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  pref: optionDisableWarningsForUnrelatedPostsInFeed,
-                )
-              ],
-            ),
-            actions: [
-              TextButton(
-                child: Text(L10n.of(context).more_info),
-                onPressed: () async {
-                  await openUri(context, "https://github.com/Teskann/QuaX/issues/26");
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("⚠️ ${L10n.of(context).feed_issue_detected}"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(L10n.of(context).feed_contains_unrelated_tweets),
+              SizedBox(
+                height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 2,
               ),
-              TextButton(
-                child: Text(L10n.of(context).close),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+              PrefCheckbox(
+                title: Text(
+                  L10n.of(context).never_show_again,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                pref: optionDisableWarningsForUnrelatedPostsInFeed,
               ),
             ],
-          );
-        });
+          ),
+          actions: [
+            TextButton(
+              child: Text(L10n.of(context).more_info),
+              onPressed: () async {
+                await openUri(
+                  context,
+                  "https://github.com/Teskann/QuaX/issues/26",
+                );
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            TextButton(
+              child: Text(L10n.of(context).close),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String _buildSearchQuery(List<Subscription> users) {
@@ -503,94 +558,119 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     for (var chunk in widget.chunks) {
       var hash = chunk.hash;
 
-      futures.add(Future(() async {
-        var tweets = <TweetChain>[];
+      futures.add(
+        Future(() async {
+          var tweets = <TweetChain>[];
 
-        String? searchCursor;
-        BigInt? storedNewestId;
+          String? searchCursor;
+          BigInt? storedNewestId;
 
-        if (cursorKey == null) {
-          // We're loading the initial content for the feed screen, so load all the chunks we already have
-          var storedChunks = await repository.query(tableFeedGroupChunk,
-              where: 'hash = ?', whereArgs: [hash], orderBy: 'created_at DESC');
+          if (cursorKey == null) {
+            // We're loading the initial content for the feed screen, so load all the chunks we already have
+            var storedChunks = await repository.query(
+              tableFeedGroupChunk,
+              where: 'hash = ?',
+              whereArgs: [hash],
+              orderBy: 'created_at DESC',
+            );
 
-          // Make sure we load any existing stored tweets from the chunk
-          tweets.addAll(chainsFromStoredChunks(storedChunks));
-          storedNewestId = _newestTweetIdOf(tweets);
+            // Make sure we load any existing stored tweets from the chunk
+            tweets.addAll(chainsFromStoredChunks(storedChunks));
+            storedNewestId = _newestTweetIdOf(tweets);
 
-          // Use the latest chunk's top cursor to load any new tweets since the last time we checked
-          var latestChunk = storedChunks.firstOrNull;
-          if (latestChunk != null) {
-            searchCursor = latestChunk['cursor_top'] as String;
+            // Use the latest chunk's top cursor to load any new tweets since the last time we checked
+            var latestChunk = storedChunks.firstOrNull;
+            if (latestChunk != null) {
+              searchCursor = latestChunk['cursor_top'] as String;
+            } else {
+              // Otherwise we need to perform a fresh load from scratch for this chunk
+              searchCursor = null;
+            }
           } else {
-            // Otherwise we need to perform a fresh load from scratch for this chunk
-            searchCursor = null;
+            // We're currently at the end of our current feed, so load the oldest chunk and use its cursor to load more
+            var storedChunks = await repository.query(
+              tableFeedGroupChunk,
+              where: 'cursor_id = ? AND hash = ?',
+              whereArgs: [int.parse(cursorKey), hash],
+            );
+            if (storedChunks.isNotEmpty) {
+              searchCursor = storedChunks.first['cursor_bottom'] as String;
+            } else {
+              searchCursor = null;
+            }
           }
-        } else {
-          // We're currently at the end of our current feed, so load the oldest chunk and use its cursor to load more
-          var storedChunks = await repository.query(tableFeedGroupChunk,
-              where: 'cursor_id = ? AND hash = ?', whereArgs: [int.parse(cursorKey), hash]);
-          if (storedChunks.isNotEmpty) {
-            searchCursor = storedChunks.first['cursor_bottom'] as String;
-          } else {
-            searchCursor = null;
-          }
-        }
 
-        // Perform our search for the next page of results for this chunk, and add those tweets to our collection
-        var query = _buildSearchQuery(chunk.users);
-        TweetStatus result =
-            await Twitter.searchTweets(query, widget.includeReplies, cursor: searchCursor);
-        shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(result, chunk.users);
+          // Perform our search for the next page of results for this chunk, and add those tweets to our collection
+          var query = _buildSearchQuery(chunk.users);
+          TweetStatus result = await Twitter.searchTweets(
+            query,
+            widget.includeReplies,
+            cursor: searchCursor,
+          );
+          shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(
+            result,
+            chunk.users,
+          );
 
-        if (result.chains.isNotEmpty) {
-          tweets.addAll(result.chains);
+          if (result.chains.isNotEmpty) {
+            tweets.addAll(result.chains);
 
-          // Make sure we insert the set of cursors for this latest chunk, ready for the next time we paginate
-          await repository.insert(tableFeedGroupChunk, {
-            'cursor_id': int.parse(nextCursor),
-            'hash': hash,
-            'cursor_top': result.cursorTop,
-            'cursor_bottom': result.cursorBottom,
-            'response': jsonEncode(result.chains.map((e) => e.toJson()).toList())
-          });
-        }
-
-        // A single fetch returns only the newest page, so a long absence
-        // leaves a hole between it and the stored posts. Keep paging down
-        // until the fresh content overlaps what was stored (bounded, so a
-        // week away can't trigger dozens of requests).
-        var page = result;
-        var gapFills = 0;
-        while (storedNewestId != null &&
-            page.chains.isNotEmpty &&
-            (_oldestTweetIdOf(page.chains) ?? BigInt.zero) > storedNewestId &&
-            page.cursorBottom != null &&
-            gapFills < maxFeedGapFillPages) {
-          page = await Twitter.searchTweets(query, widget.includeReplies, cursor: page.cursorBottom);
-          gapFills++;
-
-          if (page.chains.isNotEmpty) {
-            tweets.addAll(page.chains);
+            // Make sure we insert the set of cursors for this latest chunk, ready for the next time we paginate
             await repository.insert(tableFeedGroupChunk, {
               'cursor_id': int.parse(nextCursor),
               'hash': hash,
-              'cursor_top': page.cursorTop,
-              'cursor_bottom': page.cursorBottom,
-              'response': jsonEncode(page.chains.map((e) => e.toJson()).toList())
+              'cursor_top': result.cursorTop,
+              'cursor_bottom': result.cursorBottom,
+              'response': jsonEncode(
+                result.chains.map((e) => e.toJson()).toList(),
+              ),
             });
           }
-        }
 
-        return tweets;
-      }));
+          // A single fetch returns only the newest page, so a long absence
+          // leaves a hole between it and the stored posts. Keep paging down
+          // until the fresh content overlaps what was stored (bounded, so a
+          // week away can't trigger dozens of requests).
+          var page = result;
+          var gapFills = 0;
+          while (storedNewestId != null &&
+              page.chains.isNotEmpty &&
+              (_oldestTweetIdOf(page.chains) ?? BigInt.zero) > storedNewestId &&
+              page.cursorBottom != null &&
+              gapFills < maxFeedGapFillPages) {
+            page = await Twitter.searchTweets(
+              query,
+              widget.includeReplies,
+              cursor: page.cursorBottom,
+            );
+            gapFills++;
+
+            if (page.chains.isNotEmpty) {
+              tweets.addAll(page.chains);
+              await repository.insert(tableFeedGroupChunk, {
+                'cursor_id': int.parse(nextCursor),
+                'hash': hash,
+                'cursor_top': page.cursorTop,
+                'cursor_bottom': page.cursorBottom,
+                'response': jsonEncode(
+                  page.chains.map((e) => e.toJson()).toList(),
+                ),
+              });
+            }
+          }
+
+          return tweets;
+        }),
+      );
     }
 
     // Wait for all our searches to complete, then build our list of tweet conversations.
     // The stored chunks and the fresh fetch overlap at their window boundaries,
     // so drop repeated chains before display.
     var result = (await Future.wait(futures));
-    var threads = _sortChains(dedupeChainsById(result.expand((element) => element).toList()));
+    var threads = _sortChains(
+      dedupeChainsById(result.expand((element) => element).toList()),
+    );
     threads = filterHiddenRetweets(threads, await hiddenRetweetScreenNames());
     threads = filterHiddenReplies(threads, await hiddenReplyScreenNames());
     threads = applyCustomFeedRules(threads, widget.group.customRules);
@@ -604,7 +684,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     if (shouldShowUnrelatedPostsInFeedWarning &&
-        !PrefService.of(context).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
+        !PrefService.of(
+          context,
+        ).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
       await showUnrelatedPostsInFeedWarning();
     }
 
@@ -615,7 +697,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return (chains: threads, nextCursor: nextCursor);
   }
 
-  static int _likesOf(TweetChain chain) => chain.tweets.firstOrNull?.favoriteCount ?? 0;
+  static int _likesOf(TweetChain chain) =>
+      chain.tweets.firstOrNull?.favoriteCount ?? 0;
 
   /// Popular groups order the same recent window by likes; recent ones (the
   /// default) by date.
@@ -623,7 +706,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     if (!widget.group.popular) {
       return sortChainsNewestFirst(chains);
     }
-    return chains.sorted((a, b) => _likesOf(b).compareTo(_likesOf(a)));
+    return chains
+        .sorted((a, b) => _likesOf(b).compareTo(_likesOf(a)))
+        .toList(growable: false);
   }
 
   // In zen mode the feed is finite: pagination pauses after this many pages
@@ -664,7 +749,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   /// Loads a page for the media grid: same pages as the tweet list, mapped to
   /// their media entries.
-  Future<CursorPage<String, MediaGridItem>> _loadMediaPage(String? cursor) async {
+  Future<CursorPage<String, MediaGridItem>> _loadMediaPage(
+    String? cursor,
+  ) async {
     if (cursor == null) {
       _seenMediaKeys.clear();
     }
@@ -675,9 +762,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   // Successive search windows overlap at their boundaries, so keep only media
   // entries not shown on an earlier page.
   List<MediaGridItem> _unseenMediaItems(List<TweetChain> chains) {
-    return mediaItemsFromChains(chains)
-        .where((m) => _seenMediaKeys.add('${m.tweetId}/${m.mediaIndex}'))
-        .toList();
+    return mediaItemsFromChains(
+      chains,
+    ).where((m) => _seenMediaKeys.add('${m.tweetId}/${m.mediaIndex}')).toList();
   }
 
   Widget _buildMediaGrid(BuildContext context) {
@@ -685,8 +772,12 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       body: TweetContextScope(
         child: MediaGrid(
           controller: _mediaController.pagingController,
-          firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
-          newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+          firstPageErrorPrefix: L10n.of(
+            context,
+          ).unable_to_load_the_tweets_for_the_feed,
+          newPageErrorPrefix: L10n.of(
+            context,
+          ).unable_to_load_the_next_page_of_tweets,
           emptyMessage: L10n.of(context).could_not_find_any_posts_with_media,
         ),
       ),
@@ -699,40 +790,58 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // X chunks meant a group of nothing but subreddits reported itself empty
     // before its posts were ever asked for — the list below knows how to show
     // interleaved items with no chains, but never got the chance.
-    if (widget.chunks.isEmpty && widget.publications.isEmpty && widget.subreddits.isEmpty) {
+    if (widget.chunks.isEmpty &&
+        widget.publications.isEmpty &&
+        widget.subreddits.isEmpty) {
       return Scaffold(
-        body: Center(
-          child: Text(L10n.of(context).this_group_contains_no_subscriptions),
+        body: TweetEmptyState(
+          message: L10n.of(context).this_group_contains_no_subscriptions,
         ),
       );
     }
 
-    if (widget.mediaOnly) {
-      return _buildMediaGrid(context);
-    }
-
-    return Scaffold(
-      body: TweetContextScope(
-        child: NotificationListener<ScrollNotification>(
-          onNotification: _onScrollNotification,
-          child: PaginatedTweetList(
-            feed: _feedController,
-            loadPage: _listTweets,
-            username: null,
-            firstPagePreview: _cachedPreview,
-            onRefresh: () async {
-              var repository = await Repository.writable();
-              await repository.delete(tableFeedGroupChunk);
-            },
-            firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
-            newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-            emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
-            isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
-            caughtUpDividerKey: _caughtUpKey,
-            interleaved: [..._substackItems, ..._redditItems],
-          ),
-        ),
-      ),
+    final content = widget.mediaOnly
+        ? _buildMediaGrid(context)
+        : Scaffold(
+            body: TweetContextScope(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _onScrollNotification,
+                child: PaginatedTweetList(
+                  feed: _feedController,
+                  loadPage: _listTweets,
+                  username: null,
+                  firstPagePreview: _cachedPreview,
+                  onRefresh: () async {
+                    var repository = await Repository.writable();
+                    await repository.delete(tableFeedGroupChunk);
+                  },
+                  firstPageErrorPrefix: L10n.of(
+                    context,
+                  ).unable_to_load_the_tweets_for_the_feed,
+                  newPageErrorPrefix: L10n.of(
+                    context,
+                  ).unable_to_load_the_next_page_of_tweets,
+                  emptyMessage: L10n.of(
+                    context,
+                  ).could_not_find_any_tweets_from_the_last_7_days,
+                  isSeen: _tracksReadPosition && _lastSeen != null
+                      ? _isSeen
+                      : null,
+                  caughtUpDividerKey: _caughtUpKey,
+                  interleaved: [..._substackItems, ..._redditItems],
+                ),
+              ),
+            ),
+          );
+    final reduceMotion =
+        MediaQuery.disableAnimationsOf(context) ||
+        PrefService.of(context, listen: false).get(optionDisableAnimations) ==
+            true;
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: reduceMotion ? 0 : 160),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: KeyedSubtree(key: ValueKey(widget.mediaOnly), child: content),
     );
   }
 }

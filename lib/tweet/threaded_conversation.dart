@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quax/client/client.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
 
 /// A conversation chain placed at its depth in the reply tree.
 class ThreadNode {
@@ -41,7 +42,9 @@ List<ThreadNode> buildThreadTree(List<TweetChain> chains, String focalId) {
   }
 
   TweetChain? parentOf(TweetChain chain) {
-    final parentId = chain.tweets.isEmpty ? null : chain.tweets.first.inReplyToStatusIdStr;
+    final parentId = chain.tweets.isEmpty
+        ? null
+        : chain.tweets.first.inReplyToStatusIdStr;
     if (parentId == null) {
       return null;
     }
@@ -66,7 +69,9 @@ List<ThreadNode> buildThreadTree(List<TweetChain> chains, String focalId) {
   int byOldest(TweetChain a, TweetChain b) {
     final ai = a.tweets.isEmpty ? '' : (a.tweets.first.idStr ?? '');
     final bi = b.tweets.isEmpty ? '' : (b.tweets.first.idStr ?? '');
-    return ai.length == bi.length ? ai.compareTo(bi) : ai.length.compareTo(bi.length);
+    return ai.length == bi.length
+        ? ai.compareTo(bi)
+        : ai.length.compareTo(bi.length);
   }
 
   final out = <ThreadNode>[];
@@ -110,8 +115,8 @@ class ThreadIndent extends StatelessWidget {
 
   const ThreadIndent({super.key, required this.depth, required this.child});
 
-  static const _maxDepth = 6;
-  static const _indentPerLevel = 10.0;
+  static const _maxDepth = 5;
+  static const _indentPerLevel = kTweetSpace2;
 
   @override
   Widget build(BuildContext context) {
@@ -119,13 +124,15 @@ class ThreadIndent extends StatelessWidget {
       return child;
     }
     final level = depth.clamp(1, _maxDepth);
-    final lineColor = Theme.of(context).colorScheme.primary.withAlpha(90);
+    final lineColor = tweetSecondaryColor(context).withValues(alpha: 0.42);
     return Padding(
       padding: EdgeInsets.only(left: _indentPerLevel * level),
       child: Container(
         padding: const EdgeInsets.only(left: 6),
         decoration: BoxDecoration(
-          border: Border(left: BorderSide(color: lineColor, width: 2)),
+          border: Border(
+            left: BorderSide(color: lineColor, width: kTweetThreadRailWidth),
+          ),
         ),
         child: child,
       ),

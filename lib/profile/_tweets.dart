@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
-
+import 'package:logging/logging.dart';
+import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
 import 'package:quax/client/client.dart';
 import 'package:quax/constants.dart';
 import 'package:quax/database/repository.dart';
 import 'package:quax/database/timeline_cache.dart';
+import 'package:quax/generated/l10n.dart';
 import 'package:quax/profile/profile.dart';
-import 'package:quax/tweet/conversation.dart';
-import 'package:quax/tweet/tweet_skeleton.dart';
+import 'package:quax/tweet/paginated_tweet_list.dart';
 import 'package:quax/ui/errors.dart';
 import 'package:quax/user.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/utils/paging.dart';
-import 'package:pref/pref.dart';
-import 'package:logging/logging.dart';
-import 'package:provider/provider.dart';
 
 class ProfileTweets extends StatefulWidget {
   final UserWithExtra user;
@@ -23,68 +19,48 @@ class ProfileTweets extends StatefulWidget {
   final List<String> pinnedTweets;
   final BasePrefService pref;
 
-  const ProfileTweets(
-      {super.key,
-      required this.user,
-      required this.type,
-      required this.includeReplies,
-      required this.pinnedTweets,
-      required this.pref});
+  const ProfileTweets({
+    super.key,
+    required this.user,
+    required this.type,
+    required this.includeReplies,
+    required this.pinnedTweets,
+    required this.pref,
+  });
 
   @override
   State<ProfileTweets> createState() => _ProfileTweetsState();
 }
 
-class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveClientMixin<ProfileTweets> {
+class _ProfileTweetsState extends State<ProfileTweets>
+    with AutomaticKeepAliveClientMixin<ProfileTweets> {
   static final log = Logger('ProfileTweets');
-
-  late final CursorPagingController<String, TweetChain> _paging;
-  PagingController<int, TweetChain> get _pagingController => _paging.pagingController;
-
   static const int pageSize = 20;
-  int loadTweetsCounter = 0;
+
+  final TweetFeedController _feed = TweetFeedController();
+  int _loadTweetsCounter = 0;
   bool _bypassCache = false;
 
   @override
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-    _paging = CursorPagingController<String, TweetChain>(_fetchPage);
-  }
-
-  @override
   void dispose() {
-    _paging.dispose();
+    _feed.dispose();
     super.dispose();
   }
 
-  void incrementLoadTweetsCounter() {
-    ++loadTweetsCounter;
-  }
-
-  int getLoadTweetsCounter() {
-    return loadTweetsCounter;
-  }
-
   Future<TweetStatus> _load(String? cursor) => Twitter.getTweets(
-        widget.user.idStr!,
-        widget.type,
-        widget.pinnedTweets,
-        cursor: cursor,
-        count: pageSize,
-        includeReplies: widget.includeReplies,
-        getTweetsCounter: getLoadTweetsCounter,
-        incrementTweetsCounter: incrementLoadTweetsCounter,
-      );
+    widget.user.idStr!,
+    widget.type,
+    widget.pinnedTweets,
+    cursor: cursor,
+    count: pageSize,
+    includeReplies: widget.includeReplies,
+    getTweetsCounter: () => _loadTweetsCounter,
+    incrementTweetsCounter: () => ++_loadTweetsCounter,
+  );
 
-  /// The first page of a profile, from cache when it is fresh enough, and from
-  /// cache at any age when the request fails. Opening the same profile twice in
-  /// a session used to cost two requests; now the second one paints instantly
-  /// and still shows something while rate limited or offline.
-  ///
-  /// Only the first page is cached — see [TimelineCache].
   Future<TweetStatus> _loadFirstPage() async {
     final key = TimelineCache.profileKey(
       widget.user.idStr!,
@@ -92,14 +68,9 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
       includeReplies: widget.includeReplies,
     );
     final cache = TimelineCache(await Repository.writable());
-
-    // A pull-to-refresh must reach X; serving the cache would make the gesture
-    // do nothing for the length of the window.
     if (!_bypassCache) {
       final cached = await cache.read(key, maxAge: profileCacheMaxAge);
-      if (cached != null) {
-        return cached;
-      }
+      if (cached != null) return cached;
     }
     _bypassCache = false;
 
@@ -107,81 +78,50 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
       final result = await _load(null);
       await cache.write(key, result);
       return result;
-    } catch (e) {
+    } catch (error) {
       final stale = await cache.readStale(key);
-      if (stale == null) {
-        rethrow;
-      }
-      log.info('Showing the cached profile timeline for ${widget.user.idStr} after $e');
+      if (stale == null) rethrow;
+      log.info(
+        'Showing the cached profile timeline for ${widget.user.idStr} after $error',
+      );
       return stale;
     }
   }
 
-  Future<CursorPage<String, TweetChain>> _fetchPage(String? cursor) async {
-    var result = cursor == null ? await _loadFirstPage() : await _load(cursor);
-
-    // Stop when the cursor doesn't advance (or is gone), keeping the chains.
-    final next = result.cursorBottom;
-    return (items: result.chains, nextCursor: next == cursor ? null : next);
+  Future<TweetPageResult> _fetchPage(String? cursor) async {
+    final result = cursor == null
+        ? await _loadFirstPage()
+        : await _load(cursor);
+    return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    return Consumer<TweetContextState>(
+      builder: (context, model, child) {
+        if (model.hideSensitive && (widget.user.possiblySensitive ?? false)) {
+          return EmojiErrorWidget(
+            emoji: '🍆🙈🍆',
+            message: L10n.current.possibly_sensitive,
+            errorMessage: L10n.current.possibly_sensitive_profile,
+            onRetry: () async => model.setHideSensitive(false),
+            retryText: L10n.current.yes_please,
+          );
+        }
 
-    return Consumer<TweetContextState>(builder: (context, model, child) {
-      if (model.hideSensitive && (widget.user.possiblySensitive ?? false)) {
-        return EmojiErrorWidget(
-          emoji: '🍆🙈🍆',
-          message: L10n.current.possibly_sensitive,
-          errorMessage: L10n.current.possibly_sensitive_profile,
-          onRetry: () async => model.setHideSensitive(false),
-          retryText: L10n.current.yes_please,
+        return PaginatedTweetList(
+          feed: _feed,
+          loadPage: _fetchPage,
+          username: widget.user.screenName,
+          onRefresh: () async => _bypassCache = true,
+          firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
+          newPageErrorPrefix: L10n.of(
+            context,
+          ).unable_to_load_the_next_page_of_tweets,
+          emptyMessage: L10n.of(context).could_not_find_any_tweets_by_this_user,
         );
-      }
-
-      return RefreshIndicator(
-        onRefresh: () async {
-          _bypassCache = true;
-          _pagingController.refresh();
-        },
-        child: PagingListener<int, TweetChain>(
-          controller: _pagingController,
-          builder: (context, state, fetchNextPage) => PagedListView<int, TweetChain>(
-            padding: EdgeInsets.zero,
-            state: state,
-            fetchNextPage: fetchNextPage,
-            addAutomaticKeepAlives: false,
-            builderDelegate: PagedChildBuilderDelegate(
-              itemBuilder: (context, chain, index) {
-                return TweetConversation(
-                    id: chain.id, tweets: chain.tweets, username: widget.user.screenName!, isPinned: chain.isPinned);
-              },
-              firstPageProgressIndicatorBuilder: (context) => const TweetFeedSkeleton(),
-              newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
-              firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_tweets,
-                onRetry: fetchNextPage,
-              ),
-              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-                onRetry: fetchNextPage,
-              ),
-              noItemsFoundIndicatorBuilder: (context) {
-                return Center(
-                  child: Text(
-                    L10n.of(context).could_not_find_any_tweets_by_this_user,
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      );
-    });
+      },
+    );
   }
 }
