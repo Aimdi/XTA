@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
+import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const double kHomeNavigationHeight = 64;
@@ -90,7 +92,7 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
                   ? Icon(
                       Icons.check,
                       size: kTweetActionIconSize,
-                      color: tweetAccentColor(context),
+                      color: tweetReadableAccentColor(context),
                     )
                   : null,
             ),
@@ -150,10 +152,38 @@ class HomeNavigationBar extends StatelessWidget {
     final tokens = XLookTokens.maybeOf(context);
     final reduceMotion =
         disableAnimations || MediaQuery.disableAnimationsOf(context);
+    final theme = Theme.of(context);
+    final navigationTheme = NavigationBarTheme.of(context);
+    final selectedColor = tweetReadableAccentColor(context);
+
+    final resolvedTheme = navigationTheme.copyWith(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      indicatorColor: Colors.transparent,
+      labelTextStyle: WidgetStateProperty.resolveWith((states) {
+        final inherited = navigationTheme.labelTextStyle?.resolve(states);
+        final selected = states.contains(WidgetState.selected);
+        return (inherited ?? theme.textTheme.labelSmall)?.copyWith(
+          color: selected ? selectedColor : tweetSecondaryColor(context),
+          fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+        );
+      }),
+      iconTheme: WidgetStateProperty.resolveWith((states) {
+        final inherited = navigationTheme.iconTheme?.resolve(states);
+        final selected = states.contains(WidgetState.selected);
+        return (inherited ?? const IconThemeData()).copyWith(
+          color: selected ? selectedColor : tweetSecondaryColor(context),
+          size: 24,
+        );
+      }),
+    );
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: tokens?.background ?? Theme.of(context).colorScheme.surface,
+        color:
+            navigationTheme.backgroundColor ??
+            tokens?.background ??
+            theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
             color: tweetDividerColor(context),
@@ -161,24 +191,30 @@ class HomeNavigationBar extends StatelessWidget {
           ),
         ),
       ),
-      child: NavigationBar(
-        selectedIndex: selectedIndex,
-        labelBehavior: showLabels
-            ? NavigationDestinationLabelBehavior.alwaysShow
-            : NavigationDestinationLabelBehavior.alwaysHide,
-        height: kHomeNavigationHeight,
-        destinations: items
-            .asMap()
-            .entries
-            .map(
-              (entry) => _destination(
-                entry.value,
-                entry.key == selectedIndex,
-                reduceMotion,
-              ),
-            )
-            .toList(growable: false),
-        onDestinationSelected: onSelected,
+      child: SafeArea(
+        top: false,
+        child: NavigationBarTheme(
+          data: resolvedTheme,
+          child: NavigationBar(
+            selectedIndex: selectedIndex,
+            labelBehavior: showLabels
+                ? NavigationDestinationLabelBehavior.alwaysShow
+                : NavigationDestinationLabelBehavior.alwaysHide,
+            height: kHomeNavigationHeight,
+            destinations: items
+                .asMap()
+                .entries
+                .map(
+                  (entry) => _destination(
+                    entry.value,
+                    entry.key == selectedIndex,
+                    reduceMotion,
+                  ),
+                )
+                .toList(growable: false),
+            onDestinationSelected: onSelected,
+          ),
+        ),
       ),
     );
   }
@@ -188,7 +224,9 @@ class HomeNavigationBar extends StatelessWidget {
     bool selected,
     bool reduceMotion,
   ) {
-    final duration = Duration(milliseconds: reduceMotion ? 0 : 180);
+    final duration = reduceMotion
+        ? Duration.zero
+        : xtaMotionDuration(context, kXtaMotionStandard);
     final scale = selected ? 1.08 : 1.0;
     final icon = selected ? item.selectedIcon : item.icon;
 
@@ -215,14 +253,19 @@ class HomeLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SizedBox.square(
-            dimension: kTweetTouchTarget,
-            child: Padding(
-              padding: EdgeInsets.all(kTweetSpace3),
-              child: CircularProgressIndicator(strokeWidth: 2),
+    return XtaSystemBars(
+      child: Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: SizedBox.square(
+              dimension: kTweetTouchTarget,
+              child: Padding(
+                padding: const EdgeInsets.all(kTweetSpace3),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: tweetReadableAccentColor(context),
+                ),
+              ),
             ),
           ),
         ),

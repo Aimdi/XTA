@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "सेव इसी डिवाइस पर रहते हैं। कहीं कुछ नहीं भेजा जाता।",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "ऊपर स्क्रॉल करें",
+  "@scroll_to_top": {},
   "search": "खोजें",
   "@search": {},
   "search_in_plugin": "{name} में खोजें",

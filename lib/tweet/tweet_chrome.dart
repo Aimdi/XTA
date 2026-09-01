@@ -48,6 +48,24 @@ Color tweetAccentColor(BuildContext context) =>
     XLookTokens.maybeOf(context)?.accent ??
     Theme.of(context).colorScheme.primary;
 
+/// Accent corrected for small text against the surface it is painted on.
+///
+/// The selectable Aimdi palette includes yellow, orange and green. Those are
+/// excellent identifying colours but fail text contrast on a light surface if
+/// they are used unchanged.
+Color tweetReadableAccentColor(BuildContext context, {Color? background}) {
+  if (background == null) {
+    return Theme.of(context).colorScheme.primary;
+  }
+  return ensureContrast(tweetAccentColor(context), background);
+}
+
+/// Foreground for a solid accent control. A fixed white glyph disappears on
+/// most of the selectable accents, especially yellow and orange.
+Color tweetOnAccentColor(BuildContext context) {
+  return contrastingForeground(tweetAccentColor(context));
+}
+
 Color tweetSurfaceColor(BuildContext context) =>
     XLookTokens.maybeOf(context)?.card ?? Theme.of(context).colorScheme.surface;
 
@@ -147,7 +165,7 @@ class TweetEmbedSurface extends StatelessWidget {
     super.key,
     required this.child,
     this.onTap,
-    this.margin = const EdgeInsets.fromLTRB(
+    this.margin = const EdgeInsetsDirectional.fromSTEB(
       kTweetHorizontalPadding,
       kTweetSpace2,
       kTweetHorizontalPadding,
@@ -185,7 +203,7 @@ class TweetMediaFrame extends StatelessWidget {
   const TweetMediaFrame({
     super.key,
     required this.child,
-    this.margin = const EdgeInsets.fromLTRB(
+    this.margin = const EdgeInsetsDirectional.fromSTEB(
       kTweetHorizontalPadding,
       kTweetSpace2,
       kTweetHorizontalPadding,
@@ -196,8 +214,13 @@ class TweetMediaFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
-    final border =
-        tokens?.border ?? Theme.of(context).colorScheme.outlineVariant;
+    final surface =
+        tokens?.card ?? Theme.of(context).colorScheme.surface;
+    final border = ensureContrast(
+      tokens?.border ?? Theme.of(context).colorScheme.outlineVariant,
+      surface,
+      minRatio: 1.3,
+    );
     return RepaintBoundary(
       child: Container(
         margin: margin,
@@ -214,31 +237,106 @@ class TweetMediaFrame extends StatelessWidget {
 
 /// A small overlay label used for media position and type badges.
 class TweetMediaBadge extends StatelessWidget {
-  final String label;
+  final String? label;
+  final IconData? icon;
+  final String? semanticLabel;
 
-  const TweetMediaBadge({super.key, required this.label});
+  const TweetMediaBadge({
+    super.key,
+    this.label,
+    this.icon,
+    this.semanticLabel,
+  }) : assert(label != null || icon != null);
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    final badge = DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.62),
+        color: Colors.black.withValues(alpha: 0.68),
         borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.white24, width: 0.5),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: kTweetSpace2,
           vertical: kTweetSpace1,
         ),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Colors.white,
-            fontSize: 12,
-            height: 1.2,
-            fontWeight: FontWeight.w600,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null)
+              Icon(icon, color: Colors.white, size: 16),
+            if (icon != null && label != null)
+              const SizedBox(width: kTweetSpace1),
+            if (label != null)
+              Text(
+                label!,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: Colors.white,
+                  fontSize: 12,
+                  height: 1.2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+          ],
         ),
+      ),
+    );
+
+    if (semanticLabel == null) {
+      return badge;
+    }
+    return Semantics(
+      label: semanticLabel,
+      child: ExcludeSemantics(child: badge),
+    );
+  }
+}
+
+/// Community Notes are supporting context rather than another post or a
+/// generic Material card. This keeps the note visually attached to its host
+/// while giving the heading and body a predictable reading order.
+class TweetCommunityNote extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const TweetCommunityNote({
+    super.key,
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweetEmbedSurface(
+      margin: const EdgeInsets.all(kTweetSpace2),
+      padding: const EdgeInsets.all(kTweetSpace3),
+      semanticLabel: title,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.group_outlined,
+                size: 16,
+                color: tweetSecondaryColor(context),
+              ),
+              const SizedBox(width: kTweetSpace2),
+              Expanded(
+                child: Text(
+                  title,
+                  style: tweetLabelStyle(context),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: kTweetSpace2),
+          DefaultTextStyle.merge(
+            style: tweetBodyStyle(context),
+            child: child,
+          ),
+        ],
       ),
     );
   }
@@ -264,7 +362,7 @@ class TweetContextRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: EdgeInsets.fromLTRB(
+      padding: EdgeInsetsDirectional.fromSTEB(
         contentStart,
         kTweetSpace2,
         kTweetHorizontalPadding,
@@ -316,17 +414,22 @@ class TweetStateTile extends StatelessWidget {
     return TweetEmbedSurface(
       onTap: onTap,
       padding: const EdgeInsets.all(kTweetSpace3),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            icon,
-            size: kTweetActionIconSize,
-            color: tweetSecondaryColor(context),
-          ),
-          const SizedBox(width: kTweetSpace2),
-          Expanded(child: Text(message, style: tweetMetadataStyle(context))),
-        ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minHeight: kTweetTouchTarget - kTweetSpace6,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: kTweetActionIconSize,
+              color: tweetSecondaryColor(context),
+            ),
+            const SizedBox(width: kTweetSpace2),
+            Expanded(child: Text(message, style: tweetMetadataStyle(context))),
+          ],
+        ),
       ),
     );
   }
@@ -340,7 +443,8 @@ class TweetEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.topCenter,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 560),
         child: Padding(

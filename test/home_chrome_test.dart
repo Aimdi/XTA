@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_selection_store.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 Widget _app(Widget child) => MaterialApp(
@@ -107,4 +109,46 @@ void main() {
       expect(selected, 1);
     },
   );
+
+  testWidgets('selected navigation remains legible with a yellow accent', (
+    tester,
+  ) async {
+    final accent = xLookAccents['yellow']!;
+    final tokens = XLookTokens.light.copyWith(accent: accent);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: xLookThemeData(tokens, null),
+        home: Scaffold(
+          bottomNavigationBar: HomeNavigationBar(
+            selectedIndex: 0,
+            showLabels: true,
+            disableAnimations: true,
+            items: const [
+              HomeNavigationItem(
+                label: 'Home',
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+              ),
+              HomeNavigationItem(
+                label: 'Search',
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+              ),
+            ],
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+
+    final context = tester.element(find.byType(NavigationBar));
+    final navigationTheme = NavigationBarTheme.of(context);
+    final selectedColor = navigationTheme.iconTheme!
+        .resolve(<WidgetState>{WidgetState.selected})!
+        .color!;
+    expect(
+      contrastRatio(selectedColor, tokens.background),
+      greaterThanOrEqualTo(4.5),
+    );
+  });
 }

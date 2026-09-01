@@ -104,6 +104,7 @@ class _SettingsAccountFragment extends State<SettingsAccountFragment> {
       title: L10n.current.account,
       actions: [
         IconButton(
+          tooltip: L10n.of(context).add_account,
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => const TwitterLoginWebview()),

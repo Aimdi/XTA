@@ -52,7 +52,8 @@ class BroadcastGridItem extends MediaGridItem {
       return true;
     }
     if (tweet != null &&
-        (broadcastMediaKeyOf(tweet!) != null || spaceMediaKeyOf(tweet!) != null)) {
+        (broadcastMediaKeyOf(tweet!) != null ||
+            spaceMediaKeyOf(tweet!) != null)) {
       return true;
     }
     return (broadcastId != null && broadcastId!.isNotEmpty) ||
@@ -79,36 +80,14 @@ class BroadcastGridItem extends MediaGridItem {
           isFinished: false,
           size: 40,
         ),
-        Positioned(
-          left: 6,
-          bottom: 6,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  isSpace ? Icons.graphic_eq : Icons.live_tv,
-                  color: Colors.white,
-                  size: 12,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  isSpace
-                      ? L10n.of(context).spaces
-                      : L10n.of(context).broadcasts,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+        PositionedDirectional(
+          start: kTweetSpace2,
+          bottom: kTweetSpace2,
+          child: TweetMediaBadge(
+            icon: isSpace ? Icons.graphic_eq : Icons.live_tv_outlined,
+            label: isSpace
+                ? L10n.of(context).spaces
+                : L10n.of(context).broadcasts,
           ),
         ),
       ],

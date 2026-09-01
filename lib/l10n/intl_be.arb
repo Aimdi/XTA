@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Захаванае застаецца толькі на гэтай прыладзе. Нічога нікуды не адпраўляецца.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Пракруціць уверх",
+  "@scroll_to_top": {},
   "search": "Пошук",
   "@search": {},
   "search_in_plugin": "Пошук у {name}",

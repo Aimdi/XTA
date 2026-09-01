@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "I salvati restano su questo dispositivo. Non viene inviato nulla.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Torna in cima",
+  "@scroll_to_top": {},
   "search": "Ricerca",
   "@search": {},
   "search_in_plugin": "Cerca in {name}",

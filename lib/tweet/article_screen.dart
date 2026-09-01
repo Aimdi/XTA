@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/utils/browsers.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
@@ -57,40 +58,51 @@ class _ArticleScreenState extends State<ArticleScreen> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.article_on_x, maxLines: 1, overflow: TextOverflow.ellipsis),
-        actions: [
-          IconButton(
-            tooltip: l10n.share_link,
-            icon: const Icon(Icons.share_outlined),
-            onPressed: () {
-              final url = prepareUrl(PrefService.of(context, listen: false), widget.url);
-              SharePlus.instance.share(ShareParams(text: url));
-            },
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            l10n.article_on_x,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          // Still offered, because an article that will not render in here has
-          // to be readable somewhere. Goes to the browser the reader chose, and
-          // out of the app rather than into an embedded view — asking for a
-          // browser is asking to leave.
-          IconButton(
-            tooltip: l10n.open_in_browser,
-            icon: const Icon(Icons.open_in_new),
-            onPressed: () {
-              final prefs = PrefService.of(context, listen: false);
-              openExternally(
-                prepareUrl(prefs, widget.url),
-                package: prefs.get<String>(optionExternalBrowser) ?? systemDefaultBrowser,
-              );
-            },
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_loading) const LinearProgressIndicator(minHeight: 2),
-        ],
+          actions: [
+            IconButton(
+              tooltip: l10n.share_link,
+              icon: const Icon(Icons.share_outlined),
+              onPressed: () {
+                final url = prepareUrl(
+                  PrefService.of(context, listen: false),
+                  widget.url,
+                );
+                SharePlus.instance.share(ShareParams(text: url));
+              },
+            ),
+            // Still offered, because an article that will not render in here
+            // has to be readable somewhere. Goes to the browser the reader
+            // chose, and out of the app rather than into an embedded view —
+            // asking for a browser is asking to leave.
+            IconButton(
+              tooltip: l10n.open_in_browser,
+              icon: const Icon(Icons.open_in_new),
+              onPressed: () {
+                final prefs = PrefService.of(context, listen: false);
+                openExternally(
+                  prepareUrl(prefs, widget.url),
+                  package:
+                      prefs.get<String>(optionExternalBrowser) ??
+                      systemDefaultBrowser,
+                );
+              },
+            ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            WebViewWidget(controller: _controller),
+            if (_loading) const LinearProgressIndicator(minHeight: 2),
+          ],
+        ),
       ),
     );
   }

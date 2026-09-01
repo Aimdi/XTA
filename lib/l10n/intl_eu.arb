@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Gordetakoak gailu honetan gelditzen dira. Ez da ezer inora bidaltzen.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Joan goraino",
+  "@scroll_to_top": {},
   "search": "Bilatu",
   "@search": {},
   "search_in_plugin": "Bilatu {name}(e)n",

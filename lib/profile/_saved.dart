@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/home/_saved.dart';
 import 'package:xta/profile/archive_filter.dart';
+import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
+import 'package:xta/saved/saved_screen.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
+import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -107,7 +109,7 @@ class _ProfileSavedState extends State<ProfileSaved> {
         builder: (context, state, fetchNextPage) {
           if (pagingAwaitingFirstPage(state)) {
             return pagingFill(
-              child: const Center(child: CircularProgressIndicator()),
+              child: const TweetFeedSkeleton(count: 3),
             );
           }
           if (state.items == null) {
@@ -120,8 +122,11 @@ class _ProfileSavedState extends State<ProfileSaved> {
           }
           if (state.items!.isEmpty) {
             return pagingFill(
-              child: Center(
-                child: Text(_emptyMessage),
+              child: ProfileEmptyState(
+                icon: widget.filter == ArchiveFilter.likes
+                    ? Icons.favorite_border
+                    : Icons.bookmark_border,
+                message: _emptyMessage,
               ),
             );
           }

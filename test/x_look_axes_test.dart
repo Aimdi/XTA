@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/ui/contrast.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 /// X Look is now the app's only design language, chosen on two axes the way X
@@ -100,10 +101,17 @@ void main() {
           reason: 'light');
     });
 
-    test('the spinner and action text follow the chosen accent', () {
+    test('spinner and action text keep the chosen accent readable', () {
       for (final accent in xLookAccents.keys) {
         final theme = xLookThemeData(xLookTokensFor(xLookBackgroundLightsOut, accent), null);
-        expect(theme.snackBarTheme.actionTextColor, xLookAccents[accent], reason: accent);
+        expect(
+          contrastRatio(
+            theme.snackBarTheme.actionTextColor!,
+            theme.snackBarTheme.backgroundColor!,
+          ),
+          greaterThanOrEqualTo(4.5),
+          reason: accent,
+        );
       }
     });
   });
@@ -135,4 +143,3 @@ void _expectReadable(Color background, Color text, {required String reason}) {
   // WCAG 2.2 SC 1.4.3 for normal text.
   expect(ratio, greaterThanOrEqualTo(4.5), reason: reason);
 }
-

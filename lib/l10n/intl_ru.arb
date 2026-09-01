@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Сохранённое остаётся на этом устройстве. Никуда ничего не отправляется.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Прокрутить вверх",
+  "@scroll_to_top": {},
   "search": "Поиск",
   "@search": {},
   "search_in_plugin": "Искать в {name}",

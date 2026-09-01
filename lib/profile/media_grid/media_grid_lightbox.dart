@@ -18,14 +18,20 @@ class MediaGridLightbox extends StatefulWidget {
   final List<MediaGridItem> staticItems;
   final int initialIndex;
 
-  const MediaGridLightbox({super.key, this.controller, this.staticItems = const [], required this.initialIndex});
+  const MediaGridLightbox({
+    super.key,
+    this.controller,
+    this.staticItems = const [],
+    required this.initialIndex,
+  });
 
   @override
   State<MediaGridLightbox> createState() => _MediaGridLightboxState();
 }
 
 class _MediaGridLightboxState extends State<MediaGridLightbox> {
-  List<MediaGridItem> get _items => widget.controller?.value.items ?? widget.staticItems;
+  List<MediaGridItem> get _items =>
+      widget.controller?.value.items ?? widget.staticItems;
 
   @override
   void initState() {
@@ -51,7 +57,8 @@ class _MediaGridLightboxState extends State<MediaGridLightbox> {
     // on the conversation fetch alone.
     MediaGridItem? item;
     for (final candidate in _items) {
-      if (candidate.tweetId == entry.tweetId && candidate.mediaIndex == entry.mediaIndex) {
+      if (candidate.tweetId == entry.tweetId &&
+          candidate.mediaIndex == entry.mediaIndex) {
         item = candidate;
         break;
       }
@@ -76,7 +83,12 @@ class _MediaGridLightboxState extends State<MediaGridLightbox> {
       initialIndex: widget.initialIndex,
       entries: [
         for (final item in _items)
-          (media: item.media, username: item.username, tweetId: item.tweetId, mediaIndex: item.mediaIndex)
+          (
+            media: item.media,
+            username: item.username,
+            tweetId: item.tweetId,
+            mediaIndex: item.mediaIndex,
+          ),
       ],
       onOpenPost: _openPost,
       onNearEnd: widget.controller?.fetchNextPage,
@@ -84,15 +96,18 @@ class _MediaGridLightboxState extends State<MediaGridLightbox> {
   }
 }
 
-void openMediaLightbox(BuildContext context,
-    {PagingController<int, MediaGridItem>? controller,
-    List<MediaGridItem> staticItems = const [],
-    required int initialIndex}) {
-  Navigator.push(
+void openMediaLightbox(
+  BuildContext context, {
+  PagingController<int, MediaGridItem>? controller,
+  List<MediaGridItem> staticItems = const [],
+  required int initialIndex,
+}) {
+  pushTweetMediaViewer<void>(
     context,
-    MaterialPageRoute(
-      builder: (_) =>
-          MediaGridLightbox(controller: controller, staticItems: staticItems, initialIndex: initialIndex),
+    MediaGridLightbox(
+      controller: controller,
+      staticItems: staticItems,
+      initialIndex: initialIndex,
     ),
   );
 }

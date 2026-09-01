@@ -68,7 +68,7 @@ class ReaderTabBar extends StatelessWidget implements PreferredSizeWidget {
           tabAlignment: TabAlignment.start,
           indicatorSize: TabBarIndicatorSize.tab,
           dividerColor: Colors.transparent,
-          indicatorColor: tweetAccentColor(context),
+          indicatorColor: tweetReadableAccentColor(context),
           labelColor: tweetPrimaryColor(context),
           unselectedLabelColor: tweetSecondaryColor(context),
           labelStyle: tweetLabelStyle(context),

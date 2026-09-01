@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Збережене залишається на цьому пристрої. Нічого нікуди не надсилається.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Прокрутити вгору",
+  "@scroll_to_top": {},
   "search": "Пошук",
   "@search": {},
   "search_in_plugin": "Шукати в {name}",

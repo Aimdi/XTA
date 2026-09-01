@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Bài đã lưu được giữ trên thiết bị này. Không có gì được gửi đi đâu cả.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Cuộn lên đầu",
+  "@scroll_to_top": {},
   "search": "Tìm kiếm",
   "@search": {},
   "search_in_plugin": "Tìm trong {name}",

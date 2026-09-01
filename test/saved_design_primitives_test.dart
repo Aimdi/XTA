@@ -122,4 +122,46 @@ void main() {
     );
     expect(store.state.folder, 'folder');
   });
+
+  testWidgets('Saved search grows for large translated text', (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    await tester.pumpWidget(
+      _app(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: SavedSearchField(
+            focusNode: focusNode,
+            onChanged: (_) {},
+            onClose: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getSize(find.byType(TextField)).height,
+      kSavedLargeTextSearchHeight,
+    );
+  });
+
+  testWidgets('Saved search uses the shared inset surface', (tester) async {
+    final focusNode = FocusNode();
+    addTearDown(focusNode.dispose);
+    await tester.pumpWidget(
+      _app(
+        SavedSearchField(
+          focusNode: focusNode,
+          onChanged: (_) {},
+          onClose: () {},
+        ),
+      ),
+    );
+
+    final context = tester.element(find.byType(TextField));
+    final tokens = XLookTokens.of(context);
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.decoration?.fillColor, xLookInsetSurface(tokens));
+  });
 }

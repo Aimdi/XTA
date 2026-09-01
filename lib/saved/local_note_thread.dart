@@ -13,6 +13,7 @@ import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/local_post_tile.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 Future<void> openLocalNoteThread(BuildContext context, {required String rootId}) {
   return Navigator.push<void>(
@@ -32,18 +33,21 @@ class LocalNoteThreadScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final model = context.read<LocalPostModel>();
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.local_note_thread_title)),
-      body: ScopedBuilder<LocalPostModel, List<LocalPost>>(
-        store: model,
-        onError: (_, e) => FullPageErrorWidget(
-          error: e,
-          stackTrace: null,
-          prefix: l10n.unable_to_load_the_tweets,
-          onRetry: () => model.listLocalPosts(),
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.local_note_thread_title)),
+        body: ScopedBuilder<LocalPostModel, List<LocalPost>>(
+          store: model,
+          onError: (_, e) => FullPageErrorWidget(
+            error: e,
+            stackTrace: null,
+            prefix: l10n.unable_to_load_the_tweets,
+            onRetry: () => model.listLocalPosts(),
+          ),
+          onLoading: (_) => const Center(child: CircularProgressIndicator()),
+          onState: (context, posts) =>
+              _ThreadBody(rootId: rootId, posts: posts),
         ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
-        onState: (context, posts) => _ThreadBody(rootId: rootId, posts: posts),
       ),
     );
   }

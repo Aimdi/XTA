@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/x_look_theme.dart';
-import 'package:pref/pref.dart';
-import 'package:xta/constants.dart';
 
 /// Placeholder tiles shown while the first feed page loads.
 ///
@@ -63,12 +62,9 @@ AnimationController _skeletonPulse(TickerProvider vsync) => AnimationController(
 /// setting both leave the bones at a flat colour rather than pulsing.
 ///
 /// A skeleton is also the first thing a plugin tab paints, sometimes before
-/// anything has provided a [PrefService]; without one the pulse simply runs.
+/// anything has provided preferences; without them the pulse simply runs.
 bool skeletonWantsPulse(BuildContext context) {
-  if (MediaQuery.disableAnimationsOf(context)) return false;
-
-  final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
-  return prefs?.get<bool>(optionDisableAnimations) != true;
+  return !xtaReduceMotion(context);
 }
 
 /// Starts or pins [controller] according to [skeletonWantsPulse].
@@ -126,10 +122,12 @@ class _TweetSkeletonTileState extends State<TweetSkeletonTile>
   @override
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
-    final base =
-        tokens?.border ?? Theme.of(context).colorScheme.surfaceContainerHighest;
-    final highlight =
-        tokens?.divider ?? Theme.of(context).colorScheme.surfaceContainerHigh;
+    final base = tokens == null
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : xLookSkeletonSurface(tokens);
+    final highlight = tokens == null
+        ? Theme.of(context).colorScheme.surfaceContainerHigh
+        : xLookSkeletonHighlight(tokens);
     final avatarSize = tokens?.avatarSize ?? 40;
     final mediaRadius = tokens?.mediaRadius ?? 16;
 

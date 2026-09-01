@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Opgeslagen items blijven op dit apparaat. Er wordt nergens iets naartoe gestuurd.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Naar boven scrollen",
+  "@scroll_to_top": {},
   "search": "Zoeken",
   "@search": {},
   "search_in_plugin": "Zoeken in {name}",

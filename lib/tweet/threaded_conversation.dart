@@ -223,7 +223,7 @@ class ThreadIndent extends StatelessWidget {
       return child;
     }
     return Padding(
-      padding: EdgeInsets.only(left: indent),
+      padding: EdgeInsetsDirectional.only(start: indent),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -252,19 +252,22 @@ class ThreadContinueRow extends StatelessWidget {
     final style = theme.textTheme.labelLarge?.copyWith(color: color);
     return InkWell(
       onTap: onTap,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: threadNestedIndent(indentDepth) + kThreadRailLeft,
-          top: 8,
-          bottom: 8,
-          right: 16,
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.subdirectory_arrow_right, size: 18, color: color),
-            const SizedBox(width: 8),
-            Text(L10n.of(context).continue_thread, style: style),
-          ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Padding(
+          padding: EdgeInsetsDirectional.only(
+            start: threadNestedIndent(indentDepth) + kThreadRailLeft,
+            top: 8,
+            bottom: 8,
+            end: 16,
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.subdirectory_arrow_right, size: 18, color: color),
+              const SizedBox(width: 8),
+              Text(L10n.of(context).continue_thread, style: style),
+            ],
+          ),
         ),
       ),
     );

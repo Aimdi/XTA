@@ -1,3 +1,12 @@
+## XTA aimdi124
+
+What's new in XTA aimdi124:
+  - Built directly on aimdi123. Not QuaX.
+  - Reapplies the complete reader UI redesign to the current XTA feature baseline
+  - Keeps aimdi123's plugin networks, local notes, archive filters, browser selection, WebDAV sync, diagnostics, and local data
+  - Consistent posts, feeds, profiles, search, groups, saved library, settings, media, themes, system bars, touch targets, and reduced-motion behavior
+  - Everything from aimdi123
+
 ## XTA aimdi123
 
 What's new in XTA aimdi123:

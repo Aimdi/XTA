@@ -1,277 +1,240 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/search/advanced_search_model.dart';
 import 'package:xta/search/search_chrome.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
-List<String> _tokens(String input) =>
-    input.split(RegExp(r'[,\s]+')).where((e) => e.isNotEmpty).toList();
-
-String _orGroup(Iterable<String> items) {
-  final list = items.toList();
-  return list.length == 1 ? list.first : '(${list.join(' OR ')})';
-}
-
-void _addPrefixedGroup(
-  List<String> parts,
-  String input,
-  String Function(String) toOperator,
-) {
-  final items = _tokens(input).map(toOperator).toList();
-  if (items.isNotEmpty) {
-    parts.add(_orGroup(items));
-  }
-}
-
-void _addMinimum(List<String> parts, String input, String operator) {
-  final n = int.tryParse(input.trim());
-  if (n != null && n > 0) {
-    parts.add('$operator:$n');
-  }
-}
-
-/// Composes an X search query from the advanced-search form fields, using the
-/// same operators as x.com/search-advanced.
-String buildAdvancedSearchQuery({
-  required String allWords,
-  required String exactPhrase,
-  required String anyWords,
-  required String noneWords,
-  required String hashtags,
-  required String fromAccounts,
-  required String toAccounts,
-  required String mentioningAccounts,
-  required String minReplies,
-  required String minLikes,
-  required String minRetweets,
-  DateTime? since,
-  DateTime? until,
-  required bool onlyMedia,
-}) {
-  final parts = <String>[];
-
-  if (allWords.trim().isNotEmpty) parts.add(allWords.trim());
-  if (exactPhrase.trim().isNotEmpty) parts.add('"${exactPhrase.trim()}"');
-  final any = _tokens(anyWords);
-  if (any.isNotEmpty) parts.add(_orGroup(any));
-  parts.addAll(_tokens(noneWords).map((w) => '-$w'));
-  _addPrefixedGroup(parts, hashtags, (t) => t.startsWith('#') ? t : '#$t');
-  _addPrefixedGroup(
-    parts,
-    fromAccounts,
-    (u) => 'from:${u.replaceAll('@', '')}',
-  );
-  _addPrefixedGroup(parts, toAccounts, (u) => 'to:${u.replaceAll('@', '')}');
-  _addPrefixedGroup(
-    parts,
-    mentioningAccounts,
-    (u) => '@${u.replaceAll('@', '')}',
-  );
-  _addMinimum(parts, minReplies, 'min_replies');
-  _addMinimum(parts, minLikes, 'min_faves');
-  _addMinimum(parts, minRetweets, 'min_retweets');
-
-  final dateFormat = DateFormat('yyyy-MM-dd');
-  if (since != null) parts.add('since:${dateFormat.format(since)}');
-  if (until != null) parts.add('until:${dateFormat.format(until)}');
-  if (onlyMedia) parts.add('filter:media');
-
-  return parts.join(' ');
-}
-
-/// Full-screen form that builds an advanced search query. Pops with the
-/// composed query string, or null when dismissed.
+/// Full-screen progressive form that returns the structured filters used to
+/// compose an X search query. Dismissing it leaves the existing search intact.
 class AdvancedSearchScreen extends StatefulWidget {
-  const AdvancedSearchScreen({super.key});
+  final AdvancedSearchState initialState;
+
+  const AdvancedSearchScreen({
+    super.key,
+    this.initialState = const AdvancedSearchState(),
+  });
 
   @override
   State<AdvancedSearchScreen> createState() => _AdvancedSearchScreenState();
 }
 
 class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
-  final _allWords = TextEditingController();
-  final _exactPhrase = TextEditingController();
-  final _anyWords = TextEditingController();
-  final _noneWords = TextEditingController();
-  final _hashtags = TextEditingController();
-  final _fromAccounts = TextEditingController();
-  final _toAccounts = TextEditingController();
-  final _mentioningAccounts = TextEditingController();
-  final _minReplies = TextEditingController();
-  final _minLikes = TextEditingController();
-  final _minRetweets = TextEditingController();
-  DateTime? _since;
-  DateTime? _until;
-  bool _onlyMedia = false;
+  late final AdvancedSearchStore _store;
+  late final Map<AdvancedSearchFilter, TextEditingController> _controllers;
+
+  @override
+  void initState() {
+    super.initState();
+    _store = AdvancedSearchStore(widget.initialState);
+    _controllers = {
+      AdvancedSearchFilter.allWords: _controller(widget.initialState.allWords),
+      AdvancedSearchFilter.exactPhrase: _controller(
+        widget.initialState.exactPhrase,
+      ),
+      AdvancedSearchFilter.anyWords: _controller(widget.initialState.anyWords),
+      AdvancedSearchFilter.noneWords: _controller(
+        widget.initialState.noneWords,
+      ),
+      AdvancedSearchFilter.hashtags: _controller(widget.initialState.hashtags),
+      AdvancedSearchFilter.fromAccounts: _controller(
+        widget.initialState.fromAccounts,
+      ),
+      AdvancedSearchFilter.toAccounts: _controller(
+        widget.initialState.toAccounts,
+      ),
+      AdvancedSearchFilter.mentioningAccounts: _controller(
+        widget.initialState.mentioningAccounts,
+      ),
+      AdvancedSearchFilter.minReplies: _controller(
+        widget.initialState.minReplies,
+      ),
+      AdvancedSearchFilter.minLikes: _controller(
+        widget.initialState.minLikes,
+      ),
+      AdvancedSearchFilter.minRetweets: _controller(
+        widget.initialState.minRetweets,
+      ),
+    };
+  }
+
+  TextEditingController _controller(String value) =>
+      TextEditingController(text: value);
 
   @override
   void dispose() {
-    for (final controller in [
-      _allWords,
-      _exactPhrase,
-      _anyWords,
-      _noneWords,
-      _hashtags,
-      _fromAccounts,
-      _toAccounts,
-      _mentioningAccounts,
-      _minReplies,
-      _minLikes,
-      _minRetweets,
-    ]) {
+    for (final controller in _controllers.values) {
       controller.dispose();
     }
+    _store.destroy();
     super.dispose();
   }
 
-  void _apply() {
-    Navigator.pop(context, _query());
-  }
+  TextEditingController _controllerFor(AdvancedSearchFilter filter) =>
+      _controllers[filter]!;
 
-  String _query() => buildAdvancedSearchQuery(
-    allWords: _allWords.text,
-    exactPhrase: _exactPhrase.text,
-    anyWords: _anyWords.text,
-    noneWords: _noneWords.text,
-    hashtags: _hashtags.text,
-    fromAccounts: _fromAccounts.text,
-    toAccounts: _toAccounts.text,
-    mentioningAccounts: _mentioningAccounts.text,
-    minReplies: _minReplies.text,
-    minLikes: _minLikes.text,
-    minRetweets: _minRetweets.text,
-    since: _since,
-    until: _until,
-    onlyMedia: _onlyMedia,
-  );
+  void _apply() => Navigator.pop(context, _store.state);
 
   void _reset() {
-    for (final controller in [
-      _allWords,
-      _exactPhrase,
-      _anyWords,
-      _noneWords,
-      _hashtags,
-      _fromAccounts,
-      _toAccounts,
-      _mentioningAccounts,
-      _minReplies,
-      _minLikes,
-      _minRetweets,
-    ]) {
+    for (final controller in _controllers.values) {
       controller.clear();
     }
-    setState(() {
-      _since = null;
-      _until = null;
-      _onlyMedia = false;
-    });
+    _store.reset();
   }
 
   Widget _field(
-    TextEditingController controller,
+    AdvancedSearchFilter filter,
     String label, {
     bool number = false,
   }) {
+    final controller = _controllerFor(filter);
     return AdvancedSearchField(
       controller: controller,
       label: label,
       number: number,
-      onChanged: (_) => setState(() {}),
-      onClear: () => setState(controller.clear),
+      onChanged: (value) => _store.updateText(filter, value),
+      onClear: () {
+        controller.clear();
+        _store.clear(filter);
+      },
     );
   }
 
-  Widget _dateTile(
-    String label,
-    DateTime? value,
-    void Function(DateTime?) onChanged,
-  ) {
-    return ListTile(
-      title: Text(label),
-      subtitle: Text(
-        value == null ? '—' : DateFormat('yyyy-MM-dd').format(value),
-      ),
-      trailing: value == null
-          ? const Icon(Icons.calendar_today)
-          : IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () => setState(() => onChanged(null)),
-            ),
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: value ?? DateTime.now(),
-          firstDate: DateTime(2006),
-          lastDate: DateTime.now(),
-        );
-        if (picked != null) {
-          setState(() => onChanged(picked));
-        }
-      },
+  Future<void> _pickDate({
+    required DateTime? current,
+    required ValueChanged<DateTime?> onChanged,
+  }) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: current ?? DateTime.now(),
+      firstDate: DateTime(2006),
+      lastDate: DateTime.now(),
     );
+    if (picked != null && mounted) onChanged(picked);
+  }
+
+  AdvancedSearchDateRow _dateRow({
+    required String label,
+    required DateTime? value,
+    required ValueChanged<DateTime?> onChanged,
+  }) {
+    return AdvancedSearchDateRow(
+      label: label,
+      value: value == null
+          ? L10n.of(context).not_set
+          : DateFormat('yyyy-MM-dd').format(value),
+      selected: value != null,
+      onTap: () => _pickDate(current: value, onChanged: onChanged),
+      onClear: () => onChanged(null),
+    );
+  }
+
+  List<Widget> _wordFields(BuildContext context) {
+    final l10n = L10n.of(context);
+    return [
+      _field(AdvancedSearchFilter.allWords, l10n.all_of_these_words),
+      _field(AdvancedSearchFilter.exactPhrase, l10n.this_exact_phrase),
+      _field(AdvancedSearchFilter.anyWords, l10n.any_of_these_words),
+      _field(AdvancedSearchFilter.noneWords, l10n.none_of_these_words),
+      _field(AdvancedSearchFilter.hashtags, l10n.these_hashtags),
+    ];
+  }
+
+  List<Widget> _accountFields(BuildContext context) {
+    final l10n = L10n.of(context);
+    return [
+      _field(AdvancedSearchFilter.fromAccounts, l10n.from_these_accounts),
+      _field(AdvancedSearchFilter.toAccounts, l10n.to_these_accounts),
+      _field(
+        AdvancedSearchFilter.mentioningAccounts,
+        l10n.mentioning_these_accounts,
+      ),
+    ];
+  }
+
+  List<Widget> _filterFields(
+    BuildContext context,
+    AdvancedSearchState state,
+  ) {
+    final l10n = L10n.of(context);
+    return [
+      _field(
+        AdvancedSearchFilter.minReplies,
+        l10n.minimum_replies,
+        number: true,
+      ),
+      _field(
+        AdvancedSearchFilter.minLikes,
+        l10n.minimum_likes,
+        number: true,
+      ),
+      _field(
+        AdvancedSearchFilter.minRetweets,
+        l10n.minimum_reposts,
+        number: true,
+      ),
+      AdvancedSearchToggleRow(
+        label: l10n.only_show_posts_with_media,
+        value: state.onlyMedia,
+        onChanged: _store.setOnlyMedia,
+      ),
+      _dateRow(
+        label: l10n.since_date,
+        value: state.since,
+        onChanged: _store.setSince,
+      ),
+      _dateRow(
+        label: l10n.until_date,
+        value: state.until,
+        onChanged: _store.setUntil,
+      ),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return SearchSystemBars(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.advanced_search),
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          actions: [
-            IconButton(
-              tooltip: l10n.delete,
-              icon: const Icon(Icons.restart_alt),
-              onPressed: _reset,
-            ),
-            IconButton(
-              tooltip: l10n.search,
-              icon: const Icon(Icons.check),
-              onPressed: _apply,
-            ),
-          ],
-        ),
-        body: ListView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          children: [
-            AdvancedFilterSection(
-              title: l10n.search_term,
-              children: [
-                _field(_allWords, l10n.all_of_these_words),
-                _field(_exactPhrase, l10n.this_exact_phrase),
-                _field(_anyWords, l10n.any_of_these_words),
-                _field(_noneWords, l10n.none_of_these_words),
-                _field(_hashtags, l10n.these_hashtags),
-              ],
-            ),
-            AdvancedFilterSection(
-              title: l10n.account,
-              children: [
-                _field(_fromAccounts, l10n.from_these_accounts),
-                _field(_toAccounts, l10n.to_these_accounts),
-                _field(_mentioningAccounts, l10n.mentioning_these_accounts),
-              ],
-            ),
-            AdvancedFilterSection(
-              title: l10n.filters,
-              children: [
-                _field(_minReplies, l10n.minimum_replies, number: true),
-                _field(_minLikes, l10n.minimum_likes, number: true),
-                _field(_minRetweets, l10n.minimum_reposts, number: true),
-                CheckboxListTile(
-                  title: Text(l10n.only_show_posts_with_media),
-                  value: _onlyMedia,
-                  onChanged: (v) => setState(() => _onlyMedia = v ?? false),
-                ),
-                _dateTile(l10n.since_date, _since, (v) => _since = v),
-                _dateTile(l10n.until_date, _until, (v) => _until = v),
-              ],
-            ),
-            SearchQueryPreview(query: _query()),
-            const SizedBox(height: 24),
-          ],
+    return ScopedBuilder<AdvancedSearchStore, AdvancedSearchState>(
+      store: _store,
+      onState: (_, state) => SearchSystemBars(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(l10n.advanced_search),
+            actions: [
+              IconButton(
+                tooltip: l10n.group_combine_clear,
+                icon: const Icon(Icons.restart_alt),
+                onPressed: state.activeFilters.isEmpty ? null : _reset,
+              ),
+            ],
+          ),
+          body: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            children: [
+              AdvancedFilterSection(
+                icon: Icons.text_fields,
+                title: l10n.search_term,
+                children: _wordFields(context),
+              ),
+              AdvancedFilterSection(
+                icon: Icons.alternate_email,
+                title: l10n.account,
+                children: _accountFields(context),
+              ),
+              AdvancedFilterSection(
+                icon: Icons.tune,
+                title: l10n.filters,
+                children: _filterFields(context, state),
+              ),
+              SearchQueryPreview(query: state.query),
+              const SizedBox(height: kTweetSpace2),
+            ],
+          ),
+          bottomNavigationBar: SearchApplyBar(
+            enabled: true,
+            onPressed: _apply,
+          ),
         ),
       ),
     );

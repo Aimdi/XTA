@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "Uložené zůstává jen v tomto zařízení. Nic se nikam neodesílá.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "Přejít nahoru",
+  "@scroll_to_top": {},
   "search": "Hledat",
   "@search": {},
   "search_in_plugin": "Hledat v {name}",

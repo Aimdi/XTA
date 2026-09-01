@@ -6,6 +6,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/database/timeline_cache.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/posts_filter.dart';
+import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
@@ -25,24 +26,27 @@ class ProfileTweets extends StatefulWidget {
   final BasePrefService pref;
   final PostsFilter filter;
 
-  const ProfileTweets(
-      {super.key,
-      required this.user,
-      required this.type,
-      required this.includeReplies,
-      required this.pinnedTweets,
-      required this.pref,
-      this.filter = PostsFilter.all});
+  const ProfileTweets({
+    super.key,
+    required this.user,
+    required this.type,
+    required this.includeReplies,
+    required this.pinnedTweets,
+    required this.pref,
+    this.filter = PostsFilter.all,
+  });
 
   @override
   State<ProfileTweets> createState() => _ProfileTweetsState();
 }
 
-class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveClientMixin<ProfileTweets> {
+class _ProfileTweetsState extends State<ProfileTweets>
+    with AutomaticKeepAliveClientMixin<ProfileTweets> {
   static final log = Logger('ProfileTweets');
 
   late CursorPagingController<String, TweetChain> _paging;
-  PagingController<int, TweetChain> get _pagingController => _paging.pagingController;
+  PagingController<int, TweetChain> get _pagingController =>
+      _paging.pagingController;
 
   static const int pageSize = 20;
   int loadTweetsCounter = 0;
@@ -95,15 +99,15 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
   }
 
   Future<TweetStatus> _load(String? cursor) => Twitter.getTweets(
-        widget.user.idStr!,
-        widget.type,
-        widget.pinnedTweets,
-        cursor: cursor,
-        count: pageSize,
-        includeReplies: widget.includeReplies,
-        getTweetsCounter: getLoadTweetsCounter,
-        incrementTweetsCounter: incrementLoadTweetsCounter,
-      );
+    widget.user.idStr!,
+    widget.type,
+    widget.pinnedTweets,
+    cursor: cursor,
+    count: pageSize,
+    includeReplies: widget.includeReplies,
+    getTweetsCounter: getLoadTweetsCounter,
+    incrementTweetsCounter: incrementLoadTweetsCounter,
+  );
 
   /// The first page of a profile, from cache when it is fresh enough, and from
   /// cache at any age when the request fails. Opening the same profile twice in
@@ -138,14 +142,19 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
       if (stale == null) {
         rethrow;
       }
-      log.info('Showing the cached profile timeline for ${widget.user.idStr} after $e');
+      log.info(
+        'Showing the cached profile timeline for '
+        '${widget.user.idStr} after $e',
+      );
       return stale;
     }
   }
 
   Future<CursorPage<String, TweetChain>> _fetchPage(String? cursor) async {
     if (widget.filter == PostsFilter.all) {
-      var result = cursor == null ? await _loadFirstPage() : await _load(cursor);
+      final result = cursor == null
+          ? await _loadFirstPage()
+          : await _load(cursor);
       final next = result.cursorBottom;
       return (items: result.chains, nextCursor: next == cursor ? null : next);
     }
@@ -194,10 +203,11 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
             }
             if (state.items!.isEmpty) {
               return pagingFill(
-                child: Center(
-                  child: Text(
-                    L10n.of(context).could_not_find_any_tweets_by_this_user,
-                  ),
+                child: ProfileEmptyState(
+                  icon: Icons.article_outlined,
+                  message: L10n.of(
+                    context,
+                  ).could_not_find_any_tweets_by_this_user,
                 ),
               );
             }
@@ -212,11 +222,12 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
                   // conversation a fresh state instead of recycling the one that
                   // happened to sit at the same index.
                   return TweetConversation(
-                      key: ValueKey(chain.id),
-                      id: chain.id,
-                      tweets: chain.tweets,
-                      username: widget.user.screenName!,
-                      isPinned: chain.isPinned);
+                    key: ValueKey(chain.id),
+                    id: chain.id,
+                    tweets: chain.tweets,
+                    username: widget.user.screenName!,
+                    isPinned: chain.isPinned,
+                  );
                 },
                 newPageProgressIndicatorBuilder: (context) =>
                     const TweetSkeletonTile(),

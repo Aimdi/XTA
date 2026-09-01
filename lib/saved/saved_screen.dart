@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -855,7 +854,7 @@ class _SavedClipTileState extends State<SavedClipTile> {
         ),
         if (_editing)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
             child: Row(
               children: [
                 Expanded(
@@ -870,16 +869,34 @@ class _SavedClipTileState extends State<SavedClipTile> {
                     ),
                   ),
                 ),
-                IconButton(icon: const Icon(Icons.check), onPressed: _saveNote),
+                IconButton(
+                  tooltip: L10n.of(context).profile_note_save,
+                  icon: const Icon(Icons.check),
+                  onPressed: _saveNote,
+                ),
               ],
             ),
           )
         else if (note != null && note.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: InkWell(
-              onTap: () => setState(() => _editing = true),
-              child: Text(note, style: Theme.of(context).textTheme.bodySmall),
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
+            child: Semantics(
+              button: true,
+              child: InkWell(
+                onTap: () => setState(() => _editing = true),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: kTweetTouchTarget,
+                  ),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      note,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ),
+              ),
             ),
           )
         else
@@ -939,25 +956,9 @@ class SavedTweetTooLarge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListTile(
-              leading: Icon(
-                Icons.error_outline,
-                color: Colors.red.harmonizeWith(
-                  Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              title: Text(L10n.current.oops_something_went_wrong),
-              subtitle: Text(L10n.current.saved_tweet_too_large),
-            ),
-          ],
-        ),
-      ),
+    return TweetStateTile(
+      icon: Icons.error_outline,
+      message: L10n.of(context).saved_tweet_too_large,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/_video_controls.dart';
 import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/media_strip.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/urls.dart';

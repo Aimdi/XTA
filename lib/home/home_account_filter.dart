@@ -15,6 +15,7 @@ import 'package:xta/group/future_pool.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 const int homeTimelineMergeConcurrency = 2;
 
@@ -336,6 +337,8 @@ void showHomeAccountFilterSheet(
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
     builder: (sheetContext) {
       return SafeArea(
         child: FutureBuilder<List<Account>>(
@@ -356,26 +359,20 @@ void showHomeAccountFilterSheet(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
-                        leading: IconButton(
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: () => Navigator.of(sheetContext).pop(),
-                        ),
                         title: Text(
                           L10n.of(context).home_feed_accounts,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          bottom: 8,
+                        padding: const EdgeInsetsDirectional.only(
+                          start: kTweetSpace4,
+                          end: kTweetSpace4,
+                          bottom: kTweetSpace2,
                         ),
                         child: Text(
                           L10n.of(context).home_feed_accounts_description,
-                          style: TextStyle(
-                            color: Theme.of(context).disabledColor,
-                          ),
+                          style: tweetMetadataStyle(context),
                         ),
                       ),
                       if (accounts.isEmpty)
@@ -428,11 +425,14 @@ void showHomeAccountFilterSheet(
                                     ).textTheme.titleMedium,
                                   ),
                                   subtitle: Padding(
-                                    padding: const EdgeInsets.only(top: 4),
+                                    padding: const EdgeInsets.only(
+                                      top: kTweetSpace1,
+                                    ),
                                     child: Text(
                                       L10n.of(
                                         context,
                                       ).home_feed_groups_description,
+                                      style: tweetMetadataStyle(context),
                                     ),
                                   ),
                                 ),

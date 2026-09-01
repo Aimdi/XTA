@@ -14,6 +14,7 @@ import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
+import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
@@ -26,6 +27,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
@@ -388,18 +390,12 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadUnreadSoon();
   }
 
-  Future<void> _refreshActiveTab(FeedTab tab) async {
+  Future<void> _refreshActiveTab(BuildContext feedContext) async {
     await scrollToTop(context, widget.scrollController);
-    if (!mounted) {
+    if (!mounted || !feedContext.mounted) {
       return;
     }
-
-    if (tab == FeedTab.foryou) {
-      await _forYouFeed.softRefresh();
-      return;
-    }
-
-    _reloadHomeFeeds();
+    await feedContext.read<FeedRefreshController>().refresh();
   }
 
   String _unreadKeyFor(FeedTab tab) {
@@ -454,7 +450,7 @@ class _FeedScreenState extends State<FeedScreen> {
       leading: const DrawerAvatarButton(),
       titleBuilder: (context) => Text(L10n.of(context).home),
       bottomBuilder: (context) => PreferredSize(
-        preferredSize: const Size.fromHeight(46),
+        preferredSize: const Size.fromHeight(kTweetTouchTarget),
         child: DefaultTabController(
           key: ValueKey(
             '${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
@@ -471,6 +467,14 @@ class _FeedScreenState extends State<FeedScreen> {
                     dividerHeight: 0,
                     isScrollable: true,
                     tabAlignment: TabAlignment.start,
+                    indicatorColor: tweetReadableAccentColor(context),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelColor: tweetPrimaryColor(context),
+                    unselectedLabelColor: tweetSecondaryColor(context),
+                    labelStyle: tweetLabelStyle(context),
+                    unselectedLabelStyle: tweetLabelStyle(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.w500),
                     tabs: [
                       for (final e in visible)
                         Tab(
@@ -523,7 +527,7 @@ class _FeedScreenState extends State<FeedScreen> {
           model: model,
           showMore: tab == FeedTab.following,
           showRefresh: tab == FeedTab.foryou,
-          onRefresh: () => _refreshActiveTab(tab),
+          onRefresh: () => _refreshActiveTab(context),
           showSettings: false,
           extra: [
             IconButton(

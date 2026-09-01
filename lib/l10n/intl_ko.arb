@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "저장 항목은 이 기기에만 남으며 어디에도 전송되지 않습니다.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "맨 위로 스크롤",
+  "@scroll_to_top": {},
   "search": "검색",
   "@search": {},
   "search_in_plugin": "{name} 검색",

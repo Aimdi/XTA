@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pref/pref.dart';
-import 'package:xta/constants.dart';
+import 'package:xta/ui/motion.dart';
 
 /// How long the jump back to the top takes.
 ///
@@ -33,12 +32,14 @@ Future<void> scrollToTop(
     return;
   }
 
-  final disableAnimations =
-      PrefService.of(context, listen: false).get(optionDisableAnimations) ==
-      true;
+  if (xtaReduceMotion(context)) {
+    controller.jumpTo(0);
+    return;
+  }
+
   await controller.animateTo(
     0,
-    duration: disableAnimations ? Duration.zero : kScrollToTopDuration,
+    duration: kScrollToTopDuration,
     curve: Curves.easeInOut,
   );
 }

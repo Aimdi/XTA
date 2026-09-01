@@ -57,6 +57,7 @@ void main() {
     expect(tester.takeException(), isNull);
 
     final size = tester.getSize(find.byType(ProfileNoteCard));
+    expect(size.height, greaterThanOrEqualTo(48));
     expect(
       size.height,
       lessThan(56),

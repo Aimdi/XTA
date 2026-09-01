@@ -2742,6 +2742,8 @@
   "@saved_tweet_too_large": {},
   "saves_stay_on_device_notice": "تبقى المحفوظات على هذا الجهاز فقط، ولا يُرسل شيء إلى أي مكان.",
   "@saves_stay_on_device_notice": {},
+  "scroll_to_top": "التمرير إلى الأعلى",
+  "@scroll_to_top": {},
   "search": "البحث",
   "@search": {},
   "search_in_plugin": "البحث في {name}",

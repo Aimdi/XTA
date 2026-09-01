@@ -74,4 +74,41 @@ void main() {
 
     expect(find.text('media'), findsOneWidget);
   });
+
+  testWidgets('sensitive reveal is immediate when motion is disabled', (
+    tester,
+  ) async {
+    final model = TweetContextState(true);
+
+    await tester.pumpWidget(
+      PrefService(
+        service: PrefServiceCache(),
+        child: ChangeNotifierProvider.value(
+          value: model,
+          child: MaterialApp(
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: const MediaQuery(
+              data: MediaQueryData(disableAnimations: true),
+              child: SensitiveMediaGate(
+                sensitive: true,
+                child: Text('media'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    model.setHideSensitive(false);
+    await tester.pump();
+
+    expect(find.text('media'), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+  });
 }

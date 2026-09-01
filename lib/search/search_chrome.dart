@@ -7,6 +7,7 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const double kSearchFieldHeight = 48;
+const double kSearchLargeTextFieldHeight = 56;
 const double kSearchTabsHeight = 52;
 const double kSearchFilterStripHeight = 56;
 const double kSearchControlRadius = 12;
@@ -51,21 +52,26 @@ class XtaSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fieldHeight = MediaQuery.textScalerOf(context).scale(1) >= 1.3
+        ? kSearchLargeTextFieldHeight
+        : kSearchFieldHeight;
     final tokens = XLookTokens.maybeOf(context);
-    final background = Color.alphaBlend(
-      tweetPrimaryColor(context).withValues(alpha: 0.06),
-      tokens?.background ?? Theme.of(context).scaffoldBackgroundColor,
-    );
+    final background = tokens == null
+        ? Color.alphaBlend(
+            tweetPrimaryColor(context).withValues(alpha: 0.06),
+            Theme.of(context).scaffoldBackgroundColor,
+          )
+        : xLookInsetSurface(tokens);
     return SizedBox(
-      height: kSearchFieldHeight,
+      height: fieldHeight,
       child: SearchBar(
         controller: controller,
         focusNode: focusNode,
         hintText: L10n.of(context).search,
-        constraints: const BoxConstraints(
+        constraints: BoxConstraints(
           minWidth: 0,
-          minHeight: kSearchFieldHeight,
-          maxHeight: kSearchFieldHeight,
+          minHeight: fieldHeight,
+          maxHeight: fieldHeight,
         ),
         textInputAction: TextInputAction.search,
         onSubmitted: onSubmitted,
@@ -80,21 +86,16 @@ class XtaSearchField extends StatelessWidget {
         ),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(kSearchFieldHeight / 2),
+            borderRadius: BorderRadius.circular(fieldHeight / 2),
           ),
         ),
         padding: const WidgetStatePropertyAll(
           EdgeInsetsDirectional.only(start: kTweetSpace3, end: kTweetSpace1),
         ),
-        leading: Icon(
-          Icons.search,
-          size: kTweetActionIconSize,
-          color: tweetSecondaryColor(context),
-        ),
         trailing: [
           if (controller.text.isNotEmpty)
             IconButton(
-              tooltip: L10n.of(context).delete,
+              tooltip: L10n.of(context).group_combine_clear,
               icon: const Icon(Icons.close),
               onPressed: onClear,
             ),
@@ -119,7 +120,7 @@ class _AdvancedSearchButton extends StatelessWidget {
     final icon = Icon(
       Icons.tune,
       color: count > 0
-          ? tweetAccentColor(context)
+          ? tweetReadableAccentColor(context)
           : tweetSecondaryColor(context),
     );
     return IconButton(
@@ -176,21 +177,25 @@ class SearchActiveFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InputChip(
-      label: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 240),
-        child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+      child: InputChip(
+        label: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 240),
+          child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        labelStyle: tweetMetadataStyle(
+          context,
+        ).copyWith(color: tweetPrimaryColor(context)),
+        deleteIconColor: tweetSecondaryColor(context),
+        deleteButtonTooltipMessage: L10n.of(context).group_combine_clear,
+        onDeleted: onDeleted,
+        side: BorderSide(color: tweetDividerColor(context)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(kSearchControlRadius),
+        ),
+        backgroundColor: tweetSurfaceColor(context),
       ),
-      labelStyle: tweetMetadataStyle(
-        context,
-      ).copyWith(color: tweetPrimaryColor(context)),
-      deleteIconColor: tweetSecondaryColor(context),
-      onDeleted: onDeleted,
-      side: BorderSide(color: tweetDividerColor(context)),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(kSearchControlRadius),
-      ),
-      backgroundColor: tweetSurfaceColor(context),
     );
   }
 }
@@ -223,6 +228,7 @@ class SearchStartState extends StatelessWidget {
 }
 
 class AdvancedFilterSection extends StatelessWidget {
+  final IconData? icon;
   final String title;
   final List<Widget> children;
 
@@ -230,6 +236,7 @@ class AdvancedFilterSection extends StatelessWidget {
     super.key,
     required this.title,
     required this.children,
+    this.icon,
   });
 
   @override
@@ -244,7 +251,19 @@ class AdvancedFilterSection extends StatelessWidget {
             kTweetHorizontalPadding,
             kTweetSpace2,
           ),
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          child: Row(
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: kTweetActionIconSize,
+                  color: tweetReadableAccentColor(context),
+                ),
+                const SizedBox(width: kTweetSpace2),
+              ],
+              Expanded(child: Text(title, style: tweetLabelStyle(context))),
+            ],
+          ),
         ),
         ...children,
         const SizedBox(height: kTweetSpace2),
@@ -272,6 +291,7 @@ class AdvancedSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = XLookTokens.maybeOf(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         kTweetHorizontalPadding,
@@ -289,10 +309,17 @@ class AdvancedSearchField extends StatelessWidget {
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           labelText: label,
+          filled: true,
+          fillColor: tokens == null
+              ? Color.alphaBlend(
+                  tweetPrimaryColor(context).withValues(alpha: 0.04),
+                  Theme.of(context).scaffoldBackgroundColor,
+                )
+              : xLookInsetSurface(tokens),
           suffixIcon: controller.text.isEmpty
               ? null
               : IconButton(
-                  tooltip: L10n.of(context).delete,
+                  tooltip: L10n.of(context).group_combine_clear,
                   icon: const Icon(Icons.close),
                   onPressed: onClear,
                 ),
@@ -326,8 +353,152 @@ class SearchQueryPreview extends StatelessWidget {
         children: [
           Text(L10n.of(context).search_term, style: tweetLabelStyle(context)),
           const SizedBox(height: kTweetSpace2),
-          SelectableText(query, style: tweetBodyStyle(context)),
+          SelectableText(
+            query.isEmpty ? L10n.of(context).not_set : query,
+            style: tweetBodyStyle(context).copyWith(
+              color: query.isEmpty
+                  ? tweetSecondaryColor(context)
+                  : tweetPrimaryColor(context),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class AdvancedSearchDateRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool selected;
+  final VoidCallback onTap;
+  final VoidCallback onClear;
+
+  const AdvancedSearchDateRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.selected,
+    required this.onTap,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(
+              kTweetHorizontalPadding,
+              kTweetSpace2,
+              kTweetSpace1,
+              kTweetSpace2,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: kTweetActionIconSize,
+                  color: tweetSecondaryColor(context),
+                ),
+                const SizedBox(width: kTweetSpace3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(label, style: tweetBodyStyle(context)),
+                      const SizedBox(height: kTweetSpace1),
+                      Text(value, style: tweetMetadataStyle(context)),
+                    ],
+                  ),
+                ),
+                if (selected)
+                  IconButton(
+                    tooltip: L10n.of(context).group_combine_clear,
+                    icon: const Icon(Icons.close),
+                    onPressed: onClear,
+                  )
+                else
+                  const SizedBox.square(
+                    dimension: kTweetTouchTarget,
+                    child: Icon(Icons.chevron_right),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AdvancedSearchToggleRow extends StatelessWidget {
+  final String label;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const AdvancedSearchToggleRow({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SwitchListTile.adaptive(
+      title: Text(label, style: tweetBodyStyle(context)),
+      value: value,
+      onChanged: onChanged,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: kTweetHorizontalPadding,
+      ),
+    );
+  }
+}
+
+class SearchApplyBar extends StatelessWidget {
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  const SearchApplyBar({
+    super.key,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final background =
+        XLookTokens.maybeOf(context)?.background ??
+        Theme.of(context).scaffoldBackgroundColor;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        border: Border(
+          top: BorderSide(
+            color: tweetDividerColor(context),
+            width: kTweetDividerThickness,
+          ),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.all(kTweetSpace3),
+          child: FilledButton.icon(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(kTweetTouchTarget),
+            ),
+            onPressed: enabled ? onPressed : null,
+            icon: const Icon(Icons.search),
+            label: Text(L10n.of(context).search),
+          ),
+        ),
       ),
     );
   }

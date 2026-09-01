@@ -4,6 +4,16 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi124
+
+**XTA, built directly on aimdi123. Not QuaX.**
+
+Install **`xta-aimdi124_arm64-v8a.apk`**. It uses the same app id (`com.aimdi.xta`) and signing lineage, so it updates over aimdi123 without clearing data.
+
+This release applies the production reader redesign to the actual aimdi123 XTA codebase. Posts, Home, Profile, Search, Groups, Saved, and Settings now share one Android-first visual system, including first-class media layouts, compact reader chrome, consistent light/dark/OLED themes, accessible touch targets, edge-to-edge system bars, clear loading/empty/error states, and reduced-motion behavior.
+
+All aimdi123 functionality remains present, including plugin networks, local notes and likes, saved folders, archive filters, group controls, browser selection, WebDAV sync, diagnostics, and the read-only interaction model. Existing databases and settings keep working; no reset is required.
+
 ### aimdi123
 
 **XTA, built on aimdi122. Not QuaX.**

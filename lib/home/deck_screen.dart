@@ -10,6 +10,7 @@ import 'package:xta/group/deck_groups.dart';
 import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/group_model.dart' show GroupModel, GroupsModel;
 import 'package:xta/group/group_screen.dart';
+import 'package:xta/ui/reader_chrome.dart';
 
 class DeckScreen extends StatelessWidget {
   const DeckScreen({super.key});
@@ -20,26 +21,30 @@ class DeckScreen extends StatelessWidget {
     final ids = parseDeckGroupIds(prefs.get(optionDeckGroupIds) as String?);
     final model = context.read<GroupsModel>();
 
-    return Scaffold(
-      appBar: AppBar(title: Text(L10n.of(context).deck_title)),
-      body: ScopedBuilder<GroupsModel, List<SubscriptionGroup>>(
-        store: model,
-        onState: (_, groups) {
-          final pinned = [for (final id in ids) ...groups.where((g) => g.id == id)];
-          if (pinned.isEmpty) {
-            return Center(child: Text(L10n.of(context).deck_empty));
-          }
+    return XtaSystemBars(
+      child: Scaffold(
+        appBar: AppBar(title: Text(L10n.of(context).deck_title)),
+        body: ScopedBuilder<GroupsModel, List<SubscriptionGroup>>(
+          store: model,
+          onState: (_, groups) {
+            final pinned = [
+              for (final id in ids) ...groups.where((g) => g.id == id),
+            ];
+            if (pinned.isEmpty) {
+              return Center(child: Text(L10n.of(context).deck_empty));
+            }
 
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var i = 0; i < pinned.length; i++) ...[
-                if (i > 0) const VerticalDivider(width: 1),
-                Expanded(child: _DeckColumn(group: pinned[i])),
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var i = 0; i < pinned.length; i++) ...[
+                  if (i > 0) const VerticalDivider(width: 1),
+                  Expanded(child: _DeckColumn(group: pinned[i])),
+                ],
               ],
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

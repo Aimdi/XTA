@@ -406,8 +406,12 @@ class TweetTileState extends State<TweetTile> {
     );
   }
 
-  Widget _buildErrorTweet(String text) {
-    return TweetStateTile(icon: Icons.info_outline, message: text);
+  Widget _buildErrorTweet(String text, {VoidCallback? onTap}) {
+    return TweetStateTile(
+      icon: Icons.info_outline,
+      message: text,
+      onTap: onTap,
+    );
   }
 
   Future<Uint8List?> captureWidget() async {
@@ -473,7 +477,6 @@ class TweetTileState extends State<TweetTile> {
     }
 
     Widget retweetBanner = Container();
-    Widget retweetSidebar = Container();
     if (this.tweet.retweetedStatusWithCard != null) {
       retweetBanner = _TweetTileLeading(
         icon: Icons.repeat,
@@ -495,8 +498,6 @@ class TweetTileState extends State<TweetTile> {
           ),
         ],
       );
-
-      retweetSidebar = Container(color: theme.secondaryHeaderColor, width: 4);
     }
 
     // "Replying to @someone" belongs under the header and above the text, where
@@ -537,73 +538,31 @@ class TweetTileState extends State<TweetTile> {
 
     var tweetText = tweet.fullText ?? tweet.text;
     if (tweetText == null) {
-      return Text(
-        L10n.of(context).the_tweet_did_not_contain_any_text_this_is_unexpected,
+      return _buildErrorTweet(
+        L10n.of(
+          context,
+        ).the_tweet_did_not_contain_any_text_this_is_unexpected,
       );
     }
 
     if (isBirdwatchQuote) {
-      return TweetEmbedSurface(
-        margin: const EdgeInsets.all(kTweetSpace2),
-        child: Container(
-          // Fill the width so both RTL and LTR text are displayed correctly
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: Column(
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(
-                  bottom: 0,
-                  left: 24,
-                  right: 16,
-                  top: 0,
-                ),
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      WidgetSpan(
-                        child: Icon(
-                          Icons.group_rounded,
-                          size: 16,
-                          color: Theme.of(context).hintColor,
-                        ),
-                        alignment: PlaceholderAlignment.middle,
-                      ),
-                      const WidgetSpan(child: SizedBox(width: 16)),
-                      TextSpan(
-                        text: L10n.of(context).community_notes_header,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.titleSmall?.color,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(height: 8),
-              AutoDirection(
-                text: tweetText,
-                child: widget.tweetOpened
-                    ? SelectableText.rich(TextSpan(children: _displaySpans))
-                    : Text.rich(TextSpan(children: _displaySpans)),
-              ),
-            ],
-          ),
+      return TweetCommunityNote(
+        title: L10n.of(context).community_notes_header,
+        child: AutoDirection(
+          text: tweetText,
+          child: widget.tweetOpened
+              ? SelectableText.rich(TextSpan(children: _displaySpans))
+              : Text.rich(TextSpan(children: _displaySpans)),
         ),
       );
     }
 
     var birdwatchQuoted = Container();
     if (tweet.birdwatchQuotedStatus != null) {
-      birdwatchQuoted = Container(
-        margin: const EdgeInsets.all(8),
-        child: TweetTile(
-          clickable: false,
-          tweet: tweet.birdwatchQuotedStatus!,
-          isBirdwatchQuote: true,
-        ),
+      birdwatchQuoted = TweetTile(
+        clickable: false,
+        tweet: tweet.birdwatchQuotedStatus!,
+        isBirdwatchQuote: true,
       );
     }
 
@@ -612,53 +571,50 @@ class TweetTileState extends State<TweetTile> {
     // don't display a nested quoted tweet if we are already building a quoted tweet
     if (!isQuotedTweet && (tweet.isQuoteStatus ?? false)) {
       Widget quotedContent;
+      VoidCallback? quotedOnTap;
+      var quotedContentOwnsSurface = false;
       if (tweet.quotedStatusWithCard != null) {
         // Open the quoted post from the card chrome; its own text tap is off
         // (isQuotedTweet) so "show more" is not fighting an open-on-tap handler.
         final quoted = tweet.quotedStatusWithCard!;
-        quotedContent = GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => onClickOpenTweet(quoted),
-          child: TweetTile(
-            clickable: true,
-            tweet: quoted,
-            currentUsername: currentUsername,
-            addSeparator: false,
-            isQuotedTweet: true,
-          ),
+        quotedOnTap = () => onClickOpenTweet(quoted);
+        quotedContent = TweetTile(
+          clickable: true,
+          tweet: quoted,
+          currentUsername: currentUsername,
+          addSeparator: false,
+          isQuotedTweet: true,
         );
       } else if (tweet.quotedStatusIdStr != null) {
         // If twitter did not gave us the full tweet for some reason, we show a clickable tile to the tweet
         // There always seem to be an actual link to the quoted tweet that we can display (showing username + id)
-        String? msg =
+        final msg =
             tweet.quotedStatusPermalink?.display ??
             L10n.of(context).view_quoted_tweet;
-        quotedContent = GestureDetector(
-          onTap: () => Navigator.pushNamed(
-            context,
-            routeStatus,
-            arguments: StatusScreenArguments(
-              id: tweet.quotedStatusIdStr!,
-              username: null,
-            ),
+        quotedOnTap = () => Navigator.pushNamed(
+          context,
+          routeStatus,
+          arguments: StatusScreenArguments(
+            id: tweet.quotedStatusIdStr!,
+            username: null,
           ),
-          child: _buildErrorTweet(msg),
         );
+        quotedContent = _buildErrorTweet(msg, onTap: quotedOnTap);
+        quotedContentOwnsSurface = true;
       } else {
         // If we have a quote tweet we should at least have quotedStatusIdStr, but just in case twitter is being weird
         quotedContent = _buildErrorTweet(
           L10n.of(context).could_not_retrieve_quoted_tweet,
         );
+        quotedContentOwnsSurface = true;
       }
-      quotedTweet = TweetEmbedSurface(
-        margin: const EdgeInsets.fromLTRB(
-          kTweetHorizontalPadding,
-          kTweetSpace2,
-          kTweetHorizontalPadding,
-          0,
-        ),
-        child: quotedContent,
-      );
+      quotedTweet = quotedContentOwnsSurface
+          ? quotedContent
+          : TweetEmbedSurface(
+              onTap: quotedOnTap,
+              semanticLabel: L10n.of(context).view_quoted_tweet,
+              child: quotedContent,
+            );
     }
 
     // Only create the tweet content if the tweet contains text. X often omits
@@ -669,10 +625,14 @@ class TweetTileState extends State<TweetTile> {
     if (textEnd == null || textEnd != 0) {
       content = DefaultTextStyle.merge(
         style: tweetBodyStyle(context),
-        child: Container(
+        child: Padding(
           // Fill the width so both RTL and LTR text are displayed correctly
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            kTweetHorizontalPadding,
+            kTweetSpace2,
+            kTweetHorizontalPadding,
+            kTweetSpace1,
+          ),
           child: AutoDirection(
             text: tweetText,
             child: ExpandableTweetText(
@@ -733,15 +693,13 @@ class TweetTileState extends State<TweetTile> {
       onCaptureImage: captureWidget,
     );
 
-    var article = Container();
+    Widget article = const SizedBox.shrink();
     if (tweet.article != null) {
-      article = Container(
-        child: ArticleWidget(
-          article: tweet.article!,
-          expand: widget.tweetOpened,
-          onTap: () => onClickOpenTweet(tweet),
-          bottomBar: widget.tweetOpened ? footerBar : null,
-        ),
+      article = ArticleWidget(
+        article: tweet.article!,
+        expand: widget.tweetOpened,
+        onTap: () => onClickOpenTweet(tweet),
+        bottomBar: widget.tweetOpened ? footerBar : null,
       );
     }
 
@@ -752,8 +710,11 @@ class TweetTileState extends State<TweetTile> {
 
     // A quoted tweet is subordinate to its host, so it gets a smaller avatar
     // and a denser header — otherwise it reads as another post in the timeline.
+    final isThreadTile = widget.threadConnectTop || widget.threadConnectBottom;
     final avatarSize = isQuotedTweet
         ? kTweetQuotedAvatarSize
+        : isThreadTile
+        ? kThreadRailAvatarSize
         : kTweetAvatarSize;
     final plainAvatar = hideAuthorInformation
         ? Icon(Icons.account_circle, size: avatarSize)
@@ -784,33 +745,46 @@ class TweetTileState extends State<TweetTile> {
                 clipBehavior: Clip.none,
                 children: [
                   plainAvatar,
-                  Positioned(
-                    right: -2,
+                  PositionedDirectional(
+                    end: -4,
                     bottom: -2,
-                    child: GestureDetector(
-                      // Keep the hit area comfortable even though the visible
-                      // badge is small.
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => _showSubscribeSheet(
-                        context,
-                        _subscriptionFor(tweet.user!),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.surface,
-                              width: 1,
+                    child: Semantics(
+                      button: true,
+                      label: L10n.of(context).subscribe,
+                      child: TooltipTheme(
+                        data: const TooltipThemeData(
+                          triggerMode: TooltipTriggerMode.manual,
+                        ),
+                        child: Tooltip(
+                          message: L10n.of(context).subscribe,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => _showSubscribeSheet(
+                              context,
+                              _subscriptionFor(tweet.user!),
                             ),
-                          ),
-                          padding: const EdgeInsets.all(1.5),
-                          child: Icon(
-                            Icons.add,
-                            size: 12,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            child: SizedBox.square(
+                              dimension: 32,
+                              child: Center(
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: tweetAccentColor(context),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: tweetSurfaceColor(context),
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 14,
+                                    color: tweetOnAccentColor(context),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -837,65 +811,6 @@ class TweetTileState extends State<TweetTile> {
         arguments: ProfileScreenArguments(target.id, target.screenName, null),
       );
     }
-
-    final titleRow = Row(
-      children: [
-        // Username
-        if (!hideAuthorInformation)
-          Flexible(
-            child: Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    tweet.user!.name!,
-                    overflow: TextOverflow.ellipsis,
-                    style: tweetDisplayNameStyle(context),
-                  ),
-                ),
-                if (tweet.user!.verified ?? false) const SizedBox(width: 4),
-                if (tweet.user!.verified ?? false)
-                  Icon(
-                    Icons.verified,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-              ],
-            ),
-          ),
-      ],
-    );
-
-    final metaStyle = tweetMetadataStyle(context);
-
-    final subtitleRow = Row(
-      mainAxisAlignment: hideAuthorInformation
-          ? MainAxisAlignment.end
-          : MainAxisAlignment.spaceBetween,
-      children: [
-        // Twitter name
-        if (!hideAuthorInformation) ...[
-          Flexible(
-            child: Text(
-              '@${tweet.user!.screenName!}',
-              overflow: TextOverflow.ellipsis,
-              style: metaStyle,
-            ),
-          ),
-          const SizedBox(width: 4),
-        ],
-        if (createdAt != null)
-          DefaultTextStyle(
-            style: metaStyle,
-            child: Timestamp(
-              timestamp: createdAt,
-              absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
-              // X-style "5m" in the timeline; the opened post keeps the
-              // full wording.
-              compact: !widget.tweetOpened,
-            ),
-          ),
-      ],
-    );
 
     final headerTile = TweetHeader(
       avatar: avatar,
@@ -968,8 +883,6 @@ class TweetTileState extends State<TweetTile> {
       if (!isQuotedTweet) footerBar,
     ];
 
-    final isThreadTile = widget.threadConnectTop || widget.threadConnectBottom;
-
     if (isThreadTile) {
       return RepaintBoundary(
         child: Column(
@@ -979,47 +892,35 @@ class TweetTileState extends State<TweetTile> {
             ?pinnedBadge,
             ?threadBadge,
             _buildThreadBody(
-              theme,
               avatar,
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: onTapProfile,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 16,
-                          right: 16,
-                          top: 12,
-                          bottom: 12,
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  kTweetSpace3,
+                  kTweetVerticalPadding,
+                  kTweetSpace2,
+                  kTweetSpace1,
+                ),
+                child: TweetAuthorBlock(
+                  displayName: hideAuthorInformation
+                      ? null
+                      : tweet.user!.name,
+                  handle: hideAuthorInformation
+                      ? null
+                      : tweet.user!.screenName,
+                  verified:
+                      !hideAuthorInformation &&
+                      (tweet.user!.verified ?? false),
+                  timestamp: createdAt == null
+                      ? null
+                      : Timestamp(
+                          timestamp: createdAt,
+                          absoluteTimestamp: prefs.get(
+                            optionUseAbsoluteTimestamp,
+                          ),
+                          compact: !widget.tweetOpened,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            DefaultTextStyle.merge(
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              child: titleRow,
-                            ),
-                            DefaultTextStyle.merge(
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              child: subtitleRow,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (translateButton != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: translateButton,
-                    ),
-                ],
+                  trailing: translateButton,
+                ),
               ),
               bodyChildren,
               indentBody: widget.threadConnectBottom,
@@ -1038,21 +939,14 @@ class TweetTileState extends State<TweetTile> {
             tweet,
             tweetFlatCard(
               color: tweetCardColor(context),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  retweetSidebar,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        retweetBanner,
-                        ?pinnedBadge,
-                        ?threadBadge,
-                        headerTile,
-                        ...bodyChildren,
-                      ],
-                    ),
-                  ),
+                  retweetBanner,
+                  ?pinnedBadge,
+                  ?threadBadge,
+                  headerTile,
+                  ...bodyChildren,
                 ],
               ),
             ),
@@ -1071,7 +965,6 @@ class TweetTileState extends State<TweetTile> {
   }
 
   Widget _buildThreadBody(
-    ThemeData theme,
     Widget avatar,
     Widget header,
     List<Widget> bodyChildren, {
@@ -1190,27 +1083,24 @@ class _ReplyingToLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final base = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 4),
-      child: GestureDetector(
-        onTap: onTap,
-        child: RichText(
-          text: TextSpan(
-            style: base,
-            children: [
-              TextSpan(text: '${L10n.of(context).replying_to} '),
-              TextSpan(
-                text: '@$screenName',
-                style: base.copyWith(color: theme.colorScheme.primary),
+    final base = tweetMetadataStyle(context);
+    return TweetContextRow(
+      icon: Icons.reply_outlined,
+      contentStart: kTweetHorizontalPadding,
+      onTap: onTap,
+      label: Text.rich(
+        TextSpan(
+          style: base,
+          children: [
+            TextSpan(text: '${L10n.of(context).replying_to} '),
+            TextSpan(
+              text: '@$screenName',
+              style: base.copyWith(
+                color: tweetReadableAccentColor(context),
+                fontWeight: FontWeight.w600,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1230,34 +1120,15 @@ class _TweetTileLeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 16),
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.only(
-            bottom: 0,
-            left: 52,
-            right: 16,
-            top: 0,
-          ),
-          child: RichText(
-            text: TextSpan(
-              children: [
-                WidgetSpan(
-                  child: Icon(
-                    icon,
-                    size: 12,
-                    color: Theme.of(context).hintColor,
-                  ),
-                  alignment: PlaceholderAlignment.middle,
-                ),
-                const WidgetSpan(child: SizedBox(width: 16)),
-                ...children,
-              ],
-            ),
-          ),
+    return TweetContextRow(
+      icon: icon,
+      onTap: onTap,
+      label: Text.rich(
+        TextSpan(
+          style: tweetMetadataStyle(
+            context,
+          ).copyWith(fontWeight: FontWeight.w600),
+          children: children.toList(growable: false),
         ),
       ),
     );

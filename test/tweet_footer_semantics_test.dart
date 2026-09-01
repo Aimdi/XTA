@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/tweet/_like_button.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 
 /// An icon-only button with no accessible name is announced as an unnamed
@@ -27,6 +28,47 @@ void main() {
 
     expect(tester.getSemantics(find.byType(IconButton)).tooltip, 'Share post');
     handle.dispose();
+  });
+
+  testWidgets('count actions stay named when their visible count is hidden', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+
+    await pump(
+      tester,
+      tweetFooterTextButton(
+        Icons.chat_bubble_outline,
+        '',
+        Colors.grey,
+        () {},
+        'Open post',
+      ),
+    );
+
+    expect(find.bySemanticsLabel('Open post'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('footer controls preserve a 48dp touch target', (tester) async {
+    await pump(
+      tester,
+      Builder(
+        builder: (context) => tweetFooterIconButton(
+          context,
+          Icons.share,
+          null,
+          null,
+          () {},
+          'Share post',
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSize(find.byType(IconButton)),
+      const Size.square(kTweetTouchTarget),
+    );
   });
 
   testWidgets('saving and unsaving are told apart by name, not only by icon', (tester) async {

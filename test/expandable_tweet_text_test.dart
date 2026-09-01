@@ -52,6 +52,38 @@ void main() {
     expect(_showMore, findsNothing);
   });
 
+  testWidgets('a recycled tile resets expansion for different post text', (
+    tester,
+  ) async {
+    late StateSetter updateHost;
+    var spans = <InlineSpan>[const TextSpan(text: _long)];
+
+    await tester.pumpWidget(
+      StatefulBuilder(
+        builder: (context, setState) {
+          updateHost = setState;
+          return _wrap(
+            ExpandableTweetText(textSpans: spans, maxLines: 3),
+          );
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(_showMore);
+    await tester.pumpAndSettle();
+    expect(_showMore, findsNothing);
+
+    updateHost(() {
+      spans = <InlineSpan>[
+        const TextSpan(text: 'Different post. $_long'),
+      ];
+    });
+    await tester.pumpAndSettle();
+
+    expect(_showMore, findsOneWidget);
+  });
+
   // Nested quotes used to open-on-tap from the faded text under "Show more",
   // so tapping near the link navigated away instead of expanding.
   testWidgets('expanding does not fire the open-on-tap callback', (tester) async {
