@@ -260,7 +260,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
               ),
               Tab(
                 icon: Tooltip(
-                  message: L10n.of(context).users,
+                  message: L10n.of(context).account,
                   child: const Icon(Icons.person_search),
                 ),
               ),

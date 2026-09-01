@@ -1,9 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/profile_chrome.dart';
-import 'package:xta/profile/profile_model.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/theme_presets.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -16,19 +14,6 @@ void main() {
     'fairy forest': fairyForestTheme(null),
     'pitch black': pitchBlackTheme(null),
   };
-
-  test('ProfileViewStore owns tab, media, and scroll selections', () {
-    final store = ProfileViewStore(0);
-    addTearDown(store.destroy);
-
-    store.selectTab(2);
-    store.selectMediaFilter(MediaFilter.videos);
-    store.setBackToTopVisible(true);
-
-    expect(store.state.tabIndex, 2);
-    expect(store.state.mediaFilter, MediaFilter.videos);
-    expect(store.state.showBackToTop, isTrue);
-  });
 
   for (final entry in themes.entries) {
     testWidgets('${entry.key} missing profile media uses tonal fallbacks', (

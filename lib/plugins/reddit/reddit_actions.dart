@@ -413,10 +413,11 @@ class _RedditCommunityTileState extends State<_RedditCommunityTile> {
 
 Future<RedditSubredditAbout?> _communityAbout(BuildContext context, String name) async {
   try {
+    final client = context.read<RedditClient>();
     final session = await RedditReadSession.resolve(
       prefs: PrefService.of(context, listen: false),
     );
-    return session.fetchSubredditAbout(context.read<RedditClient>(), name);
+    return session.fetchSubredditAbout(client, name);
   } catch (_) {
     return null;
   }

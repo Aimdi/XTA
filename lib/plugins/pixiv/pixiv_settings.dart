@@ -503,7 +503,7 @@ class _PixivMorePaneState extends State<PixivMorePane> {
             title: Text(l10n.plugin_pixiv_sign_out),
             onTap: () async {
               await context.read<PixivClient>().signOut();
-              if (!mounted) return;
+              if (!context.mounted) return;
               context.read<PixivFeedStore>().update(const []);
               context.read<PixivBookmarkStore>().update(const {});
               setState(() {

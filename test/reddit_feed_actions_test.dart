@@ -123,7 +123,7 @@ void main() {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: L10n.delegate.supportedLocales,
-            home: const Scaffold(
+            home: Scaffold(
               appBar: AppBar(actions: [RedditFeedActions()]),
             ),
           ),
