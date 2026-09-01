@@ -1,0 +1,21 @@
+{
+  "$comment": "Which plugins the XTA plugin store offers. Published rather than compiled so a plugin can be added or withdrawn without a release. This cannot add code to an installed build: an id no build knows is ignored, and a plugin already installed is never taken away. Set \"available\": false to hold one back.",
+  "plugins": [
+    { "id": "substack" },
+    { "id": "rss" },
+    { "id": "reddit" },
+    { "id": "hackernews" },
+    { "id": "threads" },
+    { "id": "bluesky" },
+    { "id": "mastodon" },
+    { "id": "pixiv", "available": false },
+    { "id": "booru" },
+    { "id": "ehviewer", "available": false },
+    { "id": "tiktok", "available": false },
+    { "id": "instagram", "available": false },
+    { "id": "stocks" },
+    { "id": "karakeep" },
+    { "id": "deepmarks" },
+    { "id": "immich" }
+  ]
+}

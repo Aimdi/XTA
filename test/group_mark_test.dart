@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/subscriptions/group_identity.dart';
-import 'package:quax/subscriptions/group_mark_style.dart';
-import 'package:quax/subscriptions/widgets/avatar_mosaic.dart';
-import 'package:quax/subscriptions/widgets/group_tile.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/subscriptions/group_identity.dart';
+import 'package:xta/subscriptions/group_mark_style.dart';
+import 'package:xta/subscriptions/widgets/avatar_mosaic.dart';
+import 'package:xta/subscriptions/widgets/group_tile.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
       localizationsDelegates: const [

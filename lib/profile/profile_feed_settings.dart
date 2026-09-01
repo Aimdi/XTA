@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/user.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/user.dart';
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Per-user feed filters ("turn off reposts"): users listed in
@@ -12,44 +12,30 @@ import 'package:sqflite/sqflite.dart';
 
 Future<bool> isRetweetsHidden(String userId) async {
   var repository = await Repository.readOnly();
-  var rows = await repository.query(
-    tableRetweetFilter,
-    where: 'user_id = ?',
-    whereArgs: [userId],
-  );
+  var rows = await repository.query(tableRetweetFilter, where: 'user_id = ?', whereArgs: [userId]);
   return rows.isNotEmpty;
 }
 
 Future<void> setRetweetsHidden(UserWithExtra user, bool hidden) async {
   var repository = await Repository.writable();
   if (hidden) {
-    await repository.insert(tableRetweetFilter, {
-      'user_id': user.idStr,
-      'screen_name': user.screenName,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await repository.insert(tableRetweetFilter, {'user_id': user.idStr, 'screen_name': user.screenName},
+        conflictAlgorithm: ConflictAlgorithm.replace);
   } else {
-    await repository.delete(
-      tableRetweetFilter,
-      where: 'user_id = ?',
-      whereArgs: [user.idStr],
-    );
+    await repository.delete(tableRetweetFilter, where: 'user_id = ?', whereArgs: [user.idStr]);
   }
 }
 
 /// Lowercased screen names whose retweets are hidden.
 Future<Set<String>> hiddenRetweetScreenNames() async {
   var repository = await Repository.readOnly();
-  return (await repository.query(
-    tableRetweetFilter,
-    columns: ['screen_name'],
-  )).map((row) => (row['screen_name'] as String).toLowerCase()).toSet();
+  return (await repository.query(tableRetweetFilter, columns: ['screen_name']))
+      .map((row) => (row['screen_name'] as String).toLowerCase())
+      .toSet();
 }
 
 /// Drops chains that are a retweet made by one of the [hidden] users.
-List<TweetChain> filterHiddenRetweets(
-  List<TweetChain> chains,
-  Set<String> hidden,
-) {
+List<TweetChain> filterHiddenRetweets(List<TweetChain> chains, Set<String> hidden) {
   if (hidden.isEmpty) {
     return chains;
   }
@@ -62,37 +48,26 @@ List<TweetChain> filterHiddenRetweets(
 
 Future<bool> isRepliesHidden(String userId) async {
   var repository = await Repository.readOnly();
-  var rows = await repository.query(
-    tableReplyFilter,
-    where: 'user_id = ?',
-    whereArgs: [userId],
-  );
+  var rows = await repository.query(tableReplyFilter, where: 'user_id = ?', whereArgs: [userId]);
   return rows.isNotEmpty;
 }
 
 Future<void> setRepliesHidden(UserWithExtra user, bool hidden) async {
   var repository = await Repository.writable();
   if (hidden) {
-    await repository.insert(tableReplyFilter, {
-      'user_id': user.idStr,
-      'screen_name': user.screenName,
-    }, conflictAlgorithm: ConflictAlgorithm.replace);
+    await repository.insert(tableReplyFilter, {'user_id': user.idStr, 'screen_name': user.screenName},
+        conflictAlgorithm: ConflictAlgorithm.replace);
   } else {
-    await repository.delete(
-      tableReplyFilter,
-      where: 'user_id = ?',
-      whereArgs: [user.idStr],
-    );
+    await repository.delete(tableReplyFilter, where: 'user_id = ?', whereArgs: [user.idStr]);
   }
 }
 
 /// Lowercased screen names whose replies are hidden.
 Future<Set<String>> hiddenReplyScreenNames() async {
   var repository = await Repository.readOnly();
-  return (await repository.query(
-    tableReplyFilter,
-    columns: ['screen_name'],
-  )).map((row) => (row['screen_name'] as String).toLowerCase()).toSet();
+  return (await repository.query(tableReplyFilter, columns: ['screen_name']))
+      .map((row) => (row['screen_name'] as String).toLowerCase())
+      .toSet();
 }
 
 /// Whether [tweet] answers somebody other than its own author.
@@ -126,10 +101,7 @@ bool isReplyToSomeoneElse(TweetWithCard? tweet) {
 }
 
 /// Drops chains that open with one of the [hidden] users replying to someone else.
-List<TweetChain> filterHiddenReplies(
-  List<TweetChain> chains,
-  Set<String> hidden,
-) {
+List<TweetChain> filterHiddenReplies(List<TweetChain> chains, Set<String> hidden) {
   if (hidden.isEmpty) {
     return chains;
   }
@@ -142,7 +114,41 @@ List<TweetChain> filterHiddenReplies(
   }).toList();
 }
 
-/// The profile tune button: per-user feed filters such as "hide reposts".
+const quietAccountChoices = <int?>[null, 1, 2, 3, 5, 10];
+
+Future<int?> loadMaxPostsPerLoad(String userId) async {
+  final repository = await Repository.readOnly();
+  final rows = await repository.query(
+    tableSubscription,
+    columns: ['max_posts_per_load'],
+    where: 'id = ?',
+    whereArgs: [userId],
+    limit: 1,
+  );
+  if (rows.isEmpty) {
+    return null;
+  }
+  return rows.first['max_posts_per_load'] as int?;
+}
+
+Future<bool> setMaxPostsPerLoad(String userId, int? value) async {
+  final repository = await Repository.writable();
+  final updated = await repository.update(
+    tableSubscription,
+    {'max_posts_per_load': value},
+    where: 'id = ?',
+    whereArgs: [userId],
+  );
+  return updated > 0;
+}
+
+String quietAccountLabel(BuildContext context, int? value) {
+  final l10n = L10n.of(context);
+  return value == null ? l10n.quiet_account_off : '$value';
+}
+
+/// The wrench button on a profile: per-user feed filters, like X's
+/// "turn off reposts".
 class ProfileFeedSettingsButton extends StatelessWidget {
   final UserWithExtra user;
   final Color? color;
@@ -156,117 +162,75 @@ class ProfileFeedSettingsButton extends StatelessWidget {
     }
 
     return IconButton(
-      icon: const Icon(Icons.tune),
+      icon: const Icon(Icons.build_outlined),
       color: color,
       tooltip: L10n.of(context).filters,
       onPressed: () async {
-        final store = ProfileFeedSettingsStore(
-          ProfileFeedSettingsState(
-            hideRetweets: await isRetweetsHidden(user.idStr!),
-            hideReplies: await isRepliesHidden(user.idStr!),
-          ),
-          user,
-        );
+        final subscribed = context.read<SubscriptionsModel>().state.any((e) => e.id == user.idStr);
+        var hidden = await isRetweetsHidden(user.idStr!);
+        var repliesHidden = await isRepliesHidden(user.idStr!);
+        var maxPosts = await loadMaxPostsPerLoad(user.idStr!);
         if (!context.mounted) {
-          store.destroy();
           return;
         }
 
-        await showModalBottomSheet<void>(
-          context: context,
-          useSafeArea: true,
-          showDragHandle: true,
-          builder: (_) => _ProfileFeedSettingsSheet(store: store),
-        );
-        store.destroy();
+        showModalBottomSheet(
+            context: context,
+            builder: (sheetContext) {
+              return SafeArea(
+                child: StatefulBuilder(
+                  builder: (sheetContext, setSheetState) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SwitchListTile(
+                        title: Text(L10n.of(sheetContext).hide_retweets),
+                        subtitle: Text(L10n.of(sheetContext).hide_retweets_description),
+                        value: hidden,
+                        onChanged: (value) async {
+                          await setRetweetsHidden(user, value);
+                          setSheetState(() => hidden = value);
+                        },
+                      ),
+                      SwitchListTile(
+                        title: Text(L10n.of(sheetContext).hide_replies),
+                        subtitle: Text(L10n.of(sheetContext).hide_replies_description),
+                        value: repliesHidden,
+                        onChanged: (value) async {
+                          await setRepliesHidden(user, value);
+                          setSheetState(() => repliesHidden = value);
+                        },
+                      ),
+                      if (subscribed)
+                        ListTile(
+                          title: Text(L10n.of(sheetContext).quiet_account),
+                          subtitle: Text(L10n.of(sheetContext).quiet_account_description),
+                          trailing: DropdownButton<int?>(
+                            value: quietAccountChoices.contains(maxPosts) ? maxPosts : null,
+                            items: [
+                              for (final choice in quietAccountChoices)
+                                DropdownMenuItem(
+                                  value: choice,
+                                  child: Text(quietAccountLabel(sheetContext, choice)),
+                                ),
+                            ],
+                            onChanged: (value) async {
+                              final ok = await setMaxPostsPerLoad(user.idStr!, value);
+                              if (!ok && sheetContext.mounted) {
+                                ScaffoldMessenger.of(sheetContext).showSnackBar(
+                                  SnackBar(content: Text(L10n.of(sheetContext).unable_to_load_the_profile)),
+                                );
+                                return;
+                              }
+                              setSheetState(() => maxPosts = value);
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            });
       },
-    );
-  }
-}
-
-@immutable
-class ProfileFeedSettingsState {
-  final bool hideRetweets;
-  final bool hideReplies;
-
-  const ProfileFeedSettingsState({
-    required this.hideRetweets,
-    required this.hideReplies,
-  });
-
-  ProfileFeedSettingsState copyWith({bool? hideRetweets, bool? hideReplies}) {
-    return ProfileFeedSettingsState(
-      hideRetweets: hideRetweets ?? this.hideRetweets,
-      hideReplies: hideReplies ?? this.hideReplies,
-    );
-  }
-}
-
-class ProfileFeedSettingsStore extends Store<ProfileFeedSettingsState> {
-  final UserWithExtra user;
-
-  ProfileFeedSettingsStore(super.initialState, this.user);
-
-  Future<void> setHideRetweets(bool value) async {
-    await setRetweetsHidden(user, value);
-    update(state.copyWith(hideRetweets: value));
-  }
-
-  Future<void> setHideReplies(bool value) async {
-    await setRepliesHidden(user, value);
-    update(state.copyWith(hideReplies: value));
-  }
-}
-
-class _ProfileFeedSettingsSheet extends StatelessWidget {
-  final ProfileFeedSettingsStore store;
-
-  const _ProfileFeedSettingsSheet({required this.store});
-
-  @override
-  Widget build(BuildContext context) {
-    return ScopedBuilder<ProfileFeedSettingsStore, ProfileFeedSettingsState>(
-      store: store,
-      onState: (context, state) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                kTweetHorizontalPadding,
-                0,
-                kTweetHorizontalPadding,
-                kTweetSpace2,
-              ),
-              child: Text(
-                L10n.of(context).filters,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: kTweetHorizontalPadding,
-              ),
-              title: Text(L10n.of(context).hide_retweets),
-              subtitle: Text(L10n.of(context).hide_retweets_description),
-              value: state.hideRetweets,
-              onChanged: store.setHideRetweets,
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: kTweetHorizontalPadding,
-              ),
-              title: Text(L10n.of(context).hide_replies),
-              subtitle: Text(L10n.of(context).hide_replies_description),
-              value: state.hideReplies,
-              onChanged: store.setHideReplies,
-            ),
-            const SizedBox(height: kTweetSpace2),
-          ],
-        ),
-      ),
     );
   }
 }

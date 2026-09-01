@@ -1,6 +1,6 @@
 /// Sync of the app's local state to a WebDAV server the reader controls.
 ///
-/// Everything QuaX knows — subscriptions, groups, saved posts, likes — lives
+/// Everything XTA knows — subscriptions, groups, saved posts, likes — lives
 /// only on the device by design. That keeps it private and makes moving to a
 /// new phone a manual export/import. This carries the same backup payload to a
 /// Nextcloud, ownCloud or any other WebDAV target, chosen and hosted by the
@@ -17,7 +17,7 @@ import 'package:http/http.dart' as http;
 
 class WebDavConfig {
   /// Full URL of the backup document, e.g.
-  /// `https://cloud.example.org/remote.php/dav/files/me/quax/backup.json`.
+  /// `https://cloud.example.org/remote.php/dav/files/me/xta/backup.json`.
   final String url;
   final String username;
   final String password;

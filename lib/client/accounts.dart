@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:quax/client/account_selector.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/database/repository.dart';
+import 'package:xta/client/account_selector.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
 
 Future<List<Account>> getAccounts() async {
   var database = await Repository.readOnly();
   var query = await database.query(tableAccounts);
-  return (query as List).map((e) => Account.fromMap(e)).toList();
+  return List.from(query).map((e) => Account.fromMap(e)).toList();
 }
 
 /// Decoded auth header for a single healthy account, or null if none is usable.

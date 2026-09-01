@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:html/dom.dart' as html_dom;
 import 'package:html/parser.dart' as html_parser;
-import 'package:quax/client/http_client.dart';
+import 'package:xta/client/http_client.dart';
 
 import 'constants.dart';
 import 'cubic_curve.dart';

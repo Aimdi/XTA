@@ -3,15 +3,15 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/subscriptions/widgets/avatar_mosaic.dart';
-import 'package:quax/subscriptions/widgets/fallback_avatar.dart';
-import 'package:quax/subscriptions/widgets/group_tile.dart';
-import 'package:quax/ui/group_board_tokens.dart';
-import 'package:quax/ui/theme_presets.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/subscriptions/widgets/avatar_mosaic.dart';
+import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/subscriptions/widgets/group_tile.dart';
+import 'package:xta/ui/group_board_tokens.dart';
+import 'package:xta/ui/theme_presets.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 Widget _wrap(Widget child, {ThemeData? theme}) => MaterialApp(
       theme: theme,

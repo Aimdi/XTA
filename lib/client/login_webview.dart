@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/subscriptions/_import.dart' show SubscriptionImportScreen;
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/subscriptions/_import.dart' show SubscriptionImportScreen;
 import 'package:webview_cookie_manager_plus/webview_cookie_manager_plus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -24,8 +24,8 @@ class _TwitterLoginWebviewState extends State<TwitterLoginWebview> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text(L10n.of(context).logging_in_quax),
-          content: Text(L10n.of(context).logging_in_quax_information),
+          title: Text(L10n.of(context).logging_in_xta),
+          content: Text(L10n.of(context).logging_in_xta_information),
           actions: [
             TextButton(
               onPressed: () {
@@ -80,11 +80,14 @@ class _TwitterLoginWebviewState extends State<TwitterLoginWebview> {
                 };
 
                 final database = await Repository.writable();
-                database.insert(
+                // Awaited, and the handle left open: this is sqflite's shared
+                // instance for the whole app, so closing it here tore down
+                // every other query in flight — racing the very insert that
+                // stores the account the reader just signed in with.
+                await database.insert(
                   tableAccounts,
                   Account(id: csrfToken, screenName: screenName, authHeader: json.encode(authHeader)).toMap(),
                 );
-                database.close();
               }
               if (context.mounted) {
                 Navigator.pop(context);

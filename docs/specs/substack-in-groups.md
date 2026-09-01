@@ -1,6 +1,6 @@
 # Substack in the rest of the app
 
-Recon done on `claude/quax-repo-setup-shh2mn`. The ask: *"Can't Substack
+Recon done on `claude/xta-repo-setup-shh2mn`. The ask: *"Can't Substack
 seamlessly integrate with the rest of the app — can't I just create groups for
 Substack? The Substack UI is fine, I just don't get the extra tab."*
 
@@ -8,19 +8,25 @@ Two separate wishes, with very different costs.
 
 ## 1. No extra tab — shipped
 
-`QuaxPlugin` gained `homeTabPrefKey`; when a plugin declares one, the plugin
+`XtaPlugin` gained `homeTabPrefKey`; when a plugin declares one, the plugin
 store offers **Show as a tab**, and `HomeModel.loadPages` skips its tab when it
-is off. Turned off, the Substack feed appears as a row in the **Groups** tab and
-opens as a pushed route, which is where feeds live. The reader, archive and
-add-publication screens are untouched.
+is off. Turned off, the Substack feed is pinned on the **home strip** next to
+Following / For you — Groups is for membership, not switching sites. The
+reader, archive and add-publication screens are untouched.
 
-Only one entry point exists at a time: the Groups row appears exactly when the
-plugin is enabled and its tab is off.
+A publication added to a group still appears in that group's timeline.
 
-## 2. Newsletters inside a normal group — not shipped, and here is why
+## 2. Newsletters inside a normal group — shipped (interleaving)
 
-Substack posts cannot be dropped into a group feed as things stand. The feed
-pipeline is typed on `TweetChain` from end to end:
+Group feeds load Substack members via `SubscriptionSource` / interleaved
+items. What was still missing was an **Add to group** control on Substack’s
+own screens (archive, Notes, Discover, Library) — Follow alone left
+publications out of groups unless you dug through People or the group edit
+sheet. That control now mirrors Bluesky / Threads / Mastodon profiles.
+
+## 3. Historical options (kept for context)
+
+So a newsletter post in a group feed needed one of:
 
 | Layer | Type |
 |---|---|

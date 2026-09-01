@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/reddit/reddit_subreddit_avatar.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/plugins/reddit/reddit_listing_screen.dart';
-import 'package:quax/plugins/reddit/reddit_post_media.dart';
-import 'package:quax/plugins/reddit/reddit_post_sheet.dart';
-import 'package:quax/plugins/reddit/reddit_thread_screen.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/tweet/tweet_footer.dart';
-import 'package:quax/ui/dates.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/reddit/reddit_archive.dart';
+import 'package:xta/plugins/reddit/reddit_votes_store.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/plugins/plugin_card_row.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
+import 'package:xta/plugins/reddit/reddit_post_media.dart';
+import 'package:xta/plugins/reddit/reddit_post_sheet.dart';
+import 'package:xta/plugins/reddit/reddit_text.dart';
+import 'package:xta/plugins/reddit/reddit_thread_screen.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_footer.dart';
+import 'package:xta/ui/dates.dart';
+import 'package:xta/utils/urls.dart';
 
 /// The avatar a Reddit post gets, matching the one a tweet gets.
 const double kRedditAvatarSize = 48;
@@ -26,38 +34,64 @@ class RedditPostCard extends StatelessWidget {
   /// Set in a mixed timeline so the card says where it came from.
   final bool showSourceBadge;
 
-  const RedditPostCard({super.key, required this.post, this.showSourceBadge = true});
+  const RedditPostCard({
+    super.key,
+    required this.post,
+    this.showSourceBadge = true,
+  });
 
   void _open(BuildContext context) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => RedditThreadScreen(post: post)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => RedditThreadScreen(post: post)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InkWell(
-          onTap: () => _open(context),
-          // Everywhere else the post can lead. A long press is where Android
-          // readers look for it, and the author line offers it outright.
-          onLongPress: () => openRedditPostSheet(context, post),
-          child: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _RedditPostHeader(post: post, showSourceBadge: showSourceBadge),
-                _title(context),
-                if (post.flair != null) _RedditFlair(label: post.flair!),
-                RedditPostMedia(post: post),
-                _RedditPostFooter(post: post, onComments: () => _open(context)),
-              ],
+    return RepaintBoundary(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            onTap: () => _open(context),
+            // Everywhere else the post can lead. A long press is where Android
+            // readers look for it, and the author line offers it outright.
+            onLongPress: () => openRedditPostSheet(context, post),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _RedditPostHeader(
+                    post: post,
+                    showSourceBadge: showSourceBadge,
+                  ),
+                  if (post.showsTitle) _title(context),
+                  if (post.flair != null) _RedditFlair(label: post.flair!),
+                  // On a discussion subreddit the body is most of the post; a
+                  // card that showed only the title said almost nothing.
+                  if (post.isSelf && post.showsSelfText)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+                      child: RedditRichText(
+                        text: post.displaySelfText!,
+                        maxLines: 4,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-        ),
-        tweetHairlineDivider(context),
-      ],
+          // Outside the card InkWell so a tap opens the picture, not the thread.
+          RedditPostMedia(post: post),
+          _RedditPostFooter(post: post, onComments: () => _open(context)),
+          tweetHairlineDivider(context),
+        ],
+      ),
     );
   }
 
@@ -65,10 +99,13 @@ class RedditPostCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
       child: Text(
-        post.title,
+        post.displayTitle,
         maxLines: 6,
         overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+          fontWeight: FontWeight.w700,
+          height: 1.25,
+        ),
       ),
     );
   }
@@ -94,30 +131,29 @@ class _RedditPostHeader extends StatelessWidget {
           // and a tap on either goes straight there rather than into a menu.
           GestureDetector(
             onTap: () => _openSubreddit(context),
-            child: RedditSubredditAvatar(subreddit: post.subreddit, size: kRedditAvatarSize),
+            child: RedditSubredditAvatar(
+              subreddit: post.subreddit,
+              size: kRedditAvatarSize,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: GestureDetector(
-                        onTap: () => _openSubreddit(context),
-                        child: Text(
-                          'r/${post.subreddit}',
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
-                        ),
+                PluginNameMetaRow(
+                  name: GestureDetector(
+                    onTap: () => _openSubreddit(context),
+                    child: Text(
+                      'r/${post.subreddit}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall!.copyWith(
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    if (date != null) ...[
-                      const SizedBox(width: 6),
-                      Text('· ${createRelativeDate(date)}', style: theme.textTheme.bodySmall),
-                    ],
-                  ],
+                  ),
+                  meta: [if (date != null) createRelativeDate(date)],
                 ),
                 _subtitle(context),
               ],
@@ -131,7 +167,9 @@ class _RedditPostHeader extends StatelessWidget {
   void _openSubreddit(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => RedditListingScreen.subreddit(post.subreddit)),
+      MaterialPageRoute(
+        builder: (_) => RedditListingScreen.subreddit(post.subreddit),
+      ),
     );
   }
 
@@ -140,26 +178,35 @@ class _RedditPostHeader extends StatelessWidget {
     final author = post.author;
 
     return DefaultTextStyle.merge(
-      style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-      child: Row(
-        children: [
-          // A deleted account has no name to show; the row simply starts with
-          // the badge rather than announcing the absence.
-          if (author != null)
-            Flexible(
-              child: GestureDetector(
+      style: theme.textTheme.bodySmall!.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+      child: PluginHandleBadgeRow(
+        // A deleted account has no name to show; the row simply starts with
+        // the badge rather than announcing the absence.
+        handle: author == null
+            ? null
+            : GestureDetector(
                 onTap: () => openRedditPostSheet(context, post),
-                child: Text('u/$author', overflow: TextOverflow.ellipsis),
+                child: Text(
+                  'u/$author',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
+        badges: [
+          if (showSourceBadge)
+            PluginCardBadge(label: L10n.of(context).plugin_reddit_title),
+          if (post.over18)
+            PluginCardBadge(
+              label: L10n.of(context).plugin_reddit_nsfw,
+              tint: theme.colorScheme.error,
             ),
-          if (showSourceBadge) ...[
-            if (author != null) const SizedBox(width: 6),
-            _RedditBadge(label: L10n.of(context).plugin_reddit_title),
-          ],
-          if (post.over18) ...[
-            const SizedBox(width: 6),
-            _RedditBadge(label: L10n.of(context).plugin_reddit_nsfw, tint: theme.colorScheme.error),
-          ],
+          if (post.spoiler)
+            PluginCardBadge(
+              label: L10n.of(context).plugin_reddit_spoiler,
+              tint: theme.colorScheme.tertiary,
+            ),
         ],
       ),
     );
@@ -182,42 +229,80 @@ class _RedditPostFooter extends StatelessWidget {
       padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
       child: Row(
         children: [
-          _stat(context, Icons.arrow_upward, '${post.score}'),
+          _UpvoteButton(post: post),
           TextButton.icon(
-            style: footerButtonStyleOf(context),
+            style: footerButtonStyle,
             onPressed: onComments,
             icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text('${post.commentCount}', style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            label: Text(
+              '${post.commentCount}',
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+            ),
           ),
           const Spacer(),
-          IconButton(
-            tooltip: L10n.of(context).open_in_browser,
-            onPressed: () => openUri(context, redditPostUrl(post)),
-            icon: Icon(Icons.open_in_new, size: 18, color: muted),
+          _RedditBookmarkButton(post: post),
+          tweetFooterIconButton(
+            context,
+            Icons.open_in_new,
+            muted,
+            null,
+            () => openUri(context, redditPostUrl(post)),
+            L10n.of(context).open_in_browser,
           ),
         ],
       ),
     );
   }
+}
 
-  /// A count with no action behind it, sized to match the buttons beside it so
-  /// the row does not step up and down.
-  Widget _stat(BuildContext context, IconData icon, String value) {
+/// The upvote, kept on the device the way X likes are: Reddit is never told,
+/// the arrow remembers. The shown score includes the reader's own vote, which
+/// is what the number would be if the vote had been cast.
+class _UpvoteButton extends StatelessWidget {
+  final RedditPost post;
+
+  const _UpvoteButton({required this.post});
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
+    final votes = context.read<RedditVotesStore>();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: kFooterButtonPadding),
-      child: SizedBox(
-        height: kFooterButtonHeight,
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: muted),
-            const SizedBox(width: 6),
-            Text(value, style: theme.textTheme.bodySmall!.copyWith(color: muted)),
-          ],
-        ),
-      ),
+    return ScopedBuilder<RedditVotesStore, Set<String>>(
+      store: votes,
+      distinct: (_) => votes.isUpvoted(post.id),
+      onState: (context, state) {
+        final upvoted = state.contains(post.id);
+        final color = upvoted ? theme.colorScheme.primary : muted;
+
+        return TextButton.icon(
+          style: footerButtonStyle,
+          onPressed: () async {
+            await votes.toggle(post.id);
+            if (!context.mounted) {
+              return;
+            }
+            await syncRedditLikeToArchive(
+              context,
+              post,
+              upvoted: votes.isUpvoted(post.id),
+            );
+          },
+          icon: Icon(
+            upvoted ? Icons.arrow_circle_up : Icons.arrow_upward,
+            size: 18,
+            color: color,
+          ),
+          label: Text(
+            '${post.score + (upvoted ? 1 : 0)}',
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: color,
+              fontWeight: upvoted ? FontWeight.w700 : null,
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -245,7 +330,9 @@ class _RedditFlair extends StatelessWidget {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelMedium!.copyWith(color: theme.colorScheme.onSecondaryContainer),
+            style: theme.textTheme.labelMedium!.copyWith(
+              color: theme.colorScheme.onSecondaryContainer,
+            ),
           ),
         ),
       ),
@@ -253,23 +340,51 @@ class _RedditFlair extends StatelessWidget {
   }
 }
 
-class _RedditBadge extends StatelessWidget {
-  final String label;
-  final Color? tint;
+class _RedditBookmarkButton extends StatelessWidget {
+  final RedditPost post;
 
-  const _RedditBadge({required this.label, this.tint});
+  const _RedditBookmarkButton({required this.post});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    SavedTweetModel saved;
+    try {
+      saved = context.read<SavedTweetModel>();
+    } on ProviderNotFoundException {
+      return const SizedBox.shrink();
+    }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-      decoration: BoxDecoration(
-        border: Border.all(color: tint ?? theme.colorScheme.outline),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(label, style: theme.textTheme.labelSmall!.copyWith(color: tint)),
+    return ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+      store: saved,
+      distinct: (_) => saved.isSaved(redditArchiveId(post.id)),
+      onState: (context, _) {
+        final isSaved = saved.isSaved(redditArchiveId(post.id));
+        final button = tweetFooterIconButton(
+          context,
+          isSaved ? Icons.bookmark : Icons.bookmark_border,
+          isSaved ? theme.colorScheme.primary : muted,
+          isSaved ? 1 : 0,
+          () async {
+            if (isSaved) {
+              await unfileRedditPost(context, post);
+            } else {
+              await fileRedditPost(context, post);
+              if (context.mounted) {
+                maybeShowFolderHint(context);
+              }
+            }
+          },
+          isSaved
+              ? L10n.of(context).unsave_from_this_device
+              : L10n.of(context).save_on_this_device,
+        );
+        return GestureDetector(
+          onLongPress: () => pickRedditPostFolder(context, post),
+          child: button,
+        );
+      },
     );
   }
 }

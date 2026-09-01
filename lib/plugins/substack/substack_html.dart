@@ -1,7 +1,55 @@
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 
-/// Strip Substack chrome that hurts reading (expand buttons, SVGs, scripts).
+/// URL schemes that are code rather than a destination.
+///
+/// `javascript:` is the obvious one; `data:` can carry a whole HTML document,
+/// which is the same thing wearing a different hat.
+final _executableUrl = RegExp(
+  r'^\s*(javascript|vbscript|data)\s*:',
+  caseSensitive: false,
+);
+
+/// Attributes that hold a URL, and so can smuggle one of the above.
+const _urlAttributes = {
+  'href',
+  'src',
+  'srcset',
+  'action',
+  'formaction',
+  'poster',
+  'background',
+  'data',
+};
+
+/// Removes the parts of a post that are code rather than writing.
+///
+/// Dropping `<script>` is not enough on its own: `onerror`, `onload` and their
+/// forty-odd siblings are attributes, and they run without a script tag
+/// anywhere on the page. A post is written by whoever runs the publication, so
+/// this is not hypothetical — and the reader screen renders the result in a
+/// real web view.
+///
+/// The article itself is loaded with JavaScript switched off, which is the
+/// actual defence; this is the second lock on the same door, and it also keeps
+/// the text clean for anything else that reads it.
+void _stripExecutable(Element element) {
+  // Keyed by `Object`, because a namespaced attribute is an `AttributeName`
+  // rather than a string — so the key has to be carried through to the removal
+  // instead of the name it prints as.
+  for (final key in element.attributes.keys.toList()) {
+    final name = '$key'.toLowerCase();
+
+    if (name.startsWith('on') ||
+        (_urlAttributes.contains(name) &&
+            _executableUrl.hasMatch(element.attributes[key] ?? ''))) {
+      element.attributes.remove(key);
+    }
+  }
+}
+
+/// Strip Substack chrome that hurts reading (expand buttons, SVGs, scripts),
+/// and anything in the markup that would run rather than be read.
 String sanitizeSubstackBodyHtml(String raw) {
   final fragment = html_parser.parseFragment(raw);
   final removable = fragment.querySelectorAll(
@@ -25,13 +73,22 @@ String sanitizeSubstackBodyHtml(String raw) {
     node.remove();
   }
 
-  for (final node in List<Element>.from(fragment.querySelectorAll('div, span'))) {
-    if (node.text.trim().isEmpty && node.querySelector('img, iframe, video, picture, table') == null) {
+  for (final node in List<Element>.from(
+    fragment.querySelectorAll('div, span'),
+  )) {
+    if (node.text.trim().isEmpty &&
+        node.querySelector('img, iframe, video, picture, table') == null) {
       node.remove();
     }
   }
 
-  return fragment.nodes.map((node) => node is Element ? node.outerHtml : node.text).join();
+  for (final node in fragment.querySelectorAll('*')) {
+    _stripExecutable(node);
+  }
+
+  return fragment.nodes
+      .map((node) => node is Element ? node.outerHtml : node.text)
+      .join();
 }
 
 /// Plain text suitable for device TTS, with paragraph breaks preserved.
@@ -50,7 +107,9 @@ String substackHtmlToPlainText(String raw) {
     if (node is! Element) return;
 
     final tag = node.localName?.toLowerCase();
-    if (tag == 'script' || tag == 'style' || tag == 'svg' || tag == 'button') return;
+    if (tag == 'script' || tag == 'style' || tag == 'svg' || tag == 'button') {
+      return;
+    }
     if (tag == 'br') {
       buffer.write('\n');
       return;
@@ -98,17 +157,83 @@ String buildSubstackSpeakText({
   String? subtitle,
   String? authorName,
   String? publicationName,
-  required String bodyHtml,
+  String? bodyHtml,
+  String? bodyPlain,
 }) {
+  final body = (bodyPlain != null && bodyPlain.trim().isNotEmpty)
+      ? bodyPlain.trim()
+      : (bodyHtml != null && bodyHtml.trim().isNotEmpty)
+      ? substackHtmlToPlainText(bodyHtml)
+      : '';
   final parts = <String>[
     title.trim(),
-    if (publicationName != null && publicationName.trim().isNotEmpty) publicationName.trim(),
+    if (publicationName != null && publicationName.trim().isNotEmpty)
+      publicationName.trim(),
     if (authorName != null && authorName.trim().isNotEmpty) authorName.trim(),
     if (subtitle != null && subtitle.trim().isNotEmpty) subtitle.trim(),
-    substackHtmlToPlainText(bodyHtml),
+    body,
   ].where((e) => e.isNotEmpty);
   return parts.join('\n\n');
 }
+
+/// Long-press a paragraph → post the rest of the article to [XtaTts].
+///
+/// The reader screen installs that channel. Body HTML is still stripped of
+/// scripts and `on*` handlers; this is the only script on the page.
+const substackTtsFromHereJs = r'''
+(function(){
+  if (window.__xtaTtsFromHere) return;
+  window.__xtaTtsFromHere = true;
+  function post(text){
+    if (!text || !window.XtaTts || !XtaTts.postMessage) return;
+    XtaTts.postMessage(text);
+  }
+  function blockOf(node){
+    var n = node && node.nodeType === 3 ? node.parentElement : node;
+    while (n && n !== document.body) {
+      var t = n.tagName;
+      if (t && /^(P|H1|H2|H3|H4|H5|H6|LI|BLOCKQUOTE|PRE|FIGCAPTION)$/.test(t)) return n;
+      if (n.classList && (n.classList.contains('title') || n.classList.contains('subtitle'))) return n;
+      n = n.parentElement;
+    }
+    return node;
+  }
+  function fromHere(el){
+    var root = document.querySelector('article') || document.body;
+    var blocks = root.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,.title,.subtitle');
+    var started = false;
+    var parts = [];
+    for (var i = 0; i < blocks.length; i++) {
+      var b = blocks[i];
+      if (b === el || b.contains(el) || (el && el.contains && el.contains(b))) started = true;
+      if (started) {
+        var t = (b.innerText || '').trim();
+        if (t) parts.push(t);
+      }
+    }
+    if (!parts.length) {
+      var all = (root.innerText || '').trim();
+      var needle = ((el && el.innerText) || '').trim().slice(0, 80);
+      var at = needle ? all.indexOf(needle) : -1;
+      post(at >= 0 ? all.slice(at) : (needle || all));
+      return;
+    }
+    post(parts.join('\n\n'));
+  }
+  var timer = 0;
+  document.addEventListener('touchstart', function(e){
+    if (e.touches.length !== 1) return;
+    var target = e.target;
+    timer = setTimeout(function(){ fromHere(blockOf(target)); }, 450);
+  }, {passive:true});
+  document.addEventListener('touchend', function(){ clearTimeout(timer); });
+  document.addEventListener('touchmove', function(){ clearTimeout(timer); });
+  document.addEventListener('contextmenu', function(e){
+    e.preventDefault();
+    fromHere(blockOf(e.target));
+  });
+})();
+''';
 
 String wrapSubstackHtml({
   required String title,
@@ -123,10 +248,14 @@ String wrapSubstackHtml({
   String? publicationName,
   double fontSizePx = 18,
   double lineHeight = 1.7,
+  String? footer,
+  String? footerLink,
+  String? footerLinkLabel,
 }) {
   final cleanBody = sanitizeSubstackBodyHtml(body);
   final meta = [
-    if (publicationName != null && publicationName.isNotEmpty) _escape(publicationName),
+    if (publicationName != null && publicationName.isNotEmpty)
+      _escape(publicationName),
     if (authorName != null && authorName.isNotEmpty) _escape(authorName),
   ].join(' · ');
 
@@ -255,6 +384,15 @@ String wrapSubstackHtml({
   .twitter-embed, .youtube-wrap, .youtube-inner {
     margin: 1.2em 0;
   }
+  .preview-end {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid $rule;
+    color: $muted;
+    font-size: 0.9em;
+  }
+  .preview-end p { margin: 0.4em 0; }
+  body { -webkit-touch-callout: none; }
 </style>
 </head>
 <body>
@@ -263,10 +401,32 @@ String wrapSubstackHtml({
     ${meta.isEmpty ? '' : '<div class="meta">$meta</div>'}
     ${subtitle == null || subtitle.isEmpty ? '' : '<p class="subtitle">${_escape(subtitle)}</p>'}
     <div class="content">$cleanBody</div>
+    ${_footerHtml(footer, footerLink, footerLinkLabel)}
   </article>
+  <script>$substackTtsFromHereJs</script>
 </body>
 </html>
 ''';
+}
+
+/// A note under the article saying where the free part stops.
+///
+/// Part of the page rather than a widget beneath it, so it scrolls with the
+/// text and is not mistaken for a control of the app's.
+String _footerHtml(String? text, String? link, String? linkLabel) {
+  if (text == null || text.isEmpty) {
+    return '';
+  }
+
+  final action =
+      (link != null &&
+          link.isNotEmpty &&
+          linkLabel != null &&
+          linkLabel.isNotEmpty)
+      ? '<p><a href="${_escape(link)}">${_escape(linkLabel)}</a></p>'
+      : '';
+
+  return '<div class="preview-end"><p>${_escape(text)}</p>$action</div>';
 }
 
 String _escape(String value) => value

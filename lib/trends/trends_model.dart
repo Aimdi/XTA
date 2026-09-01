@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
 import 'package:pref/pref.dart';
 
 class TrendLocationsModel extends Store<List<TrendLocation>> {

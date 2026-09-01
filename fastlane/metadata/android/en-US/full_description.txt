@@ -1,1 +1,1 @@
-QuaX is a more private and clean way to browse Twitter/X. This also includes feed viewing, subscription grouping, offline tweet saving and more!
+XTA is a more private and clean way to browse Twitter/X. This also includes feed viewing, subscription grouping, offline tweet saving and more!

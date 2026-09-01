@@ -15,7 +15,7 @@ class Commit:
         import os
         import requests
 
-        url = f"https://api.github.com/repos/teskann/quax/commits/{self.sha}"
+        url = f"https://api.github.com/repos/Aimdi/XTA/commits/{self.sha}"
         github_token = os.getenv('GITHUB_TOKEN')
         headers = {
             "Accept": "application/vnd.github+json",
@@ -37,12 +37,12 @@ class Commit:
         return f" (by {self.author})"
 
     def __repr__(self) -> str:
-        return f"  - {self.message}{self._get_credits()} <sup>[[view modified code]](https://github.com/teskann/quax/commit/{self.sha})</sup>"
+        return f"  - {self.message}{self._get_credits()} <sup>[[view modified code]](https://github.com/Aimdi/XTA/commit/{self.sha})</sup>"
 
 
 def generate_changelog_content(commits: list[Commit]) -> str:
     version = sys.argv[1]
-    changelog_content = f"## QuaX v{version}\n\nWhat's new in QuaX v{version}:\n"
+    changelog_content = f"## XTA v{version}\n\nWhat's new in XTA v{version}:\n"
     for commit in commits:
         changelog_content += f"{commit}\n"
     return changelog_content
@@ -66,7 +66,7 @@ def generate_release_notes_content(commits: list[Commit]) -> str:
 
 First download ? Click the button below to install it with Obtainium ! 👇
 
-[![Get it on Obtainium](https://github.com/teskann/quax/blob/master/assets/readme/get-it-on-obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/Teskann/QuaX)
+[![Get it on Obtainium](https://github.com/Aimdi/XTA/blob/master/assets/readme/get-it-on-obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/Teskann/QuaX)
 
 APK Certificate fingerprints:
 ```text
@@ -75,11 +75,11 @@ APK Certificate fingerprints:
 
 ---
 
-Missed an update ? See [full changelog](https://github.com/teskann/quax/blob/master/changelog.md) for more details.
+Missed an update ? See [full changelog](https://github.com/Aimdi/XTA/blob/master/changelog.md) for more details.
     
-🗨️ Got questions about QuaX ? Ask anything in the [Q&A](https://github.com/Teskann/QuaX/discussions/categories/q-a) section !
+🗨️ Got questions about XTA ? Ask anything in the [Q&A](https://github.com/Teskann/QuaX/discussions/categories/q-a) section !
 
-👉 Read the [wiki](https://github.com/teskann/quax/blob/master/docs/QuaX.md) to learn more about the app and how it works.
+👉 Read the [wiki](https://github.com/Aimdi/XTA/blob/master/docs/XTA.md) to learn more about the app and how it works.
 """
     return release_notes_content
 

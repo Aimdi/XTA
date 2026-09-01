@@ -1,0 +1,56 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(lib/generated/**)",
+      "Write(lib/generated/**)",
+      "Edit(lib/oss_licenses.dart)",
+      "Write(lib/oss_licenses.dart)"
+    ],
+    "ask": [
+      "Edit(lib/client/**)",
+      "Write(lib/client/**)",
+      "Edit(lib/database/**)",
+      "Write(lib/database/**)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-pinned-deps.sh\"",
+            "timeout": 20,
+            "statusMessage": "Checking pinned deps"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/format-dart.sh\"",
+            "timeout": 30,
+            "statusMessage": "dart format"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\"",
+            "timeout": 600,
+            "statusMessage": "Preparing generated code"
+          }
+        ]
+      }
+    ]
+  }
+}

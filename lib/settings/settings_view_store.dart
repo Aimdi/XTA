@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:quax/client/accounts.dart';
-import 'package:quax/client/client_regular_account.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/group/group_model.dart';
+import 'package:xta/client/accounts.dart';
+import 'package:xta/client/client_regular_account.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/group_model.dart';
 
 class SettingsValueStore<T> extends Store<T> {
   SettingsValueStore(super.initialState);

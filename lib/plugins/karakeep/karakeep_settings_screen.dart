@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/karakeep/karakeep_client.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/karakeep/karakeep_client.dart';
+import 'package:xta/utils/urls.dart';
 
 /// Server URL and API key for a self-hosted Karakeep instance, with a probe so
 /// the user finds out here rather than the first time they try to save.

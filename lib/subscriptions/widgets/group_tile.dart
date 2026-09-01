@@ -1,9 +1,12 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/subscriptions/group_identity.dart';
-import 'package:quax/subscriptions/widgets/avatar_mosaic.dart';
-import 'package:quax/ui/group_board_tokens.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/subscriptions/group_identity.dart';
+import 'package:xta/subscriptions/widgets/avatar_mosaic.dart';
+import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
+import 'package:xta/ui/group_board_tokens.dart';
 
 /// One group on the board: a flat, hairline-bordered card whose identity is a
 /// mosaic of its members' pictures, plus the group's colour as a left accent
@@ -19,12 +22,16 @@ class GroupTile extends StatefulWidget {
   /// Suppresses the press animation for the reduce-animations preference.
   final bool animate;
 
+  /// Newer cached posts than the last-read mark. Tests omit this.
+  final bool unread;
+
   const GroupTile({
     super.key,
     required this.group,
     required this.onTap,
     this.onLongPress,
     this.animate = true,
+    this.unread = false,
   });
 
   @override
@@ -54,18 +61,30 @@ class _GroupTileState extends State<GroupTile> {
     // every tile with its generated colour would be noise, not identity.
     final chosen = group.color;
     final l10n = L10n.of(context);
-    final countLabel = l10n.subscription_group_member_count(group.numberOfMembers);
+    final countLabel = l10n.subscription_group_member_count(
+      group.numberOfMembers,
+    );
 
     final tileColor = tokens.tile;
-    final titleColor = GroupBoardTokens.ensureContrast(tokens.onSurface, tileColor);
-    final metaColor = GroupBoardTokens.ensureContrast(tokens.secondary, tileColor);
+    final titleColor = GroupBoardTokens.ensureContrast(
+      tokens.onSurface,
+      tileColor,
+    );
+    final metaColor = GroupBoardTokens.ensureContrast(
+      tokens.secondary,
+      tileColor,
+    );
 
     final tile = Container(
       decoration: BoxDecoration(
-        color: chosen == null ? tileColor : Color.alphaBlend(chosen.withValues(alpha: 0.07), tileColor),
+        color: chosen == null
+            ? tileColor
+            : Color.alphaBlend(chosen.withValues(alpha: 0.07), tileColor),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: chosen == null ? tokens.border : chosen.withValues(alpha: 0.55),
+          color: chosen == null
+              ? tokens.border
+              : chosen.withValues(alpha: 0.55),
           width: 1,
         ),
       ),
@@ -86,23 +105,37 @@ class _GroupTileState extends State<GroupTile> {
                         // Never larger than the space actually left after the
                         // text, so a 2x font scale shrinks the cover instead
                         // of overflowing the tile.
-                        final extent = constraints.biggest.shortestSide.clamp(0.0, 74.0);
+                        final extent = constraints.biggest.shortestSide.clamp(
+                          0.0,
+                          74.0,
+                        );
 
                         // A mark the user chose themselves outranks the
                         // member faces: they asked for that emoji or icon.
-                        if (hasExplicitGroupMark(group)) {
-                          return Center(
-                            child: GroupMark.forGroup(group, size: extent * 0.78),
-                          );
-                        }
+                        final Widget cover = hasExplicitGroupMark(group)
+                            ? Center(
+                                child: GroupMark.forGroup(
+                                  group,
+                                  size: extent * 0.78,
+                                ),
+                              )
+                            : AvatarMosaic(
+                                extent: extent,
+                                members: group.memberPreviews,
+                                groupName: group.name,
+                                groupColor: accentColor,
+                                accent: tokens.accent,
+                                ringColor: tokens.tile,
+                              );
 
-                        return AvatarMosaic(
-                          extent: extent,
-                          members: group.memberPreviews,
-                          groupName: group.name,
-                          groupColor: accentColor,
-                          accent: tokens.accent,
-                          ringColor: tokens.tile,
+                        // NSFW groups sit under Censored: blur the mosaic so
+                        // the board does not advertise adult avatars at a glance.
+                        if (!group.nsfw) {
+                          return cover;
+                        }
+                        return ImageFiltered(
+                          imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                          child: cover,
                         );
                       },
                     ),
@@ -112,6 +145,14 @@ class _GroupTileState extends State<GroupTile> {
                     children: [
                       if (group.pinned) ...[
                         Icon(Icons.push_pin, size: 13, color: metaColor),
+                        const SizedBox(width: 4),
+                      ],
+                      if (group.nsfw) ...[
+                        Icon(
+                          Icons.visibility_off_outlined,
+                          size: 13,
+                          color: metaColor,
+                        ),
                         const SizedBox(width: 4),
                       ],
                       Expanded(
@@ -134,7 +175,11 @@ class _GroupTileState extends State<GroupTile> {
                     countLabel,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: metaColor),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: metaColor,
+                    ),
                   ),
                 ],
               ),
@@ -148,7 +193,9 @@ class _GroupTileState extends State<GroupTile> {
       // Composed from the already-translated count string rather than a new
       // compound key: "Name, 3 subscriptions" is grammatical in every locale,
       // and Semantics.button already announces the role.
-      label: '${group.name}, $countLabel',
+      label: widget.unread
+          ? '${group.name}, $countLabel, ${l10n.group_has_unread}'
+          : '${group.name}, $countLabel',
       button: true,
       child: ExcludeSemantics(
         child: RepaintBoundary(
@@ -167,7 +214,11 @@ class _GroupTileState extends State<GroupTile> {
                 opacity: _pressed ? 0.85 : 1.0,
                 duration: Duration(milliseconds: _pressed ? 120 : 160),
                 curve: Curves.easeOut,
-                child: tile,
+                child: GroupUnreadBadge(
+                  unread: widget.unread,
+                  inset: 8,
+                  child: tile,
+                ),
               ),
             ),
           ),

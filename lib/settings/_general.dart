@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/home/_feed.dart';
-import 'package:quax/home/home_screen.dart';
-import 'package:quax/profile/profile.dart';
-import 'package:quax/settings/_crash_reports.dart';
-import 'package:quax/settings/settings_chrome.dart';
-import 'package:quax/utils/iterables.dart';
+import 'package:xta/utils/native_locale_names.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/settings/_browser_picker.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/_feed.dart';
+import 'package:xta/home/home_screen.dart';
+import 'package:xta/profile/profile.dart';
+import 'package:xta/settings/_crash_reports.dart';
+import 'package:xta/utils/iterables.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/settings/settings_chrome.dart';
 
 class SettingLocale {
   final String code;
@@ -19,7 +20,7 @@ class SettingLocale {
 
   factory SettingLocale.fromLocale(Locale locale) {
     var code = locale.toLanguageTag().replaceAll('-', '_');
-    var name = LocaleNamesLocalizationsDelegate.nativeLocaleNames[code] ?? code;
+    var name = nativeLocaleNameOf(code) ?? code;
 
     return SettingLocale(code, name);
   }
@@ -99,104 +100,83 @@ class SettingsGeneralFragment extends StatelessWidget {
       title: L10n.current.general,
       body: SettingsList(
         children: [
-          SettingsSection(
-            title: L10n.of(context).general,
-            children: [
-              languagePicker(),
-              PrefSwitch(
-                title: Text(L10n.of(context).should_check_for_updates_label),
-                pref: optionShouldCheckForUpdates,
-                subtitle: Text(
-                  L10n.of(context).should_check_for_updates_description,
-                ),
-              ),
-              PrefSwitch(
-                title: Text(L10n.of(context).option_confirm_close_label),
-                subtitle: Text(
-                  L10n.of(context).option_confirm_close_description,
-                ),
-                pref: optionConfirmClose,
-              ),
-              PrefSwitch(
-                title: Text(
-                  L10n.of(context).option_open_links_in_embedded_browser_label,
-                ),
-                subtitle: Text(
-                  L10n.of(
-                    context,
-                  ).option_open_links_in_embedded_browser_description,
-                ),
-                pref: optionOpenLinksInEmbeddedBrowser,
-              ),
-              PrefSwitch(
-                title: Text(L10n.of(context).disable_screenshots),
-                subtitle: Text(L10n.of(context).disable_screenshots_hint),
-                pref: optionDisableScreenshots,
-              ),
-            ],
+          languagePicker(),
+          PrefSwitch(
+            title: Text(L10n.of(context).should_check_for_updates_label),
+            pref: optionShouldCheckForUpdates,
+            subtitle: Text(
+              L10n.of(context).should_check_for_updates_description,
+            ),
           ),
-          SettingsSection(
-            title: L10n.of(context).default_tab,
-            children: [
-              PrefDropdown(
-                fullWidth: false,
-                title: Text(L10n.of(context).default_tab),
-                subtitle: Text(
-                  L10n.of(context).which_tab_is_shown_when_the_app_opens,
-                ),
-                pref: optionHomeInitialTab,
-                items: defaultHomePages
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.id,
-                        child: Text(e.titleBuilder(context)),
-                      ),
-                    )
-                    .toList(),
-              ),
-              PrefDropdown(
-                fullWidth: false,
-                title: Text(L10n.of(context).default_feed_tab),
-                subtitle: Text(L10n.of(context).default_feed_tab_description),
-                pref: optionHomeDefaultFeedTab,
-                // The same list the switcher shows, so a default cannot be set
-                // to a feed that is turned off.
-                items: availableFeedTabs(PrefService.of(context))
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.id.name,
-                        child: Text(e.titleBuilder(context)),
-                      ),
-                    )
-                    .toList(),
-              ),
-              PrefDropdown(
-                fullWidth: false,
-                title: Text(L10n.of(context).default_profile_tab),
-                subtitle: Text(
-                  L10n.of(context).default_profile_tab_description,
-                ),
-                pref: optionDefaultProfileTab,
-                items: profileTabs
-                    .map(
-                      (e) => DropdownMenuItem(
-                        value: e.id.name,
-                        child: Text(e.titleBuilder(context)),
-                      ),
-                    )
-                    .toList(),
-              ),
-              PrefDialogButton(
-                title: Text(L10n.of(context).share_base_url),
-                subtitle: Text(L10n.of(context).share_base_url_description),
-                dialog: _createShareBaseDialog(context, prefs),
-              ),
-            ],
+          PrefSwitch(
+            title: Text(L10n.of(context).option_confirm_close_label),
+            subtitle: Text(L10n.of(context).option_confirm_close_description),
+            pref: optionConfirmClose,
           ),
-          SettingsSection(
-            title: L10n.of(context).crash_reports_enabled,
-            children: const [SettingsCrashReportsSection()],
+          const BrowserPickerTile(),
+          PrefSwitch(
+            title: Text(L10n.of(context).option_clean_links_label),
+            subtitle: Text(L10n.of(context).option_clean_links_description),
+            pref: optionCleanLinks,
           ),
+          PrefSwitch(
+            title: Text(L10n.of(context).disable_screenshots),
+            subtitle: Text(L10n.of(context).disable_screenshots_hint),
+            pref: optionDisableScreenshots,
+          ),
+          PrefDropdown(
+            fullWidth: false,
+            title: Text(L10n.of(context).default_tab),
+            subtitle: Text(
+              L10n.of(context).which_tab_is_shown_when_the_app_opens,
+            ),
+            pref: optionHomeInitialTab,
+            items: defaultHomePages
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e.id,
+                    child: Text(e.titleBuilder(context)),
+                  ),
+                )
+                .toList(),
+          ),
+          PrefDropdown(
+            fullWidth: false,
+            title: Text(L10n.of(context).default_feed_tab),
+            subtitle: Text(L10n.of(context).default_feed_tab_description),
+            pref: optionHomeDefaultFeedTab,
+            // The same list the switcher shows, so a default cannot be set
+            // to a feed that is turned off.
+            items: availableFeedTabs(PrefService.of(context))
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e.id.name,
+                    child: Text(e.titleBuilder(context)),
+                  ),
+                )
+                .toList(),
+          ),
+          PrefDropdown(
+            fullWidth: false,
+            title: Text(L10n.of(context).default_profile_tab),
+            subtitle: Text(L10n.of(context).default_profile_tab_description),
+            pref: optionDefaultProfileTab,
+            items: profileTabs
+                .map(
+                  (e) => DropdownMenuItem(
+                    value: e.id.name,
+                    child: Text(e.titleBuilder(context)),
+                  ),
+                )
+                .toList(),
+          ),
+          PrefDialogButton(
+            title: Text(L10n.of(context).share_base_url),
+            subtitle: Text(L10n.of(context).share_base_url_description),
+            dialog: _createShareBaseDialog(context, prefs),
+          ),
+          const Divider(),
+          const SettingsCrashReportsSection(),
         ],
       ),
     );

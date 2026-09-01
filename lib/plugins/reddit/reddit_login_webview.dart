@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/reddit/reddit_auth.dart';
+import 'package:logging/logging.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+final _log = Logger('RedditLoginWebview');
 
 /// Reddit's login page, watched for the redirect that carries the code back.
 ///
@@ -12,7 +15,8 @@ class RedditLoginWebview extends StatefulWidget {
   final String clientId;
 
   /// Echoed back by Reddit and checked on return, so a code from anywhere else
-  /// is ignored.
+  /// is ignored. It has to be unguessable for that check to mean anything —
+  /// `redditOauthState()` in reddit_account.dart is where it comes from.
   final String state;
 
   const RedditLoginWebview({super.key, required this.clientId, required this.state});
@@ -31,37 +35,43 @@ class _RedditLoginWebviewState extends State<RedditLoginWebview> {
 
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        // The redirect never resolves to a real page, so it has to be caught
-        // as navigation rather than waited on as a load.
-        onNavigationRequest: (request) => _handle(Uri.tryParse(request.url)),
-        onUrlChange: (change) {
-          final url = change.url;
-          if (url != null) {
-            _handle(Uri.tryParse(url));
-          }
-        },
-      ))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          // The redirect never resolves to a real page, so it has to be caught
+          // as navigation rather than waited on as a load.
+          onNavigationRequest: (request) => _handle(Uri.tryParse(request.url)),
+          onUrlChange: (change) {
+            final url = change.url;
+            if (url != null) {
+              _handle(Uri.tryParse(url));
+            }
+          },
+        ),
+      )
       ..loadRequest(RedditAuth.authorizeUrl(clientId: widget.clientId, state: widget.state));
   }
 
+  /// Every return from Reddit ends the screen, including the ones that carry
+  /// nothing usable.
+  ///
+  /// A redirect whose state does not match used to be waved through as ordinary
+  /// navigation — to a scheme that resolves to no page — so the reader was left
+  /// on a blank screen with sign-in neither done nor cancelled.
   NavigationDecision _handle(Uri? uri) {
-    if (uri == null || _finished) {
+    if (uri == null || _finished || !RedditAuth.isRedirect(uri)) {
       return NavigationDecision.navigate;
     }
 
     final code = RedditAuth.codeFrom(uri, expectedState: widget.state);
-    if (code != null) {
-      _close(code);
-      return NavigationDecision.prevent;
+    if (code == null) {
+      _log.warning(
+        'Reddit came back without a usable code: '
+        '${uri.queryParameters['error'] ?? 'no code, or a state that was not ours'}',
+      );
     }
 
-    if (RedditAuth.deniedIn(uri)) {
-      _close(null);
-      return NavigationDecision.prevent;
-    }
-
-    return NavigationDecision.navigate;
+    _close(code);
+    return NavigationDecision.prevent;
   }
 
   void _close(String? code) {

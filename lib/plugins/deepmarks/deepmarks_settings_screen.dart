@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/deepmarks/deepmarks_client.dart';
-import 'package:quax/plugins/deepmarks/deepmarks_save.dart';
-import 'package:quax/plugins/deepmarks/nostr_event.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/deepmarks/deepmarks_client.dart';
+import 'package:xta/plugins/deepmarks/deepmarks_save.dart';
+import 'package:xta/plugins/deepmarks/nostr_event.dart';
+import 'package:xta/utils/urls.dart';
 
 /// API key plus the signing key, with a probe that checks the key really works
 /// and warns when the two belong to different accounts.

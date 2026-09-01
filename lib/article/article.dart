@@ -1,9 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:quax/article/article_parser.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/profile/profile.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:xta/article/article_parser.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/profile/profile.dart';
+import 'package:xta/plugins/plugin_links.dart';
 
 class Article {
   final String title;
@@ -51,7 +51,7 @@ class Article {
     final coverMediaJson = articleResult["cover_media"]?["media_info"]?["original_img_url"];
 
     final coverMedia = coverMediaJson == null ? null : ImageEntity(imageUrl: coverMediaJson);
-    return Article(title, previewText, blocks.map((e) => blockToRichText(e)).toList(), entities, coverMedia);
+    return Article(title, previewText, List.from(blocks.map((e) => blockToRichText(e))), entities, coverMedia);
   }
 }
 
@@ -99,7 +99,7 @@ class ArticleWidget extends StatelessWidget {
     if (!url.startsWith('https://') && !url.startsWith('http://')) {
       url = 'https://$url';
     }
-    return _tapSpan(context, text: text, style: style, onTap: () => openUri(context, url));
+    return _tapSpan(context, text: text, style: style, onTap: () => openLink(context, url));
   }
 
   TextSpan _mentionSpan(

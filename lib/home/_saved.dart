@@ -1,1 +1,1 @@
-export 'package:quax/saved/saved_screen.dart';
+export 'package:xta/saved/saved_screen.dart';

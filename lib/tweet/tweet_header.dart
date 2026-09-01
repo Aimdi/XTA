@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
 
 /// Author hierarchy shared by ordinary, quoted and threaded posts.
 class TweetAuthorBlock extends StatelessWidget {
@@ -20,7 +20,7 @@ class TweetAuthorBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (displayName == null && handle == null) {
+    if (displayName == null && handle == null && timestamp == null) {
       return Align(alignment: Alignment.centerRight, child: trailing);
     }
 

@@ -1,7 +1,7 @@
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/plugins/karakeep/karakeep_title.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/plugins/karakeep/karakeep_title.dart';
 
 TweetWithCard _tweet({String? name, String? screenName}) {
   final tweet = TweetWithCard();

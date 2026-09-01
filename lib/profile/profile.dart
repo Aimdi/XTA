@@ -1,31 +1,33 @@
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/_follows.dart';
+import 'package:xta/profile/_media_grid.dart';
+import 'package:xta/profile/archive_filter.dart';
+import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
+import 'package:xta/profile/_saved.dart';
+import 'package:xta/profile/_tweets.dart';
+import 'package:xta/profile/profile_feed_settings.dart';
+import 'package:xta/profile/profile_chrome.dart';
+import 'package:xta/profile/profile_model.dart';
+import 'package:xta/profile/profile_note.dart';
+import 'package:xta/profile/posts_filter.dart';
+import 'package:xta/search/search.dart';
+import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/sensitive_media_gate.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/user.dart';
+import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/utils/rich_text.dart';
+import 'package:xta/utils/urls.dart';
 import 'package:intl/intl.dart';
+import 'package:measure_size/measure_size.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/home/home_chrome.dart';
-import 'package:quax/profile/_follows.dart';
-import 'package:quax/profile/_media_grid.dart';
-import 'package:quax/profile/_saved.dart';
-import 'package:quax/profile/_tweets.dart';
-import 'package:quax/profile/media_grid/media_grid_items/media_grid_item.dart';
-import 'package:quax/profile/profile_chrome.dart';
-import 'package:quax/profile/profile_feed_settings.dart';
-import 'package:quax/profile/profile_model.dart';
-import 'package:quax/search/search.dart';
-import 'package:quax/tweet/_media.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/tweet/tweet_context_scope.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/ui/reader_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
-import 'package:quax/user.dart';
-import 'package:quax/utils/rich_text.dart';
-import 'package:quax/utils/urls.dart';
 import 'package:share_plus/share_plus.dart';
 
 typedef TabTitleBuilder = String Function(BuildContext context);
@@ -35,14 +37,14 @@ class NavigationTab {
   final TabTitleBuilder titleBuilder;
   final IconData icon;
 
-  const NavigationTab(this.id, this.titleBuilder, this.icon);
+  NavigationTab(this.id, this.titleBuilder, this.icon);
 }
 
 final List<NavigationTab> profileTabs = [
   NavigationTab(
     ProfileTabs.posts,
     (c) => L10n.of(c).tweets,
-    Icons.article_outlined,
+    Icons.wysiwyg_outlined,
   ),
   NavigationTab(
     ProfileTabs.postsAndReplies,
@@ -52,7 +54,7 @@ final List<NavigationTab> profileTabs = [
   NavigationTab(
     ProfileTabs.media,
     (c) => L10n.of(c).media,
-    Icons.perm_media_outlined,
+    Icons.smart_display_outlined,
   ),
   NavigationTab(
     ProfileTabs.saved,
@@ -68,13 +70,16 @@ class ProfileScreenArguments {
 
   ProfileScreenArguments(this.id, this.screenName, this.tabIndex);
 
-  factory ProfileScreenArguments.fromId(String id, int? tabIndex) =>
-      ProfileScreenArguments(id, null, tabIndex);
+  factory ProfileScreenArguments.fromId(String id, int? tabIndex) {
+    return ProfileScreenArguments(id, null, tabIndex);
+  }
 
   factory ProfileScreenArguments.fromScreenName(
     String screenName,
     int? tabIndex,
-  ) => ProfileScreenArguments(null, screenName, tabIndex);
+  ) {
+    return ProfileScreenArguments(null, screenName, tabIndex);
+  }
 }
 
 class ProfileScreen extends StatelessWidget {
@@ -84,8 +89,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as ProfileScreenArguments;
+
     return Provider(
-      create: (_) {
+      create: (context) {
         final model = ProfileModel();
         if (args.id != null) {
           model.loadProfileById(args.id!);
@@ -117,28 +123,29 @@ class _ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return XtaSystemBars(
-      child: ScopedBuilder<ProfileModel, Profile>.transition(
-        store: context.read<ProfileModel>(),
-        onError: (_, error) => Scaffold(
-          body: SafeArea(
-            child: FullPageErrorWidget(
-              error: error,
-              stackTrace: null,
-              prefix: L10n.of(context).unable_to_load_the_profile,
-              onRetry: () => _reload(context),
-            ),
+      child: Scaffold(
+        body: ScopedBuilder<ProfileModel, Profile>.transition(
+          store: context.read<ProfileModel>(),
+          onError: (_, error) => FullPageErrorWidget(
+            error: error,
+            stackTrace: null,
+            prefix: L10n.of(context).unable_to_load_the_profile,
+            onRetry: () {
+              if (id != null) {
+                return context.read<ProfileModel>().loadProfileById(id!);
+              } else {
+                return context.read<ProfileModel>().loadProfileByScreenName(
+                  screenName!,
+                );
+              }
+            },
           ),
+          onLoading: (_) => const ProfileLoadingSkeleton(),
+          onState: (_, state) =>
+              ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
         ),
-        onLoading: (_) => const ProfileLoadingSkeleton(),
-        onState: (_, state) =>
-            ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
       ),
     );
-  }
-
-  Future<void> _reload(BuildContext context) {
-    if (id != null) return context.read<ProfileModel>().loadProfileById(id!);
-    return context.read<ProfileModel>().loadProfileByScreenName(screenName!);
   }
 }
 
@@ -153,507 +160,1120 @@ class ProfileScreenBody extends StatefulWidget {
   });
 
   @override
-  State<ProfileScreenBody> createState() => _ProfileScreenBodyState();
+  State<StatefulWidget> createState() => _ProfileScreenBodyState();
 }
 
 class _ProfileScreenBodyState extends State<ProfileScreenBody>
-    with SingleTickerProviderStateMixin {
-  final GlobalKey<NestedScrollViewState> _scrollViewKey = GlobalKey();
-  final NumberFormat _numberFormat = NumberFormat.compact();
-  TabController? _tabController;
-  ProfileViewStore? _viewStore;
+    with TickerProviderStateMixin {
+  static const defaultHeight = 256.12345;
+
+  final GlobalKey<NestedScrollViewState> nestedScrollViewKey = GlobalKey();
+
+  late TabController _tabController;
+  bool _tabControllerInitialized = false;
+
+  MediaFilter _mediaFilter = MediaFilter.all;
+  PostsFilter _postsFilter = PostsFilter.all;
+  ArchiveFilter _archiveFilter = ArchiveFilter.all;
+
+  bool _showBackToTopButton = false;
+
+  double descriptionHeight = defaultHeight;
+  double metadataHeight = defaultHeight;
+  double noteHeight = 40;
+
+  bool descriptionResized = false;
+  bool metadataResized = false;
+
+  NumberFormat numberFormat = NumberFormat.compact();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      var nestedScrollViewState = nestedScrollViewKey.currentState;
+      if (nestedScrollViewState == null) {
+        return;
+      }
+
+      nestedScrollViewState.innerController.addListener(_listen);
+    });
+
+    var description = widget.profile.user.description;
+    if (description == null || description.isEmpty) {
+      descriptionHeight = 0;
+      descriptionResized = true;
+    }
+
+    // MeasureSize sometimes never fires (header not laid out yet). The overlay
+    // used to cover the profile forever. Drop it after one frame-plus so the
+    // posts tab can paint even if the header is still measuring.
+    Future<void>.delayed(const Duration(milliseconds: 350), () {
+      if (!mounted) return;
+      if (descriptionResized && metadataResized) return;
+      setState(() {
+        descriptionResized = true;
+        metadataResized = true;
+      });
+    });
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_tabController != null) return;
-    final defaultTab = ProfileTabs.values.byName(
+    if (_tabControllerInitialized) return;
+
+    ProfileTabs defaultProfileTab = ProfileTabs.values.byName(
       PrefService.of(context).get(optionDefaultProfileTab),
     );
-    final preferredIndex = profileTabs.indexWhere(
-      (tab) => tab.id == defaultTab,
-    );
-    final initialIndex = (widget.defaultTabIndex ?? preferredIndex)
-        .clamp(0, profileTabs.length - 1)
-        .toInt();
-    _viewStore = ProfileViewStore(initialIndex);
+    final int initialTabIdx =
+        widget.defaultTabIndex ??
+        profileTabs.indexWhere((e) => e.id == defaultProfileTab);
+
     _tabController = TabController(
-      length: profileTabs.length,
+      length: 4,
       vsync: this,
-      initialIndex: initialIndex,
-    )..addListener(_onTabChanged);
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _attachScrollListener(),
+      initialIndex: initialTabIdx,
     );
+    _tabControllerInitialized = true;
   }
 
   @override
   void dispose() {
-    _scrollViewKey.currentState?.innerController.removeListener(
-      _onScrollChanged,
-    );
-    _tabController
-      ?..removeListener(_onTabChanged)
-      ..dispose();
-    _viewStore?.destroy();
+    nestedScrollViewKey.currentState?.innerController.removeListener(_listen);
+    _tabController.dispose();
     super.dispose();
   }
 
-  void _attachScrollListener() => _scrollViewKey.currentState?.innerController
-      .addListener(_onScrollChanged);
+  void _listen() {
+    var nestedScrollViewState = nestedScrollViewKey.currentState;
+    if (nestedScrollViewState == null) {
+      return;
+    }
 
-  void _onTabChanged() => _viewStore?.selectTab(_tabController!.index);
+    if (!nestedScrollViewState.innerController.hasClients) {
+      return;
+    }
 
-  void _onScrollChanged() {
-    final controller = _scrollViewKey.currentState?.innerController;
-    if (controller == null || !controller.hasClients) return;
-    final show = controller.positions.any((position) => position.pixels >= 400);
-    _viewStore?.setBackToTopVisible(show);
+    // Show the "scroll to top" button if we scroll down a bit, and hide it if we go back above
+    if (nestedScrollViewState.innerController.positions.any(
+      (element) => element.pixels >= 400,
+    )) {
+      if (!_showBackToTopButton) {
+        setState(() {
+          _showBackToTopButton = true;
+        });
+      }
+    } else {
+      if (_showBackToTopButton) {
+        setState(() {
+          _showBackToTopButton = false;
+        });
+      }
+    }
   }
 
   void _scrollToTop() {
-    final controller = _scrollViewKey.currentState?.outerController;
-    if (controller == null || !controller.hasClients) return;
-    final animationsDisabled =
-        PrefService.of(context, listen: false).get(optionDisableAnimations) ==
-            true ||
-        MediaQuery.disableAnimationsOf(context);
-    if (animationsDisabled) {
-      controller.jumpTo(0);
-    } else {
-      controller.animateTo(
-        0,
-        duration: const Duration(milliseconds: 240),
-        curve: Curves.easeOutCubic,
-      );
-    }
+    // We scroll the outer controller (the whole nested scroll view and children) to the top
+    // TODO: No animation due to Flutter crashing on huge lists (https://github.com/flutter/flutter/issues/52207) (#607)
+    nestedScrollViewKey.currentState?.outerController.jumpTo(0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = widget.profile.user;
-    if (user.idStr?.isNotEmpty != true || user.screenName?.isNotEmpty != true) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: TweetEmptyState(message: L10n.of(context).user_not_found),
+    // TODO: This shouldn't happen before the profile is loaded
+    var user = widget.profile.user;
+    if (user.idStr == null) {
+      return Container();
+    }
+
+    // Make the app bar height the correct aspect ratio based on the header image size (1500x500)
+    var mediaQuery = MediaQuery.of(context);
+    var deviceSize = mediaQuery.size;
+    var bannerHeight = deviceSize.width * (500 / 1500);
+    var avatarHeight = 80;
+
+    var profileImageTop = bannerHeight + 16 - 36 - mediaQuery.padding.top;
+    var profileStuffTop = bannerHeight + 36;
+
+    var theme = Theme.of(context);
+
+    var banner = user.profileBannerUrl;
+    var bannerImage = ProfileBanner(
+      uri: banner,
+      height: bannerHeight,
+      onTap: banner == null
+          ? null
+          : () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TweetMediaView(
+                    initialIndex: 0,
+                    media: [
+                      createMediaFromUrl(user.profileBannerUrl, bannerHeight),
+                    ],
+                    username: user.screenName ?? L10n.of(context).unknown,
+                    tweetMedia: false,
+                  ),
+                ),
+              );
+            },
+    );
+
+    // Include the private-note chip. Leaving it out let the tab bar cover the
+    // field, clip "Private note", and hide Save.
+    var appBarHeight =
+        profileStuffTop +
+        avatarHeight +
+        metadataHeight +
+        8 +
+        descriptionHeight +
+        noteHeight;
+
+    var metadataTextStyle = const TextStyle(fontSize: 12.5);
+    var prefs = PrefService.of(context, listen: false);
+
+    var shareBaseUrlOption = prefs.get(optionShareBaseUrl);
+    var shareBaseUrl =
+        shareBaseUrlOption != null && shareBaseUrlOption.isNotEmpty
+        ? shareBaseUrlOption
+        : 'https://x.com';
+
+    List<RichTextPart> descParts = [];
+    if (user.description != null && user.description!.isNotEmpty) {
+      descParts = buildRichText(
+        context,
+        user.description!,
+        user.entities!.description!,
       );
     }
-    return ScopedBuilder<ProfileViewStore, ProfileViewState>(
-      store: _viewStore!,
-      onState: (_, viewState) => _buildProfile(context, user, viewState),
-    );
-  }
 
-  Widget _buildProfile(
-    BuildContext context,
-    UserWithExtra user,
-    ProfileViewState viewState,
-  ) {
-    final prefs = PrefService.of(context, listen: false);
     return Scaffold(
-      body: ExtendedNestedScrollView(
-        key: _scrollViewKey,
-        onlyOneScrollInBody: true,
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
-            pinned: true,
-            title: Text(
-              _displayName(user),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          SliverToBoxAdapter(child: _buildBanner(context, user)),
-          SliverToBoxAdapter(child: _buildIdentity(context, user)),
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: ProfileTabsDelegate(
-              ProfileTabsBar(
-                controller: _tabController!,
-                tabs: profileTabs
-                    .map((tab) => _ProfileTabLabel(tab: tab))
-                    .toList(growable: false),
-              ),
-            ),
-          ),
-        ],
-        body: TweetContextScope(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              ProfileTweets(
-                user: user,
-                type: 'profile',
-                includeReplies: false,
-                pinnedTweets: widget.profile.pinnedTweets,
-                pref: prefs,
-              ),
-              ProfileTweets(
-                user: user,
-                type: 'profile',
-                includeReplies: true,
-                pinnedTweets: widget.profile.pinnedTweets,
-                pref: prefs,
-              ),
-              _ProfileMediaSection(
-                user: user,
-                pref: prefs,
-                filter: viewState.mediaFilter,
-                onChanged: _viewStore!.selectMediaFilter,
-              ),
-              ProfileSaved(user: user),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: viewState.showBackToTop
-          ? FloatingActionButton.small(
-              onPressed: _scrollToTop,
-              tooltip: MaterialLocalizations.of(context).reorderItemToStart,
-              child: const Icon(Icons.arrow_upward),
-            )
-          : null,
-    );
-  }
-
-  Widget _buildBanner(BuildContext context, UserWithExtra user) {
-    return SizedBox(
-      height: kProfileBannerHeight,
-      child: ProfileBanner(
-        uri: user.profileBannerUrl,
-        semanticLabel: _displayName(user),
-        onTap: user.profileBannerUrl == null
-            ? null
-            : () => _openMedia(
-                context,
-                user,
-                user.profileBannerUrl!,
-                kProfileBannerHeight,
-              ),
-      ),
-    );
-  }
-
-  Widget _buildIdentity(BuildContext context, UserWithExtra user) {
-    final description = user.description?.trim();
-    final parts = description == null || description.isEmpty
-        ? const <RichTextPart>[]
-        : buildRichText(context, description, user.entities?.description);
-    final background =
-        XLookTokens.maybeOf(context)?.background ??
-        Theme.of(context).scaffoldBackgroundColor;
-
-    return ColoredBox(
-      color: background,
-      child: Stack(
-        clipBehavior: Clip.none,
+      body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              kTweetHorizontalPadding,
-              52,
-              kTweetHorizontalPadding,
-              kTweetSpace3,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildName(context, user),
-                const SizedBox(height: kTweetSpace1),
-                Text('@${user.screenName}', style: tweetMetadataStyle(context)),
-                if (parts.isNotEmpty) ...[
-                  const SizedBox(height: kTweetSpace3),
-                  SelectableText.rich(
-                    TextSpan(
-                      style: tweetBodyStyle(context).copyWith(height: 1.45),
-                      children: displayRichText(parts),
+          ExtendedNestedScrollView(
+            key: nestedScrollViewKey,
+            onlyOneScrollInBody: true,
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  expandedHeight: appBarHeight,
+                  floating: true,
+                  pinned: true,
+                  snap: false,
+                  forceElevated: false,
+                  elevation: 0,
+                  surfaceTintColor: Colors.transparent,
+                  automaticallyImplyLeading: false,
+                  bottom: ProfileTabsBar(
+                    controller: _tabController,
+                    tabs: [
+                      for (final t in profileTabs)
+                        Tab(
+                          child: _ProfileTabLabel(
+                            tab: t,
+                            trailing: t.id == ProfileTabs.media
+                                ? _MediaFilterButton(
+                                    value: _mediaFilter,
+                                    onChanged: (filter) =>
+                                        setState(() => _mediaFilter = filter),
+                                  )
+                                : t.id == ProfileTabs.posts
+                                ? _PostsFilterButton(
+                                    value: _postsFilter,
+                                    onChanged: (filter) =>
+                                        setState(() => _postsFilter = filter),
+                                  )
+                                : t.id == ProfileTabs.saved
+                                ? _ArchiveFilterButton(
+                                    value: _archiveFilter,
+                                    onChanged: (filter) =>
+                                        setState(() => _archiveFilter = filter),
+                                  )
+                                : null,
+                          ),
+                        ),
+                    ],
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    centerTitle: true,
+                    background: SafeArea(
+                      top: false,
+                      child: Stack(
+                        children: <Widget>[
+                          Container(
+                            alignment: Alignment.topCenter,
+                            child: bannerImage,
+                          ),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: <Color>[
+                                  theme.colorScheme.surface,
+                                  Color.fromARGB(
+                                    100,
+                                    (theme.colorScheme.surface.r * 255.0)
+                                        .round(),
+                                    (theme.colorScheme.surface.g * 255.0)
+                                        .round(),
+                                    (theme.colorScheme.surface.b * 255.0)
+                                        .round(),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16,
+                              horizontal: 0,
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Flexible(
+                                  child: Container(
+                                    margin: EdgeInsets.fromLTRB(
+                                      16,
+                                      profileStuffTop,
+                                      16,
+                                      0,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                user.name!,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                            if (user.verified ?? false)
+                                              const SizedBox(width: 6),
+                                            if (user.verified ?? false)
+                                              Icon(
+                                                Icons.verified,
+                                                size: 24,
+                                                color:
+                                                    theme.colorScheme.primary,
+                                              ),
+                                            if (user.protected ?? false)
+                                              const SizedBox(width: 6),
+                                            if (user.protected ?? false)
+                                              Icon(
+                                                Icons.lock,
+                                                size: 24,
+                                                color:
+                                                    theme.colorScheme.primary,
+                                              ),
+                                          ],
+                                        ),
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 8,
+                                          ),
+                                          child: Text(
+                                            '@${(user.screenName!)}',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color:
+                                                  theme.brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white70
+                                                  : Colors.black54,
+                                            ),
+                                          ),
+                                        ),
+                                        if (user.description != null &&
+                                            user.description!.isNotEmpty)
+                                          MeasureSize(
+                                            onChange: (size) {
+                                              setState(() {
+                                                descriptionHeight = size.height;
+                                                descriptionResized = true;
+                                              });
+                                            },
+                                            child: Container(
+                                              margin: const EdgeInsets.only(
+                                                bottom: 8,
+                                              ),
+                                              child: SelectableText.rich(
+                                                minLines: 1,
+                                                maxLines: 5,
+                                                TextSpan(
+                                                  style: TextStyle(
+                                                    height: 1.4,
+                                                    color:
+                                                        theme.brightness ==
+                                                            Brightness.dark
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                  ),
+                                                  children: displayRichText(
+                                                    descParts,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        MeasureSize(
+                                          onChange: (size) {
+                                            setState(() {
+                                              metadataHeight = size.height;
+                                              metadataResized = true;
+                                            });
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 8.0,
+                                            ),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Scrollbar(
+                                                  child: SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: Row(
+                                                      children: [
+                                                        if (user.location !=
+                                                                null &&
+                                                            user
+                                                                .location!
+                                                                .isNotEmpty)
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  vertical: 2,
+                                                                  horizontal: 0,
+                                                                ),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .location_on_outlined,
+                                                                  size: 14,
+                                                                  color: theme
+                                                                      .hintColor,
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 4,
+                                                                ),
+                                                                Text(
+                                                                  user.location!,
+                                                                  style:
+                                                                      metadataTextStyle,
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        if (user.url != null &&
+                                                            user
+                                                                .url!
+                                                                .isNotEmpty)
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  vertical: 2,
+                                                                  horizontal: 0,
+                                                                ),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.link,
+                                                                  size: 14,
+                                                                  color: theme
+                                                                      .hintColor,
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 4,
+                                                                ),
+                                                                Builder(
+                                                                  builder: (context) {
+                                                                    var url = user
+                                                                        .entities
+                                                                        ?.url
+                                                                        ?.urls
+                                                                        ?.firstWhere(
+                                                                          (
+                                                                            element,
+                                                                          ) =>
+                                                                              element.url ==
+                                                                              user.url,
+                                                                        );
+
+                                                                    if (url ==
+                                                                        null) {
+                                                                      return Container();
+                                                                    }
+
+                                                                    var displayUrl =
+                                                                        url.displayUrl ??
+                                                                        url.url;
+                                                                    var expandedUrl =
+                                                                        url.expandedUrl ??
+                                                                        url.url;
+
+                                                                    var textStyle =
+                                                                        metadataTextStyle;
+                                                                    if (displayUrl ==
+                                                                            null ||
+                                                                        expandedUrl ==
+                                                                            null) {
+                                                                      return Text(
+                                                                        L10n
+                                                                            .current
+                                                                            .unsupported_url,
+                                                                        style: textStyle.copyWith(
+                                                                          color:
+                                                                              theme.hintColor,
+                                                                        ),
+                                                                      );
+                                                                    }
+
+                                                                    return InkWell(
+                                                                      child: Text(
+                                                                        displayUrl,
+                                                                        style: textStyle.copyWith(
+                                                                          color: Theme.of(
+                                                                            context,
+                                                                          ).colorScheme.primary,
+                                                                        ),
+                                                                      ),
+                                                                      onTap: () => openLink(
+                                                                        context,
+                                                                        expandedUrl,
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        if (user.createdAt !=
+                                                            null)
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  vertical: 2,
+                                                                  horizontal: 0,
+                                                                ),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons
+                                                                      .calendar_today_outlined,
+                                                                  size: 14,
+                                                                  color: theme
+                                                                      .hintColor,
+                                                                ),
+                                                                const SizedBox(
+                                                                  width: 4,
+                                                                ),
+                                                                Text(
+                                                                  L10n.of(
+                                                                    context,
+                                                                  ).joined(
+                                                                    DateFormat(
+                                                                      'MMMM yyyy',
+                                                                    ).format(
+                                                                      user.createdAt!,
+                                                                    ),
+                                                                  ),
+                                                                  style:
+                                                                      metadataTextStyle,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Scrollbar(
+                                                  child: SingleChildScrollView(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: Row(
+                                                      children: [
+                                                        if (user.friendsCount !=
+                                                            null)
+                                                          InkWell(
+                                                            onTap: () =>
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).push(
+                                                                  MaterialPageRoute(
+                                                                    builder:
+                                                                        ((
+                                                                          context,
+                                                                        ) => ProfileFollows(
+                                                                          user:
+                                                                              user,
+                                                                          type:
+                                                                              'following',
+                                                                        )),
+                                                                  ),
+                                                                ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    vertical: 2,
+                                                                    horizontal:
+                                                                        0,
+                                                                  ),
+                                                              child: Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text.rich(
+                                                                    TextSpan(
+                                                                      children: [
+                                                                        TextSpan(
+                                                                          text: numberFormat.format(
+                                                                            widget.profile.user.friendsCount,
+                                                                          ),
+                                                                          style: metadataTextStyle.copyWith(
+                                                                            fontWeight:
+                                                                                FontWeight.w700,
+                                                                          ),
+                                                                        ),
+                                                                        TextSpan(
+                                                                          text:
+                                                                              ' ${L10n.current.following.toLowerCase()}',
+                                                                          style:
+                                                                              metadataTextStyle,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        if (user.followersCount !=
+                                                            null)
+                                                          InkWell(
+                                                            onTap: () =>
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).push(
+                                                                  MaterialPageRoute(
+                                                                    builder:
+                                                                        ((
+                                                                          context,
+                                                                        ) => ProfileFollows(
+                                                                          user:
+                                                                              user,
+                                                                          type:
+                                                                              'followers',
+                                                                        )),
+                                                                  ),
+                                                                ),
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    vertical: 2,
+                                                                    horizontal:
+                                                                        0,
+                                                                  ),
+                                                              child: Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Text.rich(
+                                                                    TextSpan(
+                                                                      children: [
+                                                                        TextSpan(
+                                                                          text: numberFormat.format(
+                                                                            widget.profile.user.followersCount,
+                                                                          ),
+                                                                          style: metadataTextStyle.copyWith(
+                                                                            fontWeight:
+                                                                                FontWeight.w700,
+                                                                          ),
+                                                                        ),
+                                                                        TextSpan(
+                                                                          text:
+                                                                              ' ${L10n.current.followers.toLowerCase()}',
+                                                                          style:
+                                                                              metadataTextStyle,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        if (user.idStr != null)
+                                          MeasureSize(
+                                            onChange: (size) {
+                                              if ((size.height - noteHeight)
+                                                      .abs() <
+                                                  0.5) {
+                                                return;
+                                              }
+                                              setState(() {
+                                                noteHeight = size.height;
+                                              });
+                                            },
+                                            child: ProfileNoteCard(
+                                              userId: user.idStr!,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // The follow / feed-settings controls sit by the
+                          // avatar, where X keeps its profile actions.
+                          Container(
+                            alignment: Alignment.topRight,
+                            margin: EdgeInsets.fromLTRB(
+                              128,
+                              profileImageTop + 64,
+                              16,
+                              16,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                ProfileFeedSettingsButton(
+                                  user: user,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                FollowButton(
+                                  user: UserSubscription.fromUser(user),
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Circular translucent buttons floating over the banner,
+                          // as on X: a back affordance a pushed profile otherwise
+                          // lacked on screen, then search and share.
+                          Positioned(
+                            top: 0,
+                            left: 4,
+                            right: 4,
+                            child: SafeArea(
+                              bottom: false,
+                              child: Row(
+                                children: [
+                                  _BannerButton(
+                                    icon: Icons.arrow_back,
+                                    tooltip: MaterialLocalizations.of(
+                                      context,
+                                    ).backButtonTooltip,
+                                    onPressed: () =>
+                                        Navigator.maybePop(context),
+                                  ),
+                                  const Spacer(),
+                                  _BannerButton(
+                                    icon: Icons.search,
+                                    tooltip: L10n.of(context).search,
+                                    onPressed: () => Navigator.pushNamed(
+                                      context,
+                                      routeSearch,
+                                      arguments: SearchArguments(
+                                        1,
+                                        focusInputOnOpen: true,
+                                        query: 'from:@${(user.screenName!)} ',
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _BannerButton(
+                                    icon: Icons.share,
+                                    tooltip: L10n.of(context).share_link,
+                                    onPressed: () => Share.share(
+                                      "$shareBaseUrl/${user.screenName}",
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.fromLTRB(
+                              16,
+                              profileImageTop,
+                              16,
+                              16,
+                            ),
+                            child: ProfileAvatar(
+                              uri: user.profileImageUrlHttps,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TweetMediaView(
+                                      initialIndex: 0,
+                                      media: [
+                                        createMediaFromUrl(
+                                          user.profileImageUrlHttps?.replaceAll(
+                                            "_normal",
+                                            "_400x400",
+                                          ),
+                                          null,
+                                        ),
+                                      ],
+                                      username:
+                                          user.screenName ??
+                                          L10n.of(context).unknown,
+                                      tweetMedia: false,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-                const SizedBox(height: kTweetSpace3),
-                _buildMetadata(context, user),
-                _buildCounts(context, user),
+                ),
+              ];
+            },
+            body: MultiProvider(
+              providers: [
+                ChangeNotifierProvider<TweetContextState>(
+                  create: (_) => TweetContextState.fromPrefs(prefs),
+                ),
               ],
-            ),
-          ),
-          PositionedDirectional(
-            top: -kProfileAvatarSize / 2,
-            start: kTweetHorizontalPadding,
-            child: ProfileAvatar(
-              uri: user.profileImageUrlHttps,
-              semanticLabel: _displayName(user),
-              onTap: user.profileImageUrlHttps == null
-                  ? null
-                  : () => _openMedia(
-                      context,
-                      user,
-                      user.profileImageUrlHttps!.replaceAll(
-                        '_normal',
-                        '_400x400',
-                      ),
-                      null,
-                    ),
-            ),
-          ),
-          PositionedDirectional(
-            top: kTweetSpace1,
-            end: kTweetSpace2,
-            child: _buildActions(context, user),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildName(BuildContext context, UserWithExtra user) {
-    return Row(
-      children: [
-        Flexible(
-          child: Text(
-            _displayName(user),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(height: 1.18),
-          ),
-        ),
-        if (user.verified ?? false) ...[
-          const SizedBox(width: kTweetSpace1),
-          Icon(Icons.verified, size: 18, color: tweetAccentColor(context)),
-        ],
-        if (user.protected ?? false) ...[
-          const SizedBox(width: kTweetSpace1),
-          Icon(
-            Icons.lock_outline,
-            size: 18,
-            color: tweetSecondaryColor(context),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildMetadata(BuildContext context, UserWithExtra user) {
-    final url = _profileUrl(user);
-    return Wrap(
-      children: [
-        if (user.location?.isNotEmpty == true)
-          ProfileMetadataItem(
-            icon: Icons.location_on_outlined,
-            child: Text(user.location!),
-          ),
-        if (url != null)
-          ProfileMetadataItem(
-            icon: Icons.link,
-            child: InkWell(
-              onTap: () => openUri(context, url.expanded),
-              child: Text(
-                url.display,
-                style: tweetMetadataStyle(
-                  context,
-                ).copyWith(color: tweetAccentColor(context)),
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  ProfileTweets(
+                    user: user,
+                    type: 'profile',
+                    includeReplies: false,
+                    pinnedTweets: widget.profile.pinnedTweets,
+                    pref: prefs,
+                    filter: _postsFilter,
+                  ),
+                  ProfileTweets(
+                    user: user,
+                    type: 'profile',
+                    includeReplies: true,
+                    pinnedTweets: widget.profile.pinnedTweets,
+                    pref: prefs,
+                  ),
+                  ProfileMediaGrid(
+                    user: user,
+                    pref: prefs,
+                    filter: _mediaFilter,
+                  ),
+                  ProfileSaved(user: user, filter: _archiveFilter),
+                ],
               ),
             ),
           ),
-        if (user.createdAt != null)
-          ProfileMetadataItem(
-            icon: Icons.calendar_today_outlined,
-            child: Text(
-              L10n.of(context).joined(
-                DateFormat.yMMMM(
-                  Localizations.localeOf(context).toString(),
-                ).format(user.createdAt!),
-              ),
-            ),
+
+          // If we haven't resized the description widget yet, display an overlay container so we don't see the resize
+          // TODO: This flickers
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            child: descriptionResized == true && metadataResized == true
+                ? Container(key: const Key('loaded'))
+                : Container(
+                    key: const Key('waiting'),
+                    height: double.infinity,
+                    color: theme.colorScheme.surface,
+                  ),
           ),
-      ],
-    );
-  }
-
-  Widget _buildCounts(BuildContext context, UserWithExtra user) {
-    return Wrap(
-      children: [
-        if (user.friendsCount != null)
-          ProfileCountButton(
-            count: _numberFormat.format(user.friendsCount),
-            label: L10n.of(context).following,
-            onTap: () => _openFollows(context, user, 'following'),
-          ),
-        if (user.followersCount != null)
-          ProfileCountButton(
-            count: _numberFormat.format(user.followersCount),
-            label: L10n.of(context).followers,
-            onTap: () => _openFollows(context, user, 'followers'),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildActions(BuildContext context, UserWithExtra user) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FollowButton(user: UserSubscription.fromUser(user)),
-        ProfileFeedSettingsButton(user: user),
-        IconButton(
-          tooltip: L10n.of(context).search,
-          icon: const Icon(Icons.search),
-          onPressed: () => Navigator.pushNamed(
-            context,
-            routeSearch,
-            arguments: SearchArguments(
-              1,
-              focusInputOnOpen: true,
-              query: 'from:@${user.screenName} ',
-            ),
-          ),
-        ),
-        IconButton(
-          tooltip: L10n.of(context).share_link,
-          icon: const Icon(Icons.share_outlined),
-          onPressed: () =>
-              Share.share('${_shareBaseUrl(context)}/${user.screenName}'),
-        ),
-      ],
-    );
-  }
-
-  String _displayName(UserWithExtra user) {
-    final name = user.name?.trim();
-    return name == null || name.isEmpty ? '@${user.screenName}' : name;
-  }
-
-  ({String display, String expanded})? _profileUrl(UserWithExtra user) {
-    final urls = user.entities?.url?.urls;
-    if (urls == null) return null;
-    for (final candidate in urls) {
-      if (candidate.url != user.url) continue;
-      final display = candidate.displayUrl ?? candidate.url;
-      final expanded = candidate.expandedUrl ?? candidate.url;
-      if (display != null && expanded != null)
-        return (display: display, expanded: expanded);
-    }
-    return null;
-  }
-
-  String _shareBaseUrl(BuildContext context) {
-    final configured = PrefService.of(
-      context,
-      listen: false,
-    ).get(optionShareBaseUrl);
-    return configured != null && configured.isNotEmpty
-        ? configured
-        : 'https://x.com';
-  }
-
-  void _openFollows(BuildContext context, UserWithExtra user, String type) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => ProfileFollows(user: user, type: type),
+        ],
       ),
-    );
-  }
-
-  void _openMedia(
-    BuildContext context,
-    UserWithExtra user,
-    String uri,
-    double? height,
-  ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => TweetMediaView(
-          initialIndex: 0,
-          media: [createMediaFromUrl(uri, height)],
-          username: user.screenName!,
-          tweetMedia: false,
-        ),
-      ),
+      floatingActionButton: _showBackToTopButton == false
+          ? null
+          : FloatingActionButton(
+              onPressed: _scrollToTop,
+              child: const Icon(Icons.arrow_upward),
+            ),
     );
   }
 }
 
-class _ProfileTabLabel extends StatelessWidget {
-  final NavigationTab tab;
+/// A circular translucent button floating over the profile banner, the way X
+/// draws the back / search / more controls there — legible over any banner
+/// because it carries its own scrim rather than relying on the image behind it.
+class _BannerButton extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
 
-  const _ProfileTabLabel({required this.tab});
-
-  @override
-  Widget build(BuildContext context) {
-    return Tab(
-      height: kProfileTabHeight,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(tab.icon, size: kTweetActionIconSize),
-          const SizedBox(width: kTweetSpace2),
-          Text(tab.titleBuilder(context)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProfileMediaSection extends StatelessWidget {
-  final UserWithExtra user;
-  final BasePrefService pref;
-  final MediaFilter filter;
-  final ValueChanged<MediaFilter> onChanged;
-
-  const _ProfileMediaSection({
-    required this.user,
-    required this.pref,
-    required this.filter,
-    required this.onChanged,
+  const _BannerButton({
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    String label(MediaFilter value) => switch (value) {
-      MediaFilter.all => L10n.of(context).all,
-      MediaFilter.photos => L10n.of(context).photos,
-      MediaFilter.videos => L10n.of(context).videos,
-    };
-    return Column(
+    return Material(
+      color: Colors.black38,
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: IconButton(
+        icon: Icon(icon, size: 20, color: Colors.white),
+        tooltip: tooltip,
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+/// Compact profile tab with an explicit text label at every selection state.
+class _ProfileTabLabel extends StatelessWidget {
+  final NavigationTab tab;
+  final Widget? trailing;
+
+  const _ProfileTabLabel({required this.tab, this.trailing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: kTweetHorizontalPadding,
-            ),
-            child: HomeFeedSwitcher<MediaFilter>(
-              selected: filter,
-              options: MediaFilter.values
-                  .map(
-                    (value) =>
-                        HomeSwitcherOption(value: value, label: label(value)),
-                  )
-                  .toList(growable: false),
-              onSelected: onChanged,
-            ),
-          ),
-        ),
-        tweetHairlineDivider(context),
-        Expanded(
-          child: ProfileMediaGrid(user: user, pref: pref, filter: filter),
-        ),
+        Icon(tab.icon, size: 22),
+        const SizedBox(width: 6),
+        Text(tab.titleBuilder(context), overflow: TextOverflow.ellipsis),
+        if (trailing != null) trailing!,
       ],
     );
   }
 }
 
-/// Legacy context state consumed by Tweet media in several existing modules.
-/// Profile uses [TweetContextScope] rather than constructing this notifier.
+/// The chevron on the selected Media tab, which opens the photos/videos filter.
+///
+/// It is its own tap target rather than a second meaning for the tab itself:
+/// tapping the tab still returns the grid to the top, as every other tab does.
+class _MediaFilterButton extends StatelessWidget {
+  final MediaFilter value;
+  final ValueChanged<MediaFilter> onChanged;
+
+  const _MediaFilterButton({required this.value, required this.onChanged});
+
+  String _labelFor(BuildContext context, MediaFilter filter) =>
+      switch (filter) {
+        MediaFilter.all => L10n.of(context).all,
+        MediaFilter.photos => L10n.of(context).photos,
+        MediaFilter.videos => L10n.of(context).videos,
+        MediaFilter.broadcasts => L10n.of(context).broadcasts,
+      };
+
+  IconData _iconFor(MediaFilter filter) => switch (filter) {
+    MediaFilter.all => Icons.perm_media_outlined,
+    MediaFilter.photos => Icons.photo_library_outlined,
+    MediaFilter.videos => Icons.video_library_outlined,
+    MediaFilter.broadcasts => Icons.live_tv_outlined,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<MediaFilter>(
+      initialValue: value,
+      onSelected: onChanged,
+      tooltip: L10n.of(context).media,
+      padding: EdgeInsets.zero,
+      itemBuilder: (context) => [
+        for (final filter in MediaFilter.values)
+          PopupMenuItem(
+            value: filter,
+            child: Row(
+              children: [
+                Icon(_iconFor(filter), size: 20),
+                const SizedBox(width: 12),
+                Text(_labelFor(context, filter)),
+              ],
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Icon(
+          Icons.expand_more,
+          size: 18,
+          color: value == MediaFilter.all
+              ? null
+              : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// The chevron on the selected Posts tab: all / posts / retweets.
+class _PostsFilterButton extends StatelessWidget {
+  final PostsFilter value;
+  final ValueChanged<PostsFilter> onChanged;
+
+  const _PostsFilterButton({required this.value, required this.onChanged});
+
+  String _labelFor(BuildContext context, PostsFilter filter) =>
+      switch (filter) {
+        PostsFilter.all => L10n.of(context).all,
+        PostsFilter.posts => L10n.of(context).tweets,
+        PostsFilter.retweets => L10n.of(context).retweets,
+      };
+
+  IconData _iconFor(PostsFilter filter) => switch (filter) {
+    PostsFilter.all => Icons.wysiwyg_outlined,
+    PostsFilter.posts => Icons.article_outlined,
+    PostsFilter.retweets => Icons.repeat,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<PostsFilter>(
+      initialValue: value,
+      onSelected: onChanged,
+      tooltip: L10n.of(context).tweets,
+      padding: EdgeInsets.zero,
+      itemBuilder: (context) => [
+        for (final filter in PostsFilter.values)
+          PopupMenuItem(
+            value: filter,
+            child: Row(
+              children: [
+                Icon(_iconFor(filter), size: 20),
+                const SizedBox(width: 12),
+                Text(_labelFor(context, filter)),
+              ],
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Icon(
+          Icons.expand_more,
+          size: 18,
+          color: value == PostsFilter.all
+              ? null
+              : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
+/// The chevron on the selected Archive tab: all / likes / bookmarks.
+class _ArchiveFilterButton extends StatelessWidget {
+  final ArchiveFilter value;
+  final ValueChanged<ArchiveFilter> onChanged;
+
+  const _ArchiveFilterButton({required this.value, required this.onChanged});
+
+  String _labelFor(BuildContext context, ArchiveFilter filter) =>
+      switch (filter) {
+        ArchiveFilter.all => L10n.of(context).all,
+        ArchiveFilter.likes => L10n.of(context).favorites,
+        ArchiveFilter.bookmarks => L10n.of(context).plugin_category_bookmarks,
+      };
+
+  IconData _iconFor(ArchiveFilter filter) => switch (filter) {
+    ArchiveFilter.all => Icons.inventory_2_outlined,
+    ArchiveFilter.likes => Icons.favorite_border,
+    ArchiveFilter.bookmarks => Icons.bookmark_border,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<ArchiveFilter>(
+      initialValue: value,
+      onSelected: onChanged,
+      tooltip: L10n.of(context).saved,
+      padding: EdgeInsets.zero,
+      itemBuilder: (context) => [
+        for (final filter in ArchiveFilter.values)
+          PopupMenuItem(
+            value: filter,
+            child: Row(
+              children: [
+                Icon(_iconFor(filter), size: 20),
+                const SizedBox(width: 12),
+                Text(_labelFor(context, filter)),
+              ],
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Icon(
+          Icons.expand_more,
+          size: 18,
+          color: value == ArchiveFilter.all
+              ? null
+              : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+}
+
 class TweetContextState extends ChangeNotifier {
   bool hideSensitive;
 
   TweetContextState(this.hideSensitive);
 
+  factory TweetContextState.fromPrefs(BasePrefService prefs) =>
+      TweetContextState(initialHideSensitive(prefs));
+
   void setHideSensitive(bool value) {
     hideSensitive = value;
     notifyListeners();
+  }
+
+  Future<void> alwaysShowSensitive(BasePrefService prefs) async {
+    await prefs.set(optionAlwaysShowSensitiveMedia, true);
+    setHideSensitive(false);
   }
 }

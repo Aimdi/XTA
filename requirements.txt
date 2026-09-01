@@ -1,6 +1,5 @@
-# Pinned exactly for reproducible builds: generate_icons.py rasterises the
-# launcher icons through CairoSVG and Pillow, and their PNG output can change
-# between versions. See docs/reproducible-builds.md.
-cairosvg==2.9.0
+# Pinned exactly for reproducible builds: generate_icons.py builds the launcher
+# icons through Pillow, and its PNG output can change between versions. See
+# docs/reproducible-builds.md.
 pillow==12.3.0
 requests==2.34.2

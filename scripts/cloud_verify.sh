@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Cloud-friendly verification for QuaX (Android-only Flutter app).
+# Cloud-friendly verification for XTA (Android-only Flutter app).
 # Works without an emulator: analyze + unit tests + optional guest API smoke + debug APK.
 set -euo pipefail
 

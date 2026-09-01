@@ -1,21 +1,85 @@
 import 'package:flutter/material.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/ui/x_look_theme.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 
 /// Placeholder tiles shown while the first feed page loads.
-class TweetFeedSkeleton extends StatelessWidget {
+///
+/// One [AnimationController] drives every bone of every tile. Each bone owning
+/// its own controller meant thirty tickers pulsing in lockstep to draw one
+/// synchronized shimmer.
+///
+/// [primary] must stay false when this sits inside another vertical list
+/// (PagedListView's first-page slot). A second primary ListView attaches
+/// NestedScrollView's inner controller and freezes, then crashes, Following
+/// and For you — the same trap empty Reddit hit.
+class TweetFeedSkeleton extends StatefulWidget {
   final int count;
+  final bool primary;
 
-  const TweetFeedSkeleton({super.key, this.count = 6});
+  const TweetFeedSkeleton({super.key, this.count = 6, this.primary = true});
+
+  @override
+  State<TweetFeedSkeleton> createState() => _TweetFeedSkeletonState();
+}
+
+class _TweetFeedSkeletonState extends State<TweetFeedSkeleton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulse = _skeletonPulse(this);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    applySkeletonPulse(context, _pulse);
+  }
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(top: kTweetSpace1),
-      itemCount: count,
-      itemBuilder: (context, index) => const TweetSkeletonTile(),
+      primary: widget.primary ? null : false,
+      shrinkWrap: !widget.primary,
+      physics: widget.primary
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 4),
+      itemCount: widget.count,
+      itemBuilder: (context, index) => TweetSkeletonTile(pulse: _pulse),
     );
+  }
+}
+
+AnimationController _skeletonPulse(TickerProvider vsync) => AnimationController(
+  vsync: vsync,
+  duration: const Duration(milliseconds: 1100),
+);
+
+/// The accessibility preference and the platform's own "remove animations"
+/// setting both leave the bones at a flat colour rather than pulsing.
+///
+/// A skeleton is also the first thing a plugin tab paints, sometimes before
+/// anything has provided a [PrefService]; without one the pulse simply runs.
+bool skeletonWantsPulse(BuildContext context) {
+  if (MediaQuery.disableAnimationsOf(context)) return false;
+
+  final prefs = context.findAncestorWidgetOfExactType<PrefService>()?.service;
+  return prefs?.get<bool>(optionDisableAnimations) != true;
+}
+
+/// Starts or pins [controller] according to [skeletonWantsPulse].
+void applySkeletonPulse(BuildContext context, AnimationController controller) {
+  if (skeletonWantsPulse(context)) {
+    if (!controller.isAnimating) {
+      controller.repeat(reverse: true);
+    }
+  } else {
+    controller.stop();
+    controller.value = controller.upperBound;
   }
 }
 
@@ -24,8 +88,40 @@ class TweetFeedSkeleton extends StatelessWidget {
 /// Also used as the footer while the next page loads: the list grows into
 /// something post-shaped instead of a centred spinner that appears, animates
 /// and is then swapped out, which is what made the timeline stall visibly.
-class TweetSkeletonTile extends StatelessWidget {
-  const TweetSkeletonTile({super.key});
+/// Standalone it runs its own pulse; in a [TweetFeedSkeleton] it shares the
+/// list's.
+class TweetSkeletonTile extends StatefulWidget {
+  final Animation<double>? pulse;
+
+  const TweetSkeletonTile({super.key, this.pulse});
+
+  @override
+  State<TweetSkeletonTile> createState() => _TweetSkeletonTileState();
+}
+
+class _TweetSkeletonTileState extends State<TweetSkeletonTile>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController? _own = widget.pulse == null
+      ? _skeletonPulse(this)
+      : null;
+
+  Animation<double> get _pulse => widget.pulse ?? _own!;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final own = _own;
+    if (own != null) {
+      applySkeletonPulse(context, own);
+    }
+  }
+
+  @override
+  void dispose() {
+    _own?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,16 +130,20 @@ class TweetSkeletonTile extends StatelessWidget {
         tokens?.border ?? Theme.of(context).colorScheme.surfaceContainerHighest;
     final highlight =
         tokens?.divider ?? Theme.of(context).colorScheme.surfaceContainerHigh;
-    final avatarSize = tokens?.avatarSize ?? kTweetAvatarSize;
+    final avatarSize = tokens?.avatarSize ?? 40;
+    final mediaRadius = tokens?.mediaRadius ?? 16;
 
     return RepaintBoundary(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: kTweetHorizontalPadding,
-              vertical: kTweetVerticalPadding,
-            ),
+      child: AnimatedBuilder(
+        animation: _pulse,
+        builder: (context, child) {
+          final color = Color.lerp(
+            base,
+            highlight,
+            Curves.easeInOut.transform(_pulse.value),
+          )!;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -51,110 +151,59 @@ class TweetSkeletonTile extends StatelessWidget {
                   width: avatarSize,
                   height: avatarSize,
                   radius: avatarSize / 2,
-                  color: base,
-                  highlight: highlight,
+                  color: color,
                 ),
-                const SizedBox(width: kTweetSpace3),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _Bone(
-                        width: 140,
-                        height: 12,
-                        color: base,
-                        highlight: highlight,
-                      ),
-                      const SizedBox(height: kTweetSpace2),
-                      _Bone(
-                        width: double.infinity,
-                        height: 12,
-                        color: base,
-                        highlight: highlight,
-                      ),
+                      _Bone(width: 140, height: 12, color: color),
+                      const SizedBox(height: 8),
+                      _Bone(width: double.infinity, height: 12, color: color),
                       const SizedBox(height: 6),
-                      _Bone(
-                        width: 220,
-                        height: 12,
-                        color: base,
-                        highlight: highlight,
-                      ),
-                      const SizedBox(height: kTweetSpace3),
+                      _Bone(width: 220, height: 12, color: color),
+                      const SizedBox(height: 12),
                       _Bone(
                         width: double.infinity,
                         height: 120,
-                        radius: tokens?.mediaRadius ?? kTweetMediaRadius,
-                        color: base,
-                        highlight: highlight,
+                        radius: mediaRadius,
+                        color: color,
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-          Divider(
-            height: 0,
-            thickness: kTweetDividerThickness,
-            color: tokens?.divider ?? Theme.of(context).dividerColor,
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 }
 
-class _Bone extends StatefulWidget {
+class _Bone extends StatelessWidget {
   final double width;
   final double height;
   final double radius;
   final Color color;
-  final Color highlight;
 
   const _Bone({
     required this.width,
     required this.height,
     required this.color,
-    required this.highlight,
     this.radius = 4,
   });
 
   @override
-  State<_Bone> createState() => _BoneState();
-}
-
-class _BoneState extends State<_Bone> with SingleTickerProviderStateMixin {
-  late final AnimationController _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1100),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (MediaQuery.disableAnimationsOf(context)) {
-      return _buildBone(widget.color);
-    }
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        final t = Curves.easeInOut.transform(_controller.value);
-        return _buildBone(Color.lerp(widget.color, widget.highlight, t)!);
-      },
+    return Container(
+      width: width == double.infinity ? null : width,
+      height: height,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(radius),
+      ),
     );
   }
-
-  Widget _buildBone(Color color) => Container(
-    width: widget.width == double.infinity ? null : widget.width,
-    height: widget.height,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(widget.radius),
-    ),
-  );
 }

@@ -45,10 +45,10 @@ class DownloadDirectory {
   }
 
   /// A readable folder name for the settings row: a tree URI ends in a document
-  /// id like `primary:Pictures/QuaX`, which is the part worth showing.
+  /// id like `primary:Pictures/XTA`, which is the part worth showing.
   static String displayName(String treeUri) {
     // The document id must be taken as a whole path segment before decoding:
-    // it encodes its own separators (`primary%3APictures%2FQuaX`), so decoding
+    // it encodes its own separators (`primary%3APictures%2FXTA`), so decoding
     // first and splitting on "/" would throw away the parent folder.
     final uri = Uri.tryParse(treeUri);
     final documentId =

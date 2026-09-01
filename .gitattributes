@@ -1,0 +1,4 @@
+# Locale files are additive: every branch appends its own keys to all 29 of
+# them. The "arb" driver merges them by key instead of by line — register it
+# with scripts/setup_git_merge_drivers.sh, or this line does nothing.
+lib/l10n/*.arb merge=arb

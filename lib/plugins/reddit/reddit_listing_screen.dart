@@ -1,127 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/plugins/reddit/reddit_post_card.dart';
-import 'package:quax/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
-import 'package:quax/plugins/reddit/reddit_sort_sheet.dart';
-import 'package:quax/plugins/reddit/reddit_store.dart';
-import 'package:quax/subscriptions/users_model.dart';
-import 'package:quax/ui/errors.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
+import 'package:xta/plugins/reddit/reddit_listing_body.dart';
+import 'package:xta/plugins/reddit/reddit_read_session.dart';
+import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
+import 'package:xta/plugins/reddit/reddit_search_screen.dart';
+import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/user.dart';
 
 /// A list of Reddit posts under a title.
 ///
 /// A subreddit and an account differ only in where the posts come from and
 /// whether the title can be followed, so they are one screen rather than two
 /// that would drift apart.
-class RedditListingScreen extends StatefulWidget {
+class RedditListingScreen extends StatelessWidget {
   final String? subreddit;
   final String? user;
 
   const RedditListingScreen.subreddit(String name, {super.key})
-      : subreddit = name,
-        user = null;
+    : subreddit = name,
+      user = null;
 
   const RedditListingScreen.user(String name, {super.key})
-      : user = name,
-        subreddit = null;
+    : user = name,
+      subreddit = null;
 
   String get title => subreddit != null ? 'r/$subreddit' : 'u/$user';
 
   @override
-  State<RedditListingScreen> createState() => _RedditListingScreenState();
-}
-
-class _RedditListingScreenState extends State<RedditListingScreen> {
-  List<RedditPost>? _posts;
-  Object? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
-  }
-
-  Future<void> _load() async {
-    setState(() => _error = null);
-    try {
-      final posts = await _read();
-      if (mounted) {
-        setState(() => _posts = posts);
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _error = e);
-      }
-    }
-  }
-
-  /// Reads through whichever route the reader chose, the same as the feed —
-  /// a screen that quietly ignored the source setting would be a way around it.
-  Future<List<RedditPost>> _read() async {
-    final client = context.read<RedditClient>();
-    final subreddit = widget.subreddit;
-    if (subreddit == null) {
-      return (await client.fetchUserPosts(widget.user!)).posts;
-    }
-
-    final prefs = PrefService.of(context, listen: false);
-    final listing = await client.fetchSubreddit(
-      subreddit,
-      clientId: prefs.get<String>(optionPluginRedditClientId) ?? '',
-      sort: storedRedditSort(prefs),
-      preferPublic: prefs.get<String>(optionPluginRedditSource) == redditSourcePublic,
-    );
-
-    return listing.posts;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final subreddit = widget.subreddit;
+    final subreddit = this.subreddit;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
-        actions: [if (subreddit != null) RedditFollowButton(subreddit: subreddit)],
+        title: subreddit == null
+            ? Text(title)
+            : Row(
+                children: [
+                  RedditSubredditAvatar(subreddit: subreddit, size: 28),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(title, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
+        actions: [
+          if (subreddit != null) ...[
+            IconButton(
+              icon: const Icon(Icons.search),
+              tooltip: L10n.of(context).search,
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => RedditSearchScreen(subreddit: subreddit),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.info_outline),
+              tooltip: L10n.of(context).plugin_reddit_about_community,
+              onPressed: () => showRedditAboutSheet(context, subreddit),
+            ),
+            IconButton(
+              icon: const Icon(Icons.group_add_outlined),
+              tooltip: L10n.of(context).add_to_group,
+              onPressed: () => addRedditSubredditToGroup(context, subreddit),
+            ),
+            RedditFollowButton(subreddit: subreddit),
+          ],
+        ],
       ),
-      body: RefreshIndicator(onRefresh: _load, child: _body(context)),
-    );
-  }
-
-  Widget _body(BuildContext context) {
-    final l10n = L10n.of(context);
-    final error = _error;
-    if (error != null) {
-      return ListView(children: [
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: redditErrorMessage(l10n, error),
-            onRetry: _load,
-          ),
-        ),
-      ]);
-    }
-
-    final posts = _posts;
-    if (posts == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (posts.isEmpty) {
-      return ListView(children: [
-        Padding(padding: const EdgeInsets.all(32), child: Center(child: Text(l10n.no_results))),
-      ]);
-    }
-
-    return ListView.builder(
-      itemCount: posts.length,
-      itemBuilder: (context, index) => RedditPostCard(post: posts[index], showSourceBadge: false),
+      body: subreddit == null
+          ? RedditListingBody.user(user!)
+          : RedditListingBody.subreddit(subreddit),
     );
   }
 }
@@ -147,7 +106,36 @@ class RedditFollowButton extends StatelessWidget {
         return TextButton.icon(
           icon: Icon(followed ? Icons.check : Icons.add, size: 18),
           label: Text(followed ? l10n.unsubscribe : l10n.subscribe),
-          onPressed: () => toggleRedditFollow(context, subreddit, followed: followed),
+          onPressed: () =>
+              toggleRedditFollow(context, subreddit, followed: followed),
+        );
+      },
+    );
+  }
+}
+
+/// Compact follow control for a search row or the search app bar, where a
+/// labelled [RedditFollowButton] would not fit.
+class RedditFollowIconButton extends StatelessWidget {
+  final String subreddit;
+
+  const RedditFollowIconButton({super.key, required this.subreddit});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+
+    return ScopedBuilder<RedditSubredditsStore, List<String>>(
+      store: context.read<RedditSubredditsStore>(),
+      onState: (context, names) {
+        final followed = isFollowedSubreddit(names, subreddit);
+
+        return IconButton(
+          tooltip: followed ? l10n.unsubscribe : l10n.subscribe,
+          icon: Icon(followed ? Icons.check : Icons.add),
+          visualDensity: VisualDensity.compact,
+          onPressed: () =>
+              toggleRedditFollow(context, subreddit, followed: followed),
         );
       },
     );
@@ -161,10 +149,154 @@ bool isFollowedSubreddit(List<String> names, String subreddit) =>
 
 /// Adds or removes a subreddit, and tells the subscription list about it so the
 /// group editor sees the change without a restart.
-Future<void> toggleRedditFollow(BuildContext context, String subreddit, {required bool followed}) async {
+Future<void> toggleRedditFollow(
+  BuildContext context,
+  String subreddit, {
+  required bool followed,
+}) async {
   final store = context.read<RedditSubredditsStore>();
   final subscriptions = context.read<SubscriptionsModel>();
 
   followed ? await store.remove(subreddit) : await store.add(subreddit);
   await subscriptions.reloadSubscriptions();
+}
+
+/// Follows [subreddit] if needed, then opens the group-membership sheet.
+///
+/// Same path RSS / Substack / Bluesky profiles use. A community that is not
+/// already followed has to be, or the group feed would name a subreddit the
+/// plugin is not watching.
+Future<void> addRedditSubredditToGroup(
+  BuildContext context,
+  String subreddit,
+) async {
+  final store = context.read<RedditSubredditsStore>();
+  final subscriptions = context.read<SubscriptionsModel>();
+  final groupsModel = context.read<GroupsModel>();
+  final followed = isFollowedSubreddit(store.state, subreddit);
+
+  if (!followed) {
+    await store.add(subreddit);
+    await subscriptions.reloadSubscriptions();
+  }
+  if (!context.mounted) return;
+
+  final normalised = normaliseSubreddit(subreddit) ?? subreddit;
+  final user = RedditSubscription(
+    id: normalised.toLowerCase(),
+    name: normalised,
+    createdAt: DateTime.now(),
+    inFeed: true,
+  );
+  final groups = await groupsModel.listGroupsForUser(user.id);
+  if (!context.mounted) return;
+
+  await pickUserGroups(
+    context,
+    user: user,
+    followed: true,
+    groupsForUser: groups,
+  );
+}
+
+/// The sidebar as a sheet: what the community is, how many read it, and its
+/// own description — the "is this worth following" answer, one tap away.
+Future<void> showRedditAboutSheet(BuildContext context, String subreddit) {
+  final client = context.read<RedditClient>();
+  final prefs = PrefService.of(context, listen: false);
+
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    isScrollControlled: true,
+    builder: (context) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.5,
+      builder: (context, controller) => FutureBuilder<RedditSubredditAbout>(
+        future: RedditReadSession.resolve(
+          prefs: prefs,
+        ).then((session) => session.fetchSubredditAbout(client, subreddit)),
+        builder: (context, snapshot) {
+          final l10n = L10n.of(context);
+          final theme = Theme.of(context);
+          final about = snapshot.data;
+
+          if (snapshot.hasError) {
+            return Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                redditErrorMessage(l10n, snapshot.error!),
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
+          if (about == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return ListView(
+            controller: controller,
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            children: [
+              Row(
+                children: [
+                  RedditSubredditAvatar(
+                    subreddit: about.name,
+                    size: 48,
+                    url: about.iconUrl ?? '',
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'r/${about.name}',
+                      style: theme.textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (about.title != null && about.title != about.name) ...[
+                const SizedBox(height: 4),
+                Text(about.title!, style: theme.textTheme.titleSmall),
+              ],
+              const SizedBox(height: 12),
+              DefaultTextStyle.merge(
+                style: theme.textTheme.bodySmall!.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                child: Row(
+                  children: [
+                    if (about.subscribers != null) ...[
+                      const Icon(Icons.people_outline, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${compactCount(about.subscribers!)} ${l10n.followers.toLowerCase()}',
+                      ),
+                    ],
+                    if (about.activeUsers != null) ...[
+                      const SizedBox(width: 12),
+                      Icon(
+                        Icons.circle,
+                        size: 8,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${compactCount(about.activeUsers!)} ${l10n.plugin_reddit_online_now}',
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (about.description != null) ...[
+                const SizedBox(height: 16),
+                Text(about.description!, style: theme.textTheme.bodyMedium),
+              ],
+            ],
+          );
+        },
+      ),
+    ),
+  );
 }

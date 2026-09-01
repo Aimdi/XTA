@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:dart_twitter_api/twitter_api.dart';
 
-import 'package:quax/article/article_entities.dart';
-import 'package:quax/tweet/_video.dart';
-import 'package:quax/utils/iterables.dart';
+import 'package:xta/article/article_entities.dart';
+import 'package:xta/tweet/_video.dart';
+import 'package:xta/utils/iterables.dart';
 
 class EntityMapParser {
   static Map<int, EntityValue> parse(dynamic json, List<dynamic> mediaEntitiesJson, String tweetIdStr, String user) {
@@ -67,11 +67,11 @@ class EntityMapParser {
                   final variantsJson = res["media_info"]?["variants"];
                   List<Variant> variants = [];
                   if (variantsJson is List<dynamic>) {
-                    variants = variantsJson.map((e) =>
+                    variants = List.from(variantsJson.map((e) =>
                       Variant()
                         ..bitrate = e['bit_rate'] as int?
                         ..contentType = e['content_type'] as String?
-                        ..url = e['url'] as String?).toList();
+                        ..url = e['url'] as String?));
                   }
                   result[key] = VideoEntity(
                     metadata: TweetVideoMetadata(

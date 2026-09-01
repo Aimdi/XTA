@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/user.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/user.dart';
 
 /// The fixtures prove the parsers read *today's* shapes. These prove they
 /// survive tomorrow's.
@@ -157,6 +157,207 @@ void main() {
       (mangled.first as Map<String, dynamic>).remove('content');
 
       expect(() => TimelineParser.createTweetChains(mangled), returnsNormally);
+    });
+  });
+
+  group('TimelineParser.getCursor', () {
+    test('reads a legacy cursor-bottom value', () {
+      final entries = [
+        {
+          'entryId': 'cursor-bottom-0',
+          'content': {'value': 'next-page', 'cursorType': 'Bottom'},
+        },
+      ];
+
+      expect(TimelineParser.getCursor(entries, [], 'cursor-bottom', 'Bottom'), 'next-page');
+    });
+
+    test('reads an sq-C operation cursor', () {
+      final entries = [
+        {
+          'entryId': 'sq-C-1',
+          'content': {
+            'operation': {
+              'cursor': {'value': 'sq-next', 'cursorType': 'Bottom'},
+            },
+          },
+        },
+      ];
+
+      expect(TimelineParser.getCursor(entries, [], 'cursor-bottom', 'Bottom'), 'sq-next');
+    });
+
+    test('reads a replaceEntry cursor without throwing on sibling junk', () {
+      final repEntries = [
+        {'notACursor': true},
+        {
+          'replaceEntry': {
+            'entryIdToReplace': 'cursor-bottom-0',
+            'entry': {
+              'content': {
+                'operation': {
+                  'cursor': {'value': 'replaced', 'cursorType': 'Bottom'},
+                },
+              },
+            },
+          },
+        },
+      ];
+
+      expect(TimelineParser.getCursor([], repEntries, 'cursor-bottom', 'Bottom'), 'replaced');
+    });
+
+    test('null entryId and missing content yield null, not a crash', () {
+      final entries = [
+        {'entryId': null, 'content': null},
+        {'content': {'value': 'orphan'}},
+        'not-a-map',
+        {
+          'entryId': 'cursor-bottom-0',
+          'content': {'operation': null},
+        },
+      ];
+
+      expect(() => TimelineParser.getCursor(entries, [], 'cursor-bottom', 'Bottom'), returnsNormally);
+      expect(TimelineParser.getCursor(entries, [], 'cursor-bottom', 'Bottom'), isNull);
+    });
+
+    test('a non-string cursor value is ignored', () {
+      final entries = [
+        {
+          'entryId': 'cursor-bottom-0',
+          'content': {'value': 42},
+        },
+      ];
+
+      expect(TimelineParser.getCursor(entries, [], 'cursor-bottom', 'Bottom'), isNull);
+    });
+  });
+
+  group('TimelineParser.createTweets resilience', () {
+    final entries = _fixture('UserTweets/add_entries.json')['entries'] as List<dynamic>;
+
+    test('keeps good tweets when a sibling entry loses its result', () {
+      final mangled = jsonDecode(jsonEncode(entries)) as List<dynamic>;
+      final first = mangled.first as Map<String, dynamic>;
+      (first['content'] as Map?)?.remove('itemContent');
+
+      final chains = TimelineParser.createTweets(mangled);
+      expect(chains, isNotEmpty);
+      expect(chains.length, lessThan(entries.length));
+    });
+
+    test('null content and null entryId are skipped', () {
+      final mangled = [
+        {'entryId': null},
+        {'entryId': 'tweet-1', 'content': null},
+        ...jsonDecode(jsonEncode(entries)) as List<dynamic>,
+      ];
+
+      expect(() => TimelineParser.createTweets(mangled), returnsNormally);
+      expect(TimelineParser.createTweets(mangled), isNotEmpty);
+    });
+  });
+
+  group('TimelineParser.createUnconversationedChainsGraphql resilience', () {
+    List<dynamic> _tweetEntriesFromFixture() {
+      final entries = jsonDecode(jsonEncode(_fixture('UserTweets/add_entries.json')['entries'])) as List<dynamic>;
+      // Give each a sortIndex so the graphql path can order them.
+      for (var i = 0; i < entries.length; i++) {
+        (entries[i] as Map<String, dynamic>)['sortIndex'] = '${entries.length - i}';
+      }
+      return entries;
+    }
+
+    test('parses a minimal timeline wrapper', () {
+      final status = TimelineParser.createUnconversationedChainsGraphql(
+        {
+          'timeline': {
+            'instructions': [
+              {'type': 'TimelineAddEntries', 'entries': _tweetEntriesFromFixture()},
+            ],
+          },
+        },
+        'tweet-',
+        const [],
+        false,
+        true,
+      );
+
+      expect(status.chains, isNotEmpty);
+    });
+
+    test('missing timeline / instructions is empty, not fatal', () {
+      expect(
+        () => TimelineParser.createUnconversationedChainsGraphql({}, 'tweet-', const [], false, true),
+        returnsNormally,
+      );
+      final status = TimelineParser.createUnconversationedChainsGraphql({}, 'tweet-', const [], false, true);
+      expect(status.chains, isEmpty);
+    });
+
+    test('one entry with null content does not wipe the page', () {
+      final entries = _tweetEntriesFromFixture();
+      (entries.first as Map<String, dynamic>)['content'] = null;
+      entries.add({'entryId': 'cursor-bottom-0', 'content': null});
+
+      final status = TimelineParser.createUnconversationedChainsGraphql(
+        {
+          'timeline': {
+            'instructions': [
+              {'type': 'TimelineAddEntries', 'entries': entries},
+            ],
+          },
+        },
+        'tweet-',
+        const [],
+        false,
+        true,
+      );
+
+      expect(status.chains, isNotEmpty);
+      expect(status.cursorBottom, isNull);
+    });
+
+    test('null sortIndex and missing entryId are tolerated', () {
+      final entries = _tweetEntriesFromFixture();
+      (entries.first as Map<String, dynamic>).remove('sortIndex');
+      entries.add({'entryId': null, 'content': {}});
+
+      expect(
+        () => TimelineParser.createUnconversationedChainsGraphql(
+          {
+            'timeline': {
+              'instructions': [
+                {'type': 'TimelineAddEntries', 'entries': entries},
+              ],
+            },
+          },
+          'tweet-',
+          const [],
+          false,
+          true,
+        ),
+        returnsNormally,
+      );
+    });
+  });
+
+  group('TimelineParser.createTimelineChains resilience', () {
+    test('missing home_timeline_urt is empty, not a crash', () {
+      final status = TimelineParser.createTimelineChains(
+        {'data': {}},
+        'tweet-',
+        const [],
+        false,
+        true,
+        false,
+        () => 0,
+        () {},
+      );
+
+      expect(status.chains, isEmpty);
+      expect(status.cursorBottom, isNull);
     });
   });
 }

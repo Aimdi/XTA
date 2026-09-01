@@ -6,7 +6,7 @@ footer PRs in `docs/specs/tweet.md`. Does **not** touch `lib/client/` or
 
 ## Product constraint
 
-QuaX-gamma is a **read-oriented** X frontend. No compose / reply-to-X / quote /
+XTA is a **read-oriented** X frontend. No compose / reply-to-X / quote /
 repost / like-on-X. Footer affordances stay navigation / local.
 
 ## Goals (by priority)

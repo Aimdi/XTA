@@ -6,12 +6,12 @@ import 'package:dynamic_color/dynamic_color.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quax/catcher/exceptions.dart';
+import 'package:xta/catcher/exceptions.dart';
 
-import 'package:quax/client/client.dart';
-import 'package:quax/client/login_webview.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/client/login_webview.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
 
 /// Snackbar for work already under way, with a small spinner in place of an
 /// icon so a slow download does not look like a frozen one.
@@ -58,6 +58,38 @@ void showSnackBar(BuildContext context, {required String icon, required String m
 
 abstract class FritterErrorWidget extends StatelessWidget {
   const FritterErrorWidget({super.key});
+}
+
+/// The shape every full-screen error here has: centred when it fits, scrolling
+/// when it does not.
+///
+/// These screens are a centred `Column` of an emoji, a heading, the details and
+/// some buttons. At twice the text size that column is taller than the phone,
+/// and a `Column` given less room than it needs does not clip politely — it
+/// runs its last children off the bottom edge. The last child is the retry
+/// button, so every error became a dead end for exactly the readers who had
+/// turned the text up.
+class ErrorLayout extends StatelessWidget {
+  final List<Widget> children;
+
+  const ErrorLayout({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          // Fill the viewport so the column still centres in it when it fits;
+          // past that the column is taller and the scroll view takes over.
+          constraints: BoxConstraints(minHeight: constraints.hasBoundedHeight ? constraints.maxHeight : 0),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: children),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class UnknownTwitterErrorCode with SyntheticException implements Exception {
@@ -133,66 +165,63 @@ class EmojiErrorWidget extends FritterErrorWidget {
   Widget build(BuildContext context) {
     var onRetry = this.onRetry;
 
-    return Container(
-      alignment: Alignment.center,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Text(emoji, style: const TextStyle(fontSize: 36)),
+    return ErrorLayout(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Text(emoji, style: const TextStyle(fontSize: 36)),
+        ),
+        Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          child: Text(
+            errorMessage,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme.of(context).hintColor),
           ),
-          Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            child: Text(
-              errorMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          // Wraps rather than a Row: two buttons whose labels have been
+          // translated and then scaled up do not fit side by side on a phone,
+          // and a Row's answer to that is to run off the edge.
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 16,
+            runSpacing: 12,
             children: [
               if (showBackButton)
-                Container(
-                  margin: const EdgeInsets.only(top: 12),
-                  child: ElevatedButton(
-                    child: Text(L10n.of(context).back),
-                    onPressed: () {
-                      // Check if we can actually pop the last route, as we might have opened here directly from another app
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
-                        return;
-                      }
+                ElevatedButton(
+                  child: Text(L10n.of(context).back),
+                  onPressed: () {
+                    // Check if we can actually pop the last route, as we might have opened here directly from another app
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                      return;
+                    }
 
-                      // If we're running on Android, close the app gracefully. Otherwise, return to the home screen
-                      if (Platform.isAndroid) {
-                        SystemNavigator.pop();
-                      } else {
-                        Navigator.pushReplacementNamed(context, routeHome);
-                      }
-                    },
-                  ),
+                    // If we're running on Android, close the app gracefully. Otherwise, return to the home screen
+                    if (Platform.isAndroid) {
+                      SystemNavigator.pop();
+                    } else {
+                      Navigator.pushReplacementNamed(context, routeHome);
+                    }
+                  },
                 ),
-              if (onRetry != null) const SizedBox(width: 16),
               if (onRetry != null)
-                Container(
-                  margin: const EdgeInsets.only(top: 12),
-                  child: AsyncButtonBuilder(
-                    showError: false,
-                    showSuccess: false,
-                    builder: (context, child, callback, buttonState) {
-                      return ElevatedButton(onPressed: callback, child: child);
-                    },
-                    child: Text(retryText ?? L10n.current.retry),
-                    onPressed: () => onRetry(),
-                  ),
+                AsyncButtonBuilder(
+                  showError: false,
+                  showSuccess: false,
+                  builder: (context, child, callback, buttonState) {
+                    return ElevatedButton(onPressed: callback, child: child);
+                  },
+                  child: Text(retryText ?? L10n.current.retry),
+                  onPressed: () => onRetry(),
                 ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -215,31 +244,26 @@ class ActionableErrorWidget extends FritterErrorWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            child: Text(emoji, style: const TextStyle(fontSize: 36)),
+    return ErrorLayout(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Text(emoji, style: const TextStyle(fontSize: 36)),
+        ),
+        Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          child: Text(
+            details,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme.of(context).hintColor),
           ),
-          Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            child: Text(
-              details,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).hintColor),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(top: 12),
-            child: Wrap(alignment: WrapAlignment.center, spacing: 12, runSpacing: 12, children: actions),
-          ),
-        ],
-      ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          child: Wrap(alignment: WrapAlignment.center, spacing: 12, runSpacing: 12, children: actions),
+        ),
+      ],
     );
   }
 }
@@ -460,62 +484,53 @@ class FullPageErrorWidget extends FritterErrorWidget {
       );
     }
 
-    return SingleChildScrollView(
-      child: Container(
-        alignment: Alignment.center,
-        constraints: const BoxConstraints(maxHeight: 500),
-        margin: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Icon(
-                Icons.error_outline,
-                color: Colors.red.harmonizeWith(Theme.of(context).colorScheme.primary),
-                size: 36,
-              ),
-            ),
-            Text(
-              L10n.of(context).oops_something_went_wrong,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              child: Text(
-                prefix,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).hintColor),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(top: 12),
-              child: Text(
-                '$error',
-                textAlign: TextAlign.left,
-                style: TextStyle(color: Theme.of(context).hintColor),
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(top: 12),
-              child: Text(
-                '$stackTrace',
-                textAlign: TextAlign.left,
-                style: TextStyle(color: Theme.of(context).hintColor),
-              ),
-            ),
-            if (onRetry != null)
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                child: ElevatedButton(child: Text(retryText ?? L10n.current.retry), onPressed: () => onRetry()),
-              ),
-          ],
+    // The branch every plugin exception lands in: their errors are plain
+    // `implements Exception`, so none match the special cases above. It used to
+    // print the stack trace unconditionally — and every plugin passes null, so
+    // under the message sat the literal word "null" — inside a column capped at
+    // 500px, which clipped the retry button away exactly when the details were
+    // long or the text was large. ErrorLayout was written for that second
+    // problem and this branch never got it.
+    return ErrorLayout(
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Icon(
+            Icons.error_outline,
+            color: Colors.red.harmonizeWith(Theme.of(context).colorScheme.primary),
+            size: 36,
+          ),
         ),
-      ),
+        Text(
+          L10n.of(context).oops_something_went_wrong,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 18),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          child: Text(prefix, textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).hintColor)),
+        ),
+        Container(
+          alignment: Alignment.center,
+          margin: const EdgeInsets.only(top: 12),
+          child: Text('$error', textAlign: TextAlign.left, style: TextStyle(color: Theme.of(context).hintColor)),
+        ),
+        if (stackTrace != null)
+          Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(top: 12),
+            child: Text(
+              '$stackTrace',
+              textAlign: TextAlign.left,
+              style: TextStyle(color: Theme.of(context).hintColor),
+            ),
+          ),
+        if (onRetry != null)
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            child: ElevatedButton(child: Text(retryText ?? L10n.current.retry), onPressed: () => onRetry()),
+          ),
+      ],
     );
   }
 }

@@ -25,12 +25,17 @@ class TweetPhoto extends StatefulWidget {
 class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateMixin {
   Animation<double>? _doubleClickAnimation;
   late void Function() _doubleClickAnimationListener;
-  late final AnimationController _doubleClickAnimationController =
-      AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
+
+  /// Only the fullscreen viewer double-taps to zoom, so a feed tile never
+  /// builds this at all.
+  AnimationController? _doubleClickController;
+
+  AnimationController get _doubleClick =>
+      _doubleClickController ??= AnimationController(duration: const Duration(milliseconds: 150), vsync: this);
 
   @override
   void dispose() {
-    _doubleClickAnimationController.dispose();
+    _doubleClickController?.dispose();
     super.dispose();
   }
 
@@ -38,18 +43,21 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     final url = widget.size != null ? '${widget.uri}:${widget.size}' : widget.uri;
 
-    // Timeline tiles: decode at layout width × DPR. Fullscreen viewer keeps
-    // full-res so pinch-zoom stays sharp.
+    // Fullscreen viewer: full resolution, so pinch-zoom stays sharp.
     if (widget.inPageView) {
       return _gestureImage(url, cacheWidth: null);
     }
 
+    // Timeline tile: decode at layout width × DPR, and none of the gesture
+    // stack. The tap that opens the viewer is handled a level up, in _media,
+    // so a scale/pan recogniser, a slide-out page and a double-tap recogniser
+    // here buy a feed tile nothing -- and the double-tap recogniser delays
+    // every single tap while it waits to see if a second one follows.
     return LayoutBuilder(builder: (context, constraints) {
       final maxW = constraints.maxWidth;
-      final cacheWidth = maxW.isFinite && maxW > 0
-          ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
-          : null;
-      return _gestureImage(url, cacheWidth: cacheWidth);
+      final cacheWidth = maxW.isFinite && maxW > 0 ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil() : null;
+
+      return ExtendedImage.network(url, cache: true, fit: widget.fit, cacheWidth: cacheWidth);
     });
   }
 
@@ -82,8 +90,8 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
           double end;
 
           _doubleClickAnimation?.removeListener(_doubleClickAnimationListener);
-          _doubleClickAnimationController.stop();
-          _doubleClickAnimationController.reset();
+          _doubleClick.stop();
+          _doubleClick.reset();
 
           if (begin == _doubleTapScales[0]) {
             end = _doubleTapScales[1];
@@ -95,9 +103,9 @@ class _TweetPhotoState extends State<TweetPhoto> with SingleTickerProviderStateM
             state.handleDoubleTap(scale: _doubleClickAnimation!.value, doubleTapPosition: pointerDownPosition);
           };
 
-          _doubleClickAnimation = _doubleClickAnimationController.drive(Tween<double>(begin: begin, end: end));
+          _doubleClickAnimation = _doubleClick.drive(Tween<double>(begin: begin, end: end));
           _doubleClickAnimation!.addListener(_doubleClickAnimationListener);
-          _doubleClickAnimationController.forward();
+          _doubleClick.forward();
         },
       ),
     );

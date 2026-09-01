@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:quax/group/group_model.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:async';
@@ -9,7 +10,7 @@ import 'package:sqflite_migration_plan/migration/sql.dart';
 import 'package:sqflite_migration_plan/sqflite_migration_plan.dart';
 import 'package:uuid/uuid.dart';
 
-const String databaseName = 'quax.db';
+const String databaseName = 'xta.db';
 
 const String tableFeedGroupChunk = 'feed_group_chunk';
 const String tableTimelineCache = 'timeline_cache';
@@ -20,8 +21,23 @@ const String tableSavedTweetFolder = 'saved_tweet_folder';
 const String tableLikedTweet = 'liked_tweet';
 const String tableSearchSubscription = 'search_subscription';
 const String tableSubstackSubscription = 'substack_subscription';
+const String tableRssSubscription = 'rss_subscription';
+const String tableThreadsSubscription = 'threads_subscription';
+const String tableBlueskySubscription = 'bluesky_subscription';
+const String tableMastodonSubscription = 'mastodon_subscription';
 const String tableRedditSubscription = 'reddit_subscription';
-const String tableSearchSubscriptionGroupMember = 'search_subscription_group_member';
+const String tableBooruSubscription = 'booru_subscription';
+const String tableEhFavorite = 'eh_favorite';
+const String tableEhHistory = 'eh_history';
+const String tableTiktokSubscription = 'tiktok_subscription';
+const String tableInstagramSubscription = 'instagram_subscription';
+const String tableImmichUpload = 'immich_upload';
+const String tableRedditLocalVote = 'reddit_local_vote';
+const String tableThreadsLocalLike = 'threads_local_like';
+const String tableBlueskyLocalLike = 'bluesky_local_like';
+const String tableStockSubscription = 'stock_subscription';
+const String tableSearchSubscriptionGroupMember =
+    'search_subscription_group_member';
 const String tableSubscription = 'subscription';
 const String tableSubscriptionGroup = 'subscription_group';
 const String tableSubscriptionGroupMember = 'subscription_group_member';
@@ -31,8 +47,11 @@ const String tablePostNotification = 'post_notification';
 const String tableRetweetFilter = 'retweet_filter';
 const String tableReplyFilter = 'reply_filter';
 const String tableFeedReadPosition = 'feed_read_position';
+const String tableProfileNote = 'profile_note';
+const String tableAntenna = 'antenna';
+const String tableLocalPost = 'local_post';
 
-const int databaseVersion = 42;
+const int databaseVersion = 61;
 
 /// Schema migration plan from the earliest versions through [databaseVersion].
 /// Extracted so characterization tests can open a DB at an intermediate version
@@ -47,7 +66,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     SqlMigration(
       'CREATE TABLE IF NOT EXISTS following_group (id INTEGER PRIMARY KEY, name VARCHAR NOT NULL, icon VARCHAR NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
     ),
-    SqlMigration('CREATE TABLE IF NOT EXISTS following_group_profile (group_id INTEGER, profile_id INTEGER)'),
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS following_group_profile (group_id INTEGER, profile_id INTEGER)',
+    ),
   ],
   4: [
     // Change the following table's "id" field to be a VARCHAR
@@ -62,8 +83,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   5: [
     // Change the following_group_profile table's "profile_id" field to be a VARCHAR to match the referenced table
-    SqlMigration('ALTER TABLE following_group_profile RENAME TO following_group_profile_old'),
-    SqlMigration('CREATE TABLE following_group_profile (group_id INTEGER, profile_id VARCHAR)'),
+    SqlMigration(
+      'ALTER TABLE following_group_profile RENAME TO following_group_profile_old',
+    ),
+    SqlMigration(
+      'CREATE TABLE following_group_profile (group_id INTEGER, profile_id VARCHAR)',
+    ),
     SqlMigration(
       'INSERT INTO following_group_profile (group_id, profile_id) SELECT group_id, profile_id FROM following_group_profile_old',
     ),
@@ -72,8 +97,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   6: [
     // Rename the old following tables to match the names in the UI
     SqlMigration('ALTER TABLE following RENAME TO $tableSubscription'),
-    SqlMigration('ALTER TABLE following_group RENAME TO $tableSubscriptionGroup'),
-    SqlMigration('ALTER TABLE following_group_profile RENAME TO $tableSubscriptionGroupMember'),
+    SqlMigration(
+      'ALTER TABLE following_group RENAME TO $tableSubscriptionGroup',
+    ),
+    SqlMigration(
+      'ALTER TABLE following_group_profile RENAME TO $tableSubscriptionGroupMember',
+    ),
   ],
   7: [
     // Add the table for saved tweets
@@ -84,7 +113,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   8: [
     // Add a primary key to the $TABLE_SUBSCRIPTION_GROUP_MEMBER table to prevent duplicates
-    SqlMigration('ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscriptionGroupMember (group_id INTEGER, profile_id VARCHAR, CONSTRAINT pk_$tableSubscriptionGroupMember PRIMARY KEY (group_id, profile_id))',
     ),
@@ -95,8 +126,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   9: [
     // Add a new ID field for subscription groups for a UUID to determine uniqueness across devices
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup ADD COLUMN uuid VARCHAR NULL'),
-    SqlMigration('ALTER TABLE $tableSubscriptionGroupMember ADD COLUMN group_uuid VARCHAR NULL'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN uuid VARCHAR NULL',
+    ),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroupMember ADD COLUMN group_uuid VARCHAR NULL',
+    ),
 
     // Generate a UUID for each existing subscription group
     Migration(
@@ -109,15 +144,27 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
           var oldId = group['id'];
           var newId = uuid.v4();
 
-          db.update(tableSubscriptionGroup, {'uuid': newId}, where: 'id = ?', whereArgs: [oldId]);
+          db.update(
+            tableSubscriptionGroup,
+            {'uuid': newId},
+            where: 'id = ?',
+            whereArgs: [oldId],
+          );
 
-          db.update(tableSubscriptionGroupMember, {'group_uuid': newId}, where: 'group_id = ?', whereArgs: [oldId]);
+          db.update(
+            tableSubscriptionGroupMember,
+            {'group_uuid': newId},
+            where: 'group_id = ?',
+            whereArgs: [oldId],
+          );
         }
       }),
     ),
 
     // Replace the old ID fields with the new ones
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup RENAME TO ${tableSubscriptionGroup}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup RENAME TO ${tableSubscriptionGroup}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscriptionGroup (id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, icon VARCHAR NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
     ),
@@ -125,7 +172,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       'INSERT INTO $tableSubscriptionGroup (id, name, icon, created_at) SELECT uuid, name, icon, created_at FROM ${tableSubscriptionGroup}_old',
     ),
 
-    SqlMigration('ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroupMember RENAME TO ${tableSubscriptionGroupMember}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscriptionGroupMember (group_id VARCHAR, profile_id VARCHAR, CONSTRAINT pk_$tableSubscriptionGroupMember PRIMARY KEY (group_id, profile_id))',
     ),
@@ -140,8 +189,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   11: [
     // Add columns for the subscription group settings
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_replies BOOLEAN DEFAULT true'),
-    SqlMigration('ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_retweets BOOLEAN DEFAULT true'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_replies BOOLEAN DEFAULT true',
+    ),
+    SqlMigration(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN include_retweets BOOLEAN DEFAULT true',
+    ),
   ],
   12: [
     // Insert a dummy record for the "All" subscription group
@@ -154,7 +207,11 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
         }, conflictAlgorithm: ConflictAlgorithm.replace);
       }),
       reverse: Operation((db) async {
-        await db.delete(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+        await db.delete(
+          tableSubscriptionGroup,
+          where: 'id = ?',
+          whereArgs: ['-1'],
+        );
       }),
     ),
   ],
@@ -169,7 +226,11 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
         }, conflictAlgorithm: ConflictAlgorithm.replace);
       }),
       reverse: Operation((db) async {
-        await db.delete(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+        await db.delete(
+          tableSubscriptionGroup,
+          where: 'id = ?',
+          whereArgs: ['-1'],
+        );
       }),
     ),
   ],
@@ -182,7 +243,9 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   ],
   15: [
     // Re-apply migration 14 in a different way, as it looks like it didn't apply for some people
-    SqlMigration('ALTER TABLE $tableSubscription RENAME TO ${tableSubscription}_old'),
+    SqlMigration(
+      'ALTER TABLE $tableSubscription RENAME TO ${tableSubscription}_old',
+    ),
     SqlMigration(
       'CREATE TABLE $tableSubscription (id VARCHAR PRIMARY KEY, screen_name VARCHAR, name VARCHAR, profile_image_url_https VARCHAR, verified BOOLEAN DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
     ),
@@ -239,7 +302,10 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     ),
     Migration(
       Operation((db) async {
-        var tweets = await db.query(tableSavedTweet, columns: ['id', 'content']);
+        var tweets = await db.query(
+          tableSavedTweet,
+          columns: ['id', 'content'],
+        );
         var batch = db.batch();
 
         for (var tweet in tweets) {
@@ -255,7 +321,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
 
           var userId = decodedTweet['user']?['id_str'] as String?;
           if (userId != null) {
-            batch.update(tableSavedTweet, {'user_id': userId}, where: 'id = ?', whereArgs: [tweet['id']]);
+            batch.update(
+              tableSavedTweet,
+              {'user_id': userId},
+              where: 'id = ?',
+              whereArgs: [tweet['id']],
+            );
           }
         }
 
@@ -287,15 +358,25 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     SqlMigration(
       'CREATE TABLE $tableAccounts (id TEXT PRIMARY KEY, auth_header VARCHAR, screen_name VARCHAR DEFAULT NULL)',
     ),
-    SqlMigration('INSERT INTO $tableAccounts (id, auth_header) SELECT id, auth_header FROM ${tableAccounts}_old'),
+    SqlMigration(
+      'INSERT INTO $tableAccounts (id, auth_header) SELECT id, auth_header FROM ${tableAccounts}_old',
+    ),
     SqlMigration('DROP TABLE ${tableAccounts}_old'),
   ],
-  23: [SqlMigration('ALTER TABLE $tableSubscription ADD COLUMN in_feed BOOLEAN DEFAULT 1')],
+  23: [
+    SqlMigration(
+      'ALTER TABLE $tableSubscription ADD COLUMN in_feed BOOLEAN DEFAULT 1',
+    ),
+  ],
   24: [
     // Account not-found health columns for the selection strategy (timestamp as ISO-8601 TEXT).
     // Rate-limit (429) state is tracked in memory per endpoint, not persisted.
-    SqlMigration('ALTER TABLE $tableAccounts ADD COLUMN last_not_found_at TEXT DEFAULT NULL'),
-    SqlMigration('ALTER TABLE $tableAccounts ADD COLUMN consecutive_not_found INTEGER DEFAULT 0'),
+    SqlMigration(
+      'ALTER TABLE $tableAccounts ADD COLUMN last_not_found_at TEXT DEFAULT NULL',
+    ),
+    SqlMigration(
+      'ALTER TABLE $tableAccounts ADD COLUMN consecutive_not_found INTEGER DEFAULT 0',
+    ),
   ],
   25: [
     // Folders for saved posts: a folder table plus a nullable folder_id on saved tweets.
@@ -350,7 +431,8 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     ),
     SqlMigration(
       "ALTER TABLE $tableSubscriptionGroup ADD COLUMN content_filter VARCHAR DEFAULT 'default'",
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN content_filter',
+      reverseSql:
+          'ALTER TABLE $tableSubscriptionGroup DROP COLUMN content_filter',
     ),
   ],
   32: [
@@ -365,7 +447,8 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // Per-folder toggle: download a post's images when it's filed here.
     SqlMigration(
       'ALTER TABLE $tableSavedTweetFolder ADD COLUMN auto_download BOOLEAN DEFAULT 0',
-      reverseSql: 'ALTER TABLE $tableSavedTweetFolder DROP COLUMN auto_download',
+      reverseSql:
+          'ALTER TABLE $tableSavedTweetFolder DROP COLUMN auto_download',
     ),
   ],
   34: [
@@ -389,7 +472,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
         );
         var batch = db.batch();
         for (var (i, group) in groups.indexed) {
-          batch.update(tableSubscriptionGroup, {'position': i}, where: 'id = ?', whereArgs: [group['id']]);
+          batch.update(
+            tableSubscriptionGroup,
+            {'position': i},
+            where: 'id = ?',
+            whereArgs: [group['id']],
+          );
         }
         await batch.commit(noResult: true);
       }),
@@ -409,14 +497,26 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     Migration(
       Operation((db) async {
         const defaultIcon = '{"pack":"custom","key":"rss_feed"}';
-        final groups = await db.query(tableSubscriptionGroup, columns: ['id', 'icon']);
+        final groups = await db.query(
+          tableSubscriptionGroup,
+          columns: ['id', 'icon'],
+        );
         final batch = db.batch();
         for (final group in groups) {
           final icon = group['icon'] as String?;
           final isCustom =
-              icon != null && icon.isNotEmpty && icon != 'rss' && icon != 'rss_feed' && icon != defaultIcon;
+              icon != null &&
+              icon.isNotEmpty &&
+              icon != 'rss' &&
+              icon != 'rss_feed' &&
+              icon != defaultIcon;
           if (isCustom) {
-            batch.update(tableSubscriptionGroup, {'mark_style': 2}, where: 'id = ?', whereArgs: [group['id']]);
+            batch.update(
+              tableSubscriptionGroup,
+              {'mark_style': 2},
+              where: 'id = ?',
+              whereArgs: [group['id']],
+            );
           }
         }
         await batch.commit(noResult: true);
@@ -433,11 +533,13 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     ),
     SqlMigration(
       'ALTER TABLE $tableSubscriptionGroup ADD COLUMN min_retweets INTEGER NOT NULL DEFAULT 0',
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN min_retweets',
+      reverseSql:
+          'ALTER TABLE $tableSubscriptionGroup DROP COLUMN min_retweets',
     ),
     SqlMigration(
       'ALTER TABLE $tableSubscriptionGroup ADD COLUMN muted_keywords TEXT',
-      reverseSql: 'ALTER TABLE $tableSubscriptionGroup DROP COLUMN muted_keywords',
+      reverseSql:
+          'ALTER TABLE $tableSubscriptionGroup DROP COLUMN muted_keywords',
     ),
   ],
   // The reply filter was written as 36 on its own branch, before the
@@ -463,10 +565,12 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
   39: [
     // The schema had no indexes at all. Most queries are by a declared PRIMARY
     // KEY and so get an implicit one, but these did not:
+    //
     // $tableFeedGroupChunk has no primary key and holds a week of feed JSON,
     // yet every feed load queries it by hash — a full scan over large TEXT rows
     // that grows with use. Both of its query shapes are covered: `hash = ?`
     // ordered by created_at, and `cursor_id = ? AND hash = ?`.
+    //
     // profile_id is the *second* column of the group-member composite key, so
     // looking a subscription up by it could not use that index.
     Migration(Operation(_createIndexes), reverse: Operation(_dropIndexes)),
@@ -476,6 +580,7 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // could not join a subscription group: group membership joins profile ids
     // against subscription tables, and a blob has no rows to join. They are a
     // third kind of subscription now, alongside users and saved searches.
+    //
     // The blob is left where it is; it is imported on first read rather than
     // migrated here, because the preferences are not reachable from a
     // migration.
@@ -496,7 +601,10 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
     // indexes above: a database that lost a table to a partially restored
     // backup must still be able to finish upgrading. A bare ALTER TABLE would
     // fail on the missing table and block every later migration with it.
-    Migration(Operation(_addGroupParentColumn), reverse: Operation(_dropGroupParentColumn)),
+    Migration(
+      Operation(_addGroupParentColumn),
+      reverse: Operation(_dropGroupParentColumn),
+    ),
   ],
   42: [
     // Subreddits, for the same reason publications got a table in 40: group
@@ -510,6 +618,235 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
       'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
       reverseSql: 'DROP TABLE $tableRedditSubscription',
     ),
+    // Re-runs _createIndexes so the three created_at indexes added to the map
+    // above reach databases that are already past migration 39. Every
+    // statement is IF NOT EXISTS and each failure is stepped over, so this is
+    // a no-op on a database that already has them.
+    Migration(Operation(_createIndexes), reverse: Operation(_dropIndexes)),
+  ],
+  43: [
+    // Watched tickers, for the same reason subreddits got a table in 42: a
+    // group joins profile ids against subscription tables, so a watchlist that
+    // wants members needs rows of its own.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableStockSubscription ('
+      'id VARCHAR PRIMARY KEY, symbol VARCHAR NOT NULL, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableStockSubscription',
+    ),
+  ],
+  44: [
+    // Per-folder toggle: send a post's media to Immich when it is filed here.
+    // Sits beside auto_download from 33 for the same reason — it is a property
+    // of the folder, not a global setting. Tolerant like parent_id in 41: an
+    // upgrade must not be stopped by a database whose folder table is gone.
+    Migration(Operation(_addFolderAutoUploadColumn)),
+    // What has already been sent. Immich rejects a second copy of the same bytes
+    // by checksum, so this exists to avoid spending the upload to be told so —
+    // re-filing a post between folders should not re-send its video.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableImmichUpload ('
+      'media_id VARCHAR PRIMARY KEY, asset_id VARCHAR, '
+      'uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableImmichUpload',
+    ),
+  ],
+  45: [
+    // Upvotes that stay on the device, like the X likes: Reddit is never told,
+    // the arrow just remembers. Only the id is needed — the post itself is
+    // refetched wherever it is shown.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableRedditLocalVote ('
+      'id VARCHAR PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableRedditLocalVote',
+    ),
+  ],
+  46: [
+    // Threads accounts, for the same reason publications got a table in 40:
+    // group membership joins profile ids against subscription tables, so an
+    // account the reader follows needs a row to be joinable at all.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableThreadsSubscription ('
+      'id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, avatar_url VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableThreadsSubscription',
+    ),
+  ],
+  47: [
+    // Bluesky accounts followed locally (not on Bluesky itself). Same shape as
+    // Threads so they can sit in subscription groups.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableBlueskySubscription ('
+      'id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, avatar_url VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableBlueskySubscription',
+    ),
+  ],
+  48: [
+    // Mastodon / Fediverse accounts followed locally. Id is the canonical
+    // user@domain so a home-instance change cannot collide bare usernames.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableMastodonSubscription ('
+      'id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, avatar_url VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableMastodonSubscription',
+    ),
+  ],
+  49: [
+    // Clip note on a saved post (Misskey-style); searchable from Saved.
+    // Tolerant: migration-test fixtures often omit saved_tweet.
+    Migration(Operation(_addSavedTweetNoteColumn)),
+    // Private, never-synced note on any profile id.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableProfileNote ('
+      'id VARCHAR PRIMARY KEY, note TEXT NOT NULL, '
+      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableProfileNote',
+    ),
+    // Keyword listeners as first-class feeds (Misskey antennas).
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableAntenna ('
+      'id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, '
+      'include_terms TEXT NOT NULL, exclude_terms TEXT, '
+      'scope VARCHAR NOT NULL DEFAULT \'search\', '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableAntenna',
+    ),
+    // Per-account cap: max chains from this author per feed load.
+    Migration(Operation(_addSubscriptionMaxPostsColumn)),
+  ],
+  50: [
+    // Likes that stay on the device, like the X likes and Reddit upvotes:
+    // Threads/Meta is never told — the heart just remembers.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableThreadsLocalLike ('
+      'id VARCHAR PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableThreadsLocalLike',
+    ),
+  ],
+  51: [
+    // Same idea as Threads local likes: AT-URI ids on device, never written to
+    // Bluesky. Post bodies for the Liked library live in preferences.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableBlueskyLocalLike ('
+      'id VARCHAR PRIMARY KEY, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableBlueskyLocalLike',
+    ),
+  ],
+  52: [
+    // Reader-marked adult groups: board sinks them under a Censored section.
+    // Distinct from content_filter, which filters posts inside a custom feed.
+    // Tolerant: partial fixtures (and the indexes upgrade test) may omit the
+    // groups table — a bare ALTER would brick later migrations.
+    Migration(Operation(_addSubscriptionGroupNsfwColumn)),
+  ],
+  53: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableBooruSubscription ('
+      'id VARCHAR PRIMARY KEY, '
+      'name VARCHAR NOT NULL, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableBooruSubscription',
+    ),
+  ],
+  54: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableEhFavorite ('
+      'gid INTEGER PRIMARY KEY, '
+      'token VARCHAR NOT NULL, '
+      'title VARCHAR NOT NULL, '
+      'title_jpn VARCHAR, '
+      'category VARCHAR, '
+      'thumb_url VARCHAR, '
+      'uploader VARCHAR, '
+      'page_count INTEGER, '
+      'rating REAL, '
+      'posted_at TEXT, '
+      'favorited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableEhFavorite',
+    ),
+  ],
+  55: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableTiktokSubscription ('
+      'id VARCHAR PRIMARY KEY, '
+      'sec_uid VARCHAR NOT NULL, '
+      'name VARCHAR NOT NULL, '
+      'avatar_url VARCHAR, '
+      'signature VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableTiktokSubscription',
+    ),
+  ],
+  56: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableEhHistory ('
+      'gid INTEGER PRIMARY KEY, '
+      'token VARCHAR NOT NULL, '
+      'title VARCHAR NOT NULL, '
+      'title_jpn VARCHAR, '
+      'category VARCHAR, '
+      'thumb_url VARCHAR, '
+      'uploader VARCHAR, '
+      'page_count INTEGER, '
+      'rating REAL, '
+      'posted_at TEXT, '
+      'last_page INTEGER NOT NULL DEFAULT 1, '
+      'viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableEhHistory',
+    ),
+  ],
+  57: [
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableInstagramSubscription ('
+      'id VARCHAR PRIMARY KEY, '
+      'pk VARCHAR NOT NULL, '
+      'name VARCHAR NOT NULL, '
+      'avatar_url VARCHAR, '
+      'signature VARCHAR, '
+      'in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableInstagramSubscription',
+    ),
+  ],
+  58: [
+    // Followed RSS / Atom feeds, for the same reason publications got a table
+    // in 40: group membership joins profile ids against subscription tables.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableRssSubscription ('
+      'id VARCHAR PRIMARY KEY, feed_url VARCHAR NOT NULL, name VARCHAR NOT NULL, '
+      'site_url VARCHAR, icon_url VARCHAR, in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableRssSubscription',
+    ),
+  ],
+  59: [
+    // Reader-authored notes that never leave the device unless a backup or
+    // WebDAV/Nextcloud copy carries them. Not an X compose path.
+    SqlMigration(
+      'CREATE TABLE IF NOT EXISTS $tableLocalPost ('
+      'id VARCHAR PRIMARY KEY, '
+      'body TEXT NOT NULL, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+      reverseSql: 'DROP TABLE $tableLocalPost',
+    ),
+  ],
+  60: [
+    // Media attachments and a quoted-post snapshot on reader notes. ALTER is
+    // tolerated if the column is already there — _addLocalPostMediaColumns is
+    // the same net for a database that skipped this step.
+    Migration(Operation(_addLocalPostMediaColumns)),
+  ],
+  61: [
+    // Replies between reader notes. Local only — this is not an X reply path.
+    Migration(Operation(_addLocalPostReplyColumn)),
   ],
 });
 
@@ -525,34 +862,153 @@ MigrationPlan buildMigrationPlan() => MigrationPlan({
 const Map<String, String> _indexes = {
   'idx_feed_group_chunk_hash': '$tableFeedGroupChunk (hash, created_at)',
   'idx_feed_group_chunk_cursor': '$tableFeedGroupChunk (cursor_id, hash)',
-  'idx_subscription_group_member_profile': '$tableSubscriptionGroupMember (profile_id)',
+  'idx_subscription_group_member_profile':
+      '$tableSubscriptionGroupMember (profile_id)',
+  // The cache preview reads newest-first with no WHERE, and the weekly cleanup
+  // deletes by age; without this both walk the largest table in the schema.
+  'idx_feed_group_chunk_created': '$tableFeedGroupChunk (created_at)',
+  'idx_saved_tweet_saved_at': '$tableSavedTweet (saved_at)',
+  'idx_saved_tweet_folder_id': '$tableSavedTweet (folder_id)',
+  'idx_liked_tweet_liked_at': '$tableLikedTweet (liked_at)',
+  // The same purge also deletes by age from these two. feed_group_chunk is
+  // covered above; these were the remaining full scans on the launch path.
+  'idx_feed_group_cursor_created_at': '$tableFeedGroupCursor (created_at)',
+  'idx_timeline_cache_created_at': '$tableTimelineCache (created_at)',
 };
+
+/// Adds the Immich column, tolerating a database whose folder table is gone —
+/// which includes every migration-test fixture that only builds the tables its
+/// own path touches. Without the column, folders simply cannot auto-upload.
+Future<void> _addFolderAutoUploadColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableSavedTweetFolder ADD COLUMN auto_upload BOOLEAN DEFAULT 0',
+    );
+  } catch (e) {
+    Repository.log.warning(
+      'Could not add auto_upload to $tableSavedTweetFolder: $e',
+    );
+  }
+}
+
+Future<void> _addSavedTweetNoteColumn(Database db) async {
+  try {
+    await db.execute('ALTER TABLE $tableSavedTweet ADD COLUMN note TEXT');
+  } catch (e) {
+    Repository.log.warning('Could not add note to $tableSavedTweet: $e');
+  }
+}
+
+Future<void> _addSubscriptionMaxPostsColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableSubscription ADD COLUMN max_posts_per_load INTEGER',
+    );
+  } catch (e) {
+    Repository.log.warning(
+      'Could not add max_posts_per_load to $tableSubscription: $e',
+    );
+  }
+}
+
+Future<void> _addSubscriptionGroupNsfwColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN nsfw BOOLEAN DEFAULT 0',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not add nsfw to $tableSubscriptionGroup: $e');
+  }
+}
 
 /// Adds the nesting column, tolerating a database whose group table is gone.
 Future<void> _addGroupParentColumn(Database db) async {
   try {
-    await db.execute('ALTER TABLE $tableSubscriptionGroup ADD COLUMN parent_id VARCHAR');
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup ADD COLUMN parent_id VARCHAR',
+    );
   } catch (e) {
     // Already present, or the table is missing entirely. Neither is worth
     // stopping the upgrade for: without the column groups simply do not nest.
-    Repository.log.warning('Could not add parent_id to $tableSubscriptionGroup: $e');
+    Repository.log.warning(
+      'Could not add parent_id to $tableSubscriptionGroup: $e',
+    );
   }
 }
 
 Future<void> _dropGroupParentColumn(Database db) async {
   try {
-    await db.execute('ALTER TABLE $tableSubscriptionGroup DROP COLUMN parent_id');
+    await db.execute(
+      'ALTER TABLE $tableSubscriptionGroup DROP COLUMN parent_id',
+    );
   } catch (e) {
-    Repository.log.warning('Could not drop parent_id from $tableSubscriptionGroup: $e');
+    Repository.log.warning(
+      'Could not drop parent_id from $tableSubscriptionGroup: $e',
+    );
+  }
+}
+
+Future<void> _ensureRssSubscriptionTable(Database db) async {
+  try {
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS $tableRssSubscription ('
+      'id VARCHAR PRIMARY KEY, feed_url VARCHAR NOT NULL, name VARCHAR NOT NULL, '
+      'site_url VARCHAR, icon_url VARCHAR, in_feed INTEGER NOT NULL DEFAULT 1, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not ensure $tableRssSubscription: $e');
+  }
+}
+
+Future<void> _ensureLocalPostTable(Database db) async {
+  try {
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS $tableLocalPost ('
+      'id VARCHAR PRIMARY KEY, '
+      'body TEXT NOT NULL, '
+      'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+      'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, '
+      'media_json TEXT, '
+      'quoted_tweet_id TEXT, '
+      'quoted_tweet_json TEXT, '
+      'in_reply_to_id TEXT)',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not ensure $tableLocalPost: $e');
+  }
+}
+
+Future<void> _addLocalPostReplyColumn(Database db) async {
+  try {
+    await db.execute(
+      'ALTER TABLE $tableLocalPost ADD COLUMN in_reply_to_id TEXT',
+    );
+  } catch (e) {
+    Repository.log.warning('Could not add in_reply_to_id to $tableLocalPost: $e');
+  }
+}
+
+Future<void> _addLocalPostMediaColumns(Database db) async {
+  for (final column in ['media_json TEXT', 'quoted_tweet_id TEXT', 'quoted_tweet_json TEXT']) {
+    try {
+      await db.execute('ALTER TABLE $tableLocalPost ADD COLUMN $column');
+    } catch (e) {
+      Repository.log.warning('Could not add $column to $tableLocalPost: $e');
+    }
   }
 }
 
 Future<void> _createIndexes(Database db) async {
   for (final entry in _indexes.entries) {
     try {
-      await db.execute('CREATE INDEX IF NOT EXISTS ${entry.key} ON ${entry.value}');
+      await db.execute(
+        'CREATE INDEX IF NOT EXISTS ${entry.key} ON ${entry.value}',
+      );
     } catch (e) {
-      Repository.log.warning('Could not create index ${entry.key}; queries still work, just slower: $e');
+      Repository.log.warning(
+        'Could not create index ${entry.key}; queries still work, just slower: $e',
+      );
     }
   }
 }
@@ -573,9 +1029,12 @@ class Repository {
   static Future<Database>? _readOnly;
 
   /// A read-only handle on the database, shared by every reader.
-  /// Previously used `openDatabase(..., singleInstance: false)`, which caused each of the 59 call
-  /// sites to open a new connection (never closed). This leaked file descriptors and added
-  /// overhead to every request.
+  ///
+  /// This used to be `openDatabase(..., singleInstance: false)`, which tells
+  /// sqflite *not* to reuse the connection: each of the 59 call sites opened a
+  /// fresh one and nothing ever closed it. `getAccounts()` runs on every single
+  /// request, so a scrolling session leaked a file descriptor per API call and
+  /// paid for a file open plus header parse on the hot path.
   ///
   /// The connection cannot simply switch to `singleInstance: true`, because
   /// sqflite caches by path: whichever of the read-only and writable opens
@@ -587,7 +1046,11 @@ class Repository {
       return cached;
     }
 
-    final opening = openDatabase(databaseName, readOnly: true, singleInstance: false);
+    final opening = openDatabase(
+      databaseName,
+      readOnly: true,
+      singleInstance: false,
+    );
     _readOnly = opening;
 
     // A failure must not latch: the first read can land before the file exists.
@@ -611,6 +1074,46 @@ class Repository {
     return openDatabase(databaseName);
   }
 
+  static bool _cleanedUp = false;
+
+  Future<void> _cleanUpOldCaches() async {
+    try {
+      final repository = await writable();
+      await repository.delete(
+        tableFeedGroupChunk,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await repository.delete(
+        tableFeedGroupCursor,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await repository.delete(
+        tableTimelineCache,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await trimTimelineCache(repository);
+    } catch (e) {
+      log.warning('Could not clean up old cached feeds: $e');
+    }
+  }
+
+  /// Keeps only the newest [maxTimelineCacheRows] cached timelines.
+  ///
+  /// Age alone does not bound this table — a row is written for every thread
+  /// opened and every profile visited — and the rows the reader has moved past
+  /// are never read again. Done here rather than on write so no read pays for
+  /// it: this already runs once per process, in the background.
+  static Future<void> trimTimelineCache(
+    Database database, {
+    int keep = maxTimelineCacheRows,
+  }) async {
+    await database.rawDelete(
+      'DELETE FROM $tableTimelineCache WHERE key NOT IN '
+      '(SELECT key FROM $tableTimelineCache ORDER BY created_at DESC LIMIT ?)',
+      [keep],
+    );
+  }
+
   Future<bool> migrate() async {
     final myMigrationPlan = buildMigrationPlan();
 
@@ -622,11 +1125,31 @@ class Repository {
       onDowngrade: myMigrationPlan.call,
     );
 
-    // Clean up any old feed chunks and cursors
-    var repository = await writable();
-    await repository.delete(tableFeedGroupChunk, where: "created_at <= date('now', '-7 day')");
-    await repository.delete(tableFeedGroupCursor, where: "created_at <= date('now', '-7 day')");
-    await repository.delete(tableTimelineCache, where: "created_at <= date('now', '-7 day')");
+    // 58 adds rss_subscription, and group/subscription reloads query every
+    // source table on launch. If the plan was skipped or only half-applied,
+    // create the table here rather than let those reads take the process down.
+    try {
+      await _ensureRssSubscriptionTable(await writable());
+    } catch (e) {
+      log.warning('Could not ensure $tableRssSubscription after migrate: $e');
+    }
+    try {
+      await _ensureLocalPostTable(await writable());
+      await _addLocalPostMediaColumns(await writable());
+      await _addLocalPostReplyColumn(await writable());
+    } catch (e) {
+      log.warning('Could not ensure $tableLocalPost after migrate: $e');
+    }
+
+    // The weekly cache cleanup walks the largest tables in the schema, and it
+    // used to be awaited here — twice, since migrate() runs twice per launch —
+    // so a week of feed JSON was scanned before the first frame. It gains
+    // nothing from blocking startup: run it once per process, in the
+    // background, after the schema work is done.
+    if (!_cleanedUp) {
+      _cleanedUp = true;
+      unawaited(_cleanUpOldCaches());
+    }
 
     log.info('Finished migrating database');
 

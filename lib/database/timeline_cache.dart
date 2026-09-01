@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:logging/logging.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/database/repository.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// Last-known first page of a thread or a profile timeline.
@@ -55,9 +55,9 @@ class TimelineCache {
     return row == null ? null : _decode(key, row['response'] as String?);
   }
 
-  /// The cursor is stored alongside the chains: without it a cache hit would
-  /// return a page that cannot be paged past, silently truncating the timeline
-  /// at whatever was cached.
+  /// The cursors are stored alongside the chains: without them a cache hit
+  /// would return a page that cannot be paged past (or offer X's "show
+  /// additional replies" prompt), silently truncating the conversation.
   Future<void> write(String key, TweetStatus status) async {
     if (status.chains.isEmpty) {
       return;
@@ -70,12 +70,22 @@ class TimelineCache {
           'chains': status.chains.map((c) => c.toJson()).toList(),
           'cursorBottom': status.cursorBottom,
           'cursorTop': status.cursorTop,
+          'cursorShowMore': status.cursorShowMore,
         }),
         'created_at': now().toIso8601String(),
       }, conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (e) {
       // A cache write must never be the reason a timeline fails to display.
       log.warning('Could not cache $key: $e');
+    }
+  }
+
+  /// Drops one entry so the next read misses and the network is tried again.
+  Future<void> remove(String key) async {
+    try {
+      await database.delete(tableTimelineCache, where: 'key = ?', whereArgs: [key]);
+    } catch (e) {
+      log.warning('Could not remove $key: $e');
     }
   }
 
@@ -108,6 +118,7 @@ class TimelineCache {
         chains: chains.map((e) => TweetChain.fromJson(e as Map<String, dynamic>)).toList(),
         cursorBottom: decoded['cursorBottom'] as String?,
         cursorTop: decoded['cursorTop'] as String?,
+        cursorShowMore: decoded['cursorShowMore'] as String?,
       );
     } catch (e) {
       // Written by an older build whose tweet model has since changed. Not

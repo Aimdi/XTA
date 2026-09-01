@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 /// X Look is now the app's only design language, chosen on two axes the way X
 /// does it: how dark the background is, and which accent sits on it. These pin

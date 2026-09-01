@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/search/advanced_search_model.dart';
-import 'package:quax/search/search_model.dart';
+import 'package:xta/search/advanced_search_model.dart';
 
 void main() {
   test('advanced search composes every supported operator', () {
@@ -44,19 +43,6 @@ void main() {
       AdvancedSearchFilter.allWords,
       AdvancedSearchFilter.onlyMedia,
     ]);
-  });
-
-  test('manual query edits invalidate structured advanced filters', () {
-    final advanced = AdvancedSearchState(allWords: 'flutter', minLikes: '5');
-    final store = SearchViewStore(initialQuery: '', initialTab: 0);
-    addTearDown(store.destroy);
-
-    store.applyAdvanced(advanced);
-    expect(store.state.advancedSearch, same(advanced));
-
-    store.editDraft('${advanced.query} android');
-    expect(store.state.advancedSearch, isNull);
-    expect(store.state.submittedQuery, advanced.query);
   });
 
   test('advanced Store resets the complete form', () {

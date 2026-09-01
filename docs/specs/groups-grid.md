@@ -1,10 +1,10 @@
 # Groups grid redesign — "Abos / Gruppen" (Option A)
 
-Verified against `claude/quax-repo-setup-shh2mn` (Phase 0 recon). Replaces the
+Verified against `claude/xta-repo-setup-shh2mn` (Phase 0 recon). Replaces the
 current **dense list** of groups with a **compact 3-column tonal-tile grid** so
 the full set of groups is scannable at a glance. Image-free by default.
 
-Parent product constraint: QuaX-gamma is a **read-oriented** X frontend — no
+Parent product constraint: XTA is a **read-oriented** X frontend — no
 compose / reply / like-on-X. Groups are local subscription folders only.
 
 ## Why (user axioms)

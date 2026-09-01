@@ -3,25 +3,28 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:dart_twitter_api/twitter_api.dart' show Media, Url;
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/saved/folder_picker.dart';
-import 'package:quax/saved/liked_tweet_model.dart';
-import 'package:quax/saved/saved_tweet_model.dart';
-import 'package:quax/status.dart';
-import 'package:quax/tweet/_like_button.dart';
-import 'package:quax/tweet/quotes_screen.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/saved/folder_picker.dart';
+import 'package:xta/saved/liked_tweet_model.dart';
+import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/status.dart';
+import 'package:xta/tweet/_like_button.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/quote_actions.dart';
+import 'package:xta/utils/urls.dart';
+import 'package:xta/database/entities.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:quax/plugins/karakeep/karakeep_save.dart';
-import 'package:quax/plugins/karakeep/karakeep_title.dart';
-import 'package:quax/plugins/deepmarks/deepmarks_save.dart';
+import 'package:xta/plugins/karakeep/karakeep_save.dart';
+import 'package:xta/plugins/karakeep/karakeep_title.dart';
+import 'package:xta/plugins/deepmarks/deepmarks_save.dart';
 
 /// Footer buttons should feel flat: no ripple and no pressed/hover background.
 /// Material's default text button reserves a 64dp minimum width and 16dp of
@@ -31,23 +34,18 @@ import 'package:quax/plugins/deepmarks/deepmarks_save.dart';
 const double kFooterButtonPadding = 6;
 
 /// How tall a footer button is. The glyphs are small on purpose, but the thing
-/// you press should not be: the design-system minimum is 48dp.
+/// you press should not be: 44dp is a finger, 36dp was a guess.
 const double kFooterButtonHeight = kTweetTouchTarget;
 
-ButtonStyle footerButtonStyleOf(BuildContext context) => ButtonStyle(
-  foregroundColor: WidgetStatePropertyAll(tweetSecondaryColor(context)),
-  overlayColor: WidgetStateProperty.resolveWith(
-    (states) => states.contains(WidgetState.pressed)
-        ? tweetPrimaryColor(context).withValues(alpha: 0.08)
-        : Colors.transparent,
-  ),
-  padding: const WidgetStatePropertyAll(
+const footerButtonStyle = ButtonStyle(
+  overlayColor: WidgetStatePropertyAll(Colors.transparent),
+  splashFactory: NoSplash.splashFactory,
+  padding: WidgetStatePropertyAll(
     EdgeInsets.symmetric(horizontal: kFooterButtonPadding),
   ),
-  minimumSize: const WidgetStatePropertyAll(Size(0, kFooterButtonHeight)),
+  minimumSize: WidgetStatePropertyAll(Size(0, kFooterButtonHeight)),
   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
   visualDensity: VisualDensity.compact,
-  shape: const WidgetStatePropertyAll(StadiumBorder()),
 );
 
 /// Fixed cost of one count action: padding, the 20dp glyph and the gap Material
@@ -61,6 +59,9 @@ const double kFooterIconItem =
 
 /// Gap between the counts group and the icon group.
 const double kFooterGroupGap = 8;
+
+/// Size the count labels are drawn at, and therefore measured at.
+const double kFooterLabelFontSize = 14;
 
 /// What the footer can afford to show at the width it was given.
 @immutable
@@ -151,13 +152,12 @@ class TweetTranslateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (status == TranslationStatus.translating) {
-      return const SizedBox.square(
-        dimension: kTweetTouchTarget,
-        child: Center(
-          child: SizedBox.square(
-            dimension: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
+      return const Padding(
+        padding: EdgeInsets.all(8),
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
         ),
       );
     }
@@ -170,7 +170,7 @@ class TweetTranslateButton extends StatelessWidget {
         onShowOriginal,
       ),
       TranslationStatus.translationFailed => (
-        theme.colorScheme.error,
+        Colors.red.harmonizeWith(theme.colorScheme.primary),
         L10n.of(context).action_translate_post,
         onTranslate,
       ),
@@ -195,17 +195,47 @@ class TweetTranslateButton extends StatelessWidget {
   }
 }
 
-Color tweetFooterButtonsColorOf(BuildContext context) =>
-    tweetSecondaryColor(context);
+// Memoized footer action tint (HSL round-trip is too expensive per button per frame).
+Color? _buttonsColorCache;
+Color? _buttonsColorBase;
 
-/// Replace t.co redirectors with cleaned destinations so shares skip X click tracking.
-String shareableTweetText(TweetWithCard tweet, String text) {
+Color? tweetFooterButtonsColor(Color? base) {
+  if (base == null) return null;
+  if (base != _buttonsColorBase) {
+    final hsl = HSLColor.fromColor(base);
+    const lightnessFactorDark = 0.5;
+    const lightnessFactorLight = 4.0;
+    final adjustedLightness =
+        (hsl.lightness *
+                (hsl.lightness > 0.5
+                    ? lightnessFactorDark
+                    : lightnessFactorLight))
+            .clamp(0.0, 1.0);
+    final adjustedSaturation = (hsl.saturation * 0.2).clamp(0.0, 1.0);
+    _buttonsColorBase = base;
+    _buttonsColorCache = hsl
+        .withLightness(adjustedLightness)
+        .withSaturation(adjustedSaturation)
+        .toColor();
+  }
+  return _buttonsColorCache;
+}
+
+Color? tweetFooterButtonsColorOf(BuildContext context) =>
+    Theme.of(context).colorScheme.onSurfaceVariant;
+
+/// Replace t.co redirectors with destinations so shares skip X click tracking.
+String shareableTweetText(
+  TweetWithCard tweet,
+  String text, {
+  bool clean = true,
+}) {
   var result = text;
   for (Url url in tweet.entities?.urls ?? []) {
     final short = url.url;
     final expanded = url.expandedUrl;
     if (short != null && expanded != null) {
-      result = result.replaceAll(short, cleanUrl(expanded));
+      result = result.replaceAll(short, clean ? cleanUrl(expanded) : expanded);
     }
   }
   for (Media media
@@ -213,7 +243,7 @@ String shareableTweetText(TweetWithCard tweet, String text) {
     final short = media.url;
     final expanded = media.expandedUrl;
     if (short != null && expanded != null) {
-      result = result.replaceAll(short, cleanUrl(expanded));
+      result = result.replaceAll(short, clean ? cleanUrl(expanded) : expanded);
     }
   }
   return result;
@@ -261,7 +291,7 @@ Widget tweetFooterIconButton(
     iconSize: 20,
     onPressed: onPressed,
     tooltip: tooltip,
-    style: footerButtonStyleOf(context),
+    style: footerButtonStyle,
   );
 
   // A tooltip triggers on long press by default, and that recogniser sits
@@ -275,32 +305,29 @@ Widget tweetFooterIconButton(
   );
 }
 
-Widget tweetFooterTextButton(
-  BuildContext context,
+TextButton tweetFooterTextButton(
   IconData icon,
   String label, [
   Color? color,
   VoidCallback? onPressed,
-  String? tooltip,
 ]) {
-  return Semantics(
-    label: tooltip,
-    button: onPressed != null,
-    excludeSemantics: tooltip != null,
-    child: TextButton.icon(
-      icon: Icon(icon, size: 20, color: color),
-      onPressed: onPressed,
-      label: Text(label, style: TextStyle(color: color, fontSize: 14)),
-      style: footerButtonStyleOf(context),
+  return TextButton.icon(
+    icon: Icon(icon, size: 20, color: color),
+    onPressed: onPressed,
+    label: Text(
+      label,
+      style: TextStyle(color: color, fontSize: kFooterLabelFontSize),
     ),
+    style: footerButtonStyle,
   );
 }
 
 /// Engagement / save / share / translate strip under a tweet tile.
 ///
-/// QuaX is a read-oriented frontend: these controls must not post to X.
-/// Comment opens the conversation, repeat opens quotes, heart/bookmark are
-/// local-only, share uses the OS sheet, translate works on loaded text.
+/// XTA is a read-oriented frontend: these controls must not post to X.
+/// Comment opens the conversation, quote opens quotes and retweeters,
+/// heart/bookmark are local-only, share uses the OS sheet, translate works
+/// on loaded text.
 class TweetFooterBar extends StatelessWidget {
   final TweetWithCard tweet;
   final String tweetText;
@@ -310,7 +337,6 @@ class TweetFooterBar extends StatelessWidget {
   final bool isArticle;
   final VoidCallback onOpenTweet;
   final Future<Uint8List?> Function() onCaptureImage;
-  final VoidCallback onChanged;
 
   const TweetFooterBar({
     super.key,
@@ -321,7 +347,6 @@ class TweetFooterBar extends StatelessWidget {
     required this.numberFormat,
     required this.onOpenTweet,
     required this.onCaptureImage,
-    required this.onChanged,
     this.isArticle = false,
   });
 
@@ -344,7 +369,12 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).share_tweet_content,
                   Icons.text_snippet,
                   () async {
-                    Share.share(shareableTweetText(tweet, tweetText));
+                    final clean = cleanLinksEnabled(
+                      PrefService.of(context, listen: false),
+                    );
+                    Share.share(
+                      shareableTweetText(tweet, tweetText, clean: clean),
+                    );
                     Navigator.pop(sheetContext);
                   },
                 ),
@@ -365,8 +395,11 @@ class TweetFooterBar extends StatelessWidget {
                   L10n.of(sheetContext).share_tweet_content_and_link,
                   Icons.add_link,
                   () async {
+                    final clean = cleanLinksEnabled(
+                      PrefService.of(context, listen: false),
+                    );
                     Share.share(
-                      '${shareableTweetText(tweet, tweetText)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
+                      '${shareableTweetText(tweet, tweetText, clean: clean)}\n\n$shareBaseUrl/${tweet.user!.screenName}/status/${tweet.idStr}',
                     );
                     Navigator.pop(sheetContext);
                   },
@@ -436,9 +469,16 @@ class TweetFooterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final zen =
-        PrefService.of(context, listen: false).get(optionZenMode) == true;
+    final prefs = PrefService.of(context, listen: false);
+    final hideCounts =
+        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final tint = tweetFooterButtonsColorOf(context);
+    // Both stores are registered with a plain Provider, so a Consumer over them
+    // would depend on a value whose identity never changes and never rebuild.
+    // ScopedBuilder listens to the Store itself, which is what actually
+    // changes — and it rebuilds only this button, not the whole tile.
+    final likedModel = context.read<LikedTweetModel>();
+    final savedModel = context.read<SavedTweetModel>();
 
     return Container(
       alignment: Alignment.center,
@@ -447,26 +487,29 @@ class TweetFooterBar extends StatelessWidget {
           : const EdgeInsets.symmetric(horizontal: 8),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final replyLabel = zen || tweet.replyCount == null
+          final replyLabel = hideCounts || tweet.replyCount == null
               ? ''
               : numberFormat.format(tweet.replyCount);
-          final repostLabel =
-              !zen && tweet.retweetCount != null && tweet.quoteCount != null
-              ? numberFormat.format(tweet.retweetCount! + tweet.quoteCount!)
-              : null;
-          final likeLabel = zen || tweet.favoriteCount == null
+          // Missing either count used to hide the whole quotes control. Treat a
+          // null as zero so the button still opens QuotesScreen.
+          final repostTotal =
+              (tweet.retweetCount ?? 0) + (tweet.quoteCount ?? 0);
+          final repostLabel = hideCounts
+              ? ''
+              : numberFormat.format(repostTotal);
+          final likeLabel = hideCounts || tweet.favoriteCount == null
               ? ''
               : numberFormat.format(tweet.favoriteCount);
-          final viewsLabel = !zen && tweet.viewCount != null
-              ? numberFormat.format(tweet.viewCount)
-              : null;
+          // View counts are vanity on a reader; keep the fit helper for tests
+          // but do not spend strip width on them here.
+          const String? viewsLabel = null;
 
           final measure = _LabelMeasure(context);
           final fit = resolveFooterFit(
             available: constraints.maxWidth,
             countLabelWidths: [
               measure.of(replyLabel),
-              if (repostLabel != null) measure.of(repostLabel),
+              measure.of(repostLabel),
               measure.of(likeLabel),
             ],
             viewsLabelWidth: viewsLabel == null ? null : measure.of(viewsLabel),
@@ -476,6 +519,13 @@ class TweetFooterBar extends StatelessWidget {
           );
 
           String label(String? value) => fit.showCounts ? (value ?? '') : '';
+
+          void openQuotes() {
+            if (tweet.idStr == null) {
+              return;
+            }
+            openQuotesAndRetweets(context, tweetId: tweet.idStr!);
+          }
 
           final actions = <Widget>[
             GestureDetector(
@@ -487,38 +537,50 @@ class TweetFooterBar extends StatelessWidget {
                 }
               },
               child: tweetFooterTextButton(
-                context,
-                Icons.mode_comment_outlined,
+                Icons.chat_bubble_outline,
                 label(replyLabel),
                 tint,
                 onOpenTweet,
-                L10n.of(context).open_post,
               ),
             ),
-            if (repostLabel != null)
-              tweetFooterTextButton(
-                context,
-                Icons.repeat,
+            GestureDetector(
+              onLongPressStart: tweet.idStr == null
+                  ? null
+                  : (details) => showQuoteActionMenu(
+                      context: context,
+                      tweet: tweet,
+                      globalPosition: details.globalPosition,
+                    ),
+              child: tweetFooterTextButton(
+                Icons.format_quote,
                 label(repostLabel),
-                tint,
-                tweet.idStr == null
-                    ? null
-                    : () => Navigator.pushNamed(
-                        context,
-                        routeQuotes,
-                        arguments: QuotesScreenArguments(id: tweet.idStr!),
-                      ),
-                L10n.of(context).quotes,
+                (tweet.quoteCount ?? 0) > 0
+                    ? Colors.green.harmonizeWith(
+                        Theme.of(context).colorScheme.primary,
+                      )
+                    : tint,
+                tweet.idStr == null ? null : openQuotes,
               ),
-            Consumer<LikedTweetModel>(
-              builder: (context, likedModel, child) {
-                final isLiked = likedModel.isLiked(tweet.idStr!);
+            ),
+            ScopedBuilder<LikedTweetModel, List<LikedTweet>>(
+              store: likedModel,
+              // Every footer on screen hears every like; only the one whose own
+              // post changed has anything to redraw. Through the model's index —
+              // a map lookup — not a scan of the whole liked list per footer per
+              // emission, which is what this was.
+              distinct: (_) =>
+                  tweet.idStr != null && likedModel.isLiked(tweet.idStr!),
+              onState: (context, _) {
+                final isLiked =
+                    tweet.idStr != null && likedModel.isLiked(tweet.idStr!);
 
                 return LikeButton(
                   isLiked: isLiked,
                   label: label(likeLabel),
                   color: isLiked ? Theme.of(context).colorScheme.primary : tint,
-                  semanticsLabel: L10n.of(context).likes_stay_on_device_notice,
+                  tooltip: isLiked
+                      ? L10n.of(context).unlike_on_this_device
+                      : L10n.of(context).like_on_this_device,
                   onPressed: () async {
                     if (isLiked) {
                       await likedModel.unlikeTweet(tweet.idStr!);
@@ -529,7 +591,6 @@ class TweetFooterBar extends StatelessWidget {
                         tweet.toJson(),
                       );
                     }
-                    onChanged();
                     if (!isLiked && context.mounted) {
                       maybeShowLikeToast(context);
                     }
@@ -538,10 +599,14 @@ class TweetFooterBar extends StatelessWidget {
               },
             ),
             if (viewsLabel != null && fit.showViews)
-              tweetFooterTextButton(context, Icons.bar_chart, viewsLabel, tint),
-            Consumer<SavedTweetModel>(
-              builder: (context, model, child) {
-                final isSaved = model.isSaved(tweet.idStr!);
+              tweetFooterTextButton(Icons.bar_chart, viewsLabel, tint),
+            ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+              store: savedModel,
+              distinct: (_) =>
+                  tweet.idStr != null && savedModel.isSaved(tweet.idStr!),
+              onState: (context, _) {
+                final isSaved =
+                    tweet.idStr != null && savedModel.isSaved(tweet.idStr!);
                 final button = isSaved
                     ? tweetFooterIconButton(
                         context,
@@ -549,10 +614,9 @@ class TweetFooterBar extends StatelessWidget {
                         Theme.of(context).colorScheme.primary,
                         1,
                         () async {
-                          await model.deleteSavedTweet(tweet.idStr!);
-                          onChanged();
+                          await savedModel.deleteSavedTweet(tweet.idStr!);
                         },
-                        L10n.of(context).action_unsave_post,
+                        L10n.of(context).unsave_from_this_device,
                       )
                     : tweetFooterIconButton(
                         context,
@@ -560,17 +624,25 @@ class TweetFooterBar extends StatelessWidget {
                         tint,
                         0,
                         () async {
-                          await model.saveTweet(
-                            tweet.idStr!,
-                            tweet.user?.idStr,
-                            tweet.toJson(),
+                          // Goes wherever the reader last chose, when they have
+                          // asked for that to be remembered; unfiled otherwise, as
+                          // before. Routed through the shared save so a folder set
+                          // to auto-download does so on a plain tap too --
+                          // inserting the row here skipped that entirely.
+                          await fileSavedTweet(
+                            context,
+                            tweetId: tweet.idStr!,
+                            userId: tweet.user?.idStr,
+                            content: tweet.toJson(),
+                            folderId: rememberedSaveFolder(
+                              PrefService.of(context, listen: false),
+                            ),
                           );
-                          onChanged();
                           if (context.mounted) {
                             maybeShowFolderHint(context);
                           }
                         },
-                        L10n.of(context).action_save_post,
+                        L10n.of(context).save_on_this_device,
                       );
 
                 return GestureDetector(
@@ -581,7 +653,6 @@ class TweetFooterBar extends StatelessWidget {
                       userId: tweet.user?.idStr,
                       content: tweet.toJson(),
                     );
-                    onChanged();
                   },
                   child: button,
                 );
@@ -618,7 +689,21 @@ class TweetFooterBar extends StatelessWidget {
 
 /// Measures footer labels at the ambient text scale, so the fit decision uses
 /// the width the label will actually occupy.
+///
+/// A whole feed only ever shows a few hundred distinct labels (compact counts
+/// like "1.2K"), and every one of them used to be shaped again on every layout
+/// of every footer, so the widths are memoized. The memo holds only what the
+/// measurement depends on — the label, the scaled font size and the reading
+/// direction — and is dropped whole when either of the latter two changes.
 class _LabelMeasure {
+  static final Map<String, double> _widths = {};
+  static double? _memoFontSize;
+  static ui.TextDirection? _memoDirection;
+
+  /// Guards against a pathological feed growing the memo without bound; the
+  /// realistic working set is far below this.
+  static const int _maxEntries = 512;
+
   final TextScaler _scaler;
   final ui.TextDirection _direction;
 
@@ -630,8 +715,23 @@ class _LabelMeasure {
     if (label.isEmpty) {
       return 0;
     }
+    final fontSize = _scaler.scale(kFooterLabelFontSize);
+    if (fontSize != _memoFontSize ||
+        _direction != _memoDirection ||
+        _widths.length > _maxEntries) {
+      _widths.clear();
+      _memoFontSize = fontSize;
+      _memoDirection = _direction;
+    }
+    return _widths[label] ??= _measure(label);
+  }
+
+  double _measure(String label) {
     final painter = TextPainter(
-      text: TextSpan(text: label, style: const TextStyle(fontSize: 14)),
+      text: TextSpan(
+        text: label,
+        style: const TextStyle(fontSize: kFooterLabelFontSize),
+      ),
       textScaler: _scaler,
       textDirection: _direction,
       maxLines: 1,

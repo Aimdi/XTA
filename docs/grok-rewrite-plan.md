@@ -1,12 +1,12 @@
-# Grok Build 4.5 — QuaX-fix incremental rewrite plan
+# Grok Build 4.5 — XTA incremental rewrite plan
 
-Durable plan for rewriting QuaX-fix's **UI/feature layer** with Grok Build
+Durable plan for rewriting XTA's **UI/feature layer** with Grok Build
 (grok-4.5). This is **not** a big-bang rewrite.
 
 ## Context (July 2026)
 
 On **2026-07-20**, X shipped a from-scratch Android app rewrite (Kotlin + Jetpack
-Compose). That client rewrite does **not** directly break QuaX-fix: this app is a
+Compose). That client rewrite does **not** directly break XTA: this app is a
 separate Flutter client talking to X's reverse-engineered backend API. The real
 compatibility risk is server-side (GraphQL `doc_id` rotation, transaction-ID
 schemes, rate limits) — not the new Android UI.
@@ -16,7 +16,7 @@ schemes, rate limits) — not the new Android UI.
 - Do **not** rebuild `lib/client/` or `lib/database/` as part of a UI rewrite.
 - Do **not** chase visual parity with X's new Android app unless explicitly scoped.
 - Do **not** plan around Musk open-sourcing X — no timeline.
-- Do **not** turn QuaX into a full X clone. It is a **read-oriented frontend**:
+- Do **not** turn XTA into a full X clone. It is a **read-oriented frontend**:
   browse feeds, profiles, search, and media. Never add compose / reply-to-X /
   quote-post / repost / like-on-X / DMs / Spaces hosting. Local-only features
   (SQLite subscriptions, saved folders, on-device likes) are intentional and
@@ -104,7 +104,7 @@ After any change near `client/` **or** a UI/perf module:
 | Trigger | Response |
 |---|---|
 | X open-sources official clients / endpoints | Re-evaluate a real client-layer rewrite |
-| Client-side request-signing change breaks QuaX | Drop UI work; API-parity spike in `lib/client/` first |
+| Client-side request-signing change breaks XTA | Drop UI work; API-parity spike in `lib/client/` first |
 | Dependency-override stack collapses on Flutter bump | Dedicated dependency modernization phase |
 
 ## ToS note

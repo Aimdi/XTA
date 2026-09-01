@@ -70,5 +70,5 @@ jobs:
           git add pubspec.yaml changelog.md release-notes.md
           git commit -m "Bumped to version $VERSION"
           git tag "v$VERSION"
-          git push origin HEAD:master
+          git push origin HEAD:main
           git push origin "v$VERSION"

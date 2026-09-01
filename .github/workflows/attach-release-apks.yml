@@ -1,0 +1,123 @@
+name: Attach release APKs
+
+# pull_request events still start workflows for the GitHub App token when
+# push / workflow_dispatch / repository_dispatch do not. Open a PR from
+# cursor/attach-<tag>-apks-bfa2 titled "[attach-apks] …" to build signed
+# APKs from that tag and upload them onto the existing GitHub Release.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+
+jobs:
+  attach:
+    if: startsWith(github.head_ref, 'cursor/attach-') && contains(github.event.pull_request.title, '[attach-apks]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag from branch name
+        id: tag
+        run: |
+          # cursor/attach-aimdi78-apks-bfa2 → aimdi78
+          ref="${{ github.head_ref }}"
+          tag=$(echo "$ref" | sed -n 's|^cursor/attach-\(.*\)-apks-bfa2$|\1|p')
+          if [ -z "$tag" ]; then
+            echo "::error::Branch $ref does not match cursor/attach-<tag>-apks-bfa2"
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Building APKs for tag: $tag"
+
+      - name: Clone the tagged commit
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.tag.outputs.tag }}
+
+      # What the tag must point at. Without this the release action creates the
+      # tag with no target, and GitHub puts an untargeted tag on the default
+      # branch's head — which is how aimdi81, 82 and 88..91 all ended up
+      # pointing at an unrelated commit while their APKs were built from the
+      # right one. Cloning at a tag gave you somebody else's source.
+      - name: Resolve the commit being built
+        id: commit
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Install and set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '21.0.10'
+
+      - name: Install and set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: Set up signing key
+        run: |
+          missing=()
+          [ -z "$SIGNING_KEY" ] && missing+=(SIGNING_KEY)
+          [ -z "$KEY_STORE_PASSWORD" ] && missing+=(KEY_STORE_PASSWORD)
+          [ -z "$KEY_PASSWORD" ] && missing+=(KEY_PASSWORD)
+          [ -z "$KEY_ALIAS" ] && missing+=(KEY_ALIAS)
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "::error::Missing GitHub Actions secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "$SIGNING_KEY" | base64 -d > android/app/key.jks
+          if [ ! -s android/app/key.jks ]; then
+            echo "::error::SIGNING_KEY decoded to an empty file"
+            exit 1
+          fi
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
+      - name: Generate icons
+        run: |
+          python -mvenv .venv
+          source ./.venv/bin/activate
+          pip install -r requirements.txt
+          python generate_icons.py
+          deactivate
+
+      - name: Build
+        run: |
+          export KEY_PATH=key.jks
+          RELEASE_TAG="${{ steps.tag.outputs.tag }}"
+
+          flutter config --no-analytics
+          flutter pub get
+          dart run flutter_launcher_icons
+          dart run dart_pubspec_licenses:generate || true
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+
+          mkdir -pv build/app/outputs/release
+
+          flutter build apk --release --no-tree-shake-icons --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG"
+          mv build/app/outputs/apk/release/*.apk build/app/outputs/release
+
+          flutter build apk --release --no-tree-shake-icons --dart-define=XTA_RELEASE_TAG="$RELEASE_TAG" --split-per-abi --target-platform=android-x64,android-arm,android-arm64
+          mv build/app/outputs/apk/release/*.apk build/app/outputs/release
+
+          ls -la build/app/outputs/release
+        env:
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+
+      - name: Upload APKs to the release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ steps.commit.outputs.sha }}
+          name: ${{ steps.tag.outputs.tag }}
+          body_path: release-notes.md
+          files: build/app/outputs/release/*.apk
+          fail_on_unmatched_files: true

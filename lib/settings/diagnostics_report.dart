@@ -6,7 +6,7 @@
 /// endpoint, which account, which query id" without a screenshot.
 library;
 
-import 'package:quax/client/endpoints.dart';
+import 'package:xta/client/endpoints.dart';
 
 class AccountDiagnostics {
   final String id;
@@ -83,7 +83,7 @@ class DiagnosticsReport {
   /// than no report.
   String toPlainText() {
     final lines = <String>[
-      'QuaX diagnostics',
+      'XTA diagnostics',
       'app: $appVersion',
       'generated: ${generatedAt.toIso8601String()}',
       '',
@@ -95,14 +95,10 @@ class DiagnosticsReport {
     }
     for (final account in accounts) {
       final state = [
-        if (account.notFoundUntil != null)
-          'auth broken until ${account.notFoundUntil!.toIso8601String()}',
-        for (final entry in account.rateLimited.entries)
-          '429 ${entry.key} until ${entry.value.toIso8601String()}',
+        if (account.notFoundUntil != null) 'auth broken until ${account.notFoundUntil!.toIso8601String()}',
+        for (final entry in account.rateLimited.entries) '429 ${entry.key} until ${entry.value.toIso8601String()}',
       ];
-      lines.add(
-        '  @${account.screenName ?? account.id}: ${state.isEmpty ? 'ok' : state.join('; ')}',
-      );
+      lines.add('  @${account.screenName ?? account.id}: ${state.isEmpty ? 'ok' : state.join('; ')}');
     }
 
     lines

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/deepmarks/deepmarks_client.dart';
-import 'package:quax/plugins/deepmarks/nostr_event.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/deepmarks/deepmarks_client.dart';
+import 'package:xta/plugins/deepmarks/nostr_event.dart';
 
 /// One-tap "save this link to Deepmarks": sign the bookmark on the device, hand
 /// the finished event to the API, and say plainly what happened.

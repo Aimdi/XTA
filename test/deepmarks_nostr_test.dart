@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bip340/bip340.dart' as bip340;
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/plugins/deepmarks/nostr_event.dart';
+import 'package:xta/plugins/deepmarks/nostr_event.dart';
 
 // The key pair from the NIP-19 specification, so the bech32 decoding and the
 // public-key derivation are checked against something outside this codebase.

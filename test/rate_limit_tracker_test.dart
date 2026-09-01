@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/rate_limit_tracker.dart';
+import 'package:xta/client/rate_limit_tracker.dart';
 
 void main() {
   const account = 'acct-1';

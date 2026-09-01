@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:quax/plugins/karakeep/karakeep_client.dart';
+import 'package:xta/plugins/karakeep/karakeep_client.dart';
 
 KarakeepClient _client(Future<http.Response> Function(http.Request) handler) =>
     KarakeepClient(httpClient: MockClient(handler));

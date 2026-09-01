@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:quax/plugins/deepmarks/nostr_event.dart';
+import 'package:xta/plugins/deepmarks/nostr_event.dart';
 
 /// Where Deepmarks runs unless the user points the plugin elsewhere.
 const String deepmarksDefaultApiBase = 'https://api.deepmarks.org';

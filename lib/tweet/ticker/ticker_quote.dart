@@ -5,6 +5,8 @@
 /// fits yields null rather than throwing inside a screen.
 library;
 
+import 'package:xta/utils/json.dart';
+
 class TickerPoint {
   final DateTime at;
   final double close;
@@ -21,6 +23,23 @@ class TickerQuote {
   final double? price;
   final double? previousClose;
 
+  /// What the rest of the market page is made of: how much changed hands, and
+  /// where today sits inside the year. All optional — the chart endpoint only
+  /// carries them for symbols it has them for.
+  final double? volume;
+  final double? yearHigh;
+  final double? yearLow;
+
+  /// Company or index name, day's range, and the session the last print
+  /// belongs to. All optional — the chart host only sends them for some
+  /// symbols, and pre/post prints vanish outside those sessions.
+  final String? shortName;
+  final double? dayHigh;
+  final double? dayLow;
+  final String? marketState;
+  final double? preMarketPrice;
+  final double? postMarketPrice;
+
   final List<TickerPoint> points;
 
   const TickerQuote({
@@ -29,6 +48,15 @@ class TickerQuote {
     required this.price,
     required this.previousClose,
     required this.points,
+    this.volume,
+    this.yearHigh,
+    this.yearLow,
+    this.shortName,
+    this.dayHigh,
+    this.dayLow,
+    this.marketState,
+    this.preMarketPrice,
+    this.postMarketPrice,
   });
 
   double? get change {
@@ -56,54 +84,54 @@ class TickerQuote {
     return delta == null ? null : delta >= 0;
   }
 
-  static double? _toDouble(Object? value) {
-    if (value is num) {
-      return value.toDouble();
+  /// The print a tape should show: pre/post when that session is live, else
+  /// the regular last, else the last close on the chart.
+  double? get displayPrice {
+    if (marketState == 'PRE' && preMarketPrice != null) {
+      return preMarketPrice;
     }
-    return value is String ? double.tryParse(value) : null;
+    if ((marketState == 'POST' || marketState == 'POSTPOST') &&
+        postMarketPrice != null) {
+      return postMarketPrice;
+    }
+    return price ?? points.lastOrNull?.close;
   }
+
+  bool get isPreMarket => marketState == 'PRE' && preMarketPrice != null;
+
+  bool get isAfterHours =>
+      (marketState == 'POST' || marketState == 'POSTPOST') &&
+      postMarketPrice != null;
 
   /// Reads the `chart.result[0]` shape: a list of timestamps alongside a
   /// parallel list of closes, plus a `meta` block.
   ///
   /// Gaps are expected — a market holiday leaves a null close against a real
-  /// timestamp — so points are only kept where both halves are present.
+  /// timestamp — so points are only kept where both halves are present. The
+  /// stepping is [Json], which cannot throw: a payload that no longer fits
+  /// simply reads as nothing and yields null at the end.
   static TickerQuote? fromChartJson(Object? json, {required String symbol}) {
-    if (json is! Map) {
-      return null;
-    }
-
-    final results = (json['chart'] is Map) ? (json['chart'] as Map)['result'] : null;
-    if (results is! List || results.isEmpty) {
-      return null;
-    }
-
-    final result = results.first;
-    if (result is! Map) {
-      return null;
-    }
-
-    final meta = result['meta'] is Map ? result['meta'] as Map : const {};
-    final timestamps = result['timestamp'];
-
-    final indicators = result['indicators'];
-    final quotes = indicators is Map ? indicators['quote'] : null;
-    final quote = (quotes is List && quotes.isNotEmpty && quotes.first is Map) ? quotes.first as Map : const {};
-    final closes = quote['close'];
+    final result = Json(json)['chart']['result'][0];
+    final meta = result['meta'];
+    final timestamps = result['timestamp'].list;
+    final closes = result['indicators']['quote'][0]['close'].list;
 
     final points = <TickerPoint>[];
-    if (timestamps is List && closes is List) {
-      for (var i = 0; i < timestamps.length && i < closes.length; i++) {
-        final seconds = timestamps[i];
-        final close = _toDouble(closes[i]);
-        if (seconds is! num || close == null) {
-          continue;
-        }
-        points.add(TickerPoint(
-          at: DateTime.fromMillisecondsSinceEpoch(seconds.toInt() * 1000, isUtc: true).toLocal(),
-          close: close,
-        ));
+    for (var i = 0; i < timestamps.length && i < closes.length; i++) {
+      final seconds = timestamps[i].integer;
+      final close = closes[i].number;
+      if (seconds == null || close == null) {
+        continue;
       }
+      points.add(
+        TickerPoint(
+          at: DateTime.fromMillisecondsSinceEpoch(
+            seconds * 1000,
+            isUtc: true,
+          ).toLocal(),
+          close: close,
+        ),
+      );
     }
 
     if (points.isEmpty) {
@@ -111,11 +139,21 @@ class TickerQuote {
     }
 
     return TickerQuote(
-      symbol: (meta['symbol'] as String?) ?? symbol,
-      currency: meta['currency'] as String?,
-      price: _toDouble(meta['regularMarketPrice']),
-      previousClose: _toDouble(meta['chartPreviousClose']) ?? _toDouble(meta['previousClose']),
+      symbol: meta['symbol'].string ?? symbol,
+      currency: meta['currency'].string,
+      price: meta['regularMarketPrice'].number,
+      previousClose:
+          meta['chartPreviousClose'].number ?? meta['previousClose'].number,
       points: points,
+      volume: meta['regularMarketVolume'].number,
+      yearHigh: meta['fiftyTwoWeekHigh'].number,
+      yearLow: meta['fiftyTwoWeekLow'].number,
+      shortName: meta['shortName'].string ?? meta['longName'].string,
+      dayHigh: meta['regularMarketDayHigh'].number,
+      dayLow: meta['regularMarketDayLow'].number,
+      marketState: meta['marketState'].string,
+      preMarketPrice: meta['preMarketPrice'].number,
+      postMarketPrice: meta['postMarketPrice'].number,
     );
   }
 }

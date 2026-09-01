@@ -1,6 +1,6 @@
-# Cloud testing for QuaX
+# Cloud testing for XTA
 
-QuaX is **Android-only**. Cursor Cloud VMs currently **do not expose `/dev/kvm`**, so a
+XTA is **Android-only**. Cursor Cloud VMs currently **do not expose `/dev/kvm`**, so a
 usable Android emulator (hardware-accelerated) is not available. Software
 emulation (`-accel off`) can start but is too slow/unstable for interactive UI
 work.
@@ -26,5 +26,9 @@ work.
 ## Environment bootstrap
 
 - `.cursor/environment.json` → runs `scripts/cloud_install.sh`
-- Snapshot tip: after a successful Cloud setup that includes FVM + Android SDK, save a
-  VM snapshot from the Cloud Agents dashboard so future agents skip the cold toolchain install.
+- **Cold VMs:** `cloud_install.sh` bootstraps FVM (into `~/fvm`) and Android
+  cmdline-tools (into `~/android-sdk`) when they are missing, then runs
+  `fvm install` / `pub get` / codegen and applies the `platforms/android-37`
+  hash quirk fix.
+- **Warm snapshots (preferred):** after one successful cold setup, save a VM
+  snapshot from the Cloud Agents dashboard so later agents only refresh deps.

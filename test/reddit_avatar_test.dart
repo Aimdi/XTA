@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/plugins/reddit/reddit_avatar.dart';
+import 'package:xta/plugins/reddit/reddit_avatar.dart';
 
 void main() {
   group('choosing an avatar', () {

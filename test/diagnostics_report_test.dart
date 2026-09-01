@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/endpoints.dart';
-import 'package:quax/client/rate_limit_tracker.dart';
-import 'package:quax/settings/diagnostics_report.dart';
+import 'package:xta/client/endpoints.dart';
+import 'package:xta/client/rate_limit_tracker.dart';
+import 'package:xta/settings/diagnostics_report.dart';
 
 DiagnosticsReport _report({
   List<AccountDiagnostics> accounts = const [],

@@ -1,155 +1,105 @@
 <div align="center">
 <img src="assets/readme/icon.png" height="100">
 
-# QuaX-fix
+# XTA
 
+[![GitHub release](https://img.shields.io/github/v/release/aimdi/xta?style=for-the-badge&logo=github&color=2dba4e)](https://github.com/Aimdi/XTA/releases)
 [![Upstream](https://img.shields.io/badge/upstream-Teskann%2FQuaX-1565C0?style=for-the-badge&logo=github)](https://github.com/Teskann/QuaX)
-[![License: MIT](https://img.shields.io/github/license/aimdi/quax-fix?style=for-the-badge&logo=opensourceinitiative&logoColor=FFFFFF&color=750014)](/LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/aimdi/quax-fix/ci.yml?style=for-the-badge&logo=github)](https://github.com/Aimdi/QuaX-fix/actions)
+[![License: MIT](https://img.shields.io/github/license/aimdi/xta?style=for-the-badge&logo=opensourceinitiative&logoColor=FFFFFF&color=750014)](/LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/aimdi/xta/ci.yml?style=for-the-badge&logo=github)](https://github.com/Aimdi/XTA/actions)
 ![Minimum Android version](https://img.shields.io/badge/Android-7.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![Flutter version](https://img.shields.io/badge/Flutter-3.44.4-54C5F8?style=for-the-badge&logo=flutter&logoColor=white)
 
-**QuaX-fix** is a personal fork of [QuaX](https://github.com/Teskann/QuaX), the free, open-source,
-privacy-focused client for X (formerly Twitter) — itself forked from
-[Quacker](https://github.com/TheHCJ/Quacker) and [Fritter](https://github.com/jonjomckay/fritter).
+**A privacy-focused, read-only Android client for X** — local feeds, saves, and
+optional plugins.
+
+[![Get it on GitHub](assets/readme/get-it-on-github.png)](https://github.com/Aimdi/XTA/releases)
+[![Get it on Obtainium](assets/readme/get-it-on-obtainium.png)](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/Aimdi/XTA)
+
+To verify a release APK, use [these signing certificate fingerprints](./certificate-fingerprints.txt).
 
 </div>
 
-## ⚠️ This is a vibe-coded fork
-
-This fork is **vibe coded**: virtually every change on top of upstream QuaX was written by an AI
-coding agent (Claude), directed and tested by a human, but not line-by-line reviewed the way
-upstream code is. It exists to scratch personal itches and to experiment quickly.
-
-What that means for you:
-
-- Expect rougher edges than upstream. Features land fast and are validated by using the app, not
-  by a formal review process.
-- If you want the stable, carefully maintained experience, use the original
-  [Teskann/QuaX](https://github.com/Teskann/QuaX) — all credit for the app itself belongs there.
-- Issues in this repo are welcome, but fixes will also be vibe coded.
+> [!IMPORTANT]
+> An X account is needed so XTA can *fetch* content. Subscriptions, saves, likes,
+> and settings stay on your device — they are not X's social graph.
+>
+> **XTA does not post, reply, quote, repost, or like on X.** Footer actions open
+> conversations or quotes, or store a like locally. Nothing is written back to X.
 
 > [!IMPORTANT]
-> An X account is needed to use QuaX. Subscriptions, saved posts, and all other settings are
-> independent from the account you're logged into. Everything is local to the app.
+> Application id is `com.aimdi.xta`, so XTA installs **alongside** upstream QuaX
+> (`com.teskann.quax`) and older Aimdi builds. Export a backup from the old app
+> before switching. Releases use this fork's keystore — see
+> [`docs/signing.md`](docs/signing.md).
 
-## Major differences from [Teskann/QuaX](https://github.com/Teskann/QuaX)
+## Screenshots
 
-This fork is based on upstream **v4.12.0**. Everything below is on top of that.
+<p align="center">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="200" alt="Feed">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="200" alt="Groups">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3.png" width="200" alt="Profile">
+</p>
 
-### Feeds & groups
+## What you get
 
-- **Media-only view for group feeds** — a toggle in the group toolbar filters a feed down to posts
-  with photos, videos, and GIFs, rendered as a media grid instead of tweet cards.
-- **Media grid layouts** — choose between masonry, a full-width media feed, or a roomy two-per-row
-  layout (`Settings > Media`), shared by every media grid in the app.
-- **Feed order per group** — *Recent* (by date) or *Popular* (the same recent window reordered by
-  likes), switchable instantly.
-- **Custom content filter per group** — a three-position content bar (SFW only / default / NSFW
-  only) based on X's sensitive-content flag, on a dedicated settings screen.
-- **Feed gap filling** — after a long absence, the feed keeps paging until it reconnects with the
-  posts it already has, instead of leaving a permanent hole (upstream issue #27).
-- **Tweet deduplication in group feeds** — the same post no longer appears multiple times when
-  pages and cached chunks overlap.
-- **Zen mode** — an anti-doomscrolling mode: engagement counts are hidden, replies stay hidden
-  until you ask for them, and feeds are strictly newest-first with a per-author cap.
+Based on upstream **QuaX v4.12.0**, plus:
 
-### Search & posts
+- ✅ Group feeds with media-only grids, Recent/Popular order, and SFW/NSFW filters
+- ✅ Gap filling and dedup so long absences and overlapping pages stay coherent
+- ✅ Zen mode — hide counts, gate replies, newest-first with a per-author cap
+- ✅ Advanced search, quotes screen, Community Notes in feeds
+- ✅ Subscribe-from-timeline, conversation translate, long-press image download
+- ✅ Remember reading position on Following, For You, and groups
+- ✅ Broken subscription / bookmark cleanup; per-user hide-reposts
+- ✅ X Look — Light / Dim / Lights Out + accent colours
+- ✅ No trackers; Android backups disabled so session tokens stay off cloud backups
 
-- **Advanced search form** — a full-screen form mirroring `x.com/search-advanced`: exact words,
-  hashtags, from/to/mentioning accounts, minimum engagement, media-only, and date ranges.
-- **Quotes screen** — tap the repost counter on a post to see the posts quoting it (the counter
-  turns green when quotes exist).
-- **Community Notes in timelines** — feed searches now request notes, so noted posts show their
-  note in feeds, not only in the detail view.
-- **Subscribe from the timeline** — a small **+** badge on avatars of authors you don't follow
-  yet lets you subscribe (and file them into groups) on the spot; can be turned off.
-- **Conversation translate** — long-press the translate button to translate a post together with
-  all its loaded replies.
-- **Quick image download** — long-press a photo in the timeline to download it directly.
+## Plugins
 
-### Subscriptions & saved posts
+Optional, off by default, installed from Settings → plugin store (catalogue:
+[`plugins.json`](./plugins.json)). They do not turn XTA into a poster.
 
-- **Broken-subscription cleanup** — a scan finds deleted/suspended accounts among your
-  subscriptions and removes them after confirmation; renamed accounts are silently repaired.
-- **Broken-bookmark cleanup** — the same kind of scan for saved posts, across all folders.
-- **Per-user "hide reposts"** — a feed filter on profiles, mirroring X's "turn off reposts",
-  applied across every group and the combined feed.
-- **Saved media view** — the bookmarks screen gets the same media-only grid toggle, per folder.
-- **Subscriptions screen polish** — draggable scrollbar, group members listed first in the group
-  edit dialog.
+| Plugin | What it does |
+|---|---|
+| **Reddit** | Read subreddits account-free; mix into home/groups; local upvotes |
+| **Substack** | Follow publications; reader + TTS; free preview when available |
+| **Stocks** | StockTwits-style watchlist strip + cashtag post feed; charts on ticker pages |
+| **Immich** | Upload a bookmark folder's photos/videos to your Immich server |
+| **Karakeep** | One-tap save to a self-hosted Karakeep instance |
+| **Deepmarks** | Save bookmarks over Nostr |
 
-### Privacy & hardening
+## About this fork
 
-- **Backups disabled** (`android:allowBackup=false`) so the database holding X session tokens can
-  never be extracted through adb or cloud backups.
-- **Removed a leftover debug log** that dumped parsed user profiles into the device log.
+This fork is **vibe coded**: changes on top of QuaX are mostly written by AI
+coding agents, directed and tested by a human, not line-by-line reviewed the way
+upstream is. Expect rougher edges; features land by using the app.
 
-### Theming & identity
+Want the carefully maintained experience? Use
+[Teskann/QuaX](https://github.com/Teskann/QuaX) — all credit for the core app
+belongs there. Issues here are welcome; fixes will also be vibe coded.
 
-- **New app icon** — the classic Q on a blue gradient with a soft drop shadow instead of flat
-  black, and a small serif *y* signature in the corner.
-- **Two theme presets** — *Fairy Forest* and *Pitch Black* (see below).
+A new-post notification experiment was tried and removed — unreliable by design
+for this reverse-engineered client.
 
-### Build & release
+## More information
 
-- **Release signing is required** — GitHub release workflows fail unless a stable
-  keystore is configured via Actions secrets (`SIGNING_KEY`, etc.). See
-  [`docs/signing.md`](docs/signing.md). Without that, every CI run would sign
-  with a fresh debug key and Android would refuse in-place updates.
-- **CI PR artifacts** may still be debug-signed for testing only.
-
-### Fixes
-
-- Group edit dialog buttons no longer overflow off-screen (creating a group was impossible).
-- Fixed a crash (`ProviderNotFoundException`) when opening a conversation.
-- Fixed the media grid layout options and moved them to `Settings > Media`.
-- Hidden the stray horizontal scrollbar over the tweet stats row.
-
-> [!NOTE]
-> A per-user new-post notification feature (background checks + local notifications) was also
-> vibe coded, found unreliable, and removed again. Such is vibe life.
-
-## Themes
-
-QuaX-fix ships two hand-tuned theme presets on top of the regular light/dark/true-black theming
-(`Settings > Theme`):
-
-| Default · Light | Default · Dark | True Black | Fairy Forest 🧚 | Pitch Black 🌑 |
-|:---:|:---:|:---:|:---:|:---:|
-| ![Default Light](assets/readme/themes/default-light.png) | ![Default Dark](assets/readme/themes/default-dark.png) | ![True Black](assets/readme/themes/true-black.png) | ![Fairy Forest](assets/readme/themes/fairy-forest.png) | ![Pitch Black](assets/readme/themes/pitch-black.png) |
-| Seed-color theming | Seed-color theming | Pure black dark mode | Warm paper cream with forest green accents | Pure black with a vivid green accent |
-
-## Download
-
-Grab the APK from this fork's [GitHub releases](https://github.com/Aimdi/QuaX-gamma/releases), or add
-the repo to [Obtainium](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/Aimdi/QuaX-gamma).
-
-> [!IMPORTANT]
-> Releases must be signed with this fork's own stable keystore (see
-> [`docs/signing.md`](docs/signing.md)). They will **not** update over upstream
-> [Teskann/QuaX](https://github.com/Teskann/QuaX), and older Aimdi builds that
-> were accidentally debug-signed need a one-time uninstall before the first
-> properly signed update.
-
-For upstream releases and APK signature verification, see
-[Teskann/QuaX](https://github.com/Teskann/QuaX/releases).
+- [FAQ / wiki](./docs/XTA.md)
+- [Release signing](./docs/signing.md)
+- [Cloud testing notes](./docs/cloud-testing.md)
+- [LICENSE](./LICENSE)
+- [Contributing](./CONTRIBUTING.md)
+- [Changelog (upstream, up to v4.12.0)](./changelog.md)
 
 ## Build locally
 
-Prerequisites:
-
-- Python
-- [FVM](https://fvm.app/) (Flutter Version Management)
-
-The Flutter SDK version is pinned in [`.fvmrc`](./.fvmrc) and provisioned by FVM, so every build uses the exact same toolchain.
+Prerequisites: Python and [FVM](https://fvm.app/). The Flutter SDK is pinned in
+[`.fvmrc`](./.fvmrc).
 
 ```bash
-# Install the pinned Flutter SDK and activate it for this project
 fvm install
 fvm use
 
-# Generate launcher icon assets
 python -mvenv .venv
 bash -c '
   source ./.venv/bin/activate
@@ -157,24 +107,42 @@ bash -c '
   python generate_icons.py
 '
 
-# Run all build steps through fvm so the pinned SDK is used
 fvm flutter pub get
 fvm dart run flutter_launcher_icons
-fvm dart run dart_pubspec_licenses:generate
 fvm dart run intl_utils:generate
 fvm dart run flutter_iconpicker:generate_packs --packs material
 fvm flutter build apk --debug
 ```
 
+> `dart_pubspec_licenses:generate` is intentionally omitted — it fails under
+> Flutter 3.44.4 + FVM, and the app uses Flutter's built-in license page instead.
+
+### ARB merge driver
+
+Every branch appends strings to all 29 files in `lib/l10n/`, so parallel
+branches conflict in all of them even when no key overlaps.
+[`.gitattributes`](./.gitattributes) routes those files through a `merge=arb`
+driver that merges them by key instead of by line. Git keeps merge drivers in
+`.git/config`, so **a fresh clone must register it once** — it does nothing
+otherwise:
+
+```bash
+bash scripts/setup_git_merge_drivers.sh   # also run by scripts/cloud_install.sh
+```
+
+Without it merges fall back to the normal text merge; `python3
+merge_arb_conflicts.py` then resolves the conflicted files still sitting in the
+index. Either way, keys both sides changed to different values are left as a
+real conflict.
+
 ## More information
 
-- [FAQ (upstream)](./docs/QuaX.md)
-- [LICENSE](./LICENSE)
-- [Contributing](./CONTRIBUTING.md)
-- [Changelog (upstream, up to v4.12.0)](./changelog.md)
+For Cursor Cloud agents, see [`docs/cloud-testing.md`](docs/cloud-testing.md)
+(`scripts/cloud_install.sh` bootstraps FVM and the Android SDK on a cold VM).
 
 ## Credits
 
 QuaX is made by [Teskann](https://github.com/Teskann), building on
-[Quacker](https://github.com/TheHCJ/Quacker) and [Fritter](https://github.com/jonjomckay/fritter).
-This fork only piles vibe-coded changes on top of their work.
+[Quacker](https://github.com/TheHCJ/Quacker) and
+[Fritter](https://github.com/jonjomckay/fritter). XTA only adds vibe-coded
+changes and plugins on top of their work.

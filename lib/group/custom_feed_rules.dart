@@ -1,5 +1,18 @@
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
+// Re-export keyword helpers used by settings UI and group_model.
+export 'package:xta/group/muted_keyword.dart'
+    show
+        KeywordFilterAction,
+        MutedKeyword,
+        activeMutedKeywords,
+        encodeMutedKeywordsStored,
+        joinMutedKeywords,
+        parseMutedKeywordTerms,
+        parseMutedKeywords,
+        parseMutedKeywordsStored;
+
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/group/muted_keyword.dart';
 
 /// Everything a custom feed filters on, beyond replies and reposts.
 ///
@@ -15,8 +28,8 @@ class CustomFeedRules {
   /// Hide posts below this many reposts. 0 disables the threshold.
   final int minRetweets;
 
-  /// Hide posts containing any of these terms.
-  final List<String> mutedKeywords;
+  /// Hide or fold posts matching these keywords.
+  final List<MutedKeyword> mutedKeywords;
 
   const CustomFeedRules({
     this.contentFilter = contentFilterDefault,
@@ -30,23 +43,19 @@ class CustomFeedRules {
 
   /// Part of the feed cache key: two feeds with different rules must not share
   /// cached chunks.
-  String get cacheKey => '$contentFilter|$minLikes|$minRetweets|${mutedKeywords.join(",")}';
+  String get cacheKey => '$contentFilter|$minLikes|$minRetweets|${encodeMutedKeywordsStored(mutedKeywords)}';
 }
 
-/// Splits what the user typed into terms. Commas and newlines separate, so a
-/// multi-word phrase stays one term.
-List<String> parseMutedKeywords(String? raw) {
-  if (raw == null || raw.trim().isEmpty) {
-    return const [];
-  }
-  return raw
-      .split(RegExp(r'[,\n]'))
-      .map((term) => term.trim())
-      .where((term) => term.isNotEmpty)
-      .toList(growable: false);
-}
+/// Result of applying feed rules — chains to show plus fold reasons by chain id.
+class FeedRuleOutcome {
+  final List<TweetChain> chains;
+  final Map<String, String> foldReasons;
 
-String joinMutedKeywords(List<String> keywords) => keywords.join(', ');
+  const FeedRuleOutcome({required this.chains, this.foldReasons = const {}});
+
+  FeedRuleOutcome merge(FeedRuleOutcome other) =>
+      FeedRuleOutcome(chains: other.chains, foldReasons: {...foldReasons, ...other.foldReasons});
+}
 
 final RegExp _wordCharacter = RegExp(r'[\p{L}\p{N}]', unicode: true);
 
@@ -69,8 +78,13 @@ bool textMatchesMutedTerm(String text, String term) {
     return haystack.contains(lowered);
   }
 
-  return RegExp('(?<![\\p{L}\\p{N}])${RegExp.escape(lowered)}(?![\\p{L}\\p{N}])', unicode: true)
-      .hasMatch(haystack);
+  try {
+    return RegExp('(?<![\\p{L}\\p{N}])${RegExp.escape(lowered)}(?![\\p{L}\\p{N}])', unicode: true).hasMatch(haystack);
+  } catch (_) {
+    // Some runtimes choke on unicode lookbehind; fail open to substring match
+    // rather than blowing up the whole feed page.
+    return haystack.contains(lowered);
+  }
 }
 
 /// The text of a chain that keyword muting looks at: every post in the thread,
@@ -99,39 +113,58 @@ int chainRetweets(TweetChain chain) {
   return (tweet.retweetCount ?? 0) + (tweet.quoteCount ?? 0);
 }
 
+MutedKeyword? _firstMatchingKeyword(String text, List<MutedKeyword> keywords) {
+  for (final keyword in keywords) {
+    if (textMatchesMutedTerm(text, keyword.term)) {
+      return keyword;
+    }
+  }
+  return null;
+}
+
 /// Keeps only the chains a custom feed should show.
 ///
 /// Thresholds read the thread's first post, the same post the popular sort
 /// ranks by, so "at least 100 likes" means the same number the footer shows.
-List<TweetChain> applyCustomFeedRules(List<TweetChain> chains, CustomFeedRules rules) {
+FeedRuleOutcome applyCustomFeedRules(List<TweetChain> chains, CustomFeedRules rules, {DateTime? now}) {
   if (rules.isEmpty) {
-    return chains;
+    return FeedRuleOutcome(chains: chains);
   }
 
-  return chains.where((chain) {
+  final activeKeywords = activeMutedKeywords(rules.mutedKeywords, now: now);
+  final kept = <TweetChain>[];
+  final foldReasons = <String, String>{};
+
+  for (final chain in chains) {
     switch (rules.contentFilter) {
       case contentFilterSfw:
-        if (_isSensitive(chain)) return false;
+        if (_isSensitive(chain)) continue;
       case contentFilterNsfw:
-        if (!_isSensitive(chain)) return false;
+        if (!_isSensitive(chain)) continue;
       default:
         break;
     }
 
     if (rules.minLikes > 0 && chainLikes(chain) < rules.minLikes) {
-      return false;
+      continue;
     }
     if (rules.minRetweets > 0 && chainRetweets(chain) < rules.minRetweets) {
-      return false;
+      continue;
     }
 
-    if (rules.mutedKeywords.isNotEmpty) {
-      final text = chainSearchText(chain);
-      if (rules.mutedKeywords.any((term) => textMatchesMutedTerm(text, term))) {
-        return false;
+    if (activeKeywords.isNotEmpty) {
+      final match = _firstMatchingKeyword(chainSearchText(chain), activeKeywords);
+      if (match != null) {
+        if (match.action == KeywordFilterAction.fold) {
+          kept.add(chain);
+          foldReasons[chain.id] = match.term;
+        }
+        continue;
       }
     }
 
-    return true;
-  }).toList(growable: false);
+    kept.add(chain);
+  }
+
+  return FeedRuleOutcome(chains: kept, foldReasons: foldReasons);
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 const double kGroupControlBarHeight = 56;
 const double kGroupControlRadius = 12;

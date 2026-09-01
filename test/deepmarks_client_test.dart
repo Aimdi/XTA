@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:quax/plugins/deepmarks/deepmarks_client.dart';
-import 'package:quax/plugins/deepmarks/nostr_event.dart';
+import 'package:xta/plugins/deepmarks/deepmarks_client.dart';
+import 'package:xta/plugins/deepmarks/nostr_event.dart';
 
 const _secretHex = '67dea2ed018072d675f5415ecfaed7d2597555e202d85b3d65ea4e58d2d92ffa';
 const _publicHex = '7e7e9c42a91bfef19fa929e5fda1b72e0ebc1a4c1141673e2794234d86addf4e';

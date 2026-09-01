@@ -1,13 +1,14 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/plugins/plugin.dart';
-import 'package:quax/plugins/plugin_registry.dart';
-import 'package:quax/plugins/substack/substack_plugin.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/plugin_category.dart';
+import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/substack/substack_plugin.dart';
 
 /// A plugin that adds an action rather than a feed, so it never claims a tab.
-class _TablessPlugin extends QuaxPlugin {
+class _TablessPlugin extends XtaPlugin {
   @override
   String get id => 'tabless';
 
@@ -16,6 +17,12 @@ class _TablessPlugin extends QuaxPlugin {
 
   @override
   IconData get icon => const IconData(0);
+
+  @override
+  PluginCategory get category => PluginCategory.social;
+
+  @override
+  Color get brandColor => const Color(0xFF808080);
 
   @override
   String title(BuildContext context) => 'Tabless';

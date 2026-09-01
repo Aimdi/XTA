@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/catcher/exceptions.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/profile/profile_model.dart';
-import 'package:quax/subscriptions/users_model.dart';
-import 'package:quax/ui/cleanup_dialog.dart';
+import 'package:xta/catcher/exceptions.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/profile_model.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/cleanup_dialog.dart';
 
 // Error codes X uses for accounts that definitively no longer exist:
 // 34/50 = not found, 63 = suspended, -1 = unavailable for another reason.

@@ -10,6 +10,8 @@ responses over hand-written stubs.
 | `UserByScreenName/ok.json` | Guest `UserByScreenName` for `@X` | `UserWithExtra.fromNonLegacyJson` |
 | `TweetDetail/tweet_result.json` | Tweet node from guest `UserTweets` | `TweetWithCard.fromGraphqlJson` |
 | `UserTweets/add_entries.json` | Slim `TimelineAddEntries` from guest `UserTweets` | `Twitter.createTweetChains` |
+| `Retweeters/ok.json` | Hand-shaped `Retweeters` timeline (`user_results` + cursor) | `TimelineParser.retweetersInstructions` / `parseUsersTimeline` |
+| `Retweeters/module.json` | Hand-shaped Retweeters `TimelineTimelineModule` + `userResults` | `TimelineParser.parseUsersTimeline` |
 
 Guest `TweetDetail` returned 404; tweet shapes were taken from `UserTweets`
 instead. No auth tokens are stored in these files.

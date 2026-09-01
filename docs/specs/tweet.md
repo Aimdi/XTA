@@ -5,7 +5,7 @@ for feature state; do **not** change `lib/client/` or `lib/database/`.
 
 ## Product constraint (read-oriented frontend)
 
-QuaX-fix is **not** X. Tweet UI is for **viewing** posts and conversations.
+XTA is **not** X. Tweet UI is for **viewing** posts and conversations.
 Do not add compose sheets, reply composers, quote/repost publishers, or any
 call that creates content on X.
 

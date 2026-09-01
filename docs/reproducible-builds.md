@@ -2,7 +2,7 @@
 
 Upstream's FAQ names this as the unsolved blocker for F-Droid:
 
-> The only way QuaX could be on F-Droid without these drawbacks is through a
+> The only way XTA could be on F-Droid without these drawbacks is through a
 > reproducible build — a process that lets F-Droid build the app from source
 > while still producing a binary identical to the one signed by the developer.
 > This is something we haven't gotten around to setting up yet.
@@ -24,7 +24,7 @@ can verify that a release contains only what the source says it does.
 | compileSdk / targetSdk | `android/app/build.gradle` | 37 |
 | Java source/target | `android/app/build.gradle` | 17 |
 | JDK running Gradle | `.github/workflows/*.yml` | 21.0.10 |
-| Icon rasteriser | `requirements.txt` | cairosvg 2.9.0, pillow 12.3.0 |
+| Icon rasteriser | `requirements.txt` | pillow 12.3.0 |
 
 `dependenciesInfo { includeInApk = false }` is already set in
 `android/app/build.gradle`. Without it every APK embeds a Play-Store

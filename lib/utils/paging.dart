@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 /// Carries an error together with its stack trace through
@@ -19,6 +20,45 @@ class PagingError implements Exception {
 PagingError? pagingErrorOf(PagingState state) {
   final error = state.error;
   return error is PagingError ? error : null;
+}
+
+/// True while the first page has not arrived and has not failed.
+bool pagingAwaitingFirstPage(PagingState state) =>
+    state.items == null && state.error == null;
+
+/// PagedListView fetches page 0 when it mounts. Kick that ourselves when the
+/// list is not mounted yet — a skeleton, or a TabBarView first-page slot.
+void scheduleFirstPageFetch<PageKeyType, ItemType>(
+  PagingController<PageKeyType, ItemType> controller, {
+  required bool alreadyStarted,
+  required VoidCallback markStarted,
+  required bool Function() isMounted,
+}) {
+  if (alreadyStarted) return;
+  if (!pagingAwaitingFirstPage(controller.value)) return;
+  markStarted();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (isMounted()) controller.fetchNextPage();
+  });
+}
+
+/// Scrollable stand-in used instead of PagedListView's first-page slot.
+///
+/// That slot is a [SliverFillRemaining] and freezes inside NestedScrollView /
+/// TabBarView. A real ListView is pull-to-refreshable and is the single inner
+/// scrollable NestedScrollView expects.
+Widget pagingFill({required Widget child}) {
+  return LayoutBuilder(
+    builder: (context, constraints) => ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: constraints.hasBoundedHeight ? constraints.maxHeight : 200,
+          child: child,
+        ),
+      ],
+    ),
+  );
 }
 
 /// One fetched page: the items to append and the cursor for the *next* page.
@@ -57,6 +97,10 @@ class CursorPagingController<C, T> {
   /// The flattened items fetched so far, or `null` before the first page loads.
   List<T>? get items => pagingController.value.items;
 
+  /// Cursor the next page will be fetched with, or `null` before the first
+  /// page has set one / once pagination has ended.
+  C? get nextCursor => _nextCursor;
+
   Future<List<T>> _fetchPage(int pageKey) async {
     if (pageKey == 0) {
       _reachedEnd = false;
@@ -92,7 +136,9 @@ class CursorPagingController<C, T> {
 
   /// Surfaces an error while keeping any already-loaded items visible.
   void setError(Object error, StackTrace stackTrace) {
-    pagingController.value = pagingController.value.copyWith(error: PagingError(error, stackTrace));
+    pagingController.value = pagingController.value.copyWith(
+      error: PagingError(error, stackTrace),
+    );
   }
 
   /// Re-opens pagination after it ended, seeding [cursor] for the next page,
@@ -102,6 +148,21 @@ class CursorPagingController<C, T> {
     _setNextCursor(cursor);
     pagingController.value = pagingController.value.copyWith(hasNextPage: true);
     pagingController.fetchNextPage();
+  }
+
+  /// Re-opens pagination by appending [items] the controller held back rather
+  /// than fetched, seeding [cursor] for whatever follows them (`null` ends
+  /// pagination there). Used when a stop was imposed part-way through a page.
+  void resumeWith(List<T> items, C? cursor) {
+    _setNextCursor(cursor);
+    final state = pagingController.value;
+    final keys = state.keys ?? const <int>[];
+    pagingController.value = PagingState<int, T>(
+      pages: [...?state.pages, items],
+      keys: [...keys, keys.isEmpty ? 0 : keys.last + 1],
+      hasNextPage: cursor != null,
+      error: null,
+    );
   }
 
   void dispose() => pagingController.dispose();

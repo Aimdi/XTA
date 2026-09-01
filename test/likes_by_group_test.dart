@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/saved/likes_by_group.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/saved/likes_by_group.dart';
 
 /// A like, reduced to what the grouping cares about.
 typedef Like = ({String id, String? author});

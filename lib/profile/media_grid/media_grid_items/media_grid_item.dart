@@ -1,14 +1,19 @@
 import 'package:dart_twitter_api/api/media/data/media.dart';
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/tweet/_video.dart';
-import 'package:quax/tweet/_video_controls.dart';
-import 'package:quax/utils/paging.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/_video_controls.dart';
+import 'package:xta/tweet/broadcasts.dart';
+import 'package:xta/tweet/media_strip.dart';
+import 'package:xta/ui/capped_network_image.dart';
+import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/urls.dart';
 
 part 'gif_grid_item.dart';
 part 'video_grid_item.dart';
 part 'photo_grid_item.dart';
+part 'broadcast_grid_item.dart';
 
 sealed class MediaGridItem {
   // The source tweet when known, handed to the status screen as the instant
@@ -35,26 +40,35 @@ sealed class MediaGridItem {
 }
 
 double _aspectRatioFor(Media m) {
-  switch (m.type) {
-    case 'photo':
-      final w = m.sizes?.large?.w;
-      final h = m.sizes?.large?.h;
-      if (w == null || h == null || h == 0) return 1.0;
-      return w / h;
-    case 'video':
-    case 'animated_gif':
-      final ar = m.videoInfo?.aspectRatio;
-      if (ar == null || ar.length < 2 || ar[1] == 0) return 1.0;
-      return ar[0] / ar[1];
-    default:
-      return 1.0;
-  }
+  return mediaItemAspect(
+    type: m.type,
+    videoAspect: m.videoInfo?.aspectRatio,
+    thumbW: m.sizes?.large?.w,
+    thumbH: m.sizes?.large?.h,
+  );
 }
 
-MediaGridItem? _itemFor(Media m, String tweetId, String username, int mediaIndex, [TweetWithCard? tweet]) {
+MediaGridItem? _itemFor(
+  Media m,
+  String tweetId,
+  String username,
+  int mediaIndex, [
+  TweetWithCard? tweet,
+]) {
   final url = m.mediaUrlHttps;
   if (url == null) return null;
   final ar = _aspectRatioFor(m);
+  final spaceId = tweet != null
+      ? spaceIdOf(tweet)
+      : spaceIdIn(m.expandedUrl) ?? spaceIdIn(m.displayUrl) ?? spaceIdIn(m.url);
+  final broadcastId = tweet != null
+      ? broadcastIdOf(tweet)
+      : broadcastIdIn(m.expandedUrl) ??
+          broadcastIdIn(m.displayUrl) ??
+          broadcastIdIn(m.url);
+  final live = spaceId != null ||
+      broadcastId != null ||
+      (tweet != null && (isBroadcastCard(tweet.card) || isAudioSpaceCard(tweet.card)));
   switch (m.type) {
     case 'photo':
       return PhotoGridItem(
@@ -77,6 +91,19 @@ MediaGridItem? _itemFor(Media m, String tweetId, String username, int mediaIndex
         media: m,
       );
     case 'video':
+      if (live) {
+        return BroadcastGridItem(
+          tweet: tweet,
+          tweetId: tweetId,
+          username: username,
+          thumbnailUrl: url,
+          aspectRatio: ar,
+          mediaIndex: mediaIndex,
+          media: m,
+          broadcastId: broadcastId,
+          spaceId: spaceId,
+        );
+      }
       return VideoGridItem(
         tweet: tweet,
         tweetId: tweetId,
@@ -94,26 +121,49 @@ MediaGridItem? _itemFor(Media m, String tweetId, String username, int mediaIndex
 /// Which media a grid shows.
 ///
 /// Animated GIFs are served as video by X and play like one, so they belong
-/// with the videos rather than in a category of their own.
+/// with the videos rather than in a category of their own. Broadcasts and
+/// Spaces are their own bucket — they look like videos but the tweet is
+/// marked by an `x.com/i/broadcasts/` or `x.com/i/spaces/` link.
 enum MediaFilter {
   all,
   photos,
-  videos;
+  videos,
+  broadcasts;
 
   bool accepts(MediaGridItem item) => switch (this) {
-        MediaFilter.all => true,
-        MediaFilter.photos => item is PhotoGridItem,
-        MediaFilter.videos => item is VideoGridItem || item is GifGridItem,
-      };
+    MediaFilter.all => true,
+    MediaFilter.photos => item is PhotoGridItem,
+    MediaFilter.videos => item is VideoGridItem || item is GifGridItem,
+    MediaFilter.broadcasts => item is BroadcastGridItem,
+  };
 }
 
-CursorPage<String, MediaGridItem> mediaPageFromStatus(TweetStatus status, String? cursor) {
+/// Livestreams are ordinary posts with an `x.com/i/broadcasts/` (or Spaces)
+/// card. UserMedia is photos and clips and drops those posts, so filtering
+/// UserMedia for broadcasts paints an empty grid on a profile that streams
+/// a lot. Posts (`profile` → UserTweets) is where those links actually live.
+String mediaTimelineTypeFor(MediaFilter filter) =>
+    filter == MediaFilter.broadcasts ? 'profile' : 'media';
+
+/// Broadcasts are sparse on UserTweets, so the Livestreams filter looks
+/// further than photos/videos on UserMedia.
+int mediaLookaheadFor(MediaFilter filter) =>
+    filter == MediaFilter.broadcasts ? 12 : 4;
+
+
+CursorPage<String, MediaGridItem> mediaPageFromStatus(
+  TweetStatus status,
+  String? cursor,
+) {
   final next = status.cursorBottom;
   // X repeats the bottom cursor once a timeline has no more pages. That does
   // mark the end, but the page it arrived with still holds real media —
   // discarding it lost the last screenful of a profile's media.
   final atEnd = next == null || next == cursor;
-  return (items: mediaItemsFromChains(status.chains), nextCursor: atEnd ? null : next);
+  return (
+    items: mediaItemsFromChains(status.chains),
+    nextCursor: atEnd ? null : next,
+  );
 }
 
 /// A page of tweets and where the next one starts.
@@ -124,17 +174,25 @@ typedef ChainPage = ({List<TweetChain> chains, String? nextCursor});
 /// Media posts are sparse: a page of twenty text posts maps to no media at all,
 /// and an empty page is how the paging controller is told a feed has ended. So
 /// a few more pages are pulled before giving that answer.
-Future<CursorPage<String, MediaGridItem>> mediaPageWithLookahead(
+Future<CursorPage<String, T>> mediaPageWithLookahead<T>(
   String? cursor,
   Future<ChainPage> Function(String? cursor) fetch,
-  List<MediaGridItem> Function(List<TweetChain> chains) itemsOf, {
+  List<T> Function(List<TweetChain> chains) itemsOf, {
   int maxLookahead = 4,
 }) async {
   var result = await fetch(cursor);
   var items = itemsOf(result.chains);
 
   var lookahead = 0;
-  while (items.isEmpty && result.chains.isNotEmpty && result.nextCursor != null && lookahead < maxLookahead) {
+  // Notably NOT gated on the page carrying chains: UserMedia's first page for
+  // some profiles is a cursor and nothing else — every leading entry tombstoned
+  // away — and refusing to follow it showed "no tweets" for an account with a
+  // grid full of media one page on. The end of the feed is a null cursor
+  // (mediaPageFromStatus already turns X's repeated cursor into one), not an
+  // empty page.
+  while (items.isEmpty &&
+      result.nextCursor != null &&
+      lookahead < maxLookahead) {
     result = await fetch(result.nextCursor);
     items = itemsOf(result.chains);
     lookahead++;
@@ -147,11 +205,16 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
   final out = <MediaGridItem>[];
   for (final chain in chains) {
     for (final tweet in chain.tweets) {
-      final medias = tweet.extendedEntities?.media;
-      if (medias == null || medias.isEmpty) continue;
       final tweetId = tweet.idStr;
       final username = tweet.user?.screenName;
       if (tweetId == null || username == null) continue;
+      if (tweetIsLive(tweet)) {
+        final live = _liveGridItem(tweet, tweetId, username);
+        if (live != null) out.add(live);
+        continue;
+      }
+      final medias = tweet.extendedEntities?.media;
+      if (medias == null || medias.isEmpty) continue;
       for (var i = 0; i < medias.length; i++) {
         final item = _itemFor(medias[i], tweetId, username, i, tweet);
         if (item != null) out.add(item);
@@ -159,4 +222,63 @@ List<MediaGridItem> mediaItemsFromChains(List<TweetChain> chains) {
     }
   }
   return out;
+}
+
+/// One Livestreams tile for a broadcast/Space post.
+///
+/// Prefers a native video thumb, then a still, then the card image. A live
+/// post that also carries photos must not fall through to PhotoGridItem —
+/// those would vanish when the Livestreams filter runs.
+MediaGridItem? _liveGridItem(
+  TweetWithCard tweet,
+  String tweetId,
+  String username,
+) {
+  if (!tweetIsLive(tweet)) {
+    return null;
+  }
+  final medias = tweet.extendedEntities?.media ?? const <Media>[];
+  Media? thumbMedia;
+  for (final m in medias) {
+    if (m.type == 'video' && m.mediaUrlHttps != null) {
+      thumbMedia = m;
+      break;
+    }
+  }
+  if (thumbMedia == null) {
+    for (final m in medias) {
+      if (m.mediaUrlHttps != null) {
+        thumbMedia = m;
+        break;
+      }
+    }
+  }
+  final thumb = thumbMedia?.mediaUrlHttps ??
+      broadcastThumbnailFromCard(tweet.card) ??
+      '';
+  final media = thumbMedia ??
+      Media.fromJson({
+        'id_str': tweetId,
+        'type': 'video',
+        'media_url_https': thumb.isEmpty
+            ? 'https://abs.twimg.com/favicons/twitter-blue.ico'
+            : thumb,
+        'sizes': {
+          'large': {'w': 16, 'h': 9},
+        },
+        'video_info': {
+          'aspect_ratio': [16, 9],
+        },
+      });
+  return BroadcastGridItem(
+    tweet: tweet,
+    tweetId: tweetId,
+    username: username,
+    thumbnailUrl: thumb,
+    aspectRatio: thumbMedia != null ? _aspectRatioFor(thumbMedia) : 16 / 9,
+    mediaIndex: 0,
+    media: media,
+    broadcastId: broadcastIdOf(tweet),
+    spaceId: spaceIdOf(tweet),
+  );
 }

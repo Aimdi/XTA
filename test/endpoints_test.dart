@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/endpoint_overrides.dart';
-import 'package:quax/client/endpoints.dart';
+import 'package:xta/client/endpoint_overrides.dart';
+import 'package:xta/client/endpoints.dart';
 
 void main() {
   tearDown(XEndpoints.clearOverrides);
@@ -23,18 +23,29 @@ void main() {
       final uri = XEndpoints.uri(XEndpoints.userTweets, {'variables': '{}'});
 
       expect(uri.host, 'x.com');
-      expect(uri.path, '/i/api/graphql/2GIWTr7XwadIixZDtyXd4A/UserTweets');
+      expect(uri.path, '/i/api/graphql/36rb3Xj3iJ64Q-9wKDjCcQ/UserTweets');
       expect(uri.queryParameters['variables'], '{}');
     });
 
-    test('the two SearchTimeline call sites keep their distinct ids and hosts', () {
+    test('AudioSpaceById is a shipped GraphQL operation', () {
+      final uri = XEndpoints.uri(XEndpoints.audioSpaceById, {'variables': '{}'});
+
+      expect(uri.host, 'x.com');
+      expect(uri.path, endsWith('/AudioSpaceById'));
+      expect(queryIdPattern.hasMatch(XEndpoints.queryId(XEndpoints.audioSpaceById)), isTrue);
+    });
+
+    test('the two SearchTimeline call sites keep distinct hosts and registry keys', () {
       final tweets = XEndpoints.uri(XEndpoints.searchTimeline, {});
       final users = XEndpoints.uri(XEndpoints.searchTimelineUsers, {});
 
       expect(tweets.host, 'x.com');
       expect(users.host, 'twitter.com');
-      expect(tweets.path, isNot(users.path));
+      expect(tweets.path, endsWith('/SearchTimeline'));
       expect(users.path, endsWith('/SearchTimeline'));
+      // Registry keys stay distinct so an override can retarget people search
+      // without touching tweet search, even when both ship the same query id.
+      expect(XEndpoints.searchTimeline, isNot(XEndpoints.searchTimelineUsers));
     });
 
     test('an override replaces the query id but keeps operation and host', () {
@@ -55,15 +66,15 @@ void main() {
       });
 
       expect(accepted, 1);
-      expect(XEndpoints.queryId(XEndpoints.userTweets), '2GIWTr7XwadIixZDtyXd4A');
-      expect(XEndpoints.queryId(XEndpoints.tweetDetail), 'xIYgDwjboktoFeXe_fgacw');
+      expect(XEndpoints.queryId(XEndpoints.userTweets), '36rb3Xj3iJ64Q-9wKDjCcQ');
+      expect(XEndpoints.queryId(XEndpoints.tweetDetail), 'oCon7R-cgWRFy6EfZjaKfg');
       expect(XEndpoints.queryId(XEndpoints.userMedia), 'BBBBBBBBBBBBBBBBBBBBBB');
     });
 
     test('a path separator in an override can never escape the operation', () {
       XEndpoints.applyOverrides({XEndpoints.userTweets: 'a/b/UserTweets?x=1'});
 
-      expect(XEndpoints.uri(XEndpoints.userTweets, {}).path, '/i/api/graphql/2GIWTr7XwadIixZDtyXd4A/UserTweets');
+      expect(XEndpoints.uri(XEndpoints.userTweets, {}).path, '/i/api/graphql/36rb3Xj3iJ64Q-9wKDjCcQ/UserTweets');
     });
 
     test('an unknown endpoint name is a programming error, not a silent 404', () {

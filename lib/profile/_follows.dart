@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:quax/client/client.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/user.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/profile/profile_chrome.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/utils/paging.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/utils/paging.dart';
 
 class ProfileFollows extends StatefulWidget {
   final UserWithExtra user;
@@ -20,14 +18,13 @@ class ProfileFollows extends StatefulWidget {
   State<ProfileFollows> createState() => _ProfileFollowsState();
 }
 
-class _ProfileFollowsState extends State<ProfileFollows>
-    with AutomaticKeepAliveClientMixin<ProfileFollows> {
+class _ProfileFollowsState extends State<ProfileFollows> with AutomaticKeepAliveClientMixin<ProfileFollows> {
   late final CursorPagingController<String, UserWithExtra> _paging;
-  PagingController<int, UserWithExtra> get _pagingController =>
-      _paging.pagingController;
+  PagingController<int, UserWithExtra> get _pagingController => _paging.pagingController;
 
   final int _pageSize = 200;
   final Set<String> _seenIds = {};
+  bool _firstLoadStarted = false;
 
   @override
   bool get wantKeepAlive => true;
@@ -44,87 +41,72 @@ class _ProfileFollowsState extends State<ProfileFollows>
     super.dispose();
   }
 
-  Future<CursorPage<String, UserWithExtra>> _fetchPage(String? cursor) async {
-    var result = await Twitter.getProfileFollows(
-      widget.user.screenName!,
-      widget.type,
-      cursor: cursor,
-      count: _pageSize,
-      id: widget.user.idStr,
+  void _maybeStartFirstLoad() {
+    scheduleFirstPageFetch(
+      _pagingController,
+      alreadyStarted: _firstLoadStarted,
+      markStarted: () => _firstLoadStarted = true,
+      isMounted: () => mounted,
     );
+  }
+
+  Future<CursorPage<String, UserWithExtra>> _fetchPage(String? cursor) async {
+    var result = await Twitter.getProfileFollows(widget.user.screenName!, widget.type,
+        cursor: cursor, count: _pageSize, id: widget.user.idStr);
 
     final next = result.cursorBottom;
-    final fresh = result.users
-        .where((u) => u.idStr != null && _seenIds.add(u.idStr!))
-        .toList();
-    final end =
-        next == null ||
-        next.isEmpty ||
-        next == '0' ||
-        next == cursor ||
-        fresh.isEmpty;
+    final fresh = result.users.where((u) => u.idStr != null && _seenIds.add(u.idStr!)).toList();
+    final end = next == null || next.isEmpty || next == '0' || next == cursor || fresh.isEmpty;
     return (items: fresh, nextCursor: end ? null : next);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _maybeStartFirstLoad();
+    final l10n = L10n.of(context);
+    final emptyText = widget.type == 'following'
+        ? l10n.this_user_does_not_follow_anyone
+        : l10n.this_user_does_not_have_anyone_following_them;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.type == 'following'
-              ? L10n.of(context).following
-              : L10n.of(context).followers,
-        ),
+        title: Text(widget.type == 'following' ? l10n.following : l10n.followers),
       ),
       body: PagingListener<int, UserWithExtra>(
         controller: _pagingController,
-        builder: (context, state, fetchNextPage) =>
-            PagedListView<int, UserWithExtra>(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).padding.bottom,
-              ),
-              state: state,
-              fetchNextPage: fetchNextPage,
-              addAutomaticKeepAlives: false,
-              builderDelegate: PagedChildBuilderDelegate(
-                itemBuilder: (context, user, index) =>
-                    UserTile(user: UserSubscription.fromUser(user)),
-                firstPageProgressIndicatorBuilder: (context) =>
-                    const ProfileUserListSkeleton(),
-                newPageProgressIndicatorBuilder: (context) => const SizedBox(
-                  height: 96,
-                  child: ProfileUserListSkeleton(count: 1),
-                ),
-                firstPageErrorIndicatorBuilder: (context) =>
-                    FullPageErrorWidget(
-                      error: pagingErrorOf(state)?.error,
-                      stackTrace: pagingErrorOf(state)?.stackTrace,
-                      prefix: L10n.of(
-                        context,
-                      ).unable_to_load_the_list_of_follows,
-                      onRetry: fetchNextPage,
-                    ),
-                newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                  error: pagingErrorOf(state)?.error,
-                  stackTrace: pagingErrorOf(state)?.stackTrace,
-                  prefix: L10n.of(
-                    context,
-                  ).unable_to_load_the_next_page_of_follows,
-                  onRetry: fetchNextPage,
-                ),
-                noItemsFoundIndicatorBuilder: (context) {
-                  var text = widget.type == 'following'
-                      ? L10n.of(context).this_user_does_not_follow_anyone
-                      : L10n.of(
-                          context,
-                        ).this_user_does_not_have_anyone_following_them;
-
-                  return TweetEmptyState(message: text);
-                },
+        builder: (context, state, fetchNextPage) {
+          if (pagingAwaitingFirstPage(state)) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.items == null) {
+            return FullPageErrorWidget(
+              error: pagingErrorOf(state)?.error,
+              stackTrace: pagingErrorOf(state)?.stackTrace,
+              prefix: l10n.unable_to_load_the_list_of_follows,
+              onRetry: fetchNextPage,
+            );
+          }
+          if (state.items!.isEmpty) {
+            return Center(child: Text(emptyText));
+          }
+          return PagedListView<int, UserWithExtra>(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+            state: state,
+            fetchNextPage: fetchNextPage,
+            addAutomaticKeepAlives: false,
+            builderDelegate: PagedChildBuilderDelegate(
+              itemBuilder: (context, user, index) =>
+                  UserTile(user: UserSubscription.fromUser(user)),
+              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+                error: pagingErrorOf(state)?.error,
+                stackTrace: pagingErrorOf(state)?.stackTrace,
+                prefix: l10n.unable_to_load_the_next_page_of_follows,
+                onRetry: fetchNextPage,
               ),
             ),
+          );
+        },
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/utils/translation.dart';
+import 'package:xta/utils/translation.dart';
 
 /// `cacheRequest` guarded its read with `result != null && result == true`,
 /// comparing the cached *string* against a bool. That is always false, so the

@@ -1,9 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/plugins/reddit/reddit_html.dart';
+import 'package:xta/plugins/reddit/reddit_html.dart';
 
 /// A listing page shaped like old.reddit's: the `data-*` attributes carry
 /// everything, which is why the parser reads those rather than the layout.
-String _page(String things, {String next = ''}) => '''
+String _page(String things, {String next = ''}) =>
+    '''
 <!doctype html><html><body><div class="content" role="main">
   <div id="siteTable">$things</div>
   <div class="nav-buttons"><span class="next-button">$next</span></div>
@@ -39,7 +40,11 @@ void main() {
     test('takes a link post out of its data attributes', () {
       final post = parseListing(_page(_link)).posts.single;
 
-      expect(post.id, 'abc123', reason: 'the t3_ prefix is the fullname, not the id');
+      expect(
+        post.id,
+        'abc123',
+        reason: 'the t3_ prefix is the fullname, not the id',
+      );
       expect(post.title, 'A title');
       expect(post.subreddit, 'dartlang');
       expect(post.author, 'someone');
@@ -48,18 +53,31 @@ void main() {
       expect(post.permalink, '/r/dartlang/comments/abc123/a_title/');
       expect(post.url, 'https://example.com/article');
       expect(post.isSelf, isFalse);
-      expect(post.createdAt, DateTime.fromMillisecondsSinceEpoch(1767225600000, isUtc: true).toLocal());
+      expect(
+        post.createdAt,
+        DateTime.fromMillisecondsSinceEpoch(
+          1767225600000,
+          isUtc: true,
+        ).toLocal(),
+      );
     });
 
     test('a protocol-relative thumbnail is given a scheme', () {
-      expect(parseListing(_page(_link)).posts.single.thumbnail, 'https://b.thumbs.redditmedia.com/x.jpg');
+      expect(
+        parseListing(_page(_link)).posts.single.thumbnail,
+        'https://b.thumbs.redditmedia.com/x.jpg',
+      );
     });
 
     test('a self post is recognised by its domain and keeps its body', () {
       final post = parseListing(_page(_selfPost)).posts.single;
 
       expect(post.isSelf, isTrue);
-      expect(post.url, isNull, reason: 'there is no article behind a self post');
+      expect(
+        post.url,
+        isNull,
+        reason: 'there is no article behind a self post',
+      );
       expect(post.selfText, 'Body text');
     });
 
@@ -75,7 +93,9 @@ void main() {
      data-permalink="/r/x/comments/ad/"><a class="title">Buy this</a></div>
 ''';
 
-      expect(parseListing(_page('$promoted$_link')).posts.map((p) => p.id), ['abc123']);
+      expect(parseListing(_page('$promoted$_link')).posts.map((p) => p.id), [
+        'abc123',
+      ]);
     });
 
     test('a pinned post is marked', () {
@@ -92,15 +112,17 @@ void main() {
       expect(parseListing(_page(_link)).posts.single.domain, 'example.com');
     });
 
-    test('flair is read, preferring the full label over the abbreviated one', () {
-      const flaired = '''
+    test(
+      'flair is read, preferring the full label over the abbreviated one',
+      () {
+        const flaired = '''
 <div class="thing" data-fullname="t3_f" data-subreddit="x"
      data-permalink="/r/x/comments/f/">
   <a class="title">Titled</a>
   <span class="linkflairlabel" title="Elon Criticism">Elon Crit…</span>
 </div>
 ''';
-      const bare = '''
+        const bare = '''
 <div class="thing" data-fullname="t3_b" data-subreddit="x"
      data-permalink="/r/x/comments/b/">
   <a class="title">Titled</a>
@@ -108,10 +130,14 @@ void main() {
 </div>
 ''';
 
-      expect(parseListing(_page(flaired)).posts.single.flair, 'Elon Criticism');
-      expect(parseListing(_page(bare)).posts.single.flair, 'Discussion');
-      expect(parseListing(_page(_link)).posts.single.flair, isNull);
-    });
+        expect(
+          parseListing(_page(flaired)).posts.single.flair,
+          'Elon Criticism',
+        );
+        expect(parseListing(_page(bare)).posts.single.flair, 'Discussion');
+        expect(parseListing(_page(_link)).posts.single.flair, isNull);
+      },
+    );
 
     test('an over-18 post carries the flag', () {
       const nsfw = '''
@@ -121,12 +147,24 @@ void main() {
 
       expect(parseListing(_page(nsfw)).posts.single.over18, isTrue);
     });
+
+    test('a spoiler post carries the flag', () {
+      const spoiler = '''
+<div class="thing spoiler" data-fullname="t3_s" data-subreddit="x" data-spoiler="true"
+     data-permalink="/r/x/comments/s/"><a class="title">The ending</a></div>
+''';
+
+      expect(parseListing(_page(spoiler)).posts.single.spoiler, isTrue);
+    });
   });
 
   group('pagination', () {
     test('takes the after cursor off the next link', () {
-      final page = _page(_link,
-          next: '<a href="https://old.reddit.com/r/dartlang/?count=25&amp;after=t3_abc123" rel="nofollow next">next</a>');
+      final page = _page(
+        _link,
+        next:
+            '<a href="https://old.reddit.com/r/dartlang/?count=25&amp;after=t3_abc123" rel="nofollow next">next</a>',
+      );
 
       expect(parseListing(page).after, 't3_abc123');
     });
@@ -169,8 +207,12 @@ void main() {
 <body><a id="header-img" href="/r/x/"><img src="//b.thumbs.redditmedia.com/logo.png"></a></body></html>
 ''';
 
-      expect(parseSubredditIcon(page), 'https://b.thumbs.redditmedia.com/logo.png',
-          reason: "the site's own logo in og:image is not the subreddit's picture");
+      expect(
+        parseSubredditIcon(page),
+        'https://b.thumbs.redditmedia.com/logo.png',
+        reason:
+            "the site's own logo in og:image is not the subreddit's picture",
+      );
     });
 
     test('falls back to og:image when it is community artwork', () {
@@ -180,11 +222,17 @@ void main() {
 </head><body></body></html>
 ''';
 
-      expect(parseSubredditIcon(page), 'https://styles.redditmedia.com/t5_2qh0u/styles/communityIcon.png');
+      expect(
+        parseSubredditIcon(page),
+        'https://styles.redditmedia.com/t5_2qh0u/styles/communityIcon.png',
+      );
     });
 
     test('a subreddit with no artwork has none to find', () {
-      expect(parseSubredditIcon('<html><body>nothing here</body></html>'), isNull);
+      expect(
+        parseSubredditIcon('<html><body>nothing here</body></html>'),
+        isNull,
+      );
       expect(parseSubredditIcon(''), isNull);
     });
   });

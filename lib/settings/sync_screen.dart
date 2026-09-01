@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/settings/_data.dart';
-import 'package:quax/settings/settings_chrome.dart';
-import 'package:quax/settings/settings_view_store.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/utils/webdav_sync.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/settings/_data.dart';
+import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/utils/webdav_sync.dart';
 
 /// Carries the same payload as the backup export to a WebDAV server the reader
 /// runs, so moving to a new phone stops being a manual file shuffle.
@@ -27,7 +24,7 @@ class _SyncScreenState extends State<SyncScreen> {
   final _username = TextEditingController();
   final _password = TextEditingController();
 
-  late final SettingsValueStore<bool> _busyStore;
+  bool _busy = false;
 
   @override
   void initState() {
@@ -36,7 +33,6 @@ class _SyncScreenState extends State<SyncScreen> {
     _url.text = prefs.get<String>(optionWebDavUrl) ?? '';
     _username.text = prefs.get<String>(optionWebDavUsername) ?? '';
     _password.text = prefs.get<String>(optionWebDavPassword) ?? '';
-    _busyStore = SettingsValueStore(false);
   }
 
   @override
@@ -44,7 +40,6 @@ class _SyncScreenState extends State<SyncScreen> {
     _url.dispose();
     _username.dispose();
     _password.dispose();
-    _busyStore.destroy();
     super.dispose();
   }
 
@@ -87,11 +82,12 @@ class _SyncScreenState extends State<SyncScreen> {
   }
 
   Future<void> _run(Future<WebDavResult> Function() action) async {
-    _busyStore.setValue(true);
+    setState(() => _busy = true);
     await _persistFields();
     final result = await action();
-    if (!mounted) return;
-    _busyStore.setValue(false);
+    if (mounted) {
+      setState(() => _busy = false);
+    }
     _report(result);
   }
 
@@ -125,106 +121,84 @@ class _SyncScreenState extends State<SyncScreen> {
 
     return SettingsPageScaffold(
       title: L10n.of(context).sync,
-      body: ScopedBuilder<SettingsValueStore<bool>, bool>(
-        store: _busyStore,
-        onState: (_, busy) => SettingsList(
-          children: [
-            SettingsSection(
-              description: L10n.of(context).sync_description,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kTweetHorizontalPadding,
+      body: SettingsList(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        children: [
+          Text(
+            L10n.of(context).sync_description,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _url,
+            keyboardType: TextInputType.url,
+            autocorrect: false,
+            decoration: InputDecoration(
+              labelText: L10n.of(context).sync_server_url,
+              hintText: L10n.of(context).sync_server_url_hint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _username,
+            autocorrect: false,
+            decoration: InputDecoration(
+              labelText: L10n.of(context).sync_username,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: L10n.of(context).sync_password,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            value: prefs.get<bool>(optionWebDavIncludeAccounts) == true,
+            title: Text(L10n.of(context).sync_include_accounts),
+            subtitle: Text(L10n.of(context).sync_include_accounts_description),
+            onChanged: (value) => prefs.set(optionWebDavIncludeAccounts, value),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            lastSync == null
+                ? L10n.of(context).sync_never
+                : L10n.of(context).sync_last(
+                    DateFormat.yMd(
+                      Localizations.localeOf(context).toString(),
+                    ).add_Hm().format(lastSync),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextField(
-                        controller: _url,
-                        keyboardType: TextInputType.url,
-                        autocorrect: false,
-                        decoration: InputDecoration(
-                          labelText: L10n.of(context).sync_server_url,
-                          hintText: L10n.of(context).sync_server_url_hint,
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: kTweetSpace3),
-                      TextField(
-                        controller: _username,
-                        autocorrect: false,
-                        decoration: InputDecoration(
-                          labelText: L10n.of(context).sync_username,
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: kTweetSpace3),
-                      TextField(
-                        controller: _password,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          labelText: L10n.of(context).sync_password,
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                      SettingsToggleRow(
-                        contentPadding: EdgeInsets.zero,
-                        value:
-                            prefs.get<bool>(optionWebDavIncludeAccounts) ==
-                            true,
-                        title: L10n.of(context).sync_include_accounts,
-                        description: L10n.of(
-                          context,
-                        ).sync_include_accounts_description,
-                        onChanged: (value) =>
-                            prefs.set(optionWebDavIncludeAccounts, value),
-                      ),
-                      const SizedBox(height: kTweetSpace2),
-                      Text(
-                        lastSync == null
-                            ? L10n.of(context).sync_never
-                            : L10n.of(context).sync_last(
-                                DateFormat.yMd(
-                                  Localizations.localeOf(context).toString(),
-                                ).add_Hm().format(lastSync),
-                              ),
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: kTweetSpace4),
-                      if (busy)
-                        const Center(
-                          child: SizedBox.square(
-                            dimension: kTweetTouchTarget,
-                            child: Padding(
-                              padding: EdgeInsets.all(kTweetSpace3),
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          ),
-                        )
-                      else
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            FilledButton.icon(
-                              icon: const Icon(Icons.cloud_upload_outlined),
-                              label: Text(L10n.of(context).sync_upload),
-                              onPressed: _upload,
-                            ),
-                            const SizedBox(height: kTweetSpace2),
-                            OutlinedButton.icon(
-                              icon: const Icon(Icons.cloud_download_outlined),
-                              label: Text(L10n.of(context).sync_download),
-                              onPressed: _download,
-                            ),
-                          ],
-                        ),
-                    ],
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 16),
+          if (_busy)
+            const Center(child: CircularProgressIndicator())
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.cloud_upload_outlined),
+                    label: Text(L10n.of(context).sync_upload),
+                    onPressed: _upload,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.cloud_download_outlined),
+                    label: Text(L10n.of(context).sync_download),
+                    onPressed: _download,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+        ],
       ),
     );
   }

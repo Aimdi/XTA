@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/plugins/reddit/reddit_search_html.dart';
+import 'package:xta/plugins/reddit/reddit_search_html.dart';
+import 'package:xta/plugins/reddit/reddit_search_json.dart';
 
 /// old.reddit's search page: `.search-result-*` blocks, not the `div.thing` a
 /// subreddit listing uses.
@@ -43,18 +44,24 @@ void main() {
       expect(post.createdAt, DateTime.parse('2026-07-01T10:00:00Z').toLocal());
     });
 
-    test('a page rendered as a listing is read by the listing parser instead', () {
-      final post = parseSearchPosts(_page(_listingPost)).single;
+    test(
+      'a page rendered as a listing is read by the listing parser instead',
+      () {
+        final post = parseSearchPosts(_page(_listingPost)).single;
 
-      expect(post.id, 'zzz');
-      expect(post.title, 'From a listing');
-    });
+        expect(post.id, 'zzz');
+        expect(post.title, 'From a listing');
+      },
+    );
 
     test('the id survives a result with no data-fullname', () {
       final withoutId = _searchPost.replaceAll('data-fullname="t3_abc123"', '');
 
-      expect(parseSearchPosts(_page(withoutId)).single.id, 'abc123',
-          reason: 'the comments path carries it');
+      expect(
+        parseSearchPosts(_page(withoutId)).single.id,
+        'abc123',
+        reason: 'the comments path carries it',
+      );
     });
 
     test('a score with a comma is still a number', () {
@@ -63,8 +70,20 @@ void main() {
       expect(parseSearchPosts(_page(busy)).single.score, 1234);
     });
 
+    test('a spoiler result carries the flag', () {
+      final spoiled = _searchPost.replaceFirst(
+        'search-result-link',
+        'search-result-link spoiler',
+      );
+
+      expect(parseSearchPosts(_page(spoiled)).single.spoiler, isTrue);
+    });
+
     test('a result with no title is skipped rather than guessed at', () {
-      expect(parseSearchPosts(_page('<div class="search-result-link"></div>')), isEmpty);
+      expect(
+        parseSearchPosts(_page('<div class="search-result-link"></div>')),
+        isEmpty,
+      );
       expect(parseSearchPosts('not html at all'), isEmpty);
       expect(parseSearchPosts(''), isEmpty);
     });
@@ -91,10 +110,16 @@ void main() {
       expect(parsed.map((e) => e.name), ['dartlang', 'flutterdev']);
       expect(parsed.first.subscribers, 12345);
       expect(parsed.first.description, 'A place for Dart');
+      expect(parsed.first.iconUrl, isNull);
     });
 
     test('an entry with no name is skipped', () {
-      expect(parseSubredditResults(_page('<div class="search-result-subreddit"></div>')), isEmpty);
+      expect(
+        parseSubredditResults(
+          _page('<div class="search-result-subreddit"></div>'),
+        ),
+        isEmpty,
+      );
     });
   });
 
@@ -118,6 +143,86 @@ void main() {
     test('a page with no users yields none rather than throwing', () {
       expect(parseUserResults(_page('')), isEmpty);
       expect(parseUserResults('junk'), isEmpty);
+    });
+  });
+
+  group('JSON search listings', () {
+    test('posts are read from t3 children', () {
+      final posts = parseSearchPostsJson({
+        'kind': 'Listing',
+        'data': {
+          'children': [
+            {
+              'kind': 't3',
+              'data': {
+                'id': 'abc123',
+                'title': 'Hu Tao build',
+                'subreddit': 'Genshin_Impact',
+                'permalink': '/r/Genshin_Impact/comments/abc123/hu_tao/',
+                'author': 'someone',
+                'score': 12,
+                'num_comments': 4,
+              },
+            },
+          ],
+        },
+      });
+
+      expect(posts.single.id, 'abc123');
+      expect(posts.single.title, 'Hu Tao build');
+      expect(posts.single.subreddit, 'Genshin_Impact');
+      expect(posts.single.commentCount, 4);
+    });
+
+    test('subreddits are read from t5 children', () {
+      final results = parseSubredditResultsJson({
+        'kind': 'Listing',
+        'data': {
+          'children': [
+            {
+              'kind': 't5',
+              'data': {
+                'display_name': 'HuTaoMains',
+                'public_description': 'For Hu Tao',
+                'subscribers': 12000,
+                'community_icon':
+                    'https://styles.redditmedia.com/t5_ht/styles/communityIcon.png?width=64&s=sig',
+              },
+            },
+          ],
+        },
+      });
+
+      expect(results.single.name, 'HuTaoMains');
+      expect(results.single.subscribers, 12000);
+      expect(results.single.description, 'For Hu Tao');
+      expect(
+        results.single.iconUrl,
+        'https://styles.redditmedia.com/t5_ht/styles/communityIcon.png',
+      );
+    });
+
+    test('users are read from t2 children', () {
+      final results = parseUserResultsJson({
+        'kind': 'Listing',
+        'data': {
+          'children': [
+            {
+              'kind': 't2',
+              'data': {'name': 'hutao', 'total_karma': 321},
+            },
+          ],
+        },
+      });
+
+      expect(results.single.name, 'hutao');
+      expect(results.single.karma, 321);
+    });
+
+    test('a missing listing yields none rather than throwing', () {
+      expect(parseSearchPostsJson(null), isEmpty);
+      expect(parseSubredditResultsJson('nope'), isEmpty);
+      expect(parseUserResultsJson(<String, Object?>{}), isEmpty);
     });
   });
 }

@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/group/custom_feed_rules.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/group/custom_feed_rules.dart';
+import 'package:xta/group/muted_keyword.dart';
 
 TweetChain _chain({
+  String id = 'c1',
   String text = '',
   int likes = 0,
   int reposts = 0,
@@ -25,8 +27,11 @@ TweetChain _chain({
       ..fullText = quotedText;
   }
 
-  return TweetChain(id: 'c1', tweets: [tweet], isPinned: false);
+  return TweetChain(id: id, tweets: [tweet], isPinned: false);
 }
+
+MutedKeyword _kw(String term, {KeywordFilterAction action = KeywordFilterAction.hide, DateTime? until}) =>
+    MutedKeyword(term: term, action: action, until: until);
 
 void main() {
   group('parseMutedKeywords', () {
@@ -80,18 +85,28 @@ void main() {
     test('passes everything through when no rule is set', () {
       final chains = [_chain(text: 'a', sensitive: true), _chain(text: 'b')];
 
-      expect(applyCustomFeedRules(chains, const CustomFeedRules()), chains);
+      expect(applyCustomFeedRules(chains, const CustomFeedRules()).chains, chains);
     });
 
     test('sfw keeps only non-sensitive posts, nsfw only sensitive ones', () {
       final chains = [_chain(text: 'clean'), _chain(text: 'spicy', sensitive: true)];
 
       expect(
-        applyCustomFeedRules(chains, const CustomFeedRules(contentFilter: contentFilterSfw)).single.tweets.first.fullText,
+        applyCustomFeedRules(chains, const CustomFeedRules(contentFilter: contentFilterSfw))
+            .chains
+            .single
+            .tweets
+            .first
+            .fullText,
         'clean',
       );
       expect(
-        applyCustomFeedRules(chains, const CustomFeedRules(contentFilter: contentFilterNsfw)).single.tweets.first.fullText,
+        applyCustomFeedRules(chains, const CustomFeedRules(contentFilter: contentFilterNsfw))
+            .chains
+            .single
+            .tweets
+            .first
+            .fullText,
         'spicy',
       );
     });
@@ -99,7 +114,7 @@ void main() {
     test('the likes threshold keeps posts at or above it', () {
       final chains = [_chain(text: 'quiet', likes: 9), _chain(text: 'loud', likes: 10)];
 
-      final kept = applyCustomFeedRules(chains, const CustomFeedRules(minLikes: 10));
+      final kept = applyCustomFeedRules(chains, const CustomFeedRules(minLikes: 10)).chains;
 
       expect(kept.map((c) => c.tweets.first.fullText), ['loud']);
     });
@@ -111,7 +126,7 @@ void main() {
         _chain(text: 'too few', reposts: 2, quotes: 1),
       ];
 
-      final kept = applyCustomFeedRules(chains, const CustomFeedRules(minRetweets: 6));
+      final kept = applyCustomFeedRules(chains, const CustomFeedRules(minRetweets: 6)).chains;
 
       expect(kept.map((c) => c.tweets.first.fullText), ['reposts only', 'split']);
     });
@@ -119,7 +134,7 @@ void main() {
     test('a muted word hides the post', () {
       final chains = [_chain(text: 'the bitcoin thread'), _chain(text: 'unrelated')];
 
-      final kept = applyCustomFeedRules(chains, const CustomFeedRules(mutedKeywords: ['bitcoin']));
+      final kept = applyCustomFeedRules(chains, CustomFeedRules(mutedKeywords: [_kw('bitcoin')])).chains;
 
       expect(kept.map((c) => c.tweets.first.fullText), ['unrelated']);
     });
@@ -127,7 +142,29 @@ void main() {
     test('a muted word inside a quoted post also hides it', () {
       final chains = [_chain(text: 'look at this', quotedText: 'spoilers ahead')];
 
-      expect(applyCustomFeedRules(chains, const CustomFeedRules(mutedKeywords: ['spoilers'])), isEmpty);
+      expect(applyCustomFeedRules(chains, CustomFeedRules(mutedKeywords: [_kw('spoilers')])).chains, isEmpty);
+    });
+
+    test('fold keeps the chain with a reason', () {
+      final chains = [_chain(id: 'c-fold', text: 'spoilers inside')];
+      final outcome = applyCustomFeedRules(
+        chains,
+        CustomFeedRules(mutedKeywords: [_kw('spoilers', action: KeywordFilterAction.fold)]),
+      );
+
+      expect(outcome.chains, hasLength(1));
+      expect(outcome.foldReasons['c-fold'], 'spoilers');
+    });
+
+    test('expired mute does not match', () {
+      final chains = [_chain(text: 'spoilers inside')];
+      final outcome = applyCustomFeedRules(
+        chains,
+        CustomFeedRules(mutedKeywords: [_kw('spoilers', until: DateTime.utc(2020, 1, 1))]),
+        now: DateTime.utc(2025, 1, 1),
+      );
+
+      expect(outcome.chains, hasLength(1));
     });
 
     test('rules combine: a post must satisfy all of them', () {
@@ -139,8 +176,8 @@ void main() {
 
       final kept = applyCustomFeedRules(
         chains,
-        const CustomFeedRules(minLikes: 100, mutedKeywords: ['muted']),
-      );
+        CustomFeedRules(minLikes: 100, mutedKeywords: [_kw('muted')]),
+      ).chains;
 
       expect(kept.map((c) => c.tweets.first.fullText), ['popular and fine']);
     });
@@ -153,7 +190,7 @@ void main() {
         const CustomFeedRules(contentFilter: contentFilterSfw).cacheKey,
         const CustomFeedRules(minLikes: 10).cacheKey,
         const CustomFeedRules(minRetweets: 10).cacheKey,
-        const CustomFeedRules(mutedKeywords: ['x']).cacheKey,
+        CustomFeedRules(mutedKeywords: [_kw('x')]).cacheKey,
       };
 
       expect(keys.length, 5);

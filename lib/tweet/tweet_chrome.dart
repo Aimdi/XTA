@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quax/ui/contrast.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/ui/contrast.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 /// Shared timeline chrome for tweet tiles.
 ///
@@ -87,7 +87,9 @@ TextStyle tweetLabelStyle(BuildContext context) =>
 Widget tweetFlatCard({
   required Color? color,
   required Widget child,
-  Clip clipBehavior = Clip.antiAlias,
+  // The shape is a zero-radius rectangle, so an antialiased clip per tile was
+  // a clip-path layer spent clipping nothing.
+  Clip clipBehavior = Clip.none,
 }) {
   return Card(
     elevation: 0,

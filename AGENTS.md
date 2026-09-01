@@ -13,7 +13,7 @@ appear.
 
 ### Hard rules (do not violate)
 
-- **QuaX is a read-oriented X frontend, not X itself.** It views timelines,
+- **XTA is a read-oriented X frontend, not X itself.** It views timelines,
   profiles, search, and media via reverse-engineered APIs. It does **not**
   create posts on X. Never add compose / reply / quote / repost / like-on-X /
   DM / Spaces hosting / account settings write-back. Local-only actions
@@ -46,8 +46,8 @@ appear.
 - One module per worktree (Grok has no built-in worktree flag):
 
   ```bash
-  git worktree add ../quax-tweet rewrite/tweet
-  cd ../quax-tweet && grok
+  git worktree add ../xta-tweet rewrite/tweet
+  cd ../xta-tweet && grok
   ```
 
 - Module order for incremental UI rewrite:
@@ -57,13 +57,31 @@ appear.
   `/memory` + `/flush` for durable decisions, `/rewind` to undo a bad direction,
   `/btw` for side questions.
 
+### Enforced guardrails
+
+Some of the rules above are machine-enforced for Claude Code via
+`.claude/settings.json` (Grok ignores it — the prose still governs there):
+
+- `permissions.deny` — Edit/Write on `lib/generated/**` and `lib/oss_licenses.dart`.
+- `permissions.ask` — Edit/Write on `lib/client/**` and `lib/database/**`.
+- `PreToolUse` → `.claude/hooks/guard-pinned-deps.sh` denies edits that change
+  `dart_twitter_api`, a `dependency_overrides` entry, or the Flutter version in
+  `pubspec.yaml` / `.fvmrc`. Other pubspec edits pass.
+- `SessionStart` → `.claude/hooks/session-start.sh` runs `pub get` +
+  `intl_utils:generate` (non-fatal, skipped without `fvm`).
+- `PostToolUse` → `.claude/hooks/format-dart.sh` runs `fvm dart format` on an
+  edited `.dart` file.
+
 ### Skills (slash commands)
 
 | Command | Source | Purpose |
 |---|---|---|
-| `/parse-api` | `.grok/skills/parse-api` (+ `.claude` mirror) | Safe X API JSON parsing |
-| `/port-from-squawker` | `.grok/skills/port-from-squawker` | Port upstream Squawker fixes |
-| `/translate` | `.grok/skills/translate` | ARB / UI string changes |
+| `/parse-api` | `parse-api` | Safe X API JSON parsing |
+| `/port-from-squawker` | `port-from-squawker` | Port upstream Squawker fixes |
+| `/translate` | `translate` | ARB / UI string changes |
+
+All three exist in both `.grok/skills/` and `.claude/skills/`, byte-identical.
+`scripts/check_skill_sync.sh` fails CI if the two trees drift apart.
 
 If names collide, use the qualified form (e.g. `/local:parse-api`).
 

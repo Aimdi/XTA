@@ -2,204 +2,420 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'package:quax/constants.dart';
-import 'package:quax/profile/profile.dart';
-import 'package:quax/search/search.dart';
-import 'package:quax/utils/urls.dart';
-import 'package:quax/utils/iterables.dart';
-import 'package:quax/utils/_entities.dart';
-import 'package:quax/tweet/ticker_screen.dart';
-import 'package:quax/plugins/plugin_links.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/profile.dart';
+import 'package:xta/search/search.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/utils/_entities.dart';
+import 'package:xta/tweet/ticker_screen.dart';
+import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/plugins/stocks/stocks_store.dart';
 
-// RichText (not sure if it has an official name) is the way urls, mentions, hashtags... are integrated on
-// twitter content (tweets and descriptions).
-// It uses Entities (objects with fields such as display_url, url (t.co) and indices)
+/// Turning a post's text and its entity list into spans.
+///
+/// X positions entities by rune index into the raw text; the text between them
+/// is scanned again for the mentions and hashtags that descriptions carry
+/// without entities. Every tappable span costs a [TapGestureRecognizer], and a
+/// recognizer is a resource: whoever keeps the returned parts must hand them to
+/// [disposeRichTextParts] when done — the parts list remembers its own
+/// recognizers.
 
+/// One run of a post's text: either plain words or a built span.
 class RichTextPart {
   final InlineSpan? entity;
-  String? plainText;
+  final String? plainText;
 
-  RichTextPart(this.entity, this.plainText);
+  const RichTextPart(this.entity, this.plainText);
 
   @override
-  String toString() {
-    return plainText ?? '';
+  String toString() => plainText ?? '';
+}
+
+// Compiled once: this runs per text segment of every tweet scrolled in, and
+// Dart does not cache RegExp construction.
+final _mentionOrHashtag = RegExp(r'(#|(?<=\W|^)@)\w+');
+final _unescape = HtmlUnescape();
+
+/// Text as it reads, not as X sends it: `&gt;`, `&lt;` and `&amp;` come back
+/// escaped in every post body, and anything showing that body raw shows the
+/// entities instead of the characters.
+String unescapeHtml(String text) => _unescape.convert(text);
+
+/// The recognizers behind each parts list, attached to the list itself so
+/// disposal needs no separate bookkeeping and a list nobody keeps can simply
+/// be collected.
+final Expando<List<GestureRecognizer>> _recognizersOf = Expando();
+
+/// Releases the recognizers a [buildRichText] result carries. Safe to call on
+/// a list that carries none.
+void disposeRichTextParts(List<RichTextPart> parts) {
+  final recognizers = _recognizersOf[parts];
+  if (recognizers == null) {
+    return;
   }
+  for (final recognizer in recognizers) {
+    recognizer.dispose();
+  }
+  _recognizersOf[parts] = null;
+}
+
+String _normalizeHashtag(String tag) => tag.startsWith('#') ? tag : '#$tag';
+
+bool _isFollowingTopic(BuildContext context, String tag) {
+  final normalized = _normalizeHashtag(tag);
+  return context.read<SubscriptionsModel>().state.any(
+    (s) => s is SearchSubscription && s.id == normalized,
+  );
+}
+
+Future<void> _toggleTopicFollow(BuildContext context, String tag) async {
+  final normalized = _normalizeHashtag(tag);
+  final model = context.read<SubscriptionsModel>();
+  final followed = _isFollowingTopic(context, normalized);
+  await model.toggleSubscribe(
+    SearchSubscription(id: normalized, createdAt: DateTime.now()),
+    followed,
+  );
+  if (!context.mounted) {
+    return;
+  }
+  final messenger = ScaffoldMessenger.of(context);
+  messenger.showSnackBar(
+    SnackBar(
+      content: Text(
+        followed
+            ? L10n.of(context).unsubscribe
+            : L10n.of(context).topic_follow_done(normalized),
+      ),
+    ),
+  );
+}
+
+void _showCashtagSheet(BuildContext context, String symbol) {
+  StocksWatchlistStore? store;
+  try {
+    store = context.read<StocksWatchlistStore>();
+  } on ProviderNotFoundException {
+    store = null;
+  }
+  final watched = store?.state.contains(symbol.toUpperCase()) ?? false;
+
+  showModalBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.show_chart),
+            title: Text('\$${symbol.toUpperCase()}'),
+            onTap: () {
+              Navigator.pop(sheetContext);
+              Navigator.pushNamed(
+                context,
+                routeTicker,
+                arguments: TickerScreenArguments(symbol: symbol),
+              );
+            },
+          ),
+          if (store != null)
+            ListTile(
+              leading: Icon(watched ? Icons.star : Icons.star_outline),
+              title: Text(
+                watched
+                    ? L10n.of(sheetContext).plugin_stocks_unwatch
+                    : L10n.of(sheetContext).plugin_stocks_watch,
+              ),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                if (watched) {
+                  store!.remove(symbol);
+                } else {
+                  store!.add(symbol);
+                }
+              },
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+void _showTopicFollowSheet(BuildContext context, String tag) {
+  final normalized = _normalizeHashtag(tag);
+  final followed = _isFollowingTopic(context, normalized);
+
+  showModalBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => SafeArea(
+      child: ListTile(
+        leading: Icon(followed ? Icons.check : Icons.tag),
+        title: Text(
+          followed
+              ? L10n.of(sheetContext).topic_following
+              : L10n.of(sheetContext).topic_follow,
+        ),
+        onTap: () {
+          Navigator.pop(sheetContext);
+          _toggleTopicFollow(context, normalized);
+        },
+      ),
+    ),
+  );
+}
+
+InlineSpan _hashtagSpan(
+  EntitySpanContext context,
+  String text,
+  VoidCallback onTap,
+  VoidCallback onLongPress,
+) {
+  return WidgetSpan(
+    alignment: PlaceholderAlignment.baseline,
+    baseline: TextBaseline.alphabetic,
+    child: GestureDetector(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      child: Text(text, style: context.linkStyle),
+    ),
+  );
 }
 
 List<InlineSpan> displayRichText(List<RichTextPart> richText) {
-  return richText.map((e) {
-    if (e.plainText != null) {
-      return TextSpan(text: e.plainText);
-    } else {
-      return e.entity!;
-    }
-  }).toList();
+  return [
+    for (final part in richText)
+      if (part.plainText != null)
+        TextSpan(text: part.plainText)
+      else
+        part.entity!,
+  ];
 }
 
-// Generate all the tweet entities (mentions, hashtags, etc.) from the tweet text
-List<RichTextPart> buildRichText(BuildContext context, String rawText, Object? rawEntities) {
-  Runes runes = Runes(rawText);
-  Iterable<int> runesAsIterable = runes.getRange(0, runes.length);
+/// All of a post's runs, in order: the entities where X placed them, and the
+/// text between them scanned for what descriptions leave unmarked.
+List<RichTextPart> buildRichText(
+  BuildContext context,
+  String rawText,
+  Object? rawEntities,
+) {
+  final runes = rawText.runes.toList(growable: false);
 
-  List<Entity> entities = [];
-  if (rawEntities != null) {
-    entities = _parseEntities(context, rawEntities);
+  final recognizers = <GestureRecognizer>[];
+  final spanContext = EntitySpanContext(
+    // The same accent every other link in the app wears. It was a hardcoded
+    // blue before, so a mention in a post and one in a bio disagreed.
+    linkColor: Theme.of(context).colorScheme.secondary,
+    recognizer: (onTap) {
+      final recognizer = TapGestureRecognizer()..onTap = onTap;
+      recognizers.add(recognizer);
+      return recognizer;
+    },
+  );
+
+  final entities = _parseEntities(context, rawEntities);
+  final parts = <RichTextPart>[];
+
+  var index = 0;
+  for (final entity in entities) {
+    _addTextRuns(
+      context,
+      parts,
+      spanContext,
+      _runesToText(runes, index, entity.getEntityStart()),
+    );
+    parts.add(RichTextPart(entity.getContent(spanContext), null));
+    index = entity.getEntityEnd();
   }
-  List<RichTextPart> richTextParts = [];
+  _addTextRuns(context, parts, spanContext, _runesToText(runes, index));
 
-  int index = 0;
-  for (var part in entities) {
-    int start = part.getEntityStart();
-    int end = part.getEntityEnd();
+  _recognizersOf[parts] = recognizers;
+  return parts;
+}
 
-    // Add any text between the last entity's end and the start of this one
-    var textPart = _convertRunesToText(runesAsIterable, index, start);
-    _handleTextParts(context, textPart, richTextParts);
-
-    // Then add the actual entity
-    richTextParts.add(RichTextPart(part.getContent(), null));
-
-    // Then set our index in the tweet text as the end of our entity
-    index = end;
+/// Splits [text] around the mentions and hashtags descriptions carry without
+/// entities, adding a run per piece.
+void _addTextRuns(
+  BuildContext context,
+  List<RichTextPart> parts,
+  EntitySpanContext spanContext,
+  String? text,
+) {
+  if (text == null) {
+    return;
   }
-  // And end by adding any text between the last entity and the end of the text
-  var textPart = _convertRunesToText(runesAsIterable, index);
-  _handleTextParts(context, textPart, richTextParts);
 
-  return richTextParts;
+  text.splitMapJoin(
+    _mentionOrHashtag,
+    onMatch: (match) {
+      final full = match.group(0);
+      final kind = match.group(1);
+      if (kind == null || full == null) {
+        return '';
+      }
+      if (kind == '#') {
+        parts.add(
+          RichTextPart(
+            _hashtagSpan(
+              spanContext,
+              full,
+              () => Navigator.pushNamed(
+                context,
+                routeSearch,
+                arguments: SearchArguments(
+                  1,
+                  focusInputOnOpen: false,
+                  query: full,
+                ),
+              ),
+              () => _showTopicFollowSheet(context, full),
+            ),
+            null,
+          ),
+        );
+      } else {
+        parts.add(
+          RichTextPart(
+            TextSpan(
+              text: full,
+              style: spanContext.linkStyle,
+              recognizer: spanContext.recognizer(() {
+                Navigator.pushNamed(
+                  context,
+                  routeProfile,
+                  arguments: ProfileScreenArguments.fromScreenName(
+                    full.substring(1),
+                    null,
+                  ),
+                );
+              }),
+            ),
+            null,
+          ),
+        );
+      }
+      return kind;
+    },
+    onNonMatch: (piece) {
+      if (piece.isNotEmpty) {
+        parts.add(RichTextPart(null, piece));
+      }
+      return piece;
+    },
+  );
 }
 
-// In descriptions, the hashtags and mentions are not seen as entities, so we parse them manually
-void _handleTextParts(BuildContext context, String? text, List<RichTextPart> richTextParts) {
-  if (text == null) return;
-  List parsedText = _parseMentionsAndHashtags(context, text);
-  for (var t in parsedText) {
-    if (t is String) {
-      richTextParts.add(RichTextPart(null, t));
-    }
-    if (t is InlineSpan) {
-      richTextParts.add(RichTextPart(t, null));
-    }
-  }
-}
-
-List _parseMentionsAndHashtags(BuildContext context, String content) {
-  List contentWidgets = [];
-
-  // Split the string by any mentions or hashtags, and turn those into links
-  content.splitMapJoin(RegExp(r'(#|(?<=\W|^)@)\w+'), onMatch: (match) {
-    var full = match.group(0);
-    var type = match.group(1);
-    if (type == null || full == null) {
-      return '';
-    }
-
-    var onTap = () async {};
-    if (type == '#') {
-      onTap = () async {
-        Navigator.pushNamed(context, routeSearch,
-            arguments:
-                SearchArguments(1, focusInputOnOpen: false, query: full));
-      };
-    }
-    if (type == '@') {
-      onTap = () async {
-        Navigator.pushNamed(context, routeProfile,
-            arguments:
-                ProfileScreenArguments.fromScreenName(full.substring(1), null));
-      };
-    }
-    contentWidgets.add(TextSpan(
-        text: full,
-        style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-        recognizer: TapGestureRecognizer()..onTap = onTap));
-    return type;
-  }, onNonMatch: (text) {
-    contentWidgets.add(text);
-    return text;
-  });
-
-  return contentWidgets;
-}
-
-String? _convertRunesToText(Iterable<int> runes, int start, [int? end]) {
-  var string =
-      runes.getRange(start, end).map((e) => String.fromCharCode(e)).join('');
+String? _runesToText(List<int> runes, int start, [int? end]) {
+  // Clamped: the indices come off the wire, and an entity past the end of the
+  // text must cost a missing run, not a RangeError in every tile after it.
+  final from = start.clamp(0, runes.length);
+  final to = (end ?? runes.length).clamp(from, runes.length);
+  final string = String.fromCharCodes(runes.getRange(from, to));
   if (string.isEmpty) {
     return null;
   }
-  return HtmlUnescape().convert(string);
+  return _unescape.convert(string);
 }
 
-List<Entity> _parseEntities(BuildContext context, dynamic newEntities) {
-  List<Entity> entities = [];
-  if (newEntities == null) return entities;
-
-  if (newEntities is Map<String, dynamic>){
-    // try using newEntities as a raw json object (that's what we get from the translation API)
-    newEntities = Entities.fromJson(newEntities);
+List<Entity> _parseEntities(BuildContext context, Object? rawEntities) {
+  if (rawEntities == null) {
+    return const [];
   }
 
-  if (newEntities is! Entities && newEntities is! UserEntityUrl){
-      return entities;
+  // The translation API hands entities back as raw JSON rather than the model.
+  final parsed = rawEntities is Map<String, dynamic>
+      ? Entities.fromJson(rawEntities)
+      : rawEntities;
+  if (parsed is! Entities && parsed is! UserEntityUrl) {
+    return const [];
   }
 
-  // in tweets all entities types can be present (Entities object)
-  // but in profile description there can be only urls (UserEntityUrl object)
-  if (newEntities is Entities) {
-    for (Media media in newEntities.media ?? []) {
+  final entities = <Entity>[];
+
+  // In tweets every entity kind can be present; a profile description carries
+  // only urls (UserEntityUrl).
+  if (parsed is Entities) {
+    for (final media in parsed.media ?? const <Media>[]) {
       entities.add(MediaEntity(media));
     }
 
-    for (Hashtag hashtag in newEntities.hashtags ?? []) {
-      entities.add(HashtagEntity(
+    for (final hashtag in parsed.hashtags ?? const <Hashtag>[]) {
+      entities.add(
+        HashtagEntity(
           hashtag,
-          () => Navigator.pushNamed(context, routeSearch,
-              arguments: SearchArguments(1,
-                  focusInputOnOpen: false, query: '#${hashtag.text}'))));
+          () => Navigator.pushNamed(
+            context,
+            routeSearch,
+            arguments: SearchArguments(
+              1,
+              focusInputOnOpen: false,
+              query: '#${hashtag.text}',
+            ),
+          ),
+          () => _showTopicFollowSheet(context, '#${hashtag.text}'),
+        ),
+      );
     }
 
     // A ticker opens its own screen: the chart, and the posts about it.
-    for (final symbol in newEntities.symbols ?? []) {
-      final text = symbol.text;
+    for (final symbol in parsed.symbols ?? const []) {
+      final String? text = symbol.text;
       if (text == null || text.isEmpty) {
         continue;
       }
-      entities.add(SymbolEntity(
+      entities.add(
+        SymbolEntity(
           text: text,
           indices: symbol.indices,
-          onTap: () =>
-              Navigator.pushNamed(context, routeTicker, arguments: TickerScreenArguments(symbol: text))));
+          onTap: () => Navigator.pushNamed(
+            context,
+            routeTicker,
+            arguments: TickerScreenArguments(symbol: text),
+          ),
+          onLongPress: () => _showCashtagSheet(context, text),
+        ),
+      );
     }
 
-    for (UserMention mention in newEntities.userMentions ?? []) {
-      entities.add(UserMentionEntity(
+    for (final mention in parsed.userMentions ?? const <UserMention>[]) {
+      entities.add(
+        UserMentionEntity(
           mention,
-          () => Navigator.pushNamed(context, routeProfile,
-              arguments:
-                  ProfileScreenArguments(mention.idStr, mention.screenName, null))));
+          () => Navigator.pushNamed(
+            context,
+            routeProfile,
+            arguments: ProfileScreenArguments(
+              mention.idStr,
+              mention.screenName,
+              null,
+            ),
+          ),
+        ),
+      );
     }
   }
 
-  for (Url url in newEntities.urls ?? []) {
-    entities.add(UrlEntity(url, () async {
-      String? uri = url.expandedUrl;
-      if (uri == null ||
-          (uri.length > 33 &&
-              uri.substring(0, 33) == 'https://twitter.com/i/web/status/') ||
-          (uri.length > 27 &&
-              uri.substring(0, 27) == 'https://x.com/i/web/status/')) {
-        return;
-      }
-      // A plugin may be able to read this link in-app (Substack posts); only
-      // hand it to the browser when none claims it.
-      if (context.mounted && await openWithPlugins(context, uri)) {
-        return;
-      }
-      await openUri(context, uri);
-    }));
+  final urls = parsed is Entities
+      ? parsed.urls
+      : (parsed as UserEntityUrl).urls;
+  for (final url in urls ?? const <Url>[]) {
+    entities.add(
+      UrlEntity(url, () async {
+        final uri = url.expandedUrl;
+        if (uri == null ||
+            uri.startsWith('https://twitter.com/i/web/status/') ||
+            uri.startsWith('https://x.com/i/web/status/')) {
+          return;
+        }
+        // A plugin may be able to read this link in-app (Substack posts); only
+        // hand it to the browser when none claims it.
+        if (!context.mounted) return;
+        await openLink(context, uri);
+      }),
+    );
   }
 
   entities.sort((a, b) => a.getEntityStart().compareTo(b.getEntityStart()));

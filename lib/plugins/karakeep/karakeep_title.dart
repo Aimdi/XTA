@@ -1,4 +1,4 @@
-import 'package:quax/client/client.dart';
+import 'package:xta/client/client.dart';
 
 /// Title Karakeep should show for a saved post: the author, then as much of the
 /// post as fits on one line, so a saved bookmark is recognisable in the list

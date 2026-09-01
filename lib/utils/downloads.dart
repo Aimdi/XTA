@@ -2,11 +2,11 @@ import 'package:dart_twitter_api/twitter_api.dart' show Media;
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/utils/download_directory.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/download_directory.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
@@ -28,7 +28,7 @@ Future<void> autoDownloadTweetPhotos({
   List<Media> photos;
   try {
     final tweet = TweetWithCard.fromJson(content);
-    username = tweet.user?.screenName ?? 'quax';
+    username = tweet.user?.screenName ?? 'xta';
     final media = tweet.extendedEntities?.media ?? tweet.entities?.media ?? const <Media>[];
     photos = media.where((m) => m.type == 'photo' && m.mediaUrlHttps != null).toList();
   } catch (_) {
@@ -106,7 +106,9 @@ Future<void> downloadUriToPickedFile(BuildContext context, Uri uri, String fileN
 
     onSuccess();
   } catch (e) {
-    showSnackBar(context, icon: '🙊', message: e.toString());
+    if (context.mounted) {
+      showSnackBar(context, icon: '🙊', message: e.toString());
+    }
   }
 }
 

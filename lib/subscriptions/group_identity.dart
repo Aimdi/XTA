@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/subscriptions/group_mark_style.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/subscriptions/group_mark_style.dart';
 
 /// Deterministic fallback color for groups without a chosen color, hashed from
 /// the group name so the same group always gets the same hue.
@@ -11,6 +11,26 @@ Color groupFallbackColor(String name) {
 }
 
 Color groupSeedColor(SubscriptionGroup group) => group.color ?? groupFallbackColor(group.name);
+
+/// A group's own colour, made readable as text on the current background.
+///
+/// The colour is how a group is recognised, so it is kept rather than replaced
+/// — but a group whose colour is nearly the colour of the sheet it is written
+/// on would be a row of invisible text. The hue survives; only how far it is
+/// from the background changes.
+Color readableGroupColor(SubscriptionGroup group, ThemeData theme) {
+  final seed = groupSeedColor(group);
+  final onDark = theme.brightness == Brightness.dark;
+  final seedIsDark = ThemeData.estimateBrightnessForColor(seed) == Brightness.dark;
+
+  if (onDark && seedIsDark) {
+    return Color.lerp(seed, Colors.white, 0.55)!;
+  }
+  if (!onDark && !seedIsDark) {
+    return Color.lerp(seed, Colors.black, 0.45)!;
+  }
+  return seed;
+}
 
 /// Glyph colour for a solid [seed] disc: white on saturated colours, near-black
 /// on pale ones — the same rule the member avatars use.

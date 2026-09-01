@@ -17,11 +17,7 @@ class VideoGridItem extends MediaGridItem {
       fit: StackFit.expand,
       alignment: Alignment.center,
       children: [
-        ExtendedImage.network(
-          thumbnailUrl,
-          cache: true,
-          fit: BoxFit.cover,
-        ),
+        CappedNetworkImage(url: thumbnailUrl),
         const FritterCenterPlayButton(
             backgroundColor: Colors.black54,
             iconColor: Colors.white,

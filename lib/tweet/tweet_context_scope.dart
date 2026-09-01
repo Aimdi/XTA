@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/profile/profile.dart';
-import 'package:quax/tweet/_video.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/profile/profile.dart';
+import 'package:xta/tweet/_video.dart';
 
 /// Provides the [TweetContextState] and [VideoContextState] that tweet tiles
 /// read from context. Any subtree rendering [TweetConversation]/[TweetTile] must
@@ -19,7 +19,7 @@ class TweetContextScope extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<TweetContextState>(
-            create: (_) => TweetContextState(prefs.get(optionTweetsHideSensitive))),
+            create: (_) => TweetContextState.fromPrefs(prefs)),
         ChangeNotifierProvider<VideoContextState>(
             create: (_) => VideoContextState(prefs.get(optionMediaDefaultMute))),
       ],

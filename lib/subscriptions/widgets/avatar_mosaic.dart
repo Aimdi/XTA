@@ -1,8 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/plugins/reddit/reddit_subreddit_avatar.dart';
-import 'package:quax/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
+import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 
 /// A group's members rendered as its cover art.
 ///

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client_unauthenticated.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/client/client_unauthenticated.dart';
+import 'package:xta/constants.dart';
 
 /// The guest token's expiry handling was dead code. `getToken` consulted
 /// `_expiresAt` / `_tokenLimit` / `_tokenRemaining`, all declared `const int =

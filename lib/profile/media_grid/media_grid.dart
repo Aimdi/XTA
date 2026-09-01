@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/profile/media_grid/gif_playback_gate.dart';
-import 'package:quax/profile/media_grid/media_grid_items/media_grid_item.dart';
-import 'package:quax/profile/media_grid/media_grid_lightbox.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/utils/paging.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/media_grid/gif_playback_gate.dart';
+import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
+import 'package:xta/profile/media_grid/media_grid_lightbox.dart';
+import 'package:xta/ui/capped_network_image.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/paging.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 typedef MediaGridConfig = ({int columns, double spacing, double radius});
@@ -18,7 +19,7 @@ typedef MediaGridConfig = ({int columns, double spacing, double radius});
 /// setting; the feed layout is one full-width item per row (a timeline
 /// without text); the two-per-row layout is a roomier two-column masonry.
 MediaGridConfig mediaGridConfigOf(BuildContext context) {
-  var prefs = PrefService.of(context);
+  var prefs = PrefService.of(context, listen: false);
   var layout = prefs.get<String>(optionMediaGridLayout) ?? mediaGridLayoutMasonry;
   return switch (layout) {
     mediaGridLayoutFeed => (columns: 1, spacing: 8.0, radius: 12.0),
@@ -50,6 +51,15 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
   bool get wantKeepAlive => true;
 
   final GifPlaybackGate _gifGate = GifPlaybackGate();
+  bool _firstLoadStarted = false;
+
+  @override
+  void didUpdateWidget(covariant MediaGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.controller, widget.controller)) {
+      _firstLoadStarted = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -57,9 +67,19 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
     super.dispose();
   }
 
+  void _maybeStartFirstLoad() {
+    scheduleFirstPageFetch(
+      widget.controller,
+      alreadyStarted: _firstLoadStarted,
+      markStarted: () => _firstLoadStarted = true,
+      isMounted: () => mounted,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _maybeStartFirstLoad();
 
     var config = mediaGridConfigOf(context);
 
@@ -67,35 +87,53 @@ class _MediaGridState extends State<MediaGrid> with AutomaticKeepAliveClientMixi
       onRefresh: () async => widget.controller.refresh(),
       child: PagingListener<int, MediaGridItem>(
         controller: widget.controller,
-        builder: (context, state, fetchNextPage) => PagedMasonryGridView<int, MediaGridItem>.count(
-          state: state,
-          fetchNextPage: fetchNextPage,
-          padding: EdgeInsets.all(config.spacing),
-          crossAxisCount: config.columns,
-          mainAxisSpacing: config.spacing,
-          crossAxisSpacing: config.spacing,
-          addAutomaticKeepAlives: false,
-          builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
-            itemBuilder: (context, item, index) => _MediaGridTile(
-                item: item,
-                gifGate: _gifGate,
-                radius: config.radius,
-                onTap: () => openMediaLightbox(context, controller: widget.controller, initialIndex: index)),
-            firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+        builder: (context, state, fetchNextPage) {
+          if (pagingAwaitingFirstPage(state)) {
+            return pagingFill(
+              child: const Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (state.items == null) {
+            return FullPageErrorWidget(
               error: pagingErrorOf(state)?.error,
               stackTrace: pagingErrorOf(state)?.stackTrace,
               prefix: widget.firstPageErrorPrefix,
               onRetry: fetchNextPage,
+            );
+          }
+          if (state.items!.isEmpty) {
+            return pagingFill(
+              child: Center(child: Text(widget.emptyMessage)),
+            );
+          }
+          return PagedMasonryGridView<int, MediaGridItem>.count(
+            state: state,
+            fetchNextPage: fetchNextPage,
+            padding: EdgeInsets.all(config.spacing),
+            crossAxisCount: config.columns,
+            mainAxisSpacing: config.spacing,
+            crossAxisSpacing: config.spacing,
+            addAutomaticKeepAlives: false,
+            builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
+              itemBuilder: (context, item, index) => _MediaGridTile(
+                  item: item,
+                  gifGate: _gifGate,
+                  radius: config.radius,
+                  onTap: () => openMediaGridItem(
+                        context,
+                        item: item,
+                        index: index,
+                        controller: widget.controller,
+                      )),
+              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+                error: pagingErrorOf(state)?.error,
+                stackTrace: pagingErrorOf(state)?.stackTrace,
+                prefix: widget.newPageErrorPrefix,
+                onRetry: fetchNextPage,
+              ),
             ),
-            newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-              error: pagingErrorOf(state)?.error,
-              stackTrace: pagingErrorOf(state)?.stackTrace,
-              prefix: widget.newPageErrorPrefix,
-              onRetry: fetchNextPage,
-            ),
-            noItemsFoundIndicatorBuilder: (context) => Center(child: Text(widget.emptyMessage)),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -152,7 +190,12 @@ class _StaticMediaGridState extends State<StaticMediaGrid> {
           item: widget.items[index],
           gifGate: _gifGate,
           radius: config.radius,
-          onTap: () => openMediaLightbox(context, staticItems: widget.items, initialIndex: index),
+          onTap: () => openMediaGridItem(
+                context,
+                item: widget.items[index],
+                index: index,
+                staticItems: widget.items,
+              ),
           onLongPress: widget.onLongPressItem == null ? null : () => widget.onLongPressItem!(widget.items[index])),
     );
   }
@@ -198,6 +241,7 @@ class _MediaGridTileState extends State<_MediaGridTile> {
       GifGridItem() => 'GIF',
       PhotoGridItem() => 'photo',
       VideoGridItem() => 'video',
+      BroadcastGridItem() => 'broadcast',
     };
   }
 
@@ -280,7 +324,7 @@ class _GifGridCellState extends State<_GifGridCell> {
       onVisibilityChanged: (info) => widget.gate.report(this, info.visibleFraction),
       child: widget.gate.isGranted(this)
           ? widget.item.toWidget(context)
-          : ExtendedImage.network(widget.item.thumbnailUrl, cache: true, fit: BoxFit.cover),
+          : CappedNetworkImage(url: widget.item.thumbnailUrl),
     );
   }
 }

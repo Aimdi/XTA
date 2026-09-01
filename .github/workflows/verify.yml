@@ -1,14 +1,13 @@
 name: verify
 
 # The build in ci.yml proves the app compiles. This proves it is *correct*:
-# formatting, static analysis, unit tests and ARB integrity, on every pull
-# request rather than only after a push to master.
+# formatting, static analysis, unit tests, ARB integrity and skill-tree sync,
+# on every pull request rather than only after a push to main.
 on:
   workflow_dispatch:
   pull_request:
   push:
     branches:
-      - master
       - main
       - claude/main
 
@@ -32,17 +31,22 @@ jobs:
       - name: Validate ARB files
         run: python scripts/validate_arb.py
 
+  skills:
+    name: Skill tree sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Neither Flutter nor Python needed: .claude/skills and .grok/skills are
+      # hand-mirrored, and drift makes the two agents follow different rules.
+      - name: Check .claude/skills and .grok/skills are identical
+        run: bash scripts/check_skill_sync.sh
+
   dart:
     name: Format, analyze, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install and set up Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '21.0.10'
 
       - name: Install and set up Flutter
         uses: subosito/flutter-action@v2
@@ -53,26 +57,17 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Generate icons
-        run: |
-          python -mvenv .venv
-          source ./.venv/bin/activate
-          pip install -r requirements.txt
-          python generate_icons.py
-          deactivate
-
       # lib/generated and lib/oss_licenses.dart are gitignored, so analysis
       # would drown in missing-import errors without generating them first.
       - name: Generate sources
         run: |
-          dart run flutter_launcher_icons
           dart run dart_pubspec_licenses:generate
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
 
       # Only files the PR *adds*. Dart 3.7's tall style would rewrite 195 of the
       # 250 existing files, and this fork regularly ports patches from upstream
-      # QuaX and Squawker — a mass reformat would turn every future port into a
+      # XTA and Squawker — a mass reformat would turn every future port into a
       # conflict. New code is still born formatted.
       - name: Check formatting of new files
         if: github.event_name == 'pull_request'
@@ -91,27 +86,5 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
-      - name: Test redesigned modules
-        run: |
-          flutter test --reporter expanded \
-            test/tweet_design_primitives_test.dart \
-            test/home_chrome_test.dart \
-            test/profile_design_primitives_test.dart \
-            test/advanced_search_test.dart \
-            test/search_chrome_test.dart \
-            test/group_chrome_test.dart \
-            test/saved_design_primitives_test.dart \
-            test/settings_design_primitives_test.dart
-
-      - name: Test full suite
+      - name: Test
         run: flutter test --reporter expanded
-
-      - name: Build debug APK
-        run: flutter build apk --debug
-
-      - name: Archive debug APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: xta-debug-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 7

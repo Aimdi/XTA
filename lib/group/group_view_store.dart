@@ -1,6 +1,6 @@
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/database/entities.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/entities.dart';
 
 typedef GroupRouteSelection = ({String id, String name});
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/settings/settings_chrome.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/settings/settings_chrome.dart';
 
 /// The accent names, kept beside the picker because they exist only for it.
 String xLookAccentName(L10n l10n, String accent) => switch (accent) {
@@ -21,83 +21,83 @@ class SettingsThemeFragment extends StatelessWidget {
   Widget build(BuildContext context) {
     final BasePrefService prefs = PrefService.of(context);
 
-    final l10n = L10n.of(context);
     return SettingsPageScaffold(
-      title: l10n.theme,
+      title: L10n.current.theme,
       body: SettingsList(
         children: [
-          SettingsSection(
-            title: l10n.theme_background,
-            description: l10n.theme_background_description,
-            children: [
-              SettingsPreferenceSelector<String>(
-                prefs: prefs,
-                pref: optionXLookBackground,
-                options: [
-                  SettingsOption(
-                    value: xLookBackgroundSystem,
-                    label: l10n.system,
-                    icon: Icons.brightness_auto_outlined,
-                  ),
-                  SettingsOption(
-                    value: xLookBackgroundLight,
-                    label: l10n.light,
-                    color: const Color(0xFFFFFFFF),
-                  ),
-                  SettingsOption(
-                    value: xLookBackgroundDim,
-                    label: l10n.theme_background_dim,
-                    color: const Color(0xFF15202B),
-                  ),
-                  SettingsOption(
-                    value: xLookBackgroundLightsOut,
-                    label: l10n.theme_background_lights_out,
-                    color: const Color(0xFF000000),
-                  ),
-                ],
+          PrefDropdown(
+            fullWidth: false,
+            title: Text(L10n.of(context).theme_background),
+            subtitle: Text(L10n.of(context).theme_background_description),
+            pref: optionXLookBackground,
+            items: [
+              DropdownMenuItem(
+                value: xLookBackgroundSystem,
+                child: Text(L10n.of(context).system),
+              ),
+              DropdownMenuItem(
+                value: xLookBackgroundLight,
+                child: Text(L10n.of(context).light),
+              ),
+              DropdownMenuItem(
+                value: xLookBackgroundDim,
+                child: Text(L10n.of(context).theme_background_dim),
+              ),
+              DropdownMenuItem(
+                value: xLookBackgroundLightsOut,
+                child: Text(L10n.of(context).theme_background_lights_out),
               ),
             ],
           ),
-          SettingsSection(
-            title: l10n.theme_accent,
-            description: l10n.theme_accent_description,
-            children: [
-              SettingsPreferenceSelector<String>(
-                prefs: prefs,
-                pref: optionXLookAccent,
-                options: xLookAccents.entries
-                    .map(
-                      (accent) => SettingsOption(
-                        value: accent.key,
-                        label: xLookAccentName(l10n, accent.key),
-                        color: accent.value,
-                      ),
-                    )
-                    .toList(growable: false),
-              ),
-            ],
+          PrefDropdown(
+            fullWidth: false,
+            title: Text(L10n.of(context).theme_accent),
+            subtitle: Text(L10n.of(context).theme_accent_description),
+            pref: optionXLookAccent,
+            items: xLookAccents.entries
+                .map(
+                  (accent) => DropdownMenuItem(
+                    value: accent.key,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // The swatch carries the meaning; the name is there for
+                        // anyone who cannot tell these colours apart.
+                        Container(
+                          width: 16,
+                          height: 16,
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: accent.value,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        Text(xLookAccentName(L10n.of(context), accent.key)),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
           ),
-          SettingsSection(
-            children: [
-              PrefSwitch(
-                title: Text(l10n.true_black),
-                pref: optionThemeTrueBlack,
-                subtitle: Text(l10n.use_true_black_for_the_dark_mode_theme),
-                onChange: (bool changeValue) {
-                  prefs.set(optionThemeTrueBlackTweetCards, changeValue);
-                },
-              ),
-              PrefSwitch(
-                title: Text(l10n.true_black_tweet_cards),
-                pref: optionThemeTrueBlackTweetCards,
-                disabled: !prefs.get(optionThemeTrueBlack),
-                subtitle: Text(l10n.use_true_black_for_tweet_cards),
-              ),
-              PrefSwitch(
-                title: Text(l10n.show_navigation_labels),
-                pref: optionShowNavigationLabels,
-              ),
-            ],
+          PrefSwitch(
+            title: Text(L10n.of(context).true_black),
+            pref: optionThemeTrueBlack,
+            subtitle: Text(
+              L10n.of(context).use_true_black_for_the_dark_mode_theme,
+            ),
+            onChange: (bool changeValue) {
+              prefs.set(optionThemeTrueBlackTweetCards, changeValue);
+            },
+          ),
+          PrefSwitch(
+            title: Text(L10n.of(context).true_black_tweet_cards),
+            pref: optionThemeTrueBlackTweetCards,
+            disabled: !prefs.get(optionThemeTrueBlack),
+            subtitle: Text(L10n.of(context).use_true_black_for_tweet_cards),
+          ),
+          PrefSwitch(
+            title: Text(L10n.of(context).show_navigation_labels),
+            pref: optionShowNavigationLabels,
           ),
         ],
       ),

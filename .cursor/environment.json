@@ -1,5 +1,5 @@
 {
   "install": "bash scripts/cloud_install.sh",
-  "start": "echo 'QuaX is Android-only. Use scripts/cloud_verify.sh (and optional adb device). Emulator needs /dev/kvm which Cursor Cloud VMs do not provide.'",
+  "start": "echo 'XTA is Android-only. Use scripts/cloud_verify.sh (and optional adb device). Emulator needs /dev/kvm which Cursor Cloud VMs do not provide.'",
   "terminals": []
 }

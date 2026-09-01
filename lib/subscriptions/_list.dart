@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/search/search.dart';
-import 'package:quax/subscriptions/_import.dart';
-import 'package:quax/subscriptions/users_model.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/user.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/search/search.dart';
+import 'package:xta/subscriptions/_import.dart';
+import 'package:xta/subscriptions/subscription_look.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/user.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/ui/x_controls.dart';
+import 'package:xta/ui/x_controls.dart';
 
 class SubscriptionUsersPage extends StatefulWidget {
   final ScrollController scrollController;
@@ -216,19 +217,31 @@ class SubscriptionUsers extends StatelessWidget {
   }
 }
 
+/// One row of the subscriptions list, whichever network it belongs to.
+///
+/// Everything that was not an X account used to land in the saved-search row
+/// below: a followed subreddit wore a search icon, said it was a search term,
+/// and opened X's search for its own name. Each row now carries its own
+/// network's mark and leads back to that network.
 Widget buildSubscriptionTile(BuildContext context, Subscription user) {
   if (user is UserSubscription) {
     return UserTile(key: Key(user.screenName), user: user);
   }
 
+  final destination = subscriptionDestination(user);
+
   return ListTile(
     key: Key(user.screenName),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-    leading: const SizedBox(width: 48, child: Icon(Icons.saved_search)),
+    leading: subscriptionAvatar(user),
     title: Text(user.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-    subtitle: Text(L10n.current.search_term),
+    subtitle: Text(subscriptionSubtitle(user), maxLines: 1, overflow: TextOverflow.ellipsis),
     trailing: FollowButton(user: user),
     onTap: () {
+      if (destination != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => destination()));
+        return;
+      }
       Navigator.pushNamed(
         context,
         routeSearch,

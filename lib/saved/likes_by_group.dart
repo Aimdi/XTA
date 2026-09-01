@@ -6,7 +6,7 @@
 /// kept rather than things you were shown.
 library;
 
-import 'package:quax/database/entities.dart';
+import 'package:xta/database/entities.dart';
 
 /// One heading in the broken-down likes list.
 class LikesSection<T> {

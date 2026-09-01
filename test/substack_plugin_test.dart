@@ -1,26 +1,66 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:quax/plugins/substack/substack_client.dart';
-import 'package:quax/plugins/substack/substack_html.dart';
-import 'package:quax/plugins/substack/substack_models.dart';
+import 'package:xta/plugins/substack/substack_client.dart';
+import 'package:xta/plugins/substack/substack_html.dart';
+import 'package:xta/plugins/substack/substack_models.dart';
 
 void main() {
   test('resolveSubstackBase accepts handle and URL', () {
-    expect(resolveSubstackBase('astralcodexten')?.host, 'astralcodexten.substack.com');
-    expect(resolveSubstackBase('https://astralcodexten.substack.com/p/x')?.origin, 'https://astralcodexten.substack.com');
-    expect(resolveSubstackBase('www.astralcodexten.com')?.host, 'www.astralcodexten.com');
+    expect(
+      resolveSubstackBase('astralcodexten')?.host,
+      'astralcodexten.substack.com',
+    );
+    expect(
+      resolveSubstackBase('https://astralcodexten.substack.com/p/x')?.origin,
+      'https://astralcodexten.substack.com',
+    );
+    expect(
+      resolveSubstackBase('www.astralcodexten.com')?.host,
+      'www.astralcodexten.com',
+    );
     expect(resolveSubstackBase(''), isNull);
   });
 
-  test('resolveSubstackPostRef parses /p/slug URLs', () {
-    final ref = resolveSubstackPostRef('https://astralcodexten.substack.com/p/hello-world?utm=1');
+  test('resolveSubstackBase reads share links and @profiles', () {
+    expect(
+      resolveSubstackBase('https://open.substack.com/pub/platformer')?.host,
+      'platformer.substack.com',
+    );
+    expect(
+      resolveSubstackBase(
+        'https://open.substack.com/pub/platformer/p/the-deal?utm=1',
+      )?.host,
+      'platformer.substack.com',
+    );
+    expect(
+      resolveSubstackBase('https://substack.com/@platformer')?.host,
+      'platformer.substack.com',
+    );
+    expect(resolveSubstackBase('@platformer')?.host, 'platformer.substack.com');
+    expect(resolveSubstackBase('https://substack.com/'), isNull);
+    expect(resolveSubstackBase('https://open.substack.com/'), isNull);
+    expect(resolveSubstackBase('https://medium.com/@someone'), isNull);
+  });
+
+  test('resolveSubstackPostRef parses /p/slug and share URLs', () {
+    final ref = resolveSubstackPostRef(
+      'https://astralcodexten.substack.com/p/hello-world?utm=1',
+    );
     expect(ref?.base.host, 'astralcodexten.substack.com');
     expect(ref?.slug, 'hello-world');
     expect(resolveSubstackPostRef('astralcodexten'), isNull);
+
+    final share = resolveSubstackPostRef(
+      'https://open.substack.com/pub/platformer/p/the-deal?utm_source=share',
+    );
+    expect(share?.base.host, 'platformer.substack.com');
+    expect(share?.slug, 'the-deal');
   });
 
-  test('publicationFromPostJson reads nested publication metadata', () {
+  test('publicationFromPostJson keeps the host that served the posts', () {
     final pub = publicationFromPostJson({
       'publishedBylines': [
         {
@@ -32,17 +72,205 @@ void main() {
                 'custom_domain': 'www.astralcodexten.com',
                 'hero_text': 'commentary',
                 'logo_url': 'https://example.com/logo.png',
-              }
-            }
-          ]
-        }
-      ]
+              },
+            },
+          ],
+        },
+      ],
     }, fallbackBase: Uri.parse('https://astralcodexten.substack.com'));
 
     expect(pub.name, 'Astral Codex Ten');
     expect(pub.subdomain, 'astralcodexten');
-    expect(pub.baseUrl, 'https://www.astralcodexten.com');
+    expect(pub.baseUrl, 'https://astralcodexten.substack.com');
     expect(pub.description, 'commentary');
+  });
+
+  test('publicationFetchBases tries leftover custom domains then Substack', () {
+    const pub = SubstackPublication(
+      subdomain: 'platformer',
+      baseUrl: 'https://www.platformer.news',
+      name: 'Platformer',
+    );
+    expect(publicationFetchBases(pub).map((e) => e.host).toList(), [
+      'www.platformer.news',
+      'platformer.news',
+      'platformer.substack.com',
+    ]);
+  });
+
+  test('subdomainOf does not turn a custom domain into www', () {
+    expect(
+      subdomainOf(Uri.parse('https://www.garbageday.email')),
+      'garbageday',
+    );
+    expect(subdomainOf(Uri.parse('https://garbageday.email')), 'garbageday');
+    expect(
+      subdomainOf(Uri.parse('https://garbageday.substack.com')),
+      'garbageday',
+    );
+    expect(publicationNameLooksGeneric('www'), isTrue);
+    expect(publicationNameLooksGeneric('Garbage Day'), isFalse);
+  });
+
+  test('substackHostCandidates adds the Substack twin for a custom domain', () {
+    expect(
+      substackHostCandidates(
+        Uri.parse('https://www.garbageday.email'),
+      ).map((e) => e.host).toList(),
+      ['www.garbageday.email', 'garbageday.email', 'garbageday.substack.com'],
+    );
+    expect(
+      requestedPublicationHosts(
+        Uri.parse('https://www.garbageday.email'),
+      ).map((e) => e.host).toList(),
+      ['www.garbageday.email', 'garbageday.email'],
+    );
+    expect(
+      leftoverSubstackHosts(
+        Uri.parse('https://www.garbageday.email'),
+      ).map((e) => e.host).toList(),
+      ['garbageday.substack.com'],
+    );
+  });
+
+  test('publicationFromHomepageHtml reads the real title and avatar', () {
+    const html = '''
+      <html><head>
+        <title>Home | Garbage Day</title>
+        <meta property="og:site_name" content="Garbage Day">
+        <meta property="og:image" content="https://example.com/logo.png">
+      </head></html>
+    ''';
+    final pub = publicationFromHomepageHtml(
+      html,
+      Uri.parse('https://www.garbageday.email'),
+    );
+    expect(pub?.name, 'Garbage Day');
+    expect(pub?.subdomain, 'garbageday');
+    expect(pub?.logoUrl, 'https://example.com/logo.png');
+  });
+
+  test('looksLikeBeehiivPostsJson requires the /posts listing shape', () {
+    expect(
+      looksLikeBeehiivPostsJson({
+        'posts': [
+          {'web_title': 'Hello', 'slug': 'hello'},
+        ],
+        'pagination': {'page': 1, 'total_pages': 1},
+      }),
+      isTrue,
+    );
+    expect(
+      looksLikeBeehiivPostsJson({
+        'posts': <Object>[],
+        'pagination': {'total_pages': 1},
+      }),
+      isTrue,
+    );
+    expect(
+      looksLikeBeehiivPostsJson([
+        {'title': 'Hello', 'slug': 'hello'},
+      ]),
+      isFalse,
+    );
+  });
+
+  test('postFromBeehiivJson maps premium audience and the /p/slug URL', () {
+    final post = postFromBeehiivJson(
+      {
+        'id': 'abc',
+        'web_title': 'Miles Morales probably couldn’t happen now',
+        'web_subtitle': 'Read to the end for a very good dog video',
+        'slug': 'miles-morales-probably-couldn-t-happen-now',
+        'image_url': 'https://media.beehiiv.com/cover.png',
+        'audience': 'premium',
+        'is_premium': true,
+        'override_scheduled_at': '2026-08-28T18:54:19.460Z',
+        'authors': [
+          {'name': 'Adam Bumas'},
+        ],
+      },
+      publicationBaseUrl: 'https://www.garbageday.email',
+      publicationName: 'Garbage Day',
+    );
+    expect(post.title, contains('Miles Morales'));
+    expect(post.slug, 'miles-morales-probably-couldn-t-happen-now');
+    expect(post.isPaywalled, isTrue);
+    expect(post.authorName, 'Adam Bumas');
+    expect(
+      post.canonicalUrl,
+      'https://www.garbageday.email/p/miles-morales-probably-couldn-t-happen-now',
+    );
+    expect(post.publicationName, 'Garbage Day');
+  });
+
+  test('postFromBeehiivHtml reads OG article tags', () {
+    const html = '''
+      <html><head>
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="Microdramas are the death rattle of Hollywood">
+        <meta property="og:description" content="Read to the end">
+        <meta property="og:image" content="https://example.com/cover.png">
+        <meta property="og:url" content="https://www.garbageday.email/p/microdramas">
+        <meta property="article:author" content="Ryan Broderick">
+        <meta property="article:published_time" content="2026-08-26T19:49:07.448Z">
+      </head><body>Powered by beehiiv</body></html>
+    ''';
+    final post = postFromBeehiivHtml(
+      html,
+      slug: 'microdramas',
+      publicationBaseUrl: 'https://www.garbageday.email',
+      publicationName: 'Garbage Day',
+    );
+    expect(post?.title, contains('Microdramas'));
+    expect(post?.authorName, 'Ryan Broderick');
+    expect(post?.coverImage, 'https://example.com/cover.png');
+    expect(post?.canonicalUrl, 'https://www.garbageday.email/p/microdramas');
+  });
+
+  test('publicationFromBeehiivRemix reads name and logo', () {
+    final remix = {
+      'state': {
+        'loaderData': {
+          'root': {
+            'publication': {
+              'name': 'Garbage Day',
+              'description': 'A newsletter about having fun online',
+              'logo': {'url': 'https://media.beehiiv.com/logo.png'},
+            },
+          },
+        },
+      },
+    };
+    final pub = publicationFromBeehiivRemix(
+      remix,
+      Uri.parse('https://www.garbageday.email'),
+    );
+    expect(pub?.name, 'Garbage Day');
+    expect(pub?.description, contains('fun online'));
+    expect(pub?.logoUrl, 'https://media.beehiiv.com/logo.png');
+    expect(pub?.subdomain, 'garbageday');
+    expect(pub?.baseUrl, 'https://www.garbageday.email');
+  });
+
+  test('jsonObjectLiteralAt does not end on a brace inside a string', () {
+    const source = '{"a":"x{y}z","b":{"c":1}} trailing';
+    expect(jsonObjectLiteralAt(source, 0), '{"a":"x{y}z","b":{"c":1}}');
+    expect(parseRemixContext('window.__remixContext = {"k":"v"};'), {'k': 'v'});
+  });
+
+  test('publicationFromProfileJson reads primaryPublication', () {
+    final pub = publicationFromProfileJson({
+      'handle': 'platformer',
+      'primaryPublication': {
+        'name': 'Platformer',
+        'subdomain': 'platformer',
+        'custom_domain': 'www.platformer.news',
+      },
+    });
+    expect(pub?.name, 'Platformer');
+    expect(pub?.subdomain, 'platformer');
+    expect(pub?.baseUrl, 'https://www.platformer.news');
   });
 
   test('isPaywalled recognizes live only_paid audience', () {
@@ -158,6 +386,7 @@ void main() {
     expect(html, contains('<p>Body</p>'));
     expect(html, isNot(contains('<button')));
     expect(html, contains('font-family: Georgia'));
+    expect(html, contains('XtaTts.postMessage'));
   });
 
   test('sanitize and plain text keep readable content', () {
@@ -175,9 +404,439 @@ void main() {
     expect(buildSubstackSpeakText(title: 'T', bodyHtml: raw), contains('T'));
   });
 
+  test(
+    'SubstackClient.fetchSimilarPublications prefers recs then search',
+    () async {
+      final recHtml =
+          '<html><script>window._preloads = JSON.parse(${jsonEncode(jsonEncode({
+            'recommendations': [
+              {
+                'description': 'Casey',
+                'recommendedPublication': {'name': 'Big Technology', 'subdomain': 'bigtechnology'},
+              },
+            ],
+          }))});</script></html>';
+
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.path == '/recommendations') {
+            return http.Response(
+              recHtml,
+              200,
+              headers: {'content-type': 'text/html'},
+            );
+          }
+          expect(request.url.path, '/api/v1/publication/search');
+          expect(request.url.queryParameters['query'], 'Platformer');
+          return http.Response(
+            jsonEncode({
+              'results': [
+                {'name': 'Platformer', 'subdomain': 'platformer'},
+                {'name': 'User Mag', 'subdomain': 'usermag'},
+              ],
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final similar = await client.fetchSimilarPublications(
+        const SubstackPublication(
+          subdomain: 'platformer',
+          baseUrl: 'https://platformer.substack.com',
+          name: 'Platformer',
+        ),
+      );
+
+      expect(similar.map((e) => e.publication.id), [
+        'bigtechnology',
+        'usermag',
+      ]);
+      expect(similar.first.blurb, 'Casey');
+    },
+  );
+
+  test('fetchPublication refuses a site that is not Substack', () async {
+    final client = SubstackClient(
+      httpClient: MockClient((request) async {
+        return http.Response('Not found', 404);
+      }),
+    );
+
+    expect(
+      () => client.fetchPublication(Uri.parse('https://www.platformer.news')),
+      throwsA(isA<SubstackNotPublicationException>()),
+    );
+  });
+
+  test(
+    'fetchPosts falls back to the Substack host after a leftover domain',
+    () async {
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.host.endsWith('platformer.news')) {
+            return http.Response('Not found', 404);
+          }
+          expect(request.url.host, 'platformer.substack.com');
+          expect(request.url.path, '/api/v1/posts');
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 1,
+                'title': 'Still here',
+                'slug': 'still-here',
+                'publishedBylines': [
+                  {
+                    'publicationUsers': [
+                      {
+                        'publication': {
+                          'name': 'Platformer',
+                          'subdomain': 'platformer',
+                          'custom_domain': 'www.platformer.news',
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final posts = await client.fetchPosts(
+        const SubstackPublication(
+          subdomain: 'platformer',
+          baseUrl: 'https://www.platformer.news',
+          name: 'Platformer',
+        ),
+      );
+
+      expect(posts, hasLength(1));
+      expect(posts.first.slug, 'still-here');
+      expect(posts.first.publicationBaseUrl, 'https://www.platformer.news');
+      expect(posts.first.publicationName, 'Platformer');
+    },
+  );
+
+  test(
+    'a follow saved as www on a custom domain still loads the Substack twin',
+    () async {
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.host.contains('garbageday.email')) {
+            return http.Response('Not found', 404);
+          }
+          expect(request.url.host, 'garbageday.substack.com');
+          if (request.url.path == '/api/v1/posts') {
+            return http.Response(
+              jsonEncode([
+                {
+                  'id': 9,
+                  'title': 'How The MrBeast Undisclosed Ad Thing Works',
+                  'slug': 'how-the-mrbeast-undisclosed-ad-thing',
+                  'publishedBylines': [
+                    {
+                      'publicationUsers': [
+                        {
+                          'publication': {
+                            'name': 'Garbage Day',
+                            'subdomain': 'garbageday',
+                            'hero_text':
+                                'A newsletter about having fun online.',
+                            'logo_url': 'https://example.com/gd.png',
+                          },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ]),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          return http.Response('Not found', 404);
+        }),
+      );
+
+      const stub = SubstackPublication(
+        subdomain: 'www',
+        baseUrl: 'https://www.garbageday.email',
+        name: 'www',
+      );
+
+      final pub = await client.fetchPublication(Uri.parse(stub.baseUrl));
+      expect(pub.name, 'Garbage Day');
+      expect(pub.subdomain, 'garbageday');
+      expect(pub.baseUrl, 'https://www.garbageday.email');
+      expect(pub.logoUrl, 'https://example.com/gd.png');
+
+      final posts = await client.fetchPosts(stub);
+      expect(posts, isNotEmpty);
+      expect(posts.first.title, contains('MrBeast'));
+      expect(posts.first.publicationName, 'Garbage Day');
+    },
+  );
+
+  test(
+    'fetchPublication prefers a living Beehiiv host over the leftover Substack',
+    () async {
+      const beehiivHome = '''
+        <html><head>
+          <title>Home | Garbage Day</title>
+          <meta property="og:site_name" content="Garbage Day">
+          <meta property="og:image" content="https://media.beehiiv.com/logo.png">
+        </head><body>Powered by beehiiv</body></html>
+      ''';
+      const beehiivPosts = {
+        'posts': [
+          {
+            'id': '6a30a3a4-6dff-4ec9-a5e6-d519df5271f4',
+            'web_title': 'Miles Morales probably couldn’t happen now',
+            'web_subtitle': 'Read to the end for a very good dog video',
+            'slug': 'miles-morales-probably-couldn-t-happen-now',
+            'image_url': 'https://media.beehiiv.com/cover.png',
+            'audience': 'both',
+            'is_premium': false,
+            'override_scheduled_at': '2026-08-28T18:54:19.460Z',
+            'authors': [
+              {'name': 'Adam Bumas'},
+            ],
+          },
+        ],
+        'pagination': {'page': 1, 'per_page': 30, 'total': 1, 'total_pages': 1},
+      };
+
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.host.contains('substack.com')) {
+            fail(
+              'leftover Substack twin must not be probed for a living Beehiiv host: ${request.url}',
+            );
+          }
+          expect(request.url.host.endsWith('garbageday.email'), isTrue);
+          if (request.url.path == '/posts') {
+            return http.Response(
+              jsonEncode(beehiivPosts),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          if (request.url.path.isEmpty || request.url.path == '/') {
+            return http.Response(
+              beehiivHome,
+              200,
+              headers: {'content-type': 'text/html'},
+            );
+          }
+          return http.Response('Not found', 404);
+        }),
+      );
+
+      final pub = await client.fetchPublication(
+        Uri.parse('https://www.garbageday.email'),
+      );
+      expect(pub.name, 'Garbage Day');
+      expect(pub.subdomain, 'garbageday');
+      expect(pub.baseUrl, 'https://www.garbageday.email');
+      expect(pub.logoUrl, 'https://media.beehiiv.com/logo.png');
+
+      final posts = await client.fetchPosts(pub);
+      expect(posts, hasLength(1));
+      expect(posts.first.title, contains('Miles Morales'));
+      expect(posts.first.authorName, 'Adam Bumas');
+      expect(
+        posts.first.canonicalUrl,
+        'https://www.garbageday.email/p/miles-morales-probably-couldn-t-happen-now',
+      );
+      expect(posts.first.publicationBaseUrl, 'https://www.garbageday.email');
+    },
+  );
+
+  test(
+    'fetchPost reads a Beehiiv /p/slug page instead of leftover Substack',
+    () async {
+      const article = '''
+      <html><head>
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="Miles Morales probably couldn’t happen now">
+        <meta property="og:description" content="Read to the end for a very good dog video">
+        <meta property="og:image" content="https://media.beehiiv.com/cover.png">
+        <meta property="og:url" content="https://www.garbageday.email/p/miles-morales-probably-couldn-t-happen-now">
+        <meta property="article:author" content="Adam Bumas">
+        <meta property="article:published_time" content="2026-08-28T18:54:19.460Z">
+      </head><body>Powered by beehiiv</body></html>
+    ''';
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.host.contains('substack.com')) {
+            fail(
+              'leftover Substack twin must not be probed for a living Beehiiv post: ${request.url}',
+            );
+          }
+          if (request.url.path ==
+              '/p/miles-morales-probably-couldn-t-happen-now') {
+            return http.Response.bytes(
+              utf8.encode(article),
+              200,
+              headers: {'content-type': 'text/html; charset=utf-8'},
+            );
+          }
+          return http.Response('Not found', 404);
+        }),
+      );
+
+      final post = await client.fetchPost(
+        const SubstackPublication(
+          subdomain: 'garbageday',
+          baseUrl: 'https://www.garbageday.email',
+          name: 'Garbage Day',
+        ),
+        'miles-morales-probably-couldn-t-happen-now',
+      );
+      expect(post.title, contains('Miles Morales'));
+      expect(post.authorName, 'Adam Bumas');
+      expect(post.canonicalUrl, contains('garbageday.email/p/'));
+      expect(post.publicationName, 'Garbage Day');
+    },
+  );
+
+  test('fetchPosts uses /api/v1/archive when /posts is gone', () async {
+    final client = SubstackClient(
+      httpClient: MockClient((request) async {
+        if (request.url.path == '/api/v1/posts') {
+          return http.Response('Not found', 404);
+        }
+        expect(request.url.path, '/api/v1/archive');
+        return http.Response(
+          jsonEncode([
+            {'id': 2, 'title': 'From archive', 'slug': 'from-archive'},
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }),
+    );
+
+    final posts = await client.fetchPosts(
+      const SubstackPublication(
+        subdomain: 'example',
+        baseUrl: 'https://example.substack.com',
+        name: 'Example',
+      ),
+    );
+    expect(posts.single.title, 'From archive');
+  });
+
+  test('resolvePublication follows open.substack.com share links', () async {
+    final client = SubstackClient(
+      httpClient: MockClient((request) async {
+        expect(request.url.host, 'platformer.substack.com');
+        expect(request.url.path, '/api/v1/posts');
+        return http.Response(
+          jsonEncode([
+            {
+              'id': 1,
+              'title': 'Hello',
+              'slug': 'hello',
+              'publishedBylines': [
+                {
+                  'publicationUsers': [
+                    {
+                      'publication': {
+                        'name': 'Platformer',
+                        'subdomain': 'platformer',
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+        );
+      }),
+    );
+
+    final pub = await client.resolvePublication(
+      'https://open.substack.com/pub/platformer/p/hello',
+    );
+    expect(pub.subdomain, 'platformer');
+    expect(pub.baseUrl, 'https://platformer.substack.com');
+    expect(pub.name, 'Platformer');
+  });
+
+  test(
+    'resolvePublication maps a leftover custom domain to its Substack twin',
+    () async {
+      final client = SubstackClient(
+        httpClient: MockClient((request) async {
+          if (request.url.path.contains('/user/platformer/public_profile')) {
+            return http.Response(
+              jsonEncode({
+                'handle': 'platformer',
+                'primaryPublication': {
+                  'name': 'Platformer',
+                  'subdomain': 'platformer',
+                  'custom_domain': 'www.platformer.news',
+                },
+              }),
+              200,
+              headers: {'content-type': 'application/json'},
+            );
+          }
+          if (request.url.host.contains('platformer.news')) {
+            return http.Response('Gone', 404);
+          }
+          expect(request.url.host, 'platformer.substack.com');
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 1,
+                'title': 'Archive',
+                'slug': 'archive',
+                'publishedBylines': [
+                  {
+                    'publicationUsers': [
+                      {
+                        'publication': {
+                          'name': 'Platformer',
+                          'subdomain': 'platformer',
+                          'custom_domain': 'www.platformer.news',
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ]),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      final pub = await client.resolvePublication(
+        'https://www.platformer.news',
+      );
+      expect(pub.subdomain, 'platformer');
+      expect(pub.name, 'Platformer');
+      expect(pub.baseUrl, 'https://www.platformer.news');
+    },
+  );
+
   test('SubstackPublication prefs round-trip', () {
     const pubs = [
-      SubstackPublication(subdomain: 'a', baseUrl: 'https://a.substack.com', name: 'A'),
+      SubstackPublication(
+        subdomain: 'a',
+        baseUrl: 'https://a.substack.com',
+        name: 'A',
+      ),
     ];
     final raw = SubstackPublication.listToPrefs(pubs);
     final back = SubstackPublication.listFromPrefs(raw);

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/utils/download_directory.dart';
+import 'package:xta/utils/download_directory.dart';
 
 const MethodChannel _channel = MethodChannel('browser_resolver');
 
@@ -47,8 +47,8 @@ void main() {
     test('shows the folder, not the whole tree URI', () {
       expect(
         DownloadDirectory.displayName(
-            'content://com.android.externalstorage.documents/tree/primary%3APictures%2FQuaX'),
-        'Pictures/QuaX',
+            'content://com.android.externalstorage.documents/tree/primary%3APictures%2FXTA'),
+        'Pictures/XTA',
       );
     });
 

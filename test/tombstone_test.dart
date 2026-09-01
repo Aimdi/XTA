@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/generated/l10n.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/generated/l10n.dart';
 
 /// A reply X will not return is not the same as a reply that does not exist.
 /// Dropping it silently loses a link in the chain, so the position has to

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:quax/article/article_text_block.dart';
+import 'package:xta/article/article_text_block.dart';
 
 ArticleTextBlock blockToRichText(Map<String, dynamic> block, {TextStyle? baseStyle}) {
   final String text = (block['text'] ?? '') as String;

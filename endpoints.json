@@ -1,5 +1,19 @@
 {
-  "_comment": "Query-id overrides for the X GraphQL endpoints in lib/client/endpoints.dart. Apps fetch this on launch, so correcting an id here repairs every install without a release. Only ids for operations the installed build already knows are accepted, and only when they match ^[A-Za-z0-9_-]{16,32}$ — this file cannot redirect traffic or add endpoints. Leave 'endpoints' empty while the shipped ids are correct.",
+  "_comment": "Query-id overrides for the X GraphQL endpoints in lib/client/endpoints.dart. Apps fetch this on launch, so correcting an id here repairs every install without a release. Only ids for operations the installed build already knows are accepted, and only when they match ^[A-Za-z0-9_-]{16,32}$ — this file cannot redirect traffic or add endpoints. Keep entries while they differ from older shipped APKs; clear when every release already ships the same ids.",
   "version": 1,
-  "endpoints": {}
+  "endpoints": {
+    "TweetDetail": "oCon7R-cgWRFy6EfZjaKfg",
+    "SearchTimeline": "Yw6L66Pw54NHKuq4Dp7b4Q",
+    "SearchTimelineUsers": "Yw6L66Pw54NHKuq4Dp7b4Q",
+    "HomeTimeline": "7zlnp2TxC044W4C1ZUJMHw",
+    "UserTweets": "36rb3Xj3iJ64Q-9wKDjCcQ",
+    "UserTweetsAndReplies": "D5eKzDa5ZoJuC1TCeAXbWA",
+    "UserMedia": "9EovraBTXJYGSEQXZqlLmQ",
+    "UserByScreenName": "IGgvgiOx4QZndDHuD3x9TQ",
+    "UserByRestId": "XIpMDIi_YoVzXeoON-cfAQ",
+    "Following": "F42cDX8PDFxkbjjq6JrM2w",
+    "Followers": "_orfRBQae57vylFPH0Huhg",
+    "Retweeters": "ROjiuYueotTnWoI8m2YaiQ",
+    "ListMembers": "oIetCo19avgStX4mOnGsPg"
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/account_selector.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
+import 'package:xta/client/account_selector.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
 
 Account _account(String id, {DateTime? lastNotFoundAt}) => Account(
       id: id,

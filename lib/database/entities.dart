@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/group/custom_feed_rules.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/subscriptions/group_mark_style.dart';
-import 'package:quax/user.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/group/custom_feed_rules.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/group/muted_keyword.dart';
+import 'package:xta/subscriptions/group_mark_style.dart';
+import 'package:xta/user.dart';
 import 'package:intl/intl.dart';
 
 final DateFormat sqliteDateFormat = DateFormat('yyyy-MM-dd hh:mm:ss');
@@ -17,32 +20,291 @@ class SavedTweet with ToMappable {
   final String? user;
   final String? content;
   final String? folderId;
+  final String? note;
 
-  SavedTweet({required this.id, required this.user, required this.content, this.folderId});
+  SavedTweet({
+    required this.id,
+    required this.user,
+    required this.content,
+    this.folderId,
+    this.note,
+  });
 
   factory SavedTweet.fromMap(Map<String, Object?> map) {
     return SavedTweet(
-        id: map['id'] as String,
-        user: map['user_id'] as String?,
-        content: map['content'] as String?,
-        folderId: map['folder_id'] as String?);
+      id: map['id'] as String,
+      user: map['user_id'] as String?,
+      content: map['content'] as String?,
+      folderId: map['folder_id'] as String?,
+      note: map['note'] as String?,
+    );
   }
 
   // `folderId` is nullable and null is meaningful ("unfiled"), so the sentinel lets
   // callers distinguish "leave unchanged" from "clear the folder".
   static const _unset = Object();
 
-  SavedTweet copyWith({String? id, String? user, String? content, Object? folderId = _unset}) {
+  SavedTweet copyWith({
+    String? id,
+    String? user,
+    String? content,
+    Object? folderId = _unset,
+    Object? note = _unset,
+  }) {
     return SavedTweet(
-        id: id ?? this.id,
-        user: user ?? this.user,
-        content: content ?? this.content,
-        folderId: identical(folderId, _unset) ? this.folderId : folderId as String?);
+      id: id ?? this.id,
+      user: user ?? this.user,
+      content: content ?? this.content,
+      folderId: identical(folderId, _unset)
+          ? this.folderId
+          : folderId as String?,
+      note: identical(note, _unset) ? this.note : note as String?,
+    );
   }
 
   @override
   Map<String, dynamic> toMap() {
-    return {'id': id, 'content': content, 'user_id': user, 'folder_id': folderId};
+    return {
+      'id': id,
+      'content': content,
+      'user_id': user,
+      'folder_id': folderId,
+      'note': note,
+    };
+  }
+}
+
+/// A private note the reader keeps on a profile — never synced anywhere.
+class ProfileNote with ToMappable {
+  final String id;
+  final String note;
+  final DateTime updatedAt;
+
+  ProfileNote({required this.id, required this.note, required this.updatedAt});
+
+  factory ProfileNote.fromMap(Map<String, Object?> map) {
+    return ProfileNote(
+      id: map['id'] as String,
+      note: map['note'] as String? ?? '',
+      updatedAt:
+          DateTime.tryParse((map['updated_at'] as String?) ?? '') ??
+          DateTime.now(),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'note': note, 'updated_at': updatedAt.toIso8601String()};
+  }
+}
+
+/// A note the reader wrote. It lives in SQLite and in backups / WebDAV —
+/// never on X.
+class LocalPost with ToMappable {
+  final String id;
+  final String body;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final List<LocalPostMedia> media;
+  final String? quotedTweetId;
+  final String? quotedTweetJson;
+  /// Parent note this is a reply to. Null for a top-level note. Local only.
+  final String? inReplyToId;
+
+  LocalPost({
+    required this.id,
+    required this.body,
+    required this.createdAt,
+    required this.updatedAt,
+    this.media = const [],
+    this.quotedTweetId,
+    this.quotedTweetJson,
+    this.inReplyToId,
+  });
+
+  factory LocalPost.fromMap(Map<String, Object?> map) {
+    return LocalPost(
+      id: map['id'] as String,
+      body: map['body'] as String? ?? '',
+      createdAt: _parseLocalPostTime(map['created_at']),
+      updatedAt: _parseLocalPostTime(map['updated_at']),
+      media: parseLocalPostMedia(map['media'] ?? map['media_json']),
+      quotedTweetId: map['quoted_tweet_id'] as String?,
+      quotedTweetJson: map['quoted_tweet_json'] as String?,
+      inReplyToId: _nonEmpty(map['in_reply_to_id'] as String?),
+    );
+  }
+
+  LocalPost copyWith({
+    String? body,
+    DateTime? updatedAt,
+    List<LocalPostMedia>? media,
+    String? quotedTweetId,
+    String? quotedTweetJson,
+    String? inReplyToId,
+    bool clearQuoted = false,
+    bool clearReply = false,
+  }) {
+    return LocalPost(
+      id: id,
+      body: body ?? this.body,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      media: media ?? this.media,
+      quotedTweetId: clearQuoted ? null : (quotedTweetId ?? this.quotedTweetId),
+      quotedTweetJson: clearQuoted ? null : (quotedTweetJson ?? this.quotedTweetJson),
+      inReplyToId: clearReply ? null : (inReplyToId ?? this.inReplyToId),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'body': body,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'media_json': encodeLocalPostMedia(media),
+      'quoted_tweet_id': quotedTweetId,
+      'quoted_tweet_json': quotedTweetJson,
+      'in_reply_to_id': inReplyToId,
+    };
+  }
+
+  /// Backup JSON includes media bytes so Nextcloud / a file restore keeps photos.
+  Map<String, dynamic> toBackupMap() {
+    return {
+      ...toMap(),
+      'media': [for (final item in media) item.toJson(includeData: item.data != null)],
+    };
+  }
+}
+
+/// One file attached to a [LocalPost]. Bytes ([data]) travel with backups only.
+class LocalPostMedia {
+  final String id;
+  final String name;
+  final String mime;
+  final String? data;
+
+  const LocalPostMedia({
+    required this.id,
+    required this.name,
+    required this.mime,
+    this.data,
+  });
+
+  bool get isImage => mime.startsWith('image/');
+
+  bool get isVideo => mime.startsWith('video/');
+
+  LocalPostMedia withData(String? data) => LocalPostMedia(
+        id: id,
+        name: name,
+        mime: mime,
+        data: data,
+      );
+
+  Map<String, dynamic> toJson({bool includeData = false}) {
+    return {
+      'id': id,
+      'name': name,
+      'mime': mime,
+      if (includeData && data != null) 'data': data,
+    };
+  }
+
+  factory LocalPostMedia.fromJson(Map<String, dynamic> json) {
+    return LocalPostMedia(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      mime: json['mime'] as String? ?? 'application/octet-stream',
+      data: json['data'] as String?,
+    );
+  }
+}
+
+List<LocalPostMedia> parseLocalPostMedia(Object? raw) {
+  List<dynamic>? list;
+  if (raw is List) {
+    list = raw;
+  } else if (raw is String && raw.isNotEmpty) {
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        list = decoded;
+      }
+    } catch (_) {
+      return const [];
+    }
+  }
+  if (list == null) {
+    return const [];
+  }
+  return [
+    for (final item in list)
+      if (item is Map)
+        LocalPostMedia.fromJson(Map<String, dynamic>.from(item)),
+  ].where((item) => item.id.isNotEmpty).toList(growable: false);
+}
+
+String encodeLocalPostMedia(List<LocalPostMedia> media) {
+  return jsonEncode([for (final item in media) item.toJson()]);
+}
+
+DateTime _parseLocalPostTime(Object? value) {
+  return DateTime.tryParse((value as String?) ?? '') ?? DateTime.now();
+}
+
+String? _nonEmpty(String? value) {
+  if (value == null || value.isEmpty) return null;
+  return value;
+}
+
+
+/// A saved keyword listener feed (Misskey antenna).
+class Antenna with ToMappable {
+  final String id;
+  final String name;
+  final List<String> includeTerms;
+  final List<String> excludeTerms;
+
+  /// `search` (all of X search) or `following` (only accounts you follow).
+  final String scope;
+  final DateTime createdAt;
+
+  Antenna({
+    required this.id,
+    required this.name,
+    required this.includeTerms,
+    this.excludeTerms = const [],
+    this.scope = 'search',
+    required this.createdAt,
+  });
+
+  factory Antenna.fromMap(Map<String, Object?> map) {
+    return Antenna(
+      id: map['id'] as String,
+      name: map['name'] as String? ?? '',
+      includeTerms: parseMutedKeywordTerms(map['include_terms'] as String?),
+      excludeTerms: parseMutedKeywordTerms(map['exclude_terms'] as String?),
+      scope: (map['scope'] as String?) == 'following' ? 'following' : 'search',
+      createdAt:
+          DateTime.tryParse((map['created_at'] as String?) ?? '') ??
+          DateTime.now(),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'include_terms': includeTerms.join(', '),
+      'exclude_terms': excludeTerms.isEmpty ? null : excludeTerms.join(', '),
+      'scope': scope,
+      'created_at': createdAt.toIso8601String(),
+    };
   }
 }
 
@@ -55,7 +317,10 @@ class LikedTweet with ToMappable {
 
   factory LikedTweet.fromMap(Map<String, Object?> map) {
     return LikedTweet(
-        id: map['id'] as String, user: map['user_id'] as String?, content: map['content'] as String?);
+      id: map['id'] as String,
+      user: map['user_id'] as String?,
+      content: map['content'] as String?,
+    );
   }
 
   @override
@@ -71,30 +336,42 @@ class SavedTweetFolder with ToMappable {
   final DateTime createdAt;
   // When true, saving a post into this folder also downloads its images.
   final bool autoDownload;
+  final bool autoUpload;
 
-  SavedTweetFolder(
-      {required this.id,
-      required this.name,
-      this.position = 0,
-      required this.createdAt,
-      this.autoDownload = false});
+  SavedTweetFolder({
+    required this.id,
+    required this.name,
+    this.position = 0,
+    required this.createdAt,
+    this.autoDownload = false,
+    this.autoUpload = false,
+  });
 
   factory SavedTweetFolder.fromMap(Map<String, Object?> map) {
     return SavedTweetFolder(
-        id: map['id'] as String,
-        name: map['name'] as String,
-        position: (map['position'] as int?) ?? 0,
-        createdAt: DateTime.parse(map['created_at'] as String),
-        autoDownload: (map['auto_download'] as int?) == 1);
+      id: map['id'] as String,
+      name: map['name'] as String,
+      position: (map['position'] as int?) ?? 0,
+      createdAt: DateTime.parse(map['created_at'] as String),
+      autoDownload: (map['auto_download'] as int?) == 1,
+      autoUpload: (map['auto_upload'] as int?) == 1,
+    );
   }
 
-  SavedTweetFolder copyWith({String? name, int? position, bool? autoDownload}) {
+  SavedTweetFolder copyWith({
+    String? name,
+    int? position,
+    bool? autoDownload,
+    bool? autoUpload,
+  }) {
     return SavedTweetFolder(
-        id: id,
-        name: name ?? this.name,
-        position: position ?? this.position,
-        createdAt: createdAt,
-        autoDownload: autoDownload ?? this.autoDownload);
+      id: id,
+      name: name ?? this.name,
+      position: position ?? this.position,
+      createdAt: createdAt,
+      autoDownload: autoDownload ?? this.autoDownload,
+      autoUpload: autoUpload ?? this.autoUpload,
+    );
   }
 
   @override
@@ -105,6 +382,7 @@ class SavedTweetFolder with ToMappable {
       'position': position,
       'created_at': createdAt.toIso8601String(),
       'auto_download': autoDownload ? 1 : 0,
+      'auto_upload': autoUpload ? 1 : 0,
     };
   }
 }
@@ -118,82 +396,121 @@ abstract class Subscription with ToMappable {
   final DateTime createdAt;
   final bool inFeed;
 
-  Subscription(
-      {required this.id,
-      required this.screenName,
-      required this.name,
-      required this.profileImageUrlHttps,
-      required this.verified,
-      required this.createdAt,
-      required this.inFeed,
-      });
+  Subscription({
+    required this.id,
+    required this.screenName,
+    required this.name,
+    required this.profileImageUrlHttps,
+    required this.verified,
+    required this.createdAt,
+    required this.inFeed,
+  });
 }
 
 class SearchSubscription extends Subscription {
   SearchSubscription({required super.id, required super.createdAt})
-      : super(name: id, screenName: id, verified: false, profileImageUrlHttps: null, inFeed: true);
+    : super(
+        name: id,
+        screenName: id,
+        verified: false,
+        profileImageUrlHttps: null,
+        inFeed: true,
+      );
 
   factory SearchSubscription.fromMap(Map<String, Object?> map) {
-    return SearchSubscription(id: map['id'] as String, createdAt: DateTime.parse(map['created_at'] as String));
+    return SearchSubscription(
+      id: map['id'] as String,
+      createdAt: DateTime.parse(map['created_at'] as String),
+    );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is SearchSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is SearchSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
 
   @override
   Map<String, dynamic> toMap() {
-    // Standardize date format for created_at field using ISO 8601
-    // This ensures consistent date formatting across all platforms
+    // TODO: Created at date format
     return {'id': id, 'created_at': sqliteDateFormat.format(createdAt)};
   }
 }
 
 class UserSubscription extends Subscription {
-  UserSubscription(
-      {required super.id,
-      required super.screenName,
-      required super.name,
-      required super.profileImageUrlHttps,
-      required super.verified,
-      required super.createdAt,
-      required super.inFeed
-      });
+  /// Max posts from this account kept per feed load; null/0 = uncapped.
+  final int? maxPostsPerLoad;
+
+  UserSubscription({
+    required super.id,
+    required super.screenName,
+    required super.name,
+    required super.profileImageUrlHttps,
+    required super.verified,
+    required super.createdAt,
+    required super.inFeed,
+    this.maxPostsPerLoad,
+  });
 
   factory UserSubscription.fromMap(Map<String, Object?> map) {
     var verified = map['verified'] is int;
-    var createdAt = map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String);
+    var createdAt = map['created_at'] == null
+        ? DateTime.now()
+        : DateTime.parse(map['created_at'] as String);
     var inFeed = map['in_feed'] is int;
 
     return UserSubscription(
-        id: map['id'] as String,
-        screenName: map['screen_name'] as String,
-        name: map['name'] as String,
-        profileImageUrlHttps: map['profile_image_url_https'] as String?,
-        verified: verified ? map['verified'] == 1 : false,
-        createdAt: createdAt,
-        inFeed: inFeed ? map['in_feed'] == 1 : false
+      id: map['id'] as String,
+      screenName: map['screen_name'] as String,
+      name: map['name'] as String,
+      profileImageUrlHttps: map['profile_image_url_https'] as String?,
+      verified: verified ? map['verified'] == 1 : false,
+      createdAt: createdAt,
+      inFeed: inFeed ? map['in_feed'] == 1 : false,
+      maxPostsPerLoad: map['max_posts_per_load'] as int?,
     );
   }
 
   factory UserSubscription.fromUser(UserWithExtra user) {
     return UserSubscription(
-        id: user.idStr!,
-        screenName: user.screenName!,
-        name: user.name!,
-        profileImageUrlHttps: user.profileImageUrlHttps,
-        verified: user.verified!,
-        createdAt: user.createdAt!,
-        inFeed: true
+      id: user.idStr!,
+      screenName: user.screenName!,
+      name: user.name!,
+      profileImageUrlHttps: user.profileImageUrlHttps,
+      verified: user.verified!,
+      createdAt: user.createdAt!,
+      inFeed: true,
+    );
+  }
+
+  UserSubscription copyWith({
+    int? maxPostsPerLoad,
+    bool clearMaxPosts = false,
+  }) {
+    return UserSubscription(
+      id: id,
+      screenName: screenName,
+      name: name,
+      profileImageUrlHttps: profileImageUrlHttps,
+      verified: verified,
+      createdAt: createdAt,
+      inFeed: inFeed,
+      maxPostsPerLoad: clearMaxPosts
+          ? null
+          : (maxPostsPerLoad ?? this.maxPostsPerLoad),
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is UserSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is UserSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -208,6 +525,7 @@ class UserSubscription extends Subscription {
       'verified': verified ? 1 : 0,
       'created_at': sqliteDateFormat.format(createdAt),
       'in_feed': inFeed ? 1 : 0,
+      'max_posts_per_load': maxPostsPerLoad,
     };
   }
 
@@ -217,8 +535,155 @@ class UserSubscription extends Subscription {
       'screen_name': screenName,
       'name': name,
       'profile_image_url_https': profileImageUrlHttps,
-      'verified': verified
+      'verified': verified,
     });
+  }
+}
+
+/// A Threads account the reader follows.
+///
+/// Its id is the handle, without the `@` — that is what the RSSHub route is
+/// keyed by, and what the account is called everywhere it is shown.
+class ThreadsSubscription extends Subscription {
+  ThreadsSubscription({
+    required super.id,
+    required super.name,
+    required String? avatarUrl,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: avatarUrl);
+
+  String? get avatarUrl => profileImageUrlHttps;
+
+  factory ThreadsSubscription.fromMap(Map<String, Object?> map) {
+    return ThreadsSubscription(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      avatarUrl: map['avatar_url'] as String?,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ThreadsSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar_url': avatarUrl,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
+/// A Bluesky account the reader follows locally.
+///
+/// Its id is the handle (or a DID when that is what was stored) — what the
+/// public AppView accepts as `actor`, and what the account is called in the UI.
+class BlueskySubscription extends Subscription {
+  BlueskySubscription({
+    required super.id,
+    required super.name,
+    required String? avatarUrl,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: avatarUrl);
+
+  String? get avatarUrl => profileImageUrlHttps;
+
+  factory BlueskySubscription.fromMap(Map<String, Object?> map) {
+    return BlueskySubscription(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      avatarUrl: map['avatar_url'] as String?,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BlueskySubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar_url': avatarUrl,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
+/// A Mastodon / Fediverse account the reader follows locally.
+///
+/// Its id is the canonical `user@domain` — portable across home instances,
+/// unlike the numeric account id each Mastodon server assigns.
+class MastodonSubscription extends Subscription {
+  MastodonSubscription({
+    required super.id,
+    required super.name,
+    required String? avatarUrl,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: avatarUrl);
+
+  String? get avatarUrl => profileImageUrlHttps;
+
+  factory MastodonSubscription.fromMap(Map<String, Object?> map) {
+    return MastodonSubscription(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      avatarUrl: map['avatar_url'] as String?,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MastodonSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'avatar_url': avatarUrl,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
   }
 }
 
@@ -249,14 +714,19 @@ class SubstackSubscription extends Subscription {
       baseUrl: map['base_url'] as String,
       name: map['name'] as String,
       logoUrl: map['logo_url'] as String?,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is SubstackSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is SubstackSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -268,6 +738,61 @@ class SubstackSubscription extends Subscription {
       'base_url': baseUrl,
       'name': name,
       'logo_url': logoUrl,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
+/// A followed public RSS or Atom feed.
+class RssSubscription extends Subscription {
+  final String feedUrl;
+  final String? siteUrl;
+
+  RssSubscription({
+    required super.id,
+    required this.feedUrl,
+    required super.name,
+    this.siteUrl,
+    required String? iconUrl,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: iconUrl);
+
+  String? get iconUrl => profileImageUrlHttps;
+
+  factory RssSubscription.fromMap(Map<String, Object?> map) {
+    return RssSubscription(
+      id: map['id'] as String,
+      feedUrl: map['feed_url'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      siteUrl: map['site_url'] as String?,
+      iconUrl: map['icon_url'] as String?,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RssSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'feed_url': feedUrl,
+      'name': name,
+      'site_url': siteUrl,
+      'icon_url': iconUrl,
       'in_feed': inFeed ? 1 : 0,
       'created_at': sqliteDateFormat.format(createdAt),
     };
@@ -291,14 +816,19 @@ class RedditSubscription extends Subscription {
     return RedditSubscription(
       id: map['id'] as String,
       name: map['name'] as String,
-      createdAt: map['created_at'] == null ? DateTime.now() : DateTime.parse(map['created_at'] as String),
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
       inFeed: map['in_feed'] == null || map['in_feed'] == 1,
     );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is RedditSubscription && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is RedditSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -308,6 +838,98 @@ class RedditSubscription extends Subscription {
     return {
       'id': id,
       'name': name,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
+/// A followed booru tag.
+class BooruSubscription extends Subscription {
+  BooruSubscription({
+    required super.id,
+    required super.name,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(screenName: id, verified: false, profileImageUrlHttps: null);
+
+  factory BooruSubscription.fromMap(Map<String, Object?> map) {
+    return BooruSubscription(
+      id: map['id'] as String,
+      name: map['name'] as String,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BooruSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'in_feed': inFeed ? 1 : 0,
+      'created_at': sqliteDateFormat.format(createdAt),
+    };
+  }
+}
+
+/// A watched ticker.
+///
+/// The symbol carries the display name, so a watchlist entry can be a group
+/// member on the same terms as every other subscription kind.
+class StockSubscription extends Subscription {
+  StockSubscription({
+    required super.id,
+    required String symbol,
+    required super.createdAt,
+    required super.inFeed,
+  }) : super(
+         name: symbol,
+         screenName: id,
+         verified: false,
+         profileImageUrlHttps: null,
+       );
+
+  String get symbol => name;
+
+  factory StockSubscription.fromMap(Map<String, Object?> map) {
+    return StockSubscription(
+      id: map['id'] as String,
+      symbol: map['symbol'] as String,
+      createdAt: map['created_at'] == null
+          ? DateTime.now()
+          : DateTime.parse(map['created_at'] as String),
+      inFeed: map['in_feed'] == null || map['in_feed'] == 1,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is StockSubscription &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'symbol': symbol,
       'in_feed': inFeed ? 1 : 0,
       'created_at': sqliteDateFormat.format(createdAt),
     };
@@ -327,7 +949,12 @@ class GroupMemberPreview {
   /// holds — it is fetched and cached separately, and drawn from the name.
   final String? subreddit;
 
-  const GroupMemberPreview({required this.id, required this.name, this.avatarUrl, this.subreddit});
+  const GroupMemberPreview({
+    required this.id,
+    required this.name,
+    this.avatarUrl,
+    this.subreddit,
+  });
 }
 
 class SubscriptionGroup with ToMappable {
@@ -338,6 +965,10 @@ class SubscriptionGroup with ToMappable {
   final int numberOfMembers;
   final DateTime createdAt;
   final bool pinned;
+
+  /// Reader-marked adult group: board sinks it under Censored. Not the same as
+  /// [SubscriptionGroupGet.contentFilter], which filters posts in a custom feed.
+  final bool nsfw;
   final String? emoji;
   final int markStyle;
 
@@ -350,31 +981,36 @@ class SubscriptionGroup with ToMappable {
 
   IconData get iconData => deserializeIconData(icon);
 
-  SubscriptionGroup(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.color,
-      required this.numberOfMembers,
-      required this.createdAt,
-      this.pinned = false,
-      this.emoji,
-      this.markStyle = 0,
-      this.parentId,
-      this.memberPreviews = const []});
+  SubscriptionGroup({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.numberOfMembers,
+    required this.createdAt,
+    this.pinned = false,
+    this.nsfw = false,
+    this.emoji,
+    this.markStyle = 0,
+    this.parentId,
+    this.memberPreviews = const [],
+  });
 
-  SubscriptionGroup withMemberPreviews(List<GroupMemberPreview> previews) => SubscriptionGroup(
-      id: id,
-      name: name,
-      icon: icon,
-      color: color,
-      numberOfMembers: numberOfMembers,
-      createdAt: createdAt,
-      pinned: pinned,
-      emoji: emoji,
-      markStyle: markStyle,
-      parentId: parentId,
-      memberPreviews: previews);
+  SubscriptionGroup withMemberPreviews(List<GroupMemberPreview> previews) =>
+      SubscriptionGroup(
+        id: id,
+        name: name,
+        icon: icon,
+        color: color,
+        numberOfMembers: numberOfMembers,
+        createdAt: createdAt,
+        pinned: pinned,
+        nsfw: nsfw,
+        emoji: emoji,
+        markStyle: markStyle,
+        parentId: parentId,
+        memberPreviews: previews,
+      );
 
   factory SubscriptionGroup.fromMap(Map<String, Object?> json) {
     // This is here to handle imports of data from before v2.15.0
@@ -384,16 +1020,20 @@ class SubscriptionGroup with ToMappable {
     }
 
     return SubscriptionGroup(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        icon: icon,
-        color: json['color'] == null ? null : Color(json['color'] as int),
-        numberOfMembers: json['number_of_members'] == null ? 0 : json['number_of_members'] as int,
-        createdAt: DateTime.parse(json['created_at'] as String),
-        pinned: json['pinned'] == 1,
-        emoji: json['emoji'] as String?,
-        markStyle: GroupMarkStyle.coerce(json['mark_style']),
-        parentId: json['parent_id'] as String?);
+      id: json['id'] as String,
+      name: json['name'] as String,
+      icon: icon,
+      color: json['color'] == null ? null : Color(json['color'] as int),
+      numberOfMembers: json['number_of_members'] == null
+          ? 0
+          : json['number_of_members'] as int,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      pinned: json['pinned'] == 1,
+      nsfw: json['nsfw'] == 1,
+      emoji: json['emoji'] as String?,
+      markStyle: GroupMarkStyle.coerce(json['mark_style']),
+      parentId: json['parent_id'] as String?,
+    );
   }
 
   @override
@@ -405,6 +1045,7 @@ class SubscriptionGroup with ToMappable {
       'color': color?.toARGB32(),
       'created_at': createdAt.toIso8601String(),
       'pinned': pinned ? 1 : 0,
+      'nsfw': nsfw ? 1 : 0,
       'emoji': emoji,
       'mark_style': markStyle,
       'parent_id': parentId,
@@ -434,22 +1075,23 @@ class SubscriptionGroupGet {
   int minLikes;
   int minRetweets;
 
-  /// Terms whose posts this feed hides.
-  List<String> mutedKeywords;
+  /// Terms whose posts this feed hides or folds.
+  List<MutedKeyword> mutedKeywords;
 
-  SubscriptionGroupGet(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.subscriptions,
-      required this.includeReplies,
-      required this.includeRetweets,
-      required this.popular,
-      this.custom = false,
-      this.contentFilter = contentFilterDefault,
-      this.minLikes = 0,
-      this.minRetweets = 0,
-      this.mutedKeywords = const []});
+  SubscriptionGroupGet({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.subscriptions,
+    required this.includeReplies,
+    required this.includeRetweets,
+    required this.popular,
+    this.custom = false,
+    this.contentFilter = contentFilterDefault,
+    this.minLikes = 0,
+    this.minRetweets = 0,
+    this.mutedKeywords = const [],
+  });
 
   CustomFeedRules get customRules => custom
       ? CustomFeedRules(
@@ -462,54 +1104,35 @@ class SubscriptionGroupGet {
 
   // Store updates must emit a new instance, otherwise listeners never see the
   // change (the store skips identical states) and dependent widgets go stale.
-  SubscriptionGroupGet copyWith(
-      {Object? includeReplies = _unset,
-      Object? includeRetweets = _unset,
-      bool? popular,
-      bool? custom,
-      String? contentFilter,
-      int? minLikes,
-      int? minRetweets,
-      List<String>? mutedKeywords}) {
+  SubscriptionGroupGet copyWith({
+    Object? includeReplies = _unset,
+    Object? includeRetweets = _unset,
+    bool? popular,
+    bool? custom,
+    String? contentFilter,
+    int? minLikes,
+    int? minRetweets,
+    List<MutedKeyword>? mutedKeywords,
+  }) {
     return SubscriptionGroupGet(
-        id: id,
-        name: name,
-        icon: icon,
-        subscriptions: subscriptions,
-        includeReplies: identical(includeReplies, _unset) ? this.includeReplies : includeReplies as bool?,
-        includeRetweets: identical(includeRetweets, _unset) ? this.includeRetweets : includeRetweets as bool?,
-        popular: popular ?? this.popular,
-        custom: custom ?? this.custom,
-        contentFilter: contentFilter ?? this.contentFilter,
-        minLikes: minLikes ?? this.minLikes,
-        minRetweets: minRetweets ?? this.minRetweets,
-        mutedKeywords: mutedKeywords ?? this.mutedKeywords);
-  }
-
-  /// Factory method to create SubscriptionGroupGet from database map
-  /// This provides a clean way to instantiate groups with all their subscriptions
-  factory SubscriptionGroupGet.fromDatabaseMap(
-    Map<String, dynamic> group,
-    List<Subscription> subscriptions,
-  ) {
-    return SubscriptionGroupGet(
-      id: group['id'] as String,
-      name: group['name'] as String,
-      icon: group['icon'] as String,
+      id: id,
+      name: name,
+      icon: icon,
       subscriptions: subscriptions,
-      includeReplies: _includeOverride(group['include_replies']),
-      includeRetweets: _includeOverride(group['include_retweets']),
-      popular: group['popular'] == 1,
-      custom: group['custom'] == 1,
-      contentFilter: group['content_filter'] as String? ?? contentFilterDefault,
-      minLikes: (group['min_likes'] as int?) ?? 0,
-      minRetweets: (group['min_retweets'] as int?) ?? 0,
-      mutedKeywords: parseMutedKeywords(group['muted_keywords'] as String?),
+      includeReplies: identical(includeReplies, _unset)
+          ? this.includeReplies
+          : includeReplies as bool?,
+      includeRetweets: identical(includeRetweets, _unset)
+          ? this.includeRetweets
+          : includeRetweets as bool?,
+      popular: popular ?? this.popular,
+      custom: custom ?? this.custom,
+      contentFilter: contentFilter ?? this.contentFilter,
+      minLikes: minLikes ?? this.minLikes,
+      minRetweets: minRetweets ?? this.minRetweets,
+      mutedKeywords: mutedKeywords ?? this.mutedKeywords,
     );
   }
-
-  /// Helper to convert database value to nullable bool
-  static bool? _includeOverride(Object? value) => value == null ? null : value == 1;
 }
 
 class SubscriptionGroupEdit {
@@ -521,14 +1144,15 @@ class SubscriptionGroupEdit {
   String? emoji;
   int markStyle;
 
-  SubscriptionGroupEdit(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.color,
-      required this.members,
-      this.emoji,
-      this.markStyle = GroupMarkStyle.auto});
+  SubscriptionGroupEdit({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.members,
+    this.emoji,
+    this.markStyle = GroupMarkStyle.auto,
+  });
 }
 
 class SubscriptionGroupMember with ToMappable {
@@ -538,7 +1162,10 @@ class SubscriptionGroupMember with ToMappable {
   SubscriptionGroupMember({required this.group, required this.profile});
 
   factory SubscriptionGroupMember.fromMap(Map<String, Object?> json) {
-    return SubscriptionGroupMember(group: json['group_id'] as String, profile: json['profile_id'] as String);
+    return SubscriptionGroupMember(
+      group: json['group_id'] as String,
+      profile: json['profile_id'] as String,
+    );
   }
 
   @override
@@ -554,30 +1181,34 @@ class Account with ToMappable {
   final DateTime? lastNotFoundAt;
   final int consecutiveNotFound;
 
-  Account(
-      {required this.id,
-      required this.authHeader,
-      required this.screenName,
-      this.lastNotFoundAt,
-      this.consecutiveNotFound = 0});
+  Account({
+    required this.id,
+    required this.authHeader,
+    required this.screenName,
+    this.lastNotFoundAt,
+    this.consecutiveNotFound = 0,
+  });
 
-  static DateTime? _date(Object? value) => value == null ? null : DateTime.parse(value as String);
+  static DateTime? _date(Object? value) =>
+      value == null ? null : DateTime.parse(value as String);
 
   /// No flag set, so a successful response needs no database write (hot-path guard).
   bool get isClean => consecutiveNotFound == 0 && lastNotFoundAt == null;
 
   factory Account.fromMap(Map<String, Object?> map) {
     return Account(
-        id: map['id'] as String,
-        authHeader: map['auth_header'],
-        screenName: map['screen_name'] as String?,
-        lastNotFoundAt: _date(map['last_not_found_at']),
-        consecutiveNotFound: (map['consecutive_not_found'] as int?) ?? 0);
+      id: map['id'] as String,
+      authHeader: map['auth_header'],
+      screenName: map['screen_name'] as String?,
+      lastNotFoundAt: _date(map['last_not_found_at']),
+      consecutiveNotFound: (map['consecutive_not_found'] as int?) ?? 0,
+    );
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is Account && runtimeType == other.runtimeType && id == other.id;
+      identical(this, other) ||
+      other is Account && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -589,7 +1220,7 @@ class Account with ToMappable {
       'auth_header': authHeader,
       'screen_name': screenName,
       'last_not_found_at': lastNotFoundAt?.toIso8601String(),
-      'consecutive_not_found': consecutiveNotFound
+      'consecutive_not_found': consecutiveNotFound,
     };
   }
 }

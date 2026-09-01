@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:quax/client/x_client_transaction_id/client_transaction.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
+import 'package:xta/constants.dart';
 
 /// Whether a derived transaction key may still be used.
 ///
@@ -71,6 +71,7 @@ class TwitterHeaders {
     // would fail *every* later request with that same error for the life of the
     // process — a blip at startup could only be cleared by force-stopping the
     // app. Forgetting it lets the next call try again.
+    //
     // This listener also marks `started` handled, so clearing the cache never
     // surfaces as an unhandled async error; whoever awaits it still sees the
     // failure and reports it normally.

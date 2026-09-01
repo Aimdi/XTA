@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 /// X-style controls: flat surfaces, full-round pills, no tonal containers and
 /// no ink splashes. Used where Material's own widgets would otherwise stamp a
@@ -13,32 +13,47 @@ Color xControlFill(BuildContext context) {
     // X's own search fill: #EFF3F4 on white, a lifted slate on dim/lights out.
     return tokens.background.computeLuminance() > 0.5
         ? tokens.divider
-        : Color.alphaBlend(tokens.onBackground.withValues(alpha: 0.10), tokens.background);
+        : Color.alphaBlend(
+            tokens.onBackground.withValues(alpha: 0.10),
+            tokens.background,
+          );
   }
   final scheme = Theme.of(context).colorScheme;
-  return Color.alphaBlend(scheme.onSurface.withValues(alpha: 0.08), scheme.surface);
+  return Color.alphaBlend(
+    scheme.onSurface.withValues(alpha: 0.08),
+    scheme.surface,
+  );
 }
 
 Color xAccent(BuildContext context) =>
-    XLookTokens.maybeOf(context)?.accent ?? Theme.of(context).colorScheme.primary;
+    XLookTokens.maybeOf(context)?.accent ??
+    Theme.of(context).colorScheme.primary;
 
 Color xOnSurface(BuildContext context) =>
-    XLookTokens.maybeOf(context)?.onBackground ?? Theme.of(context).colorScheme.onSurface;
+    XLookTokens.maybeOf(context)?.onBackground ??
+    Theme.of(context).colorScheme.onSurface;
 
 Color xSecondary(BuildContext context) =>
-    XLookTokens.maybeOf(context)?.secondary ?? Theme.of(context).colorScheme.onSurfaceVariant;
+    XLookTokens.maybeOf(context)?.secondary ??
+    Theme.of(context).colorScheme.onSurfaceVariant;
 
-/// A filled pill, X's primary action shape. Bold label, no elevation, no
+/// A filled pill, the reader's primary action shape. Bold label, no elevation, no
 /// rounded-rectangle Material shape.
 ButtonStyle xPrimaryPillStyle(BuildContext context) {
   final accent = xAccent(context);
   return FilledButton.styleFrom(
     backgroundColor: accent,
-    foregroundColor: accent.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+    foregroundColor: accent.computeLuminance() > 0.5
+        ? Colors.black
+        : Colors.white,
     elevation: 0,
     shape: const StadiumBorder(),
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-    textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, letterSpacing: -0.2),
+    textStyle: const TextStyle(
+      fontWeight: FontWeight.w700,
+      fontSize: 15,
+      letterSpacing: -0.2,
+    ),
   );
 }
 
@@ -84,7 +99,10 @@ class _XSearchFieldState extends State<XSearchField> {
     final hasQuery = widget.controller.text.isNotEmpty;
     final border = OutlineInputBorder(
       borderRadius: BorderRadius.circular(9999),
-      borderSide: BorderSide(color: focused ? accent : Colors.transparent, width: focused ? 1.4 : 1),
+      borderSide: BorderSide(
+        color: focused ? accent : Colors.transparent,
+        width: focused ? 1.4 : 1,
+      ),
     );
 
     return TextField(
@@ -103,7 +121,11 @@ class _XSearchFieldState extends State<XSearchField> {
         fillColor: xControlFill(context),
         hintText: widget.hintText,
         hintStyle: TextStyle(color: xSecondary(context), fontSize: 15),
-        prefixIcon: Icon(Icons.search, size: 20, color: focused ? accent : xSecondary(context)),
+        prefixIcon: Icon(
+          Icons.search,
+          size: 20,
+          color: focused ? accent : xSecondary(context),
+        ),
         suffixIcon: hasQuery
             ? IconButton(
                 icon: Icon(Icons.cancel, size: 18, color: xSecondary(context)),

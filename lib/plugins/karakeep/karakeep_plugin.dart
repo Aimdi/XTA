@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/karakeep/karakeep_settings_screen.dart';
-import 'package:quax/plugins/plugin.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/karakeep/karakeep_settings_screen.dart';
+import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/plugin_category.dart';
 
 /// Sends links to a self-hosted Karakeep instance. No home tab: the plugin adds
 /// a save action where links already are, plus its own settings screen.
-class KarakeepPlugin extends QuaxPlugin {
+class KarakeepPlugin extends XtaPlugin {
   KarakeepPlugin();
 
   @override
@@ -16,7 +18,13 @@ class KarakeepPlugin extends QuaxPlugin {
   String get enabledPrefKey => optionPluginKarakeepEnabled;
 
   @override
-  IconData get icon => Icons.bookmark_add_outlined;
+  IconData get icon => Icons.bookmark_add;
+
+  @override
+  PluginCategory get category => PluginCategory.bookmarks;
+
+  @override
+  Color get brandColor => const Color(0xFF0F766E);
 
   @override
   String title(BuildContext context) => L10n.of(context).plugin_karakeep_title;
@@ -26,4 +34,10 @@ class KarakeepPlugin extends QuaxPlugin {
 
   @override
   Widget? settingsScreen(BuildContext context) => const KarakeepSettingsScreen();
+
+  @override
+  Future<void> resetPreferences(BasePrefService prefs) async {
+    await prefs.set(optionPluginKarakeepServerUrl, '');
+    await prefs.set(optionPluginKarakeepApiKey, '');
+  }
 }

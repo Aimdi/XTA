@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/plugins/reddit/reddit_post_card.dart';
-import 'package:quax/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
-import 'package:quax/plugins/reddit/reddit_store.dart';
-import 'package:quax/ui/errors.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_actions.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_post_card.dart';
+import 'package:xta/plugins/reddit/reddit_screen.dart' show redditErrorMessage;
+import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/reddit/reddit_store.dart';
+import 'package:xta/ui/empty_pane.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Every followed subreddit, newest first.
 ///
@@ -16,32 +21,31 @@ import 'package:quax/ui/errors.dart';
 class RedditFeedList extends StatefulWidget {
   final ScrollController? scrollController;
 
-  /// Offered by the empty state. Null leaves it out, for a place with nowhere
-  /// to put a subreddit-adding dialog.
-  final VoidCallback? onAddSubreddit;
-
-  const RedditFeedList({super.key, this.scrollController, this.onAddSubreddit});
+  const RedditFeedList({super.key, this.scrollController});
 
   @override
   State<RedditFeedList> createState() => _RedditFeedListState();
 }
 
-class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAliveClientMixin {
+class _RedditFeedListState extends State<RedditFeedList>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-
-  bool _hasLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    // Only load subreddits on first init, but DON'T auto-refresh feed
-    // This prevents constant reloading when switching between tabs
+    // The store is shared, so this is the first mount's job wherever that
+    // happens to be — the tab, or the switcher entry.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      await context.read<RedditSubredditsStore>().load();
+      // Capture before the awaits: a home-strip remount can drop this State
+      // while SQLite or the feed store is still answering.
+      final subs = context.read<RedditSubredditsStore>();
+      final feed = context.read<RedditFeedStore>();
+      await subs.load();
       if (mounted) {
-        setState(() {});
+        await feed.refresh();
       }
     });
   }
@@ -53,68 +57,57 @@ class _RedditFeedListState extends State<RedditFeedList> with AutomaticKeepAlive
     final feed = context.read<RedditFeedStore>();
 
     return RefreshIndicator(
-      onRefresh: () async {
-        // Only refresh when user explicitly pulls down
-        await feed.refresh();
-      },
-      child: ScopedBuilder<RedditFeedStore, List<RedditPost>>.transition(
+      // Forced: a pull that was answered out of the shared cache would hand
+      // back the posts already on screen, which is not what a pull is for.
+      onRefresh: () => feed.refresh(force: true),
+      child: ScopedBuilder<RedditFeedStore, List<RedditPost>>(
         store: feed,
-        onError: (_, error) => FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: redditErrorMessage(l10n, error!),
-          onRetry: feed.refresh,
-        ),
-        onLoading: (_) => const Center(child: CircularProgressIndicator()),
-        onState: (_, posts) => posts.isEmpty ? _empty(context, l10n) : _list(posts),
+        onError: (_, error) {
+          if (feed.state.isNotEmpty) {
+            return _list(feed.state);
+          }
+          return FullPageErrorWidget(
+            error: error,
+            stackTrace: null,
+            prefix: redditErrorMessage(l10n, error!),
+            onRetry: () => feed.refresh(force: true),
+          );
+        },
+        onLoading: (_) {
+          if (feed.state.isNotEmpty) {
+            return _list(feed.state);
+          }
+          return const PluginFeedSkeleton();
+        },
+        onState: (_, posts) =>
+            posts.isEmpty ? _empty(context, l10n) : _list(posts),
       ),
     );
   }
 
   Widget _list(List<RedditPost> posts) {
-    // Auto-refresh feed only on first load or when returning to top
-    if (!_hasLoaded) {
-      _hasLoaded = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (!mounted) return;
-        final feed = context.read<RedditFeedStore>();
-        if (feed.state.isEmpty) {
-          await feed.refresh();
-        }
-      });
-    }
-    
-    return ListView.builder(
-      controller: widget.scrollController,
+    return FeedListView(
+      controller: pluginInnerScrollController(context, widget.scrollController),
+      padding: pluginFeedPadding(context),
       itemCount: posts.length,
-      itemBuilder: (context, index) => RedditPostCard(post: posts[index], showSourceBadge: false),
+      itemBuilder: (context, index) => RedditPostCard(
+        key: ValueKey(posts[index].id),
+        post: posts[index],
+        showSourceBadge: false,
+      ),
     );
   }
 
   Widget _empty(BuildContext context, L10n l10n) {
-    final onAdd = widget.onAddSubreddit;
-
-    return ListView(
-      controller: widget.scrollController,
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
-      children: [
-        Icon(Icons.forum_outlined, size: 48, color: Theme.of(context).colorScheme.outline),
-        const SizedBox(height: 16),
-        Text(l10n.plugin_reddit_empty, textAlign: TextAlign.center),
-        if (onAdd != null) ...[
-          const SizedBox(height: 16),
-          // Telling the reader to add a subreddit and then leaving the only
-          // control in the app bar is how this screen managed to look broken
-          // when it was merely empty.
-          Center(
-            child: FilledButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add),
-              label: Text(l10n.plugin_reddit_add),
-            ),
-          ),
-        ],
-      ],
+    return EmptyPane(
+      icon: Icons.forum_outlined,
+      message: l10n.plugin_reddit_empty,
+      scrollController: widget.scrollController,
+      action: FilledButton.icon(
+        onPressed: () => addRedditSubreddit(context),
+        icon: const Icon(Icons.add),
+        label: Text(l10n.plugin_reddit_add),
+      ),
     );
   }
 }

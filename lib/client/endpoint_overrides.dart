@@ -13,8 +13,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/client/endpoints.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/client/endpoints.dart';
+import 'package:xta/constants.dart';
 
 /// Parses a registry document, tolerating anything that is not the shape we
 /// expect rather than throwing into app startup.
@@ -72,6 +72,14 @@ class EndpointRegistry {
     final uri = Uri.tryParse(url);
     if (uri == null || !uri.isScheme('https')) {
       log.warning('Endpoint registry URL must be https, ignoring "$url"');
+      return 0;
+    }
+
+    // Once a day is plenty for a file that changes when X rotates a query id.
+    // fetchedAt was recorded on every fetch and read by nothing; now it is the
+    // throttle. The cached document has already been applied at startup.
+    final fetchedAt = DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? '');
+    if (fetchedAt != null && DateTime.now().difference(fetchedAt) < const Duration(hours: 24)) {
       return 0;
     }
 

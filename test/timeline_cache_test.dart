@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/database/timeline_cache.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/database/timeline_cache.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 TweetChain _chain(String id, {String text = 'hello'}) => TweetChain(
@@ -16,8 +16,8 @@ TweetChain _chain(String id, {String text = 'hello'}) => TweetChain(
   isPinned: false,
 );
 
-TweetStatus _page(List<TweetChain> chains, {String? cursorBottom}) =>
-    TweetStatus(chains: chains, cursorBottom: cursorBottom, cursorTop: null);
+TweetStatus _page(List<TweetChain> chains, {String? cursorBottom, String? cursorShowMore}) =>
+    TweetStatus(chains: chains, cursorBottom: cursorBottom, cursorTop: null, cursorShowMore: cursorShowMore);
 
 void main() {
   setUpAll(() {
@@ -29,7 +29,7 @@ void main() {
   late DateTime clock;
 
   setUp(() async {
-    final path = '${Directory.systemTemp.path}/quax_cache_${DateTime.now().microsecondsSinceEpoch}.db';
+    final path = '${Directory.systemTemp.path}/xta_cache_${DateTime.now().microsecondsSinceEpoch}.db';
     final plan = buildMigrationPlan();
     db = await openDatabase(path, version: databaseVersion, onCreate: plan.call, onUpgrade: plan.call);
     clock = DateTime.utc(2026, 7, 25, 12);
@@ -114,6 +114,25 @@ void main() {
     final read = await cache().read(key, maxAge: const Duration(hours: 1));
 
     expect(read!.cursorBottom, 'CURSOR-2');
+  });
+
+  // Threads often land with only the focal post plus X's show-more cursor; if
+  // that cursor is dropped on cache hit the reader never gets a prompt.
+  test('the show-more cursor survives the round trip', () async {
+    final key = TimelineCache.threadKey('99');
+    await cache().write(key, _page([_chain('99')], cursorShowMore: 'SHOWMORE-Z'));
+
+    final read = await cache().read(key, maxAge: const Duration(hours: 1));
+
+    expect(read!.cursorShowMore, 'SHOWMORE-Z');
+  });
+
+  test('remove drops a key so the next read misses', () async {
+    final key = TimelineCache.threadKey('1');
+    await cache().write(key, _page([_chain('1')]));
+    await cache().remove(key);
+
+    expect(await cache().read(key, maxAge: const Duration(hours: 1)), isNull);
   });
 
   test('a missing key is a miss, not an error', () async {

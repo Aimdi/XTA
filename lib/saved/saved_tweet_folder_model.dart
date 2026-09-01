@@ -1,6 +1,6 @@
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/database/repository.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
 import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
@@ -21,7 +21,7 @@ class SavedTweetFolderModel extends Store<List<SavedTweetFolder>> {
     });
   }
 
-  Future<SavedTweetFolder> createFolder(String name, {bool autoDownload = false}) async {
+  Future<SavedTweetFolder> createFolder(String name, {bool autoDownload = false, bool autoUpload = false}) async {
     var database = await Repository.writable();
 
     var folder = SavedTweetFolder(
@@ -29,7 +29,8 @@ class SavedTweetFolderModel extends Store<List<SavedTweetFolder>> {
         name: name,
         position: state.length,
         createdAt: DateTime.now(),
-        autoDownload: autoDownload);
+        autoDownload: autoDownload,
+        autoUpload: autoUpload);
 
     await database.insert(tableSavedTweetFolder, folder.toMap());
     update([...state, folder], force: true);
@@ -37,17 +38,22 @@ class SavedTweetFolderModel extends Store<List<SavedTweetFolder>> {
     return folder;
   }
 
-  Future<void> updateFolder(String id, String name, {bool? autoDownload}) async {
+  Future<void> updateFolder(String id, String name, {bool? autoDownload, bool? autoUpload}) async {
     var database = await Repository.writable();
 
     await database.update(
         tableSavedTweetFolder,
-        {'name': name, if (autoDownload != null) 'auto_download': autoDownload ? 1 : 0},
+        {
+          'name': name,
+          if (autoDownload != null) 'auto_download': autoDownload ? 1 : 0,
+          if (autoUpload != null) 'auto_upload': autoUpload ? 1 : 0,
+        },
         where: 'id = ?',
         whereArgs: [id]);
 
     update(
-        state.map((e) => e.id == id ? e.copyWith(name: name, autoDownload: autoDownload) : e).toList(), force: true);
+        state.map((e) => e.id == id ? e.copyWith(name: name, autoDownload: autoDownload, autoUpload: autoUpload) : e).toList(),
+        force: true);
   }
 
   /// Deletes a folder and moves its posts back to "unfiled" (folder_id = NULL).

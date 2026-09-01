@@ -25,13 +25,17 @@ bool showsPlayButton({
 ///
 /// [alreadyCached] short-circuits the wait — the pool already holds the player,
 /// so attaching to it costs nothing and delaying would only make a scroll-back
-/// flash its poster again.
+/// flash its poster again. It short-circuits only while the tile is [isVisible]:
+/// a tile that has scrolled away gives its player back so the pool can evict it,
+/// and a cached entry that re-attached from `build` alone would pin it again
+/// before it was ever on screen.
 bool shouldCreatePlayer({
   required bool autoPlayPref,
   required bool alwaysPlay,
   required bool userRequestedPlay,
   required bool alreadyCached,
   required bool hasBeenVisible,
+  required bool isVisible,
 }) {
   if (showsPlayButton(
     autoPlayPref: autoPlayPref,
@@ -41,5 +45,48 @@ bool shouldCreatePlayer({
   )) {
     return false;
   }
-  return hasBeenVisible || alreadyCached;
+  return hasBeenVisible || (alreadyCached && isVisible);
 }
+
+/// Whether an off-screen tile may hand its pooled player back.
+///
+/// Fullscreen must never reclaim: the opaque route stops the tile being painted
+/// (VisibilityDetector reports 0), and releasing the pool ref would let eviction
+/// dispose the player still showing on the fullscreen route.
+bool shouldReleaseHiddenPlayer({
+  required bool isFullscreen,
+  required bool mounted,
+  required bool hasPoolKey,
+  required bool anyVisible,
+  required double visibleFraction,
+}) {
+  if (!mounted || isFullscreen || !hasPoolKey) return false;
+  if (anyVisible || visibleFraction >= 0.5) return false;
+  return true;
+}
+
+/// Whether the pool may start a *new* libmpv instance.
+///
+/// Reattaching to an existing key is free. Creating past [maxSize] when nothing
+/// is evictable is what exhausted MediaCodec and froze the home timeline.
+bool videoPoolCanCreate({
+  required bool alreadyCached,
+  required int entryCount,
+  required int maxSize,
+  bool hasEvictable = false,
+}) => alreadyCached || entryCount < maxSize || hasEvictable;
+
+/// How full the pool map may stay during eviction.
+///
+/// [makeRoom] is acquire of a *new* key: drop unused entries until there is a
+/// free slot (`entryCount < maxSize`). Without that, a pool sitting at capacity
+/// with idle cached players never shrinks — `_evict` used to run only when
+/// `entryCount > maxSize`, which acquire never allowed — and every later video
+/// failed to load.
+///
+/// Release leaves unused entries cached (`makeRoom: false`) so scrolling back
+/// re-attaches instead of restarting them.
+int videoPoolEvictionCeiling({
+  required int maxSize,
+  required bool makeRoom,
+}) => makeRoom ? maxSize - 1 : maxSize;

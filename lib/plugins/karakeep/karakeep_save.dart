@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/karakeep/karakeep_client.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/karakeep/karakeep_client.dart';
 
 /// One-tap "save this link to Karakeep", with the feedback the user needs:
 /// saved, already there, or exactly what went wrong.

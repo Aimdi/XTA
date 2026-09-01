@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/plugins/substack/substack_links.dart';
+import 'package:xta/plugins/substack/substack_links.dart';
 
 void main() {
   group('parseSubstackPostLink', () {

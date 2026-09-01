@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/search/search_chrome.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/search/search_chrome.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 void main() {
   testWidgets('Search result tabs are labeled, scrollable, and token styled', (

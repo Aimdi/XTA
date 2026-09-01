@@ -1,12 +1,12 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/client/accounts.dart';
-import 'package:quax/client/endpoints.dart';
-import 'package:quax/client/rate_limit_tracker.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/settings/diagnostics_report.dart';
+import 'package:xta/client/accounts.dart';
+import 'package:xta/client/endpoints.dart';
+import 'package:xta/client/rate_limit_tracker.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/settings/diagnostics_report.dart';
 
 class DiagnosticsModel extends Store<DiagnosticsReport> {
   final BasePrefService prefs;
@@ -20,15 +20,10 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
 
       return DiagnosticsReport(
         appVersion: 'v${packageInfo.version}+${packageInfo.buildNumber}',
-        accounts: (await getAccounts())
-            .map((account) => _diagnose(account, now))
-            .toList(),
+        accounts: (await getAccounts()).map((account) => _diagnose(account, now)).toList(),
         endpoints: XEndpoints.all.map(EndpointDiagnostics.of).toList(),
-        registryEnabled:
-            prefs.get<bool>(optionEndpointRegistryEnabled) != false,
-        registryFetchedAt: DateTime.tryParse(
-          prefs.get<String>(optionEndpointRegistryFetchedAt) ?? '',
-        ),
+        registryEnabled: prefs.get<bool>(optionEndpointRegistryEnabled) != false,
+        registryFetchedAt: DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? ''),
         generatedAt: now,
       );
     });
@@ -41,9 +36,7 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
       id: account.id,
       screenName: account.screenName,
       rateLimited: RateLimitTracker.activeFor(account.id, now),
-      notFoundUntil: notFoundUntil != null && notFoundUntil.isAfter(now)
-          ? notFoundUntil
-          : null,
+      notFoundUntil: notFoundUntil != null && notFoundUntil.isAfter(now) ? notFoundUntil : null,
     );
   }
 }

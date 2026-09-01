@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:quax/client/client.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/import_data_model.dart';
-import 'package:quax/subscriptions/users_model.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/import_data_model.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/urls.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/generated/l10n.dart';
+import 'package:xta/generated/l10n.dart';
 
 /// Thrown when ListByRestId returns no list (deleted, or private and thus
 /// inaccessible); rendered through the standard error widget.

@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/profile/profile_feed_settings.dart';
-import 'package:quax/user.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/profile/profile_feed_settings.dart';
+import 'package:xta/user.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 TweetWithCard _tweet({
@@ -153,7 +153,7 @@ void main() {
     setUpAll(() async {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
-      final dir = await Directory.systemTemp.createTemp('quax_reply_filter_test');
+      final dir = await Directory.systemTemp.createTemp('xta_reply_filter_test');
       await databaseFactory.setDatabasesPath(dir.path);
       await Repository().migrate();
     });

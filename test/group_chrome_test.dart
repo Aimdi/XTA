@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/group_chrome.dart';
-import 'package:quax/group/group_view_store.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_chrome.dart';
+import 'package:xta/group/group_view_store.dart';
+import 'package:xta/group/muted_keyword.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 SubscriptionGroupGet _group({
   bool popular = false,
@@ -15,7 +16,7 @@ SubscriptionGroupGet _group({
   String contentFilter = contentFilterDefault,
   int minLikes = 0,
   int minRetweets = 0,
-  List<String> mutedKeywords = const [],
+  List<MutedKeyword> mutedKeywords = const [],
 }) {
   return SubscriptionGroupGet(
     id: 'group',
@@ -76,7 +77,10 @@ void main() {
           contentFilter: contentFilterSfw,
           minLikes: 10,
           minRetweets: 5,
-          mutedKeywords: const ['spoiler', 'sale'],
+          mutedKeywords: const [
+            MutedKeyword(term: 'spoiler'),
+            MutedKeyword(term: 'sale'),
+          ],
         ),
       ),
       5,

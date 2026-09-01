@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/user.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/user.dart';
 
 Map<String, dynamic> _loadFixture(String relativePath) {
   final file = File('test/fixtures/$relativePath');

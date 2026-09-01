@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/headers.dart';
-import 'package:quax/client/x_client_transaction_id/client_transaction.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/client/headers.dart';
+import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
+import 'package:xta/constants.dart';
 
 /// `_initFuture ??= ClientTransaction.initialize()` cached a *rejected* future
 /// as happily as a successful one. Deriving the key does two network requests

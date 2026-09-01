@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/tweet/poll.dart';
+import 'package:xta/tweet/poll.dart';
 
 Map<String, dynamic> _card(Map<String, String> values) => {
       'binding_values': {for (final entry in values.entries) entry.key: {'string_value': entry.value}}

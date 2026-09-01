@@ -1,31 +1,30 @@
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/_feed.dart';
-import 'package:quax/group/_feed_shell.dart';
-import 'package:quax/group/_settings.dart';
-import 'package:quax/group/feed_cache.dart';
-import 'package:quax/group/feed_session_cache.dart';
-import 'package:quax/group/group_chrome.dart';
-import 'package:quax/group/group_custom_settings.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/group/group_switcher.dart';
-import 'package:quax/group/group_view_store.dart';
-import 'package:quax/subscriptions/_groups_edit.dart';
-import 'package:quax/tweet/cached_tweet_list.dart';
-import 'package:quax/tweet/tweet_context_scope.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/tweet/tweet_skeleton.dart';
-import 'package:quax/ui/errors.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/_feed.dart';
+import 'package:xta/group/_feed_shell.dart';
+import 'package:xta/group/feed_cache.dart';
+import 'package:xta/group/feed_session_cache.dart';
+import 'package:xta/group/feed_chunk_hash.dart';
+import 'package:xta/group/group_members.dart';
+import 'package:xta/group/group_chrome.dart';
+import 'package:xta/group/group_custom_settings.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/home/home_group_filter.dart';
+import 'package:xta/group/group_switcher.dart';
+import 'package:xta/tweet/cached_tweet_list.dart';
+import 'package:xta/tweet/tweet_context_scope.dart';
+import 'package:xta/tweet/tweet_skeleton.dart';
+import 'package:xta/ui/errors.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/utils/iterables.dart';
+import 'package:xta/utils/iterables.dart';
 import 'package:quiver/iterables.dart';
+
+export 'package:xta/group/feed_chunk_hash.dart' show feedChunkSize;
 
 class GroupScreenArguments {
   final String id;
@@ -48,7 +47,11 @@ class GroupScreen extends StatefulWidget {
 
 class _GroupScreenState extends State<GroupScreen> {
   late final ScrollController _scrollController;
-  GroupRouteStore? _routeStore;
+
+  // Which group this route currently shows. Switching from the title swaps it
+  // in place rather than pushing another route, so Back always returns to
+  // wherever the first group was opened from, however many groups were visited.
+  GroupScreenArguments? _current;
 
   @override
   void initState() {
@@ -59,15 +62,13 @@ class _GroupScreenState extends State<GroupScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args =
+    _current ??=
         ModalRoute.of(context)!.settings.arguments as GroupScreenArguments;
-    _routeStore ??= GroupRouteStore((id: args.id, name: args.name));
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _routeStore?.destroy();
     super.dispose();
   }
 
@@ -75,22 +76,27 @@ class _GroupScreenState extends State<GroupScreen> {
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(0);
     }
-    _routeStore!.switchTo(group);
+    setState(
+      () => _current = GroupScreenArguments(id: group.id, name: group.name),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<GroupRouteStore, GroupRouteSelection>(
-      store: _routeStore!,
-      onState: (_, route) => SubscriptionGroupScreen(
-        key: ValueKey(route.id),
-        scrollController: _scrollController,
-        id: route.id,
-        name: route.name,
-        cacheKey: route.id,
-        onSwitchGroup: _switchTo,
-        actions: const [],
-      ),
+    final args = _current!;
+    return SubscriptionGroupScreen(
+      // A new group needs its own shell state, model and feed; keying by id is
+      // what makes the swap clean instead of half-updating the old one.
+      key: ValueKey(args.id),
+      scrollController: _scrollController,
+      id: args.id,
+      name: args.name,
+      // Pushed routes persist their feed state across pop/push via the cache.
+      // The cache key matches the groupId so re-pushing the same group restores
+      // the previous tweets and scroll offset.
+      cacheKey: args.id,
+      onSwitchGroup: _switchTo,
+      actions: const [],
     );
   }
 }
@@ -116,12 +122,12 @@ class _SubscriptionGroupScreenContentState
     extends State<SubscriptionGroupScreenContent> {
   // Cached tweets shown while the group's subscriptions load, so the feed
   // reveals its content instead of a full-screen spinner on cold start.
-  late final GroupPreviewStore _previewStore;
+  CachedChains? _preview;
+  Set<String>? _excludedProfiles;
 
   @override
   void initState() {
     super.initState();
-    _previewStore = GroupPreviewStore();
     // Only the combined "All"/Following feed (id '-1') can preview every cached
     // chunk up front; a specific group needs its own chunk hashes (unknown until
     // loadGroup finishes) to avoid showing tweets from other groups.
@@ -130,104 +136,145 @@ class _SubscriptionGroupScreenContentState
     }
   }
 
-  Future<void> _loadPreview() async {
-    var repository = await Repository.readOnly();
-    var chains = await readAllCachedChains(repository);
-    if (!mounted) return;
-    _previewStore.show(chains);
-  }
-
   @override
-  void dispose() {
-    _previewStore.destroy();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.id == '-1' && _excludedProfiles == null) {
+      _loadExcludedProfiles();
+    }
   }
 
-  Widget _loadingView(List<TweetChain>? preview) {
-    if (preview != null && preview.isNotEmpty) {
-      return TweetContextScope(child: CachedTweetList(preview));
+  Future<void> _loadExcludedProfiles() async {
+    HomeGroupFilterStore? filter;
+    GroupsModel? groups;
+    try {
+      filter = context.read<HomeGroupFilterStore>();
+      groups = context.read<GroupsModel>();
+    } on ProviderNotFoundException {
+      if (mounted) {
+        setState(() => _excludedProfiles = const {});
+      }
+      return;
     }
+    final disabled = filter.state;
+    if (disabled.isEmpty) {
+      if (mounted) {
+        setState(() => _excludedProfiles = const {});
+      }
+      return;
+    }
+    try {
+      final members = await groups.listGroupMembers();
+      final parents = await readGroupParents(await Repository.readOnly());
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _excludedProfiles = profileIdsExcludedByGroups(
+          members: members,
+          disabledGroupIds: disabled,
+          parentOf: parents,
+        );
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _excludedProfiles = const {});
+      }
+    }
+  }
+
+  Future<void> _loadPreview() async {
+    try {
+      var repository = await Repository.readOnly();
+      var cached = await readAllCachedChains(repository);
+      if (!mounted) return;
+      setState(() => _preview = cached);
+    } catch (_) {
+      // A bad cached chunk must not take the first Following frame down.
+    }
+  }
+
+  Widget _loadingView() {
+    var preview = _preview;
+    if (preview != null && preview.chains.isNotEmpty) {
+      return TweetContextScope(child: CachedTweetList(preview.chains));
+    }
+    // Post-shaped placeholders, like the paginated list's own first page — a
+    // centred spinner was the one loading state left that didn't look like the
+    // feed it was standing in for.
     return const TweetFeedSkeleton();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<GroupPreviewStore, List<TweetChain>?>(
-      store: _previewStore,
-      onState: (_, preview) =>
-          ScopedBuilder<GroupModel, SubscriptionGroupGet>.transition(
-            store: context.read<GroupModel>(),
-            onLoading: (_) => _loadingView(preview),
-            onError: (_, error) => ScaffoldErrorWidget(
-              error: error,
-              stackTrace: null,
-              prefix: L10n.current.unable_to_load_the_group,
-            ),
-            onState: (_, group) {
-              // Handle empty state with proper UI feedback
-              if (group.id.isEmpty) {
-                return TweetEmptyState(
-                  message: L10n.of(context).unable_to_load_the_group,
-                );
-              }
-              // A group leaves each filter unset (null) to follow the global default.
-              final prefs = PrefService.of(context);
-              final includeReplies =
-                  group.includeReplies ??
-                  prefs.get<bool>(optionGlobalIncludeReplies) ??
-                  true;
-              final includeRetweets =
-                  group.includeRetweets ??
-                  prefs.get<bool>(optionGlobalIncludeRetweets) ??
-                  true;
+    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+      store: context.read<GroupModel>(),
+      onLoading: (_) => _loadingView(),
+      onError: (_, error) => ScaffoldErrorWidget(
+        error: error,
+        stackTrace: null,
+        prefix: L10n.current.unable_to_load_the_group,
+      ),
+      onState: (_, group) {
+        // TODO: This is pretty gross. Figure out how to have a "no data" state
+        if (group.id.isEmpty) {
+          return _loadingView();
+        }
+        if (widget.id == '-1' && _excludedProfiles == null) {
+          return _loadingView();
+        }
+        // A group leaves each filter unset (null) to follow the global default.
+        final prefs = PrefService.of(context, listen: false);
+        final includeReplies =
+            group.includeReplies ??
+            prefs.get<bool>(optionGlobalIncludeReplies) ??
+            true;
+        final includeRetweets =
+            group.includeRetweets ??
+            prefs.get<bool>(optionGlobalIncludeRetweets) ??
+            true;
 
-              // Split the users into chunks, oldest first, to prevent thrashing of all groups when a new user is added
-              final filteredUsers = group.id == '-1'
-                  ? group.subscriptions.where((elm) => elm.inFeed)
-                  : group.subscriptions;
-              final members = filteredUsers.sorted(
-                (a, b) => a.createdAt.compareTo(b.createdAt),
-              );
+        // Split the users into chunks, oldest first, to prevent thrashing of all groups when a new user is added
+        final excluded = _excludedProfiles ?? const <String>{};
+        final filteredUsers = group.id == '-1'
+            ? group.subscriptions.where(
+                (elm) => subscriptionAllowedInFollowing(elm, excluded),
+              )
+            : group.subscriptions;
+        final members = filteredUsers
+            .sorted((a, b) => a.createdAt.compareTo(b.createdAt))
+            .toList();
 
-              // Substack publications are members of the group but they are not
-              // searched on X: they have their own source, and leaving them in a
-              // search query would put an empty clause in it.
-              final publications = members
-                  .whereType<SubstackSubscription>()
-                  .toList(growable: false);
-              final subreddits = members.whereType<RedditSubscription>().toList(
-                growable: false,
-              );
-              final users = members
-                  .where(
-                    (e) =>
-                        e is! SubstackSubscription && e is! RedditSubscription,
-                  )
-                  .toList(growable: false);
+        // Members belonging to a plugin are not searched on X: each source has
+        // its own pagination, and leaving one in a search query puts a dangling
+        // `OR` in it — or worse, searches `from:flutter` and paints an empty
+        // tweet where a Reddit card should be.
+        final split = splitGroupMembers(members);
+        final pluginMembers = split.pluginMembers;
+        final users = split.xMembers;
 
-              var chunks = partition(users, 16)
-                  .map(
-                    (e) => SubscriptionGroupFeedChunk(
-                      e,
-                      includeReplies,
-                      includeRetweets,
-                    ),
-                  )
-                  .toList();
+        var chunks = partition(users, feedChunkSize)
+            .map(
+              (e) => SubscriptionGroupFeedChunk(
+                e,
+                includeReplies,
+                includeRetweets,
+              ),
+            )
+            .toList();
 
-              return SubscriptionGroupFeed(
-                group: group,
-                chunks: chunks,
-                publications: publications,
-                subreddits: subreddits,
-                includeReplies: includeReplies,
-                includeRetweets: includeRetweets,
-                mediaOnly: widget.mediaOnly,
-                cacheKey: widget.cacheKey,
-                initialPreview: preview,
-              );
-            },
-          ),
+        return SubscriptionGroupFeed(
+          group: group,
+          chunks: chunks,
+          pluginMembers: pluginMembers,
+          includeReplies: includeReplies,
+          includeRetweets: includeRetweets,
+          mediaOnly: widget.mediaOnly,
+          cacheKey: widget.cacheKey,
+          initialPreview: _preview?.chains,
+          initialPreviewCachedAt: _preview?.cachedAt,
+        );
+      },
     );
   }
 }
@@ -243,12 +290,11 @@ class SubscriptionGroupFeedChunk {
     this.includeRetweets,
   );
 
-  String get hash {
-    var toHash =
-        '${users.map((e) => e.id).join(', ')}$includeReplies$includeRetweets';
-
-    return sha1.convert(toHash.codeUnits).toString();
-  }
+  String get hash => feedChunkHash(
+    users.map((e) => e.id).toList(),
+    includeReplies: includeReplies,
+    includeRetweets: includeRetweets,
+  );
 }
 
 class SubscriptionGroupScreen extends StatefulWidget {
@@ -280,29 +326,24 @@ class SubscriptionGroupScreen extends StatefulWidget {
 }
 
 class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
-  late final GroupMediaModeStore _mediaStore;
+  bool _mediaOnly = false;
 
   @override
   void initState() {
     super.initState();
-    final cacheKey = widget.cacheKey;
-    final initial = cacheKey == null
-        ? false
-        : context.read<FeedSessionCache>().readMediaOnly(cacheKey);
-    _mediaStore = GroupMediaModeStore(initial);
-  }
-
-  @override
-  void dispose() {
-    _mediaStore.destroy();
-    super.dispose();
-  }
-
-  void _toggleMediaOnly(bool mediaOnly) {
-    _mediaStore.toggle();
+    // Restore the filter together with the cached feed it was applied to, so a
+    // re-pushed route never shows filtered tweets under an unfiltered toggle.
     final cacheKey = widget.cacheKey;
     if (cacheKey != null) {
-      context.read<FeedSessionCache>().saveMediaOnly(cacheKey, !mediaOnly);
+      _mediaOnly = context.read<FeedSessionCache>().readMediaOnly(cacheKey);
+    }
+  }
+
+  void _toggleMediaOnly() {
+    setState(() => _mediaOnly = !_mediaOnly);
+    final cacheKey = widget.cacheKey;
+    if (cacheKey != null) {
+      context.read<FeedSessionCache>().saveMediaOnly(cacheKey, _mediaOnly);
     }
   }
 
@@ -323,112 +364,57 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
     );
   }
 
-  void _handleOverflow(
-    BuildContext context,
-    GroupModel model,
-    GroupOverflowAction action,
-  ) {
-    switch (action) {
-      case GroupOverflowAction.filters:
-        showFeedSettings(context, model);
-        return;
-      case GroupOverflowAction.subscriptions:
-        openSubscriptionGroupDialog(
-          context,
-          widget.id,
-          model.state.name,
-          model.state.icon,
-        );
-        return;
-      case GroupOverflowAction.settings:
-        Navigator.pushNamed(context, routeSettings);
-        return;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScopedBuilder<GroupMediaModeStore, bool>(
-      store: _mediaStore,
-      onState: (_, mediaOnly) => GroupFeedShell(
-        scrollController: widget.scrollController,
-        groupId: widget.id,
-        usesFeedCache: widget.cacheKey != null,
-        titleBuilder: (context) {
-          final onSwitch = widget.onSwitchGroup;
-          return GroupSwitcherTitle(
-            name: widget.name,
-            currentGroupId: widget.id,
-            onSwitch: onSwitch,
-          );
-        },
-        bottomBuilder: (context) => _GroupFeedControls(
-          model: context.read<GroupModel>(),
-          mediaOnly: mediaOnly,
-          onOrderSelected: (order) =>
-              _selectOrder(context.read<GroupModel>(), order),
-          onMediaToggle: () => _toggleMediaOnly(mediaOnly),
-          onCustomSettings: () =>
-              _openCustomSettings(context, context.read<GroupModel>()),
-        ),
-        bodyBuilder: (context) => SubscriptionGroupScreenContent(
-          id: widget.id,
-          cacheKey: widget.cacheKey,
-          mediaOnly: mediaOnly,
-        ),
-        actionsBuilder: (context) {
-          final model = context.read<GroupModel>();
-          return [
-            ...defaultGroupActions(
-              context,
-              model: model,
-              scrollToTopController: widget.scrollController,
-              showMore: false,
-              showSettings: false,
-              extra: widget.actions ?? const [],
-            ),
-            GroupOverflowButton(
-              onSelected: (action) => _handleOverflow(context, model, action),
-            ),
-          ];
-        },
+  PreferredSizeWidget _controls(BuildContext context) {
+    final model = context.read<GroupModel>();
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kGroupControlBarHeight),
+      child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+        store: model,
+        onState: (_, group) => group.id.isEmpty
+            ? const SizedBox(height: kGroupControlBarHeight)
+            : GroupFeedControlBar(
+                group: group,
+                mediaOnly: _mediaOnly,
+                onOrderSelected: (order) => _selectOrder(model, order),
+                onMediaToggle: _toggleMediaOnly,
+                onCustomSettings: () => _openCustomSettings(context, model),
+              ),
       ),
     );
   }
-}
-
-class _GroupFeedControls extends StatelessWidget
-    implements PreferredSizeWidget {
-  final GroupModel model;
-  final bool mediaOnly;
-  final ValueChanged<int> onOrderSelected;
-  final VoidCallback onMediaToggle;
-  final VoidCallback onCustomSettings;
-
-  const _GroupFeedControls({
-    required this.model,
-    required this.mediaOnly,
-    required this.onOrderSelected,
-    required this.onMediaToggle,
-    required this.onCustomSettings,
-  });
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kGroupControlBarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-      store: model,
-      onState: (_, group) => group.id.isEmpty
-          ? const SizedBox(height: kGroupControlBarHeight)
-          : GroupFeedControlBar(
-              group: group,
-              mediaOnly: mediaOnly,
-              onOrderSelected: onOrderSelected,
-              onMediaToggle: onMediaToggle,
-              onCustomSettings: onCustomSettings,
-            ),
+    return GroupFeedShell(
+      scrollController: widget.scrollController,
+      groupId: widget.id,
+      usesFeedCache: widget.cacheKey != null,
+      titleBuilder: (context) {
+        final onSwitch = widget.onSwitchGroup;
+        if (onSwitch == null) {
+          return Text(widget.name);
+        }
+        return GroupSwitcherTitle(
+          name: widget.name,
+          currentGroupId: widget.id,
+          onSwitch: onSwitch,
+        );
+      },
+      bodyBuilder: (context) => SubscriptionGroupScreenContent(
+        id: widget.id,
+        cacheKey: widget.cacheKey,
+        mediaOnly: _mediaOnly,
+      ),
+      bottomBuilder: widget.cacheKey == null ? null : _controls,
+      actionsBuilder: (context) => [
+        ...defaultGroupActions(
+          context,
+          model: context.read<GroupModel>(),
+          scrollToTopController: widget.scrollController,
+          showSettings: false,
+          extra: widget.actions ?? const [],
+        ),
+      ],
     );
   }
 }

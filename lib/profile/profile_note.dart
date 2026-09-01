@@ -1,0 +1,298 @@
+import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/errors.dart';
+
+typedef ProfileNoteLoader = Future<ProfileNote?> Function(String userId);
+typedef ProfileNoteSaver = Future<void> Function(String userId, String note);
+
+Future<ProfileNote?> loadProfileNote(String userId) async {
+  final database = await Repository.readOnly();
+  final rows = await database.query(
+    tableProfileNote,
+    where: 'id = ?',
+    whereArgs: [userId],
+    limit: 1,
+  );
+  if (rows.isEmpty) {
+    return null;
+  }
+  return ProfileNote.fromMap(rows.first);
+}
+
+Future<void> saveProfileNote(String userId, String note) async {
+  final trimmed = note.trim();
+  final database = await Repository.writable();
+
+  if (trimmed.isEmpty) {
+    await database.delete(
+      tableProfileNote,
+      where: 'id = ?',
+      whereArgs: [userId],
+    );
+    return;
+  }
+
+  await database.insert(
+    tableProfileNote,
+    ProfileNote(id: userId, note: trimmed, updatedAt: DateTime.now()).toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+
+/// Compact private-note row on a profile — local only, never synced.
+///
+/// The old inline TextField lived in the collapsing [SliverAppBar] without
+/// being counted in `expandedHeight`, so the tab bar ate the field, clipped
+/// the label, and hid the save button. A one-line chip plus a sheet keeps the
+/// header small and lets typing/saving happen outside the nested scroll view.
+class ProfileNoteCard extends StatefulWidget {
+  final String userId;
+  final ProfileNoteLoader? loader;
+  final ProfileNoteSaver? saver;
+
+  const ProfileNoteCard({
+    super.key,
+    required this.userId,
+    this.loader,
+    this.saver,
+  });
+
+  @override
+  State<ProfileNoteCard> createState() => _ProfileNoteCardState();
+}
+
+class _ProfileNoteCardState extends State<ProfileNoteCard> {
+  String _note = '';
+  bool _loading = true;
+
+  ProfileNoteLoader get _loader => widget.loader ?? loadProfileNote;
+  ProfileNoteSaver get _saver => widget.saver ?? saveProfileNote;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(covariant ProfileNoteCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId) {
+      _load();
+    }
+  }
+
+  Future<void> _load() async {
+    if (mounted && !_loading) {
+      setState(() => _loading = true);
+    }
+    try {
+      final note = await _loader(widget.userId);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _note = note?.note ?? '';
+        _loading = false;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
+  Future<void> _openEditor() async {
+    if (_loading) {
+      return;
+    }
+    final saved = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (sheetContext) => ProfileNoteEditorSheet(
+        userId: widget.userId,
+        initial: _note,
+        saver: _saver,
+      ),
+    );
+    if (!mounted || saved == null) {
+      return;
+    }
+    setState(() => _note = saved);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final empty = _note.isEmpty;
+    final label = empty ? l10n.profile_note_title : _note;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 4, bottom: 8),
+      child: Material(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(
+          alpha: 0.45,
+        ),
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          key: const Key('profile_note_chip'),
+          onTap: _loading ? null : _openEditor,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.sticky_note_2_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: empty
+                          ? theme.colorScheme.onSurfaceVariant
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                Icon(Icons.edit_outlined, size: 14, color: theme.hintColor),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Editor sheet for a profile's private note. Pops the trimmed text on save
+/// (empty string if the note was cleared).
+class ProfileNoteEditorSheet extends StatefulWidget {
+  final String userId;
+  final String initial;
+  final ProfileNoteSaver saver;
+
+  const ProfileNoteEditorSheet({
+    super.key,
+    required this.userId,
+    required this.initial,
+    required this.saver,
+  });
+
+  @override
+  State<ProfileNoteEditorSheet> createState() => _ProfileNoteEditorSheetState();
+}
+
+class _ProfileNoteEditorSheetState extends State<ProfileNoteEditorSheet> {
+  late final TextEditingController _controller;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initial);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (_saving) {
+      return;
+    }
+    setState(() => _saving = true);
+    final trimmed = _controller.text.trim();
+    try {
+      await widget.saver(widget.userId, trimmed);
+      if (mounted) {
+        Navigator.pop(context, trimmed);
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _saving = false);
+      showSnackBar(
+        context,
+        icon: '❌',
+        message: L10n.of(context).oops_something_went_wrong,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + 16,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(l10n.profile_note_title, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              l10n.profile_note_hint,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.hintColor,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              key: const Key('profile_note_field'),
+              controller: _controller,
+              autofocus: true,
+              minLines: 3,
+              maxLines: 8,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _save(),
+              decoration: InputDecoration(
+                hintText: l10n.profile_note_hint,
+                isDense: true,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                key: const Key('profile_note_save'),
+                onPressed: _saving ? null : _save,
+                icon: _saving
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save_outlined, size: 18),
+                label: Text(l10n.profile_note_save),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

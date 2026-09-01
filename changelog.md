@@ -1,3 +1,227 @@
+## XTA aimdi122
+
+What's new in XTA aimdi122:
+  - Built on aimdi121. Not QuaX.
+  - Substack follows a newsletter that moved to Beehiiv (paste the new site, not the old Substack)
+  - Everything from aimdi121
+
+## XTA aimdi121
+
+What's new in XTA aimdi121:
+  - Built on aimdi120. Not QuaX.
+  - Pixiv has its own bar under the Start strip: Home, Rankings, Favorites, Search, More
+  - Everything from aimdi120
+
+## XTA aimdi120
+
+What's new in XTA aimdi120:
+  - Built on aimdi119. Not QuaX.
+  - Livestreams and Spaces play in the app. A browser is only offered if the stream cannot be fetched
+  - Add a Reddit community to a group from the post sheet or the community header
+  - Link preview images fill their frame (no white bars)
+  - Reddit comments no longer sit in a blank strip on the left
+  - Everything from aimdi119
+
+## XTA aimdi119
+
+What's new in XTA aimdi119:
+  - Built on aimdi118. Not QuaX.
+  - Bluesky profiles use the same banner / avatar / tabs as X
+  - Bluesky following only refreshes on pull-to-refresh (no count of new posts)
+  - Everything from aimdi118
+
+## XTA aimdi118
+
+What's new in XTA aimdi118:
+  - Built on aimdi117. Not QuaX.
+  - Abos menu is a grouped sheet (view, sort, actions) instead of twelve unlabeled rows
+  - Everything from aimdi117
+
+## XTA aimdi117
+
+What's new in XTA aimdi117:
+  - Built on aimdi116. Not QuaX.
+  - Replies under an opened post sit flush with it (no blank strip on the left)
+  - Everything from aimdi116
+
+## XTA aimdi116
+
+What's new in XTA aimdi116:
+  - Built on aimdi115. Not QuaX.
+  - Tapping a Livestream or Space opens it (VODs play here; live rooms and Spaces open x.com in a browser instead of "Link kann nicht geöffnet werden")
+  - Reddit communities show their real icon (not a generated face)
+  - Bookmark a Reddit post into an Archiv folder (tap saves, long-press picks the folder)
+  - Reddit upvotes also appear under Archiv → Gefällt mir
+  - Bluesky profiles have a Saved tab of local likes (hearts stay on this device)
+  - Everything from aimdi115
+
+## XTA aimdi115
+
+What's new in XTA aimdi115:
+  - Built on aimdi114. Not QuaX.
+  - Medien Livestreams actually loads broadcasts and Spaces (from posts, not the photo/video timeline)
+  - Everything from aimdi114
+
+## XTA aimdi114
+
+What's new in XTA aimdi114:
+  - Built on aimdi113. Not QuaX.
+  - Long-press a paragraph to start Vorlesen from there
+  - Retweets and other lists no longer freeze on the first-page spinner
+  - Reply to your own local notes
+  - Medien Livestreams: broadcasts and Spaces
+  - Profile Archive: All / Likes / Bookmarks
+  - Everything from aimdi113
+
+## XTA aimdi113
+
+What's new in XTA aimdi113:
+  - Built on aimdi111. Not QuaX.
+  - Vorlesen speaks with Sherpa / Next-gen Kaldi (Android 11 can see the engine; English-only voices are not asked for German)
+  - Everything from aimdi111
+
+## XTA aimdi110
+
+What's new in XTA aimdi110:
+  - Group feeds keep showing posts when SearchTimeline is rate-limited
+  - Notes you write stay on this device (and in backup / Nextcloud), never on X
+  - Turn a login off and Für dich also drops that login's own posts
+  - Turn a group off to hide its members from Folgt (the group's own tab stays)
+  - The globe is gone from the home strip; plus adds, removes, and reorders plugin timelines
+  - Everything from aimdi109
+
+## XTA aimdi109
+
+What's new in XTA aimdi109:
+  - Videos load and play again (aimdi108 compared the wrong acquire Future, so the poster never lifted)
+  - A full video pool now evicts unused players instead of leaving every later clip as a still
+  - Waiting for a pool slot still shows a tap target and retries; autoplay starts when the tile is on screen
+  - Everything from aimdi108
+
+## XTA aimdi108
+
+What's new in XTA aimdi108:
+  - Home Following / For you no longer freeze then crash (two inner NestedScrollView attachments on first load, zero on empty Following)
+  - Saved no longer dual-attaches the home strip's outer scroll controller
+  - Following scroll restore is bounded; switching Für dich / Following no longer remounts NestedScrollView
+  - Video pool refuses a new player when it is full instead of creating past the cap
+  - Plugin feeds share one card row, paint a post-shaped skeleton, write counts in the reader's language
+  - Mastodon content warnings say "content warning"; Substack titles no longer overflow
+  - Everything from aimdi107
+
+## XTA aimdi107
+
+What's new in XTA aimdi107:
+  - Filled Pixiv and Booru homes no longer attach every board to the home NestedScrollView controller
+  - Switching Pixiv / Booru tabs unmounts the hidden grid instead of keeping four (or two) decoded
+  - A bad cached Following chunk no longer takes the first home frame down
+  - An uncaught widget or isolate error no longer aborts the process
+  - Everything from aimdi106
+
+## XTA aimdi106
+
+What's new in XTA aimdi106:
+  - Empty RSS, Substack, Threads, and Stocks homes no longer freeze or crash under the home strip
+  - One-item RSS / EH / Booru lists no longer attach the outer NestedScrollView controller
+  - Add-account, RSS tag, Reddit client-id, and EH page-jump fields dispose with the dialog, not while it closes
+  - Empty RSS / Substack remounts from Für dich do not enter a loading spinner
+  - Everything from aimdi105
+
+## XTA aimdi105
+
+What's new in XTA aimdi105:
+  - Home → Reddit with no followed communities no longer freezes or crashes on the empty pane
+  - The Add subreddit sheet can be cancelled without taking the process down
+  - Swiping Für dich → Reddit does not refetch an empty following list
+  - Everything from aimdi104
+
+## XTA aimdi104
+
+What's new in XTA aimdi104:
+  - Stop the crash on the first home frame (missing RSS table, empty or restored home tabs, bad string-list prefs)
+  - Tight IconLabel tabs, Networks → Add timeline, and enabling RSS no longer take the process down
+  - Everything from aimdi103
+
+## XTA aimdi103
+
+What's new in XTA aimdi103:
+  - Guest RSS plugin: paste a site or feed URL, unread stays on this device, feeds can join groups
+  - Substack custom-domain follows load; tap the publication name on a card to open its profile
+  - Sherpa is an explicit on-device read-aloud engine under Settings → Read aloud
+  - Group feeds include plugin posts (Reddit, Substack, RSS, and the rest), not only X
+  - Bluesky adds Discover (custom feeds / algos) and Lists next to Following and Liked
+  - Bluesky home stays put when you swipe away and back
+  - The group image tab reuses the tweet list instead of starting a second Search
+  - Reddit home switches among followed communities; Discover plugin chips own search
+  - Plugin switching lives on the home strip (Networks), not the Groups board
+  - Hiding a plugin tab pins it on the home strip instead of the Groups board
+  - Plugin and section icons sit beside tab labels
+  - Smoother home and plugin feeds without a rewrite
+
+## XTA aimdi102
+
+What's new in XTA aimdi102:
+  - Hacker News stays in the Plugin store even when `main`'s catalogue is stale
+  - Search plugins by name, initials, or id (`hn`, `hacker news`)
+  - Available plugins start open so Communities is not hidden
+  - HN threads and user pages build comment and story rows on demand
+
+## XTA aimdi101
+
+What's new in XTA aimdi101:
+  - Guest Hacker News plugin (Top / New / Best / Ask / Show / Jobs, search, threads, local likes and follows)
+  - Home tabs build on demand; switching tabs no longer rebuilds the feed you are reading
+  - Cheaper tweet tiles, paint-size plugin images, and feed-cache JSON encode off the UI isolate
+
+## XTA aimdi100
+
+What's new in XTA aimdi100:
+  - Plugin links (Bluesky, Threads, Instagram, TikTok, Reddit, Mastodon, Pixiv, Substack) open in-app
+  - Discover can search enabled plugins, not only X, and has Find people / Antennas chips
+  - Reddit uses the same icon chrome as the other plugins
+  - The timeline stays put while plugin sources and accounts load
+  - Unread dots on groups, Following, and For You when cached posts are newer
+  - Saved library says likes and saves stay on this device
+  - Mastodon no longer refetches every public timeline on install or uninstall
+
+## XTA aimdi99
+
+What's new in XTA aimdi99:
+  - Paste a Grok (xAI) key in Settings → Advanced → AI provider; an OpenAI chip is there too
+  - Import the public following of one or more accounts as local subscriptions
+  - Sort ungrouped subscriptions into similar groups, or suggest new ones when none fit
+
+## XTA aimdi98
+
+What's new in XTA aimdi98:
+  - Private guest Instagram plugin, with For You and people-to-follow when you do not know a handle
+  - Mastodon: Explore / Local / Federated / Following, paging, CWs, polls, quotes, tappable mentions and tags
+  - Threads and Bluesky suggest people from the feed; Substack can find similar publications
+  - TikTok search; plugin screens drop the second title bar under the home strip
+  - Calmer settings hub; excluding an account from Following and For you actually works
+  - Groups: plugin chips, and the board-swap crash is gone
+  - Full-size Bluesky / Threads / Mastodon media and profile reply tabs
+  - Reddit hides leftover >image> text when the picture is already shown
+
+## XTA aimdi97
+
+What's new in XTA aimdi97:
+  - Private guest TikTok plugin (follows and likes stay on this device)
+  - Plugin and app chrome: larger footers, pinned feed bars, empty states with a way out
+  - Threads is guest-first so a pasted session is not spent on every refresh
+  - Faster feeds: cheaper off-screen tiles, capped image decode, cache JSON off the UI isolate
+  - Pixiv heart bookmarks on Pixiv (sign-in required); Booru catalog tiles use sample/large instead of tiny previews
+  - Plugin store: Installed on top in compact rows; Available grouped by category
+  - Booru: Rule34 and Xbooru presets, plus Add site for other Gelbooru/Danbooru/Moebooru/e621 hosts
+
+## XTA aimdi96
+
+What's new in XTA aimdi96:
+  - Booru plugin (Danbooru / Moebooru / Gelbooru / e621) with tag follows, mute, autocomplete
+  - Private EH gallery plugin (Popular / Front / search / reader / local favorites)
+  - Discover/search for Bluesky, Mastodon, Threads, and Pixiv
+  - Groups: stop timeline reset when adding a member; compact plugin feed rows
+
 ## QuaX v4.12.0
 
 What's new in QuaX v4.12.0:

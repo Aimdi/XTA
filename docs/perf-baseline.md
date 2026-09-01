@@ -68,6 +68,33 @@ These landed before this baseline doc and are **not** double-counted as Phase 2 
 - Avatar `cacheWidth` decode cap (`9dc41c4`)
 - Reverted feed `cacheExtent` bump — GIF tiles spin native players on build (`d66b60b`)
 
+## Later pass (feeds / plugins / startup)
+
+Mechanism work after the tweet-module pass. Device rows above stay TBD.
+
+- Plugin timelines share `FeedListView` (`kFeedListCacheExtent`, no keep-alives) and wrap cards in `RepaintBoundary`.
+- Home/group shells no longer rebuild the feed on every pref write; subscribe badges / Substack read / Reddit votes use `distinct:`.
+- Non-sensitive media skips the hide-sensitive `Consumer`.
+- Cached chunk JSON decodes on a background isolate; plugin interleave waits until after the first frame and skips disabled plugins.
+- Audio service bind moved to the same post-frame callback as MediaKit.
+- Home-strip remounts reuse plugin feeds inside `kAccountPostsCacheTtl` (Substack
+  included) and skip the Triple loading flash when posts are already on screen.
+  Inbox / Notes / Liked panes are built the first time they are opened
+  (`PluginLazyTabs`), not on the first home paint. TikTok's following cache
+  lives with the other plugin stores so a swipe away no longer drops it.
+- Home destinations use `PageView.builder` and a page-index notifier, so unused
+  groups / plugins are not constructed on first paint and a tab change does
+  not rebuild the visible feed. Feed tiles drop an unused ticker; long posts
+  stay capped in the feed; boost-run lengths are remembered per list.
+- Home no longer rebuilds keep-alive feeds on unrelated pref writes (nav-bar
+  labels listen locally). Plugin panes unmount when left. Feed
+  `ScopedBuilder.transition` AnimatedSwitchers are gone. Instagram / TikTok
+  cards isolate paints; remaining 20–40px plugin avatars decode at paint size.
+  Home-strip unread scans debounce 200ms.
+- Feed chunk JSON encodes off the UI isolate. Gallery plugin stores race the
+  first frame. Pref listeners register once. Plugin media / Instagram / TikTok
+  decode at paint size. Pixiv keeps only the visible masonry grid alive.
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 /// Keeps transparent edge-to-edge system bars legible for the active XTA theme.
 class XtaSystemBars extends StatelessWidget {

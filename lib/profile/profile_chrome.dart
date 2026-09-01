@@ -2,11 +2,11 @@ import 'dart:ui' show FontFeature;
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/tweet/tweet_skeleton.dart';
-import 'package:quax/ui/reader_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
-import 'package:quax/user.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_skeleton.dart';
+import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/user.dart';
 
 const double kProfileBannerHeight = 168;
 const double kProfileAvatarSize = 88;
@@ -17,12 +17,14 @@ class ProfileBanner extends StatelessWidget {
   final String? uri;
   final VoidCallback? onTap;
   final String? semanticLabel;
+  final double height;
 
   const ProfileBanner({
     super.key,
     required this.uri,
     this.onTap,
     this.semanticLabel,
+    this.height = kProfileBannerHeight,
   });
 
   @override
@@ -32,18 +34,23 @@ class ProfileBanner extends StatelessWidget {
       tweetPrimaryColor(context).withValues(alpha: 0.06),
       tokens?.background ?? Theme.of(context).scaffoldBackgroundColor,
     );
-    final image = uri == null
-        ? ColoredBox(color: fallback)
-        : ExtendedImage.network(
-            uri!,
-            width: double.infinity,
-            height: kProfileBannerHeight,
-            fit: BoxFit.cover,
-            loadStateChanged: (state) => switch (state.extendedImageLoadState) {
-              LoadState.failed => ColoredBox(color: fallback),
-              _ => null,
-            },
-          );
+    final image = SizedBox(
+      width: double.infinity,
+      height: height,
+      child: uri == null
+          ? ColoredBox(color: fallback)
+          : ExtendedImage.network(
+              uri!,
+              width: double.infinity,
+              height: height,
+              fit: BoxFit.cover,
+              loadStateChanged: (state) =>
+                  switch (state.extendedImageLoadState) {
+                    LoadState.failed => ColoredBox(color: fallback),
+                    _ => null,
+                  },
+            ),
+    );
 
     return Semantics(
       label: semanticLabel,

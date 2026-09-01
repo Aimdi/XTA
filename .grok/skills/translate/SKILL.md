@@ -5,7 +5,7 @@ description: load this skill everytime user asks you to do translation stuff, or
 
 # translate skill
 
-Guide for adding, changing, or removing user-visible strings in QuaX.
+Guide for adding, changing, or removing user-visible strings in XTA.
 
 ## When this skill applies
 

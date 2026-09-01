@@ -1,31 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
-import 'package:provider/provider.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/profile/media_grid/media_grid.dart';
-import 'package:quax/profile/media_grid/media_grid_items/media_grid_item.dart';
-import 'package:quax/profile/profile.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/user.dart';
-import 'package:quax/utils/paging.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/media_grid/media_grid.dart';
+import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
+import 'package:xta/tweet/sensitive_media_gate.dart';
+import 'package:xta/user.dart';
+import 'package:xta/utils/paging.dart';
 
 class ProfileMediaGrid extends StatefulWidget {
   final UserWithExtra user;
   final BasePrefService pref;
   final MediaFilter filter;
 
-  const ProfileMediaGrid({super.key, required this.user, required this.pref, this.filter = MediaFilter.all});
+  const ProfileMediaGrid({
+    super.key,
+    required this.user,
+    required this.pref,
+    this.filter = MediaFilter.all,
+  });
 
   @override
   State<ProfileMediaGrid> createState() => _ProfileMediaGridState();
 }
 
-class _ProfileMediaGridState extends State<ProfileMediaGrid> {
+class _ProfileMediaGridState extends State<ProfileMediaGrid>
+    with AutomaticKeepAliveClientMixin<ProfileMediaGrid> {
   late CursorPagingController<String, MediaGridItem> _paging;
 
+  @override
+  bool get wantKeepAlive => true;
+
   static const int pageSize = 20;
-  int loadTweetsCounter = 0;
 
   /// Successive media pages overlap at their boundaries, so an entry already
   /// shown must not come round again.
@@ -53,12 +59,16 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> {
     super.dispose();
   }
 
-  void incrementLoadTweetsCounter() {
-    ++loadTweetsCounter;
-  }
+  // Deliberately inert. The parser's sparse-page counter exists to stop
+  // regex-filtered feeds paging forever, and it does that by nulling the
+  // cursor after a handful of thin pages — but thin pages are the media tab's
+  // normal condition (twenty text posts map to no media), and the lookahead
+  // above this owns when to stop. Feeding the real counter here ended long
+  // text-heavy profiles' grids early.
+  void incrementLoadTweetsCounter() {}
 
   int getLoadTweetsCounter() {
-    return loadTweetsCounter;
+    return 0;
   }
 
   Future<CursorPage<String, MediaGridItem>> _fetchPage(String? cursor) async {
@@ -66,13 +76,18 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> {
       _seen.clear();
     }
 
-    return mediaPageWithLookahead(cursor, _chainsAfter, _unseenItems);
+    return mediaPageWithLookahead(
+      cursor,
+      _chainsAfter,
+      _unseenItems,
+      maxLookahead: mediaLookaheadFor(widget.filter),
+    );
   }
 
   Future<ChainPage> _chainsAfter(String? cursor) async {
     var result = await Twitter.getTweets(
       widget.user.idStr!,
-      'media',
+      mediaTimelineTypeFor(widget.filter),
       const [],
       cursor: cursor,
       count: pageSize,
@@ -86,7 +101,8 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> {
   }
 
   List<MediaGridItem> _unseenItems(List<TweetChain> chains) {
-    return mediaItemsFromChains(chains)
+    final raw = mediaItemsFromChains(chains);
+    return raw
         .where(widget.filter.accepts)
         .where((m) => _seen.add('${m.tweetId}/${m.mediaIndex}'))
         .toList();
@@ -94,23 +110,19 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TweetContextState>(builder: (context, model, child) {
-      if (model.hideSensitive && (widget.user.possiblySensitive ?? false)) {
-        return EmojiErrorWidget(
-          emoji: '🍆🙈🍆',
-          message: L10n.current.possibly_sensitive,
-          errorMessage: L10n.current.possibly_sensitive_profile,
-          onRetry: () async => model.setHideSensitive(false),
-          retryText: L10n.current.yes_please,
-        );
-      }
-
-      return MediaGrid(
+    super.build(context);
+    return SensitiveMediaGate(
+      sensitive: widget.user.possiblySensitive ?? false,
+      errorMessage: L10n.current.possibly_sensitive_profile,
+      wrapInCard: false,
+      child: MediaGrid(
         controller: _paging.pagingController,
         firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
-        newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+        newPageErrorPrefix: L10n.of(
+          context,
+        ).unable_to_load_the_next_page_of_tweets,
         emptyMessage: L10n.of(context).could_not_find_any_tweets_by_this_user,
-      );
-    });
+      ),
+    );
   }
 }

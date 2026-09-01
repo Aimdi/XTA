@@ -1,7 +1,7 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/constants.dart';
 
 /// X design-language tokens. Chirp is proprietary — we use Inter instead.
 @immutable
@@ -62,7 +62,8 @@ class XLookTokens extends ThemeExtension<XLookTokens> {
     border: Color(0xFF2F3336),
   );
 
-  static XLookTokens? maybeOf(BuildContext context) => Theme.of(context).extension<XLookTokens>();
+  static XLookTokens? maybeOf(BuildContext context) =>
+      Theme.of(context).extension<XLookTokens>();
 
   static XLookTokens of(BuildContext context) {
     final tokens = maybeOf(context);
@@ -116,31 +117,73 @@ class XLookTokens extends ThemeExtension<XLookTokens> {
 }
 
 TextTheme _xLookTextTheme(Brightness brightness, Color onBg, Color secondary) {
-  final base = brightness == Brightness.light ? Typography.material2021().black : Typography.material2021().white;
+  final base = brightness == Brightness.light
+      ? Typography.material2021().black
+      : Typography.material2021().white;
   return base
       .apply(fontFamily: 'Inter', bodyColor: onBg, displayColor: onBg)
       .copyWith(
-        bodyLarge: base.bodyLarge?.copyWith(fontFamily: 'Inter', fontSize: 15, color: onBg, height: 1.35),
-        bodyMedium: base.bodyMedium?.copyWith(fontFamily: 'Inter', fontSize: 15, color: onBg, height: 1.35),
-        bodySmall: base.bodySmall?.copyWith(fontFamily: 'Inter', fontSize: 13, color: secondary),
-        titleLarge: base.titleLarge?.copyWith(fontFamily: 'Inter', fontSize: 20, fontWeight: FontWeight.w700, color: onBg),
-        titleMedium: base.titleMedium?.copyWith(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w700, color: onBg),
-        titleSmall: base.titleSmall?.copyWith(fontFamily: 'Inter', fontSize: 14, fontWeight: FontWeight.w700, color: onBg),
-        labelLarge: base.labelLarge?.copyWith(fontFamily: 'Inter', fontWeight: FontWeight.w700, color: onBg),
+        bodyLarge: base.bodyLarge?.copyWith(
+          fontFamily: 'Inter',
+          fontSize: 15,
+          color: onBg,
+          height: 1.35,
+        ),
+        bodyMedium: base.bodyMedium?.copyWith(
+          fontFamily: 'Inter',
+          fontSize: 15,
+          color: onBg,
+          height: 1.35,
+        ),
+        bodySmall: base.bodySmall?.copyWith(
+          fontFamily: 'Inter',
+          fontSize: 13,
+          color: secondary,
+        ),
+        titleLarge: base.titleLarge?.copyWith(
+          fontFamily: 'Inter',
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          color: onBg,
+        ),
+        titleMedium: base.titleMedium?.copyWith(
+          fontFamily: 'Inter',
+          fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: onBg,
+        ),
+        titleSmall: base.titleSmall?.copyWith(
+          fontFamily: 'Inter',
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          color: onBg,
+        ),
+        labelLarge: base.labelLarge?.copyWith(
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+          color: onBg,
+        ),
       );
 }
 
 /// The fill for a surface that floats above the page — a menu, a dialog, a
-/// sheet, a snackbar.
+/// sheet, a snackbar, the home nav pill.
 ///
 /// Lights Out makes card and background both pure black, so anything drawn on
 /// either would dissolve into the screen behind it. Lifting it a little keeps
 /// the edge readable without introducing Material's tonal wash.
-Color _floatingSurface(XLookTokens tokens) => tokens.card == tokens.background
-    ? Color.alphaBlend(tokens.onBackground.withValues(alpha: 0.10), tokens.background)
+Color xLookFloatingSurface(XLookTokens tokens) =>
+    tokens.card == tokens.background
+    ? Color.alphaBlend(
+        tokens.onBackground.withValues(alpha: 0.10),
+        tokens.background,
+      )
     : tokens.card;
 
-ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitions) {
+ThemeData xLookThemeData(
+  XLookTokens tokens,
+  PageTransitionsTheme? pageTransitions,
+) {
   final isLight = tokens.background.computeLuminance() > 0.5;
   final brightness = isLight ? Brightness.light : Brightness.dark;
   final scheme = ColorScheme(
@@ -161,6 +204,17 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     surfaceContainer: tokens.card,
     surfaceContainerHigh: tokens.card,
     surfaceContainerHighest: tokens.border,
+    // Inset fill for FilledButton.tonal / plugin store — not a Material You wash.
+    primaryContainer: Color.alphaBlend(
+      tokens.accent.withValues(alpha: 0.14),
+      tokens.card,
+    ),
+    onPrimaryContainer: tokens.onBackground,
+    secondaryContainer: Color.alphaBlend(
+      tokens.onBackground.withValues(alpha: 0.08),
+      tokens.background,
+    ),
+    onSecondaryContainer: tokens.onBackground,
   );
 
   return ThemeData(
@@ -172,7 +226,11 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     cardColor: tokens.card,
     dividerColor: tokens.divider,
     fontFamily: 'Inter',
-    textTheme: _xLookTextTheme(brightness, tokens.onBackground, tokens.secondary),
+    textTheme: _xLookTextTheme(
+      brightness,
+      tokens.onBackground,
+      tokens.secondary,
+    ),
     appBarTheme: AppBarThemeData(
       backgroundColor: tokens.background,
       foregroundColor: tokens.onBackground,
@@ -201,7 +259,10 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
       }),
       iconTheme: WidgetStateProperty.resolveWith((states) {
         final selected = states.contains(WidgetState.selected);
-        return IconThemeData(color: selected ? tokens.accent : tokens.secondary, size: 24);
+        return IconThemeData(
+          color: selected ? tokens.accent : tokens.secondary,
+          size: 24,
+        );
       }),
     ),
     // Material 3 draws snackbars on inverseSurface, which in a dark app means a
@@ -209,8 +270,12 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     snackBarTheme: SnackBarThemeData(
       // Lights Out makes card and background both pure black, so a snackbar
       // drawn on either would be invisible against the screen behind it.
-      backgroundColor: _floatingSurface(tokens),
-      contentTextStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
+      backgroundColor: xLookFloatingSurface(tokens),
+      contentTextStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        color: tokens.onBackground,
+      ),
       actionTextColor: tokens.accent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -222,37 +287,49 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     // Left unset they were tinted like X but never shaped like it, which is
     // what made the menus and the settings panel read as a different app.
     popupMenuTheme: PopupMenuThemeData(
-      color: _floatingSurface(tokens),
+      color: xLookFloatingSurface(tokens),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: tokens.border),
       ),
-      textStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
+      textStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        color: tokens.onBackground,
+      ),
     ),
     menuTheme: MenuThemeData(
       style: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(_floatingSurface(tokens)),
+        backgroundColor: WidgetStatePropertyAll(xLookFloatingSurface(tokens)),
         elevation: const WidgetStatePropertyAll(0),
-        shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: tokens.border),
-        )),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: tokens.border),
+          ),
+        ),
       ),
     ),
     dropdownMenuTheme: DropdownMenuThemeData(
-      textStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
+      textStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        color: tokens.onBackground,
+      ),
       menuStyle: MenuStyle(
-        backgroundColor: WidgetStatePropertyAll(_floatingSurface(tokens)),
+        backgroundColor: WidgetStatePropertyAll(xLookFloatingSurface(tokens)),
         elevation: const WidgetStatePropertyAll(0),
-        shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: tokens.border),
-        )),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: tokens.border),
+          ),
+        ),
       ),
     ),
     dialogTheme: DialogThemeData(
-      backgroundColor: _floatingSurface(tokens),
+      backgroundColor: xLookFloatingSurface(tokens),
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -265,12 +342,16 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
         fontWeight: FontWeight.w700,
         color: tokens.onBackground,
       ),
-      contentTextStyle: TextStyle(fontFamily: 'Inter', fontSize: 15, color: tokens.onBackground),
+      contentTextStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        color: tokens.onBackground,
+      ),
     ),
     bottomSheetTheme: BottomSheetThemeData(
-      backgroundColor: _floatingSurface(tokens),
+      backgroundColor: xLookFloatingSurface(tokens),
       surfaceTintColor: Colors.transparent,
-      modalBackgroundColor: _floatingSurface(tokens),
+      modalBackgroundColor: xLookFloatingSurface(tokens),
       elevation: 0,
       modalElevation: 0,
       showDragHandle: true,
@@ -284,34 +365,60 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
       indicatorColor: tokens.accent,
       labelColor: tokens.onBackground,
       unselectedLabelColor: tokens.secondary,
-      labelStyle: const TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w700),
-      unselectedLabelStyle: const TextStyle(fontFamily: 'Inter', fontSize: 15, fontWeight: FontWeight.w500),
+      labelStyle: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        fontWeight: FontWeight.w700,
+      ),
+      unselectedLabelStyle: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
     ),
-    dividerTheme: DividerThemeData(color: tokens.divider, thickness: 1, space: 1),
+    dividerTheme: DividerThemeData(
+      color: tokens.divider,
+      thickness: 1,
+      space: 1,
+    ),
     listTileTheme: ListTileThemeData(
       iconColor: tokens.secondary,
       textColor: tokens.onBackground,
-      subtitleTextStyle: TextStyle(fontFamily: 'Inter', fontSize: 13, color: tokens.secondary),
+      subtitleTextStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 13,
+        color: tokens.secondary,
+      ),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: Colors.transparent,
       selectedColor: tokens.accent,
       side: BorderSide(color: tokens.border),
       shape: const StadiumBorder(),
-      labelStyle: TextStyle(fontFamily: 'Inter', fontSize: 14, color: tokens.onBackground),
+      labelStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 14,
+        color: tokens.onBackground,
+      ),
       showCheckmark: false,
     ),
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
-        color: _floatingSurface(tokens),
+        color: xLookFloatingSurface(tokens),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: tokens.border),
       ),
-      textStyle: TextStyle(fontFamily: 'Inter', fontSize: 13, color: tokens.onBackground),
+      textStyle: TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 13,
+        color: tokens.onBackground,
+      ),
     ),
     inputDecorationTheme: InputDecorationThemeData(
       filled: true,
-      fillColor: tokens.card == tokens.background ? _floatingSurface(tokens) : tokens.card,
+      fillColor: tokens.card == tokens.background
+          ? xLookFloatingSurface(tokens)
+          : tokens.card,
       hintStyle: TextStyle(fontFamily: 'Inter', color: tokens.secondary),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(24),
@@ -329,7 +436,10 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: tokens.accent,
-        textStyle: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
       ),
     ),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -344,22 +454,37 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? Colors.white : tokens.secondary),
+        (states) => states.contains(WidgetState.selected)
+            ? Colors.white
+            : tokens.secondary,
+      ),
       trackColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? tokens.accent : Colors.transparent),
+        (states) => states.contains(WidgetState.selected)
+            ? tokens.accent
+            : Colors.transparent,
+      ),
       trackOutlineColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? tokens.accent : tokens.border),
+        (states) => states.contains(WidgetState.selected)
+            ? tokens.accent
+            : tokens.border,
+      ),
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? tokens.accent : Colors.transparent),
+        (states) => states.contains(WidgetState.selected)
+            ? tokens.accent
+            : Colors.transparent,
+      ),
       checkColor: const WidgetStatePropertyAll(Colors.white),
       side: BorderSide(color: tokens.border, width: 2),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     ),
     radioTheme: RadioThemeData(
       fillColor: WidgetStateProperty.resolveWith(
-          (states) => states.contains(WidgetState.selected) ? tokens.accent : tokens.border),
+        (states) => states.contains(WidgetState.selected)
+            ? tokens.accent
+            : tokens.border,
+      ),
     ),
     sliderTheme: SliderThemeData(
       activeTrackColor: tokens.accent,
@@ -369,9 +494,15 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
     segmentedButtonTheme: SegmentedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.selected) ? tokens.accent : Colors.transparent),
+          (states) => states.contains(WidgetState.selected)
+              ? tokens.accent
+              : Colors.transparent,
+        ),
         foregroundColor: WidgetStateProperty.resolveWith(
-            (states) => states.contains(WidgetState.selected) ? Colors.white : tokens.onBackground),
+          (states) => states.contains(WidgetState.selected)
+              ? Colors.white
+              : tokens.onBackground,
+        ),
         side: WidgetStatePropertyAll(BorderSide(color: tokens.border)),
         shape: const WidgetStatePropertyAll(StadiumBorder()),
       ),
@@ -380,8 +511,31 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
       style: FilledButton.styleFrom(
         backgroundColor: tokens.accent,
         foregroundColor: Colors.white,
+        elevation: 0,
         shape: const StadiumBorder(),
-        textStyle: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: tokens.accent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        shape: const StadiumBorder(),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    ),
+    iconButtonTheme: IconButtonThemeData(
+      style: IconButton.styleFrom(
+        foregroundColor: tokens.secondary,
+        highlightColor: Colors.transparent,
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -391,7 +545,8 @@ ThemeData xLookThemeData(XLookTokens tokens, PageTransitionsTheme? pageTransitio
         shape: const StadiumBorder(),
       ),
     ),
-    pageTransitionsTheme: pageTransitions ??
+    pageTransitionsTheme:
+        pageTransitions ??
         const PageTransitionsTheme(
           builders: {
             TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
@@ -415,11 +570,14 @@ ThemeData xLookLightsOutTheme(PageTransitionsTheme? pageTransitions) =>
     xLookThemeData(XLookTokens.lightsOut, pageTransitions);
 
 bool isXLookPreset(String preset) =>
-    preset == 'x_look_light' || preset == 'x_look_dim' || preset == 'x_look_lights_out';
+    preset == 'x_look_light' ||
+    preset == 'x_look_dim' ||
+    preset == 'x_look_lights_out';
 
 /// The accent for [accent], falling back to X's blue for a value we no longer
 /// recognise rather than leaving the app without a usable colour.
-Color xLookAccentColor(String accent) => xLookAccents[accent] ?? xLookAccents[xLookAccentBlue]!;
+Color xLookAccentColor(String accent) =>
+    xLookAccents[accent] ?? xLookAccents[xLookAccentBlue]!;
 
 /// Tokens for one background, tinted with the chosen accent.
 ///
@@ -437,24 +595,27 @@ XLookTokens xLookTokensFor(String background, String accent) {
 
 /// The dark half of the theme. "System" darkens to Lights Out, which is true
 /// black and the cheapest on an OLED panel; Dim is a deliberate choice.
-XLookTokens xLookDarkTokensFor(String background, String accent) => xLookTokensFor(
-      background == xLookBackgroundDim ? xLookBackgroundDim : xLookBackgroundLightsOut,
+XLookTokens xLookDarkTokensFor(String background, String accent) =>
+    xLookTokensFor(
+      background == xLookBackgroundDim
+          ? xLookBackgroundDim
+          : xLookBackgroundLightsOut,
       accent,
     );
 
 /// Only "System" defers to the phone; every other background names a brightness.
 ThemeMode xLookThemeModeFor(String background) => switch (background) {
-      xLookBackgroundSystem => ThemeMode.system,
-      xLookBackgroundLight => ThemeMode.light,
-      _ => ThemeMode.dark,
-    };
+  xLookBackgroundSystem => ThemeMode.system,
+  xLookBackgroundLight => ThemeMode.light,
+  _ => ThemeMode.dark,
+};
 
 /// Maps a stored theme preset onto the background that replaced it, so an
 /// existing install keeps the look it had. The three retired presets (Standard,
 /// Fairy Forest, Pitch Black) have no X Look equivalent and fall to System.
 String xLookBackgroundForPreset(String? preset) => switch (preset) {
-      themePresetXLookLight => xLookBackgroundLight,
-      themePresetXLookDim => xLookBackgroundDim,
-      themePresetXLookLightsOut => xLookBackgroundLightsOut,
-      _ => xLookBackgroundSystem,
-    };
+  themePresetXLookLight => xLookBackgroundLight,
+  themePresetXLookDim => xLookBackgroundDim,
+  themePresetXLookLightsOut => xLookBackgroundLightsOut,
+  _ => xLookBackgroundSystem,
+};

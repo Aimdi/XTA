@@ -5,7 +5,7 @@
 /// which are worth reporting rather than swallowing.
 library;
 
-import 'package:quax/catcher/exceptions.dart';
+import 'package:xta/catcher/exceptions.dart';
 
 class UnknownProfileResultType with SyntheticException implements Exception {
   final String type;

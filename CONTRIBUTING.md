@@ -1,4 +1,4 @@
-# Contributing to QuaX
+# Contributing to XTA
 
 Contributions are welcomed and encouraged! Whether you want to fix a bug, add a
 feature, improve documentation, or translate the app — every contribution helps.
@@ -9,22 +9,22 @@ Before opening a bug report, please verify the following:
 
 1. **Reproduce on X web first** — check if the same issue occurs
    on [x.com](https://x.com) in a browser. If X itself has the issue, it is
-   outside the scope of QuaX.
+   outside the scope of XTA.
 2. **Search existing issues** — the bug may already be reported
    at [github.com/Teskann/QuaX/issues](https://github.com/Teskann/QuaX/issues).
 
-If the bug is specific to QuaX, open an issue and include:
+If the bug is specific to XTA, open an issue and include:
 
 - A clear description of the issue
 - Steps to reproduce it
 - Expected vs. actual behavior
-- Your Android version and QuaX version
+- Your Android version and XTA version
 - Relevant screenshots or logs, if applicable
 
 ## Feature Requests
 
 Open an issue describing the feature and why it would be useful. Keep in mind
-that QuaX is a privacy-focused client, so features that compromise privacy are
+that XTA is a privacy-focused client, so features that compromise privacy are
 unlikely to be accepted.
 
 ## Pull Requests

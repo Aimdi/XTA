@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/saved/saved_tab_order.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/saved/saved_tab_order.dart';
 
 @immutable
 class SavedViewState {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quax/generated/l10n.dart';
+import 'package:xta/generated/l10n.dart';
 
 /// Divider drawn between new posts and ones the user has already seen.
 class CaughtUpDivider extends StatelessWidget {

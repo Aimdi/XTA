@@ -3,231 +3,192 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-import 'package:quax/client/accounts.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/import_data_model.dart';
-import 'package:quax/saved/liked_tweet_model.dart';
-import 'package:quax/saved/saved_tweet_folder_model.dart';
-import 'package:quax/saved/saved_tweet_model.dart';
-import 'package:quax/settings/sync_screen.dart';
-import 'package:quax/settings/settings_chrome.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/subscriptions/users_model.dart';
-import 'package:quax/utils/crash_reporter.dart';
+import 'package:xta/client/accounts.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/import_data_model.dart';
+import 'package:xta/saved/liked_tweet_model.dart';
+import 'package:xta/saved/local_post_files.dart';
+import 'package:xta/saved/local_post_model.dart';
+import 'package:xta/saved/saved_tweet_folder_model.dart';
+import 'package:xta/saved/saved_tweet_model.dart';
+import 'package:xta/settings/sync_screen.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/utils/crash_reporter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/settings/backup_data.dart';
+import 'package:xta/settings/backup_rows.dart';
+import 'package:xta/settings/import_preview.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-
-class SettingsData {
-  final Map<String, dynamic>? settings;
-  final List<SearchSubscription>? searchSubscriptions;
-  final List<UserSubscription>? userSubscriptions;
-  final List<SubscriptionGroup>? subscriptionGroups;
-  final List<SubscriptionGroupMember>? subscriptionGroupMembers;
-  final List<SavedTweet>? tweets;
-  final List<SavedTweetFolder>? savedTweetFolders;
-  final List<LikedTweet>? likedTweets;
-  final List<Account>? accounts;
-
-  SettingsData({
-    required this.settings,
-    required this.searchSubscriptions,
-    required this.userSubscriptions,
-    required this.subscriptionGroups,
-    required this.subscriptionGroupMembers,
-    required this.tweets,
-    required this.savedTweetFolders,
-    required this.likedTweets,
-    required this.accounts,
-  });
-
-  factory SettingsData.fromJson(Map<String, dynamic> json) {
-    return SettingsData(
-      settings: json['settings'],
-      searchSubscriptions: json['searchSubscriptions'] != null
-          ? (json['searchSubscriptions'] as List? ?? [])
-                .map((e) => SearchSubscription.fromMap(e))
-                .toList()
-          : null,
-      userSubscriptions: json['subscriptions'] != null
-          ? (json['subscriptions'] as List? ?? [])
-                .map((e) => UserSubscription.fromMap(e))
-                .toList()
-          : null,
-      subscriptionGroups: json['subscriptionGroups'] != null
-          ? (json['subscriptionGroups'] as List? ?? [])
-                .map((e) => SubscriptionGroup.fromMap(e))
-                .toList()
-          : null,
-      subscriptionGroupMembers: json['subscriptionGroupMembers'] != null
-          ? (json['subscriptionGroupMembers'] as List? ?? [])
-                .map((e) => SubscriptionGroupMember.fromMap(e))
-                .toList()
-          : null,
-      tweets: json['tweets'] != null
-          ? (json['tweets'] as List).map((e) => SavedTweet.fromMap(e)).toList()
-          : null,
-      savedTweetFolders: json['savedTweetFolders'] != null
-          ? (json['savedTweetFolders'] as List? ?? [])
-                .map((e) => SavedTweetFolder.fromMap(e))
-                .toList()
-          : null,
-      likedTweets: json['likedTweets'] != null
-          ? (json['likedTweets'] as List? ?? [])
-                .map((e) => LikedTweet.fromMap(e))
-                .toList()
-          : null,
-      accounts: json['accounts'] != null
-          ? (json['accounts'] as List).map((e) => Account.fromMap(e)).toList()
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'settings': settings,
-      'searchSubscriptions': searchSubscriptions
-          ?.map((e) => e.toMap())
-          .toList(),
-      'subscriptions': userSubscriptions?.map((e) => e.toMap()).toList(),
-      'subscriptionGroups': subscriptionGroups?.map((e) => e.toMap()).toList(),
-      'subscriptionGroupMembers': subscriptionGroupMembers
-          ?.map((e) => e.toMap())
-          .toList(),
-      'tweets': tweets?.map((e) => e.toMap()).toList(),
-      'savedTweetFolders': savedTweetFolders?.map((e) => e.toMap()).toList(),
-      'likedTweets': likedTweets?.map((e) => e.toMap()).toList(),
-      'accounts': accounts?.map((e) => e.toMap()).toList(),
-    };
-  }
-}
 
 Future<void> _importFromFile(BuildContext context, File file) async {
   await importSettingsJson(context, file.readAsStringSync());
 }
 
-/// Applies an exported backup document. Shared by the file import and the
-/// WebDAV restore so a restore can never diverge from what a file does.
+/// Applies an exported backup document, once the reader has seen what is in it.
+/// Shared by the file import and the WebDAV restore so a restore can never
+/// diverge from what a file does.
 Future<void> importSettingsJson(BuildContext context, String json) async {
-  var content = jsonDecode(json);
+  var data = _parseBackup(json);
+  if (data == null) {
+    _notify(context, L10n.of(context).unable_to_import);
+    return;
+  }
 
+  if (!isSupportedBackupVersion(data.formatVersion)) {
+    _notify(context, L10n.of(context).import_unsupported_version);
+    return;
+  }
+
+  if (backupCounts(data).isEmpty) {
+    _notify(context, L10n.of(context).unable_to_import);
+    return;
+  }
+
+  var choice = await showImportPreview(context, data);
+  if (choice != null && context.mounted) {
+    await _applyBackup(context, data, choice);
+  }
+}
+
+/// Null for anything that is not a backup document. Nothing is applied from a
+/// file we could not read whole.
+SettingsData? _parseBackup(String json) {
+  try {
+    var content = jsonDecode(json);
+
+    return content is Map<String, dynamic> ? SettingsData.fromJson(content) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+void _notify(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+}
+
+Future<void> _applyBackup(BuildContext context, SettingsData data, ImportChoice choice) async {
   var importModel = context.read<ImportDataModel>();
   var groupModel = context.read<GroupsModel>();
   var prefs = PrefService.of(context);
-
-  var data = SettingsData.fromJson(content);
 
   var settings = data.settings;
   if (settings != null) {
     prefs.fromMap(settings);
   }
 
-  var dataToImport = <String, List<ToMappable>>{};
-
-  var searchSubscriptions = data.searchSubscriptions;
-  if (searchSubscriptions != null) {
-    dataToImport[tableSearchSubscription] = searchSubscriptions;
+  await importModel.importData(backupTables(data, includeReadPositions: choice.includeReadPositions));
+  for (final post in data.localPosts ?? const <LocalPost>[]) {
+    await materializeLocalPostMedia(post);
   }
-
-  var userSubscriptions = data.userSubscriptions;
-  if (userSubscriptions != null) {
-    dataToImport[tableSubscription] = userSubscriptions;
-  }
-
-  var subscriptionGroups = data.subscriptionGroups;
-  if (subscriptionGroups != null) {
-    dataToImport[tableSubscriptionGroup] = subscriptionGroups;
-  }
-
-  var subscriptionGroupMembers = data.subscriptionGroupMembers;
-  if (subscriptionGroupMembers != null) {
-    dataToImport[tableSubscriptionGroupMember] = subscriptionGroupMembers;
-  }
-
-  var tweets = data.tweets;
-  if (tweets != null) {
-    dataToImport[tableSavedTweet] = tweets;
-  }
-
-  var savedTweetFolders = data.savedTweetFolders;
-  if (savedTweetFolders != null) {
-    dataToImport[tableSavedTweetFolder] = savedTweetFolders;
-  }
-
-  var likedTweets = data.likedTweets;
-  if (likedTweets != null) {
-    dataToImport[tableLikedTweet] = likedTweets;
-  }
-
-  var accounts = data.accounts;
-  if (accounts != null) {
-    dataToImport[tableAccounts] = accounts;
-  }
-
-  await importModel.importData(dataToImport);
   await groupModel.reloadGroups();
-  context.mounted
-      ? await context.read<SubscriptionsModel>().reloadSubscriptions()
-      : null;
-  context.mounted
-      ? await context.read<SavedTweetFolderModel>().listFolders()
-      : null;
-  context.mounted
-      ? await context.read<LikedTweetModel>().listLikedTweets()
-      : null;
 
   if (context.mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(L10n.of(context).data_imported_successfully)),
-    );
+    await _reloadAfterImport(context);
+  }
+
+  if (context.mounted) {
+    _notify(context, L10n.of(context).data_imported_successfully);
+  }
+}
+
+/// Every store holding a table the import may have just replaced.
+Future<void> _reloadAfterImport(BuildContext context) async {
+  var subscriptions = context.read<SubscriptionsModel>();
+  var folders = context.read<SavedTweetFolderModel>();
+  var likedTweets = context.read<LikedTweetModel>();
+  // Every source, not the two this used to name: a restored list of followed
+  // Threads, Bluesky, Fediverse or stock accounts stayed invisible until the
+  // app was restarted.
+  final sources = subscriptionSources;
+
+  await subscriptions.reloadSubscriptions();
+  await folders.listFolders();
+  await likedTweets.listLikedTweets();
+  if (context.mounted) {
+    await context.read<LocalPostModel>().listLocalPosts();
+  }
+  for (final source in sources) {
+    if (!context.mounted) return;
+    await source.reloadFromDatabase(context);
   }
 }
 
 /// The whole backup payload as JSON, for callers that write it somewhere other
 /// than a file. Accounts are opt-in because they carry X session tokens.
-Future<String> exportSettingsJson(
-  BuildContext context, {
-  required bool includeAccounts,
-}) async {
-  final groupModel = context.read<GroupsModel>();
-  final subscriptionsModel = context.read<SubscriptionsModel>();
-  final savedTweetModel = context.read<SavedTweetModel>();
-  final savedTweetFolderModel = context.read<SavedTweetFolderModel>();
-  final likedTweetModel = context.read<LikedTweetModel>();
-  final prefs = PrefService.of(context, listen: false);
+Future<String> exportSettingsJson(BuildContext context, {required bool includeAccounts}) async {
+  var data = await collectBackup(context, includeAccounts: includeAccounts);
 
+  return jsonEncode(data.toJson());
+}
+
+/// Every backed-up table, so a WebDAV upload carries exactly what a manual
+/// export of everything would.
+Future<SettingsData> collectBackup(BuildContext context, {required bool includeAccounts}) async {
+  var groupModel = context.read<GroupsModel>();
+  var subscriptionsModel = context.read<SubscriptionsModel>();
+  var prefs = PrefService.of(context, listen: false);
+
+  var saved = await collectSavedPosts(context);
   await subscriptionsModel.reloadSubscriptions();
-  await savedTweetModel.listSavedTweets();
-  await savedTweetFolderModel.listFolders();
-  await likedTweetModel.listLikedTweets();
+  var subscriptions = subscriptionsModel.state;
 
-  final subscriptions = subscriptionsModel.state;
-
-  return jsonEncode(
-    SettingsData(
-      settings: prefsMapWithoutSecrets(prefs.toMap()),
-      searchSubscriptions: subscriptions
-          .whereType<SearchSubscription>()
-          .toList(),
-      userSubscriptions: subscriptions.whereType<UserSubscription>().toList(),
-      subscriptionGroups: groupModel.state,
-      subscriptionGroupMembers: await groupModel.listGroupMembers(),
-      tweets: savedTweetModel.state,
-      savedTweetFolders: savedTweetFolderModel.state,
-      likedTweets: likedTweetModel.state,
-      accounts: includeAccounts ? await getAccounts() : null,
-    ).toJson(),
+  return SettingsData(
+    exportedAt: DateTime.now(),
+    appVersion: await appVersionLabel(),
+    settings: prefsMapWithoutSecrets(prefs.toMap()),
+    searchSubscriptions: subscriptions.whereType<SearchSubscription>().toList(),
+    userSubscriptions: subscriptions.whereType<UserSubscription>().toList(),
+    // Read from the plugins rather than named here: a plugin's rows are often
+    // the only copy in existence, and a list that has to be extended by hand is
+    // how several of them went unsaved.
+    pluginRows: await readPluginRows(),
+    subscriptionGroups: groupModel.state,
+    subscriptionGroupMembers: await groupModel.listGroupMembers(),
+    searchGroupMembers: await readSearchGroupMembers(),
+    tweets: saved.tweets,
+    savedTweetFolders: saved.folders,
+    likedTweets: saved.liked,
+    retweetFilters: await readRetweetFilters(),
+    replyFilters: await readReplyFilters(),
+    feedReadPositions: await readFeedReadPositions(),
+    accounts: includeAccounts ? await getAccounts() : null,
+    profileNotes: await readProfileNotes(),
+    antennas: await readAntennas(),
+    localPosts: await readLocalPosts(),
   );
 }
 
+/// The saved side of a backup, refreshed from the database first so an export
+/// never writes a stale list.
+Future<({List<SavedTweet> tweets, List<SavedTweetFolder> folders, List<LikedTweet> liked})> collectSavedPosts(
+  BuildContext context,
+) async {
+  var tweets = context.read<SavedTweetModel>();
+  var folders = context.read<SavedTweetFolderModel>();
+  var liked = context.read<LikedTweetModel>();
+
+  await tweets.listSavedTweets();
+  await folders.listFolders();
+  await liked.listLikedTweets();
+
+  return (tweets: tweets.state, folders: folders.state, liked: liked.state);
+}
+
+/// The build that wrote a file, so its reader can tell where it came from.
+Future<String> appVersionLabel() async {
+  var info = await PackageInfo.fromPlatform();
+
+  return '${info.version}+${info.buildNumber}';
+}
+
 Future<void> importBackup(BuildContext context) async {
-  var path = await FlutterFileDialog.pickFile(
-    params: const OpenFileDialogParams(),
-  );
+  var path = await FlutterFileDialog.pickFile(params: const OpenFileDialogParams());
   if (path != null && context.mounted) {
     await _importFromFile(context, File(path));
   }
@@ -240,32 +201,25 @@ class SettingsDataFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SettingsRow(
-          icon: Icons.file_download_outlined,
-          title: L10n.of(context).import,
-          description: L10n.of(context).import_data_from_another_device,
-          onTap: () => importBackup(context),
-        ),
-        tweetHairlineDivider(context),
-        SettingsNavigationRow(
-          icon: Icons.save_outlined,
-          title: L10n.of(context).export,
-          description: L10n.of(context).export_your_data,
-          onTap: () => Navigator.pushNamed(context, routeSettingsExport),
-        ),
-        tweetHairlineDivider(context),
-        SettingsNavigationRow(
-          icon: Icons.cloud_sync_outlined,
-          title: L10n.of(context).sync,
-          description: L10n.of(context).sync_description,
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SyncScreen()),
-          ),
-        ),
-      ],
-    );
+    return Column(children: [
+      PrefLabel(
+        leading: const Icon(Icons.import_export),
+        title: Text(L10n.of(context).import),
+        subtitle: Text(L10n.of(context).import_data_from_another_device),
+        onTap: () => importBackup(context),
+      ),
+      PrefLabel(
+        leading: const Icon(Icons.save),
+        title: Text(L10n.of(context).export),
+        subtitle: Text(L10n.of(context).export_your_data),
+        onTap: () => Navigator.pushNamed(context, routeSettingsExport),
+      ),
+      PrefLabel(
+        leading: const Icon(Icons.cloud_sync_outlined),
+        title: Text(L10n.of(context).sync),
+        subtitle: Text(L10n.of(context).sync_description),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SyncScreen())),
+      ),
+    ]);
   }
 }

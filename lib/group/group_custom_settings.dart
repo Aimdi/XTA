@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/custom_feed_rules.dart';
-import 'package:quax/group/group_chrome.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/reader_chrome.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/custom_feed_rules.dart';
+import 'package:xta/group/group_chrome.dart';
+import 'package:xta/group/group_model.dart';
 
 /// Full-screen customization for a group's custom feed mode, opened from the
 /// filter sheet — a bottom sheet is too cramped for these controls.
@@ -18,22 +16,19 @@ class GroupCustomSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return XtaSystemBars(
-      child: Scaffold(
-        appBar: AppBar(title: Text(L10n.of(context).custom)),
-        body: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-          store: model,
-          onState: (_, state) => SafeArea(
-            top: false,
-            child: ListView(
-              padding: const EdgeInsets.only(bottom: kTweetSpace6),
-              children: [
-                _ContentFilterSection(model: model, state: state),
-                _EngagementSection(model: model, state: state),
-                _MutedKeywordsSection(model: model, state: state),
-              ],
-            ),
-          ),
+    return Scaffold(
+      appBar: AppBar(title: Text(L10n.of(context).custom)),
+      body: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+        store: model,
+        onState: (_, state) => ListView(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+          children: [
+            _ContentFilterSection(model: model, state: state),
+            const SizedBox(height: 12),
+            _EngagementSection(model: model, state: state),
+            const SizedBox(height: 12),
+            _MutedKeywordsSection(model: model, state: state),
+          ],
         ),
       ),
     );
@@ -94,32 +89,27 @@ class _ContentFilterSection extends StatelessWidget {
       icon: Icons.filter_alt_outlined,
       title: l10n.content_filter,
       description: l10n.content_filter_description,
-      child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minWidth: constraints.maxWidth),
-            child: SegmentedButton<String>(
-              showSelectedIcon: false,
-              segments: [
-                ButtonSegment(
-                  value: contentFilterSfw,
-                  label: Text(l10n.content_filter_sfw),
-                ),
-                ButtonSegment(
-                  value: contentFilterDefault,
-                  label: Text(l10n.content_filter_default),
-                ),
-                ButtonSegment(
-                  value: contentFilterNsfw,
-                  label: Text(l10n.content_filter_nsfw),
-                ),
-              ],
-              selected: {current},
-              onSelectionChanged: (selection) =>
-                  model.setSubscriptionGroupContentFilter(selection.first),
+      child: SizedBox(
+        width: double.infinity,
+        child: SegmentedButton<String>(
+          showSelectedIcon: false,
+          segments: [
+            ButtonSegment(
+              value: contentFilterSfw,
+              label: Text(l10n.content_filter_sfw),
             ),
-          ),
+            ButtonSegment(
+              value: contentFilterDefault,
+              label: Text(l10n.content_filter_default),
+            ),
+            ButtonSegment(
+              value: contentFilterNsfw,
+              label: Text(l10n.content_filter_nsfw),
+            ),
+          ],
+          selected: {current},
+          onSelectionChanged: (selection) =>
+              model.setSubscriptionGroupContentFilter(selection.first),
         ),
       ),
     );
@@ -233,36 +223,29 @@ class _Pill extends StatelessWidget {
     final accent = Theme.of(context).colorScheme.primary;
     final onSurface = Theme.of(context).colorScheme.onSurface;
 
-    return Material(
-      color: selected ? accent : Colors.transparent,
-      shape: StadiumBorder(
-        side: BorderSide(
-          color: selected
-              ? accent
-              : Theme.of(context).colorScheme.outlineVariant,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(9999),
+          border: Border.all(
+            color: selected
+                ? accent
+                : Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const StadiumBorder(),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Center(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  color: selected
-                      ? (accent.computeLuminance() > 0.5
-                            ? Colors.black
-                            : Colors.white)
-                      : onSurface,
-                ),
-              ),
-            ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: selected
+                ? (accent.computeLuminance() > 0.5
+                      ? Colors.black
+                      : Colors.white)
+                : onSurface,
           ),
         ),
       ),
@@ -291,26 +274,40 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
   }
 
   Future<void> _add() async {
-    final terms = parseMutedKeywords(_controller.text);
+    final terms = parseMutedKeywordTerms(_controller.text);
     if (terms.isEmpty) {
       return;
     }
 
     final existing = widget.state.mutedKeywords
-        .map((e) => e.toLowerCase())
+        .map((e) => e.term.toLowerCase())
         .toSet();
     final next = [
       ...widget.state.mutedKeywords,
-      ...terms.where((term) => !existing.contains(term.toLowerCase())),
+      ...terms
+          .where((term) => !existing.contains(term.toLowerCase()))
+          .map((term) => MutedKeyword(term: term)),
     ];
 
     _controller.clear();
     await widget.model.setSubscriptionGroupMutedKeywords(next);
   }
 
-  Future<void> _remove(String term) async {
+  Future<void> _remove(MutedKeyword keyword) async {
     final next = widget.state.mutedKeywords
-        .where((e) => e != term)
+        .where((e) => e.term != keyword.term)
+        .toList(growable: false);
+    await widget.model.setSubscriptionGroupMutedKeywords(next);
+  }
+
+  Future<void> _setExpiry(MutedKeyword keyword, Duration? duration) async {
+    final until = duration == null ? null : DateTime.now().add(duration);
+    final next = widget.state.mutedKeywords
+        .map(
+          (e) => e.term == keyword.term
+              ? e.copyWith(until: until, clearUntil: duration == null)
+              : e,
+        )
         .toList(growable: false);
     await widget.model.setSubscriptionGroupMutedKeywords(next);
   }
@@ -352,7 +349,6 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
               ),
               const SizedBox(width: 8),
               IconButton(
-                tooltip: l10n.custom_feed_muted_keywords_hint,
                 icon: const Icon(Icons.add),
                 color: Theme.of(context).colorScheme.primary,
                 onPressed: _add,
@@ -365,16 +361,111 @@ class _MutedKeywordsSectionState extends State<_MutedKeywordsSection> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final term in keywords)
+                for (final keyword in keywords)
                   InputChip(
-                    label: Text(term),
-                    onDeleted: () => _remove(term),
+                    label: Text(_keywordChipLabel(l10n, keyword)),
+                    onPressed: () => _showKeywordOptions(context, keyword),
+                    onDeleted: () => _remove(keyword),
                     deleteIcon: const Icon(Icons.close, size: 16),
+                    avatar: Icon(
+                      keyword.action == KeywordFilterAction.fold
+                          ? Icons.unfold_more
+                          : Icons.visibility_off_outlined,
+                      size: 16,
+                    ),
                   ),
               ],
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  String _keywordChipLabel(L10n l10n, MutedKeyword keyword) {
+    final action = keyword.action == KeywordFilterAction.fold
+        ? l10n.filter_action_fold
+        : l10n.filter_action_hide;
+    if (keyword.until == null) {
+      return '${keyword.term} · $action';
+    }
+    return '${keyword.term} · $action · ${l10n.filter_until_short}';
+  }
+
+  Future<void> _showKeywordOptions(
+    BuildContext context,
+    MutedKeyword keyword,
+  ) async {
+    final l10n = L10n.of(context);
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.visibility_off_outlined),
+              title: Text(l10n.filter_action_hide),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await widget.model.setSubscriptionGroupMutedKeywords(
+                  widget.state.mutedKeywords
+                      .map(
+                        (e) => e.term == keyword.term
+                            ? e.copyWith(action: KeywordFilterAction.hide)
+                            : e,
+                      )
+                      .toList(growable: false),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.unfold_more),
+              title: Text(l10n.filter_action_fold),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await widget.model.setSubscriptionGroupMutedKeywords(
+                  widget.state.mutedKeywords
+                      .map(
+                        (e) => e.term == keyword.term
+                            ? e.copyWith(action: KeywordFilterAction.fold)
+                            : e,
+                      )
+                      .toList(growable: false),
+                );
+              },
+            ),
+            const Divider(height: 1),
+            ListTile(
+              title: Text(l10n.filter_expire_never),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await _setExpiry(keyword, null);
+              },
+            ),
+            ListTile(
+              title: Text(l10n.filter_expire_1_day),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await _setExpiry(keyword, const Duration(days: 1));
+              },
+            ),
+            ListTile(
+              title: Text(l10n.filter_expire_1_week),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await _setExpiry(keyword, const Duration(days: 7));
+              },
+            ),
+            ListTile(
+              title: Text(l10n.filter_expire_1_month),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await _setExpiry(keyword, const Duration(days: 30));
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

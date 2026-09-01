@@ -1,6 +1,8 @@
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:quax/tweet/video_quality.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/tweet/video_playback_policy.dart';
+import 'package:xta/tweet/video_quality.dart';
 
 /// One cached video player: the libmpv [Player] together with the
 /// [VideoController] that renders it, plus the resolved download URL, the
@@ -21,6 +23,9 @@ class PooledVideo {
   /// The MP4 variant currently open in [player]; updated on a quality switch.
   String currentStreamUrl;
 
+  /// Optional request headers for CDN playback (TikTok Referer + Cookie).
+  final Map<String, String>? httpHeaders;
+
   bool _disposed = false;
 
   PooledVideo({
@@ -30,7 +35,10 @@ class PooledVideo {
     required this.qualities,
     required this.currentStreamUrl,
     required this.pausableByPolicy,
+    this.httpHeaders,
   });
+
+  bool get isDisposed => _disposed;
 
   Future<void> dispose() async {
     // Two disposal paths can race on the same pair — an explicit restart and the
@@ -87,7 +95,7 @@ class VideoControllerPool {
   final int maxSize;
   final Map<String, _Entry> _entries = {};
   final Map<String, Set<Object>> _visibleTokens = {};
-  VideoControllerPool({this.maxSize = 5});
+  VideoControllerPool({this.maxSize = kVideoPoolSize});
   bool contains(String key) => _entries.containsKey(key);
   PooledVideo? peek(String key) => _entries[key]?.value;
 
@@ -108,17 +116,43 @@ class VideoControllerPool {
   void pauseOthers(PooledVideo active) {
     for (final entry in _entries.values) {
       final video = entry.value;
-      if (video == null || identical(video, active)) continue;
+      if (video == null || video.isDisposed || identical(video, active)) {
+        continue;
+      }
       if (!video.pausableByPolicy) continue;
-      if (video.player.state.playing) video.player.pause();
+      try {
+        if (video.player.state.playing) video.player.pause();
+      } catch (_) {}
     }
   }
 
-  Future<PooledVideo> acquire(String key, Future<PooledVideo> Function() create) {
-    var entry = _entries.remove(key) ?? _Entry(create());
+  bool canAcquire(String key) => videoPoolCanCreate(
+    alreadyCached: _entries.containsKey(key),
+    entryCount: _entries.length,
+    maxSize: maxSize,
+    hasEvictable: _entries.values.any((e) => e.refCount == 0),
+  );
+
+  Future<PooledVideo> acquire(
+    String key,
+    Future<PooledVideo> Function() create,
+  ) {
+    var entry = _entries.remove(key);
+    if (entry != null) {
+      _entries[key] = entry;
+      entry.refCount++;
+      return entry.future;
+    }
+    // Drop unused cached players so a new one can be created. Without
+    // [makeRoom] a pool sitting at [maxSize] with idle entries never
+    // shrinks, [canAcquire] says yes, and every later video fails.
+    _evict(makeRoom: true);
+    if (_entries.length >= maxSize) {
+      return Future.error(const VideoPoolFullException());
+    }
+    entry = _Entry(create());
     _entries[key] = entry;
     entry.refCount++;
-    _evict();
     return entry.future;
   }
 
@@ -134,8 +168,12 @@ class VideoControllerPool {
     _evict();
   }
 
-  void _evict() {
-    while (_entries.length > maxSize) {
+  void _evict({bool makeRoom = false}) {
+    final ceiling = videoPoolEvictionCeiling(
+      maxSize: maxSize,
+      makeRoom: makeRoom,
+    );
+    while (_entries.length > ceiling) {
       String? victimKey;
       for (final e in _entries.entries) {
         if (e.value.refCount == 0) {
@@ -148,4 +186,10 @@ class VideoControllerPool {
       _visibleTokens.remove(victimKey);
     }
   }
+}
+
+/// The pool is already at [VideoControllerPool.maxSize] with every player
+/// still on screen. Callers should keep the poster instead of creating more.
+class VideoPoolFullException implements Exception {
+  const VideoPoolFullException();
 }

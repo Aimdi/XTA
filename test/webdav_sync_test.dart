@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/utils/crash_reporter.dart';
-import 'package:quax/utils/webdav_sync.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/utils/crash_reporter.dart';
+import 'package:xta/utils/webdav_sync.dart';
 
 const _config = WebDavConfig(
-  url: 'https://cloud.example.org/dav/quax/backup.json',
+  url: 'https://cloud.example.org/dav/xta/backup.json',
   username: 'reader',
   password: 'hunter2',
 );
@@ -72,7 +72,7 @@ void main() {
       final result = await sync.upload(_config, '{}');
 
       expect(result.isSuccess, isTrue);
-      expect(calls, ['PUT /dav/quax/backup.json', 'MKCOL /dav/quax', 'PUT /dav/quax/backup.json']);
+      expect(calls, ['PUT /dav/xta/backup.json', 'MKCOL /dav/xta', 'PUT /dav/xta/backup.json']);
     });
 
     test('a collection that already exists is not an error', () async {
@@ -158,7 +158,7 @@ void main() {
   // so leaving the password in would store the server's own password on it.
   test('the exported settings never carry the sync password', () {
     final stripped = prefsMapWithoutSecrets({
-      optionWebDavUrl: 'https://cloud.example.org/dav/quax/backup.json',
+      optionWebDavUrl: 'https://cloud.example.org/dav/xta/backup.json',
       optionWebDavUsername: 'reader',
       optionWebDavPassword: 'hunter2',
       optionCrashGithubToken: 'ghp_secret',

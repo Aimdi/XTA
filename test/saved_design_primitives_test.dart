@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/saved/saved_chrome.dart';
-import 'package:quax/saved/saved_tab_order.dart';
-import 'package:quax/saved/saved_view_store.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/saved/saved_chrome.dart';
+import 'package:xta/saved/saved_tab_order.dart';
+import 'package:xta/saved/saved_view_store.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 Widget _app(Widget child) => MaterialApp(
   theme: xLookLightTheme(null),

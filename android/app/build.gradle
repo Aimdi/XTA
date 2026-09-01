@@ -44,7 +44,7 @@ if (keystoreFile != null && !keystoreFile.isEmpty()) {
 }
 
 android {
-    namespace 'com.teskann.quax'
+    namespace 'com.aimdi.xta'
     compileSdkVersion 37
     ndkVersion = "29.0.14206865"
 
@@ -62,7 +62,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.teskann.quax"
+        applicationId "com.aimdi.xta"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 37
         multiDexEnabled true
@@ -101,9 +101,9 @@ android {
                 variant.outputs.all { output ->
                     def abiName = output.getFilter(OutputFile.ABI)
                     if (abiName == null) {
-                        outputFileName = "quax-v${defaultConfig.versionName}.apk"
+                        outputFileName = "xta-aimdi122.apk"
                     } else {
-                        outputFileName = "quax-v${defaultConfig.versionName}_${abiName}.apk"
+                        outputFileName = "xta-aimdi122_${abiName}.apk"
                     }
                 }
             }

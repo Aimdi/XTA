@@ -2,9 +2,9 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/theme_presets.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/theme_presets.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 double _luminance(Color c) {
   double channel(double v) => v <= 0.03928 ? v / 12.92 : math.pow((v + 0.055) / 1.055, 2.4).toDouble();

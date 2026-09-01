@@ -2,7 +2,9 @@ import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:flutter/material.dart';
-import 'package:quax/tweet/tweet_footer.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/tweet/tweet_footer.dart';
 
 /// The footer "like" heart, with the full X-style burst: a ring expands out of
 /// the heart, then a spray of coloured confetti bursts and fades, while the
@@ -11,16 +13,16 @@ class LikeButton extends StatefulWidget {
   final bool isLiked;
   final String label;
   final Color? color;
-  final String semanticsLabel;
   final VoidCallback onPressed;
+  final String? tooltip;
 
   const LikeButton({
     super.key,
     required this.isLiked,
     required this.label,
     required this.color,
-    required this.semanticsLabel,
     required this.onPressed,
+    this.tooltip,
   });
 
   @override
@@ -34,23 +36,23 @@ class _LikeButtonState extends State<LikeButton>
 
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 320),
+    duration: const Duration(milliseconds: 1000),
   );
 
   late final Animation<double> _scale = TweenSequence<double>([
     TweenSequenceItem(
       tween: Tween(
         begin: 1.0,
-        end: 1.18,
-      ).chain(CurveTween(curve: Curves.easeOutCubic)),
-      weight: 40,
+        end: 1.35,
+      ).chain(CurveTween(curve: Curves.easeOut)),
+      weight: 35,
     ),
     TweenSequenceItem(
       tween: Tween(
-        begin: 1.18,
+        begin: 1.35,
         end: 1.0,
-      ).chain(CurveTween(curve: Curves.easeInOut)),
-      weight: 60,
+      ).chain(CurveTween(curve: Curves.elasticOut)),
+      weight: 65,
     ),
   ]).animate(_controller);
 
@@ -61,10 +63,21 @@ class _LikeButtonState extends State<LikeButton>
   }
 
   void _handleTap() {
-    if (!widget.isLiked && !MediaQuery.disableAnimationsOf(context)) {
+    if (!widget.isLiked && !_quietBurst) {
       _controller.forward(from: 0);
     }
     widget.onPressed();
+  }
+
+  bool get _quietBurst {
+    try {
+      final prefs = PrefService.of(context, listen: false);
+      return prefs.get(optionDisableAnimations) == true ||
+          prefs.get(optionCalmMode) == true ||
+          prefs.get(optionZenMode) == true;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override
@@ -74,51 +87,56 @@ class _LikeButtonState extends State<LikeButton>
         ? (widget.color ?? scheme.primary)
         : widget.color;
 
-    return Semantics(
-      button: true,
-      toggled: widget.isLiked,
-      label: widget.semanticsLabel,
-      excludeSemantics: true,
-      child: TextButton.icon(
-        onPressed: _handleTap,
-        style: footerButtonStyleOf(context),
-        icon: SizedBox(
-          width: _iconSize,
-          height: _iconSize,
-          child: Stack(
-            clipBehavior: Clip.none,
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                // Centre the larger burst canvas over the 20px icon without shifting layout.
-                left: (_iconSize - _burstSize) / 2,
-                top: (_iconSize - _burstSize) / 2,
-                child: IgnorePointer(
-                  child: CustomPaint(
-                    size: const Size.square(_burstSize),
-                    painter: _BurstPainter(
-                      animation: _controller,
-                      color: ringColor ?? scheme.primary,
-                    ),
+    final button = TextButton.icon(
+      onPressed: _handleTap,
+      style: footerButtonStyle,
+      icon: SizedBox(
+        width: _iconSize,
+        height: _iconSize,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              // Centre the larger burst canvas over the 20px icon without shifting layout.
+              left: (_iconSize - _burstSize) / 2,
+              top: (_iconSize - _burstSize) / 2,
+              child: IgnorePointer(
+                child: CustomPaint(
+                  size: const Size.square(_burstSize),
+                  painter: _BurstPainter(
+                    animation: _controller,
+                    color: ringColor ?? scheme.primary,
                   ),
                 ),
               ),
-              ScaleTransition(
-                scale: _scale,
-                child: Icon(
-                  widget.isLiked ? Icons.favorite : Icons.favorite_border,
-                  size: _iconSize,
-                  color: widget.color,
-                ),
+            ),
+            ScaleTransition(
+              scale: _scale,
+              child: Icon(
+                widget.isLiked ? Icons.favorite : Icons.favorite_border,
+                size: _iconSize,
+                color: widget.color,
               ),
-            ],
-          ),
-        ),
-        label: Text(
-          widget.label,
-          style: TextStyle(color: widget.color, fontSize: 14),
+            ),
+          ],
         ),
       ),
+      label: Text(
+        widget.label,
+        style: TextStyle(color: widget.color, fontSize: 14),
+      ),
+    );
+
+    final tooltip = widget.tooltip;
+    if (tooltip == null || tooltip.isEmpty) {
+      return button;
+    }
+    final count = widget.label.trim();
+    return Semantics(
+      button: true,
+      label: count.isEmpty ? tooltip : '$tooltip, $count',
+      child: ExcludeSemantics(child: button),
     );
   }
 }

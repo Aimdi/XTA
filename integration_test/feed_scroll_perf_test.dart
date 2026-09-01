@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:quax/main.dart' as app;
+import 'package:xta/main.dart' as app;
 
 /// Scroll-jank benchmark for the feed.
 ///

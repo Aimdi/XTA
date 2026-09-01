@@ -1,5 +1,5 @@
-name: quax
-description: A private and clean way to browse Twitter/X
+name: xta
+description: A private, read-oriented way to browse X
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 4.12.0+400001040
+version: 4.12.0+400001072
 
 environment:
   sdk: ">=3.12.2 <4.0.0"
@@ -70,18 +70,17 @@ dependencies:
   flutter_iconpicker: ^4.0.3
   flutter_portal: ^1.1.4
   webview_flutter: ^4.14.1
+  webview_flutter_android: ^4.13.0
   webview_cookie_manager_plus: ^2.0.16
 
   # Localization & Styling
   intl: any
-  flutter_localized_locales: ^2.0.5
   dynamic_color: ^1.8.1
 
   # State Management & Data
   pref: ^2.8.0
   provider: ^6.1.5
   flutter_triple: ^3.0.0
-  multi_select_flutter: ^4.1.3
 
   # Utilities & Helpers
   crypto: ^3.0.7
@@ -91,7 +90,6 @@ dependencies:
   package_info_plus: ^10.2.1
   path: ^1.9.1
   path_provider: ^2.1.4
-  permission_handler: ^12.0.3
   quiver: ^3.2.2
   scroll_to_index: ^3.0.1
   secure_content: ^1.0.1
@@ -111,6 +109,7 @@ dependencies:
 
   # Miscellaneous
   async_button_builder: ^3.0.0+1
+  audio_service: ^0.18.15
   media_kit: ^1.2.6
   media_kit_video: ^2.0.1
   media_kit_libs_video: ^1.0.7

@@ -1,25 +1,30 @@
-import 'dart:ui' as ui;
-
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/utils/urls.dart';
-
-/// How tall a picture is allowed to get before it is cropped.
-///
-/// A phone-height meme would otherwise push everything after it off the screen,
-/// and a feed where one post fills the viewport is not a feed.
-const double kRedditMediaMaxHeight = 420;
+import 'package:pref/pref.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/plugins/reddit/reddit_gallery_loader.dart';
+import 'package:xta/plugins/reddit/reddit_gallery.dart';
+import 'package:xta/plugins/reddit/reddit_media_urls.dart';
+import 'package:xta/plugins/reddit/reddit_media_frame.dart';
+import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
+import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/capped_network_image.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/utils/downloads.dart';
+import 'package:xta/utils/urls.dart';
+import 'package:path/path.dart' as path;
 
 /// The picture, video or link that goes with a Reddit post, at the width a
 /// tweet's media gets rather than as a 70px thumbnail beside the title.
 ///
-/// Only a real image is shown edge to edge. Reddit's video is a DASH manifest
-/// and a gallery is a page, so neither can be rendered inline — those get a
-/// link card that says where they lead, which is honest about what a tap will
-/// do instead of showing a stretched placeholder.
+/// Everything it shows goes into a [RedditMediaFrame]: bounded, tinted, and the
+/// full width of the card, so no post can grow taller than a screen and nothing
+/// leaves a hole while it loads. A post marked over-18 gets a
+/// [RedditSensitiveGate] in front of the frame instead — the picture is not
+/// fetched at all until it is asked for.
 class RedditPostMedia extends StatelessWidget {
   final RedditPost post;
 
@@ -35,17 +40,156 @@ class RedditPostMedia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final media = _media(context);
+
+    return media == null
+        ? const SizedBox.shrink()
+        : Padding(padding: padding, child: media);
+  }
+
+  Widget? _media(BuildContext context) {
+    // v.redd.it plays in the same stack as every X video: same pool, same
+    // creation gate, same controls. libmpv reads the DASH manifest whole —
+    // video and its separate audio track together; the progressive fallback
+    // is video-only and serves as the download target.
+    final dash = post.resolvedVideoDashUrl;
+    if (dash != null) {
+      final ratio = redditMediaAspectRatio(post.videoAspectRatio);
+
+      return _gate(
+        context,
+        aspectRatio: ratio,
+        child: _video(context, dash, ratio),
+      );
+    }
+
+    final gallery = collapseRedditImageUrls(post.galleryImages);
+    if (gallery.length > 1) {
+      return _gate(
+        context,
+        aspectRatio: kRedditGalleryAspectRatio,
+        child: RedditGallery(
+          images: gallery,
+          onOpen: (index) => openRedditImageViewer(
+            context,
+            urls: gallery,
+            initialIndex: index,
+            username: _redditMediaUser(post),
+          ),
+          onSave: (index) => downloadRedditImage(
+            context,
+            gallery[index],
+            username: _redditMediaUser(post),
+          ),
+        ),
+      );
+    }
+
     final image = post.imageUrl;
     if (image != null) {
-      return Padding(padding: padding, child: _RedditImage(url: image, blurred: post.over18));
+      return _gate(
+        context,
+        child: _RedditImage(url: image, username: _redditMediaUser(post)),
+      );
     }
 
     final link = post.url;
     if (link != null && !post.isSelf) {
-      return Padding(padding: padding, child: _RedditLinkCard(post: post, url: link));
+      final card = _RedditLinkCard(post: post, url: link);
+      // A gallery scraped off old.reddit arrives as this link and nothing else:
+      // its pictures are in the post's own JSON, not in that page. Fetch them
+      // and show the album; keep the link until they arrive, or for good when
+      // Reddit will not say.
+      if (isRedditGalleryUrl(link)) {
+        return RedditGalleryImages(
+          loader: context.read<RedditGalleryLoader>(),
+          permalink: post.permalink,
+          placeholder: card,
+          whenLoaded: (images) {
+            final gallery = collapseRedditImageUrls(images);
+            return _gate(
+              context,
+              aspectRatio: kRedditGalleryAspectRatio,
+              child: RedditGallery(
+                images: gallery,
+                onOpen: (index) => openRedditImageViewer(
+                  context,
+                  urls: gallery,
+                  initialIndex: index,
+                  username: _redditMediaUser(post),
+                ),
+                onSave: (index) => downloadRedditImage(
+                  context,
+                  gallery[index],
+                  username: _redditMediaUser(post),
+                ),
+              ),
+            );
+          },
+        );
+      }
+      return card;
     }
 
-    return const SizedBox.shrink();
+    return null;
+  }
+
+  Widget _gate(
+    BuildContext context, {
+    required Widget child,
+    double aspectRatio = kRedditSensitiveAspectRatio,
+  }) {
+    final prefs = PrefService.of(context);
+    return RedditSensitiveGate(
+      sensitive: redditMediaShouldGate(post, prefs),
+      revealKey: post.id,
+      kind: redditMediaGateKind(post, prefs),
+      aspectRatio: aspectRatio,
+      child: child,
+    );
+  }
+
+  Widget _video(BuildContext context, String dash, double ratio) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
+      child: TweetVideo(
+        username: post.subreddit,
+        loop: false,
+        tweetId: 'reddit-${post.id}',
+        metadata: TweetVideoMetadata(
+          ratio,
+          post.cardPreviewImage,
+          () async => TweetVideoUrls(dash, post.videoFallbackUrl),
+        ),
+      ),
+    );
+  }
+}
+
+/// The one picture of a picture post, at whatever height it turns out to be
+/// within the frame's bounds.
+class _RedditImage extends StatelessWidget {
+  final String url;
+  final String username;
+
+  const _RedditImage({required this.url, required this.username});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () =>
+          openRedditImageViewer(context, urls: [url], username: username),
+      onLongPress: () => downloadRedditImage(context, url, username: username),
+      child: RedditMediaFrame(
+        child: Semantics(
+          image: true,
+          button: true,
+          label: L10n.of(context).media,
+          child: CappedNetworkImage(url: url),
+        ),
+      ),
+    );
   }
 }
 
@@ -70,21 +214,49 @@ class RedditCommentImages extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final label = L10n.of(context).media;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (final url in urls)
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: kRedditCommentMediaMaxHeight),
-                child: Image.network(
-                  url,
-                  fit: BoxFit.contain,
-                  alignment: Alignment.centerLeft,
-                  errorBuilder: (context, _, __) => _RedditBrokenImage(url: url),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => openRedditImageViewer(
+                context,
+                urls: urls,
+                initialIndex: urls.indexOf(url),
+              ),
+              onLongPress: () => downloadRedditImage(context, url),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: kRedditCommentMediaMaxHeight,
+                  ),
+                  child: Semantics(
+                    image: true,
+                    button: true,
+                    label: label,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) => Image.network(
+                        url,
+                        fit: BoxFit.contain,
+                        // Decoded at the width it is drawn at, which under an
+                        // indented reply is a good deal less than the screen.
+                        cacheWidth: constraints.hasBoundedWidth
+                            ? (constraints.maxWidth *
+                                      MediaQuery.devicePixelRatioOf(context))
+                                  .ceil()
+                            : null,
+                        alignment: Alignment.centerLeft,
+                        errorBuilder: (context, error, stackTrace) =>
+                            RedditBrokenImage(url: url),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -96,105 +268,44 @@ class RedditCommentImages extends StatelessWidget {
 
 /// A picture Reddit would not serve. The link survives, so it can still be
 /// opened somewhere that will.
-class _RedditBrokenImage extends StatelessWidget {
+class RedditBrokenImage extends StatelessWidget {
   final String url;
 
-  const _RedditBrokenImage({required this.url});
+  const RedditBrokenImage({super.key, required this.url});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return InkWell(
-      onTap: () => openUri(context, url),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.broken_image_outlined, size: 18, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              Uri.tryParse(url)?.host ?? url,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RedditImage extends StatefulWidget {
-  final String url;
-  final bool blurred;
-
-  const _RedditImage({required this.url, required this.blurred});
-
-  @override
-  State<_RedditImage> createState() => _RedditImageState();
-}
-
-class _RedditImageState extends State<_RedditImage> {
-  late bool _hidden = widget.blurred;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: kRedditMediaMaxHeight, minHeight: 120),
-        child: Stack(
-          fit: StackFit.passthrough,
-          children: [
-            ExtendedImage.network(
-              widget.url,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              loadStateChanged: _placeholderWhileLoading,
-            ),
-            if (_hidden) _cover(context),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// A tinted block rather than a spinner: the card keeps its shape while the
-  /// picture arrives, so the feed does not jump as each one lands.
-  Widget? _placeholderWhileLoading(ExtendedImageState state) {
-    if (state.extendedImageLoadState == LoadState.completed) {
-      return null;
-    }
-
-    return Container(
-      height: 200,
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      alignment: Alignment.center,
-      child: state.extendedImageLoadState == LoadState.failed
-          ? Icon(Icons.broken_image_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant)
-          : null,
-    );
-  }
-
-  Widget _cover(BuildContext context) {
-    return Positioned.fill(
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-          child: Material(
-            color: Colors.black26,
-            child: InkWell(
-              onTap: () => setState(() => _hidden = false),
-              child: Center(
+    return Semantics(
+      button: true,
+      // Nothing here is a picture any more, so what it announces is what a tap
+      // now does: take the reader to where the picture actually lives.
+      tooltip: L10n.of(context).open_in_browser,
+      child: InkWell(
+        onTap: () => openUri(context, url),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.broken_image_outlined,
+                size: 18,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Flexible(
                 child: Text(
-                  L10n.of(context).possibly_sensitive,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                  Uri.tryParse(url)?.host ?? url,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall!.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -213,38 +324,97 @@ class _RedditLinkCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final radius = tweetMediaRadiusOf(context);
-    final thumbnail = post.thumbnailUrl;
+    final preview = post.cardPreviewImage;
 
-    return InkWell(
-      onTap: () => openUri(context, url),
-      borderRadius: BorderRadius.circular(radius),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outlineVariant),
-          borderRadius: BorderRadius.circular(radius),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Row(
-          children: [
-            _leading(context, thumbnail),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Text(
-                  post.domain ?? Uri.tryParse(url)?.host ?? url,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    return Semantics(
+      button: true,
+      tooltip: L10n.of(context).open_in_browser,
+      child: InkWell(
+        onTap: () => openUri(context, url),
+        borderRadius: BorderRadius.circular(radius),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+            borderRadius: BorderRadius.circular(radius),
+          ),
+          clipBehavior: Clip.antiAlias,
+          // Reddit's preview is the poster frame of a video or the lead image of
+          // an article; showing it full width is what makes the card read as "the
+          // post's file is here", with the row underneath saying where a tap goes.
+          child: preview == null
+              ? _domainRow(context)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [_banner(context, preview), _domainRow(context)],
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: Icon(Icons.open_in_new, size: 18, color: theme.colorScheme.onSurfaceVariant),
-            ),
-          ],
         ),
       ),
+    );
+  }
+
+  Widget _domainRow(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Row(
+      children: [
+        if (post.cardPreviewImage == null) _leading(context, post.thumbnailUrl),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Text(
+              post.domain ?? Uri.tryParse(url)?.host ?? url,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium!.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: Icon(
+            Icons.open_in_new,
+            size: 18,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _banner(BuildContext context, String preview) {
+    final banner = RedditMediaFrame(
+      aspectRatio: kRedditMediaMaxAspectRatio,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Semantics(
+            image: true,
+            label: L10n.of(context).media,
+            child: CappedNetworkImage(url: preview),
+          ),
+          if (post.isVideo)
+            const Center(
+              child: CircleAvatar(
+                radius: 24,
+                backgroundColor: Colors.black54,
+                child: Icon(Icons.play_arrow, color: Colors.white, size: 30),
+              ),
+            ),
+        ],
+      ),
+    );
+
+    // The poster frame of an over-18 post is the post: it is held back with the
+    // same tile a picture would be.
+    final prefs = PrefService.of(context);
+    return RedditSensitiveGate(
+      sensitive: redditMediaShouldGate(post, prefs),
+      revealKey: post.id,
+      kind: redditMediaGateKind(post, prefs),
+      aspectRatio: kRedditMediaMaxAspectRatio,
+      child: banner,
     );
   }
 
@@ -252,6 +422,7 @@ class _RedditLinkCard extends StatelessWidget {
   /// of thing this is. A video gets a play badge over either.
   Widget _leading(BuildContext context, String? thumbnail) {
     final theme = Theme.of(context);
+    final gated = redditMediaShouldGate(post, PrefService.of(context));
 
     return SizedBox(
       width: 88,
@@ -259,12 +430,13 @@ class _RedditLinkCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          if (thumbnail != null)
-            ExtendedImage.network(thumbnail, fit: BoxFit.cover)
+          ColoredBox(color: theme.colorScheme.surfaceContainerHighest),
+          if (thumbnail != null && !gated)
+            CappedNetworkImage(url: thumbnail)
           else
-            Container(
-              color: theme.colorScheme.surfaceContainerHighest,
-              child: Icon(Icons.link, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              gated ? Icons.visibility_off_outlined : Icons.link,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           if (post.isVideo)
             const Center(
@@ -278,4 +450,84 @@ class _RedditLinkCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Whether a post's media stays behind the cover tile.
+///
+/// Spoilers are covered unless the reader asked to see them. NSFW still
+/// follows [RedditNsfwMode]: hide/tap cover it, show does not. A post that is
+/// both uses the spoiler tile while spoilers are hidden, then the NSFW rule.
+bool redditMediaShouldGate(RedditPost post, BasePrefService prefs) {
+  if (post.spoiler && !storedRedditShowSpoilers(prefs)) {
+    return true;
+  }
+  return post.over18 && storedRedditNsfwMode(prefs) != RedditNsfwMode.show;
+}
+
+RedditSensitiveGateKind redditMediaGateKind(
+  RedditPost post,
+  BasePrefService prefs,
+) => post.spoiler && !storedRedditShowSpoilers(prefs)
+    ? RedditSensitiveGateKind.spoiler
+    : RedditSensitiveGateKind.nsfw;
+
+String _redditMediaUser(RedditPost post) => post.author ?? post.subreddit;
+
+/// Fullscreen pictures without Twitter's `:orig` suffix — Reddit CDN URLs
+/// 404 if that is appended.
+Future<void> openRedditImageViewer(
+  BuildContext context, {
+  required List<String> urls,
+  int initialIndex = 0,
+  String username = 'reddit',
+}) async {
+  if (!context.mounted || urls.isEmpty) {
+    return;
+  }
+  final media = [for (final url in urls) createMediaFromUrl(url, null)];
+  final last = media.length - 1;
+  final index = initialIndex < 0
+      ? 0
+      : (initialIndex > last ? last : initialIndex);
+  await Navigator.push<void>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => TweetMediaView(
+        initialIndex: index,
+        media: media,
+        username: username,
+        tweetMedia: false,
+      ),
+    ),
+  );
+}
+
+/// Saves a Reddit image as-is. Do not reuse [downloadMediaItem]: that appends
+/// `:orig`, which is a Twitter original-size trick and breaks i.redd.it.
+Future<void> downloadRedditImage(
+  BuildContext context,
+  String url, {
+  String username = 'reddit',
+}) async {
+  if (!context.mounted) {
+    return;
+  }
+  final fileName = '$username-${path.basename(url)}';
+  await downloadUriToPickedFile(
+    context,
+    Uri.parse(url),
+    fileName,
+    prefs: PrefService.of(context, listen: false),
+    onStart: () {
+      showWorkingSnackBar(context, L10n.of(context).downloading_media);
+    },
+    onSuccess: () {
+      ScaffoldMessenger.of(
+        context,
+      ).hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(L10n.of(context).successfully_saved_the_media)),
+      );
+    },
+  );
 }

@@ -1,10 +1,13 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:ffcache/ffcache.dart';
 import 'package:flutter/material.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/plugins/reddit/reddit_avatar.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/utils/cache.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/plugins/reddit/reddit_avatar.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_read_session.dart';
+import 'package:xta/utils/cache.dart';
 
 /// How long a subreddit's picture is kept before it is looked up again.
 /// Community artwork changes about as often as a logo does.
@@ -13,30 +16,68 @@ const Duration kRedditIconExpiry = Duration(days: 7);
 /// The subreddit pictures known this session.
 ///
 /// Finding one costs a page fetch, so it happens once per subreddit and is
-/// remembered — in memory for the session and on disk between them. An empty
-/// string stands for "asked, and there is none", which is worth remembering as
-/// much as a hit: it is what stops a subreddit without artwork from being
-/// looked up again on every card.
+/// remembered — in memory for the session and on disk between them. A miss
+/// is not written to disk: a blocked about.json is not "this community has
+/// no artwork", and caching that for a week locked the generated tile in.
 class RedditIcons {
   final RedditClient client;
-  final FFCache _cache = FFCache(name: 'reddit_icons');
+  final FFCache _cache = FFCache(name: redditIconsCacheName);
   final Map<String, Future<String?>> _pending = {};
 
   RedditIcons(this.client);
 
-  Future<String?> iconFor(String subreddit) {
+  Future<String?> iconFor(
+    String subreddit, {
+    String clientId = '',
+    String? userToken,
+    bool preferPublic = false,
+  }) {
     final key = subreddit.toLowerCase();
 
     return _pending.putIfAbsent(key, () async {
-      final cached = await _cache.getOrCreateAsJSON(
-        key,
-        kRedditIconExpiry,
-        () async => await client.fetchSubredditIcon(subreddit) ?? '',
-      );
+      try {
+        if (await _cache.has(key)) {
+          final cached = await _cache.getJSON(key);
+          if (cached is String && cached.isNotEmpty) {
+            return cached;
+          }
+        }
+      } catch (_) {
+        // An emptied cache directory is a miss, not a dead icon.
+      }
 
-      return cached.isEmpty ? null : cached;
+      final fetched = await client.fetchSubredditIcon(
+        subreddit,
+        clientId: clientId,
+        userToken: userToken,
+        preferPublic: preferPublic,
+      );
+      if (fetched == null || fetched.isEmpty) {
+        // Do not persist a miss: a blocked about.json is not "no artwork".
+        return null;
+      }
+      try {
+        await _cache.getOrCreateAsJSON(key, kRedditIconExpiry, () async => fetched);
+      } catch (_) {}
+      return fetched;
     });
   }
+}
+
+/// Artwork URL for [RedditSubredditAvatar] from an about.json future.
+///
+/// Null while the future is still in flight so a disk-cached icon can paint.
+/// Empty string once about.json answered with no artwork, so lookup is not
+/// started again. Passing `''` *while loading* used to skip the cache and
+/// lock the generated tile in.
+String? redditAvatarUrlFromAbout({
+  required bool hasData,
+  String? iconUrl,
+}) {
+  if (!hasData) {
+    return null;
+  }
+  return iconUrl ?? '';
 }
 
 /// A subreddit's picture, the way Reddit's own apps show it.
@@ -49,7 +90,16 @@ class RedditSubredditAvatar extends StatefulWidget {
   final String subreddit;
   final double size;
 
-  const RedditSubredditAvatar({super.key, required this.subreddit, this.size = 40});
+  /// Already-known artwork, so a row that fetched `about` does not look it up
+  /// again. Null means ask [RedditIcons].
+  final String? url;
+
+  const RedditSubredditAvatar({
+    super.key,
+    required this.subreddit,
+    this.size = 40,
+    this.url,
+  });
 
   @override
   State<RedditSubredditAvatar> createState() => _RedditSubredditAvatarState();
@@ -61,24 +111,45 @@ class _RedditSubredditAvatarState extends State<RedditSubredditAvatar> {
   @override
   void initState() {
     super.initState();
+    _icon = widget.url;
     WidgetsBinding.instance.addPostFrameCallback((_) => _resolve());
   }
 
   @override
   void didUpdateWidget(RedditSubredditAvatar old) {
     super.didUpdateWidget(old);
-    if (old.subreddit != widget.subreddit) {
-      _icon = null;
+    if (old.subreddit != widget.subreddit || old.url != widget.url) {
+      _icon = widget.url;
       _resolve();
     }
   }
 
   Future<void> _resolve() async {
-    if (!mounted || widget.subreddit.isEmpty) {
+    if (!mounted || widget.subreddit.isEmpty || widget.url != null) {
       return;
     }
 
-    final icon = await context.read<RedditIcons>().iconFor(widget.subreddit);
+    String clientId = '';
+    String? userToken;
+    var preferPublic = false;
+    try {
+      final prefs = PrefService.of(context, listen: false);
+      final session = await RedditReadSession.resolve(prefs: prefs);
+      clientId = session.clientId;
+      userToken = session.userToken;
+      preferPublic = session.preferPublic;
+    } catch (_) {
+      // Tests and a missing prefs ancestor still look the icon up.
+    }
+    if (!mounted) {
+      return;
+    }
+    final icon = await context.read<RedditIcons>().iconFor(
+      widget.subreddit,
+      clientId: clientId,
+      userToken: userToken,
+      preferPublic: preferPublic,
+    );
     if (mounted && icon != null) {
       setState(() => _icon = icon);
     }
@@ -86,14 +157,12 @@ class _RedditSubredditAvatarState extends State<RedditSubredditAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    final icon = _icon;
-    // The generated tile is not a placeholder to be swapped out — it is what a
-    // subreddit without artwork keeps. Showing it until the answer arrives
-    // means the row never changes height or jumps.
-    if (icon == null) {
+    final icon = widget.url ?? _icon;
+    if (icon == null || icon.isEmpty) {
       return RedditAvatar(name: 'r/${widget.subreddit}', size: widget.size);
     }
 
+    final decode = (widget.size * MediaQuery.devicePixelRatioOf(context)).ceil();
     // Contained, not cropped, on a filled square. A community logo is usually
     // drawn with margins of its own and is rarely square — cover cut the edges
     // off exactly the part that identifies it.
@@ -108,6 +177,10 @@ class _RedditSubredditAvatarState extends State<RedditSubredditAvatar> {
       child: ExtendedImage.network(
         icon,
         fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        // Decode at least 512px so a 44dp tile stays sharp on dense screens.
+        cacheWidth: decode < 512 ? 512 : decode,
+        headers: const {'User-Agent': RedditClient.publicUserAgent},
         loadStateChanged: (state) => state.extendedImageLoadState == LoadState.completed
             ? null
             : RedditAvatar(name: 'r/${widget.subreddit}', size: widget.size),

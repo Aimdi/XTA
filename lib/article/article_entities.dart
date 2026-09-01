@@ -1,1 +1,1 @@
-export 'package:quax/article/entities/entity_value.dart';
+export 'package:xta/article/entities/entity_value.dart';

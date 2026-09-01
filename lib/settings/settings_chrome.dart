@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/reader_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 const double kSettingsContentWidth = 720;
 const double kSettingsRowRadius = 12;
@@ -419,7 +419,9 @@ class _SettingsPreferenceSelectorState<T>
   @override
   void initState() {
     super.initState();
-    _store = _SettingsSelectionStore<T>(widget.prefs.get<T>(widget.pref) ?? widget.options.first.value);
+    _store = _SettingsSelectionStore<T>(
+      widget.prefs.get<T>(widget.pref) ?? widget.options.first.value,
+    );
   }
 
   @override

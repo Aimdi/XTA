@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/database/repository.dart';
+import 'package:xta/database/repository.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 /// The schema had no indexes at all. Creating one proves nothing on its own —
@@ -16,7 +16,7 @@ void main() {
   late Database db;
 
   setUp(() async {
-    final path = '${Directory.systemTemp.path}/quax_idx_${DateTime.now().microsecondsSinceEpoch}.db';
+    final path = '${Directory.systemTemp.path}/xta_idx_${DateTime.now().microsecondsSinceEpoch}.db';
     final plan = buildMigrationPlan();
     db = await openDatabase(path, version: databaseVersion, onCreate: plan.call, onUpgrade: plan.call);
 
@@ -69,7 +69,7 @@ void main() {
   // absent. A database that lost a table to a partly applied earlier migration
   // would then fail to open forever — bricked by an optimisation.
   test('a missing table does not stop the upgrade', () async {
-    final path = '${Directory.systemTemp.path}/quax_idx_partial_${DateTime.now().microsecondsSinceEpoch}.db';
+    final path = '${Directory.systemTemp.path}/xta_idx_partial_${DateTime.now().microsecondsSinceEpoch}.db';
     final partial = await openDatabase(
       path,
       version: 38,
@@ -102,6 +102,26 @@ void main() {
       'idx_feed_group_chunk_hash',
       'idx_feed_group_chunk_cursor',
       'idx_subscription_group_member_profile',
+      'idx_feed_group_chunk_created',
+      'idx_saved_tweet_saved_at',
+      'idx_saved_tweet_folder_id',
+      'idx_liked_tweet_liked_at',
+      'idx_feed_group_cursor_created_at',
+      'idx_timeline_cache_created_at',
     });
+  });
+
+  test('the saved and liked lists read newest-first by index, not by sorting', () async {
+    final saved = await planFor('SELECT * FROM $tableSavedTweet ORDER BY saved_at DESC');
+    final liked = await planFor('SELECT * FROM $tableLikedTweet ORDER BY liked_at DESC');
+
+    expect(saved, isNot(contains('USE TEMP B-TREE')));
+    expect(liked, isNot(contains('USE TEMP B-TREE')));
+  });
+
+  test('the weekly cleanup finds old chunks by index', () async {
+    final plan = await planFor("SELECT * FROM $tableFeedGroupChunk WHERE created_at <= date('now', '-7 day')");
+
+    expect(plan, contains('idx_feed_group_chunk_created'));
   });
 }

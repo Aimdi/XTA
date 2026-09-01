@@ -1,4 +1,4 @@
-# Release signing (Aimdi / QuaX-gamma)
+# Release signing (Aimdi / XTA)
 
 Android only allows an app update when the **new APK is signed with the same
 certificate** as the installed one. Upstream [Teskann/QuaX](https://github.com/Teskann/QuaX)
@@ -19,15 +19,15 @@ stable keystore is configured.
 
 ```bash
 keytool -genkey -v \
-  -keystore quax-gamma.jks \
+  -keystore xta.jks \
   -keyalg RSA -keysize 2048 -validity 10000 \
-  -alias quax-gamma \
+  -alias xta \
   -storepass 'CHOOSE_A_STORE_PASSWORD' \
   -keypass 'CHOOSE_A_KEY_PASSWORD' \
-  -dname 'CN=QuaX-gamma, OU=Aimdi, O=Aimdi, L=Unknown, ST=Unknown, C=US'
+  -dname 'CN=XTA, OU=Aimdi, O=Aimdi, L=Unknown, ST=Unknown, C=US'
 ```
 
-Back up `quax-gamma.jks` somewhere safe. Losing it means users must uninstall
+Back up `xta.jks` somewhere safe. Losing it means users must uninstall
 to install future builds again.
 
 ### 2. Add GitHub Actions secrets
@@ -36,24 +36,29 @@ Repo → **Settings → Secrets and variables → Actions**:
 
 | Secret | Value |
 |---|---|
-| `SIGNING_KEY` | `base64 -w0 quax-gamma.jks` (single line) |
+| `SIGNING_KEY` | `base64 -w0 xta.jks` (single line) |
 | `KEY_STORE_PASSWORD` | store password from step 1 |
 | `KEY_PASSWORD` | key password from step 1 |
-| `KEY_ALIAS` | `quax-gamma` (or whatever `-alias` you used) |
+| `KEY_ALIAS` | `xta` (or whatever `-alias` you used) |
+
+A keystore created before the rename keeps working — its file name and alias are
+not part of the app's identity, so there is nothing to recreate. The secrets
+already set are authoritative; the names above are only what a new keystore
+would be called.
 
 With the GitHub CLI:
 
 ```bash
-base64 -w0 quax-gamma.jks | gh secret set SIGNING_KEY
+base64 -w0 xta.jks | gh secret set SIGNING_KEY
 gh secret set KEY_STORE_PASSWORD --body 'CHOOSE_A_STORE_PASSWORD'
 gh secret set KEY_PASSWORD --body 'CHOOSE_A_KEY_PASSWORD'
-gh secret set KEY_ALIAS --body 'quax-gamma'
+gh secret set KEY_ALIAS --body 'xta'
 ```
 
 ### 3. Publish fingerprints (optional but useful)
 
 ```bash
-keytool -list -v -keystore quax-gamma.jks -alias quax-gamma
+keytool -list -v -keystore xta.jks -alias xta
 ```
 
 Put the SHA-1 / SHA-256 into `release-notes.md` (and keep them in sync) so
@@ -70,3 +75,16 @@ apply in place.
 
 `ci.yml` may still produce **debug-signed** APK artifacts for PR testing.
 Those are not for Obtainium or long-lived installs.
+
+### Agent / API cut
+
+From a token that can create `repository_dispatch` events (but not
+`workflow_dispatch`):
+
+```bash
+gh api -X POST repos/Aimdi/XTA/dispatches \
+  -f event_type=build-release \
+  -f 'client_payload[tag]=aimdi78'
+```
+
+Or push tag `aimdiNN` to run `.github/workflows/release.yml`.

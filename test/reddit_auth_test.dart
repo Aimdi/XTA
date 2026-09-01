@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:quax/plugins/reddit/reddit_auth.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_auth.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
 
 /// Reddit's authorization-code flow for installed apps — the same one RedReader
 /// uses. Signing in is optional and gets the reader their own account's rate
@@ -29,7 +29,7 @@ void main() {
       expect(uri.queryParameters['duration'], 'permanent');
     });
 
-    test('asks only for read scopes: QuaX never posts, votes or subscribes', () {
+    test('asks only for read scopes: XTA never posts, votes or subscribes', () {
       final scopes = uri.queryParameters['scope']!.split(',');
 
       expect(scopes, containsAll(<String>['read', 'identity']));

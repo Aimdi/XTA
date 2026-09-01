@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:quax/client/client_unauthenticated.dart';
-import 'package:quax/client/endpoint_overrides.dart';
-import 'package:quax/client/endpoints.dart';
-import 'package:quax/client/headers.dart';
+import 'package:xta/client/client_unauthenticated.dart';
+import 'package:xta/client/endpoint_overrides.dart';
+import 'package:xta/client/endpoints.dart';
+import 'package:xta/client/headers.dart';
 
 /// Live canary over every GraphQL endpoint the app calls. Opt in with:
 ///   flutter test test/live/endpoint_canary_test.dart --dart-define=RUN_LIVE=true

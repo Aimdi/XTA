@@ -1,13 +1,13 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/group/group_screen.dart';
-import 'package:quax/subscriptions/group_identity.dart';
-import 'package:quax/subscriptions/widgets/fallback_avatar.dart';
-import 'package:quax/user.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/group/group_unread_store.dart';
+import 'package:xta/subscriptions/group_identity.dart';
+import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
+import 'package:xta/user.dart';
 import 'package:provider/provider.dart';
 
 /// How far each level of nesting moves a row to the right.
@@ -28,7 +28,17 @@ class GroupListItem extends StatelessWidget {
   // handle bound to this index.
   final int? reorderIndex;
 
-  const GroupListItem({super.key, required this.group, this.onLongPress, this.reorderIndex, this.depth = 0});
+  /// Newer cached posts than the last-read mark. Tests omit this.
+  final bool unread;
+
+  const GroupListItem({
+    super.key,
+    required this.group,
+    this.onLongPress,
+    this.reorderIndex,
+    this.depth = 0,
+    this.unread = false,
+  });
 
   Widget _buildTrailing(BuildContext context) {
     final l10n = L10n.of(context);
@@ -36,11 +46,18 @@ class GroupListItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          icon: Icon(group.pinned ? Icons.push_pin : Icons.push_pin_outlined,
-              size: 20,
-              color: group.pinned ? Theme.of(context).colorScheme.primary : Theme.of(context).hintColor),
+          icon: Icon(
+            group.pinned ? Icons.push_pin : Icons.push_pin_outlined,
+            size: 20,
+            color: group.pinned
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).hintColor,
+          ),
           tooltip: group.pinned ? l10n.unpin : l10n.pin,
-          onPressed: () => context.read<GroupsModel>().toggleGroupPinned(group.id, !group.pinned),
+          onPressed: () => context.read<GroupsModel>().toggleGroupPinned(
+            group.id,
+            !group.pinned,
+          ),
         ),
         if (reorderIndex != null)
           ReorderableDragStartListener(
@@ -60,33 +77,80 @@ class GroupListItem extends StatelessWidget {
     // towards the theme accent, which turned every pick into a variation of
     // orange — the generated fallback is harmonised, because that one is the
     // app's colour rather than theirs.
-    final fill = group.color ?? groupFallbackColor(group.name).harmonizeWith(theme.colorScheme.primary);
-    final onFill =
-        ThemeData.estimateBrightnessForColor(fill) == Brightness.dark ? Colors.white : Colors.black87;
+    final fill =
+        group.color ??
+        groupFallbackColor(group.name).harmonizeWith(theme.colorScheme.primary);
+    final onFill = ThemeData.estimateBrightnessForColor(fill) == Brightness.dark
+        ? Colors.white
+        : Colors.black87;
     final hiddenMembers = group.numberOfMembers - group.memberPreviews.length;
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       // Indent rather than hide: a nested group is still a group you can open.
-      contentPadding: EdgeInsets.only(left: 16 + kGroupNestIndent * depth, right: 8),
-      leading: CircleAvatar(
-        radius: 20,
-        backgroundColor: fill,
-        child: group.icon == defaultGroupIcon
-            ? Text(group.name.isEmpty ? '?' : group.name.characters.first.toUpperCase(),
-                style: TextStyle(color: onFill, fontWeight: FontWeight.w700, fontSize: 16))
-            : Icon(group.iconData, size: 20, color: onFill),
+      contentPadding: EdgeInsets.only(
+        left: 16 + kGroupNestIndent * depth,
+        right: 8,
       ),
-      title: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+      leading: GroupUnreadBadge(
+        unread: unread,
+        child: CircleAvatar(
+          radius: 20,
+          backgroundColor: fill,
+          child: group.icon == defaultGroupIcon
+              ? Text(
+                  group.name.isEmpty
+                      ? '?'
+                      : group.name.characters.first.toUpperCase(),
+                  style: TextStyle(
+                    color: onFill,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                )
+              : Icon(group.iconData, size: 20, color: onFill),
+        ),
+      ),
+      title: Row(
+        children: [
+          if (group.nsfw) ...[
+            Icon(
+              Icons.visibility_off_outlined,
+              size: 16,
+              color: theme.hintColor,
+            ),
+            const SizedBox(width: 6),
+          ],
+          Expanded(
+            child: Text(
+              group.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (unread)
+            Semantics(
+              label: L10n.of(context).group_has_unread,
+              child: const SizedBox.shrink(),
+            ),
+        ],
+      ),
       subtitle: Row(
         children: [
           Flexible(
-            child: Text(L10n.of(context).subscription_group_member_count(group.numberOfMembers),
-                maxLines: 1, overflow: TextOverflow.ellipsis),
+            child: Text(
+              L10n.of(
+                context,
+              ).subscription_group_member_count(group.numberOfMembers),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           if (group.memberPreviews.isNotEmpty) ...[
             const SizedBox(width: 8),
-            ExcludeSemantics(child: _AvatarCluster(members: group.memberPreviews)),
+            ExcludeSemantics(
+              child: _AvatarCluster(members: group.memberPreviews),
+            ),
             if (hiddenMembers > 0) ...[
               const SizedBox(width: 4),
               Text('+$hiddenMembers', style: theme.textTheme.bodySmall),
@@ -95,8 +159,8 @@ class GroupListItem extends StatelessWidget {
         ],
       ),
       trailing: _buildTrailing(context),
-      onTap: () => Navigator.pushNamed(context, routeGroup,
-          arguments: GroupScreenArguments(id: group.id, name: group.name)),
+      onTap: () =>
+          openGroupAndRefreshUnread(context, id: group.id, name: group.name),
       onLongPress: onLongPress,
     );
   }
@@ -135,7 +199,8 @@ class _AvatarCluster extends StatelessWidget {
                         seed: member.id,
                         displayName: member.name,
                         size: _size,
-                        accent: theme.colorScheme.primary)
+                        accent: theme.colorScheme.primary,
+                      )
                     : UserAvatar(uri: member.avatarUrl, size: _size),
               ),
             ),

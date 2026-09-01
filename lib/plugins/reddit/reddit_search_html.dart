@@ -9,11 +9,16 @@ library;
 
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html;
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/plugins/reddit/reddit_html.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_html.dart';
 
 /// A subreddit a search turned up.
-typedef RedditSubredditResult = ({String name, int? subscribers, String? description});
+typedef RedditSubredditResult = ({
+  String name,
+  int? subscribers,
+  String? description,
+  String? iconUrl,
+});
 
 /// An account a search turned up.
 typedef RedditUserResult = ({String name, int? karma});
@@ -23,7 +28,9 @@ int? _number(String? text) {
   if (text == null) {
     return null;
   }
-  final match = RegExp(r'-?\d+').firstMatch(text.replaceAll(RegExp(r'[,.\s]'), ''));
+  final match = RegExp(
+    r'-?\d+',
+  ).firstMatch(text.replaceAll(RegExp(r'[,.\s]'), ''));
   return match == null ? null : int.tryParse(match.group(0)!);
 }
 
@@ -32,12 +39,16 @@ String? _nameAfter(String? href, String segment) {
   if (href == null) {
     return null;
   }
-  final segments = Uri.tryParse(href)?.pathSegments.where((s) => s.isNotEmpty).toList();
+  final segments = Uri.tryParse(
+    href,
+  )?.pathSegments.where((s) => s.isNotEmpty).toList();
   if (segments == null) {
     return null;
   }
   final index = segments.indexOf(segment);
-  return index == -1 || index + 1 >= segments.length ? null : segments[index + 1];
+  return index == -1 || index + 1 >= segments.length
+      ? null
+      : segments[index + 1];
 }
 
 /// Posts from a search page.
@@ -89,7 +100,11 @@ RedditPost? _searchPostFrom(Element result) {
   return RedditPost(
     id: id,
     title: title.text.trim(),
-    subreddit: _nameAfter(result.querySelector('.search-subreddit-link')?.attributes['href'], 'r') ??
+    subreddit:
+        _nameAfter(
+          result.querySelector('.search-subreddit-link')?.attributes['href'],
+          'r',
+        ) ??
         _nameAfter(href, 'r') ??
         '',
     permalink: permalink,
@@ -100,7 +115,12 @@ RedditPost? _searchPostFrom(Element result) {
     // A search result carries no link target of its own, so the post is treated
     // as its own page — which is where tapping it should go anyway.
     isSelf: true,
-    over18: result.classes.contains('over18') || result.querySelector('.nsfw-stamp') != null,
+    over18:
+        result.classes.contains('over18') ||
+        result.querySelector('.nsfw-stamp') != null,
+    spoiler:
+        result.classes.contains('spoiler') ||
+        result.querySelector('.spoiler-stamp') != null,
   );
 }
 
@@ -110,7 +130,9 @@ List<RedditSubredditResult> parseSubredditResults(String body) {
   final results = <RedditSubredditResult>[];
   final seen = <String>{};
 
-  for (final element in document.querySelectorAll('.search-result-subreddit, div.subreddit.thing')) {
+  for (final element in document.querySelectorAll(
+    '.search-result-subreddit, div.subreddit.thing',
+  )) {
     final result = _subredditFrom(element);
     if (result != null && seen.add(result.name.toLowerCase())) {
       results.add(result);
@@ -121,23 +143,32 @@ List<RedditSubredditResult> parseSubredditResults(String body) {
 }
 
 RedditSubredditResult? _subredditFrom(Element element) {
-  final link = element.querySelector('a.search-subreddit-link') ??
+  final link =
+      element.querySelector('a.search-subreddit-link') ??
       element.querySelector('a.title') ??
       element.querySelector('a[href*="/r/"]');
 
-  final name = _nameAfter(link?.attributes['href'], 'r') ?? normaliseSubreddit(link?.text ?? '');
+  final name =
+      _nameAfter(link?.attributes['href'], 'r') ??
+      normaliseSubreddit(link?.text ?? '');
   if (name == null || name.isEmpty) {
     return null;
   }
 
-  final description = element.querySelector('.search-result-body')?.text.trim() ??
+  final description =
+      element.querySelector('.search-result-body')?.text.trim() ??
       element.querySelector('.description')?.text.trim();
 
   return (
     name: name,
-    subscribers: _number(element.querySelector('.search-subscribers')?.text ??
-        element.querySelector('.subscribers')?.text),
-    description: description == null || description.isEmpty ? null : description,
+    subscribers: _number(
+      element.querySelector('.search-subscribers')?.text ??
+          element.querySelector('.subscribers')?.text,
+    ),
+    description: description == null || description.isEmpty
+        ? null
+        : description,
+    iconUrl: null,
   );
 }
 
@@ -148,12 +179,18 @@ List<RedditUserResult> parseUserResults(String body) {
   final seen = <String>{};
 
   for (final element in document.querySelectorAll('.search-result-user')) {
-    final name = _nameAfter(element.querySelector('a[href*="/user/"]')?.attributes['href'], 'user');
+    final name = _nameAfter(
+      element.querySelector('a[href*="/user/"]')?.attributes['href'],
+      'user',
+    );
     if (name == null || name.isEmpty || !seen.add(name.toLowerCase())) {
       continue;
     }
 
-    results.add((name: name, karma: _number(element.querySelector('.search-result-user-karma')?.text)));
+    results.add((
+      name: name,
+      karma: _number(element.querySelector('.search-result-user-karma')?.text),
+    ));
   }
 
   return results;

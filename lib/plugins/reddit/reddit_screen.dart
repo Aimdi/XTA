@@ -1,38 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/reddit/reddit_actions.dart';
+import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_feed_list.dart';
+import 'package:xta/plugins/reddit/reddit_home_source.dart';
+import 'package:xta/plugins/reddit/reddit_listing_body.dart';
+import 'package:xta/plugins/reddit/reddit_plugin.dart';
+import 'package:xta/plugins/reddit/reddit_saved_screen.dart';
+import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:provider/provider.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/plugins/reddit/reddit_auth.dart';
-import 'package:quax/plugins/reddit/reddit_login_webview.dart';
-import 'package:quax/plugins/reddit/reddit_client.dart';
-import 'package:quax/plugins/reddit/reddit_feed_list.dart';
-import 'package:quax/plugins/reddit/reddit_search_screen.dart';
-import 'package:quax/plugins/reddit/reddit_sort_sheet.dart';
-import 'package:quax/plugins/reddit/reddit_store.dart';
-import 'package:quax/subscriptions/users_model.dart';
-import 'package:quax/ui/errors.dart';
 
-String redditErrorMessage(L10n l10n, Object error) {
-  if (error is RedditException) {
-    final explanation = switch (error.kind) {
-      RedditErrorKind.notConfigured => l10n.plugin_reddit_not_configured,
-      RedditErrorKind.unauthorized => l10n.plugin_reddit_error_client_id,
-      RedditErrorKind.blocked => l10n.plugin_reddit_error_blocked,
-      RedditErrorKind.notFound => l10n.plugin_reddit_error_not_found,
-      RedditErrorKind.rateLimited => l10n.plugin_reddit_error_rate_limited,
-      RedditErrorKind.badResponse => l10n.plugin_reddit_error_response,
-      RedditErrorKind.network => l10n.plugin_reddit_error_network,
-    };
-
-    // The translated sentence says what to do; the detail says what actually
-    // happened. Without it a refusal, a timeout and a reshaped response all
-    // read the same, and "it doesn't work" is all anyone can report back.
-    return error.detail.isEmpty ? explanation : '$explanation\n\n${error.detail}';
-  }
-  return '$error';
-}
+export 'package:xta/plugins/reddit/reddit_states.dart' show redditErrorMessage;
 
 /// Account-free Reddit reading: the subreddits you follow, newest first.
 class RedditScreen extends StatefulWidget {
@@ -44,297 +27,246 @@ class RedditScreen extends StatefulWidget {
   State<RedditScreen> createState() => _RedditScreenState();
 }
 
-class _RedditScreenState extends State<RedditScreen> {
-  /// Which route Reddit is read through.
-  ///
-  /// The client would otherwise decide silently from whatever credentials
-  /// happen to be stored, so a reader who would rather not be identified had no
-  /// way to say so while a sign-in existed.
-  Widget _sourceMenu(BuildContext context) {
-    final prefs = PrefService.of(context);
-    final l10n = L10n.of(context);
+class _RedditScreenState extends State<RedditScreen>
+    with AutomaticKeepAliveClientMixin {
+  final _popularKey = GlobalKey<RedditListingBodyState>();
+  final _allKey = GlobalKey<RedditListingBodyState>();
+  final _subredditKeys = <String, GlobalKey<RedditListingBodyState>>{};
 
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert),
-      tooltip: l10n.plugin_reddit_source,
-      onSelected: (value) => _onMenuSelected(value, prefs),
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          value: redditSourceAuto,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(l10n.plugin_reddit_source_auto),
-            subtitle: Text(l10n.plugin_reddit_source_auto_description),
-          ),
-        ),
-        PopupMenuItem(
-          value: redditSourcePublic,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            title: Text(l10n.plugin_reddit_source_public),
-            subtitle: Text(l10n.plugin_reddit_source_public_description),
-          ),
-        ),
-        const PopupMenuDivider(),
-        PopupMenuItem(
-          value: _menuSignIn,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Icon(_signedIn ? Icons.logout : Icons.login),
-            title: Text(_signedIn ? l10n.plugin_reddit_sign_out : l10n.plugin_reddit_sign_in),
-          ),
-        ),
-        PopupMenuItem(
-          value: _menuClientId,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.key),
-            title: Text(l10n.plugin_reddit_client_id),
-          ),
-        ),
-      ],
-    );
-  }
+  RedditHomeStore? _home;
+  bool _loadedStores = false;
 
-  /// Values the menu uses for the actions that are not a source choice.
-  static const _menuSignIn = '_signIn';
-  static const _menuClientId = '_clientId';
+  RedditHomeStore get home => _home!;
 
-  Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
-    if (value == _menuSignIn) {
-      return _signedIn ? _signOut() : _signIn();
-    }
-    if (value == _menuClientId) {
-      return _editClientId();
-    }
+  @override
+  bool get wantKeepAlive => true;
 
-    await prefs.set(optionPluginRedditSource, value);
-    if (mounted) {
-      await context.read<RedditFeedStore>().refresh();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _home ??= RedditHomeStore(PrefService.of(context, listen: false));
+    if (!_loadedStores) {
+      _loadedStores = true;
+      unawaited(_prime());
     }
   }
 
-  Future<void> _editClientId() async {
-    final prefs = PrefService.of(context, listen: false);
-    final controller = TextEditingController(text: prefs.get<String>(optionPluginRedditClientId) ?? '');
-
-    final saved = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        final l10n = L10n.of(dialogContext);
-        return AlertDialog(
-          title: Text(l10n.plugin_reddit_client_id),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.plugin_reddit_client_id_help, style: Theme.of(dialogContext).textTheme.bodySmall),
-              const SizedBox(height: 8),
-              // Reddit rejects the login unless the registered app carries this
-              // exact redirect, and it is not guessable — so it is stated here
-              // rather than left to be discovered.
-              Text(
-                l10n.plugin_reddit_redirect_uri_help(RedditAuth.redirectUri),
-                style: Theme.of(dialogContext).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: controller,
-                autofocus: true,
-                autocorrect: false,
-                decoration: InputDecoration(hintText: l10n.plugin_reddit_client_id),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
-              child: Text(l10n.save),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (saved == null || !mounted) return;
-    await prefs.set(optionPluginRedditClientId, saved);
-    context.read<RedditClient>().forgetToken();
-    if (mounted) {
-      await context.read<RedditFeedStore>().refresh();
-    }
-  }
-
-  bool get _signedIn => (PrefService.of(context, listen: false).get<String>(optionPluginRedditRefreshToken) ?? '')
-      .isNotEmpty;
-
-  /// Signing in gets the reader their own account's rate limits, which is the
-  /// most reliable route Reddit offers. It still needs a client id: the login
-  /// authorises *this app*, and Reddit has to know which app that is.
-  Future<void> _signIn() async {
-    final prefs = PrefService.of(context, listen: false);
-    final clientId = prefs.get<String>(optionPluginRedditClientId) ?? '';
-    if (clientId.trim().isEmpty) {
-      await _editClientId();
+  Future<void> _prime() async {
+    final saved = context.read<RedditSavedStore>();
+    final subs = context.read<RedditSubredditsStore>();
+    await saved.load();
+    await subs.load();
+    if (!mounted) {
       return;
     }
+    await home.reconcileFollowed(subs.state);
+  }
 
-    // Echoed back by Reddit and checked on return, so a code from anywhere
-    // else is refused.
-    final state = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    final code = await Navigator.push<String>(
+  @override
+  void dispose() {
+    _home?.destroy();
+    super.dispose();
+  }
+
+  GlobalKey<RedditListingBodyState> _subredditKey(String name) {
+    return _subredditKeys.putIfAbsent(
+      name.toLowerCase(),
+      GlobalKey<RedditListingBodyState>.new,
+    );
+  }
+
+  Future<void> _refreshCurrent() {
+    final source = home.state;
+    if (source.viewingSubreddit) {
+      return _subredditKey(source.subreddit!).currentState?.refresh() ??
+          Future.value();
+    }
+    return switch (source.mode) {
+      RedditFeedMode.following => context.read<RedditFeedStore>().refresh(
+        force: true,
+      ),
+      RedditFeedMode.popular =>
+        _popularKey.currentState?.refresh() ?? Future.value(),
+      RedditFeedMode.all => _allKey.currentState?.refresh() ?? Future.value(),
+    };
+  }
+
+  void _openSaved() {
+    Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => RedditLoginWebview(clientId: clientId, state: state)),
-    );
-
-    if (code == null || !mounted) return;
-
-    try {
-      final refreshToken = await context.read<RedditAuth>().exchangeCode(clientId: clientId, code: code);
-      await prefs.set(optionPluginRedditRefreshToken, refreshToken);
-      if (mounted) {
-        setState(() {});
-        // The webview closing is not by itself proof the token was accepted.
-        showSnackBar(context, icon: '✅', message: L10n.of(context).plugin_reddit_signed_in);
-        await context.read<RedditFeedStore>().refresh();
-      }
-    } on RedditException catch (e) {
-      if (mounted) {
-        showSnackBar(context, icon: '🔒', message: '${L10n.of(context).plugin_reddit_sign_in_failed}\n${e.detail}');
-      }
-    }
-  }
-
-  Future<void> _signOut() async {
-    final prefs = PrefService.of(context, listen: false);
-    await prefs.set(optionPluginRedditRefreshToken, '');
-    if (mounted) {
-      setState(() {});
-      await context.read<RedditFeedStore>().refresh();
-    }
-  }
-
-  Future<void> _addSubreddit() async {
-    final controller = TextEditingController();
-    final entered = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        final l10n = L10n.of(dialogContext);
-        return AlertDialog(
-          title: Text(l10n.plugin_reddit_add),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: 'r/dartlang'),
-            onSubmitted: (value) => Navigator.pop(dialogContext, value.trim()),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, controller.text.trim()),
-              child: Text(l10n.ok),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (entered == null || entered.isEmpty || !mounted) return;
-
-    if (normaliseSubreddit(entered) == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(L10n.of(context).plugin_reddit_error_not_found)));
-      return;
-    }
-
-    await context.read<RedditSubredditsStore>().add(entered);
-    if (mounted) {
-      await _refreshAfterChange(context);
-    }
-  }
-
-  /// The feed and the subscription list both have to hear about it: a subreddit
-  /// is a group member now, and the group editor reads that list rather than
-  /// the store this screen keeps.
-  static Future<void> _refreshAfterChange(BuildContext context) async {
-    final subscriptions = context.read<SubscriptionsModel>();
-    await context.read<RedditFeedStore>().refresh();
-    await subscriptions.reloadSubscriptions();
-  }
-
-  Future<void> _manageSubreddits() async {
-    await showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) {
-        final store = sheetContext.read<RedditSubredditsStore>();
-        return SafeArea(
-          child: ScopedBuilder<RedditSubredditsStore, List<String>>(
-            store: store,
-            onState: (_, names) => ListView(
-              shrinkWrap: true,
-              children: [
-                for (final name in names)
-                  ListTile(
-                    title: Text('r/$name'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: () async {
-                        await store.remove(name);
-                        if (sheetContext.mounted) {
-                          await _refreshAfterChange(sheetContext);
-                        }
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        );
-      },
+      MaterialPageRoute(builder: (_) => const RedditSavedScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
+    super.build(context);
+    final store = _home;
+    if (store == null) {
+      return const SizedBox.shrink();
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.plugin_reddit_title),
-        actions: [
-          IconButton(
-            tooltip: l10n.plugin_reddit_sort,
-            icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
-            onPressed: () async {
-              if (await openRedditSortSheet(context) != null && mounted) {
-                await context.read<RedditFeedStore>().refresh();
-              }
-            },
-          ),
-          IconButton(
-            tooltip: l10n.plugin_reddit_search_hint,
-            icon: const Icon(Icons.search),
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
-          ),
-          IconButton(
-            tooltip: l10n.plugin_reddit_add,
-            icon: const Icon(Icons.add),
-            onPressed: _addSubreddit,
-          ),
-          IconButton(
-            tooltip: l10n.subscriptions,
-            icon: const Icon(Icons.list),
-            onPressed: _manageSubreddits,
-          ),
-          _sourceMenu(context),
-        ],
+      primary: !PluginEmbedded.maybeOf(context),
+      body: ScopedBuilder<RedditHomeStore, RedditHomeSource>(
+        store: store,
+        onState: (context, source) => Column(
+          children: [
+            RedditHomeChrome(
+              source: source,
+              onMode: store.selectMode,
+              actions: [
+                IconButton(
+                  tooltip: L10n.of(context).saved,
+                  icon: const Icon(Icons.bookmark_border),
+                  onPressed: _openSaved,
+                ),
+                RedditFeedActions(onRefresh: _refreshCurrent),
+              ],
+            ),
+            RedditSubredditChips(home: store),
+            Expanded(child: _body(source)),
+          ],
+        ),
       ),
-      body: RedditFeedList(
+    );
+  }
+
+  Widget _body(RedditHomeSource source) {
+    final name = source.subreddit;
+    if (name != null && name.isNotEmpty) {
+      return RedditListingBody.subreddit(
+        name,
+        key: _subredditKey(name),
         scrollController: widget.scrollController,
-        onAddSubreddit: _addSubreddit,
+        showSourceBadge: false,
+      );
+    }
+    return switch (source.mode) {
+      RedditFeedMode.following => RedditFeedList(
+        scrollController: widget.scrollController,
+      ),
+      RedditFeedMode.popular => RedditListingBody.subreddit(
+        'popular',
+        key: _popularKey,
+        scrollController: widget.scrollController,
+        showSourceBadge: false,
+      ),
+      RedditFeedMode.all => RedditListingBody.subreddit(
+        'all',
+        key: _allKey,
+        scrollController: widget.scrollController,
+        showSourceBadge: false,
+      ),
+    };
+  }
+}
+
+/// Icon tabs for Following / Popular / All — same chrome as the other plugins.
+class RedditHomeChrome extends StatelessWidget {
+  final RedditHomeSource source;
+  final ValueChanged<RedditFeedMode> onMode;
+  final List<Widget> actions;
+
+  const RedditHomeChrome({
+    super.key,
+    required this.source,
+    required this.onMode,
+    this.actions = const [],
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return PluginHomeChrome(
+      accent: RedditPlugin().brandColor,
+      tabs: [
+        PluginHomeTab(
+          icon: Icons.home_outlined,
+          label: l10n.plugin_reddit_feed_following,
+          selected: redditHomeRailSelected(source, RedditFeedMode.following),
+          onTap: () => onMode(RedditFeedMode.following),
+        ),
+        PluginHomeTab(
+          icon: Icons.whatshot_outlined,
+          label: l10n.plugin_reddit_feed_popular,
+          selected: redditHomeRailSelected(source, RedditFeedMode.popular),
+          onTap: () => onMode(RedditFeedMode.popular),
+        ),
+        PluginHomeTab(
+          icon: Icons.public_outlined,
+          label: l10n.plugin_reddit_feed_all,
+          selected: redditHomeRailSelected(source, RedditFeedMode.all),
+          onTap: () => onMode(RedditFeedMode.all),
+        ),
+      ],
+      actions: actions,
+    );
+  }
+}
+
+/// Followed communities as a chip strip, so r/foo and r/bar stay on this tab.
+class RedditSubredditChips extends StatelessWidget {
+  final RedditHomeStore home;
+
+  const RedditSubredditChips({super.key, required this.home});
+
+  @override
+  Widget build(BuildContext context) {
+    final subreddits = context.read<RedditSubredditsStore>();
+    return ScopedBuilder<RedditSubredditsStore, List<String>>(
+      store: subreddits,
+      onState: (context, names) {
+        if (names.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return ScopedBuilder<RedditHomeStore, RedditHomeSource>(
+          store: home,
+          onState: (context, source) => _chipRow(context, names, source),
+        );
+      },
+    );
+  }
+
+  Widget _chipRow(
+    BuildContext context,
+    List<String> names,
+    RedditHomeSource source,
+  ) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    return Semantics(
+      label: l10n.plugin_reddit_followed_communities,
+      child: SizedBox(
+        height: 48,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+          children: [
+            for (final name in names)
+              Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: ChoiceChip(
+                  key: ValueKey('reddit-community-$name'),
+                  label: Text('r/$name'),
+                  selected: isSelectedRedditCommunity(source.subreddit, name),
+                  showCheckmark: false,
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  selectedColor: RedditPlugin().brandColor.withValues(
+                    alpha: theme.brightness == Brightness.dark ? 0.28 : 0.16,
+                  ),
+                  onSelected: (selected) {
+                    if (selected) {
+                      unawaited(home.selectSubreddit(name));
+                    } else {
+                      unawaited(home.selectMode(source.mode));
+                    }
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

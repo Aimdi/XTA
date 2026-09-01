@@ -1,73 +1,89 @@
-# Reddit plugin (in the spirit of Stealth)
+# Reddit plugin
 
-Answer to *"Stealth looks awesome — can't you make it a plugin of QuaX-fix?"*
-Two findings decided the approach, both worth knowing before more is built.
+Answer to *"Stealth looks awesome — can't you make it a plugin of XTA?"*
+Two findings decided the approach; both still hold.
 
 ## 1. It cannot be a port. It has to be a reimplementation
 
-| | Stealth | QuaX |
+| | Stealth | XTA |
 |---|---|---|
 | Language | Kotlin | Dart |
 | UI | Android views | Flutter |
 | Storage | Room | sqflite / prefs |
 | Licence | **GPLv3** | **MIT** |
 
-Nothing about a Kotlin Android app can be "plugged into" a Flutter app — there
-is no shared UI, storage or networking layer, so the feature has to be written
-again in Dart either way.
+Nothing about a Kotlin Android app can be "plugged into" a Flutter app. Copying
+or translating Stealth's source would make the combined work GPLv3. This plugin
+is therefore written against Reddit's own API / HTML. Stealth was consulted only
+to learn *which* routes a modern account-free client uses — not for its
+implementation.
 
-The licence makes that the *only* option rather than merely the practical one.
-Copying or translating Stealth's source into QuaX would make the combined work
-GPLv3, relicensing this entire app. This plugin is therefore written against
-Reddit's own documented API. Stealth's source was consulted only to learn *which*
-API a modern account-free client has to use (its `OAuthInterceptor` answers
-that), not for its implementation.
+## 2. Account-free reading is scrape-first, OAuth optional
 
-## 2. Reddit no longer serves anonymous JSON
+Unauthenticated `.json` is often refused (datacenter IPs especially). The
+shipped default path scrapes `old.reddit.com` HTML (browser UA + cookies +
+over-18 cookie), with public JSON as a secondary try.
 
-Measured from this machine, every unauthenticated path is refused:
+Optional credentials, in priority order when source is `auto`:
 
-| Endpoint | Result |
+1. **User OAuth** (`read,identity` only) — reader's own rate limits
+2. **App-only** `installed_client` — when a client id is set
+3. **Public scrape / JSON** — needs nothing
+
+`source=public` forces the account-free route even when credentials exist.
+No write scopes; local follow + local upvote stay on-device.
+
+## What is shipped
+
+| Area | Status |
 |---|---|
-| `www.reddit.com/r/<sub>/hot.json` | **403** |
-| `old.reddit.com/r/<sub>/hot.json` | **403** (explicit "Blocked" page) |
-| `api.reddit.com/r/<sub>/hot` | **403** |
-| a public Redlib instance | **403** |
+| Followed feed (merged first pages, newest first) | Yes — parallel fetch, per-subreddit errors isolated |
+| Subreddit / user listing screens | Yes |
+| Comments / thread screen | Yes (HTML scrape; `more` stubs still skipped) |
+| Search (posts / subreddits / users) | Yes |
+| Discovery feeds | Yes — Following / Popular / All |
+| Sort UI (hot / new / top / rising / controversial) | Yes, including `t=` windows for top / controversial |
+| Media galleries, flairs, NSFW / spoiler gates | Yes (JSON path richer than scrape) |
+| NSFW display preference | Yes — hide / tap-to-show / always show |
+| Local-only upvote | Yes |
+| Local-only saved posts | Yes — pref snapshots capped on-device |
+| Optional sign-in + client id | Yes |
+| Home / group interleave | Yes (opt-in; uses shared read session) |
+| Plugin store / tab / settings | Yes |
 
-So "account-free" now means *app-only OAuth*: the `installed_client` grant,
-which authenticates the app rather than a person and takes a client id the user
-creates once at `reddit.com/prefs/apps`. No account, no login, and the device id
-sent is Reddit's own `DO_NOT_TRACK_THIS_DEVICE`.
+Code lives under `lib/plugins/reddit/`. Off by default (`plugins.json`).
 
-Some of those 403s are likely datacenter-IP blocking rather than a policy that
-would hit a phone, but the token flow is required regardless.
+## Shared read session (P0)
 
-## What is implemented
+`RedditReadSession.resolve` is the single place that turns prefs into
+`clientId` / `preferPublic` / `userToken`. Listing paths that used to omit the
+user token (home/group interleave, subreddit listing) now go through it, so
+signing in helps every subreddit listing — not only the Reddit tab.
 
-- `reddit_client.dart` — app-only token with caching and early expiry, subreddit
-  listings (hot / new / top / rising) with Reddit's `after` cursor, defensive
-  parsing, and each documented status mapped to an actionable error.
-- `reddit_store.dart` — followed subreddits in prefs; a merged feed that loads
-  one page per subreddit and interleaves by date, because Reddit paginates per
-  listing and there is no cursor across several.
-- `reddit_screen.dart` — the feed, adding and removing subreddits, the client id,
-  and a post view with its own text plus links out.
-- Registered like the Substack plugin, off by default.
+Comment threads use `RedditReadSession` (OAuth JSON when signed in,
+old.reddit scrape when anonymous). Search and user posts still scrape
+publicly. Community icons read `about.json` (`community_icon` / `icon_img`)
+from oauth, then www, then old.reddit, and fall back to HTML. Signed
+`?width=&s=` query strings are stripped so the CDN serves the original file.
 
-## Not implemented
+## Known gaps (not P0)
 
-- **Comments.** The biggest remaining chunk: `/comments/{id}` returns a nested
-  `Listing` of `t1` items with `more` stubs to expand, so it needs its own model,
-  a flattening pass with depth, and a threaded renderer.
-- Search, user profiles, subreddit browsing without following, saved posts,
-  multiple profiles (Stealth's per-profile subscriptions), media galleries,
-  awards, flairs.
-- Sort selection in the UI (the client takes it; the screen always asks for hot).
+- Comment `more` expansion / collapse / markdown
+- Search / user posts still scrape publicly (OAuth wiring follow-up)
+- Scrape/OAuth media parity; gallery pager (same-file preview/i.redd.it width
+  variants are collapsed — no more low+high double display)
+- User profile beyond submitted posts
+- Followed-tab (`RedditFeedStore`) pagination — listing screens paginate via
+  `after`; the merged followed feed still loads first pages only
 
-## Unverified
+## Done (recent P0)
 
-Every request in the tests is mocked, and the live endpoints cannot be reached
-from this environment, so the first real request happens on a device with a real
-client id. If it turns out Reddit refuses the `installed_client` grant from
-phones too, the fallback is a self-hosted Redlib instance as the transport, which
-would replace `reddit_client.dart` and nothing else.
+- For You pull-to-refresh reloads the Reddit mix (`onRefresh: _loadRedditPosts`)
+- Subreddit / user listing pagination via trailing Load more (`after` cursor)
+
+## Non-goals
+
+- Posting, reply, Reddit-side vote/subscribe/save, DMs, mod tools
+- Expanding OAuth beyond `read` (+ `identity` for display)
+- Porting GPL Stealth / Infinity / RedReader / Slide code
+- Making Reddit the default home experience

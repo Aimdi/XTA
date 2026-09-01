@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
-import 'package:quax/client/client_unauthenticated.dart';
+import 'package:xta/client/client_unauthenticated.dart';
 
 /// Live smoke against x.com guest auth. Opt in with:
 ///   fvm flutter test test/live/guest_api_smoke_test.dart --dart-define=RUN_LIVE=true
@@ -16,7 +16,7 @@ void main() {
       final token = await getToken(log);
       expect(token, isNotEmpty);
 
-      final uri = Uri.https('x.com', '/i/api/graphql/qW5u-DAuXpMEG0zA1F7UGQ/UserByScreenName', {
+      final uri = Uri.https('x.com', '/i/api/graphql/IGgvgiOx4QZndDHuD3x9TQ/UserByScreenName', {
         'variables': jsonEncode({'screen_name': 'X', 'withSafetyModeUserFields': true}),
         'features': jsonEncode({
           'hidden_profile_subscriptions_enabled': true,

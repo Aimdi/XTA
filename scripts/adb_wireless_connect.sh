@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Connect a physical Android phone over Wi‑Fi so Cloud agents can install/run QuaX.
+# Connect a physical Android phone over Wi‑Fi so Cloud agents can install/run XTA.
 # On the phone: Developer options → Wireless debugging → Pair device with pairing code.
 set -euo pipefail
 
@@ -27,4 +27,4 @@ adb pair "$PAIR_HOST_PORT" "$PAIR_CODE"
 adb connect "$CONNECT_HOST_PORT"
 adb devices -l
 echo "Install with: adb install -r build/app/outputs/flutter-apk/app-debug.apk"
-echo "Launch with:  adb shell am start -n fr.l3m2e.quax/.MainActivity || adb shell monkey -p \$(adb shell pm list packages | rg -o 'package:.*quax' | head -1 | cut -d: -f2) 1"
+echo "Launch with:  adb shell am start -n fr.l3m2e.xta/.MainActivity || adb shell monkey -p \$(adb shell pm list packages | rg -o 'package:.*xta' | head -1 | cut -d: -f2) 1"

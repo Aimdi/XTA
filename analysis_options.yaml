@@ -32,3 +32,12 @@ analyzer:
   exclude:
     - "**/*.g.dart"
     - "lib/generated/intl/messages_*.dart"
+  errors:
+    # A BuildContext used after an await may belong to a frame that no longer
+    # exists; the crash only reproduces when the user navigates at the wrong
+    # moment, which makes it the worst bug this app ships. The lint defaults to
+    # info severity and CI runs --no-fatal-infos, so by default the one check
+    # guarding this is exactly the one nothing enforces. Here it is a build
+    # error: guard with `mounted` / `context.mounted`, or capture what you need
+    # (a messenger, a navigator, the strings) before the await.
+    use_build_context_synchronously: error

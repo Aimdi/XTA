@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quax/client/client.dart';
-import 'package:quax/tweet/tweet.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/utils/iterables.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/tweet/tweet.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/utils/iterables.dart';
 
 class TweetConversation extends StatefulWidget {
   final String id;
@@ -29,9 +29,13 @@ class _TweetConversationState extends State<TweetConversation> {
   @override
   Widget build(BuildContext context) {
     if (widget.tweets.length == 1) {
+      final tweet = widget.tweets.first;
       return TweetTile(
+          // Feeds replace a page in place on refresh, so without an identity of
+          // its own a recycled tile would keep the previous post's frozen state.
+          key: ValueKey(tweet.idStr ?? widget.id),
           clickable: true,
-          tweet: widget.tweets.first,
+          tweet: tweet,
           currentUsername: widget.username,
           isPinned: widget.isPinned,
           tweetOpened: widget.tweetOpened,
@@ -39,10 +43,11 @@ class _TweetConversationState extends State<TweetConversation> {
     }
 
     var tiles = <Widget>[];
-    var tweets = widget.tweets.sorted((a, b) => a.idStr!.compareTo(b.idStr!)).toList(growable: false);
+    var tweets = widget.tweets.sorted((a, b) => (a.idStr ?? '').compareTo(b.idStr ?? '')).toList(growable: false);
 
     for (var i = 0; i < tweets.length; i++) {
       tiles.add(TweetTile(
+          key: ValueKey(tweets[i].idStr ?? '${widget.id}#$i'),
           clickable: true,
           tweet: tweets[i],
           currentUsername: widget.username,

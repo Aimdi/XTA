@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:quax/client/http_client.dart';
-import 'package:quax/constants.dart';
+import 'package:xta/client/http_client.dart';
+import 'package:xta/constants.dart';
 
 String? _guestToken;
 
@@ -17,8 +17,11 @@ int guestTokenRemaining = -1;
 int guestTokenLimit = -1;
 
 /// Whether the cached guest token is still worth sending.
-/// Tracks rate-limit headers to avoid expired/quota-exhausted tokens.
-/// Previously, the counters were hardcoded to -1, making this a no-op.
+///
+/// This used to be dead code: the values it consulted were `const int = -1`, so
+/// the first branch was always true and the token was reused forever, expiry
+/// and quota alike ignored. The counters `fetchUnauthenticated` actually
+/// maintained were never read.
 bool guestTokenUsable({required int resetAtMillis, required int remaining, required int nowMillis}) {
   // Nothing observed yet — no request has come back with rate-limit headers, so
   // there is no reason to distrust the token.

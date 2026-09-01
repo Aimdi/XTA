@@ -5,18 +5,19 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path/path.dart' as path;
 import 'package:pref/pref.dart';
-import 'package:quax/ui/errors.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/tweet/video_controller_pool.dart';
-import 'package:quax/tweet/video_quality.dart';
-import 'package:quax/utils/downloads.dart';
+import 'package:xta/ui/errors.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/video_controller_pool.dart';
+import 'package:xta/tweet/video_fullscreen.dart';
+import 'package:xta/tweet/video_quality.dart';
+import 'package:xta/utils/downloads.dart';
 
 Player _playerOf(BuildContext context) =>
     VideoStateInheritedWidget.of(context).state.widget.controller.player;
 
 const _kSeekSeconds = 10;
 
-class QuaxControls extends StatefulWidget {
+class XtaControls extends StatefulWidget {
   final PooledVideo pooled;
   final String username;
   final bool allowMuting;
@@ -24,7 +25,19 @@ class QuaxControls extends StatefulWidget {
   final bool subtitlesEnabled;
   final VoidCallback onToggleSubtitles;
 
-  const QuaxControls({
+  /// When set, replaces media_kit's [MaterialFullscreenButton] so fullscreen can
+  /// use a self-contained route that does not share the inline tile's notifiers.
+  final VoidCallback? onToggleFullscreen;
+
+  /// Fullscreen only: whether the video is filling the screen rather than
+  /// fitting inside it, and how to swap between the two.
+  final bool? zoomedToFill;
+  final VoidCallback? onToggleZoom;
+
+  /// Fullscreen only: shrink the app into a floating window.
+  final VoidCallback? onPictureInPicture;
+
+  const XtaControls({
     super.key,
     required this.pooled,
     required this.username,
@@ -32,13 +45,17 @@ class QuaxControls extends StatefulWidget {
     required this.accentColor,
     required this.subtitlesEnabled,
     required this.onToggleSubtitles,
+    this.onToggleFullscreen,
+    this.zoomedToFill,
+    this.onToggleZoom,
+    this.onPictureInPicture,
   });
 
   @override
-  State<QuaxControls> createState() => _QuaxControlsState();
+  State<XtaControls> createState() => _XtaControlsState();
 }
 
-class _QuaxControlsState extends State<QuaxControls> {
+class _XtaControlsState extends State<XtaControls> {
   bool _visible = true;
   Timer? _hideTimer;
 
@@ -117,7 +134,9 @@ class _QuaxControlsState extends State<QuaxControls> {
                     // IgnorePointer so the opaque scrim never swallows taps,
                     // which would make the controls impossible to dismiss.
                     const Positioned.fill(
-                      child: IgnorePointer(child: ColoredBox(color: Colors.black45)),
+                      child: IgnorePointer(
+                        child: ColoredBox(color: Colors.black45),
+                      ),
                     ),
                     Positioned.fill(
                       child: IgnorePointer(
@@ -139,7 +158,9 @@ class _QuaxControlsState extends State<QuaxControls> {
             Positioned.fill(
               child: IgnorePointer(
                 child: Align(
-                  alignment: _seekFeedback < 0 ? Alignment.centerLeft : Alignment.centerRight,
+                  alignment: _seekFeedback < 0
+                      ? Alignment.centerLeft
+                      : Alignment.centerRight,
                   child: _seekFeedbackBadge(),
                 ),
               ),
@@ -164,6 +185,10 @@ class _QuaxControlsState extends State<QuaxControls> {
             accentColor: widget.accentColor,
             subtitlesEnabled: widget.subtitlesEnabled,
             onToggleSubtitles: widget.onToggleSubtitles,
+            onToggleFullscreen: widget.onToggleFullscreen,
+            zoomedToFill: widget.zoomedToFill,
+            onToggleZoom: widget.onToggleZoom,
+            onPictureInPicture: widget.onPictureInPicture,
           ),
         ),
       ],
@@ -175,13 +200,22 @@ class _QuaxControlsState extends State<QuaxControls> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+      decoration: const BoxDecoration(
+        color: Colors.black54,
+        shape: BoxShape.circle,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(back ? Icons.fast_rewind : Icons.fast_forward, color: Colors.white),
+          Icon(
+            back ? Icons.fast_rewind : Icons.fast_forward,
+            color: Colors.white,
+          ),
           const SizedBox(height: 4),
-          Text('$_kSeekSeconds s', style: const TextStyle(color: Colors.white, fontSize: 12)),
+          Text(
+            '$_kSeekSeconds s',
+            style: const TextStyle(color: Colors.white, fontSize: 12),
+          ),
         ],
       ),
     );
@@ -195,6 +229,10 @@ class _BottomBar extends StatelessWidget {
   final Color accentColor;
   final bool subtitlesEnabled;
   final VoidCallback onToggleSubtitles;
+  final VoidCallback? onToggleFullscreen;
+  final bool? zoomedToFill;
+  final VoidCallback? onToggleZoom;
+  final VoidCallback? onPictureInPicture;
 
   const _BottomBar({
     required this.pooled,
@@ -203,6 +241,10 @@ class _BottomBar extends StatelessWidget {
     required this.accentColor,
     required this.subtitlesEnabled,
     required this.onToggleSubtitles,
+    this.onToggleFullscreen,
+    this.zoomedToFill,
+    this.onToggleZoom,
+    this.onPictureInPicture,
   });
 
   @override
@@ -217,13 +259,29 @@ class _BottomBar extends StatelessWidget {
               const _PositionIndicator(),
               const Spacer(),
               if (allowMuting) const _MuteButton(),
+              if (onPictureInPicture != null)
+                IconButton(
+                  iconSize: 24.0,
+                  color: Colors.white,
+                  tooltip: L10n.of(context).picture_in_picture,
+                  icon: const Icon(Icons.picture_in_picture_alt),
+                  onPressed: onPictureInPicture,
+                ),
               _MoreButton(
                 pooled: pooled,
                 username: username,
                 subtitlesEnabled: subtitlesEnabled,
                 onToggleSubtitles: onToggleSubtitles,
+                zoomedToFill: zoomedToFill,
+                onToggleZoom: onToggleZoom,
               ),
-              const MaterialFullscreenButton(),
+              if (onToggleFullscreen != null)
+                _FullscreenButton(
+                  onPressed: onToggleFullscreen!,
+                  exit: TweetVideoFullscreenScope.activeOf(context),
+                )
+              else
+                const MaterialFullscreenButton(),
             ],
           ),
         ),
@@ -258,12 +316,16 @@ class _PlayPauseButtonState extends State<_PlayPauseButton> {
     final player = _playerOf(context);
     _playing = player.state.playing;
     _completed = player.state.completed;
-    _subs.add(player.stream.playing.listen((v) {
-      if (mounted) setState(() => _playing = v);
-    }));
-    _subs.add(player.stream.completed.listen((v) {
-      if (mounted) setState(() => _completed = v);
-    }));
+    _subs.add(
+      player.stream.playing.listen((v) {
+        if (mounted) setState(() => _playing = v);
+      }),
+    );
+    _subs.add(
+      player.stream.completed.listen((v) {
+        if (mounted) setState(() => _completed = v);
+      }),
+    );
   }
 
   @override
@@ -299,11 +361,18 @@ class _PlayPauseButtonState extends State<_PlayPauseButton> {
       child: Container(
         width: 64,
         height: 64,
-        decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+        decoration: const BoxDecoration(
+          color: Colors.black54,
+          shape: BoxShape.circle,
+        ),
         child: Center(
           child: _completed
               ? const Icon(Icons.replay, color: Colors.white, size: 32)
-              : AnimatedPlayPause(playing: _playing, color: Colors.white, size: 32),
+              : AnimatedPlayPause(
+                  playing: _playing,
+                  color: Colors.white,
+                  size: 32,
+                ),
         ),
       ),
     );
@@ -315,7 +384,12 @@ class AnimatedPlayPause extends StatefulWidget {
   final double? size;
   final Color? color;
 
-  const AnimatedPlayPause({super.key, required this.playing, this.size, this.color});
+  const AnimatedPlayPause({
+    super.key,
+    required this.playing,
+    this.size,
+    this.color,
+  });
 
   @override
   State<AnimatedPlayPause> createState() => _AnimatedPlayPauseState();
@@ -373,12 +447,16 @@ class _PositionIndicatorState extends State<_PositionIndicator> {
     final player = _playerOf(context);
     _position = player.state.position;
     _duration = player.state.duration;
-    _subs.add(player.stream.position.listen((v) {
-      if (mounted) setState(() => _position = v);
-    }));
-    _subs.add(player.stream.duration.listen((v) {
-      if (mounted) setState(() => _duration = v);
-    }));
+    _subs.add(
+      player.stream.position.listen((v) {
+        if (mounted) setState(() => _position = v);
+      }),
+    );
+    _subs.add(
+      player.stream.duration.listen((v) {
+        if (mounted) setState(() => _duration = v);
+      }),
+    );
   }
 
   @override
@@ -403,7 +481,11 @@ class _PositionIndicatorState extends State<_PositionIndicator> {
     return RichText(
       text: TextSpan(
         text: '${_fmt(_position)} ',
-        style: const TextStyle(fontSize: 14.0, color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          fontSize: 14.0,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
         children: [
           TextSpan(
             text: '/ ${_fmt(_duration)}',
@@ -444,15 +526,21 @@ class _SeekBarState extends State<_SeekBar> {
     _position = player.state.position;
     _duration = player.state.duration;
     _buffer = player.state.buffer;
-    _subs.add(player.stream.position.listen((v) {
-      if (mounted && _dragFraction == null) setState(() => _position = v);
-    }));
-    _subs.add(player.stream.duration.listen((v) {
-      if (mounted) setState(() => _duration = v);
-    }));
-    _subs.add(player.stream.buffer.listen((v) {
-      if (mounted) setState(() => _buffer = v);
-    }));
+    _subs.add(
+      player.stream.position.listen((v) {
+        if (mounted && _dragFraction == null) setState(() => _position = v);
+      }),
+    );
+    _subs.add(
+      player.stream.duration.listen((v) {
+        if (mounted) setState(() => _duration = v);
+      }),
+    );
+    _subs.add(
+      player.stream.buffer.listen((v) {
+        if (mounted) setState(() => _buffer = v);
+      }),
+    );
   }
 
   @override
@@ -483,7 +571,9 @@ class _SeekBarState extends State<_SeekBar> {
     const trackHeight = 10.0;
     const thumbSize = 12.0;
     final trackColor = Theme.of(context).disabledColor.withValues(alpha: 0.5);
-    final bufferColor = Theme.of(context).colorScheme.surface.withValues(alpha: 0.5);
+    final bufferColor = Theme.of(
+      context,
+    ).colorScheme.surface.withValues(alpha: 0.5);
     final radius = BorderRadius.circular(trackHeight / 2);
 
     return LayoutBuilder(
@@ -499,13 +589,13 @@ class _SeekBarState extends State<_SeekBar> {
         // Explicit width + left anchor so the fill grows from the left edge; an
         // unpositioned child in this centered Stack would grow from the middle.
         Widget bar(double w, Color color) => Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                width: w,
-                height: trackHeight,
-                decoration: BoxDecoration(color: color, borderRadius: radius),
-              ),
-            );
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: w,
+            height: trackHeight,
+            decoration: BoxDecoration(color: color, borderRadius: radius),
+          ),
+        );
 
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -533,7 +623,10 @@ class _SeekBarState extends State<_SeekBar> {
                     child: Container(
                       width: thumbSize,
                       height: thumbSize,
-                      decoration: BoxDecoration(color: widget.accentColor, shape: BoxShape.circle),
+                      decoration: BoxDecoration(
+                        color: widget.accentColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ),
@@ -585,8 +678,26 @@ class _MuteButtonState extends State<_MuteButton> {
       iconSize: 24.0,
       color: Colors.white,
       icon: Icon(_volume > 0 ? Icons.volume_up : Icons.volume_off),
-      onPressed: () => _playerOf(context)
-          .setVolume(_volume > 0 ? 0.0 : (_lastNonZero > 0 ? _lastNonZero : 100.0)),
+      onPressed: () => _playerOf(context).setVolume(
+        _volume > 0 ? 0.0 : (_lastNonZero > 0 ? _lastNonZero : 100.0),
+      ),
+    );
+  }
+}
+
+class _FullscreenButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final bool exit;
+
+  const _FullscreenButton({required this.onPressed, required this.exit});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      iconSize: 24.0,
+      color: Colors.white,
+      icon: Icon(exit ? Icons.fullscreen_exit : Icons.fullscreen),
+      onPressed: onPressed,
     );
   }
 }
@@ -596,12 +707,16 @@ class _MoreButton extends StatelessWidget {
   final String username;
   final bool subtitlesEnabled;
   final VoidCallback onToggleSubtitles;
+  final bool? zoomedToFill;
+  final VoidCallback? onToggleZoom;
 
   const _MoreButton({
     required this.pooled,
     required this.username,
     required this.subtitlesEnabled,
     required this.onToggleSubtitles,
+    this.zoomedToFill,
+    this.onToggleZoom,
   });
 
   @override
@@ -617,8 +732,9 @@ class _MoreButton extends StatelessWidget {
   Future<void> _openMenu(BuildContext context) async {
     final player = _playerOf(context);
     // Only offer the subtitle toggle if the video carries a subtitle track.
-    final hasSubtitles =
-        player.state.tracks.subtitle.any((t) => t.id != 'no' && t.id != 'auto');
+    final hasSubtitles = player.state.tracks.subtitle.any(
+      (t) => t.id != 'no' && t.id != 'auto',
+    );
     await showModalBottomSheet<void>(
       context: context,
       useRootNavigator: true,
@@ -645,12 +761,33 @@ class _MoreButton extends StatelessWidget {
               ),
             if (hasSubtitles)
               ListTile(
-                leading: Icon(subtitlesEnabled ? Icons.closed_caption : Icons.closed_caption_off),
+                leading: Icon(
+                  subtitlesEnabled
+                      ? Icons.closed_caption
+                      : Icons.closed_caption_off,
+                ),
                 title: Text(L10n.of(sheetContext).subtitles),
                 trailing: subtitlesEnabled ? const Icon(Icons.check) : null,
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   onToggleSubtitles();
+                },
+              ),
+            if (onToggleZoom != null)
+              ListTile(
+                leading: Icon(
+                  zoomedToFill == true
+                      ? Icons.fullscreen_exit
+                      : Icons.aspect_ratio,
+                ),
+                title: Text(
+                  zoomedToFill == true
+                      ? L10n.of(sheetContext).video_fit_contain
+                      : L10n.of(sheetContext).video_fit_cover,
+                ),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  onToggleZoom!();
                 },
               ),
             ListTile(
@@ -704,16 +841,23 @@ Future<void> _openQualitySheet(BuildContext context, PooledVideo pooled) async {
   // The new variant restarts from 0: preserving position across the source swap
   // proved unreliable on libmpv's Android network playback.
   pooled.currentStreamUrl = chosen.url;
-  await player.open(Media(chosen.url), play: wasPlaying);
+  await player.open(
+    Media(chosen.url, httpHeaders: pooled.httpHeaders),
+    play: wasPlaying,
+  );
   await player.setVolume(volume);
   await player.setRate(rate);
 }
 
-Future<void> downloadTweetVideo(BuildContext context, String username, String? downloadUrl) async {
+Future<void> downloadTweetVideo(
+  BuildContext context,
+  String username,
+  String? downloadUrl,
+) async {
   if (downloadUrl == null) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(L10n.current.download_media_no_url),
-    ));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(L10n.current.download_media_no_url)));
     return;
   }
 
@@ -724,14 +868,14 @@ Future<void> downloadTweetVideo(BuildContext context, String username, String? d
     context,
     videoUri,
     fileName,
-    prefs: PrefService.of(context),
+    prefs: PrefService.of(context, listen: false),
     onStart: () {
       showWorkingSnackBar(context, L10n.of(context).downloading_media);
     },
     onSuccess: () {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(L10n.of(context).successfully_saved_the_media),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(L10n.of(context).successfully_saved_the_media)),
+      );
     },
   );
 }
@@ -750,7 +894,9 @@ class _SpeedSheet extends StatelessWidget {
         children: speeds.reversed.map((speed) {
           final isSelected = (speed - selected).abs() < 0.01;
           return ListTile(
-            leading: isSelected ? const Icon(Icons.check) : const SizedBox(width: 24),
+            leading: isSelected
+                ? const Icon(Icons.check)
+                : const SizedBox(width: 24),
             title: Text('${speed}x'),
             onTap: () => Navigator.of(context).pop(speed),
           );
@@ -774,7 +920,9 @@ class _QualitySheet extends StatelessWidget {
         children: qualities.map((quality) {
           final isSelected = quality.url == selectedUrl;
           return ListTile(
-            leading: isSelected ? const Icon(Icons.check) : const SizedBox(width: 24),
+            leading: isSelected
+                ? const Icon(Icons.check)
+                : const SizedBox(width: 24),
             title: Text(quality.label),
             onTap: () => Navigator.of(context).pop(quality),
           );
@@ -825,7 +973,11 @@ class FritterCenterPlayButton extends StatelessWidget {
                 iconSize: size / 2,
                 icon: isFinished
                     ? Icon(Icons.replay, color: iconColor)
-                    : AnimatedPlayPause(playing: isPlaying, color: iconColor, size: size / 2),
+                    : AnimatedPlayPause(
+                        playing: isPlaying,
+                        color: iconColor,
+                        size: size / 2,
+                      ),
                 onPressed: onPressed,
               ),
             ),

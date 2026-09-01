@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:quax/ui/contrast.dart' as contrast;
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/ui/contrast.dart' as contrast;
+import 'package:xta/ui/x_look_theme.dart';
 
 /// Surface tokens for the group board.
 ///

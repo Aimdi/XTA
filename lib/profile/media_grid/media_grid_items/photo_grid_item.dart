@@ -13,10 +13,6 @@ class PhotoGridItem extends MediaGridItem {
 
   @override
   Widget toWidget(BuildContext context) {
-    return ExtendedImage.network(
-      '$thumbnailUrl:medium',
-      cache: true,
-      fit: BoxFit.cover,
-    );
+    return CappedNetworkImage(url: '$thumbnailUrl:medium');
   }
 }

@@ -7,9 +7,9 @@ library;
 
 import 'package:dart_twitter_api/src/utils/date_utils.dart';
 import 'package:dart_twitter_api/twitter_api.dart';
-import 'package:quax/article/article.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/user.dart';
+import 'package:xta/article/article.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/user.dart';
 
 class TweetWithCard extends Tweet {
   String? noteText;
@@ -23,7 +23,26 @@ class TweetWithCard extends Tweet {
   Article? article;
   int? viewCount;
 
+  /// Alt text keyed by media `id_str`, from X's `ext_alt_text` (dropped by Media.fromJson).
+  Map<String, String> mediaAltText = const {};
+
   TweetWithCard();
+
+  /// Description for [media], if X sent one.
+  String? altTextForMedia(Media media) {
+    final id = media.idStr;
+    if (id != null) {
+      final fromMap = mediaAltText[id];
+      if (fromMap != null && fromMap.isNotEmpty) {
+        return fromMap;
+      }
+    }
+    final description = media.additionalMediaInfo?.description;
+    if (description != null && description.isNotEmpty) {
+      return description;
+    }
+    return null;
+  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -37,6 +56,9 @@ class TweetWithCard extends Tweet {
     json['viewCount'] = viewCount;
     json['noteText'] = noteText;
     json['noteEntities'] = noteEntities?.toJson();
+    if (mediaAltText.isNotEmpty) {
+      json['mediaAltText'] = mediaAltText;
+    }
 
     return json;
   }
@@ -105,6 +127,8 @@ class TweetWithCard extends Tweet {
     tweetWithCard.article = e['article'] == null ? null : Article.fromJson(e['article']);
     tweetWithCard.noteText = e['noteText'];
     tweetWithCard.noteEntities = e['noteEntities'] == null ? null : Entities.fromJson(e['noteEntities']);
+    tweetWithCard.mediaAltText = _mediaAltTextFromJson(e['mediaAltText']) ??
+        extractMediaAltText(e['extended_entities'] ?? e['extendedEntities']);
 
     return tweetWithCard;
   }
@@ -273,8 +297,7 @@ class TweetWithCard extends Tweet {
 
     tweet.displayTextRange = (e['display_text_range'] as List<dynamic>?)?.map((e) => e as int).toList();
 
-    // Legacy fields that are no longer used by the Twitter API v2
-    // These are kept as null for backwards compatibility with older data
+    // TODO
     tweet.coordinates = null;
     tweet.truncated = null;
     tweet.place = null;
@@ -283,6 +306,7 @@ class TweetWithCard extends Tweet {
     // notes are a new kind of tweets that can be longer, compared to old ones now marked as "legacy" but still used
     tweet.noteText = noteText;
     tweet.noteEntities = noteEntities;
+    tweet.mediaAltText = extractMediaAltText(e['extended_entities']);
 
     return tweet;
   }
@@ -310,6 +334,44 @@ class TweetWithCard extends Tweet {
   }
 }
 
+/// Pulls `ext_alt_text` off raw media JSON before [Media.fromJson] drops it.
+Map<String, String> extractMediaAltText(Object? extendedEntities) {
+  if (extendedEntities is! Map) {
+    return const {};
+  }
+  final media = extendedEntities['media'];
+  if (media is! List) {
+    return const {};
+  }
+
+  final out = <String, String>{};
+  for (final item in media) {
+    if (item is! Map) {
+      continue;
+    }
+    final id = item['id_str'] as String?;
+    final alt = item['ext_alt_text'] as String?;
+    if (id == null || alt == null || alt.trim().isEmpty) {
+      continue;
+    }
+    out[id] = alt.trim();
+  }
+  return out.isEmpty ? const {} : out;
+}
+
+Map<String, String>? _mediaAltTextFromJson(Object? raw) {
+  if (raw is! Map) {
+    return null;
+  }
+  final out = <String, String>{};
+  raw.forEach((key, value) {
+    if (key is String && value is String && value.isNotEmpty) {
+      out[key] = value;
+    }
+  });
+  return out.isEmpty ? null : out;
+}
+
 class TweetChain {
   final String id;
   final List<TweetWithCard> tweets;
@@ -318,7 +380,7 @@ class TweetChain {
   TweetChain({required this.id, required this.tweets, required this.isPinned});
 
   factory TweetChain.fromJson(Map<String, dynamic> e) {
-    var tweets = (e['tweets'] as List).map((e) => TweetWithCard.fromJson(e)).toList();
+    var tweets = List.from(e['tweets']).map((e) => TweetWithCard.fromJson(e)).toList();
 
     return TweetChain(id: e['id'], tweets: tweets, isPinned: e['isPinned']);
   }

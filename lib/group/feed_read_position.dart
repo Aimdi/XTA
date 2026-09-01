@@ -1,7 +1,21 @@
-import 'package:quax/client/client.dart';
-import 'package:quax/database/repository.dart';
-import 'package:quax/utils/iterables.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/utils/iterables.dart';
 import 'package:sqflite/sqflite.dart';
+
+/// Stable keys for the home Following / For You feeds. Group feeds use their
+/// subscription-group id as the key; the combined Following feed historically
+/// used [legacyFeedKeyFollowing] (`-1`) and is remapped via
+/// [feedReadPositionKey].
+const feedKeyFollowing = 'following';
+const feedKeyForYou = 'for_you';
+
+/// Pre-generalization key for the combined Following feed (group id `-1`).
+const legacyFeedKeyFollowing = '-1';
+
+/// Maps a subscription-group id onto the `feed_read_position.group_id` column.
+/// The column name is historical; values are feed keys, not only group ids.
+String feedReadPositionKey(String groupId) => groupId == legacyFeedKeyFollowing ? feedKeyFollowing : groupId;
 
 /// The last chain the user is known to have read in a group feed. Compared by
 /// value (timestamp), never by presence: the chain itself may have been purged
@@ -13,9 +27,21 @@ class FeedReadPosition {
   const FeedReadPosition({required this.chainId, required this.chainCreatedAt});
 }
 
-Future<FeedReadPosition?> readFeedReadPosition(String groupId) async {
+Future<FeedReadPosition?> readFeedReadPosition(String feedKey) async {
   var repository = await Repository.readOnly();
-  var rows = await repository.query(tableFeedReadPosition, where: 'group_id = ?', whereArgs: [groupId]);
+  final position = await _queryFeedReadPosition(repository, feedKey);
+  if (position != null) {
+    return position;
+  }
+  // Following used to be stored under the combined-group id "-1".
+  if (feedKey == feedKeyFollowing) {
+    return _queryFeedReadPosition(repository, legacyFeedKeyFollowing);
+  }
+  return null;
+}
+
+Future<FeedReadPosition?> _queryFeedReadPosition(Database repository, String feedKey) async {
+  var rows = await repository.query(tableFeedReadPosition, where: 'group_id = ?', whereArgs: [feedKey]);
   var row = rows.firstOrNull;
   if (row == null) {
     return null;
@@ -26,18 +52,19 @@ Future<FeedReadPosition?> readFeedReadPosition(String groupId) async {
   );
 }
 
-Future<void> writeFeedReadPosition(String groupId, TweetChain chain) async {
+Future<void> writeFeedReadPosition(String feedKey, TweetChain chain) async {
   var repository = await Repository.writable();
-  await repository.insert(
-    tableFeedReadPosition,
-    {
-      'group_id': groupId,
-      'chain_id': chain.id,
-      'chain_created_at': chain.tweets.firstOrNull?.createdAt?.toIso8601String(),
-    },
-    conflictAlgorithm: ConflictAlgorithm.replace,
-  );
+  await repository.insert(tableFeedReadPosition, {
+    'group_id': feedKey,
+    'chain_id': chain.id,
+    'chain_created_at': chain.tweets.firstOrNull?.createdAt?.toIso8601String(),
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
 }
+
+/// Newest chain that carries a creation timestamp — the value we persist as
+/// the reading cursor when the reader is at the top of a chronological feed.
+TweetChain? newestRecordableChain(Iterable<TweetChain> chains) =>
+    chains.where((c) => c.tweets.firstOrNull?.createdAt != null).firstOrNull;
 
 /// Chain ids are not chronological (conversation chains carry their root's
 /// id), so besides the exact-match shortcut, compare by the first tweet's

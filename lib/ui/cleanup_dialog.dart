@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quax/generated/l10n.dart';
+import 'package:xta/generated/l10n.dart';
 
 /// Outcome of checking one item against X during a cleanup scan.
 sealed class CleanupCheck {}

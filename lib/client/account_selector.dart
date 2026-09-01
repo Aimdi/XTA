@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:quax/constants.dart';
-import 'package:quax/database/entities.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/database/entities.dart';
 
 /// Health-aware account selection policy.
 ///

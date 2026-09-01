@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/settings/settings_chrome.dart';
-import 'package:quax/settings/settings_view_store.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/settings/settings_chrome.dart';
+import 'package:xta/settings/settings_view_store.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 Widget _app(Widget child) => MaterialApp(
   theme: xLookLightTheme(null),

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/client/http_client.dart';
+import 'package:xta/client/http_client.dart';
 
 /// The X path used to call the top-level `http.get`, which builds a client per
 /// call and closes it again — a fresh TCP and TLS handshake for every request,

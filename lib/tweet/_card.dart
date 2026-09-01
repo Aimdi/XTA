@@ -4,22 +4,30 @@ import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 
-import 'package:quax/client/client.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/tweet/_media.dart';
-import 'package:quax/tweet/_video.dart';
-import 'package:quax/tweet/poll.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
-import 'package:quax/utils/urls.dart';
+import 'package:xta/client/client.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/_video.dart';
+import 'package:xta/tweet/broadcasts.dart';
+import 'package:xta/tweet/poll.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:quax/plugins/plugin_links.dart';
+import 'package:xta/plugins/plugin_links.dart';
+import 'package:xta/utils/media_quality.dart';
 
-class TweetCard extends StatelessWidget {
+/// Poll totals are grouped in the reader's locale. Building the pattern parses
+/// it, so one is kept per locale rather than one per build of every poll.
+final Map<String, NumberFormat> _decimalFormats = {};
+
+NumberFormat _decimalFormat(String locale) =>
+    _decimalFormats.putIfAbsent(locale, () => NumberFormat.decimalPattern(locale));
+
+class TweetCard extends StatefulWidget {
   static final log = Logger('TweetCard');
 
   final TweetWithCard tweet;
@@ -27,36 +35,69 @@ class TweetCard extends StatelessWidget {
 
   const TweetCard({super.key, required this.tweet, required this.card});
 
-  Widget _createBaseCard(
-    Widget child,
-    BuildContext context, {
-    VoidCallback? onTap,
-  }) {
-    return TweetEmbedSurface(onTap: onTap, child: child);
+  @override
+  State<TweetCard> createState() => _TweetCardState();
+}
+
+class _TweetCardState extends State<TweetCard> {
+  /// A unified card arrives as a JSON string several kilobytes long, so it is
+  /// decoded when the card is handed over rather than on every build.
+  Map<String, dynamic>? _unifiedCard;
+
+  @override
+  void initState() {
+    super.initState();
+    _unifiedCard = _decodeUnifiedCard(widget.card);
   }
 
-  Widget _createCard(String? url, Widget child, BuildContext context) {
-    return _createBaseCard(
-      child,
-      context,
-      onTap: url == null
-          ? null
-          : () async {
-              // A Substack card opens in the in-app reader when the plugin is on.
-              if (await openWithPlugins(context, url)) {
-                return;
-              }
-              await openUri(context, url);
-            },
+  @override
+  void didUpdateWidget(TweetCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!identical(widget.card, oldWidget.card)) {
+      _unifiedCard = _decodeUnifiedCard(widget.card);
+    }
+  }
+
+  static Map<String, dynamic>? _decodeUnifiedCard(Map<String, dynamic>? card) {
+    final raw = card?['binding_values']?['unified_card']?['string_value'];
+    if (raw is! String) {
+      return null;
+    }
+
+    try {
+      return jsonDecode(raw) as Map<String, dynamic>;
+    } catch (e) {
+      TweetCard.log.severe('Unable to decode the unified card');
+      return null;
+    }
+  }
+
+  Container _createBaseCard(Widget child, BuildContext context) {
+    return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12),
+        width: double.infinity,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          color: Theme.of(context).colorScheme.inversePrimary,
+          elevation: 0,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kTweetMediaRadius)),
+          child: child,
+        ));
+  }
+
+  GestureDetector _createCard(String? url, Widget child, BuildContext context) {
+    return GestureDetector(
+      child: _createBaseCard(child, context),
+      onTap: () async {
+        if (url == null) {
+          return;
+        }
+        await openLink(context, url);
+      },
     );
   }
 
-  Widget _createImage(
-    String size,
-    Map<String, dynamic>? image,
-    BoxFit fit, {
-    double? aspectRatio,
-  }) {
+  Widget _createImage(String size, Map<String, dynamic>? image, BoxFit fit, {double? aspectRatio}) {
     if (image == null) {
       return Container();
     }
@@ -66,20 +107,18 @@ class TweetCard extends StatelessWidget {
     if (size == 'disabled') {
       child = Container();
     } else {
-      child = LayoutBuilder(
-        builder: (context, constraints) {
-          final maxW = constraints.maxWidth;
-          final cacheWidth = maxW.isFinite && maxW > 0
-              ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
-              : null;
-          return ExtendedImage.network(
-            image['url'],
-            cache: true,
-            fit: fit,
-            cacheWidth: cacheWidth,
-          );
-        },
-      );
+      child = LayoutBuilder(builder: (context, constraints) {
+        final maxW = constraints.maxWidth;
+        final cacheWidth = maxW.isFinite && maxW > 0
+            ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+            : null;
+        return ExtendedImage.network(
+          image['url'],
+          cache: true,
+          fit: fit,
+          cacheWidth: cacheWidth,
+        );
+      });
     }
 
     return AspectRatio(
@@ -88,58 +127,49 @@ class TweetCard extends StatelessWidget {
     );
   }
 
-  Container _createListTile(
-    BuildContext context,
-    String title,
-    String? description,
-    String? uri,
-  ) {
+  Container _createListTile(BuildContext context, String title, String? description, String? uri) {
     return Container(
-      padding: const EdgeInsets.all(kTweetSpace3),
+      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
-            style: tweetLabelStyle(context),
+          Container(
+            margin: const EdgeInsets.only(top: 4),
+            child: Text(
+              title,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+            ),
           ),
           if (description != null)
-            Padding(
-              padding: const EdgeInsets.only(top: kTweetSpace1),
+            Container(
+              margin: const EdgeInsets.only(top: 4),
               child: Text(
                 description,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
-                style: tweetMetadataStyle(context),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white, fontSize: 12),
               ),
             ),
           if (uri != null)
-            Padding(
-              padding: EdgeInsets.only(
-                top: description == null ? kTweetSpace1 : kTweetSpace2,
-              ),
+            Container(
+              margin: EdgeInsets.only(top: description == null ? 4 : 8),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.link,
-                    size: 16,
-                    color: tweetSecondaryColor(context),
-                  ),
-                  const SizedBox(width: kTweetSpace1),
-                  Expanded(
-                    child: Text(
-                      uri,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: tweetMetadataStyle(context),
-                    ),
-                  ),
+                  const Icon(Icons.link, size: 12, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(uri,
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            color: Colors.white,
+                          )),
                 ],
               ),
-            ),
+            )
         ],
       ),
     );
@@ -151,11 +181,7 @@ class TweetCard extends StatelessWidget {
   /// The old bar was a bare [LinearProgressIndicator] with the label painted
   /// over it — square, full-bleed and with the percentage crowding the option
   /// text it ran into.
-  Widget _createVoteBar(
-    BuildContext context,
-    PollChoice choice,
-    bool isLeading,
-  ) {
+  Widget _createVoteBar(BuildContext context, PollChoice choice, bool isLeading) {
     final theme = Theme.of(context);
     final tokens = XLookTokens.maybeOf(context);
     final track = tokens?.divider ?? theme.dividerColor;
@@ -187,17 +213,11 @@ class TweetCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        choice.label,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: weight),
-                      ),
+                      child: Text(choice.label,
+                          overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: weight)),
                     ),
                     const SizedBox(width: 8),
-                    Text(
-                      '${(choice.share * 100).round()}%',
-                      style: TextStyle(fontWeight: weight),
-                    ),
+                    Text('${(choice.share * 100).round()}%', style: TextStyle(fontWeight: weight)),
                   ],
                 ),
               ),
@@ -209,129 +229,91 @@ class TweetCard extends StatelessWidget {
   }
 
   dynamic _createWebsiteCard(
-    BuildContext context,
-    Map<String, dynamic> unifiedCard,
-    String uri,
-    String imageSize,
-    Widget media,
-  ) {
+      BuildContext context, Map<String, dynamic> unifiedCard, String uri, String imageSize, Widget media) {
     return _createCard(
-      uri,
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          media,
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-            child: _createListTile(
-              context,
-              unifiedCard['component_objects']['details_1']['data']['title']['content'],
-              unifiedCard['component_objects']['details_1']['data']['subtitle']['content'],
-              null,
+        uri,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            media,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+              child: _createListTile(context, unifiedCard['component_objects']['details_1']['data']['title']['content'],
+                  unifiedCard['component_objects']['details_1']['data']['subtitle']['content'], null),
             ),
-          ),
-        ],
-      ),
-      context,
-    );
+          ],
+        ),
+        context);
   }
 
-  dynamic _createUnifiedCard(
-    BuildContext context,
-    Map<String, dynamic> card,
-    String imageKey,
-    String imageSize,
-  ) {
-    var unifiedCard =
-        jsonDecode(card['binding_values']['unified_card']['string_value'])
-            as Map<String, dynamic>;
+  dynamic _createUnifiedCard(BuildContext context, String imageSize) {
+    var unifiedCard = _unifiedCard;
+    if (unifiedCard == null) {
+      return Container();
+    }
+
 
     switch (unifiedCard['type']) {
       case 'image_website':
-        var media =
-            unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
-        var uri =
-            unifiedCard['destination_objects']['browser_1']['data']['url_data']['url'];
+        var media = unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
+        var uri = unifiedCard['destination_objects']['browser_1']['data']['url_data']['url'];
 
-        var child = _createImage(imageSize, {
-          'url': media['media_url_https'],
-          'width': media['original_info']['width'],
-          'height': media['original_info']['height'],
-        }, BoxFit.cover);
+        var child = _createImage(
+            imageSize,
+            {
+              'url': media['media_url_https'],
+              'width': media['original_info']['width'],
+              'height': media['original_info']['height'],
+            },
+            BoxFit.cover);
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       case 'video_website':
         // https://twitter.com/yenisafak/status/1560244349451096064
-        var media =
-            unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
-        var uri =
-            unifiedCard['destination_objects']['browser_with_docked_media_1']['data']['url_data']['url'];
+        var media = unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
+        var uri = unifiedCard['destination_objects']['browser_with_docked_media_1']['data']['url_data']['url'];
 
-        var child = TweetMedia(
-          media: [Media.fromJson(media)],
-          username: tweet.user!.screenName!,
-          sensitive: false,
-        );
+        var child =
+            TweetMedia(media: [Media.fromJson(media)], username: widget.tweet.user!.screenName!, sensitive: false);
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       default:
         return Container();
     }
   }
 
-  Widget _createVoteCard(
-    BuildContext context,
-    Map<String, dynamic> card,
-    int numberOfChoices,
-  ) {
+  Widget _createVoteCard(BuildContext context, Map<String, dynamic> card, int numberOfChoices) {
     final poll = TweetPoll.fromCard(card, numberOfChoices);
     if (poll == null) {
       return Container();
     }
 
-    final numberFormat = NumberFormat.decimalPattern();
+    final locale = Intl.getCurrentLocale();
+    final numberFormat = _decimalFormat(locale);
     final endsAt = poll.endsAt;
     final closed = endsAt != null && endsAt.isBefore(DateTime.now());
     final relative = endsAt == null
         ? null
-        : timeago.format(
-            endsAt,
-            allowFromNow: true,
-            locale: Intl.shortLocale(Intl.getCurrentLocale()),
-          );
+        : timeago.format(endsAt, allowFromNow: true, locale: Intl.shortLocale(locale));
 
-    return TweetEmbedSurface(
-      padding: const EdgeInsets.all(kTweetSpace3),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final choice in poll.choices)
-            _createVoteBar(context, choice, choice.count == poll.leadingCount),
+          for (final choice in poll.choices) _createVoteBar(context, choice, choice.count == poll.leadingCount),
           Padding(
-            padding: const EdgeInsets.only(top: kTweetSpace2),
+            padding: const EdgeInsets.only(top: 8),
             child: DefaultTextStyle.merge(
-              style: tweetMetadataStyle(context),
-              child: Text(
-                [
-                  L10n.of(context).numberFormat_format_total_votes(
-                    poll.total,
-                    numberFormat.format(poll.total),
-                  ),
-                  if (relative != null)
-                    closed
-                        ? L10n.of(
-                            context,
-                          ).ended_timeago_format_endsAt_allowFromNow_true(
-                            relative,
-                          )
-                        : L10n.of(
-                            context,
-                          ).ends_timeago_format_endsAt_allowFromNow_true(
-                            relative,
-                          ),
-                ].join(' • '),
-              ),
+              style: Theme.of(context).textTheme.bodySmall!,
+              child: Text([
+                L10n.of(context).numberFormat_format_total_votes(poll.total, numberFormat.format(poll.total)),
+                if (relative != null)
+                  closed
+                      ? L10n.of(context).ended_timeago_format_endsAt_allowFromNow_true(relative)
+                      : L10n.of(context).ends_timeago_format_endsAt_allowFromNow_true(relative),
+              ].join(' • ')),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -339,120 +321,88 @@ class TweetCard extends StatelessWidget {
 
   String? _findCardUrl(Map<String, dynamic> card) {
     var link = card['url'];
-    var urls = tweet.entities?.urls ?? [];
+    var urls = widget.tweet.entities?.urls ?? [];
 
     // Match up the card's URL with the link in the tweet entities, otherwise just use the card's URL
-    var url = urls.firstWhere(
-      (element) => element.url == link,
-      orElse: () => Url.fromJson({'expanded_url': link}),
-    );
+    var url = urls.firstWhere((element) => element.url == link, orElse: () => Url.fromJson({'expanded_url': link}));
 
     return url.expandedUrl;
   }
 
   @override
   Widget build(BuildContext context) {
-    var card = this.card;
+    var card = widget.card;
     if (card == null) {
       return Container();
     }
 
-    var imageKey = '';
-    var imageSize = PrefService.of(
-      context,
-      listen: false,
-    ).get(optionImageQuality);
-    if (imageSize == 'thumb') {
-      imageKey = '_small';
-    } else if (imageSize == 'medium') {
-      imageKey = '_large';
-    } else if (imageSize == 'large') {
-      imageKey = '_x_large';
-    }
+    var imageSize = PrefService.of(context, listen: false).get<String>(optionImageQuality) ?? '';
+    // `small` and anything unknown keep the card's unsuffixed default key.
+    var imageKey = switch (MediaQuality.fromStored(imageSize, fallback: MediaQuality.small)) {
+      MediaQuality.thumb => '_small',
+      MediaQuality.small => '',
+      MediaQuality.medium => '_large',
+      MediaQuality.large => '_x_large',
+    };
 
     switch (card['name']) {
       case 'summary':
-        var image =
-            card['binding_values']['thumbnail_image$imageKey']?['image_value'];
+        var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
         return _createCard(
-          _findCardUrl(card),
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: _createImage(imageSize, image, BoxFit.cover),
-              ),
-              Expanded(
-                flex: 4,
-                child: _createListTile(
-                  context,
-                  card['binding_values']['title']['string_value'],
-                  card['binding_values']?['description']?['string_value'],
-                  card['binding_values']?['vanity_url']?['string_value'],
-                ),
-              ),
-            ],
-          ),
-          context,
-        );
+            _findCardUrl(card),
+            Row(
+              children: [
+                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover)),
+                Expanded(
+                    flex: 4,
+                    child: _createListTile(
+                        context,
+                        card['binding_values']['title']['string_value'],
+                        card['binding_values']?['description']?['string_value'],
+                        card['binding_values']?['vanity_url']?['string_value']))
+              ],
+            ),
+            context);
       case 'summary_large_image':
-        var image =
-            card['binding_values']['thumbnail_image$imageKey']?['image_value'];
+        var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
         return _createCard(
-          _findCardUrl(card),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _createImage(imageSize, image, BoxFit.cover),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 10,
+            _findCardUrl(card),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _createImage(imageSize, image, BoxFit.cover),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                  child: _createListTile(
+                      context,
+                      card['binding_values']['title']['string_value'],
+                      card['binding_values']?['description']?['string_value'],
+                      card['binding_values']?['vanity_url']?['string_value']),
                 ),
-                child: _createListTile(
-                  context,
-                  card['binding_values']['title']['string_value'],
-                  card['binding_values']?['description']?['string_value'],
-                  card['binding_values']?['vanity_url']?['string_value'],
-                ),
-              ),
-            ],
-          ),
-          context,
-        );
+              ],
+            ),
+            context);
       case 'player':
-        var image =
-            card['binding_values']['player_image$imageKey']?['image_value'];
+        var image = card['binding_values']['player_image$imageKey']?['image_value'];
 
         return _createCard(
-          _findCardUrl(card),
-          Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: _createImage(
-                  imageSize,
-                  image,
-                  BoxFit.cover,
-                  aspectRatio: 1,
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: _createListTile(
-                  context,
-                  card['binding_values']['title']['string_value'],
-                  card['binding_values']?['description']?['string_value'],
-                  card['binding_values']?['vanity_url']?['string_value'],
-                ),
-              ),
-            ],
-          ),
-          context,
-        );
+            _findCardUrl(card),
+            Row(
+              children: [
+                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover, aspectRatio: 1)),
+                Expanded(
+                    flex: 4,
+                    child: _createListTile(
+                        context,
+                        card['binding_values']['title']['string_value'],
+                        card['binding_values']?['description']?['string_value'],
+                        card['binding_values']?['vanity_url']?['string_value']))
+              ],
+            ),
+            context);
       // The image variants carry the same choice bindings; only the artwork
       // differs, and it was never shown. They used to fall through to the
       // default and render nothing at all.
@@ -468,124 +418,127 @@ class TweetCard extends StatelessWidget {
       case 'promo_website':
         // https://twitter.com/CMEGroup/status/1573288572647612416
         var url = card['binding_values']['website_url']['string_value'];
-        var image =
-            card['binding_values']['promo_image$imageKey']?['image_value'];
+        var image = card['binding_values']['promo_image$imageKey']?['image_value'];
         var title = card['binding_values']['title']['string_value'];
         var vanityUrl = card['binding_values']['vanity_url']['string_value'];
 
         return _createCard(
-          url,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _createImage(imageSize, image, BoxFit.cover),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 10,
+            url,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _createImage(imageSize, image, BoxFit.cover),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                  child: _createListTile(context, title, null, vanityUrl),
                 ),
-                child: _createListTile(context, title, null, vanityUrl),
-              ),
-            ],
-          ),
-          context,
-        );
+              ],
+            ),
+            context);
       case 'unified_card':
         try {
-          return _createUnifiedCard(context, card, imageKey, imageSize);
+          return _createUnifiedCard(context, imageSize);
         } catch (e) {
-          log.severe('Unable to render the unified card');
+          TweetCard.log.severe('Unable to render the unified card');
           return Container();
         }
       case '745291183405076480:live_event':
         // https://twitter.com/Erdoanz11/status/1573765738032152577
         var url = card['binding_values']['card_url']['string_value'];
-        var image =
-            card['binding_values']['event_thumbnail$imageKey']?['image_value'];
+        var image = card['binding_values']['event_thumbnail$imageKey']?['image_value'];
 
-        // Open URL in in-app browser for better user experience and security
+        // TODO: This opens the URL externally. Create a screen for it in XTA
         return _createCard(
-          url,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _createImage(imageSize, image, BoxFit.cover),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 10,
+            url,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _createImage(imageSize, image, BoxFit.cover),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                  child: _createListTile(context, card['binding_values']['event_title']['string_value'],
+                      card['binding_values']['event_subtitle']?['string_value'], null),
                 ),
-                child: _createListTile(
-                  context,
-                  card['binding_values']['event_title']['string_value'],
-                  card['binding_values']['event_subtitle']?['string_value'],
-                  null,
-                ),
-              ),
-            ],
-          ),
-          context,
-        );
+              ],
+            ),
+            context);
       case '745291183405076480:broadcast':
         // https://twitter.com/KwasiKwarteng/status/1573229010779516929
-        var uri = card['binding_values']['card_url']['string_value'];
-        var image =
-            card['binding_values']['broadcast_thumbnail$imageKey']?['image_value']['url'];
-        var key = card['binding_values']['broadcast_media_key']['string_value'];
+        final values = card['binding_values'] as Map<String, dynamic>?;
+        var image = values?['broadcast_thumbnail$imageKey']?['image_value']?['url'] as String?;
+        var key = values?['broadcast_media_key']?['string_value'] as String?;
+        final broadcastId = broadcastIdFromCard(card);
 
-        var width = double.parse(
-          card['binding_values']['broadcast_width']['string_value'],
-        );
-        var height = double.parse(
-          card['binding_values']['broadcast_height']['string_value'],
-        );
+        final width = double.tryParse('${values?['broadcast_width']?['string_value'] ?? ''}') ?? 16;
+        final height = double.tryParse('${values?['broadcast_height']?['string_value'] ?? ''}') ?? 9;
+        var aspectRatio = height == 0 ? 16 / 9 : width / height;
+        // Square thumbnails around a landscape stream used to leave a fat
+        // white bar under the player.
+        if (!aspectRatio.isFinite || aspectRatio <= 0 || aspectRatio < 1.2) {
+          aspectRatio = 16 / 9;
+        }
 
-        var aspectRatio = width / height;
+        if (key == null && broadcastId == null) {
+          return Container();
+        }
 
         var child = TweetVideo(
-          username: 'username',
-          loop: false,
-          metadata: TweetVideoMetadata(aspectRatio, image, () async {
-            var broadcast = await Twitter.getBroadcastDetails(key);
-
-            return TweetVideoUrls(
-              broadcast['source']['noRedirectPlaybackUrl'],
-              null,
-            );
-          }),
-        );
-
-        var username =
-            card['binding_values']['broadcaster_username']['string_value'];
-        var title = card['binding_values']['broadcast_title']['string_value'];
-
-        // Documented card states: live, ended, upcoming, replay
-        // For now, we handle all states with the same UI
-
-        // Open URL in in-app browser for better user experience and security
-        return _createCard(
-          uri,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              child,
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 10,
+            username: 'username',
+            loop: false,
+            metadata: TweetVideoMetadata.live(
+              aspectRatio: aspectRatio,
+              imageUrl: image,
+              playbackUrl: () => livePlaybackUrl(
+                LivePlayRequest(
+                  mediaKey: key,
+                  broadcastId: broadcastId,
                 ),
-                child: _createListTile(context, title, '@$username', null),
               ),
-            ],
+            ));
+
+        // Just the player. Title/@username sat in a pale card under the video
+        // and read as a blank white bar; the tweet already has the text.
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(kTweetMediaRadius),
+            child: ColoredBox(color: Colors.black, child: child),
           ),
-          context,
         );
       default:
+        if (isAudioSpaceCard(card)) {
+          return _createAudioSpacePlayer(card);
+        }
         return Container();
     }
+  }
+
+  Widget _createAudioSpacePlayer(Map<String, dynamic> card) {
+    final spaceId = spaceIdFromCard(card);
+    if (spaceId == null) {
+      return Container();
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(kTweetMediaRadius),
+        child: ColoredBox(
+          color: Colors.black,
+          child: TweetVideo(
+            username: widget.tweet.user?.screenName ?? 'space',
+            loop: false,
+            metadata: TweetVideoMetadata.live(
+              imageUrl: broadcastThumbnailFromCard(card),
+              playbackUrl: () => livePlaybackUrl(
+                LivePlayRequest.fromTweet(widget.tweet),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

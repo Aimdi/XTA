@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:quax/constants.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/group_model.dart';
-import 'package:quax/home/home_screen.dart';
-import 'package:quax/plugins/plugin_registry.dart';
-import 'package:quax/utils/iterables.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/group/group_model.dart';
+import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/home/home_screen.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/utils/iterables.dart';
+import 'package:xta/utils/pref_lists.dart';
 import 'package:pref/pref.dart';
 
 class HomePage {
@@ -21,9 +24,11 @@ class HomeModel extends Store<List<HomePage>> {
   final GroupsModel groupsModel;
 
   HomeModel(this.prefs, this.groupsModel) : super([]) {
-    groupsModel.observer(onState: (state) async {
-      await loadPages();
-    });
+    groupsModel.observer(
+      onState: (state) async {
+        await loadPages();
+      },
+    );
   }
 
   Future<void> resetPages() async {
@@ -36,7 +41,7 @@ class HomeModel extends Store<List<HomePage>> {
 
   Future<void> loadPages() async {
     await execute(() async {
-      var saved = prefs.getStringList(optionHomePages) ?? [];
+      var saved = stringListPref(prefs, optionHomePages) ?? [];
 
       final pluginPages = <NavigationPage>[
         for (final plugin in builtInPlugins)
@@ -44,16 +49,22 @@ class HomeModel extends Store<List<HomePage>> {
             NavigationPage(
               plugin.id,
               (c) => plugin.title(c),
-              Icon(plugin.icon),
-              Icon(plugin.icon),
+              pluginMark(plugin, size: 22),
+              pluginMark(plugin, size: 22),
             ),
       ];
 
       var available = [
         ...defaultHomePages,
         ...pluginPages,
-        ...groupsModel.state.map((e) =>
-            NavigationPage('group-${e.id}', (c) => L10n.of(c).group_name(e.name), Icon(e.iconData), Icon(e.iconData))),
+        ...groupsModel.state.map(
+          (e) => NavigationPage(
+            'group-${e.id}',
+            (c) => L10n.of(c).group_name(e.name),
+            Icon(e.iconData),
+            Icon(e.iconData),
+          ),
+        ),
       ];
 
       var pages = <HomePage>[];
@@ -69,9 +80,11 @@ class HomeModel extends Store<List<HomePage>> {
       // Switching a plugin on should put its tab in the bar. Only Substack did
       // that, so enabling any other plugin registered a tab and then left it
       // hidden behind Settings > Home pages, looking like nothing had happened.
+      //
       // Seeded once, and remembered: a tab the reader then removes has to stay
       // removed rather than coming back on the next launch.
-      final seeded = prefs.getStringList(optionSeededPluginTabs) ?? const <String>[];
+      final seeded =
+          stringListPref(prefs, optionSeededPluginTabs) ?? const <String>[];
       final newlySeeded = <String>[];
 
       for (var page in available) {
@@ -82,7 +95,8 @@ class HomeModel extends Store<List<HomePage>> {
         // `available` only carries plugin pages for plugins that are enabled
         // and want a tab, so being a plugin at all is enough here. Groups are
         // deliberately excluded: they are not tabs the reader asked for.
-        final autoSelect = pluginById(page.id) != null && !seeded.contains(page.id);
+        final autoSelect =
+            pluginById(page.id) != null && !seeded.contains(page.id);
         if (autoSelect) {
           newlySeeded.add(page.id);
         }
@@ -94,8 +108,27 @@ class HomeModel extends Store<List<HomePage>> {
         await prefs.set(optionSeededPluginTabs, [...seeded, ...newlySeeded]);
       }
 
-      final selectedIds = pages.where((e) => e.selected).map((e) => e.id).toList();
-      if (selectedIds.length != saved.length || !selectedIds.every(saved.contains)) {
+      // An empty saved list (or a restore that dropped every known id) used
+      // to leave no selected tabs. The bottom bar then built with zero
+      // destinations and the first frame threw.
+      if (pages.every((e) => !e.selected)) {
+        for (final page in pages) {
+          if (defaultHomePages.any((e) => e.id == page.id)) {
+            page.selected = true;
+          }
+        }
+      }
+
+      // Enabling a plugin also pins it on the home strip. The bottom bar is
+      // optional; the strip is where networks belong next to Following.
+      await seedFeedStripPlugins(prefs);
+
+      final selectedIds = pages
+          .where((e) => e.selected)
+          .map((e) => e.id)
+          .toList();
+      if (selectedIds.length != saved.length ||
+          !selectedIds.every(saved.contains)) {
         await prefs.set(optionHomePages, selectedIds);
       }
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/saved/saved_tab_order.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/saved/saved_tab_order.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 const double kSavedControlBarHeight = 56;
 const double kSavedControlRadius = 12;
@@ -31,6 +31,7 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueChanged<String> onFolderSelected;
   final ValueChanged<SavedFolderOption> onFolderLongPress;
   final VoidCallback onMediaToggle;
+  final bool showMedia;
 
   const SavedControlBar({
     super.key,
@@ -41,6 +42,7 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onFolderSelected,
     required this.onFolderLongPress,
     required this.onMediaToggle,
+    this.showMedia = true,
   });
 
   @override
@@ -69,10 +71,10 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
             horizontal: kTweetHorizontalPadding,
             vertical: kTweetSpace1,
           ),
-          itemCount: folders.length + 1,
+          itemCount: folders.length + (showMedia ? 1 : 0),
           separatorBuilder: (_, __) => const SizedBox(width: kTweetSpace2),
           itemBuilder: (context, index) {
-            if (index == folders.length) {
+            if (showMedia && index == folders.length) {
               return SavedChoiceChip(
                 label: L10n.of(context).media,
                 icon: mediaOnly

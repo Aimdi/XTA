@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**QuaX** (formerly Quacker) is a privacy-focused Flutter/Dart **read-oriented
+**XTA** (formerly Quacker) is a privacy-focused Flutter/Dart **read-oriented
 frontend** for X (formerly Twitter), forked from Quacker/Fritter. It is **not**
 X itself and does not implement posting: no compose, reply, quote, repost, or
 server-side like. Accounts are used to *fetch* content; subscriptions, saved
@@ -13,7 +13,7 @@ the app talks to reverse-engineered X API endpoints.
 
 ## Build & Development Commands
 
-Use `fvm flutter` instead of raw `flutter` to enforce the pinned SDK version (3.44.1).
+Use `fvm flutter` instead of raw `flutter` to enforce the pinned SDK version (3.44.4).
 
 ```bash
 # Install the pinned Flutter SDK and activate it for this project
@@ -76,6 +76,14 @@ final count = result["legacy"]?["favorite_count"] as int? ?? 0;
 final text = result["data"]["text"] as String;
 ```
 
+For new parsing code, prefer the `Json` extension type in `lib/utils/json.dart`
+— `Json(result)['data']['legacy']['favorite_count'].integer ?? 0` cannot throw
+at any step, so the deep path is the safe path (see `/parse-api`).
+
+`use_build_context_synchronously` is a build **error** here, not a hint: after
+an `await`, guard with `mounted`/`context.mounted` or capture what you need
+(messenger, navigator, strings) before the await.
+
 The layer is split by responsibility:
 
 | File | Responsibility |
@@ -132,9 +140,19 @@ Strings live in `lib/l10n/*.arb` files. The `L10n` class in `lib/generated/l10n.
 ## Custom Skills
 
 Skills live under both `.claude/skills/` (Claude Code) and `.grok/skills/`
-(Grok Build). Keep them in sync. Grok also loads this file and `AGENTS.md`
-automatically — see `docs/grok-rewrite-plan.md` for the incremental rewrite plan.
+(Grok Build). Keep them in sync — `scripts/check_skill_sync.sh` enforces it in
+CI (the `skills` job in `.github/workflows/verify.yml`). Grok also loads this
+file and `AGENTS.md` automatically — see `docs/grok-rewrite-plan.md` for the
+incremental rewrite plan.
 
 - `/parse-api` — guidance for safely parsing reverse-engineered X API responses
 - `/port-from-squawker` — port a bug fix or feature from the Squawker codebase
 - `/translate` — user asked anything about translation, or you tried to add/remove/edit a text that appears in the UI
+
+## Enforced Guardrails
+
+`.claude/settings.json` enforces part of the AGENTS.md hard rules: generated code
+(`lib/generated/**`, `lib/oss_licenses.dart`) is deny-listed, `lib/client/**` and
+`lib/database/**` always prompt, and hooks in `.claude/hooks/` block pinned-dep
+bumps, run codegen at session start, and `dart format` edited Dart files. See
+"Enforced guardrails" in `AGENTS.md`.

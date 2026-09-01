@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quax/tweet/tweet_footer.dart';
+import 'package:xta/tweet/_like_button.dart';
+import 'package:xta/tweet/tweet_footer.dart';
 
 /// An icon-only button with no accessible name is announced as an unnamed
 /// "button". The footer has several on every post, so the omission repeated all
@@ -76,6 +77,27 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(longPressed, 1, reason: 'the folder sheet is opened from a long press on this button');
+  });
+
+  testWidgets('the like button says the heart stays on this device', (tester) async {
+    final handle = tester.ensureSemantics();
+
+    await pump(
+      tester,
+      LikeButton(
+        isLiked: false,
+        label: '12',
+        color: Colors.grey,
+        tooltip: 'Like on this device',
+        onPressed: () {},
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.byType(LikeButton)).label,
+      'Like on this device, 12',
+    );
+    handle.dispose();
   });
 
   testWidgets('naming the button still survives that fix', (tester) async {

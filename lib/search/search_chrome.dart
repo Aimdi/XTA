@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quax/generated/l10n.dart';
-import 'package:quax/search/advanced_search_model.dart';
-import 'package:quax/tweet/tweet_chrome.dart';
-import 'package:quax/ui/reader_chrome.dart';
-import 'package:quax/ui/x_look_theme.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/search/advanced_search_model.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/reader_chrome.dart';
+import 'package:xta/ui/x_look_theme.dart';
 
 const double kSearchFieldHeight = 48;
 const double kSearchTabsHeight = 52;
