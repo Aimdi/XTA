@@ -53,10 +53,19 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate icons
+        run: |
+          python -mvenv .venv
+          source ./.venv/bin/activate
+          pip install -r requirements.txt
+          python generate_icons.py
+          deactivate
+
       # lib/generated and lib/oss_licenses.dart are gitignored, so analysis
       # would drown in missing-import errors without generating them first.
       - name: Generate sources
         run: |
+          dart run flutter_launcher_icons
           dart run dart_pubspec_licenses:generate
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
