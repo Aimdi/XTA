@@ -6,7 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quax/generated/l10n.dart';
 import 'package:quax/utils/urls.dart';
-import 'package:pref/pref.dart';
+import 'package:quax/settings/settings_chrome.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
 
 class SettingsAboutFragment extends StatelessWidget {
   final String appVersion;
@@ -18,12 +19,10 @@ class SettingsAboutFragment extends StatelessWidget {
     Map<String, Object>? metadata;
 
     if (Platform.isAndroid && context.mounted) {
-      if (context.mounted) {
-        metadata = {
-          'locale': Localizations.localeOf(context).languageCode,
-          'os': 'android',
-        };
-      }
+      metadata = {
+        'locale': Localizations.localeOf(context).languageCode,
+        'os': 'android',
+      };
     } else {
       if (context.mounted) {
         metadata = {
@@ -33,77 +32,86 @@ class SettingsAboutFragment extends StatelessWidget {
           'version': packageInfo.buildNumber,
         };
       }
+    }
 
-      if (context.mounted) {
-        showDialog(
-            context: context,
-            builder: (context) {
-              var content = JsonEncoder.withIndent(' ' * 2).convert(metadata);
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          var content = JsonEncoder.withIndent(' ' * 2).convert(metadata);
 
-              return AlertDialog(
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(L10n.of(context).ok)),
-                  ],
-                  title: Text(L10n.of(context).app_info),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 16),
-                      Text(content, style: const TextStyle(fontFamily: 'monospace'))
-                    ],
-                  ));
-            });
-      }
+          return AlertDialog(
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(L10n.of(context).ok),
+              ),
+            ],
+            title: Text(L10n.of(context).app_info),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 16),
+                Text(content, style: const TextStyle(fontFamily: 'monospace')),
+              ],
+            ),
+          );
+        },
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      InkWell(
+    return Column(
+      children: [
+        SettingsRow(
+          icon: Icons.info_outline,
+          title: L10n.of(context).version,
+          value: appVersion,
           onLongPress: () => _appInfo(context),
-          child: PrefLabel(
-            leading: const Icon(Icons.info),
-            title: Text(L10n.of(context).version),
-            subtitle: Text(appVersion),
-            onTap: () async {
-              await Clipboard.setData(ClipboardData(text: appVersion));
+          onTap: () async {
+            await Clipboard.setData(ClipboardData(text: appVersion));
 
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
                   content: Text(L10n.of(context).copied_version_to_clipboard),
-                ));
-              }
-            },
-          )),
-      PrefLabel(
-        leading: const Icon(Icons.favorite),
-        title: Text(L10n.of(context).contribute),
-        subtitle: Text(L10n.of(context).help_make_fritter_even_better),
-        onTap: () => openUri(context, 'https://github.com/teskann/quax'),
-      ),
-      PrefLabel(
-        leading: const Icon(Icons.bug_report),
-        title: Text(L10n.of(context).report_a_bug),
-        subtitle: Text(
-          L10n.of(context).let_the_developers_know_if_something_is_broken,
+                ),
+              );
+            }
+          },
         ),
-        onTap: () => openUri(context, 'https://github.com/teskann/quax/issues'),
-      ),
-      PrefLabel(
-        leading: const Icon(Icons.copyright),
-        title: Text(L10n.of(context).licenses),
-        subtitle: Text(L10n.of(context).all_the_great_software_used_by_fritter),
-        onTap: () => showLicensePage(
+        tweetHairlineDivider(context),
+        SettingsNavigationRow(
+          icon: Icons.favorite_outline,
+          title: L10n.of(context).contribute,
+          description: L10n.of(context).help_make_fritter_even_better,
+          onTap: () => openUri(context, 'https://github.com/teskann/quax'),
+        ),
+        tweetHairlineDivider(context),
+        SettingsNavigationRow(
+          icon: Icons.bug_report_outlined,
+          title: L10n.of(context).report_a_bug,
+          description: L10n.of(
+            context,
+          ).let_the_developers_know_if_something_is_broken,
+          onTap: () =>
+              openUri(context, 'https://github.com/teskann/quax/issues'),
+        ),
+        tweetHairlineDivider(context),
+        SettingsNavigationRow(
+          icon: Icons.copyright_outlined,
+          title: L10n.of(context).licenses,
+          description: L10n.of(context).all_the_great_software_used_by_fritter,
+          onTap: () => showLicensePage(
             context: context,
             applicationName: L10n.of(context).fritter,
             applicationVersion: appVersion,
-            applicationLegalese: L10n.of(context).released_under_the_mit_license,
+            applicationLegalese: L10n.of(
+              context,
+            ).released_under_the_mit_license,
             applicationIcon: Container(
               margin: const EdgeInsets.all(12),
               child: ClipRRect(
@@ -114,8 +122,10 @@ class SettingsAboutFragment extends StatelessWidget {
                   width: 48.0,
                 ),
               ),
-            )),
-      ),
-    ]);
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

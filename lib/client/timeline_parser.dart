@@ -12,6 +12,8 @@ library;
 import 'package:dart_twitter_api/src/utils/date_utils.dart';
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:quax/client/tweet_models.dart';
+import 'package:quax/user.dart';
+import 'package:quax/utils/iterables.dart';
 
 /// Enum for grouping mode when creating tweet chains
 /// This replaces the boolean flag for better clarity and type safety
@@ -21,12 +23,6 @@ enum GroupingMode {
   /// Keep tweets as individual items (flat list)
   flat,
 }
-
-// Export GroupingMode for use in other files
-// This enum is used to replace boolean flags with type-safe grouping mode selection
-export 'timeline_parser.dart' show GroupingMode;
-import 'package:quax/user.dart';
-import 'package:quax/utils/iterables.dart';
 
 class TimelineParser {
   static PaginatedUsers parseUsersTimeline(dynamic instructions) {

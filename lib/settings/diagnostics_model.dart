@@ -20,10 +20,15 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
 
       return DiagnosticsReport(
         appVersion: 'v${packageInfo.version}+${packageInfo.buildNumber}',
-        accounts: (await getAccounts()).map((account) => _diagnose(account, now)).toList(),
+        accounts: (await getAccounts())
+            .map((account) => _diagnose(account, now))
+            .toList(),
         endpoints: XEndpoints.all.map(EndpointDiagnostics.of).toList(),
-        registryEnabled: prefs.get<bool>(optionEndpointRegistryEnabled) != false,
-        registryFetchedAt: DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? ''),
+        registryEnabled:
+            prefs.get<bool>(optionEndpointRegistryEnabled) != false,
+        registryFetchedAt: DateTime.tryParse(
+          prefs.get<String>(optionEndpointRegistryFetchedAt) ?? '',
+        ),
         generatedAt: now,
       );
     });
@@ -36,7 +41,9 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
       id: account.id,
       screenName: account.screenName,
       rateLimited: RateLimitTracker.activeFor(account.id, now),
-      notFoundUntil: notFoundUntil != null && notFoundUntil.isAfter(now) ? notFoundUntil : null,
+      notFoundUntil: notFoundUntil != null && notFoundUntil.isAfter(now)
+          ? notFoundUntil
+          : null,
     );
   }
 }

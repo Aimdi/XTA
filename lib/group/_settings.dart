@@ -5,9 +5,12 @@ import 'package:quax/constants.dart';
 import 'package:quax/database/entities.dart';
 import 'package:quax/generated/l10n.dart';
 import 'package:quax/group/group_custom_settings.dart';
+import 'package:quax/group/group_chrome.dart';
 import 'package:quax/group/group_model.dart';
+import 'package:quax/tweet/tweet_chrome.dart';
 
-int _sortModeOf(SubscriptionGroupGet group) => group.custom ? 2 : (group.popular ? 1 : 0);
+int _sortModeOf(SubscriptionGroupGet group) =>
+    group.custom ? 2 : (group.popular ? 1 : 0);
 
 String _sortModeLabel(BuildContext context, SubscriptionGroupGet group) {
   switch (_sortModeOf(group)) {
@@ -22,102 +25,169 @@ String _sortModeLabel(BuildContext context, SubscriptionGroupGet group) {
 
 void showFeedSettings(BuildContext context, GroupModel model) {
   showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-            child: SingleChildScrollView(
-                child: Column(
-          mainAxisSize: MainAxisSize.min,
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    showDragHandle: true,
+    builder: (context) => FractionallySizedBox(
+      heightFactor: 0.82,
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _SheetHeader(onClose: () => Navigator.of(context).pop()),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  kTweetHorizontalPadding,
+                  0,
+                  kTweetHorizontalPadding,
+                  kTweetSpace3,
+                ),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    L10n.of(
+                      context,
+                    ).note_due_to_a_twitter_limitation_not_all_tweets_may_be_included,
+                    style: tweetMetadataStyle(context),
+                  ),
+                ),
+              ),
+              _FeedSettingsContent(model: model),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _SheetHeader extends StatelessWidget {
+  final VoidCallback onClose;
+
+  const _SheetHeader({required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        L10n.of(context).filters,
+        style: Theme.of(context).textTheme.titleLarge,
+      ),
+      trailing: IconButton(
+        tooltip: L10n.of(context).close,
+        icon: const Icon(Icons.close),
+        onPressed: onClose,
+      ),
+    );
+  }
+}
+
+class _FeedSettingsContent extends StatelessWidget {
+  final GroupModel model;
+
+  const _FeedSettingsContent({required this.model});
+
+  @override
+  Widget build(BuildContext context) {
+    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+      store: model,
+      onState: (_, state) {
+        final prefs = PrefService.of(context);
+        final includeReplies =
+            state.includeReplies ??
+            prefs.get<bool>(optionGlobalIncludeReplies) ??
+            true;
+        final includeRetweets =
+            state.includeRetweets ??
+            prefs.get<bool>(optionGlobalIncludeRetweets) ??
+            true;
+        return Column(
           children: [
-            ListTile(
-              leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  }),
-              title: Text(
-                L10n.of(context).filters,
-                style: Theme.of(context).textTheme.titleLarge,
+            GroupSettingsSection(
+              icon: Icons.tune,
+              title: L10n.of(context).filters,
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(L10n.of(context).include_replies),
+                    value: includeReplies,
+                    onChanged: model.toggleSubscriptionGroupIncludeReplies,
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(L10n.of(context).include_retweets),
+                    value: includeRetweets,
+                    onChanged: model.toggleSubscriptionGroupIncludeRetweets,
+                  ),
+                ],
               ),
             ),
-            Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(bottom: 8, top: 16, left: 16, right: 16),
-                child: Text(
-                  L10n.of(context).note_due_to_a_twitter_limitation_not_all_tweets_may_be_included,
-                  style: TextStyle(
-                    color: Theme.of(context).disabledColor,
-                  ),
-                )),
-            ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-              store: model,
-              onState: (_, state) {
-                // The switches show the effective value (the group's own choice,
-                // else the global default); toggling records the group's own choice.
-                final prefs = PrefService.of(context);
-                final includeReplies =
-                    model.state.includeReplies ?? prefs.get<bool>(optionGlobalIncludeReplies) ?? true;
-                final includeRetweets =
-                    model.state.includeRetweets ?? prefs.get<bool>(optionGlobalIncludeRetweets) ?? true;
-
-                return Column(
-                  children: [
-                    SwitchListTile(
-                      title: Text(L10n.of(context).include_replies),
-                      value: includeReplies,
-                      onChanged: (value) async => await model.toggleSubscriptionGroupIncludeReplies(value),
-                    ),
-                    SwitchListTile(
-                      title: Text(L10n.of(context).include_retweets),
-                      value: includeRetweets,
-                      onChanged: (value) async => await model.toggleSubscriptionGroupIncludeRetweets(value),
-                    ),
-                    ExpansionTile(
-                      leading: const Icon(Icons.sort),
-                      title: Text(_sortModeLabel(context, model.state)),
-                      subtitle: Text(L10n.of(context).popular_feed_description),
-                      children: [
-                        RadioListTile<int>(
-                          title: Text(L10n.of(context).recent),
-                          value: 0,
-                          groupValue: _sortModeOf(model.state),
-                          onChanged: (_) async => await model.toggleSubscriptionGroupPopular(false),
-                        ),
-                        RadioListTile<int>(
-                          title: Text(L10n.of(context).popular),
-                          value: 1,
-                          groupValue: _sortModeOf(model.state),
-                          onChanged: (_) async => await model.toggleSubscriptionGroupPopular(true),
-                        ),
-                        RadioListTile<int>(
-                          title: Text(L10n.of(context).custom),
-                          value: 2,
-                          groupValue: _sortModeOf(model.state),
-                          onChanged: (_) async => await model.toggleSubscriptionGroupCustom(true),
-                          secondary: IconButton(
-                            icon: const Icon(Icons.add_circle_outline),
-                            onPressed: () async {
-                              if (!model.state.custom) {
-                                await model.toggleSubscriptionGroupCustom(true);
-                              }
-                              if (context.mounted) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => GroupCustomSettingsScreen(model: model),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
-            ),
+            _OrderSection(model: model, state: state),
           ],
-        )));
-      });
+        );
+      },
+    );
+  }
+}
+
+class _OrderSection extends StatelessWidget {
+  final GroupModel model;
+  final SubscriptionGroupGet state;
+
+  const _OrderSection({required this.model, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    return GroupSettingsSection(
+      icon: Icons.sort,
+      title: _sortModeLabel(context, state),
+      description: L10n.of(context).popular_feed_description,
+      child: Column(
+        children: [
+          _orderTile(context, L10n.of(context).recent, 0),
+          _orderTile(context, L10n.of(context).popular, 1),
+          _orderTile(context, L10n.of(context).custom, 2, customSettings: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _orderTile(
+    BuildContext context,
+    String title,
+    int value, {
+    bool customSettings = false,
+  }) {
+    return RadioListTile<int>(
+      contentPadding: EdgeInsets.zero,
+      title: Text(title),
+      value: value,
+      groupValue: _sortModeOf(state),
+      onChanged: (_) => value == 2
+          ? model.toggleSubscriptionGroupCustom(true)
+          : model.toggleSubscriptionGroupPopular(value == 1),
+      secondary: customSettings
+          ? IconButton(
+              tooltip: L10n.of(context).custom,
+              icon: const Icon(Icons.tune),
+              onPressed: () => _openCustomSettings(context),
+            )
+          : null,
+    );
+  }
+
+  Future<void> _openCustomSettings(BuildContext context) async {
+    if (!model.state.custom) await model.toggleSubscriptionGroupCustom(true);
+    if (!context.mounted) return;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GroupCustomSettingsScreen(model: model),
+      ),
+    );
+  }
 }
