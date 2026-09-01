@@ -50,30 +50,33 @@ class ReaderTabBar extends StatelessWidget implements PreferredSizeWidget {
     final background =
         XLookTokens.maybeOf(context)?.background ??
         Theme.of(context).scaffoldBackgroundColor;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: background,
-        border: Border(
-          bottom: BorderSide(
-            color: tweetDividerColor(context),
-            width: kTweetDividerThickness,
+    return SizedBox(
+      height: height,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: background,
+          border: Border(
+            bottom: BorderSide(
+              color: tweetDividerColor(context),
+              width: kTweetDividerThickness,
+            ),
           ),
         ),
-      ),
-      child: TabBar(
-        controller: controller,
-        isScrollable: true,
-        tabAlignment: TabAlignment.start,
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        indicatorColor: tweetAccentColor(context),
-        labelColor: tweetPrimaryColor(context),
-        unselectedLabelColor: tweetSecondaryColor(context),
-        labelStyle: tweetLabelStyle(context),
-        unselectedLabelStyle: tweetLabelStyle(
-          context,
-        ).copyWith(fontWeight: FontWeight.w500),
-        tabs: tabs,
+        child: TabBar(
+          controller: controller,
+          isScrollable: true,
+          tabAlignment: TabAlignment.start,
+          indicatorSize: TabBarIndicatorSize.tab,
+          dividerColor: Colors.transparent,
+          indicatorColor: tweetAccentColor(context),
+          labelColor: tweetPrimaryColor(context),
+          unselectedLabelColor: tweetSecondaryColor(context),
+          labelStyle: tweetLabelStyle(context),
+          unselectedLabelStyle: tweetLabelStyle(
+            context,
+          ).copyWith(fontWeight: FontWeight.w500),
+          tabs: tabs,
+        ),
       ),
     );
   }
