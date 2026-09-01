@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:dart_twitter_api/twitter_api.dart';
 import 'package:flutter/material.dart';
@@ -799,7 +800,7 @@ class _TweetVideoState extends State<TweetVideo> {
                         style: FilledButton.styleFrom(
                           backgroundColor: tweetAccentColor(context),
                           foregroundColor: tweetOnAccentColor(context),
-                          minimumSize: const Size(0, kTweetTouchTarget),
+                          minimumSize: const ui.Size(0, kTweetTouchTarget),
                           elevation: 0,
                         ),
                         onPressed: () => _restartVideo(prefLoop),

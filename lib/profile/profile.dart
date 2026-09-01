@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -415,7 +417,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
                   '@$username',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  textDirection: TextDirection.ltr,
+                  textDirection: ui.TextDirection.ltr,
                   style: tweetMetadataStyle(context).copyWith(fontSize: 11),
                 ),
               ],

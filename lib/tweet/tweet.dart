@@ -557,7 +557,7 @@ class TweetTileState extends State<TweetTile> {
       );
     }
 
-    var birdwatchQuoted = Container();
+    Widget birdwatchQuoted = const SizedBox.shrink();
     if (tweet.birdwatchQuotedStatus != null) {
       birdwatchQuoted = TweetTile(
         clickable: false,

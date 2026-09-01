@@ -206,6 +206,7 @@ class HomeNavigationBar extends StatelessWidget {
                 .entries
                 .map(
                   (entry) => _destination(
+                    context,
                     entry.value,
                     entry.key == selectedIndex,
                     reduceMotion,
@@ -220,6 +221,7 @@ class HomeNavigationBar extends StatelessWidget {
   }
 
   NavigationDestination _destination(
+    BuildContext context,
     HomeNavigationItem item,
     bool selected,
     bool reduceMotion,
