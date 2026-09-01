@@ -1,3 +1,12 @@
+## XTA aimdi123
+
+What's new in XTA aimdi123:
+  - Built on aimdi122. Not QuaX.
+  - Complete reader UI redesign across posts, Home, Profile, Search, Groups, Saved, and Settings
+  - Keeps the full aimdi122 feature set, local data, plugins, Android app id, and signing lineage
+  - Improved theme consistency, edge-to-edge system bars, touch targets, empty/error states, and reduced-motion handling
+  - Everything from aimdi122
+
 ## XTA aimdi122
 
 What's new in XTA aimdi122:
