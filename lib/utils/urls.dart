@@ -153,7 +153,9 @@ _LiveLink? _liveLink(String? url) {
     return null;
   }
   var trimmed = url.trim();
-  if (trimmed.contains('…') || trimmed.contains('...')) {
+  if (trimmed.contains('…') ||
+      trimmed.toLowerCase().contains('%e2%80%a6') ||
+      trimmed.contains('...')) {
     return null;
   }
   trimmed = trimmed.replaceAll(RegExp(r'[.,);]+$'), '');
