@@ -20,7 +20,6 @@ class SubstackScreen extends StatefulWidget {
 }
 
 class _SubstackScreenState extends State<SubstackScreen> {
-  bool _isInitialLoad = true;
   bool _hasLoaded = false;
 
   @override
@@ -33,7 +32,6 @@ class _SubstackScreenState extends State<SubstackScreen> {
       final read = context.read<SubstackReadStore>();
       await pubs.load();
       await read.load();
-      _isInitialLoad = false;
       if (mounted) {
         setState(() {});
       }

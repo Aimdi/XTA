@@ -76,14 +76,11 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         List<Subscription> newLst = [];
         final customScreenNames = orderCustom.split(',');
         
-        // Create a Set for O(1) lookups
-        final customScreenNamesSet = customScreenNames.toSet();
-        
         // First pass: add custom ordered subscriptions
         for (String screenName in customScreenNames) {
           // Find and remove from lst in O(n) - but only for custom ordered items
-          int? index = lst.indexWhere((e) => e.screenName == screenName);
-          if (index != null && index >= 0) {
+          int index = lst.indexWhere((e) => e.screenName == screenName);
+          if (index >= 0) {
             newLst.add(lst.removeAt(index));
           }
         }

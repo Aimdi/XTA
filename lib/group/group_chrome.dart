@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:quax/constants.dart';
 import 'package:quax/database/entities.dart';
 import 'package:quax/generated/l10n.dart';
-import 'package:quax/group/custom_feed_rules.dart';
 import 'package:quax/tweet/tweet_chrome.dart';
 import 'package:quax/ui/x_look_theme.dart';
 
