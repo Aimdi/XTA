@@ -107,7 +107,9 @@ void main() {
   ) async {
     await _pumpHub(tester);
 
-    await tester.tap(find.text('Data'));
+    await tester.tap(
+      find.widgetWithText(SettingsNavigationRow, 'Data'),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 

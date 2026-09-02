@@ -217,7 +217,7 @@ class DownloadTypeSettingState extends State<DownloadTypeSetting> {
   Widget build(BuildContext context) {
     return ScopedBuilder<SettingsRevisionStore, int>(
       store: _viewStore,
-      onState: (_, __) {
+      onState: (_, revision) {
         final downloadPath =
             widget.prefs.get<String>(optionDownloadPath) ?? '';
         final treeUri =
