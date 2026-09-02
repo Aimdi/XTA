@@ -70,6 +70,101 @@ void main() {
     expect(tapped, isTrue);
   });
 
+  testWidgets('profile counts stay side by side and remain tappable', (
+    tester,
+  ) async {
+    var followingTapped = false;
+    var followersTapped = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: xLookLightTheme(null),
+        home: Scaffold(
+          body: ProfileIdentityHeader(
+            banner: const SizedBox(height: 120),
+            avatar: const ProfileAvatar(uri: null),
+            actions: const SizedBox.shrink(),
+            name: 'Name',
+            handle: '@handle',
+            verified: false,
+            protected: false,
+            protectedLabel: 'Private profile',
+            counts: [
+              ProfileCountButton(
+                count: '23',
+                label: 'Following',
+                onTap: () => followingTapped = true,
+              ),
+              ProfileCountButton(
+                count: '13.9K',
+                label: 'Followers',
+                onTap: () => followersTapped = true,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final following = find.textContaining('23');
+    final followers = find.textContaining('13.9K');
+    expect(tester.getTopLeft(following).dy, tester.getTopLeft(followers).dy);
+    expect(
+      tester.getTopLeft(following).dx,
+      lessThan(tester.getTopLeft(followers).dx),
+    );
+
+    await tester.tap(following);
+    await tester.tap(followers);
+    expect(followingTapped, isTrue);
+    expect(followersTapped, isTrue);
+  });
+
+  testWidgets('profile actions stay in one compact row and remain tappable', (
+    tester,
+  ) async {
+    var settingsTapped = false;
+    var followTapped = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: xLookLightTheme(null),
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.topRight,
+            child: ProfileActionCluster(
+              children: [
+                IconButton(
+                  onPressed: () => settingsTapped = true,
+                  icon: const Icon(Icons.tune_outlined),
+                ),
+                IconButton(
+                  onPressed: () => followTapped = true,
+                  icon: const Icon(Icons.person_add),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final settings = find.byIcon(Icons.tune_outlined);
+    final follow = find.byIcon(Icons.person_add);
+    expect(tester.getTopLeft(settings).dy, tester.getTopLeft(follow).dy);
+    expect(
+      tester.getTopLeft(settings).dx,
+      lessThan(tester.getTopLeft(follow).dx),
+    );
+    expect(
+      tester.getSize(find.byType(ProfileActionSurface).first),
+      const Size.square(kTweetTouchTarget),
+    );
+
+    await tester.tap(settings);
+    await tester.tap(follow);
+    expect(settingsTapped, isTrue);
+    expect(followTapped, isTrue);
+  });
+
   testWidgets('profile tabs use one pinned-height selection surface', (
     tester,
   ) async {

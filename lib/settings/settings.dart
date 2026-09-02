@@ -76,7 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
-  List<_SettingsEntry> _everydayEntries(BuildContext context, Key key) {
+  List<_SettingsEntry> _everydayEntries(BuildContext context) {
     final l10n = L10n.of(context);
     return [
       _SettingsEntry(
@@ -96,12 +96,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: l10n.media,
         description: l10n.settings_media_hint,
         builder: (context) => const SettingsMediaFragment(),
-      ),
-      _SettingsEntry(
-        icon: Icons.account_circle,
-        title: l10n.account,
-        description: l10n.settings_account_hint,
-        builder: (context) => SettingsAccountFragment(key: key),
       ),
       _SettingsEntry(
         icon: Icons.home,
@@ -126,6 +120,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: l10n.settings_speech,
         description: l10n.settings_speech_description,
         builder: (context) => const TtsSettingsScreen(),
+      ),
+    ];
+  }
+
+  List<_SettingsEntry> _accountEntries(BuildContext context, Key key) {
+    final l10n = L10n.of(context);
+    return [
+      _SettingsEntry(
+        icon: Icons.account_circle,
+        title: l10n.account,
+        description: l10n.settings_account_hint,
+        builder: (context) => SettingsAccountFragment(key: key),
       ),
       _SettingsEntry(
         icon: Icons.extension_outlined,
@@ -211,7 +217,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var key = widget.key ?? const Key("Settings");
     var appVersion = 'v${_packageInfo.version}+${_packageInfo.buildNumber}';
     final query = _query.trim().toLowerCase();
-    final everyday = _everydayEntries(context, key);
+    final everyday = _everydayEntries(context);
+    final accounts = _accountEntries(context, key);
     final data = _dataEntry(context);
     final advanced = _advancedEntries(context);
 
@@ -223,39 +230,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (query.isNotEmpty)
             for (final entry in [
               ...everyday,
+              ...accounts,
               data,
               ...advanced,
             ].where((e) => e.matches(query)))
               _entryTile(context, entry)
           else ...[
-            for (final entry in everyday) _entryTile(context, entry),
-            _entryTile(context, data),
+            SettingsSection(
+              title: l10n.general,
+              children: [
+                for (final entry in everyday) _entryTile(context, entry),
+              ],
+            ),
+            SettingsSection(
+              title: l10n.account,
+              children: [
+                for (final entry in accounts) _entryTile(context, entry),
+              ],
+            ),
+            SettingsSection(
+              title: l10n.data,
+              children: [_entryTile(context, data)],
+            ),
             _advancedTile(context, advanced),
-            const Divider(height: 1),
-            _SectionLabel(l10n.app_info),
-            SettingsAboutFragment(appVersion: appVersion),
+            SettingsSection(
+              title: l10n.app_info,
+              children: [SettingsAboutFragment(appVersion: appVersion)],
+            ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  final String label;
-
-  const _SectionLabel(this.label);
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: Text(
-        label,
-        style: theme.textTheme.titleSmall!.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
       ),
     );
   }

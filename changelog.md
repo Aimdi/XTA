@@ -1,3 +1,14 @@
+## XTA aimdi125
+
+What's new in XTA aimdi125:
+  - Built directly on the released aimdi124 XTA tree. Not QuaX.
+  - Restores the approved visual background and accent selectors in Settings
+  - Restores the True Black and True Black Tweet Cards controls without changing their stored values
+  - Applies the established Settings sections to General, Posts, Media, Accessibility, and the Settings hub
+  - Uses the shared media-layout selector for masonry, full-width, and two-column modes
+  - Restores Profile actions and statistics placement that was missed by aimdi124
+  - Everything from aimdi124
+
 ## XTA aimdi124
 
 What's new in XTA aimdi124:
