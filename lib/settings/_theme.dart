@@ -19,67 +19,85 @@ class SettingsThemeFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final prefs = PrefService.of(context);
+    final l10n = L10n.of(context);
+
     return SettingsPageScaffold(
-      title: L10n.current.theme,
+      title: l10n.theme,
       body: SettingsList(
         children: [
-          PrefDropdown(
-            fullWidth: false,
-            title: Text(L10n.of(context).theme_background),
-            subtitle: Text(L10n.of(context).theme_background_description),
-            pref: optionXLookBackground,
-            items: [
-              DropdownMenuItem(
-                value: xLookBackgroundSystem,
-                child: Text(L10n.of(context).system),
-              ),
-              DropdownMenuItem(
-                value: xLookBackgroundLight,
-                child: Text(L10n.of(context).light),
-              ),
-              DropdownMenuItem(
-                value: xLookBackgroundDim,
-                child: Text(L10n.of(context).theme_background_dim),
-              ),
-              DropdownMenuItem(
-                value: xLookBackgroundLightsOut,
-                child: Text(L10n.of(context).theme_background_lights_out),
+          SettingsSection(
+            title: l10n.theme_background,
+            description: l10n.theme_background_description,
+            children: [
+              SettingsPreferenceSelector<String>(
+                prefs: prefs,
+                pref: optionXLookBackground,
+                options: [
+                  SettingsOption(
+                    value: xLookBackgroundSystem,
+                    label: l10n.system,
+                    icon: Icons.brightness_auto_outlined,
+                  ),
+                  SettingsOption(
+                    value: xLookBackgroundLight,
+                    label: l10n.light,
+                    color: const Color(0xFFFFFFFF),
+                  ),
+                  SettingsOption(
+                    value: xLookBackgroundDim,
+                    label: l10n.theme_background_dim,
+                    color: const Color(0xFF15202B),
+                  ),
+                  SettingsOption(
+                    value: xLookBackgroundLightsOut,
+                    label: l10n.theme_background_lights_out,
+                    color: const Color(0xFF000000),
+                  ),
+                ],
               ),
             ],
           ),
-          PrefDropdown(
-            fullWidth: false,
-            title: Text(L10n.of(context).theme_accent),
-            subtitle: Text(L10n.of(context).theme_accent_description),
-            pref: optionXLookAccent,
-            items: xLookAccents.entries
-                .map(
-                  (accent) => DropdownMenuItem(
-                    value: accent.key,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // The swatch carries the meaning; the name is there for
-                        // anyone who cannot tell these colours apart.
-                        Container(
-                          width: 16,
-                          height: 16,
-                          margin: const EdgeInsets.only(right: 8),
-                          decoration: BoxDecoration(
-                            color: accent.value,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        Text(xLookAccentName(L10n.of(context), accent.key)),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
+          SettingsSection(
+            title: l10n.theme_accent,
+            description: l10n.theme_accent_description,
+            children: [
+              SettingsPreferenceSelector<String>(
+                prefs: prefs,
+                pref: optionXLookAccent,
+                options: xLookAccents.entries
+                    .map(
+                      (accent) => SettingsOption(
+                        value: accent.key,
+                        label: xLookAccentName(l10n, accent.key),
+                        color: accent.value,
+                      ),
+                    )
+                    .toList(growable: false),
+              ),
+            ],
           ),
-          PrefSwitch(
-            title: Text(L10n.of(context).show_navigation_labels),
-            pref: optionShowNavigationLabels,
+          SettingsSection(
+            children: [
+              PrefSwitch(
+                title: Text(l10n.true_black),
+                pref: optionThemeTrueBlack,
+                subtitle: Text(l10n.use_true_black_for_the_dark_mode_theme),
+                onChange: (value) {
+                  prefs.set(optionThemeTrueBlackTweetCards, value);
+                },
+              ),
+              PrefSwitch(
+                title: Text(l10n.true_black_tweet_cards),
+                pref: optionThemeTrueBlackTweetCards,
+                disabled: !prefs.get(optionThemeTrueBlack),
+                subtitle: Text(l10n.use_true_black_for_tweet_cards),
+              ),
+              PrefSwitch(
+                title: Text(l10n.show_navigation_labels),
+                pref: optionShowNavigationLabels,
+              ),
+            ],
           ),
         ],
       ),

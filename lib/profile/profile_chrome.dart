@@ -192,7 +192,10 @@ class ProfileCountButton extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
         child: Padding(
           padding: const EdgeInsetsDirectional.only(end: kTweetSpace4),
-          child: Center(
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            widthFactor: 1,
+            heightFactor: 1,
             child: Text.rich(
               TextSpan(
                 children: [
@@ -365,10 +368,12 @@ class ProfileIdentityHeader extends StatelessWidget {
                   Wrap(children: metadata),
                 ],
                 if (counts.isNotEmpty)
-                  Wrap(
-                    spacing: kTweetSpace1,
-                    runSpacing: kTweetSpace1,
-                    children: counts,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: counts,
+                    ),
                   ),
                 if (note != null) note!,
               ],
@@ -388,11 +393,14 @@ class ProfileActionCluster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.end,
-      spacing: kTweetSpace2,
-      runSpacing: kTweetSpace2,
-      children: [for (final child in children) ProfileActionSurface(child: child)],
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var index = 0; index < children.length; index++) ...[
+          if (index > 0) const SizedBox(width: kTweetSpace2),
+          ProfileActionSurface(child: children[index]),
+        ],
+      ],
     );
   }
 }
@@ -404,11 +412,8 @@ class ProfileActionSurface extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minWidth: kTweetTouchTarget,
-        minHeight: kTweetTouchTarget,
-      ),
+    return SizedBox.square(
+      dimension: kTweetTouchTarget,
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border.all(
@@ -417,7 +422,7 @@ class ProfileActionSurface extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(kTweetTouchTarget / 2),
         ),
-        child: Center(child: child),
+        child: Align(child: child),
       ),
     );
   }

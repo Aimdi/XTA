@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/settings.dart';
+import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/ui/x_controls.dart';
 
 Widget _app() {
@@ -39,18 +40,25 @@ void main() {
     await _pumpHub(tester);
 
     expect(find.byType(XSearchField), findsOneWidget);
-    expect(find.text('General'), findsOneWidget);
+    expect(
+      find.widgetWithText(SettingsNavigationRow, 'General'),
+      findsOneWidget,
+    );
     expect(find.text('Posts'), findsOneWidget);
     expect(find.text('Media'), findsOneWidget);
-    expect(find.text('Accounts'), findsOneWidget);
+    expect(
+      find.widgetWithText(SettingsNavigationRow, 'Accounts'),
+      findsOneWidget,
+    );
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Theme'), findsOneWidget);
     expect(find.text('Accessibility'), findsOneWidget);
     expect(find.text('Read aloud'), findsOneWidget);
     expect(find.text('Plugin store'), findsOneWidget);
-    expect(find.text('Data'), findsOneWidget);
+    expect(find.widgetWithText(SettingsNavigationRow, 'Data'), findsOneWidget);
     expect(find.text('Language, updates, and sharing'), findsOneWidget);
     expect(find.text('Advanced'), findsOneWidget);
+    expect(find.byType(SettingsSection), findsNWidgets(4));
 
     expect(find.text('AI provider'), findsNothing);
     expect(find.text('Diagnostics'), findsNothing);

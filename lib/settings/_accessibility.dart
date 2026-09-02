@@ -15,35 +15,44 @@ class SettingsAccessibilityFragment extends StatelessWidget {
       title: L10n.current.accessibility,
       body: SettingsList(
         children: [
-          PrefSlider(
-            title: Text(L10n.of(context).text_scale_factor),
-            pref: optionTextScaleFactor,
-            subtitle: Text(L10n.of(context).text_scale_factor_description),
-            min: 1.0,
-            max: 1.5,
-            divisions: 10,
-          ),
-          PrefSwitch(
-            title: Text(L10n.of(context).disable_animations),
-            pref: optionDisableAnimations,
-            subtitle: Text(L10n.of(context).disable_animations_description),
-          ),
-          PrefSwitch(
-            title: Text(L10n.of(context).ticker_chart),
-            pref: optionTickerChart,
-            subtitle: Text(L10n.of(context).ticker_chart_description),
-          ),
-          PrefSwitch(
-            title: Text(L10n.of(context).gesture_double_tap_like),
-            pref: optionGestureDoubleTapLike,
-            subtitle: Text(
-              L10n.of(context).gesture_double_tap_like_description,
-            ),
-          ),
-          ListTile(
-            title: Text(L10n.of(context).settings_speech),
-            subtitle: Text(L10n.of(context).settings_speech_description),
-            onTap: () => openTtsSettings(context, FlutterTts()),
+          SettingsSection(
+            children: [
+              PrefSlider(
+                title: Text(L10n.of(context).text_scale_factor),
+                pref: optionTextScaleFactor,
+                subtitle: Text(
+                  L10n.of(context).text_scale_factor_description,
+                ),
+                min: 1.0,
+                max: 1.5,
+                divisions: 10,
+              ),
+              PrefSwitch(
+                title: Text(L10n.of(context).disable_animations),
+                pref: optionDisableAnimations,
+                subtitle: Text(
+                  L10n.of(context).disable_animations_description,
+                ),
+              ),
+              PrefSwitch(
+                title: Text(L10n.of(context).ticker_chart),
+                pref: optionTickerChart,
+                subtitle: Text(L10n.of(context).ticker_chart_description),
+              ),
+              PrefSwitch(
+                title: Text(L10n.of(context).gesture_double_tap_like),
+                pref: optionGestureDoubleTapLike,
+                subtitle: Text(
+                  L10n.of(context).gesture_double_tap_like_description,
+                ),
+              ),
+              SettingsNavigationRow(
+                icon: Icons.record_voice_over_outlined,
+                title: L10n.of(context).settings_speech,
+                description: L10n.of(context).settings_speech_description,
+                onTap: () => openTtsSettings(context, FlutterTts()),
+              ),
+            ],
           ),
         ],
       ),
