@@ -4,6 +4,16 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi126
+
+**XTA, built directly on the released aimdi125 XTA tree. Not QuaX.**
+
+Install **`xta-aimdi126_arm64-v8a.apk`**. It uses the same app id (`com.aimdi.xta`) and signing lineage, so it updates over aimdi125 without clearing data.
+
+Home now has a cleaner pinned header while retaining XTA's existing icons and actions. The title stays readable at large text sizes, action targets remain accessible, and Following / For you / plugin timelines share one compact scrollable strip with a fixed Add timeline button. Plugin marks, unread badges, filters, refresh, account controls, swipe navigation, and the bottom bar behave as before.
+
+This release changes only Home chrome. Shared post cards and the screens reached from the bottom navigation are unchanged. Existing accounts, plugins, subscriptions, groups, saved posts, local likes and notes, media preferences, databases, and read-only behavior are preserved.
+
 ### aimdi125
 
 **XTA, built directly on the released aimdi124 XTA tree. Not QuaX.**
