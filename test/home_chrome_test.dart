@@ -151,4 +151,137 @@ void main() {
       greaterThanOrEqualTo(4.5),
     );
   });
+
+  testWidgets('home title and actions remain bounded at large text scale', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: xLookLightTheme(null),
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(320, 640),
+            textScaler: TextScaler.linear(2),
+          ),
+          child: Scaffold(
+            appBar: AppBar(
+              title: const HomeAppBarTitle(
+                label: 'A deliberately long localized Home title',
+              ),
+              actions: [
+                HomeAppBarActions(
+                  children: [
+                    IconButton(
+                      tooltip: 'Filter',
+                      icon: const Icon(Icons.tune),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      tooltip: 'Accounts',
+                      icon: const Icon(Icons.manage_accounts_outlined),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.widget<Text>(
+        find.text('A deliberately long localized Home title'),
+      ),
+      isA<Text>()
+          .having((text) => text.maxLines, 'maxLines', 1)
+          .having((text) => text.overflow, 'overflow', TextOverflow.ellipsis),
+    );
+    expect(
+      tester.getSize(find.widgetWithIcon(IconButton, Icons.tune)),
+      const Size.square(kTweetTouchTarget),
+    );
+    expect(
+      tester.getSize(
+        find.widgetWithIcon(IconButton, Icons.manage_accounts_outlined),
+      ),
+      const Size.square(kTweetTouchTarget),
+    );
+  });
+
+  testWidgets('home feed strip keeps compact tabs and a fixed add action', (
+    tester,
+  ) async {
+    var added = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: xLookLightTheme(null),
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(320, 640),
+            textScaler: TextScaler.linear(2),
+          ),
+          child: Scaffold(
+            body: Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: 320,
+                child: DefaultTabController(
+                  length: 4,
+                  child: HomeFeedStrip(
+                    tabs: const [
+                      Tab(text: 'Following'),
+                      Tab(text: 'For you'),
+                      Tab(text: 'Reddit'),
+                      Tab(text: 'Blue'),
+                    ],
+                    addTooltip: 'Add timeline',
+                    onAdd: () => added = true,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getSize(find.byType(HomeFeedStrip)),
+      const Size(320, kHomeFeedStripHeight),
+    );
+    expect(
+      tester.getSize(find.byTooltip('Add timeline')),
+      const Size.square(kTweetTouchTarget),
+    );
+
+    final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+    expect(tabBar.dividerHeight, 0);
+    expect(tabBar.isScrollable, isTrue);
+    expect(tabBar.tabAlignment, TabAlignment.start);
+    expect(
+      tabBar.labelPadding,
+      const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
+    );
+    expect(tabBar.indicatorWeight, kHomeFeedIndicatorThickness);
+
+    final addBoundary = tester
+        .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+        .map((widget) => widget.decoration)
+        .whereType<BoxDecoration>()
+        .map((decoration) => decoration.border)
+        .whereType<BorderDirectional>()
+        .singleWhere((border) => border.start.width == kTweetDividerThickness);
+    expect(addBoundary.start.color, isNot(Colors.transparent));
+
+    final tabRect = tester.getRect(find.byType(TabBar));
+    final addRect = tester.getRect(find.byTooltip('Add timeline'));
+    expect(tabRect.right, lessThanOrEqualTo(addRect.left));
+
+    await tester.tap(find.byTooltip('Add timeline'));
+    expect(added, isTrue);
+  });
 }

@@ -10,6 +10,7 @@ import 'package:xta/home/_for_you.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
@@ -27,7 +28,6 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
-import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
@@ -447,63 +447,44 @@ class _FeedScreenState extends State<FeedScreen> {
       scrollController: widget.scrollController,
       groupId: widget.id,
       centerTitle: false,
+      flatAppBar: true,
       leading: const DrawerAvatarButton(),
-      titleBuilder: (context) => Text(L10n.of(context).home),
+      titleBuilder: (context) => HomeAppBarTitle(
+        label: L10n.of(context).home,
+      ),
       bottomBuilder: (context) => PreferredSize(
-        preferredSize: const Size.fromHeight(kTweetTouchTarget),
+        preferredSize: const Size.fromHeight(kHomeFeedStripHeight),
         child: DefaultTabController(
           key: ValueKey(
             '${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
           ),
           length: visible.length,
           initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
-          child: Row(
-            children: [
-              Expanded(
-                child: GroupUnreadScope(
-                  builder: (context, unreadIds) => TabBar(
-                    // The shell draws the bar's hairline; the TabBar's own divider on top
-                    // of it would double the line.
-                    dividerHeight: 0,
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    indicatorColor: tweetReadableAccentColor(context),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelColor: tweetPrimaryColor(context),
-                    unselectedLabelColor: tweetSecondaryColor(context),
-                    labelStyle: tweetLabelStyle(context),
-                    unselectedLabelStyle: tweetLabelStyle(
-                      context,
-                    ).copyWith(fontWeight: FontWeight.w500),
-                    tabs: [
-                      for (final e in visible)
-                        Tab(
-                          child: FeedStripTab(
-                            title: e.titleBuilder(context),
-                            icon: e.icon ?? e.id.icon,
-                            mark: e.mark,
-                            unread: unreadIds.contains(_unreadKeyFor(e.id)),
-                          ),
-                        ),
-                    ],
-                    onTap: (index) {
-                      _selectStripTab(visible[index].id);
-                    },
+          child: GroupUnreadScope(
+            builder: (context, unreadIds) => HomeFeedStrip(
+              tabs: [
+                for (final e in visible)
+                  Tab(
+                    child: FeedStripTab(
+                      title: e.titleBuilder(context),
+                      icon: e.icon ?? e.id.icon,
+                      mark: e.mark,
+                      unread: unreadIds.contains(_unreadKeyFor(e.id)),
+                    ),
                   ),
-                ),
-              ),
-              IconButton(
-                tooltip: L10n.of(context).feed_strip_add,
-                icon: const Icon(Icons.add),
-                onPressed: () async {
-                  final pinnedId = await showFeedStripAddSheet(context);
-                  if (!context.mounted || pinnedId == null) return;
-                  await rememberNetwork(context, pinnedId);
-                  if (!context.mounted) return;
-                  _selectStripTab(FeedTab(pinnedId));
-                },
-              ),
-            ],
+              ],
+              onTap: (index) {
+                _selectStripTab(visible[index].id);
+              },
+              addTooltip: L10n.of(context).feed_strip_add,
+              onAdd: () async {
+                final pinnedId = await showFeedStripAddSheet(context);
+                if (!context.mounted || pinnedId == null) return;
+                await rememberNetwork(context, pinnedId);
+                if (!context.mounted) return;
+                _selectStripTab(FeedTab(pinnedId));
+              },
+            ),
           ),
         ),
       ),
@@ -513,7 +494,12 @@ class _FeedScreenState extends State<FeedScreen> {
         // steer nothing here. Its overflow carries the app settings so they
         // stay reachable from this tab too.
         if (tab == FeedTab.reddit) {
-          return const [RedditFeedActions(showAppSettings: true)];
+          return const [
+            Padding(
+              padding: EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
+              child: RedditFeedActions(showAppSettings: true),
+            ),
+          ];
         }
 
         // Only the feed filters. Refresh is the pull gesture and settings
@@ -522,7 +508,7 @@ class _FeedScreenState extends State<FeedScreen> {
         final model = context.read<GroupModel>();
         final disabledCount =
             _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
-        return defaultGroupActions(
+        final actions = defaultGroupActions(
           context,
           model: model,
           showMore: tab == FeedTab.following,
@@ -546,6 +532,7 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
           ],
         );
+        return [HomeAppBarActions(children: actions)];
       },
       bodyBuilder: (context) {
         if (tab == FeedTab.following) {

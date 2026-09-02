@@ -8,6 +8,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/feed_strip_tab.dart';
+import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/network_switcher.dart';
 
@@ -55,26 +56,18 @@ void main() {
             final available = availableFeedTabsFromIds(strip.state, prefs);
             return DefaultTabController(
               length: available.length,
-              child: Column(
-                children: [
-                  TabBar(
-                    isScrollable: true,
-                    tabs: [
-                      for (final e in available)
-                        Tab(
-                          child: FeedStripTab(
-                            title: e.titleBuilder(context),
-                            icon: e.icon ?? e.id.icon,
-                          ),
-                        ),
-                    ],
-                  ),
-                  IconButton(
-                    tooltip: L10n.of(context).feed_strip_add,
-                    icon: const Icon(Icons.add),
-                    onPressed: () {},
-                  ),
+              child: HomeFeedStrip(
+                tabs: [
+                  for (final e in available)
+                    Tab(
+                      child: FeedStripTab(
+                        title: e.titleBuilder(context),
+                        icon: e.icon ?? e.id.icon,
+                      ),
+                    ),
                 ],
+                addTooltip: L10n.of(context).feed_strip_add,
+                onAdd: () {},
               ),
             );
           },

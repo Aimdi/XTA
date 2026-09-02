@@ -5,6 +5,119 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const double kHomeNavigationHeight = 64;
+const double kHomeFeedStripHeight = kTweetTouchTarget;
+const double kHomeFeedTabHorizontalPadding = 12;
+const double kHomeFeedIndicatorThickness = 2;
+const double kHomeAppBarEndInset = kTweetSpace1;
+
+/// Leading-aligned Home title that cannot compete with feed actions at large
+/// text scales.
+class HomeAppBarTitle extends StatelessWidget {
+  final String label;
+
+  const HomeAppBarTitle({super.key, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(label, maxLines: 1, overflow: TextOverflow.ellipsis);
+  }
+}
+
+/// Keeps Home's existing actions in predictable, independent touch targets.
+class HomeAppBarActions extends StatelessWidget {
+  final List<Widget> children;
+
+  const HomeAppBarActions({super.key, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final child in children)
+            SizedBox.square(
+              dimension: kTweetTouchTarget,
+              child: Center(child: child),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Home's single-row, scrollable feed selector with a fixed add action.
+class HomeFeedStrip extends StatelessWidget {
+  final List<Widget> tabs;
+  final ValueChanged<int>? onTap;
+  final String addTooltip;
+  final VoidCallback onAdd;
+
+  const HomeFeedStrip({
+    super.key,
+    required this.tabs,
+    this.onTap,
+    required this.addTooltip,
+    required this.onAdd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = XLookTokens.maybeOf(context);
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      height: kHomeFeedStripHeight,
+      child: ColoredBox(
+        color: tokens?.background ?? theme.colorScheme.surface,
+        child: Row(
+          children: [
+            Expanded(
+              child: TabBar(
+                dividerHeight: 0,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                labelPadding: const EdgeInsets.symmetric(
+                  horizontal: kHomeFeedTabHorizontalPadding,
+                ),
+                indicatorColor: tweetReadableAccentColor(context),
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicatorWeight: kHomeFeedIndicatorThickness,
+                labelColor: tweetPrimaryColor(context),
+                unselectedLabelColor: tweetSecondaryColor(context),
+                labelStyle: tweetLabelStyle(context),
+                unselectedLabelStyle: tweetLabelStyle(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w500),
+                tabs: tabs,
+                onTap: onTap,
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: BorderDirectional(
+                  start: BorderSide(
+                    color: tweetDividerColor(context),
+                    width: kTweetDividerThickness,
+                  ),
+                ),
+              ),
+              child: SizedBox.square(
+                dimension: kTweetTouchTarget,
+                child: IconButton(
+                  tooltip: addTooltip,
+                  icon: const Icon(Icons.add),
+                  onPressed: onAdd,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 @immutable
 class HomeSwitcherOption<T> {

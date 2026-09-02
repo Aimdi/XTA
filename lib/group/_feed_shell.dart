@@ -31,6 +31,10 @@ class GroupFeedShell extends StatefulWidget {
   /// Home uses a leading title; group names stay leading like every pushed screen.
   final bool centerTitle;
 
+  /// Keeps the Home app bar on the same flat reading surface while scrolled.
+  /// Group routes retain Material's existing app-bar behavior by default.
+  final bool flatAppBar;
+
   /// The app bar's leading slot. The home feed puts the account avatar here (it
   /// opens the drawer, as X's does); a pushed group leaves it null for the
   /// default back button.
@@ -50,6 +54,7 @@ class GroupFeedShell extends StatefulWidget {
     required this.actionsBuilder,
     this.bottomBuilder,
     this.centerTitle = false,
+    this.flatAppBar = false,
     this.leading,
     this.usesFeedCache = false,
   });
@@ -203,7 +208,14 @@ class _GroupFeedShellState extends State<GroupFeedShell>
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
                   SliverAppBar(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    backgroundColor: widget.flatAppBar
+                        ? Theme.of(context).scaffoldBackgroundColor
+                        : Theme.of(context).colorScheme.surface,
+                    elevation: widget.flatAppBar ? 0 : null,
+                    scrolledUnderElevation: widget.flatAppBar ? 0 : null,
+                    surfaceTintColor: widget.flatAppBar
+                        ? Colors.transparent
+                        : null,
                     pinned: true,
                     centerTitle: widget.centerTitle,
                     leading: widget.leading,
