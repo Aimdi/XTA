@@ -12,8 +12,12 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/plugins/mastodon/mastodon_settings.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -30,31 +34,32 @@ class MastodonScreen extends StatefulWidget {
   State<MastodonScreen> createState() => _MastodonScreenState();
 }
 
-class _MastodonTabStore extends Store<int> {
+class _MastodonTabStore extends PluginViewStore<int> {
   _MastodonTabStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _MastodonScreenState extends State<MastodonScreen> {
-  final _tabs = _MastodonTabStore();
+  late final PluginSessionLease _session;
+  late final _MastodonTabStore _tabs;
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'mastodon');
+    _tabs = _session.obtain('view', () => _MastodonTabStore());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         // Explore only. Following used to start the same frame and fan out
         // every followed acct across several instances — that is what made
         // opening the tab stall the rest of the app.
-        context.read<MastodonExploreStore>().refresh();
+        _onTab(_tabs.state);
       }
     });
   }
 
   @override
   void dispose() {
-    _tabs.destroy();
+    _session.dispose();
     super.dispose();
   }
 
@@ -80,17 +85,12 @@ class _MastodonScreenState extends State<MastodonScreen> {
     try {
       // No instance required any more: the acct's own instance is asked first,
       // then the reader's, then the built-in defaults.
-      final candidates = mastodonInstanceCandidates(
-        acct,
-        configured: mastodonConfiguredInstances(prefs),
-      );
+      final candidates = mastodonInstanceCandidates(acct, configured: mastodonConfiguredInstances(prefs));
       final profile = await client.lookupAnywhere(candidates, acct);
       await accounts.add(profile.toAccount());
     } catch (e) {
       if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(mastodonErrorMessage(l10n, e))),
-        );
+        messenger.showSnackBar(SnackBar(content: Text(mastodonErrorMessage(l10n, e))));
       }
       return;
     }
@@ -103,6 +103,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _tabs.restore(context, 'mastodon');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -111,7 +112,35 @@ class _MastodonScreenState extends State<MastodonScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_mastodon_title,
+              mark: pluginMark(MastodonPlugin(), size: 24),
               accent: MastodonPlugin().brandColor,
+              tabs: [
+                PluginHomeTab(
+                  label: l10n.plugin_mastodon_tab_explore,
+                  icon: Icons.explore_outlined,
+                  selected: tab == 0,
+                  onTap: () => _onTab(0),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_mastodon_tab_local,
+                  icon: Icons.home_outlined,
+                  selected: tab == 1,
+                  onTap: () => _onTab(1),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_mastodon_tab_federated,
+                  icon: Icons.public,
+                  selected: tab == 2,
+                  onTap: () => _onTab(2),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_mastodon_tab_following,
+                  icon: Icons.people_outline,
+                  selected: tab == 3,
+                  onTap: () => _onTab(3),
+                ),
+              ],
               actions: [
                 IconButton(
                   icon: const Icon(Icons.search),
@@ -123,16 +152,34 @@ class _MastodonScreenState extends State<MastodonScreen> {
                   tooltip: l10n.plugin_mastodon_add,
                   onPressed: _addAccount,
                 ),
+                IconButton(
+                  icon: const Icon(Icons.settings_outlined),
+                  tooltip: l10n.settings,
+                  onPressed: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const MastodonSettingsScreen())),
+                ),
               ],
             ),
-            _MastodonTabs(selected: tab, onSelected: _onTab),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
+              child: Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  mastodonConfiguredInstances(PrefService.of(context)).isEmpty
+                      ? l10n.plugin_mastodon_builtin_instances
+                      : '${l10n.plugin_mastodon_instance}: ${mastodonConfiguredInstances(PrefService.of(context)).join(', ')}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+            ),
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  (_) =>
-                      _ExplorePane(scrollController: widget.scrollController),
+                  (_) => _ExplorePane(scrollController: widget.scrollController),
                   (_) => _PublicPane(
                     store: context.read<MastodonLocalStore>(),
                     emptyIcon: Icons.home_outlined,
@@ -143,8 +190,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
                     emptyIcon: Icons.public,
                     scrollController: widget.scrollController,
                   ),
-                  (_) =>
-                      _FollowingPane(scrollController: widget.scrollController),
+                  (_) => _FollowingPane(scrollController: widget.scrollController),
                 ],
               ),
             ),
@@ -157,6 +203,10 @@ class _MastodonScreenState extends State<MastodonScreen> {
   void _onTab(int index) {
     _tabs.select(index);
     if (!mounted) return;
+    if (index == 0) {
+      final store = context.read<MastodonExploreStore>();
+      if (store.state.posts.isEmpty && store.state.tags.isEmpty) unawaited(store.refresh());
+    }
     if (index == 1) {
       final store = context.read<MastodonLocalStore>();
       if (store.state.isEmpty) unawaited(store.refresh());
@@ -172,95 +222,6 @@ class _MastodonScreenState extends State<MastodonScreen> {
   }
 }
 
-class _MastodonTabs extends StatelessWidget {
-  final int selected;
-  final ValueChanged<int> onSelected;
-
-  const _MastodonTabs({required this.selected, required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-        children: [
-          _Tab(
-            label: l10n.plugin_mastodon_tab_explore,
-            icon: Icons.explore_outlined,
-            selected: selected == 0,
-            onTap: () => onSelected(0),
-          ),
-          _Tab(
-            label: l10n.plugin_mastodon_tab_local,
-            icon: Icons.home_outlined,
-            selected: selected == 1,
-            onTap: () => onSelected(1),
-          ),
-          _Tab(
-            label: l10n.plugin_mastodon_tab_federated,
-            icon: Icons.public,
-            selected: selected == 2,
-            onTap: () => onSelected(2),
-          ),
-          _Tab(
-            label: l10n.plugin_mastodon_tab_following,
-            icon: Icons.people_outline,
-            selected: selected == 3,
-            onTap: () => onSelected(3),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Tab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _Tab({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = selected
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20, color: color),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ExplorePane extends StatelessWidget {
   final ScrollController scrollController;
 
@@ -272,8 +233,7 @@ class _ExplorePane extends StatelessWidget {
     final store = context.read<MastodonExploreStore>();
     return ScopedBuilder<MastodonExploreStore, MastodonExplorePage>(
       store: store,
-      onLoading: (_) =>
-          store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
+      onLoading: (_) => store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
           : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.posts.isNotEmpty
@@ -291,11 +251,7 @@ class _ExplorePane extends StatelessWidget {
     );
   }
 
-  Widget _exploreBody(
-    BuildContext context,
-    L10n l10n,
-    MastodonExplorePage page,
-  ) {
+  Widget _exploreBody(BuildContext context, L10n l10n, MastodonExplorePage page) {
     if (page.tags.isEmpty && page.posts.isEmpty) {
       return EmptyPane(
         icon: Icons.explore_outlined,
@@ -315,11 +271,7 @@ class _ExplorePane extends StatelessWidget {
             return _TrendingTags(tags: page.tags);
           }
           final post = page.posts[index - (page.tags.isEmpty ? 0 : 1)];
-          return MastodonPostCard(
-            key: ValueKey(post.id),
-            post: post,
-            showSourceBadge: false,
-          );
+          return MastodonPostCard(key: ValueKey(post.id), post: post, showSourceBadge: false);
         },
       ),
     );
@@ -341,9 +293,7 @@ class _TrendingTags extends StatelessWidget {
         children: [
           Text(
             l10n.plugin_mastodon_trending,
-            style: Theme.of(
-              context,
-            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -353,12 +303,8 @@ class _TrendingTags extends StatelessWidget {
               for (final tag in tags.take(12))
                 ActionChip(
                   label: Text('#${tag.name}'),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => MastodonTagScreen(tag: tag.name),
-                    ),
-                  ),
+                  onPressed: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name))),
                 ),
             ],
           ),
@@ -373,20 +319,14 @@ class _PublicPane extends StatelessWidget {
   final IconData emptyIcon;
   final ScrollController scrollController;
 
-  const _PublicPane({
-    required this.store,
-    required this.emptyIcon,
-    required this.scrollController,
-  });
+  const _PublicPane({required this.store, required this.emptyIcon, required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
       store: store,
-      onLoading: (_) => store.state.isNotEmpty
-          ? _list(context, store.state, store)
-          : const PluginFeedSkeleton(),
+      onLoading: (_) => store.state.isNotEmpty ? _list(context, store.state, store) : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _list(context, store.state, store)
           : Padding(
@@ -412,15 +352,10 @@ class _PublicPane extends StatelessWidget {
     );
   }
 
-  Widget _list(
-    BuildContext context,
-    List<MastodonPost> posts,
-    MastodonPublicFeedStore store,
-  ) {
+  Widget _list(BuildContext context, List<MastodonPost> posts, MastodonPublicFeedStore store) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.metrics.pixels >
-            notification.metrics.maxScrollExtent - 1200) {
+        if (notification.metrics.pixels > notification.metrics.maxScrollExtent - 1200) {
           store.loadMore();
         }
         return false;
@@ -438,11 +373,7 @@ class _PublicPane extends StatelessWidget {
                 child: Center(child: CircularProgressIndicator()),
               );
             }
-            return MastodonPostCard(
-              key: ValueKey(posts[index].id),
-              post: posts[index],
-              showSourceBadge: false,
-            );
+            return MastodonPostCard(key: ValueKey(posts[index].id), post: posts[index], showSourceBadge: false);
           },
         ),
       ),
@@ -461,9 +392,7 @@ class _FollowingPane extends StatelessWidget {
     final feed = context.read<MastodonFeedStore>();
     return ScopedBuilder<MastodonFeedStore, List<MastodonPost>>(
       store: feed,
-      onLoading: (_) => feed.state.isNotEmpty
-          ? _followingList(context, l10n, feed.state)
-          : const PluginFeedSkeleton(),
+      onLoading: (_) => feed.state.isNotEmpty ? _followingList(context, l10n, feed.state) : const PluginFeedSkeleton(),
       onError: (context, error) => feed.state.isNotEmpty
           ? _followingList(context, l10n, feed.state)
           : Padding(
@@ -479,22 +408,15 @@ class _FollowingPane extends StatelessWidget {
     );
   }
 
-  Widget _followingList(
-    BuildContext context,
-    L10n l10n,
-    List<MastodonPost> posts,
-  ) {
+  Widget _followingList(BuildContext context, L10n l10n, List<MastodonPost> posts) {
     if (posts.isEmpty) {
       return ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
         store: context.read<MastodonAccountsStore>(),
         onState: (context, accounts) => EmptyPane(
           icon: Icons.public,
-          message: accounts.isEmpty
-              ? l10n.plugin_mastodon_empty
-              : l10n.plugin_mastodon_no_posts,
+          message: accounts.isEmpty ? l10n.plugin_mastodon_empty : l10n.plugin_mastodon_no_posts,
           scrollController: scrollController,
-          onRefresh: () =>
-              context.read<MastodonFeedStore>().refresh(force: true),
+          onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
           action: accounts.isEmpty
               ? FilledButton.icon(
                   onPressed: () => showMastodonSearchSheet(context),
@@ -502,8 +424,7 @@ class _FollowingPane extends StatelessWidget {
                   label: Text(l10n.plugin_mastodon_discover),
                 )
               : FilledButton.icon(
-                  onPressed: () =>
-                      context.read<MastodonFeedStore>().refresh(force: true),
+                  onPressed: () => context.read<MastodonFeedStore>().refresh(force: true),
                   icon: const Icon(Icons.refresh),
                   label: Text(l10n.retry),
                 ),
@@ -516,20 +437,14 @@ class _FollowingPane extends StatelessWidget {
         controller: scrollController,
         padding: pluginFeedPadding(context),
         itemCount: posts.length,
-        itemBuilder: (context, index) => MastodonPostCard(
-          key: ValueKey(posts[index].id),
-          post: posts[index],
-          showSourceBadge: false,
-        ),
+        itemBuilder: (context, index) =>
+            MastodonPostCard(key: ValueKey(posts[index].id), post: posts[index], showSourceBadge: false),
       ),
     );
   }
 }
 
-Future<String?> showMastodonAddAccountDialog(
-  BuildContext context, {
-  bool lookup = false,
-}) {
+Future<String?> showMastodonAddAccountDialog(BuildContext context, {bool lookup = false}) {
   return showDialog<String>(
     context: context,
     builder: (_) => _MastodonAddAccountDialog(lookup: lookup),
@@ -542,8 +457,7 @@ class _MastodonAddAccountDialog extends StatefulWidget {
   const _MastodonAddAccountDialog({required this.lookup});
 
   @override
-  State<_MastodonAddAccountDialog> createState() =>
-      _MastodonAddAccountDialogState();
+  State<_MastodonAddAccountDialog> createState() => _MastodonAddAccountDialogState();
 }
 
 class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
@@ -576,23 +490,15 @@ class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return AlertDialog(
-      title: Text(
-        widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add,
-      ),
+      title: Text(widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add),
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: InputDecoration(
-          hintText: l10n.plugin_mastodon_handle_hint,
-          errorText: _error,
-        ),
+        decoration: InputDecoration(hintText: l10n.plugin_mastodon_handle_hint, errorText: _error),
         onSubmitted: (_) => _submit(),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
         TextButton(onPressed: _submit, child: Text(l10n.ok)),
       ],
     );

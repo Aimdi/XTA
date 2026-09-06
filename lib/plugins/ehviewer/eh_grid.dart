@@ -8,6 +8,8 @@ import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_gallery_layout.dart';
+import 'package:xta/ui/contrast.dart';
 
 const ehImageTimeLimit = Duration(seconds: 20);
 
@@ -105,47 +107,54 @@ class EhGalleryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final grid = NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (onNearEnd == null) return false;
-        final metrics = notification.metrics;
-        if (metrics.pixels >= metrics.maxScrollExtent - 800) {
-          onNearEnd!();
-        }
-        return false;
-      },
-      child: CustomScrollView(
-        controller: pluginInnerScrollController(context, scrollController),
-        primary: PluginEmbedded.maybeOf(context) ? false : null,
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(8),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 0.62,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final scaler = MediaQuery.textScalerOf(context);
+        final columns = pluginGalleryColumns(constraints.maxWidth, scaler);
+        final tileWidth = (constraints.maxWidth - 16 - (columns - 1) * 8) / columns;
+        final grid = NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (onNearEnd == null) return false;
+            final metrics = notification.metrics;
+            if (metrics.pixels >= metrics.maxScrollExtent - 800) {
+              onNearEnd!();
+            }
+            return false;
+          },
+          child: CustomScrollView(
+            controller: pluginInnerScrollController(context, scrollController),
+            primary: PluginEmbedded.maybeOf(context) ? false : null,
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.all(8),
+                sliver: SliverGrid(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    mainAxisExtent: tileWidth * 1.25 + scaler.scale(72) + 28,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => EhGalleryTile(gallery: galleries[index]),
+                    childCount: galleries.length,
+                  ),
+                ),
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => EhGalleryTile(gallery: galleries[index]),
-                childCount: galleries.length,
-              ),
-            ),
+              if (loadingMore)
+                const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+            ],
           ),
-          if (loadingMore)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ),
-        ],
-      ),
+        );
+        if (onRefresh == null) return grid;
+        return RefreshIndicator(onRefresh: onRefresh!, child: grid);
+      },
     );
-    if (onRefresh == null) return grid;
-    return RefreshIndicator(onRefresh: onRefresh!, child: grid);
   }
 }
 
@@ -164,10 +173,7 @@ class EhGalleryTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => EhGalleryScreen(gallery: gallery)),
-        ),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EhGalleryScreen(gallery: gallery))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -180,10 +186,7 @@ class EhGalleryTile extends StatelessWidget {
                       RepaintBoundary(
                         child: EhNetworkImage(
                           url: gallery.thumbUrl ?? '',
-                          cacheWidth:
-                              (constraints.maxWidth *
-                                      MediaQuery.devicePixelRatioOf(context))
-                                  .ceil(),
+                          cacheWidth: (constraints.maxWidth * MediaQuery.devicePixelRatioOf(context)).ceil(),
                         ),
                       ),
                       if (gallery.category != null)
@@ -196,14 +199,11 @@ class EhGalleryTile extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               child: Text(
                                 gallery.category!.label,
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: Colors.white,
+                                  color: ensureContrast(Colors.white, ehCategoryColor(gallery.category!)),
                                 ),
                               ),
                             ),
@@ -220,19 +220,23 @@ class EhGalleryTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    gallery.titleFor(
-                      preferJapanese: ehPreferJapaneseOf(context),
-                    ),
+                    gallery.titleFor(preferJapanese: ehPreferJapaneseOf(context)),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall,
+                    style: theme.textTheme.bodyMedium,
                   ),
+                  if (gallery.uploader?.isNotEmpty == true) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      gallery.uploader!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium,
+                    ),
+                  ],
                   if (gallery.pageCount != null) ...[
                     const SizedBox(height: 2),
-                    Text(
-                      l10n.plugin_eh_pages(gallery.pageCount!),
-                      style: theme.textTheme.labelSmall,
-                    ),
+                    Text(l10n.plugin_eh_pages(gallery.pageCount!), style: theme.textTheme.labelSmall),
                   ],
                 ],
               ),
@@ -250,12 +254,7 @@ class EhSpriteThumb extends StatelessWidget {
   final double offsetX;
   final double tileWidth;
 
-  const EhSpriteThumb({
-    super.key,
-    required this.url,
-    required this.offsetX,
-    this.tileWidth = 200,
-  });
+  const EhSpriteThumb({super.key, required this.url, required this.offsetX, this.tileWidth = 200});
 
   @override
   Widget build(BuildContext context) {
@@ -274,11 +273,8 @@ class EhSpriteThumb extends StatelessWidget {
                 height: constraints.maxHeight,
                 fit: BoxFit.fitHeight,
                 cache: true,
-                cacheHeight:
-                    constraints.maxHeight.isFinite && constraints.maxHeight > 0
-                    ? (constraints.maxHeight *
-                              MediaQuery.devicePixelRatioOf(context))
-                          .ceil()
+                cacheHeight: constraints.maxHeight.isFinite && constraints.maxHeight > 0
+                    ? (constraints.maxHeight * MediaQuery.devicePixelRatioOf(context)).ceil()
                     : null,
                 headers: _ehImageHeaders(context),
                 filterQuality: FilterQuality.medium,
@@ -286,11 +282,7 @@ class EhSpriteThumb extends StatelessWidget {
                 retries: 1,
                 loadStateChanged: (state) {
                   if (state.extendedImageLoadState == LoadState.failed) {
-                    return ColoredBox(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                    );
+                    return ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest);
                   }
                   return null;
                 },

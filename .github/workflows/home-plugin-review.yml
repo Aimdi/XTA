@@ -1,0 +1,141 @@
+name: Home plugin review
+
+on:
+  pull_request:
+    branches: [claude/main]
+    paths:
+      - 'lib/home/**'
+      - 'lib/group/_feed_shell.dart'
+      - 'lib/plugins/**'
+      - 'lib/l10n/**'
+      - 'test/**'
+      - '.github/workflows/home-plugin-review.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: home-plugin-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.head_ref == 'codex/home-plugin-redesign'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          mkdir -p review-artifacts
+          git rev-parse HEAD > review-artifacts/commit.txt
+      - name: Format touched Dart and localization
+        run: |
+          mapfile -t changed < <(git diff --name-only --diff-filter=AM 4c6b8e87f4acce99b6998ac2b65a13892ac41673 HEAD -- '*.dart')
+          dart format --line-length 120 "${changed[@]}"
+          for file in lib/l10n/*.arb; do
+            dart run arb_utils sort "$file"
+            dart run arb_utils generate-meta "$file"
+          done
+          git diff --binary > review-artifacts/format.patch
+      - name: Upload formatter patch
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-plugin-format-${{ github.event.pull_request.head.sha }}
+          path: review-artifacts/format.patch
+          retention-days: 7
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos 2>&1 | tee review-artifacts/analyze.txt
+      - name: Reader journeys
+        timeout-minutes: 3
+        id: journeys
+        if: steps.analyze.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test test/home_plugin_journeys_test.dart test/pixiv_reader_journey_test.dart test/plugin_connection_journeys_test.dart test/plugin_reader_accessibility_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+      - name: Upload journey evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-plugin-journeys-${{ github.event.pull_request.head.sha }}
+          path: |
+            review-artifacts/journeys.txt
+            review-artifacts/renders
+          retention-days: 7
+      - name: Deterministic tests
+        timeout-minutes: 12
+        id: tests
+        if: steps.journeys.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee review-artifacts/tests.txt
+      - name: Before test renders
+        timeout-minutes: 8
+        if: always()
+        continue-on-error: true
+        run: |
+          git worktree add --detach ../xta-before 4c6b8e87f4acce99b6998ac2b65a13892ac41673
+          cp test/home_plugin_evidence_test.dart ../xta-before/test/
+          cd ../xta-before
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          flutter test test/home_plugin_evidence_test.dart --reporter expanded
+          cp -r review-artifacts/renders ../XTA-before-renders
+      - name: Collect before renders
+        if: always()
+        run: |
+          if [ -d ../XTA-before-renders ]; then mv ../XTA-before-renders review-artifacts/before; fi
+      - name: Debug APK
+        id: apk
+        if: steps.analyze.outcome == 'success' && steps.tests.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python -m pip install -r requirements.txt
+          python generate_icons.py
+          dart run flutter_launcher_icons
+          flutter build apk --debug
+          cp build/app/outputs/flutter-apk/app-debug.apk review-artifacts/xta-home-plugin-debug.apk
+      - name: Upload review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-plugin-review-${{ github.event.pull_request.head.sha }}
+          path: review-artifacts
+          retention-days: 7
+      - name: Enforce verification
+        if: always()
+        env:
+          ANALYZE: ${{ steps.analyze.outcome }}
+          JOURNEYS: ${{ steps.journeys.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          APK: ${{ steps.apk.outcome }}
+        run: |
+          test "$ANALYZE" = success
+          test "$JOURNEYS" = success
+          test "$TESTS" = success
+          test "$APK" = success

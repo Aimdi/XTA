@@ -35,6 +35,10 @@ class GroupFeedShell extends StatefulWidget {
   /// Group routes retain Material's existing app-bar behavior by default.
   final bool flatAppBar;
 
+  /// Home keeps source and plugin controls below a fixed app header. A nested
+  /// outer offset can otherwise move a newly selected plugin under that header.
+  final bool fixedHeader;
+
   /// The app bar's leading slot. The home feed puts the account avatar here (it
   /// opens the drawer, as X's does); a pushed group leaves it null for the
   /// default back button.
@@ -55,6 +59,7 @@ class GroupFeedShell extends StatefulWidget {
     this.bottomBuilder,
     this.centerTitle = false,
     this.flatAppBar = false,
+    this.fixedHeader = false,
     this.leading,
     this.usesFeedCache = false,
   });
@@ -63,8 +68,7 @@ class GroupFeedShell extends StatefulWidget {
   State<GroupFeedShell> createState() => _GroupFeedShellState();
 }
 
-class _GroupFeedShellState extends State<GroupFeedShell>
-    with AutomaticKeepAliveClientMixin<GroupFeedShell> {
+class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAliveClientMixin<GroupFeedShell> {
   late GroupModel _groupModel;
   final FeedRefreshController _feedRefreshController = FeedRefreshController();
   int _refreshCounter = 0;
@@ -74,8 +78,7 @@ class _GroupFeedShellState extends State<GroupFeedShell>
   SubscriptionsModel? _subscriptionsModel;
   GroupsModel? _groupsModel;
 
-  late final String _callbackKey =
-      'GroupFeedShell-${widget.groupId}-${identityHashCode(this)}';
+  late final String _callbackKey = 'GroupFeedShell-${widget.groupId}-${identityHashCode(this)}';
 
   @override
   bool get wantKeepAlive => true;
@@ -120,8 +123,7 @@ class _GroupFeedShellState extends State<GroupFeedShell>
     super.didChangeDependencies();
     final newSubs = context.read<SubscriptionsModel>();
     final newGroups = context.read<GroupsModel>();
-    if (!identical(newSubs, _subscriptionsModel) ||
-        !identical(newGroups, _groupsModel)) {
+    if (!identical(newSubs, _subscriptionsModel) || !identical(newGroups, _groupsModel)) {
       _subscriptionsModel?.removeReloadListener(_callbackKey);
       _groupsModel?.removeReloadListener(_callbackKey);
       _subscriptionsModel = newSubs;
@@ -172,8 +174,7 @@ class _GroupFeedShellState extends State<GroupFeedShell>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (!_isHomeFeed)
-            _GroupIdentityRow(model: _groupModel, groupId: widget.groupId),
+          if (!_isHomeFeed) _GroupIdentityRow(model: _groupModel, groupId: widget.groupId),
           ?inner,
           tweetHairlineDivider(context),
         ],
@@ -203,36 +204,63 @@ class _GroupFeedShellState extends State<GroupFeedShell>
         builder: (context, child) {
           return Provider<FeedRefreshController>.value(
             value: _feedRefreshController,
-            child: NestedScrollView(
-              controller: widget.scrollController,
-              headerSliverBuilder: (context, innerBoxIsScrolled) {
-                return [
-                  SliverAppBar(
-                    backgroundColor: widget.flatAppBar
-                        ? Theme.of(context).scaffoldBackgroundColor
-                        : Theme.of(context).colorScheme.surface,
-                    elevation: widget.flatAppBar ? 0 : null,
-                    scrolledUnderElevation: widget.flatAppBar ? 0 : null,
-                    surfaceTintColor: widget.flatAppBar
-                        ? Colors.transparent
-                        : null,
-                    pinned: true,
-                    centerTitle: widget.centerTitle,
-                    leading: widget.leading,
-                    title: widget.titleBuilder(context),
-                    actions: widget.actionsBuilder(context),
-                    bottom: _bottom(context),
+            child: widget.fixedHeader
+                ? Builder(builder: _fixedHome)
+                : NestedScrollView(
+                    controller: widget.scrollController,
+                    headerSliverBuilder: (context, innerBoxIsScrolled) {
+                      return [
+                        SliverAppBar(
+                          backgroundColor: widget.flatAppBar
+                              ? Theme.of(context).scaffoldBackgroundColor
+                              : Theme.of(context).colorScheme.surface,
+                          elevation: widget.flatAppBar ? 0 : null,
+                          scrolledUnderElevation: widget.flatAppBar ? 0 : null,
+                          surfaceTintColor: widget.flatAppBar ? Colors.transparent : null,
+                          pinned: true,
+                          centerTitle: widget.centerTitle,
+                          leading: widget.leading,
+                          title: widget.titleBuilder(context),
+                          actions: widget.actionsBuilder(context),
+                          bottom: _bottom(context),
+                        ),
+                      ];
+                    },
+                    body: KeyedSubtree(key: ValueKey(_refreshCounter), child: widget.bodyBuilder(context)),
                   ),
-                ];
-              },
-              body: KeyedSubtree(
-                key: ValueKey(_refreshCounter),
-                child: widget.bodyBuilder(context),
-              ),
-            ),
           );
         },
       ),
+    );
+  }
+
+  Widget _fixedHome(BuildContext context) {
+    final bottom = _bottom(context);
+    final toolbarHeight = Theme.of(context).appBarTheme.toolbarHeight ?? kToolbarHeight;
+    return Column(
+      children: [
+        SizedBox(
+          height: toolbarHeight + bottom.preferredSize.height + MediaQuery.paddingOf(context).top,
+          child: AppBar(
+            toolbarHeight: toolbarHeight,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            centerTitle: widget.centerTitle,
+            leading: widget.leading,
+            title: widget.titleBuilder(context),
+            actions: widget.actionsBuilder(context),
+            bottom: bottom,
+          ),
+        ),
+        Expanded(
+          child: PrimaryScrollController(
+            controller: widget.scrollController,
+            child: KeyedSubtree(key: ValueKey(_refreshCounter), child: widget.bodyBuilder(context)),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -252,14 +280,8 @@ class _GroupIdentityRow extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final meta = context
-            .read<GroupsModel>()
-            .state
-            .where((g) => g.id == groupId)
-            .firstOrNull;
-        final seed = meta != null
-            ? groupSeedColor(meta)
-            : groupFallbackColor(group.name);
+        final meta = context.read<GroupsModel>().state.where((g) => g.id == groupId).firstOrNull;
+        final seed = meta != null ? groupSeedColor(meta) : groupFallbackColor(group.name);
         final memberCount = group.subscriptions.length;
         final theme = Theme.of(context);
 
@@ -281,9 +303,7 @@ class _GroupIdentityRow extends StatelessWidget {
                   L10n.of(context).subscription_group_member_count(memberCount),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                 ),
               ),
             ],
@@ -318,18 +338,13 @@ List<Widget> defaultGroupActions(
       IconButton(
         tooltip: L10n.of(context).scroll_to_top,
         icon: const Icon(Icons.arrow_upward),
-        onPressed: () async =>
-            await scrollToTop(context, scrollToTopController),
+        onPressed: () async => await scrollToTop(context, scrollToTopController),
       ),
     if (showRefresh)
       IconButton(
-        tooltip: MaterialLocalizations.of(
-          context,
-        ).refreshIndicatorSemanticLabel,
+        tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
         icon: const Icon(Icons.refresh),
-        onPressed:
-            onRefresh ??
-            () async => await context.read<FeedRefreshController>().refresh(),
+        onPressed: onRefresh ?? () async => await context.read<FeedRefreshController>().refresh(),
       ),
     if (showSettings)
       IconButton(

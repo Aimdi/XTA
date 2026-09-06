@@ -11,6 +11,9 @@ import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -27,18 +30,21 @@ class HnScreen extends StatefulWidget {
 }
 
 class _HnScreenState extends State<HnScreen> {
-  final _tabs = _HnTabStore();
+  late final PluginSessionLease _session;
+  late final _HnTabStore _tabs;
   late final Map<HnFeed, HnFeedStore> _feeds;
   late final HnFollowingStore _following;
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'hackernews');
+    _tabs = _session.obtain('view', () => _HnTabStore());
     final client = context.read<HackerNewsClient>();
     _feeds = {
-      for (final feed in HnFeed.values) feed: HnFeedStore(client, feed),
+      for (final feed in HnFeed.values) feed: _session.obtain('feed-${feed.name}', () => HnFeedStore(client, feed)),
     };
-    _following = HnFollowingStore(client, context.read<HnFollowsStore>());
+    _following = _session.obtain('following', () => HnFollowingStore(client, context.read<HnFollowsStore>()));
     WidgetsBinding.instance.addPostFrameCallback((_) => _prime());
   }
 
@@ -50,22 +56,19 @@ class _HnScreenState extends State<HnScreen> {
     if (!mounted) return;
     await context.read<HnFollowsStore>().load();
     if (!mounted) return;
-    await _feeds[HnFeed.top]!.refresh();
+    // The selected pane loads itself; opening a restored section must not fetch Top.
   }
 
   @override
   void dispose() {
-    for (final store in _feeds.values) {
-      store.destroy();
-    }
-    _following.destroy();
-    _tabs.destroy();
+    _session.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _tabs.restore(context, 'hn');
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<_HnTabStore, int>(
@@ -73,6 +76,8 @@ class _HnScreenState extends State<HnScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_hn_title,
+              mark: pluginMark(HackerNewsPlugin(), size: 24),
               accent: hackerNewsBrand,
               tabs: [
                 _tab(l10n.plugin_hn_tab_top, Icons.whatshot_outlined, 0),
@@ -93,10 +98,7 @@ class _HnScreenState extends State<HnScreen> {
                 IconButton(
                   tooltip: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HnSettingsScreen()),
-                  ),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HnSettingsScreen())),
                 ),
               ],
             ),
@@ -157,19 +159,12 @@ class _HnScreenState extends State<HnScreen> {
   }
 
   PluginHomeTab _tab(String label, IconData icon, int index) {
-    return PluginHomeTab(
-      label: label,
-      icon: icon,
-      selected: _tabs.state == index,
-      onTap: () => _tabs.select(index),
-    );
+    return PluginHomeTab(label: label, icon: icon, selected: _tabs.state == index, onTap: () => _tabs.select(index));
   }
 }
 
-class _HnTabStore extends Store<int> {
+class _HnTabStore extends PluginViewStore<int> {
   _HnTabStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _FeedTab extends StatefulWidget {
@@ -178,12 +173,7 @@ class _FeedTab extends StatefulWidget {
   final String empty;
   final Future<void> Function() onOpen;
 
-  const _FeedTab({
-    required this.store,
-    required this.scrollController,
-    required this.empty,
-    required this.onOpen,
-  });
+  const _FeedTab({required this.store, required this.scrollController, required this.empty, required this.onOpen});
 
   @override
   State<_FeedTab> createState() => _FeedTabState();
@@ -265,12 +255,7 @@ class _SavedTab extends StatelessWidget {
             scrollController: scrollController,
           );
         }
-        return _StoryList(
-          stories: stories,
-          scrollController: scrollController,
-          onRefresh: store.load,
-          ranked: false,
-        );
+        return _StoryList(stories: stories, scrollController: scrollController, onRefresh: store.load, ranked: false);
       },
     );
   }
@@ -281,11 +266,7 @@ class _FollowingTab extends StatefulWidget {
   final ScrollController scrollController;
   final Future<void> Function() onOpen;
 
-  const _FollowingTab({
-    required this.store,
-    required this.scrollController,
-    required this.onOpen,
-  });
+  const _FollowingTab({required this.store, required this.scrollController, required this.onOpen});
 
   @override
   State<_FollowingTab> createState() => _FollowingTabState();
@@ -305,19 +286,13 @@ class _FollowingTabState extends State<_FollowingTab> {
     return ScopedBuilder<HnFollowingStore, List<HnStory>>(
       store: widget.store,
       onLoading: (_) => const PluginFeedSkeleton(),
-      onError: (_, error) => FullPageErrorWidget(
-        error: error,
-        stackTrace: null,
-        prefix: error.toString(),
-        onRetry: widget.onOpen,
-      ),
+      onError: (_, error) =>
+          FullPageErrorWidget(error: error, stackTrace: null, prefix: error.toString(), onRetry: widget.onOpen),
       onState: (_, stories) {
         if (stories.isEmpty) {
           return EmptyPane(
             icon: Icons.people_outline,
-            message: follows.state.isEmpty
-                ? l10n.plugin_hn_following_empty
-                : l10n.plugin_hn_feed_empty,
+            message: follows.state.isEmpty ? l10n.plugin_hn_following_empty : l10n.plugin_hn_feed_empty,
             scrollController: widget.scrollController,
             onRefresh: widget.onOpen,
             action: TextButton.icon(
@@ -359,9 +334,7 @@ class _StoryList extends StatelessWidget {
       onRefresh: onRefresh,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
-          if (onMore != null &&
-              notification.metrics.extentAfter < 400 &&
-              notification is ScrollUpdateNotification) {
+          if (onMore != null && notification.metrics.extentAfter < 400 && notification is ScrollUpdateNotification) {
             onMore!();
           }
           return false;
@@ -371,10 +344,7 @@ class _StoryList extends StatelessWidget {
           padding: pluginFeedPadding(context),
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: stories.length,
-          itemBuilder: (context, index) => HnStoryCard(
-            story: stories[index],
-            rank: ranked ? index + 1 : null,
-          ),
+          itemBuilder: (context, index) => HnStoryCard(story: stories[index], rank: ranked ? index + 1 : null),
         ),
       ),
     );

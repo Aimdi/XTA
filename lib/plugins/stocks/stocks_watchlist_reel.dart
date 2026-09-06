@@ -21,18 +21,12 @@ class StocksWatchlistReel extends StatelessWidget {
   final String? selected;
   final ValueChanged<String>? onSelected;
 
-  const StocksWatchlistReel({
-    super.key,
-    required this.symbols,
-    required this.quotes,
-    this.selected,
-    this.onSelected,
-  });
+  const StocksWatchlistReel({super.key, required this.symbols, required this.quotes, this.selected, this.onSelected});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: kStockWatchlistStripHeight,
+      height: 38 + MediaQuery.textScalerOf(context).scale(30),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -80,55 +74,47 @@ class _WatchlistChip extends StatelessWidget {
     final theme = Theme.of(context);
     final price = quote?.displayPrice;
     final percent = quote?.changePercent;
-    final colour = percent == null
-        ? theme.colorScheme.outline
-        : stockChangeColour(quote?.isUp);
-    final outline = selected
-        ? theme.colorScheme.primary
-        : theme.colorScheme.outlineVariant;
+    final colour = percent == null ? theme.colorScheme.outline : stockChangeColour(quote?.isUp);
+    final outline = selected ? theme.colorScheme.primary : theme.colorScheme.outlineVariant;
 
-    return Material(
-      color: selected
-          ? theme.colorScheme.primaryContainer
-          : xControlFill(context),
-      shape: StadiumBorder(side: BorderSide(color: outline)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '\$$symbol',
-                maxLines: 1,
-                style: theme.textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.w800,
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: Material(
+        color: selected ? theme.colorScheme.primaryContainer : xControlFill(context),
+        shape: StadiumBorder(side: BorderSide(color: outline)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${selected ? '✓ ' : ''}\$$symbol',
+                  maxLines: 1,
+                  style: theme.textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w800),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    price == null
-                        ? kStockPlaceholder
-                        : stockMoneyFormat.format(price),
-                    style: theme.textTheme.bodySmall!.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: price == null
-                          ? theme.colorScheme.outline
-                          : theme.colorScheme.onSurface,
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      price == null ? kStockPlaceholder : stockMoneyFormat.format(price),
+                      style: theme.textTheme.bodySmall!.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: price == null ? theme.colorScheme.outline : theme.colorScheme.onSurface,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 6),
-                  _ChangePill(percent: percent, colour: colour),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 6),
+                    _ChangePill(percent: percent, colour: colour),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -144,25 +130,19 @@ class _ChangePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = percent == null
-        ? kStockPlaceholder
-        : stockPercentLabel(percent!);
+    final label = percent == null ? kStockPlaceholder : stockPercentLabel(percent!);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
       decoration: BoxDecoration(
-        color: percent == null
-            ? Theme.of(context).colorScheme.surfaceContainerHighest
-            : colour.withValues(alpha: 0.18),
+        color: percent == null ? Theme.of(context).colorScheme.surfaceContainerHighest : colour.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall!.copyWith(
           fontWeight: FontWeight.w800,
-          color: percent == null
-              ? Theme.of(context).colorScheme.outline
-              : colour,
+          color: percent == null ? Theme.of(context).colorScheme.outline : colour,
         ),
       ),
     );

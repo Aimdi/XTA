@@ -3,6 +3,11 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_plugin.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
@@ -27,8 +32,10 @@ class EhScreen extends StatefulWidget {
 }
 
 class _EhScreenState extends State<EhScreen> {
-  var _tab = 0;
-  var _toplistPeriod = EhToplistPeriod.yesterday;
+  late final PluginSessionLease _session;
+  late final PluginViewStore<({int tab, EhToplistPeriod period})> _view;
+  int get _tab => _view.state.tab;
+  EhToplistPeriod get _toplistPeriod => _view.state.period;
   late final EhFeedStore _popular;
   late final EhFeedStore _front;
   late final EhFeedStore _toplist;
@@ -37,13 +44,20 @@ class _EhScreenState extends State<EhScreen> {
   @override
   void initState() {
     super.initState();
-    final client = context.read<EhClient>();
-    _popular = EhFeedStore(({pageUrl}) => client.popular(pageUrl: pageUrl));
-    _front = EhFeedStore(({pageUrl}) => client.frontPage(pageUrl: pageUrl));
-    _toplist = EhFeedStore(
-      ({pageUrl}) => client.toplist(_toplistPeriod, pageUrl: pageUrl),
+    _session = PluginSessionLease(context, 'ehviewer');
+    _view = _session.obtain(
+      'view',
+      () => PluginViewStore<({int tab, EhToplistPeriod period})>((tab: 0, period: EhToplistPeriod.yesterday)),
     );
-    _watched = EhFeedStore(({pageUrl}) => client.watched(pageUrl: pageUrl));
+    final view = _view;
+    final client = context.read<EhClient>();
+    _popular = _session.obtain('popular', () => EhFeedStore(({pageUrl}) => client.popular(pageUrl: pageUrl)));
+    _front = _session.obtain('front', () => EhFeedStore(({pageUrl}) => client.frontPage(pageUrl: pageUrl)));
+    _toplist = _session.obtain(
+      'toplist',
+      () => EhFeedStore(({pageUrl}) => client.toplist(view.state.period, pageUrl: pageUrl)),
+    );
+    _watched = _session.obtain('watched', () => EhFeedStore(({pageUrl}) => client.watched(pageUrl: pageUrl)));
 
     final favorites = context.read<EhFavoritesStore>();
     final history = context.read<EhHistoryStore>();
@@ -53,24 +67,23 @@ class _EhScreenState extends State<EhScreen> {
       if (!mounted) return;
       await history.load();
       if (!mounted) return;
-      await _popular.refresh();
+      await _select(_tab);
     });
   }
 
   @override
   void dispose() {
-    _popular.destroy();
-    _front.destroy();
-    _toplist.destroy();
-    _watched.destroy();
+    _session.dispose();
     super.dispose();
   }
 
   Future<void> _select(int tab) async {
     final history = context.read<EhHistoryStore>();
     final favorites = context.read<EhFavoritesStore>();
-    setState(() => _tab = tab);
+    _view.select((tab: tab, period: _toplistPeriod));
     switch (tab) {
+      case 0:
+        if (_popular.state.isEmpty) await _popular.refresh();
       case 1:
         if (_front.state.isEmpty) await _front.refresh();
       case 2:
@@ -86,109 +99,101 @@ class _EhScreenState extends State<EhScreen> {
 
   Future<void> _setToplist(EhToplistPeriod period) async {
     if (period == _toplistPeriod) return;
-    setState(() => _toplistPeriod = period);
+    _view.select((tab: _tab, period: period));
     await _toplist.refresh();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _view.restore(context, 'ehviewer');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      body: Column(
-        children: [
-          PluginHomeChrome(
-            accent: EhViewerPlugin().brandColor,
-            tabs: [
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_popular,
-                icon: Icons.whatshot_outlined,
-                selected: _tab == 0,
-                onTap: () => _select(0),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_front,
-                icon: Icons.home_outlined,
-                selected: _tab == 1,
-                onTap: () => _select(1),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_toplist,
-                icon: Icons.emoji_events_outlined,
-                selected: _tab == 2,
-                onTap: () => _select(2),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_watched,
-                icon: Icons.visibility_outlined,
-                selected: _tab == 3,
-                onTap: () => _select(3),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_history,
-                icon: Icons.history,
-                selected: _tab == 4,
-                onTap: () => _select(4),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_favorites,
-                icon: Icons.favorite_border,
-                selected: _tab == 5,
-                onTap: () => _select(5),
-              ),
-            ],
-            actions: [
-              IconButton(
-                tooltip: l10n.search,
-                icon: const Icon(Icons.search),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EhSearchScreen()),
+      body: ScopedBuilder<PluginViewStore<({int tab, EhToplistPeriod period})>, ({int tab, EhToplistPeriod period})>(
+        store: _view,
+        onState: (_, _) => Column(
+          children: [
+            PluginHomeChrome(
+              title: l10n.plugin_eh_title,
+              mark: pluginMark(EhViewerPlugin(), size: 24),
+              accent: EhViewerPlugin().brandColor,
+              tabs: [
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_popular,
+                  icon: Icons.whatshot_outlined,
+                  selected: _tab == 0,
+                  onTap: () => _select(0),
                 ),
-              ),
-              IconButton(
-                tooltip: l10n.settings,
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EhSettingsScreen()),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_front,
+                  icon: Icons.home_outlined,
+                  selected: _tab == 1,
+                  onTap: () => _select(1),
                 ),
-              ),
-            ],
-          ),
-          if (_tab == 2)
-            SizedBox(
-              height: 44,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_toplist,
+                  icon: Icons.emoji_events_outlined,
+                  selected: _tab == 2,
+                  onTap: () => _select(2),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_watched,
+                  icon: Icons.visibility_outlined,
+                  selected: _tab == 3,
+                  onTap: () => _select(3),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_history,
+                  icon: Icons.history,
+                  selected: _tab == 4,
+                  onTap: () => _select(4),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_favorites,
+                  icon: Icons.favorite_border,
+                  selected: _tab == 5,
+                  onTap: () => _select(5),
+                ),
+              ],
+              actions: [
+                IconButton(
+                  tooltip: l10n.search,
+                  icon: const Icon(Icons.search),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
+                ),
+                IconButton(
+                  tooltip: l10n.settings,
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSettingsScreen())),
+                ),
+              ],
+            ),
+            if (_tab == 2)
+              PluginFilterRow(
                 children: [
                   for (final period in EhToplistPeriod.values)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: FilterChip(
-                        label: Text(ehToplistLabel(l10n, period)),
-                        selected: _toplistPeriod == period,
-                        onSelected: (_) => _setToplist(period),
-                      ),
+                    ChoiceChip(
+                      label: Text(ehToplistLabel(l10n, period)),
+                      selected: _toplistPeriod == period,
+                      showCheckmark: true,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                      onSelected: (_) => _setToplist(period),
                     ),
                 ],
               ),
+            Expanded(
+              child: PluginLazyTabs(index: _tab, children: [for (var i = 0; i < 6; i++) (_) => _body(l10n)]),
             ),
-          Expanded(child: _body(l10n)),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _body(L10n l10n) {
     return switch (_tab) {
-      0 => _FeedTab(
-        store: _popular,
-        empty: l10n.plugin_eh_empty_list,
-        scrollController: widget.scrollController,
-      ),
+      0 => _FeedTab(store: _popular, empty: l10n.plugin_eh_empty_list, scrollController: widget.scrollController),
       1 => _FeedTab(store: _front, empty: l10n.plugin_eh_empty_list),
       2 => _FeedTab(store: _toplist, empty: l10n.plugin_eh_empty_list),
       3 => _FeedTab(store: _watched, empty: l10n.plugin_eh_empty_watched),
@@ -203,11 +208,7 @@ class _FeedTab extends StatelessWidget {
   final String empty;
   final ScrollController? scrollController;
 
-  const _FeedTab({
-    required this.store,
-    required this.empty,
-    this.scrollController,
-  });
+  const _FeedTab({required this.store, required this.empty, this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -269,19 +270,13 @@ class _FavoritesTab extends StatelessWidget {
             icon: Icons.favorite_border,
             message: l10n.plugin_eh_empty_favorites,
             action: FilledButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const EhSearchScreen()),
-              ),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
               icon: const Icon(Icons.search),
               label: Text(l10n.search),
             ),
           );
         }
-        return EhGalleryGrid(
-          galleries: galleries,
-          onRefresh: () => context.read<EhFavoritesStore>().load(),
-        );
+        return EhGalleryGrid(galleries: galleries, onRefresh: () => context.read<EhFavoritesStore>().load());
       },
     );
   }
@@ -301,10 +296,7 @@ class _HistoryTab extends StatelessWidget {
             icon: Icons.history,
             message: l10n.plugin_eh_empty_history,
             action: FilledButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const EhSearchScreen()),
-              ),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
               icon: const Icon(Icons.search),
               label: Text(l10n.search),
             ),

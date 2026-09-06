@@ -11,6 +11,7 @@ import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_feed_view_store.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
@@ -25,6 +26,7 @@ import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_tab.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
@@ -81,16 +83,8 @@ const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
-  FeedTabOption(
-    FeedTab.following,
-    (c) => L10n.of(c).following,
-    icon: Icons.home_outlined,
-  ),
-  FeedTabOption(
-    FeedTab.foryou,
-    (c) => L10n.of(c).foryou,
-    icon: Icons.auto_awesome_outlined,
-  ),
+  FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
+  FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou, icon: Icons.auto_awesome_outlined),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -98,36 +92,18 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
     availableFeedTabsFromIds(feedStripPluginIds(prefs), prefs);
 
 /// Same shape as [availableFeedTabs], but from an explicit id list (the store).
-List<FeedTabOption> availableFeedTabsFromIds(
-  List<String> pluginIds,
-  BasePrefService prefs,
-) {
+List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
-    FeedTabOption(
-      FeedTab.following,
-      (c) => L10n.of(c).following,
-      icon: Icons.home_outlined,
-    ),
-    FeedTabOption(
-      FeedTab.foryou,
-      (c) => L10n.of(c).foryou,
-      icon: Icons.auto_awesome_outlined,
-    ),
+    FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
+    FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou, icon: Icons.auto_awesome_outlined),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
     final plugin = pluginById(pluginId);
-    if (plugin == null ||
-        !plugin.isEnabled(prefs) ||
-        !plugin.supportsFeedStrip) {
+    if (plugin == null || !plugin.isEnabled(prefs) || !plugin.supportsFeedStrip) {
       continue;
     }
     options.add(
-      FeedTabOption(
-        FeedTab(pluginId),
-        (c) => plugin.title(c),
-        icon: plugin.icon,
-        mark: pluginMark(plugin, size: 16),
-      ),
+      FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c), icon: plugin.icon, mark: pluginMark(plugin, size: 16)),
     );
   }
   return List.unmodifiable(options);
@@ -168,10 +144,7 @@ List<FeedTabOption> visibleFeedTabs({
   return visible;
 }
 
-List<FeedTabOption> overflowFeedTabs({
-  required List<FeedTabOption> available,
-  required List<FeedTabOption> visible,
-}) {
+List<FeedTabOption> overflowFeedTabs({required List<FeedTabOption> available, required List<FeedTabOption> visible}) {
   final shown = {for (final e in visible) e.id.id};
   return [
     for (final e in available)
@@ -200,12 +173,7 @@ class FeedScreen extends StatefulWidget {
   final String id;
   final String name;
 
-  const FeedScreen({
-    super.key,
-    required this.scrollController,
-    required this.id,
-    required this.name,
-  });
+  const FeedScreen({super.key, required this.scrollController, required this.id, required this.name});
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -213,19 +181,20 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   TweetFeedController _forYouFeed = TweetFeedController();
-  FeedTab? _tab;
+  final _view = HomeFeedViewStore();
+  FeedTab? get _tab => _view.state.sourceId == null ? null : FeedTab(_view.state.sourceId!);
   // Bumped on For-you refresh so the tab remounts with a fresh controller —
   // softRefresh alone left mid-scroll users looking at stale tiles until they
   // switched tabs (#168).
-  int _forYouEpoch = 0;
+  int get _forYouEpoch => _view.state.forYouEpoch;
   // Bumped with the Following cache evict so toggling an account does not
   // leave home--1 showing pages fetched with the old mix.
-  int _followingEpoch = 0;
+  int get _followingEpoch => _view.state.followingEpoch;
 
   /// Bumped only when the feed is chosen from somewhere other than these tabs,
   /// so the bar is rebuilt at the new index. A tap on the bar itself leaves it
   /// alone: the controller survives and the indicator slides, as it should.
-  int _externalTabEpoch = 0;
+  int get _externalTabEpoch => _view.state.stripEpoch;
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
   HomeAccountFilterStore? _accountFilter;
@@ -241,7 +210,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final store = context.read<FeedTabStore>();
     if (!identical(store, _tabStore)) {
       _tabStore = store;
-      _tab ??= store.state;
+      if (_tab == null) _view.selectSource(store.state.id);
       store.observer(onState: _onFeedChosenElsewhere);
     }
 
@@ -282,32 +251,30 @@ class _FeedScreenState extends State<FeedScreen> {
     if (!mounted || tab == _tab) {
       return;
     }
-    setState(() {
-      _tab = tab;
-      _externalTabEpoch++;
-    });
+    _view.selectSource(tab.id, external: true);
   }
 
   void _onStripChanged(List<String> plugins) {
     if (!mounted) return;
     final same =
         plugins.length == _lastStripPlugins.length &&
-        List.generate(
-          plugins.length,
-          (i) => plugins[i] == _lastStripPlugins[i],
-        ).every((e) => e);
+        List.generate(plugins.length, (i) => plugins[i] == _lastStripPlugins[i]).every((e) => e);
     if (same) return;
     _lastStripPlugins = List<String>.from(plugins);
-    setState(() => _externalTabEpoch++);
+    final available = availableFeedTabsFromIds(plugins, PrefService.of(context, listen: false));
+    if (!available.any((option) => option.id == _tab)) {
+      _view.selectSource(FeedTab.following.id, external: true);
+      _tabStore?.select(FeedTab.following);
+    } else {
+      _view.refreshStrip();
+    }
   }
 
   void _onHomeAccountFilterChanged(Set<String> disabled) {
     if (!mounted) {
       return;
     }
-    final same =
-        disabled.length == _lastDisabledAccountIds.length &&
-        disabled.every(_lastDisabledAccountIds.contains);
+    final same = disabled.length == _lastDisabledAccountIds.length && disabled.every(_lastDisabledAccountIds.contains);
     if (same) {
       return;
     }
@@ -319,9 +286,7 @@ class _FeedScreenState extends State<FeedScreen> {
     if (!mounted) {
       return;
     }
-    final same =
-        disabled.length == _lastDisabledGroupIds.length &&
-        disabled.every(_lastDisabledGroupIds.contains);
+    final same = disabled.length == _lastDisabledGroupIds.length && disabled.every(_lastDisabledGroupIds.contains);
     if (same) {
       return;
     }
@@ -341,7 +306,7 @@ class _FeedScreenState extends State<FeedScreen> {
     if (!mounted) {
       return;
     }
-    setState(() => _followingEpoch++);
+    _view.refreshFollowing();
     _remountForYou(scrollToTopFirst: _tab == FeedTab.foryou);
   }
 
@@ -349,6 +314,7 @@ class _FeedScreenState extends State<FeedScreen> {
   void dispose() {
     _unreadReloadDebounce?.cancel();
     _forYouFeed.dispose();
+    _view.destroy();
     super.dispose();
   }
 
@@ -370,20 +336,16 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
     final previous = _forYouFeed;
-    setState(() {
-      _forYouFeed = TweetFeedController();
-      _forYouEpoch++;
-    });
+    _forYouFeed = TweetFeedController();
+    _view.refreshForYou();
     // Dispose after the remount so the outgoing ForYouTweets isn't holding a
     // dead controller for the rest of this frame.
     WidgetsBinding.instance.addPostFrameCallback((_) => previous.dispose());
   }
 
   void _selectStripTab(FeedTab tab) {
-    setState(() {
-      _tab = tab;
-      _tabStore?.select(tab);
-    });
+    _view.selectSource(tab.id);
+    _tabStore?.select(tab);
     if (tab.isPlugin) {
       rememberNetwork(context, tab.id);
     }
@@ -410,54 +372,58 @@ class _FeedScreenState extends State<FeedScreen> {
 
   Widget _pluginBody(FeedTab tab) {
     final plugin = pluginById(tab.id);
-    final screen = plugin?.feedStripScreen(
-      scrollController: widget.scrollController,
-    );
-    if (screen != null) return PluginEmbedded(child: screen);
+    final screen = plugin?.feedStripScreen(scrollController: widget.scrollController);
+    if (screen != null) {
+      return KeyedSubtree(
+        key: PageStorageKey('home-plugin-${tab.id}'),
+        child: PluginEmbedded(child: screen),
+      );
+    }
     return Center(child: Text(L10n.of(context).feed_strip_unavailable));
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ScopedBuilder<HomeFeedViewStore, HomeFeedViewState>(store: _view, onState: (context, _) => _buildFeed(context));
+
+  Widget _buildFeed(BuildContext context) {
     // Strip membership is observed separately; listening to every pref here
     // rebuilt Following on theme, zen, and unrelated plugin writes.
     final BasePrefService prefs = PrefService.of(context, listen: false);
     final strip = context.read<FeedStripStore>();
     // Store list is the source of truth once edited; prefs alone lag a frame.
     final available = availableFeedTabsFromIds(strip.state, prefs);
-    var tab = _tab ??= feedTabFromId(
-      prefs.get<String>(optionHomeDefaultFeedTab),
-    );
+    var tab = _tab ?? feedTabFromId(prefs.get<String>(optionHomeDefaultFeedTab));
     // The plugin can be turned off while its feed is the one being shown.
     if (!available.any((e) => e.id == tab)) {
-      tab = _tab = FeedTab.following;
+      tab = FeedTab.following;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !available.any((option) => option.id == _tab)) {
+          _view.selectSource(FeedTab.following.id, external: true);
+          _tabStore?.select(FeedTab.following);
+        }
+      });
     }
 
-    final visible = visibleFeedTabs(
-      available: available,
-      recent: const [],
-      current: tab,
-    );
+    final visible = visibleFeedTabs(available: available, recent: const [], current: tab);
 
     // TabBar lives in its own DefaultTabController so a strip edit can remount
     // the indicator without recreating NestedScrollView (two outers on the
     // same ScrollController froze, then crashed, home).
     return GroupFeedShell(
-      key: ValueKey('home-shell-${tab.id}'),
+      key: ValueKey('home-shell-${widget.id}'),
       scrollController: widget.scrollController,
       groupId: widget.id,
       centerTitle: false,
       flatAppBar: true,
+      fixedHeader: true,
       leading: const DrawerAvatarButton(),
-      titleBuilder: (context) => HomeAppBarTitle(
-        label: L10n.of(context).home,
-      ),
+      titleBuilder: (context) =>
+          HomeAppBarTitle(label: tab.isPlugin ? pluginById(tab.id)!.title(context) : L10n.of(context).home),
       bottomBuilder: (context) => PreferredSize(
         preferredSize: const Size.fromHeight(kHomeFeedStripHeight),
         child: DefaultTabController(
-          key: ValueKey(
-            '${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch',
-          ),
+          key: ValueKey('${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch'),
           length: visible.length,
           initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
           child: GroupUnreadScope(
@@ -494,10 +460,29 @@ class _FeedScreenState extends State<FeedScreen> {
         // steer nothing here. Its overflow carries the app settings so they
         // stay reachable from this tab too.
         if (tab == FeedTab.reddit) {
-          return const [
+          return [
             Padding(
-              padding: EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
-              child: RedditFeedActions(showAppSettings: true),
+              padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
+              child: RedditFeedActions(
+                showAppSettings: true,
+                onOpenClient: () => openPluginClient(context, pluginById(tab.id)!),
+              ),
+            ),
+          ];
+        }
+
+        if (tab.isPlugin) {
+          final plugin = pluginById(tab.id)!;
+          return [
+            HomeAppBarActions(
+              children: [
+                IconButton(
+                  key: ValueKey('open-client-${plugin.id}'),
+                  tooltip: L10n.of(context).plugin_open_client(plugin.title(context)),
+                  icon: const Icon(Icons.open_in_new),
+                  onPressed: () => openPluginClient(context, plugin),
+                ),
+              ],
             ),
           ];
         }
@@ -506,8 +491,7 @@ class _FeedScreenState extends State<FeedScreen> {
         // live in the drawer — except on For you, whose pull gesture cannot
         // rebuild the timeline, so it keeps the explicit refresh (#168).
         final model = context.read<GroupModel>();
-        final disabledCount =
-            _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
+        final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
         final actions = defaultGroupActions(
           context,
           model: model,
@@ -520,11 +504,7 @@ class _FeedScreenState extends State<FeedScreen> {
               icon: Badge(
                 isLabelVisible: disabledCount > 0,
                 smallSize: 8,
-                child: Icon(
-                  disabledCount > 0
-                      ? Icons.manage_accounts
-                      : Icons.manage_accounts_outlined,
-                ),
+                child: Icon(disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
               ),
               tooltip: L10n.of(context).home_feed_accounts,
               // Store observer remounts For you; sheet only needs to open.

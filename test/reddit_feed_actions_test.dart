@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
+import 'package:xta/plugins/reddit/reddit_home_source.dart';
+import 'package:xta/plugins/reddit/reddit_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
 
@@ -73,9 +75,50 @@ Widget _app(Widget child) {
 }
 
 void main() {
-  testWidgets('Reddit chrome has search, not a plus next to it', (
-    tester,
-  ) async {
+  testWidgets('full Reddit actions and back fit a 320dp screen; saved stays reachable', (tester) async {
+    tester.view.physicalSize = const Size(320, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    var saved = 0;
+    await tester.pumpWidget(
+      _app(
+        Builder(
+          builder: (context) => TextButton(
+            child: const Text('Open Reddit'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => Scaffold(
+                  body: RedditHomeChrome(
+                    source: const RedditHomeSource(mode: RedditFeedMode.following),
+                    onMode: (_) {},
+                    actions: [RedditFeedActions(onOpenSaved: () => saved++)],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('Open Reddit'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BackButton), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.tap(find.byIcon(Icons.more_vert));
+    await tester.pumpAndSettle();
+    expect(find.text('Subscriptions'), findsOneWidget);
+    await tester.tap(find.text('Saved'));
+    await tester.pumpAndSettle();
+    expect(saved, 1);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.text('Open Reddit'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Reddit chrome has search, not a plus next to it', (tester) async {
     await tester.pumpWidget(_app(const RedditFeedActions()));
     await tester.pumpAndSettle();
 
@@ -98,9 +141,7 @@ void main() {
     expect(find.text('Without an account'), findsOneWidget);
   });
 
-  testWidgets('the list sheet opens a community when its row is tapped', (
-    tester,
-  ) async {
+  testWidgets('the list sheet opens a community when its row is tapped', (tester) async {
     final prefs = PrefServiceCache();
     final client = _Client();
     final subs = _Subs();
@@ -123,9 +164,7 @@ void main() {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: L10n.delegate.supportedLocales,
-            home: Scaffold(
-              appBar: AppBar(actions: [RedditFeedActions()]),
-            ),
+            home: Scaffold(appBar: AppBar(actions: [RedditFeedActions()])),
           ),
         ),
       ),
@@ -149,12 +188,7 @@ void main() {
     expect(find.text('Add subreddit'), findsOneWidget);
 
     final tile = tester.widget<ListTile>(
-      find
-          .ancestor(
-            of: find.text('r/girlsfrontline2'),
-            matching: find.byType(ListTile),
-          )
-          .first,
+      find.ancestor(of: find.text('r/girlsfrontline2'), matching: find.byType(ListTile)).first,
     );
     expect(tile.onTap, isNotNull);
   });

@@ -4,8 +4,12 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
@@ -31,7 +35,9 @@ class SubstackScreen extends StatefulWidget {
 }
 
 class _SubstackScreenState extends State<SubstackScreen> {
-  var _tab = 0;
+  late final PluginSessionLease _session;
+  late final PluginViewStore<int> _view;
+  int get _tab => _view.state;
   final _notesScrollController = ScrollController();
   final _inboxScrollController = ScrollController();
   final _libraryScrollController = ScrollController();
@@ -39,6 +45,8 @@ class _SubstackScreenState extends State<SubstackScreen> {
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'substack');
+    _view = _session.obtain('view', () => PluginViewStore<int>(0));
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final pubs = context.read<SubstackPublicationsStore>();
@@ -55,12 +63,17 @@ class _SubstackScreenState extends State<SubstackScreen> {
       if (saved.state.isEmpty) await saved.load();
       if (!mounted) return;
       feed.syncReadIds(read.state);
-      await feed.refresh();
+      if (_tab == 2) {
+        _selectTab(2);
+      } else if (_tab < 2 && feed.allPosts.isEmpty) {
+        await feed.refresh();
+      }
     });
   }
 
   @override
   void dispose() {
+    _session.dispose();
     _notesScrollController.dispose();
     _inboxScrollController.dispose();
     _libraryScrollController.dispose();
@@ -68,10 +81,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
   }
 
   Future<void> _openAdd() async {
-    final added = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(builder: (_) => const SubstackAddScreen()),
-    );
+    final added = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const SubstackAddScreen()));
     if (added == true && mounted) {
       await context.read<SubstackFeedStore>().refresh();
     }
@@ -88,8 +98,8 @@ class _SubstackScreenState extends State<SubstackScreen> {
   }
 
   void _selectTab(int tab) {
-    setState(() => _tab = tab);
-    if (tab == 2) {
+    _view.select(tab);
+    if (tab == 2 && context.read<SubstackNotesStore>().state.notes.isEmpty) {
       context.read<SubstackNotesStore>().refresh();
     }
   }
@@ -112,101 +122,90 @@ class _SubstackScreenState extends State<SubstackScreen> {
     final feed = context.read<SubstackFeedStore>();
     final notes = context.read<SubstackNotesStore>();
     final l10n = L10n.of(context);
+    _view.restore(context, 'substack');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      body: Column(
-        children: [
-          PluginHomeChrome(
-            accent: SubstackPlugin().brandColor,
-            tabs: [
-              PluginHomeTab(
-                selected: _tab == 0,
-                icon: Icons.home_outlined,
-                label: l10n.plugin_substack_home,
-                onTap: () => _selectTab(0),
-              ),
-              PluginHomeTab(
-                selected: _tab == 1,
-                icon: Icons.inbox_outlined,
-                label: l10n.plugin_substack_inbox,
-                onTap: () => _selectTab(1),
-              ),
-              PluginHomeTab(
-                selected: _tab == 2,
-                icon: Icons.notes_outlined,
-                label: l10n.plugin_substack_tab_notes,
-                onTap: () => _selectTab(2),
-              ),
-              PluginHomeTab(
-                selected: _tab == 3,
-                icon: Icons.person_outline,
-                label: l10n.plugin_substack_library,
-                onTap: () => _selectTab(3),
-              ),
-            ],
-            actions: [
-              if (_tab == 0 || _tab == 1)
-                ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
-                  store: feed,
-                  onState: (context, _) {
-                    final readIds = context.read<SubstackReadStore>().state;
-                    final hasUnread = feed.allPosts.any(
-                      (p) => !readIds.contains(p.id),
-                    );
-                    if (!hasUnread) {
-                      return const SizedBox.shrink();
-                    }
-                    return IconButton(
-                      tooltip: l10n.plugin_substack_mark_all_read,
-                      icon: const Icon(Icons.done_all),
-                      onPressed: _markAllRead,
-                    );
-                  },
+      body: ScopedBuilder<PluginViewStore<int>, int>(
+        store: _view,
+        onState: (_, _) => Column(
+          children: [
+            PluginHomeChrome(
+              title: l10n.plugin_substack_title,
+              mark: pluginMark(SubstackPlugin(), size: 24),
+              accent: SubstackPlugin().brandColor,
+              tabs: [
+                PluginHomeTab(
+                  selected: _tab == 0,
+                  icon: Icons.home_outlined,
+                  label: l10n.plugin_substack_home,
+                  onTap: () => _selectTab(0),
                 ),
-              IconButton(
-                tooltip: l10n.plugin_substack_discover,
-                icon: const Icon(Icons.explore_outlined),
-                onPressed: _openDiscover,
-              ),
-              IconButton(
-                tooltip: l10n.plugin_substack_add,
-                icon: const Icon(Icons.add),
-                onPressed: _openAdd,
-              ),
-            ],
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: PluginLazyTabs(
-              index: _tab,
-              children: [
-                (_) => _PostsPane(
-                  scrollController: widget.scrollController,
-                  pubs: pubs,
-                  feed: feed,
-                  onAdd: _openAdd,
-                  onDiscover: _openDiscover,
-                  onFilter: _setFilter,
+                PluginHomeTab(
+                  selected: _tab == 1,
+                  icon: Icons.inbox_outlined,
+                  label: l10n.plugin_substack_inbox,
+                  onTap: () => _selectTab(1),
                 ),
-                (_) => _InboxPane(
-                  scrollController: _inboxScrollController,
-                  feed: feed,
-                  onAdd: _openAdd,
+                PluginHomeTab(
+                  selected: _tab == 2,
+                  icon: Icons.notes_outlined,
+                  label: l10n.plugin_substack_tab_notes,
+                  onTap: () => _selectTab(2),
                 ),
-                (_) => _NotesPane(
-                  scrollController: _notesScrollController,
-                  notes: notes,
-                ),
-                (_) => _LibraryPane(
-                  scrollController: _libraryScrollController,
-                  pubs: pubs,
-                  onAdd: _openAdd,
+                PluginHomeTab(
+                  selected: _tab == 3,
+                  icon: Icons.person_outline,
+                  label: l10n.plugin_substack_library,
+                  onTap: () => _selectTab(3),
                 ),
               ],
+              actions: [
+                if (_tab == 0 || _tab == 1)
+                  ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
+                    store: feed,
+                    onState: (context, _) {
+                      final readIds = context.read<SubstackReadStore>().state;
+                      final hasUnread = feed.allPosts.any((p) => !readIds.contains(p.id));
+                      if (!hasUnread) {
+                        return const SizedBox.shrink();
+                      }
+                      return IconButton(
+                        tooltip: l10n.plugin_substack_mark_all_read,
+                        icon: const Icon(Icons.done_all),
+                        onPressed: _markAllRead,
+                      );
+                    },
+                  ),
+                IconButton(
+                  tooltip: l10n.plugin_substack_discover,
+                  icon: const Icon(Icons.explore_outlined),
+                  onPressed: _openDiscover,
+                ),
+                IconButton(tooltip: l10n.plugin_substack_add, icon: const Icon(Icons.add), onPressed: _openAdd),
+              ],
             ),
-          ),
-        ],
+            const Divider(height: 1),
+            Expanded(
+              child: PluginLazyTabs(
+                index: _tab,
+                children: [
+                  (_) => _PostsPane(
+                    scrollController: widget.scrollController,
+                    pubs: pubs,
+                    feed: feed,
+                    onAdd: _openAdd,
+                    onDiscover: _openDiscover,
+                    onFilter: _setFilter,
+                  ),
+                  (_) => _InboxPane(scrollController: _inboxScrollController, feed: feed, onAdd: _openAdd),
+                  (_) => _NotesPane(scrollController: _notesScrollController, notes: notes),
+                  (_) => _LibraryPane(scrollController: _libraryScrollController, pubs: pubs, onAdd: _openAdd),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -232,8 +231,7 @@ class _PostsPane extends StatelessWidget {
   String? _logoFor(List<SubstackPublication> publications, SubstackPost post) {
     final base = post.publicationBaseUrl.toLowerCase();
     for (final pub in publications) {
-      if (pub.baseUrl.toLowerCase() == base ||
-          pub.name == post.publicationName) {
+      if (pub.baseUrl.toLowerCase() == base || pub.name == post.publicationName) {
         return pub.logoUrl;
       }
     }
@@ -247,206 +245,163 @@ class _PostsPane extends StatelessWidget {
         await pubs.load();
         await feed.refresh();
       },
-      child:
-          ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
-            store: pubs,
+      child: ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
+        store: pubs,
+        onError: (_, error) => FullPageErrorWidget(
+          error: error,
+          stackTrace: null,
+          prefix: L10n.of(context).plugin_substack_load_error,
+          onRetry: pubs.load,
+        ),
+        onLoading: (_) => const PluginFeedSkeleton(),
+        onState: (context, publications) {
+          if (publications.isEmpty) {
+            return ListView(
+              controller: pluginInnerScrollController(context, scrollController),
+              children: [
+                const SizedBox(height: 80),
+                Icon(Icons.newspaper_outlined, size: 48, color: Theme.of(context).colorScheme.outline),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    L10n.of(context).plugin_substack_empty,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(L10n.of(context).plugin_substack_empty_description, textAlign: TextAlign.center),
+                ),
+                const SizedBox(height: 24),
+                Center(
+                  child: FilledButton.icon(
+                    onPressed: onDiscover,
+                    icon: const Icon(Icons.explore_outlined),
+                    label: Text(L10n.of(context).plugin_substack_discover),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: OutlinedButton.icon(
+                    onPressed: onAdd,
+                    icon: const Icon(Icons.add),
+                    label: Text(L10n.of(context).plugin_substack_add),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
+            store: feed,
             onError: (_, error) => FullPageErrorWidget(
               error: error,
               stackTrace: null,
               prefix: L10n.of(context).plugin_substack_load_error,
-              onRetry: pubs.load,
+              onRetry: feed.refresh,
             ),
-            onLoading: (_) => const PluginFeedSkeleton(),
-            onState: (context, publications) {
-              if (publications.isEmpty) {
-                return ListView(
-                  controller: pluginInnerScrollController(
-                    context,
-                    scrollController,
-                  ),
-                  children: [
-                    const SizedBox(height: 80),
-                    Icon(
-                      Icons.newspaper_outlined,
-                      size: 48,
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        L10n.of(context).plugin_substack_empty,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Text(
-                        L10n.of(context).plugin_substack_empty_description,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Center(
-                      child: FilledButton.icon(
-                        onPressed: onDiscover,
-                        icon: const Icon(Icons.explore_outlined),
-                        label: Text(L10n.of(context).plugin_substack_discover),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Center(
-                      child: OutlinedButton.icon(
-                        onPressed: onAdd,
-                        icon: const Icon(Icons.add),
-                        label: Text(L10n.of(context).plugin_substack_add),
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              return ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
-                store: feed,
-                onError: (_, error) => FullPageErrorWidget(
-                  error: error,
-                  stackTrace: null,
-                  prefix: L10n.of(context).plugin_substack_load_error,
-                  onRetry: feed.refresh,
-                ),
-                onLoading: (_) =>
-                    const Center(child: CircularProgressIndicator()),
-                onState: (context, snapshot) {
-                  return ScopedBuilder<SubstackReadStore, Set<String>>(
-                    store: context.read<SubstackReadStore>(),
-                    onState: (context, readIds) {
-                      final children = <Widget>[
-                        _PublicationStrip(
-                          publications: publications,
-                          posts: snapshot.posts,
-                          readIds: readIds,
-                          onOpen: (pub) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    SubstackArchiveScreen(publication: pub),
-                              ),
-                            );
-                          },
-                        ),
-                        _FilterBar(selected: feed.filter, onSelected: onFilter),
-                      ];
-
-                      if (snapshot.failedCount > 0) {
-                        children.add(
-                          ListTile(
-                            leading: Icon(
-                              Icons.warning_amber_outlined,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                            title: Text(
-                              L10n.of(context).plugin_substack_partial_error(
-                                snapshot.failedCount,
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-
-                      if (snapshot.posts.isEmpty) {
-                        children.addAll([
-                          const SizedBox(height: 48),
-                          Icon(
-                            Icons.article_outlined,
-                            size: 52,
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: Text(
-                              L10n.of(context).plugin_substack_feed_empty,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.titleMedium!
-                                  .copyWith(fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Center(
-                            child: FilledButton.icon(
-                              onPressed: onDiscover,
-                              icon: const Icon(Icons.explore_outlined),
-                              label: Text(
-                                L10n.of(context).plugin_substack_discover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Center(
-                            child: OutlinedButton.icon(
-                              onPressed: onAdd,
-                              icon: const Icon(Icons.add),
-                              label: Text(L10n.of(context).plugin_substack_add),
-                            ),
-                          ),
-                        ]);
-                        return ListView(
-                          controller: pluginInnerScrollController(
-                            context,
-                            scrollController,
-                          ),
-                          children: children,
-                        );
-                      }
-
-                      return FeedListView(
-                        controller: pluginInnerScrollController(
+            onLoading: (_) => const Center(child: CircularProgressIndicator()),
+            onState: (context, snapshot) {
+              return ScopedBuilder<SubstackReadStore, Set<String>>(
+                store: context.read<SubstackReadStore>(),
+                onState: (context, readIds) {
+                  final children = <Widget>[
+                    _PublicationStrip(
+                      publications: publications,
+                      posts: snapshot.posts,
+                      readIds: readIds,
+                      onOpen: (pub) {
+                        Navigator.push(
                           context,
-                          scrollController,
+                          MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: pub)),
+                        );
+                      },
+                    ),
+                    _FilterBar(selected: feed.filter, onSelected: onFilter),
+                  ];
+
+                  if (snapshot.failedCount > 0) {
+                    children.add(
+                      ListTile(
+                        leading: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
+                        title: Text(L10n.of(context).plugin_substack_partial_error(snapshot.failedCount)),
+                      ),
+                    );
+                  }
+
+                  if (snapshot.posts.isEmpty) {
+                    final filtered = feed.filter != SubstackFeedFilter.all;
+                    children.addAll([
+                      const SizedBox(height: 40),
+                      Icon(
+                        filtered ? Icons.filter_list : Icons.article_outlined,
+                        size: 40,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          filtered
+                              ? L10n.of(context).plugin_reader_empty_filter
+                              : L10n.of(context).plugin_substack_feed_empty,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        padding: pluginFeedPadding(context),
-                        itemCount:
-                            1 +
-                            snapshot.posts.length +
-                            (snapshot.canLoadMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: children,
-                            );
-                          }
-                          final postIndex = index - 1;
-                          if (postIndex < snapshot.posts.length) {
-                            final post = snapshot.posts[postIndex];
-                            return SubstackPostCard(
-                              key: ValueKey(post.id),
-                              post: post,
-                              showSourceBadge: false,
-                              logoUrl: _logoFor(publications, post),
-                            );
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Center(
-                              child: OutlinedButton(
-                                onPressed: feed.loadMore,
-                                child: Text(
-                                  L10n.of(context).plugin_substack_load_more,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                      ),
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: filtered ? () => onFilter(SubstackFeedFilter.all) : feed.refresh,
+                          icon: Icon(filtered ? Icons.filter_list_off : Icons.refresh),
+                          label: Text(filtered ? L10n.of(context).plugin_reader_reset_filters : L10n.of(context).retry),
+                        ),
+                      ),
+                    ]);
+                    return ListView(
+                      controller: pluginInnerScrollController(context, scrollController),
+                      padding: pluginFeedPadding(context),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: children,
+                    );
+                  }
+
+                  return FeedListView(
+                    controller: pluginInnerScrollController(context, scrollController),
+                    padding: pluginFeedPadding(context),
+                    itemCount: 1 + snapshot.posts.length + (snapshot.canLoadMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return Column(mainAxisSize: MainAxisSize.min, children: children);
+                      }
+                      final postIndex = index - 1;
+                      if (postIndex < snapshot.posts.length) {
+                        final post = snapshot.posts[postIndex];
+                        return SubstackPostCard(
+                          key: ValueKey(post.id),
+                          post: post,
+                          showSourceBadge: false,
+                          logoUrl: _logoFor(publications, post),
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Center(
+                          child: OutlinedButton(
+                            onPressed: feed.loadMore,
+                            child: Text(L10n.of(context).plugin_substack_load_more),
+                          ),
+                        ),
                       );
                     },
                   );
                 },
               );
             },
-          ),
+          );
+        },
+      ),
     );
   }
 }
@@ -467,25 +422,17 @@ class _FilterBar extends StatelessWidget {
       SubstackFeedFilter.podcast: l10n.plugin_substack_filter_podcast,
     };
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 2, 12, 6),
-      child: Row(
-        children: [
-          for (final filter in SubstackFeedFilter.values)
-            Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: FilterChip(
-                label: Text(labels[filter]!),
-                selected: selected == filter,
-                showCheckmark: false,
-                visualDensity: VisualDensity.compact,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                onSelected: (_) => onSelected(filter),
-              ),
-            ),
-        ],
-      ),
+    return PluginFilterRow(
+      children: [
+        for (final filter in SubstackFeedFilter.values)
+          ChoiceChip(
+            label: Text(labels[filter]!),
+            selected: selected == filter,
+            showCheckmark: true,
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            onSelected: (_) => onSelected(filter),
+          ),
+      ],
     );
   }
 }
@@ -495,11 +442,7 @@ class _InboxPane extends StatelessWidget {
   final SubstackFeedStore feed;
   final Future<void> Function() onAdd;
 
-  const _InboxPane({
-    required this.scrollController,
-    required this.feed,
-    required this.onAdd,
-  });
+  const _InboxPane({required this.scrollController, required this.feed, required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
@@ -519,26 +462,17 @@ class _InboxPane extends StatelessWidget {
           return ScopedBuilder<SubstackReadStore, Set<String>>(
             store: context.read<SubstackReadStore>(),
             onState: (context, readIds) {
-              return ScopedBuilder<
-                SubstackPublicationsStore,
-                List<SubstackPublication>
-              >(
+              return ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
                 store: context.read<SubstackPublicationsStore>(),
                 onState: (context, publications) {
                   if (publications.isEmpty) {
                     return ListView(
-                      controller: pluginInnerScrollController(
-                        context,
-                        scrollController,
-                      ),
+                      controller: pluginInnerScrollController(context, scrollController),
                       children: [
                         const SizedBox(height: 80),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            l10n.plugin_substack_empty,
-                            textAlign: TextAlign.center,
-                          ),
+                          child: Text(l10n.plugin_substack_empty, textAlign: TextAlign.center),
                         ),
                         const SizedBox(height: 24),
                         Center(
@@ -552,51 +486,34 @@ class _InboxPane extends StatelessWidget {
                     );
                   }
 
-                  final unread = feed.allPosts
-                      .where((p) => !readIds.contains(p.id))
-                      .toList();
+                  final unread = feed.allPosts.where((p) => !readIds.contains(p.id)).toList();
                   if (unread.isEmpty) {
                     return ListView(
-                      controller: pluginInnerScrollController(
-                        context,
-                        scrollController,
-                      ),
+                      controller: pluginInnerScrollController(context, scrollController),
                       children: [
                         const SizedBox(height: 48),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            l10n.plugin_substack_inbox_empty,
-                            textAlign: TextAlign.center,
-                          ),
+                          child: Text(l10n.plugin_substack_inbox_empty, textAlign: TextAlign.center),
                         ),
                         const SizedBox(height: 8),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 32),
-                          child: Text(
-                            l10n.plugin_substack_inbox_intro,
-                            textAlign: TextAlign.center,
-                          ),
+                          child: Text(l10n.plugin_substack_inbox_intro, textAlign: TextAlign.center),
                         ),
                       ],
                     );
                   }
 
                   return FeedListView(
-                    controller: pluginInnerScrollController(
-                      context,
-                      scrollController,
-                    ),
+                    controller: pluginInnerScrollController(context, scrollController),
                     padding: const EdgeInsets.only(bottom: 24, top: 8),
                     itemCount: unread.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                          child: Text(
-                            l10n.plugin_substack_inbox_intro,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
+                          child: Text(l10n.plugin_substack_inbox_intro, style: Theme.of(context).textTheme.bodySmall),
                         );
                       }
                       final post = unread[index - 1];
@@ -632,11 +549,7 @@ class _LibraryPane extends StatefulWidget {
   final SubstackPublicationsStore pubs;
   final Future<void> Function() onAdd;
 
-  const _LibraryPane({
-    required this.scrollController,
-    required this.pubs,
-    required this.onAdd,
-  });
+  const _LibraryPane({required this.scrollController, required this.pubs, required this.onAdd});
 
   @override
   State<_LibraryPane> createState() => _LibraryPaneState();
@@ -663,8 +576,7 @@ class _LibraryPaneState extends State<_LibraryPane> {
   bool _matchesPub(String query, SubstackPublication pub) {
     if (query.isEmpty) return true;
     final q = query.toLowerCase();
-    return pub.name.toLowerCase().contains(q) ||
-        pub.baseUrl.toLowerCase().contains(q);
+    return pub.name.toLowerCase().contains(q) || pub.baseUrl.toLowerCase().contains(q);
   }
 
   @override
@@ -712,30 +624,20 @@ class _LibraryPaneState extends State<_LibraryPane> {
         ),
         Expanded(
           child: _section == 0
-              ? ScopedBuilder<
-                  SubstackPublicationsStore,
-                  List<SubstackPublication>
-                >(
+              ? ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
                   store: widget.pubs,
                   onState: (context, publications) {
                     final q = _query.text.trim();
-                    final visible = publications
-                        .where((p) => _matchesPub(q, p))
-                        .toList();
+                    final visible = publications.where((p) => _matchesPub(q, p)).toList();
                     if (visible.isEmpty) {
                       return ListView(
-                        controller: pluginInnerScrollController(
-                          context,
-                          widget.scrollController,
-                        ),
+                        controller: pluginInnerScrollController(context, widget.scrollController),
                         children: [
                           const SizedBox(height: 48),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 32),
                             child: Text(
-                              q.isEmpty
-                                  ? l10n.plugin_substack_empty
-                                  : l10n.plugin_substack_library_search_empty,
+                              q.isEmpty ? l10n.plugin_substack_empty : l10n.plugin_substack_library_search_empty,
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -753,10 +655,7 @@ class _LibraryPaneState extends State<_LibraryPane> {
                       );
                     }
                     return ListView.separated(
-                      controller: pluginInnerScrollController(
-                        context,
-                        widget.scrollController,
-                      ),
+                      controller: pluginInnerScrollController(context, widget.scrollController),
                       padding: const EdgeInsets.only(bottom: 24),
                       itemCount: visible.length,
                       separatorBuilder: (_, _) => const Divider(height: 1),
@@ -773,65 +672,43 @@ class _LibraryPaneState extends State<_LibraryPane> {
                                     height: 56,
                                     fit: BoxFit.cover,
                                     cache: true,
-                                    cacheWidth:
-                                        (56 *
-                                                MediaQuery.devicePixelRatioOf(
-                                                  context,
-                                                ))
-                                            .ceil(),
+                                    cacheWidth: (56 * MediaQuery.devicePixelRatioOf(context)).ceil(),
                                   ),
                                 ),
                           title: Text(pub.name),
-                          subtitle: Text(
-                            Uri.tryParse(pub.baseUrl)?.host ?? pub.baseUrl,
-                          ),
+                          subtitle: Text(Uri.tryParse(pub.baseUrl)?.host ?? pub.baseUrl),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
                                 tooltip: pinned ? l10n.unpin : l10n.pin,
-                                onPressed: () =>
-                                    widget.pubs.togglePinned(pub.id),
+                                onPressed: () => widget.pubs.togglePinned(pub.id),
                                 icon: Icon(
-                                  pinned
-                                      ? Icons.push_pin
-                                      : Icons.push_pin_outlined,
-                                  color: pinned
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Theme.of(context).hintColor,
+                                  pinned ? Icons.push_pin : Icons.push_pin_outlined,
+                                  color: pinned ? Theme.of(context).colorScheme.primary : Theme.of(context).hintColor,
                                 ),
                               ),
                               PopupMenuButton<String>(
                                 onSelected: (value) async {
                                   if (value == 'group') {
-                                    await addSubstackPublicationToGroup(
-                                      context,
-                                      pub,
-                                    );
+                                    await addSubstackPublicationToGroup(context, pub);
                                     return;
                                   }
                                   if (value != 'unfollow') return;
-                                  final subscriptions = context
-                                      .read<SubscriptionsModel>();
+                                  final subscriptions = context.read<SubscriptionsModel>();
                                   final ok = await showDialog<bool>(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title: Text(
-                                        l10n.plugin_substack_unfollow,
-                                      ),
+                                      title: Text(l10n.plugin_substack_unfollow),
                                       content: Text(pub.name),
                                       actions: [
                                         TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, false),
+                                          onPressed: () => Navigator.pop(context, false),
                                           child: Text(l10n.cancel),
                                         ),
                                         FilledButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, true),
-                                          child: Text(
-                                            l10n.plugin_substack_unfollow,
-                                          ),
+                                          onPressed: () => Navigator.pop(context, true),
+                                          child: Text(l10n.plugin_substack_unfollow),
                                         ),
                                       ],
                                     ),
@@ -841,24 +718,15 @@ class _LibraryPaneState extends State<_LibraryPane> {
                                   await subscriptions.reloadSubscriptions();
                                 },
                                 itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 'group',
-                                    child: Text(l10n.add_to_group),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'unfollow',
-                                    child: Text(l10n.plugin_substack_unfollow),
-                                  ),
+                                  PopupMenuItem(value: 'group', child: Text(l10n.add_to_group)),
+                                  PopupMenuItem(value: 'unfollow', child: Text(l10n.plugin_substack_unfollow)),
                                 ],
                               ),
                             ],
                           ),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  SubstackArchiveScreen(publication: pub),
-                            ),
+                            MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: pub)),
                           ),
                         );
                       },
@@ -868,29 +736,19 @@ class _LibraryPaneState extends State<_LibraryPane> {
               : ScopedBuilder<SubstackSavedStore, List<SubstackPost>>(
                   store: saved,
                   onState: (context, savedPosts) {
-                    return ScopedBuilder<
-                      SubstackLikesStore,
-                      List<SubstackPost>
-                    >(
+                    return ScopedBuilder<SubstackLikesStore, List<SubstackPost>>(
                       store: likes,
                       onState: (context, likedPosts) {
                         final source = _section == 1 ? savedPosts : likedPosts;
                         final q = _query.text.trim();
-                        final visible = source
-                            .where((p) => _matches(q, p))
-                            .toList();
+                        final visible = source.where((p) => _matches(q, p)).toList();
                         if (visible.isEmpty) {
                           return ListView(
-                            controller: pluginInnerScrollController(
-                              context,
-                              widget.scrollController,
-                            ),
+                            controller: pluginInnerScrollController(context, widget.scrollController),
                             children: [
                               const SizedBox(height: 48),
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 32),
                                 child: Text(
                                   q.isEmpty
                                       ? (_section == 1
@@ -904,16 +762,11 @@ class _LibraryPaneState extends State<_LibraryPane> {
                           );
                         }
                         return ListView.builder(
-                          controller: pluginInnerScrollController(
-                            context,
-                            widget.scrollController,
-                          ),
+                          controller: pluginInnerScrollController(context, widget.scrollController),
                           padding: const EdgeInsets.only(bottom: 24),
                           itemCount: visible.length,
-                          itemBuilder: (context, index) => SubstackPostCard(
-                            post: visible[index],
-                            showSourceBadge: false,
-                          ),
+                          itemBuilder: (context, index) =>
+                              SubstackPostCard(post: visible[index], showSourceBadge: false),
                         );
                       },
                     );
@@ -948,26 +801,17 @@ class _NotesPane extends StatelessWidget {
         onState: (context, page) {
           if (page.notes.isEmpty) {
             return ListView(
-              controller: pluginInnerScrollController(
-                context,
-                scrollController,
-              ),
+              controller: pluginInnerScrollController(context, scrollController),
               children: [
                 const SizedBox(height: 48),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Text(
-                    l10n.plugin_substack_notes_empty,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text(l10n.plugin_substack_notes_empty, textAlign: TextAlign.center),
                 ),
                 const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Text(
-                    l10n.plugin_substack_notes_intro,
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text(l10n.plugin_substack_notes_intro, textAlign: TextAlign.center),
                 ),
               ],
             );
@@ -981,10 +825,7 @@ class _NotesPane extends StatelessWidget {
               if (index == 0) {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Text(
-                    l10n.plugin_substack_notes_intro,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
+                  child: Text(l10n.plugin_substack_notes_intro, style: Theme.of(context).textTheme.bodySmall),
                 );
               }
               final noteIndex = index - 1;
@@ -997,10 +838,7 @@ class _NotesPane extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Center(
-                  child: OutlinedButton(
-                    onPressed: notes.loadMore,
-                    child: Text(l10n.plugin_substack_load_more),
-                  ),
+                  child: OutlinedButton(onPressed: notes.loadMore, child: Text(l10n.plugin_substack_load_more)),
                 ),
               );
             },
@@ -1027,16 +865,10 @@ class _PublicationStrip extends StatelessWidget {
 
   bool _hasUnread(SubstackPublication pub) {
     final base = pub.baseUrl.toLowerCase();
-    return posts.any(
-      (p) =>
-          !readIds.contains(p.id) && p.publicationBaseUrl.toLowerCase() == base,
-    );
+    return posts.any((p) => !readIds.contains(p.id) && p.publicationBaseUrl.toLowerCase() == base);
   }
 
-  Future<void> _confirmUnfollow(
-    BuildContext context,
-    SubstackPublication pub,
-  ) async {
+  Future<void> _confirmUnfollow(BuildContext context, SubstackPublication pub) async {
     final l10n = L10n.of(context);
     final pubs = context.read<SubstackPublicationsStore>();
     final subscriptions = context.read<SubscriptionsModel>();
@@ -1047,14 +879,8 @@ class _PublicationStrip extends StatelessWidget {
         title: Text(l10n.plugin_substack_unfollow),
         content: Text(pub.name),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.plugin_substack_unfollow),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.plugin_substack_unfollow)),
         ],
       ),
     );
@@ -1077,9 +903,7 @@ class _PublicationStrip extends StatelessWidget {
         itemBuilder: (context, index) {
           final pub = publications[index];
           final unread = _hasUnread(pub);
-          final pinned = context.read<SubstackPublicationsStore>().isPinned(
-            pub.id,
-          );
+          final pinned = context.read<SubstackPublicationsStore>().isPinned(pub.id);
           return Tooltip(
             message: pub.name,
             child: InkWell(
@@ -1096,9 +920,7 @@ class _PublicationStrip extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: unread
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.outlineVariant,
+                        color: unread ? theme.colorScheme.primary : theme.colorScheme.outlineVariant,
                         width: unread ? 2.5 : 1,
                       ),
                     ),
@@ -1106,17 +928,12 @@ class _PublicationStrip extends StatelessWidget {
                       child: pub.logoUrl == null
                           ? ColoredBox(
                               color: theme.colorScheme.surfaceContainerHighest,
-                              child: Icon(
-                                Icons.newspaper,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
+                              child: Icon(Icons.newspaper, color: theme.colorScheme.onSurfaceVariant),
                             )
                           : ExtendedImage.network(
                               pub.logoUrl!,
                               fit: BoxFit.cover,
-                              cacheWidth:
-                                  (48 * MediaQuery.devicePixelRatioOf(context))
-                                      .ceil(),
+                              cacheWidth: (48 * MediaQuery.devicePixelRatioOf(context)).ceil(),
                             ),
                     ),
                   ),
@@ -1130,10 +947,7 @@ class _PublicationStrip extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primary,
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: theme.colorScheme.surface,
-                            width: 2,
-                          ),
+                          border: Border.all(color: theme.colorScheme.surface, width: 2),
                         ),
                       ),
                     ),
@@ -1143,15 +957,8 @@ class _PublicationStrip extends StatelessWidget {
                       bottom: 0,
                       child: Container(
                         padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.push_pin,
-                          size: 10,
-                          color: theme.colorScheme.primary,
-                        ),
+                        decoration: BoxDecoration(color: theme.colorScheme.surface, shape: BoxShape.circle),
+                        child: Icon(Icons.push_pin, size: 10, color: theme.colorScheme.primary),
                       ),
                     ),
                 ],

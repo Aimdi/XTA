@@ -14,9 +14,9 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 
-const double kSubstackLogoSize = 40;
+const double kSubstackLogoSize = 48;
 
-/// A Substack Home-style post card: cover first when present, then title.
+/// Publication and headline lead; optional media and local reading actions follow.
 class SubstackPostCard extends StatelessWidget {
   final SubstackPost post;
 
@@ -28,35 +28,22 @@ class SubstackPostCard extends StatelessWidget {
   /// from the subscription that produced the post when there is one.
   final String? logoUrl;
 
-  const SubstackPostCard({
-    super.key,
-    required this.post,
-    this.showSourceBadge = true,
-    this.logoUrl,
-  });
+  const SubstackPostCard({super.key, required this.post, this.showSourceBadge = true, this.logoUrl});
 
   void _open(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackReaderScreen(post: post)));
   }
 
   void _openPublication(BuildContext context) {
-    openSubstackPublication(
-      context,
-      publicationForPost(post, logoUrl: logoUrl),
-    );
+    openSubstackPublication(context, publicationForPost(post, logoUrl: logoUrl));
   }
 
   @override
   Widget build(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
       store: context.read<SubstackReadStore>(),
-      distinct: (_) =>
-          !context.read<SubstackReadStore>().state.contains(post.id),
-      onState: (context, readIds) =>
-          _build(context, unread: !readIds.contains(post.id)),
+      distinct: (_) => !context.read<SubstackReadStore>().state.contains(post.id),
+      onState: (context, readIds) => _build(context, unread: !readIds.contains(post.id)),
     );
   }
 
@@ -74,14 +61,16 @@ class SubstackPostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (hasCover)
-                  InkWell(onTap: () => _open(context), child: _cover(context)),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _header(context, date, unread: unread),
+                      if (post.authorName?.isNotEmpty == true) ...[
+                        const SizedBox(height: 4),
+                        Text(post.authorName!, style: theme.textTheme.bodySmall),
+                      ],
                       const SizedBox(height: 8),
                       InkWell(
                         onTap: () => _open(context),
@@ -93,9 +82,7 @@ class SubstackPostCard extends StatelessWidget {
                               maxLines: hasCover ? 4 : 3,
                               overflow: TextOverflow.ellipsis,
                               style: theme.textTheme.titleMedium!.copyWith(
-                                fontWeight: unread
-                                    ? FontWeight.w800
-                                    : FontWeight.w600,
+                                fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
                                 height: 1.25,
                               ),
                             ),
@@ -117,10 +104,15 @@ class SubstackPostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
-                  child: _counts(context),
-                ),
+                if (hasCover)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: InkWell(onTap: () => _open(context), child: _cover(context)),
+                    ),
+                  ),
+                Padding(padding: const EdgeInsets.fromLTRB(8, 0, 8, 4), child: _counts(context)),
               ],
             ),
           ),
@@ -144,11 +136,8 @@ class SubstackPostCard extends StatelessWidget {
               Container(
                 width: 8,
                 height: 8,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  shape: BoxShape.circle,
-                ),
+                margin: const EdgeInsetsDirectional.only(end: 8),
+                decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle),
               ),
             Expanded(
               child: PluginNameMetaRow(
@@ -164,8 +153,7 @@ class SubstackPostCard extends StatelessWidget {
                               ? Container(
                                   width: kSubstackLogoSize,
                                   height: kSubstackLogoSize,
-                                  color:
-                                      theme.colorScheme.surfaceContainerHighest,
+                                  color: theme.colorScheme.surfaceContainerHighest,
                                   child: Icon(
                                     Icons.article_outlined,
                                     size: 20,
@@ -177,12 +165,7 @@ class SubstackPostCard extends StatelessWidget {
                                   width: kSubstackLogoSize,
                                   height: kSubstackLogoSize,
                                   fit: BoxFit.cover,
-                                  cacheWidth:
-                                      (kSubstackLogoSize *
-                                              MediaQuery.devicePixelRatioOf(
-                                                context,
-                                              ))
-                                          .ceil(),
+                                  cacheWidth: (kSubstackLogoSize * MediaQuery.devicePixelRatioOf(context)).ceil(),
                                 ),
                         ),
                         const SizedBox(width: 10),
@@ -191,9 +174,7 @@ class SubstackPostCard extends StatelessWidget {
                             post.publicationName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleSmall!.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
+                            style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
                           ),
                         ),
                       ],
@@ -212,16 +193,9 @@ class SubstackPostCard extends StatelessWidget {
             runSpacing: 4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              if (showSourceBadge)
-                _badge(context, L10n.of(context).plugin_substack_title),
-              if (post.isPaywalled)
-                _badge(context, L10n.of(context).plugin_substack_paywalled),
-              if (post.isPodcast)
-                Icon(
-                  Icons.podcasts,
-                  size: 16,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+              if (showSourceBadge) _badge(context, L10n.of(context).plugin_substack_title),
+              if (post.isPaywalled) _badge(context, L10n.of(context).plugin_substack_paywalled),
+              if (post.isPodcast) Icon(Icons.podcasts, size: 16, color: theme.colorScheme.onSurfaceVariant),
             ],
           ),
         ],
@@ -271,21 +245,10 @@ class SubstackPostCard extends StatelessWidget {
                 ),
                 TextButton.icon(
                   style: footerButtonStyle,
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SubstackCommentsScreen(post: post),
-                    ),
-                  ),
-                  icon: Icon(
-                    Icons.mode_comment_outlined,
-                    size: 20,
-                    color: muted,
-                  ),
-                  label: Text(
-                    '$comments',
-                    style: theme.textTheme.bodySmall!.copyWith(color: muted),
-                  ),
+                  onPressed: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackCommentsScreen(post: post))),
+                  icon: Icon(Icons.mode_comment_outlined, size: 20, color: muted),
+                  label: Text('$comments', style: theme.textTheme.bodySmall!.copyWith(color: muted)),
                 ),
               ],
             );
@@ -317,18 +280,12 @@ class SubstackPostCard extends StatelessWidget {
           child: ExtendedImage.network(
             post.coverImage!,
             fit: BoxFit.cover,
-            cacheWidth:
-                (MediaQuery.sizeOf(context).width *
-                        MediaQuery.devicePixelRatioOf(context))
-                    .ceil(),
+            cacheWidth: (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil(),
           ),
         ),
         if (post.isVideo)
           Container(
-            decoration: const BoxDecoration(
-              color: Colors.black54,
-              shape: BoxShape.circle,
-            ),
+            decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
             padding: const EdgeInsets.all(12),
             child: const Icon(Icons.play_arrow, color: Colors.white, size: 32),
           ),

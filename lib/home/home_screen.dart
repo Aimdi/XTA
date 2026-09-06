@@ -23,6 +23,7 @@ import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
@@ -45,24 +46,14 @@ class NavigationPage {
 }
 
 final List<NavigationPage> defaultHomePages = [
-  NavigationPage(
-    'feed',
-    (c) => L10n.of(c).home,
-    const Icon(Icons.home_outlined),
-    const Icon(Icons.home),
-  ),
+  NavigationPage('feed', (c) => L10n.of(c).home, const Icon(Icons.home_outlined), const Icon(Icons.home)),
   NavigationPage(
     'subscriptions',
     (c) => L10n.of(c).subscriptions,
     const Icon(Icons.people_outlined),
     const Icon(Icons.people),
   ),
-  NavigationPage(
-    'trending',
-    (c) => L10n.of(c).discover,
-    const Icon(Icons.search_outlined),
-    const Icon(Icons.search),
-  ),
+  NavigationPage('trending', (c) => L10n.of(c).discover, const Icon(Icons.search_outlined), const Icon(Icons.search)),
   NavigationPage(
     'saved',
     (c) => L10n.of(c).saved,
@@ -87,7 +78,11 @@ class HomeScreen extends StatelessWidget {
     var prefs = PrefService.of(context, listen: false);
     var model = context.read<HomeModel>();
 
-    return _HomeScreen(prefs: prefs, model: model);
+    return Provider<PluginSessionStore>(
+      create: (_) => PluginSessionStore(),
+      dispose: (_, session) => session.destroy(),
+      child: _HomeScreen(prefs: prefs, model: model),
+    );
   }
 }
 
@@ -126,12 +121,7 @@ class _HomeScreenState extends State<_HomeScreen> {
     if (!widget.prefs.getKeys().contains(optionHomeInitialTab)) {
       return 0;
     }
-    return max(
-      0,
-      pages.indexWhere(
-        (element) => element.id == widget.prefs.get(optionHomeInitialTab),
-      ),
-    );
+    return max(0, pages.indexWhere((element) => element.id == widget.prefs.get(optionHomeInitialTab)));
   }
 
   void _onPages(List<HomePage> state) {
@@ -176,27 +166,16 @@ class _HomeScreenState extends State<_HomeScreen> {
             }
             switch (page.id) {
               case 'feed':
-                return FeedScreen(
-                  scrollController: scrollControllers[index]!,
-                  id: '-1',
-                  name: L10n.current.feed,
-                );
+                return FeedScreen(scrollController: scrollControllers[index]!, id: '-1', name: L10n.current.feed);
               case 'subscriptions':
-                return SubscriptionsScreen(
-                  scrollController: scrollControllers[index]!,
-                );
+                return SubscriptionsScreen(scrollController: scrollControllers[index]!);
               case 'trending':
-                return TrendsScreen(
-                  scrollController: scrollControllers[index]!,
-                  focusNode: focusNodes[index]!,
-                );
+                return TrendsScreen(scrollController: scrollControllers[index]!, focusNode: focusNodes[index]!);
               case 'saved':
                 return SavedScreen(scrollController: scrollControllers[index]!);
               default:
                 final plugin = pluginById(page.id);
-                final screen = plugin?.homeScreen(
-                  scrollController: scrollControllers[index]!,
-                );
+                final screen = plugin?.homeScreen(scrollController: scrollControllers[index]!);
                 return screen ?? const MissingScreen();
             }
           },
@@ -210,11 +189,7 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   final List<NavigationPage> pages;
   final BasePrefService prefs;
   final int initialPage;
-  final Widget Function(
-    int index,
-    Map<int, ScrollController> scrollControllers,
-    Map<int, FocusNode> focusNodes,
-  )
+  final Widget Function(int index, Map<int, ScrollController> scrollControllers, Map<int, FocusNode> focusNodes)
   builder;
 
   const ScaffoldWithBottomNavigation({
@@ -226,8 +201,7 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   });
 
   @override
-  State<ScaffoldWithBottomNavigation> createState() =>
-      _ScaffoldWithBottomNavigationState();
+  State<ScaffoldWithBottomNavigation> createState() => _ScaffoldWithBottomNavigationState();
 }
 
 /// Which page a swipe on the navigation bar should land on.
@@ -270,8 +244,7 @@ int pageAfterNavigationSwipe({
   return next;
 }
 
-class _ScaffoldWithBottomNavigationState
-    extends State<ScaffoldWithBottomNavigation> {
+class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation> {
   late PageController _pageController;
   late final ValueNotifier<int> _pageIndex;
   final Map<int, ScrollController> _scrollControllers = {};
@@ -298,9 +271,7 @@ class _ScaffoldWithBottomNavigationState
   void initState() {
     super.initState();
     final pageCount = _barPages.length;
-    final initial = widget.pages.isEmpty
-        ? 0
-        : widget.initialPage.clamp(0, _barPages.length - 1);
+    final initial = widget.pages.isEmpty ? 0 : widget.initialPage.clamp(0, _barPages.length - 1);
     _pageIndex = ValueNotifier(initial);
     _pageController = PageController(initialPage: initial);
     for (int i = 0; i < pageCount; i++) {
@@ -314,16 +285,11 @@ class _ScaffoldWithBottomNavigationState
     super.didUpdateWidget(oldWidget);
     if (_barPages.length != pagesForNavigationBar(oldWidget.pages).length) {
       // Dispose controllers that are no longer needed.
-      _scrollControllers.keys
-          .where((k) => k >= _barPages.length)
-          .toList()
-          .forEach((k) {
-            _scrollControllers[k]?.dispose();
-            _scrollControllers.remove(k);
-          });
-      _focusNodes.keys.where((k) => k >= _barPages.length).toList().forEach((
-        k,
-      ) {
+      _scrollControllers.keys.where((k) => k >= _barPages.length).toList().forEach((k) {
+        _scrollControllers[k]?.dispose();
+        _scrollControllers.remove(k);
+      });
+      _focusNodes.keys.where((k) => k >= _barPages.length).toList().forEach((k) {
         _focusNodes[k]?.dispose();
         _focusNodes.remove(k);
       });
@@ -344,11 +310,7 @@ class _ScaffoldWithBottomNavigationState
 
   /// Closes the drawer before going: navigating from an open drawer left it
   /// sitting open under the pushed route, waiting behind the Back button.
-  Future<void> _goFromDrawer(
-    BuildContext context,
-    String route, {
-    Object? arguments,
-  }) async {
+  Future<void> _goFromDrawer(BuildContext context, String route, {Object? arguments}) async {
     Navigator.pop(context);
     await Navigator.pushNamed(context, route, arguments: arguments);
     if (context.mounted) {
@@ -373,11 +335,8 @@ class _ScaffoldWithBottomNavigationState
                 ListTile(
                   leading: const Icon(Icons.search),
                   title: Text(l10n.search),
-                  onTap: () => _goFromDrawer(
-                    context,
-                    routeSearch,
-                    arguments: SearchArguments(0, focusInputOnOpen: true),
-                  ),
+                  onTap: () =>
+                      _goFromDrawer(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: true)),
                 ),
                 ListTile(
                   leading: const Icon(Icons.settings),
@@ -387,19 +346,10 @@ class _ScaffoldWithBottomNavigationState
                 if (groups.isNotEmpty) ...[
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      16,
-                      12,
-                      16,
-                      4,
-                    ),
-                    child: Text(
-                      l10n.groups,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
+                    padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 4),
+                    child: Text(l10n.groups, style: Theme.of(context).textTheme.bodySmall),
                   ),
-                  for (final group in groups)
-                    _drawerGroupTile(context, l10n, group, unreadIds),
+                  for (final group in groups) _drawerGroupTile(context, l10n, group, unreadIds),
                 ],
               ],
             ),
@@ -432,9 +382,7 @@ class _ScaffoldWithBottomNavigationState
                 if (account?.screenName != null)
                   Text(
                     '@${account!.screenName}',
-                    style: theme.textTheme.bodyMedium!.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
               ],
             ),
@@ -446,32 +394,14 @@ class _ScaffoldWithBottomNavigationState
 
   /// One group shortcut: its colour disc, its name, a muted member count, and a
   /// pin when it is pinned (the pinned ones already float to the top).
-  Widget _drawerGroupTile(
-    BuildContext context,
-    L10n l10n,
-    SubscriptionGroup group,
-    Set<String> unreadIds,
-  ) {
+  Widget _drawerGroupTile(BuildContext context, L10n l10n, SubscriptionGroup group, Set<String> unreadIds) {
     final unread = unreadIds.contains(group.id);
     return ListTile(
-      leading: GroupUnreadBadge(
-        unread: unread,
-        child: GroupMark.forGroup(group, size: 36),
-      ),
+      leading: GroupUnreadBadge(unread: unread, child: GroupMark.forGroup(group, size: 36)),
       title: Row(
         children: [
-          Expanded(
-            child: Text(
-              group.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          if (unread)
-            Semantics(
-              label: l10n.group_has_unread,
-              child: const SizedBox.shrink(),
-            ),
+          Expanded(child: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
+          if (unread) Semantics(label: l10n.group_has_unread, child: const SizedBox.shrink()),
         ],
       ),
       subtitle: Text(
@@ -479,13 +409,7 @@ class _ScaffoldWithBottomNavigationState
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: group.pinned
-          ? Icon(
-              Icons.push_pin,
-              size: 16,
-              color: tweetReadableAccentColor(context),
-            )
-          : null,
+      trailing: group.pinned ? Icon(Icons.push_pin, size: 16, color: tweetReadableAccentColor(context)) : null,
       onTap: () => _goFromDrawer(
         context,
         routeGroup,
@@ -523,41 +447,23 @@ class _ScaffoldWithBottomNavigationState
         // Labels pref is read here so a Settings toggle does not rebuild feeds.
         bottomNavigationBar: Builder(
           builder: (context) {
-            final showLabels =
-                PrefService.of(context).get(optionShowNavigationLabels) == true;
-            final disableAnimations =
-                PrefService.of(
-                  context,
-                  listen: false,
-                ).get<bool>(optionDisableAnimations) ==
-                true;
+            final showLabels = PrefService.of(context).get(optionShowNavigationLabels) == true;
+            final disableAnimations = PrefService.of(context, listen: false).get<bool>(optionDisableAnimations) == true;
             return GestureDetector(
               behavior: HitTestBehavior.translucent,
               onHorizontalDragStart: (_) => _dragDistance = 0,
-              onHorizontalDragUpdate: (details) =>
-                  _dragDistance += details.primaryDelta ?? 0,
-              onHorizontalDragEnd: (details) => _swipeNavigationBar(
-                details.primaryVelocity ?? 0,
-                _dragDistance,
-              ),
+              onHorizontalDragUpdate: (details) => _dragDistance += details.primaryDelta ?? 0,
+              onHorizontalDragEnd: (details) => _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
               child: ValueListenableBuilder<int>(
                 valueListenable: _pageIndex,
                 builder: (context, currentPage, _) {
                   final slots = _bottomBarSlots(context);
                   return HomeNavigationBar(
                     selectedIndex: destinationIndexForPage(slots, currentPage),
-                    items: [
-                      for (final slot in slots)
-                        _navigationItemForSlot(context, slot),
-                    ],
+                    items: [for (final slot in slots) _navigationItemForSlot(context, slot)],
                     showLabels: showLabels,
                     disableAnimations: disableAnimations,
-                    onSelected: (index) => _onBarDestination(
-                      context,
-                      slots,
-                      index,
-                      currentPage,
-                    ),
+                    onSelected: (index) => _onBarDestination(context, slots, index, currentPage),
                   );
                 },
               ),
@@ -589,21 +495,14 @@ class _ScaffoldWithBottomNavigationState
     String? recentPluginId;
     try {
       final recents = context.read<NetworkRecentsStore>().state;
-      recentPluginId = recents
-          .where((id) => _barPages.any((page) => page.id == id))
-          .firstOrNull;
+      recentPluginId = recents.where((id) => _barPages.any((page) => page.id == id)).firstOrNull;
     } on ProviderNotFoundException {
       recentPluginId = null;
     }
-    return layoutBottomBar([
-      for (final page in _barPages) page.id,
-    ], recentPluginId: recentPluginId);
+    return layoutBottomBar([for (final page in _barPages) page.id], recentPluginId: recentPluginId);
   }
 
-  HomeNavigationItem _navigationItemForSlot(
-    BuildContext context,
-    BottomBarSlot slot,
-  ) {
+  HomeNavigationItem _navigationItemForSlot(BuildContext context, BottomBarSlot slot) {
     if (slot.isOverflow) {
       return HomeNavigationItem(
         icon: const Icon(Icons.public_outlined),
@@ -612,19 +511,10 @@ class _ScaffoldWithBottomNavigationState
       );
     }
     final page = _barPages[slot.pageIndex!];
-    return HomeNavigationItem(
-      icon: page.icon,
-      selectedIcon: page.selectedIcon,
-      label: page.titleBuilder(context),
-    );
+    return HomeNavigationItem(icon: page.icon, selectedIcon: page.selectedIcon, label: page.titleBuilder(context));
   }
 
-  Future<void> _onBarDestination(
-    BuildContext context,
-    List<BottomBarSlot> slots,
-    int index,
-    int currentPage,
-  ) async {
+  Future<void> _onBarDestination(BuildContext context, List<BottomBarSlot> slots, int index, int currentPage) async {
     final slot = slots[index];
     if (slot.isOverflow) {
       await _openBarNetworks(context);
@@ -683,10 +573,7 @@ class _ScaffoldWithBottomNavigationState
   }
 
   void _movePageBy(int direction) {
-    final target = max(
-      0,
-      min(_pageIndex.value + direction, _barPages.length - 1),
-    );
+    final target = max(0, min(_pageIndex.value + direction, _barPages.length - 1));
     _goToPage(target, animate: true);
   }
 
@@ -697,11 +584,7 @@ class _ScaffoldWithBottomNavigationState
     if (!animate || reduceMotion) {
       _pageController.jumpToPage(target);
     } else {
-      _pageController.animateToPage(
-        target,
-        duration: kXtaMotionNavigation,
-        curve: Curves.easeOut,
-      );
+      _pageController.animateToPage(target, duration: kXtaMotionNavigation, curve: Curves.easeOut);
     }
   }
 

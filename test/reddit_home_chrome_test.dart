@@ -21,28 +21,22 @@ Widget _app(Widget child) {
 }
 
 void main() {
-  testWidgets('Reddit chrome is icon tabs, not a titled AppBar', (
-    tester,
-  ) async {
+  testWidgets('Reddit full client identifies itself and labels its feed sections', (tester) async {
     var mode = RedditFeedMode.following;
     await tester.pumpWidget(
       _app(
         RedditHomeChrome(
           source: RedditHomeSource(mode: mode),
           onMode: (next) => mode = next,
-          actions: [
-            IconButton(
-              tooltip: 'Saved',
-              icon: const Icon(Icons.bookmark_border),
-              onPressed: () {},
-            ),
-          ],
+          actions: [IconButton(tooltip: 'Saved', icon: const Icon(Icons.bookmark_border), onPressed: () {})],
         ),
       ),
     );
 
     expect(find.byType(PluginHomeChrome), findsOneWidget);
-    expect(find.text('Reddit'), findsNothing);
+    expect(find.text('Reddit'), findsOneWidget);
+    expect(find.text('Following'), findsOneWidget);
+    expect(find.text('Popular'), findsOneWidget);
     expect(find.byIcon(Icons.home_outlined), findsOneWidget);
     expect(find.byIcon(Icons.whatshot_outlined), findsOneWidget);
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);
@@ -68,20 +62,13 @@ void main() {
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);
   });
 
-  testWidgets('a followed community deselects Home/Popular/All', (
-    tester,
-  ) async {
-    const source = RedditHomeSource(
-      mode: RedditFeedMode.following,
-      subreddit: 'foo',
-    );
+  testWidgets('a followed community deselects Home/Popular/All', (tester) async {
+    const source = RedditHomeSource(mode: RedditFeedMode.following, subreddit: 'foo');
     expect(redditHomeRailSelected(source, RedditFeedMode.following), isFalse);
     expect(redditHomeRailSelected(source, RedditFeedMode.popular), isFalse);
     expect(redditHomeRailSelected(source, RedditFeedMode.all), isFalse);
 
-    await tester.pumpWidget(
-      _app(RedditHomeChrome(source: source, onMode: (_) {})),
-    );
+    await tester.pumpWidget(_app(RedditHomeChrome(source: source, onMode: (_) {})));
 
     expect(find.byType(PluginHomeChrome), findsOneWidget);
   });

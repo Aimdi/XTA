@@ -31,6 +31,8 @@ class RedditFeedActions extends StatefulWidget {
   /// Adds the app's own settings to the overflow menu, for a bar that has no
   /// other route to them.
   final bool showAppSettings;
+  final VoidCallback? onOpenClient;
+  final VoidCallback? onOpenSaved;
 
   /// Called after a setting changes what the active Reddit body should fetch.
   final Future<void> Function()? onRefresh;
@@ -38,6 +40,8 @@ class RedditFeedActions extends StatefulWidget {
   const RedditFeedActions({
     super.key,
     this.showAppSettings = false,
+    this.onOpenClient,
+    this.onOpenSaved,
     this.onRefresh,
   });
 
@@ -59,9 +63,28 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
-      tooltip: l10n.plugin_reddit_source,
+      tooltip: '${l10n.plugin_reddit_title} · ${MaterialLocalizations.of(context).moreButtonTooltip}',
       onSelected: (value) => _onMenuSelected(value, prefs),
       itemBuilder: (context) => [
+        if (widget.onOpenSaved != null) ...[
+          PopupMenuItem(
+            value: _menuSaved,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.bookmark_border),
+              title: Text(l10n.saved),
+            ),
+          ),
+          PopupMenuItem(
+            value: _menuCommunities,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.list),
+              title: Text(l10n.subscriptions),
+            ),
+          ),
+          const PopupMenuDivider(),
+        ],
         PopupMenuItem(
           value: redditSourceAuto,
           child: ListTile(
@@ -82,6 +105,15 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
             subtitle: Text(l10n.plugin_reddit_source_public_description),
           ),
         ),
+        if (widget.onOpenClient != null)
+          PopupMenuItem(
+            value: _menuClient,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.open_in_new),
+              title: Text(l10n.plugin_open_client(l10n.plugin_reddit_title)),
+            ),
+          ),
         const PopupMenuDivider(),
         PopupMenuItem(
           value: _menuPluginSettings,
@@ -106,14 +138,26 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
   /// Values the menu uses for the actions that are not a source choice.
   static const _menuPluginSettings = '_pluginSettings';
+  static const _menuClient = '_client';
+  static const _menuSaved = '_saved';
+  static const _menuCommunities = '_communities';
   static const _menuAppSettings = '_appSettings';
 
   Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
+    if (value == _menuSaved) {
+      widget.onOpenSaved?.call();
+      return;
+    }
+    if (value == _menuCommunities) {
+      await _manageSubreddits();
+      return;
+    }
+    if (value == _menuClient) {
+      widget.onOpenClient?.call();
+      return;
+    }
     if (value == _menuPluginSettings) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const RedditSettingsScreen()),
-      );
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSettingsScreen()));
       // Everything on that screen — the sign-in, the client id, the route —
       // changes what this menu should say next time it opens.
       if (mounted) setState(() {});
@@ -141,12 +185,7 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
       children: [
         IconButton(
           tooltip: l10n.plugin_reddit_sort,
-          icon: Icon(
-            redditSortLabel(
-              context,
-              storedRedditSort(PrefService.of(context)),
-            ).icon,
-          ),
+          icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
           onPressed: () async {
             if (await openRedditSortSheet(context) != null && context.mounted) {
               await _refreshActive();
@@ -156,23 +195,16 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
         IconButton(
           tooltip: l10n.plugin_reddit_search_hint,
           icon: const Icon(Icons.search),
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RedditSearchScreen()),
-          ),
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
         ),
-        IconButton(
-          tooltip: l10n.subscriptions,
-          icon: const Icon(Icons.list),
-          onPressed: _manageSubreddits,
-        ),
+        if (widget.onOpenSaved == null)
+          IconButton(tooltip: l10n.subscriptions, icon: const Icon(Icons.list), onPressed: _manageSubreddits),
         _sourceMenu(context),
       ],
     );
   }
 
-  Future<void> _refreshActive() =>
-      widget.onRefresh?.call() ?? context.read<RedditFeedStore>().refresh();
+  Future<void> _refreshActive() => widget.onRefresh?.call() ?? context.read<RedditFeedStore>().refresh();
 }
 
 /// Opens a followed community without leaving the Reddit home chrome.
@@ -219,8 +251,7 @@ Future<void> showRedditCommunitiesSheet(BuildContext context) {
       initialChildSize: 0.52,
       minChildSize: 0.32,
       maxChildSize: 0.88,
-      builder: (context, controller) =>
-          _RedditCommunitiesSheet(controller: controller, opener: opener),
+      builder: (context, controller) => _RedditCommunitiesSheet(controller: controller, opener: opener),
     ),
   );
 }
@@ -229,10 +260,7 @@ class _RedditCommunitiesSheet extends StatelessWidget {
   final ScrollController controller;
   final BuildContext opener;
 
-  const _RedditCommunitiesSheet({
-    required this.controller,
-    required this.opener,
-  });
+  const _RedditCommunitiesSheet({required this.controller, required this.opener});
 
   @override
   Widget build(BuildContext context) {
@@ -254,12 +282,7 @@ class _RedditCommunitiesSheet extends StatelessWidget {
                   children: [
                     Icon(Icons.forum_outlined, color: scheme.primary),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        l10n.plugin_reddit_communities,
-                        style: theme.textTheme.titleLarge,
-                      ),
-                    ),
+                    Expanded(child: Text(l10n.plugin_reddit_communities, style: theme.textTheme.titleLarge)),
                     if (names.isNotEmpty)
                       Text(
                         '${names.length}',
@@ -281,35 +304,25 @@ class _RedditCommunitiesSheet extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
                         child: Column(
                           children: [
-                            Icon(
-                              Icons.forum_outlined,
-                              size: 40,
-                              color: scheme.onSurfaceVariant,
-                            ),
+                            Icon(Icons.forum_outlined, size: 40, color: scheme.onSurfaceVariant),
                             const SizedBox(height: 12),
                             Text(
                               l10n.plugin_reddit_empty,
                               textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyMedium!.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
+                              style: theme.textTheme.bodyMedium!.copyWith(color: scheme.onSurfaceVariant),
                             ),
                           ],
                         ),
                       )
                     else
-                      for (final name in names)
-                        _RedditCommunityTile(name: name, opener: opener),
+                      for (final name in names) _RedditCommunityTile(name: name, opener: opener),
                   ],
                 ),
               ),
               const Divider(height: 1),
               ListTile(
                 leading: Icon(Icons.add, color: scheme.primary),
-                title: Text(
-                  l10n.plugin_reddit_add,
-                  style: TextStyle(color: scheme.primary),
-                ),
+                title: Text(l10n.plugin_reddit_add, style: TextStyle(color: scheme.primary)),
                 onTap: () async {
                   Navigator.pop(context);
                   if (opener.mounted) {
@@ -369,18 +382,13 @@ class _RedditCommunityTileState extends State<_RedditCommunityTile> {
           leading: RedditSubredditAvatar(
             subreddit: name,
             size: 44,
-            url: redditAvatarUrlFromAbout(
-              hasData: snapshot.hasData,
-              iconUrl: about?.iconUrl,
-            ),
+            url: redditAvatarUrlFromAbout(hasData: snapshot.hasData, iconUrl: about?.iconUrl),
           ),
           title: Text(
             'r/$name',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall!.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w600),
           ),
           subtitle: _communitySubscriberLine(context, about),
           trailing: IconButton(
@@ -398,12 +406,7 @@ class _RedditCommunityTileState extends State<_RedditCommunityTile> {
             if (!opener.mounted) {
               return;
             }
-            Navigator.push(
-              opener,
-              MaterialPageRoute(
-                builder: (_) => RedditListingScreen.subreddit(name),
-              ),
-            );
+            Navigator.push(opener, MaterialPageRoute(builder: (_) => RedditListingScreen.subreddit(name)));
           },
         );
       },
@@ -414,9 +417,7 @@ class _RedditCommunityTileState extends State<_RedditCommunityTile> {
 Future<RedditSubredditAbout?> _communityAbout(BuildContext context, String name) async {
   try {
     final client = context.read<RedditClient>();
-    final session = await RedditReadSession.resolve(
-      prefs: PrefService.of(context, listen: false),
-    );
+    final session = await RedditReadSession.resolve(prefs: PrefService.of(context, listen: false));
     return session.fetchSubredditAbout(client, name);
   } catch (_) {
     return null;
@@ -430,9 +431,7 @@ Widget _communitySubscriberLine(BuildContext context, RedditSubredditAbout? abou
   }
   final theme = Theme.of(context);
   return DefaultTextStyle.merge(
-    style: theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    ),
+    style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
     child: Row(
       children: [
         const Icon(Icons.people_outline, size: 16),
@@ -454,17 +453,12 @@ Widget _communitySubscriberLine(BuildContext context, RedditSubredditAbout? abou
 /// A function rather than a method: the app bar offers it, and so does the
 /// empty feed, which is the screen a reader with no subreddits actually sees.
 Future<void> addRedditSubreddit(BuildContext context) async {
-  final entered = await showDialog<String>(
-    context: context,
-    builder: (_) => const _AddSubredditDialog(),
-  );
+  final entered = await showDialog<String>(context: context, builder: (_) => const _AddSubredditDialog());
 
   if (entered == null || entered.isEmpty || !context.mounted) return;
 
   if (normaliseSubreddit(entered) == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(L10n.of(context).plugin_reddit_error_not_found)),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).plugin_reddit_error_not_found)));
     return;
   }
 
@@ -522,14 +516,8 @@ class _AddSubredditDialogState extends State<_AddSubredditDialog> {
         onSubmitted: (value) => Navigator.pop(context, value.trim()),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
-          child: Text(l10n.ok),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        TextButton(onPressed: () => Navigator.pop(context, _controller.text.trim()), child: Text(l10n.ok)),
       ],
     );
   }
