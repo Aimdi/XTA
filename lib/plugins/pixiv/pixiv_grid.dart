@@ -13,6 +13,7 @@ import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_gallery_layout.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
 /// Stable Hero tag from a grid tile into the illust viewer.
@@ -41,11 +42,14 @@ class PixivIllustGrid extends StatelessWidget {
     // whole masonry — that rebuilds every ExtendedImage and thrash-decodes.
     return ScopedBuilder<PixivMuteStore, PixivMuteState>(
       store: context.read<PixivMuteStore>(),
-      onState: (context, mute) => _grid(context, mute.filter(illusts)),
+      onState: (context, mute) => LayoutBuilder(
+        builder: (context, constraints) => _grid(context, mute.filter(illusts),
+          pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context))),
+      ),
     );
   }
 
-  Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts) {
+  Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts, int columns) {
     final grid = CustomScrollView(
       controller: pluginInnerScrollController(context, scrollController),
       primary: PluginEmbedded.maybeOf(context) ? false : null,
@@ -55,9 +59,9 @@ class PixivIllustGrid extends StatelessWidget {
         SliverPadding(
           padding: padding,
           sliver: SliverMasonryGrid.count(
-            crossAxisCount: 2,
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
+            crossAxisCount: columns,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
             itemBuilder: (context, index) =>
                 PixivIllustTile(illust: visibleIllusts[index]),
@@ -93,7 +97,7 @@ class PixivIllustTile extends StatelessWidget {
     final ratio = illust.aspectRatio.clamp(0.45, 1.6);
 
     return Material(
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+      color: theme.scaffoldBackgroundColor,
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -180,7 +184,7 @@ class PixivIllustTile extends StatelessWidget {
                       illust.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall!.copyWith(
+                      style: theme.textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.w600,
                         height: 1.2,
                       ),

@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "重试",
   "@retry": {},
-  "retweets": "转推",
-  "@retweets": {},
   "save": "保存",
   "@save": {},
   "save_bandwidth_using_smaller_images": "使用较小的图像以节省带宽",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "打开{plugin}",
+  "plugin_reader_empty_filter": "没有符合这些筛选条件的内容",
+  "plugin_reader_reset_filters": "重置筛选"
 }

@@ -21,7 +21,7 @@ Widget _app(Widget child) {
 }
 
 void main() {
-  testWidgets('Reddit chrome is icon tabs, not a titled AppBar', (
+  testWidgets('Reddit full client identifies itself and labels its feed sections', (
     tester,
   ) async {
     var mode = RedditFeedMode.following;
@@ -42,7 +42,9 @@ void main() {
     );
 
     expect(find.byType(PluginHomeChrome), findsOneWidget);
-    expect(find.text('Reddit'), findsNothing);
+    expect(find.text('Reddit'), findsOneWidget);
+    expect(find.text('Following'), findsOneWidget);
+    expect(find.text('Popular'), findsOneWidget);
     expect(find.byIcon(Icons.home_outlined), findsOneWidget);
     expect(find.byIcon(Icons.whatshot_outlined), findsOneWidget);
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);

@@ -574,7 +574,7 @@
   "hide_retweets": "Ezkutatu bertxioak",
   "@hide_retweets": {},
   "hide_retweets_description": "Ez erakutsi erabiltzaile honen bertxiorik zure jarioetan",
-  "retweets": "Bertxioak",
+  "retweets": "Birtxioak",
   "@retweets": {},
   "@hide_retweets_description": {},
   "hide_sensitive_tweets": "Ezkutatu txio sentikorrak",
@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Saiatu berriro",
   "@retry": {},
-  "retweets": "Birtxioak",
-  "@retweets": {},
   "save": "Gorde",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Gorde banda-zabalera irudi txikiagoekin",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Ireki {plugin}",
+  "plugin_reader_empty_filter": "Ez dago iragazki hauekin bat datorren edukirik",
+  "plugin_reader_reset_filters": "Berrezarri iragazkiak"
 }

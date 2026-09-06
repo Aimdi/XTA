@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Повторить",
   "@retry": {},
-  "retweets": "Ретвиты",
-  "@retweets": {},
   "save": "Сохранить",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Экономьте место на экране, с изображениями меньшего размера",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Открыть {plugin}",
+  "plugin_reader_empty_filter": "Нет материалов, соответствующих этим фильтрам",
+  "plugin_reader_reset_filters": "Сбросить фильтры"
 }

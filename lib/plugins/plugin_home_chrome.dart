@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-/// Marks a plugin screen as sitting under the home feed strip.
-///
-/// Those pins already name the plugin (Für dich / Reddit / Substack / …). A
-/// second AppBar titled with the same name is just another chrome row. Screens
-/// that read [maybeOf] drop that title and skip a top [SafeArea] — the parent
-/// shell already cleared the status bar.
+import 'package:flutter/material.dart';
+import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/contrast.dart';
+
+/// The Home strip already provides identity and the top safe area.
 class PluginEmbedded extends InheritedWidget {
   const PluginEmbedded({super.key, required super.child});
 
@@ -16,8 +15,6 @@ class PluginEmbedded extends InheritedWidget {
   bool updateShouldNotify(covariant PluginEmbedded oldWidget) => false;
 }
 
-/// One destination on [PluginHomeChrome]. The [label] is a tooltip / semantic
-/// name — the chrome itself is icon-only so long locales do not wrap.
 class PluginHomeTab {
   final IconData icon;
   final String label;
@@ -32,17 +29,18 @@ class PluginHomeTab {
   });
 }
 
-/// Compact toolbar for a plugin already named by a parent tab.
-///
-/// One 48dp row: icon tabs on the left, actions on the right. Used instead of
-/// a titled [AppBar] plus a second icon+label tab strip.
+/// Named, scrollable sections. Full clients also expose their own identity.
 class PluginHomeChrome extends StatelessWidget {
+  final String? title;
+  final Widget? mark;
   final List<PluginHomeTab> tabs;
   final List<Widget> actions;
   final Color? accent;
 
   const PluginHomeChrome({
     super.key,
+    this.title,
+    this.mark,
     this.tabs = const [],
     this.actions = const [],
     this.accent,
@@ -50,52 +48,72 @@ class PluginHomeChrome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final embedded = PluginEmbedded.maybeOf(context);
+    final hasIdentity = !embedded && title != null;
+    final rowHeight = math.max(48.0, MediaQuery.textScalerOf(context).scale(14) + 20);
     final bar = Material(
-      color: theme.colorScheme.surface,
-      child: SizedBox(
-        height: 48,
-        child: Row(
-          children: [
-            Expanded(
-              child: tabs.isEmpty
-                  ? const SizedBox.shrink()
-                  : ListView(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasIdentity)
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 56),
+              child: Row(
+                children: [
+                  if (Navigator.canPop(context)) const BackButton(),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.only(start: 16, end: 10),
+                    child: mark ?? const SizedBox.shrink(),
+                  ),
+                  Expanded(
+                    child: Semantics(
+                      header: true,
+                      child: Text(title!, maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleLarge),
+                    ),
+                  ),
+                  ...actions,
+                ],
+              ),
+            ),
+          if (tabs.isNotEmpty || (!hasIdentity && actions.isNotEmpty))
+            SizedBox(
+              height: rowHeight,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ListView(
                       scrollDirection: Axis.horizontal,
                       primary: false,
-                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       children: [
                         for (final tab in tabs)
                           _TabButton(tab: tab, accent: accent),
                       ],
                     ),
+                  ),
+                  if (!hasIdentity) ...actions,
+                ],
+              ),
             ),
-            ...actions,
-          ],
-        ),
+        ],
       ),
     );
-
-    if (PluginEmbedded.maybeOf(context)) {
-      return bar;
-    }
-    return SafeArea(bottom: false, child: bar);
+    return embedded ? bar : SafeArea(bottom: false, child: bar);
   }
 }
 
-/// Title-less [AppBar] that puts a [TabBar] in the title slot so tabs and
-/// actions share one row — the parent strip already named the plugin.
 AppBar pluginHomeTabAppBar({
   required Widget tabs,
   List<Widget> actions = const [],
-}) {
-  return AppBar(
-    automaticallyImplyLeading: false,
-    titleSpacing: 0,
-    title: tabs,
-    actions: actions,
-  );
-}
+}) => AppBar(
+  automaticallyImplyLeading: false,
+  titleSpacing: 0,
+  title: tabs,
+  actions: actions,
+);
 
 class _TabButton extends StatelessWidget {
   final PluginHomeTab tab;
@@ -105,32 +123,43 @@ class _TabButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final selectedColor = accent ?? theme.colorScheme.primary;
-    final color = tab.selected
-        ? selectedColor
-        : theme.colorScheme.onSurfaceVariant;
-
+    final selectedColor = ensureContrast(
+      accent ?? tweetReadableAccentColor(context),
+      Theme.of(context).scaffoldBackgroundColor,
+    );
+    final foreground = tab.selected
+        ? tweetPrimaryColor(context)
+        : tweetSecondaryColor(context);
     return Semantics(
       button: true,
       selected: tab.selected,
       label: tab.label,
+      excludeSemantics: true,
       child: Tooltip(
         message: tab.label,
         child: InkWell(
           onTap: tab.onTap,
-          child: SizedBox(
-            width: 48,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: tab.selected ? selectedColor : Colors.transparent,
-                    width: 2,
-                  ),
-                ),
-              ),
-              child: Icon(tab.icon, size: 22, color: color),
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(
+                color: tab.selected ? selectedColor : Colors.transparent,
+                width: 2,
+              )),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(tab.icon, size: 20,
+                  color: tab.selected ? selectedColor : foreground),
+                const SizedBox(width: 8),
+                Text(tab.label, maxLines: 1,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: foreground,
+                    fontWeight: tab.selected ? FontWeight.w700 : FontWeight.w500,
+                  )),
+              ],
             ),
           ),
         ),

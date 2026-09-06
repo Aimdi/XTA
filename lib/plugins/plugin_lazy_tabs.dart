@@ -19,7 +19,7 @@ class PluginLazyTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return KeyedSubtree(
-      key: ValueKey<int>(index),
+      key: PageStorageKey<int>(index),
       child: children[index](context),
     );
   }

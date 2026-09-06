@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Ulang",
   "@retry": {},
-  "retweets": "Retweet",
-  "@retweets": {},
   "save": "Simpan",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Hemat bandwidth menggunakan gambar yang lebih kecil",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Buka {plugin}",
+  "plugin_reader_empty_filter": "Tidak ada konten yang sesuai dengan filter ini",
+  "plugin_reader_reset_filters": "Atur ulang filter"
 }

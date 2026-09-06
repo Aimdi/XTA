@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Паўтарыць",
   "@retry": {},
-  "retweets": "Рэтвіты",
-  "@retweets": {},
   "save": "Захаваць",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Эканомце месца на экране, з выявамі меншага памеру",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Адкрыць {plugin}",
+  "plugin_reader_empty_filter": "Няма матэрыялаў, якія адпавядаюць гэтым фільтрам",
+  "plugin_reader_reset_filters": "Скінуць фільтры"
 }

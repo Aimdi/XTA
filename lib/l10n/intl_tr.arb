@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Yeniden dene",
   "@retry": {},
-  "retweets": "Retweetler",
-  "@retweets": {},
   "save": "Kaydet",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Daha küçük görüntülerle bant genişliğinden tasarruf edin",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "{plugin} aç",
+  "plugin_reader_empty_filter": "Bu filtrelerle eşleşen içerik yok",
+  "plugin_reader_reset_filters": "Filtreleri sıfırla"
 }

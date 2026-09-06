@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/ui/contrast.dart';
 
 Widget _app(Widget child) {
   return MaterialApp(home: Scaffold(body: child));
 }
 
 void main() {
-  testWidgets('chrome is one 48dp row of icon tabs and actions', (
+  testWidgets('chrome has readable sections in a 48dp row', (
     tester,
   ) async {
     var tapped = 0;
@@ -42,9 +43,9 @@ void main() {
     final chrome = tester.getSize(find.byType(PluginHomeChrome));
     expect(chrome.height, 48);
 
-    // Labels are tooltips, not a second text row — long locales were wrapping.
-    expect(find.text('Home'), findsNothing);
-    expect(find.text('Inbox'), findsNothing);
+    // Labels scroll rather than wrapping or shrinking their touch targets.
+    expect(find.text('Home'), findsOneWidget);
+    expect(find.text('Inbox'), findsOneWidget);
     expect(find.byIcon(Icons.home_outlined), findsOneWidget);
     expect(find.byIcon(Icons.inbox_outlined), findsOneWidget);
     expect(find.byTooltip('Discover'), findsOneWidget);
@@ -113,7 +114,7 @@ void main() {
     );
 
     final icon = tester.widget<Icon>(find.byIcon(Icons.home_outlined));
-    expect(icon.color, accent);
+    expect(contrastRatio(icon.color!, Theme.of(tester.element(find.byType(PluginHomeChrome))).scaffoldBackgroundColor), greaterThanOrEqualTo(4.5));
   });
 
   testWidgets('tab AppBar has no plugin-name title', (tester) async {

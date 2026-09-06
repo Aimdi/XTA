@@ -574,7 +574,7 @@
   "hide_retweets": "Peida jagamised",
   "@hide_retweets": {},
   "hide_retweets_description": "Ära näita selle kasutaja jagamisi sinu voogudes",
-  "retweets": "Jagamised",
+  "retweets": "Kordussäutsud",
   "@retweets": {},
   "@hide_retweets_description": {},
   "hide_sensitive_tweets": "Peida võimalikud ebasobiliku sisuga säutsud",
@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Proovi uuesti",
   "@retry": {},
-  "retweets": "Kordussäutsud",
-  "@retweets": {},
   "save": "salvesta",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Kasutades väiksemaid pildifaile säästad ribalaiust",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Ava {plugin}",
+  "plugin_reader_empty_filter": "Ükski sisu ei vasta nendele filtritele",
+  "plugin_reader_reset_filters": "Lähtesta filtrid"
 }

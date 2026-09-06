@@ -8,7 +8,12 @@ import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
 import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
@@ -31,17 +36,16 @@ class PixivScreen extends StatefulWidget {
   State<PixivScreen> createState() => _PixivScreenState();
 }
 
-class _PixivScreenState extends State<PixivScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabs;
+class _PixivScreenState extends State<PixivScreen> {
+  final _view = PluginViewStore<PixivViewState>(const PixivViewState());
   late final PixivIllustListStore _recommended;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
-  var _signingIn = false;
-  var _rankingMode = 'day';
-  DateTime? _rankingDate;
-  var _bookmarksRestrict = 'public';
-  var _homeSource = 0;
+  bool get _signingIn => _view.state.signingIn;
+  String get _rankingMode => _view.state.rankingMode;
+  DateTime? get _rankingDate => _view.state.rankingDate;
+  String get _bookmarksRestrict => _view.state.bookmarksRestrict;
+  int get _homeSource => _view.state.homeSource;
 
   /// Ranking modes Flare pins as first-class feeds, plus XTA's existing set.
   static const _rankingModes = [
@@ -58,12 +62,6 @@ class _PixivScreenState extends State<PixivScreen>
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 5, vsync: this);
-    _tabs.addListener(() {
-      if (_tabs.indexIsChanging) return;
-      _ensureTabLoaded(_tabs.index);
-      if (mounted) setState(() {});
-    });
     final mute = context.read<PixivMuteStore>();
     _recommended = PixivIllustListStore(
       ({nextUrl}) => context.read<PixivClient>().recommended(nextUrl: nextUrl),
@@ -93,7 +91,7 @@ class _PixivScreenState extends State<PixivScreen>
         // Warm the token once so the first feed call does not serialise behind
         // a cold refresh, and concurrent tab loads share one in-flight refresh.
         unawaited(context.read<PixivClient>().ensureAccessToken());
-        unawaited(context.read<PixivFeedStore>().refresh());
+        _ensureTabLoaded(_view.state.section);
       }
     });
   }
@@ -114,7 +112,7 @@ class _PixivScreenState extends State<PixivScreen>
 
   @override
   void dispose() {
-    _tabs.dispose();
+    _view.destroy();
     _recommended.destroy();
     _ranking.destroy();
     _bookmarks.destroy();
@@ -167,13 +165,13 @@ class _PixivScreenState extends State<PixivScreen>
       lastDate: now,
     );
     if (picked == null || !mounted) return;
-    setState(() => _rankingDate = picked);
+    _view.select(_view.state.copyWith(rankingDate: picked));
     await _reloadRanking();
   }
 
   Future<void> _clearRankingDate() async {
     if (_rankingDate == null) return;
-    setState(() => _rankingDate = null);
+    _view.select(_view.state.copyWith(clearRankingDate: true));
     await _reloadRanking();
   }
 
@@ -190,20 +188,21 @@ class _PixivScreenState extends State<PixivScreen>
 
   Future<void> _changeRankingMode(String mode) async {
     if (mode == _rankingMode) return;
-    setState(() => _rankingMode = mode);
+    _view.select(_view.state.copyWith(rankingMode: mode));
     await _reloadRanking();
   }
 
   Future<void> _changeBookmarksRestrict(String restrict) async {
     if (restrict == _bookmarksRestrict) return;
-    setState(() => _bookmarksRestrict = restrict);
+    _view.select(_view.state.copyWith(bookmarksRestrict: restrict));
     _bookmarks.useLoader(_bookmarksLoader(restrict));
     await _bookmarks.refresh();
   }
 
   void _selectTab(int index) {
-    if (_tabs.index == index) return;
-    _tabs.index = index;
+    if (_view.state.section == index) return;
+    _view.select(_view.state.copyWith(section: index));
+    _ensureTabLoaded(index);
   }
 
   String _rankingLabel(L10n l10n, String mode) => switch (mode) {
@@ -220,6 +219,7 @@ class _PixivScreenState extends State<PixivScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _view.restore(context, 'pixiv');
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '')
         .trim()
@@ -227,15 +227,17 @@ class _PixivScreenState extends State<PixivScreen>
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      body: Column(
+      body: ScopedBuilder<PluginViewStore<PixivViewState>, PixivViewState>(
+        store: _view,
+        onState: (context, _) => Column(
         children: [
-          PixivHomeChrome(index: _tabs.index, onSelect: _selectTab),
+          PixivHomeChrome(index: _view.state.section, onSelect: _selectTab),
           const Divider(height: 1),
           Expanded(
-            child: !hasToken && _tabs.index != 4
+            child: !hasToken && _view.state.section != 4
                 ? _signInBody(l10n)
                 : PluginLazyTabs(
-                    index: _tabs.index,
+                    index: _view.state.section,
                     children: [
                       (_) => _homeTab(l10n),
                       (_) => _rankingTab(l10n),
@@ -243,7 +245,7 @@ class _PixivScreenState extends State<PixivScreen>
                       (_) => const PixivSearchScreen(embedded: true),
                       (_) => PixivMorePane(
                         onAuthChanged: () {
-                          if (mounted) setState(() {});
+                          if (mounted) _view.select(_view.state.copyWith());
                         },
                       ),
                     ],
@@ -251,22 +253,21 @@ class _PixivScreenState extends State<PixivScreen>
           ),
         ],
       ),
+      ),
     );
   }
 
   Widget _homeTab(L10n l10n) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-          child: Row(
+        PluginFilterRow(
             children: [
               ChoiceChip(
                 label: Text(l10n.plugin_pixiv_tab_following),
                 selected: _homeSource == 0,
                 onSelected: (_) {
                   if (_homeSource == 0) return;
-                  setState(() => _homeSource = 0);
+                  _view.select(_view.state.copyWith(homeSource: 0));
                   _ensureTabLoaded(0);
                 },
               ),
@@ -276,12 +277,11 @@ class _PixivScreenState extends State<PixivScreen>
                 selected: _homeSource == 1,
                 onSelected: (_) {
                   if (_homeSource == 1) return;
-                  setState(() => _homeSource = 1);
+                  _view.select(_view.state.copyWith(homeSource: 1));
                   _ensureTabLoaded(0);
                 },
               ),
             ],
-          ),
         ),
         Expanded(
           child: _homeSource == 0
@@ -311,16 +311,16 @@ class _PixivScreenState extends State<PixivScreen>
               onPressed: _signingIn
                   ? null
                   : () async {
-                      setState(() => _signingIn = true);
+                      _view.select(_view.state.copyWith(signingIn: true));
                       try {
                         final feed = context.read<PixivFeedStore>();
                         await runPixivSignIn(context);
                         if (mounted) {
-                          setState(() {});
+                          _view.select(_view.state.copyWith());
                           await feed.refresh();
                         }
                       } finally {
-                        if (mounted) setState(() => _signingIn = false);
+                        if (mounted) _view.select(_view.state.copyWith(signingIn: false));
                       }
                     },
               child: _signingIn
@@ -340,46 +340,45 @@ class _PixivScreenState extends State<PixivScreen>
   Widget _rankingTab(L10n l10n) {
     return Column(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                child: Row(
-                  children: [
-                    for (final mode in _rankingModes) ...[
-                      Padding(
-                        padding: const EdgeInsets.only(right: 6),
-                        child: ChoiceChip(
-                          label: Text(_rankingLabel(l10n, mode)),
-                          selected: _rankingMode == mode,
-                          onSelected: (_) => _changeRankingMode(mode),
-                        ),
-                      ),
-                    ],
-                    if (_rankingDate != null)
-                      InputChip(
-                        avatar: const Icon(Icons.history, size: 18),
-                        label: Text(
-                          MaterialLocalizations.of(
-                            context,
-                          ).formatCompactDate(_rankingDate!),
-                        ),
-                        onDeleted: _clearRankingDate,
-                        deleteButtonTooltipMessage:
-                            l10n.plugin_pixiv_ranking_back_to_today,
-                      ),
-                  ],
-                ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(children: [
+            Expanded(child: PopupMenuButton<String>(
+              initialValue: _rankingMode,
+              onSelected: _changeRankingMode,
+              itemBuilder: (_) => [
+                for (final mode in _rankingModes)
+                  CheckedPopupMenuItem(value: mode, checked: _rankingMode == mode,
+                    child: Text(_rankingLabel(l10n, mode))),
+              ],
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Row(children: [
+                  const Icon(Icons.bar_chart, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(_rankingLabel(l10n, _rankingMode),
+                    maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  const Icon(Icons.expand_more),
+                ]),
               ),
-            ),
+            )),
+            const SizedBox(width: 8),
+            if (_rankingDate != null)
+              Flexible(child: Text(MaterialLocalizations.of(context)
+                .formatCompactDate(_rankingDate!), maxLines: 1,
+                overflow: TextOverflow.ellipsis)),
             IconButton(
               icon: const Icon(Icons.calendar_today),
               tooltip: l10n.plugin_pixiv_ranking_pick_date,
               onPressed: _pickRankingDate,
             ),
-          ],
+            if (_rankingDate != null)
+              IconButton(
+                icon: const Icon(Icons.close),
+                tooltip: l10n.plugin_pixiv_ranking_back_to_today,
+                onPressed: _clearRankingDate,
+              ),
+          ]),
         ),
         Expanded(
           child: _feedTab(
@@ -394,9 +393,7 @@ class _PixivScreenState extends State<PixivScreen>
   Widget _bookmarksTab(L10n l10n) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-          child: Row(
+        PluginFilterRow(
             children: [
               ChoiceChip(
                 label: Text(l10n.plugin_pixiv_bookmarks_public),
@@ -410,7 +407,6 @@ class _PixivScreenState extends State<PixivScreen>
                 onSelected: (_) => _changeBookmarksRestrict('private'),
               ),
             ],
-          ),
         ),
         Expanded(
           child: _feedTab(
@@ -559,6 +555,8 @@ class PixivHomeChrome extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return PluginHomeChrome(
+      title: l10n.plugin_pixiv_title,
+      mark: pluginMark(PixivPlugin(), size: 24),
       accent: const Color(0xFF0096FA),
       tabs: [
         PluginHomeTab(

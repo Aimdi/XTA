@@ -574,7 +574,7 @@
   "hide_retweets": "रीट्वीट छिपाएँ",
   "@hide_retweets": {},
   "hide_retweets_description": "इस उपयोगकर्ता के रीट्वीट आपकी फ़ीड में न दिखाएँ",
-  "retweets": "रीट्वीट्स",
+  "retweets": "रीट्वीट",
   "@retweets": {},
   "@hide_retweets_description": {},
   "hide_sensitive_tweets": "संवेदनशील पोस्ट छुपाएं",
@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "पुनः प्रयास करें",
   "@retry": {},
-  "retweets": "रीट्वीट",
-  "@retweets": {},
   "save": "सहेजें",
   "@save": {},
   "save_bandwidth_using_smaller_images": "छोटी छवियों से बैंडविड्थ बचाएं",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "{plugin} खोलें",
+  "plugin_reader_empty_filter": "इन फ़िल्टर से मेल खाने वाली कोई सामग्री नहीं है",
+  "plugin_reader_reset_filters": "फ़िल्टर रीसेट करें"
 }

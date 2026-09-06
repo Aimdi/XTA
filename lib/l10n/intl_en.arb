@@ -2759,8 +2759,6 @@
   "@restart_video_player": {},
   "retry": "Retry",
   "@retry": {},
-  "retweets": "Retweets",
-  "@retweets": {},
   "save": "Save",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Save bandwidth with smaller images",
@@ -3233,5 +3231,8 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Open {plugin}",
+  "plugin_reader_empty_filter": "No items match these filters",
+  "plugin_reader_reset_filters": "Reset filters"
 }

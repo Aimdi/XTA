@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "重試",
   "@retry": {},
-  "retweets": "轉推",
-  "@retweets": {},
   "save": "儲存",
   "@save": {},
   "save_bandwidth_using_smaller_images": "使用較小的圖片以節省頻寬",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "禪模式時間軸長度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "開啟{plugin}",
+  "plugin_reader_empty_filter": "沒有符合這些篩選條件的內容",
+  "plugin_reader_reset_filters": "重設篩選"
 }

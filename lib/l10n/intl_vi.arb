@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Thử lại",
   "@retry": {},
-  "retweets": "Bài đăng lại",
-  "@retweets": {},
   "save": "Lưu",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Tiết kiệm dung lượng với dung lượng ảnh nhỏ hơn",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Mở {plugin}",
+  "plugin_reader_empty_filter": "Không có nội dung phù hợp với các bộ lọc này",
+  "plugin_reader_reset_filters": "Đặt lại bộ lọc"
 }

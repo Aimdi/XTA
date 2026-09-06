@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Riprova",
   "@retry": {},
-  "retweets": "Retweet",
-  "@retweets": {},
   "save": "Salva",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Risparmia banda usando immagini più piccole",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Lunghezza del feed in modalità zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quante pagine carica il feed in modalità zen prima di fermarsi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Apri {plugin}",
+  "plugin_reader_empty_filter": "Nessun contenuto corrisponde a questi filtri",
+  "plugin_reader_reset_filters": "Reimposta filtri"
 }

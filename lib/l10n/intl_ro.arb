@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Reîncercați",
   "@retry": {},
-  "retweets": "Retweeturi",
-  "@retweets": {},
   "save": "Salvează",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Economisiți lățimea de bandă cu imagini mai mici",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Deschide {plugin}",
+  "plugin_reader_empty_filter": "Niciun conținut nu corespunde acestor filtre",
+  "plugin_reader_reset_filters": "Resetează filtrele"
 }

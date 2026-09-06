@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Ponów",
   "@retry": {},
-  "retweets": "Retweety",
-  "@retweets": {},
   "save": "Zapisz",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Oszczędzaj transfer dzięki mniejszym obrazom",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Otwórz {plugin}",
+  "plugin_reader_empty_filter": "Żadne treści nie pasują do tych filtrów",
+  "plugin_reader_reset_filters": "Wyczyść filtry"
 }

@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Opnieuw",
   "@retry": {},
-  "retweets": "Retweets",
-  "@retweets": {},
   "save": "Veilig",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Bandbreedte besparen met kleinere afbeeldingen",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "{plugin} openen",
+  "plugin_reader_empty_filter": "Geen inhoud voldoet aan deze filters",
+  "plugin_reader_reset_filters": "Filters herstellen"
 }

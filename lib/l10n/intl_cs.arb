@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Zkusit znovu",
   "@retry": {},
-  "retweets": "Retweety",
-  "@retweets": {},
   "save": "Uložit",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Ušetřete data s menšími obrázky",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Otevřít {plugin}",
+  "plugin_reader_empty_filter": "Těmto filtrům neodpovídá žádný obsah",
+  "plugin_reader_reset_filters": "Obnovit filtry"
 }

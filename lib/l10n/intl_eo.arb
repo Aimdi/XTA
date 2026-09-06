@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "Reprovi",
   "@retry": {},
-  "retweets": "Repepoj",
-  "@retweets": {},
   "save": "Konservi",
   "@save": {},
   "save_bandwidth_using_smaller_images": "Konservi bendlarĝon per pli malgrandaj bildoj",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "Malfermi {plugin}",
+  "plugin_reader_empty_filter": "Neniu enhavo kongruas kun ĉi tiuj filtriloj",
+  "plugin_reader_reset_filters": "Restarigi filtrilojn"
 }

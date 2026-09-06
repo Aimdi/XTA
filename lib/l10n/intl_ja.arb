@@ -2720,8 +2720,6 @@
   "@restart_video_player": {},
   "retry": "再試行",
   "@retry": {},
-  "retweets": "リツイート",
-  "@retweets": {},
   "save": "保存",
   "@save": {},
   "save_bandwidth_using_smaller_images": "小さい画像にすると通信容量を削減できます",
@@ -3179,5 +3177,8 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open_client": "{plugin}を開く",
+  "plugin_reader_empty_filter": "このフィルターに一致する項目はありません",
+  "plugin_reader_reset_filters": "フィルターをリセット"
 }

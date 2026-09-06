@@ -5,6 +5,8 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_feed_list.dart';
@@ -179,6 +181,8 @@ class RedditHomeChrome extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return PluginHomeChrome(
+      title: l10n.plugin_reddit_title,
+      mark: pluginMark(RedditPlugin(), size: 24),
       accent: RedditPlugin().brandColor,
       tabs: [
         PluginHomeTab(
@@ -235,39 +239,32 @@ class RedditSubredditChips extends StatelessWidget {
   ) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    return Semantics(
-      label: l10n.plugin_reddit_followed_communities,
-      child: SizedBox(
-        height: 48,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
-          children: [
-            for (final name in names)
-              Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: ChoiceChip(
-                  key: ValueKey('reddit-community-$name'),
-                  label: Text('r/$name'),
-                  selected: isSelectedRedditCommunity(source.subreddit, name),
-                  showCheckmark: false,
-                  visualDensity: VisualDensity.compact,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  selectedColor: RedditPlugin().brandColor.withValues(
-                    alpha: theme.brightness == Brightness.dark ? 0.28 : 0.16,
-                  ),
-                  onSelected: (selected) {
-                    if (selected) {
-                      unawaited(home.selectSubreddit(name));
-                    } else {
-                      unawaited(home.selectMode(source.mode));
-                    }
-                  },
-                ),
-              ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
+          child: Text(l10n.plugin_reddit_followed_communities,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant)),
         ),
-      ),
+        PluginFilterRow(children: [
+          for (final name in names)
+            ChoiceChip(
+              key: ValueKey('reddit-community-$name'),
+              label: Text('r/$name'),
+              selected: isSelectedRedditCommunity(source.subreddit, name),
+              materialTapTargetSize: MaterialTapTargetSize.padded,
+              onSelected: (selected) {
+                if (selected) {
+                  unawaited(home.selectSubreddit(name));
+                } else {
+                  unawaited(home.selectMode(source.mode));
+                }
+              },
+            ),
+        ]),
+      ],
     );
   }
 }

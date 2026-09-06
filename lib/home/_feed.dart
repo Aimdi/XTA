@@ -25,6 +25,7 @@ import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/feed_strip_tab.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
@@ -413,7 +414,12 @@ class _FeedScreenState extends State<FeedScreen> {
     final screen = plugin?.feedStripScreen(
       scrollController: widget.scrollController,
     );
-    if (screen != null) return PluginEmbedded(child: screen);
+    if (screen != null) {
+      return KeyedSubtree(
+        key: PageStorageKey('home-plugin-${tab.id}'),
+        child: PluginEmbedded(child: screen),
+      );
+    }
     return Center(child: Text(L10n.of(context).feed_strip_unavailable));
   }
 
@@ -450,7 +456,9 @@ class _FeedScreenState extends State<FeedScreen> {
       flatAppBar: true,
       leading: const DrawerAvatarButton(),
       titleBuilder: (context) => HomeAppBarTitle(
-        label: L10n.of(context).home,
+        label: tab.isPlugin
+            ? pluginById(tab.id)!.title(context)
+            : L10n.of(context).home,
       ),
       bottomBuilder: (context) => PreferredSize(
         preferredSize: const Size.fromHeight(kHomeFeedStripHeight),
@@ -494,12 +502,27 @@ class _FeedScreenState extends State<FeedScreen> {
         // steer nothing here. Its overflow carries the app settings so they
         // stay reachable from this tab too.
         if (tab == FeedTab.reddit) {
-          return const [
+          return [
             Padding(
-              padding: EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
-              child: RedditFeedActions(showAppSettings: true),
+              padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
+              child: RedditFeedActions(
+                showAppSettings: true,
+                onOpenClient: () => openPluginClient(context, pluginById(tab.id)!),
+              ),
             ),
           ];
+        }
+
+        if (tab.isPlugin) {
+          final plugin = pluginById(tab.id)!;
+          return [HomeAppBarActions(children: [
+            IconButton(
+              key: ValueKey('open-client-${plugin.id}'),
+              tooltip: L10n.of(context).plugin_open_client(plugin.title(context)),
+              icon: const Icon(Icons.open_in_new),
+              onPressed: () => openPluginClient(context, plugin),
+            ),
+          ])];
         }
 
         // Only the feed filters. Refresh is the pull gesture and settings

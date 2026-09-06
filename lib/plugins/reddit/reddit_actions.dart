@@ -31,6 +31,7 @@ class RedditFeedActions extends StatefulWidget {
   /// Adds the app's own settings to the overflow menu, for a bar that has no
   /// other route to them.
   final bool showAppSettings;
+  final VoidCallback? onOpenClient;
 
   /// Called after a setting changes what the active Reddit body should fetch.
   final Future<void> Function()? onRefresh;
@@ -38,6 +39,7 @@ class RedditFeedActions extends StatefulWidget {
   const RedditFeedActions({
     super.key,
     this.showAppSettings = false,
+    this.onOpenClient,
     this.onRefresh,
   });
 
@@ -82,6 +84,15 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
             subtitle: Text(l10n.plugin_reddit_source_public_description),
           ),
         ),
+        if (widget.onOpenClient != null)
+          PopupMenuItem(
+            value: _menuClient,
+            child: ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.open_in_new),
+              title: Text(l10n.plugin_open_client(l10n.plugin_reddit_title)),
+            ),
+          ),
         const PopupMenuDivider(),
         PopupMenuItem(
           value: _menuPluginSettings,
@@ -106,9 +117,14 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
   /// Values the menu uses for the actions that are not a source choice.
   static const _menuPluginSettings = '_pluginSettings';
+  static const _menuClient = '_client';
   static const _menuAppSettings = '_appSettings';
 
   Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
+    if (value == _menuClient) {
+      widget.onOpenClient?.call();
+      return;
+    }
     if (value == _menuPluginSettings) {
       await Navigator.push(
         context,
