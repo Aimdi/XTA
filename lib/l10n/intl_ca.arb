@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Deixa de seguir",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Obre {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avançat: enganxa el testimoni d’actualització",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Marcador",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Encara no hi ha res per llegir",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "No hi ha contingut que coincideixi amb aquests filtres",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "No s’han pogut carregar {count} fonts",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Restableix els filtres",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Sobre aquesta comunitat",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Afegeix un subreddit",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

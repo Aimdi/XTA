@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Berhenti mengikuti",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Buka {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Lanjutan: tempel refresh token",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Markah",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Belum ada yang bisa dibaca",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Tidak ada konten yang sesuai dengan filter ini",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Tidak dapat memuat {count} sumber",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Atur ulang filter",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Tentang komunitas ini",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Tambah subreddit",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

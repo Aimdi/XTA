@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "إلغاء المتابعة",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "فتح {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "متقدم: الصق رمز التحديث",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "إضافة إلى الإشارات",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "لا يوجد ما تقرؤه بعد",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "لا توجد عناصر تطابق هذه الفلاتر",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "تعذّر تحميل {count} من المصادر",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "إعادة ضبط الفلاتر",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "حول هذا المجتمع",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "إضافة سبريديت",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

@@ -1839,6 +1839,7 @@
   "plugin_mastodon_unfollow": "Unfollow",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Open {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Advanced: paste refresh token",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Bookmark",
@@ -2033,6 +2034,7 @@
   "plugin_reader_empty": "Nothing to read yet",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "No items match these filters",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Could not load {count} sources",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2042,6 +2044,7 @@
     }
   },
   "plugin_reader_reset_filters": "Reset filters",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "About this community",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Add subreddit",
@@ -3250,8 +3253,5 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

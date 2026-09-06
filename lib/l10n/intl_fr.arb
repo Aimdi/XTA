@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Ne plus suivre",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Ouvrir {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avancé : coller le jeton d’actualisation",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Favori",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Rien à lire pour le moment",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Aucun contenu ne correspond à ces filtres",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Impossible de charger {count} sources",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Réinitialiser les filtres",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "À propos de cette communauté",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Ajouter un subreddit",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

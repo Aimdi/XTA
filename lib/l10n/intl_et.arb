@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Lõpeta jälgimine",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Ava {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Täpsem: kleebi värskendustoken",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Järjehoidja",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Pole veel midagi lugeda",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Ükski sisu ei vasta nendele filtritele",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "{count} allika laadimine ebaõnnestus",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Lähtesta filtrid",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Sellest kogukonnast",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Lisa subreddit",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

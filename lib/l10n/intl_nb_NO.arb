@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Slutt å følge",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Åpne {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avansert: lim inn oppfriskningstoken",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Bokmerke",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Ingenting å lese ennå",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Ingen elementer samsvarer med filtrene",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Kunne ikke laste inn {count} kilder",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Nullstill filtre",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Om dette fellesskapet",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Legg til subreddit",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

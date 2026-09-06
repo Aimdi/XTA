@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Adpisacca",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Adkryć {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Dadatkova: ustaŭic refresh-token",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "U zakladki",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Pakuĺ niama čaho čytać",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Niama materyjałaŭ, jakija adpaviadajuć hetym filtram",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Nie ŭdałosia zahruzić krynicy: {count}",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Skinuć filtry",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Pra hetu supolnasć",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Dadać sabredyt",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

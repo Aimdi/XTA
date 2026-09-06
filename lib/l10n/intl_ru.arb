@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Отписаться",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Открыть {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Дополнительно: вставить refresh-токен",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "В закладки",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Пока нечего читать",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Нет материалов, соответствующих этим фильтрам",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Не удалось загрузить источники: {count}",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Сбросить фильтры",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Об этом сообществе",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Добавить сабреддит",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

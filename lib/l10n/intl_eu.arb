@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Jarraitzeari utzi",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "Ireki {plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Aurreratua: itsatsi freskatze-tokena",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "Laster-marka",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "Oraindik ez dago irakurtzekorik",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "Ez dago iragazki hauekin bat datorren edukirik",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "Ezin izan dira {count} iturri kargatu",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "Berrezarri iragazkiak",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "Komunitate honi buruz",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "Gehitu subreddita",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

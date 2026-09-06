@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "언팔로우",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "{plugin} 열기",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "고급: 리프레시 토큰 붙여넣기",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "북마크",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "아직 읽을 항목이 없습니다",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "이 필터와 일치하는 항목이 없습니다",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "소스 {count}개를 불러오지 못했습니다",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "필터 초기화",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "이 커뮤니티 정보",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "서브레딧 추가",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }

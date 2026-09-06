@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "取消关注",
   "@plugin_mastodon_unfollow": {},
   "plugin_open_client": "打开{plugin}",
+  "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "高级：粘贴刷新令牌",
   "@plugin_pixiv_advanced_token": {},
   "plugin_pixiv_bookmark": "收藏",
@@ -2012,6 +2013,7 @@
   "plugin_reader_empty": "暂无可读内容",
   "@plugin_reader_empty": {},
   "plugin_reader_empty_filter": "没有符合这些筛选条件的内容",
+  "@plugin_reader_empty_filter": {},
   "plugin_reader_partial_error": "无法加载 {count} 个来源",
   "@plugin_reader_partial_error": {
     "placeholders": {
@@ -2021,6 +2023,7 @@
     }
   },
   "plugin_reader_reset_filters": "重置筛选",
+  "@plugin_reader_reset_filters": {},
   "plugin_reddit_about_community": "关于此社区",
   "@plugin_reddit_about_community": {},
   "plugin_reddit_add": "添加 subreddit",
@@ -3196,8 +3199,5 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open_client": {},
-  "@plugin_reader_empty_filter": {},
-  "@plugin_reader_reset_filters": {}
+  "@zen_mode_page_cap_description": {}
 }
