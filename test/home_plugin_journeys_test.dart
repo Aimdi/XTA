@@ -192,7 +192,10 @@ void main() {
     expect(find.text('A quiet article'), findsOneWidget);
     await expectLater(find.byType(FeedScreen), matchesGoldenFile('../review-artifacts/renders/home-rss.png'));
     final rssContext = tester.element(find.text('A quiet article'));
-    await rssContext.read<RssReadStore>().markRead('article');
+    final markRead = rssContext.read<RssReadStore>().markRead('article');
+    // Store.execute debounces for 50ms; advance the widget clock before awaiting.
+    await tester.pump(const Duration(milliseconds: 100));
+    await markRead;
     await tester.tap(find.widgetWithText(FilterChip, 'Unread'));
     await tester.pumpAndSettle();
     expect(find.text('No items match these filters'), findsOneWidget);
