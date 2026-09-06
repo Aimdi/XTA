@@ -8,8 +8,9 @@ void main() {
   for (final tokens in [XLookTokens.light, XLookTokens.dim, XLookTokens.lightsOut]) {
     for (final direction in [TextDirection.ltr, TextDirection.rtl]) {
       for (final embedded in [true, false]) {
-        testWidgets('reader controls fit $tokens $direction embedded=$embedded at 320dp and 200% text', (tester) async {
-          tester.view.physicalSize = const Size(320, 280);
+        for (final size in [const Size(320, 280), const Size(840, 360)]) {
+        testWidgets('reader controls fit $tokens $direction embedded=$embedded at $size and 200% text', (tester) async {
+          tester.view.physicalSize = size;
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
@@ -26,7 +27,8 @@ void main() {
               onPressed: () => settings++)],
           );
           await tester.pumpWidget(MaterialApp(theme: xLookThemeData(tokens, null),
-            home: MediaQuery(data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            home: MediaQuery(data: MediaQueryData(size: size, textScaler: const TextScaler.linear(2),
+                padding: const EdgeInsets.only(top: 24, bottom: 16), disableAnimations: true),
               child: Directionality(textDirection: direction,
                 child: Scaffold(body: embedded ? PluginEmbedded(child: chrome) : chrome)))));
           expect(tester.takeException(), isNull);
@@ -39,6 +41,7 @@ void main() {
           expect(selected, 1);
           expect(find.text('A long localized plugin name'), embedded ? findsNothing : findsOneWidget);
         });
+        }
       }
     }
   }

@@ -11,6 +11,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/combined_groups.dart';
+import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/chrome_avatar.dart';
@@ -105,6 +106,7 @@ void main() {
       Provider(create: (_) => NetworkRecentsStore(prefs)), Provider(create: (_) => ChromeAvatarStore(prefs)),
       Provider<GroupsModel>.value(value: groups), Provider(create: (_) => SubscriptionsModel(prefs, groups)),
       Provider(create: (_) => CombinedGroupsStore()), Provider<PluginSessionStore>.value(value: session),
+      Provider(create: (_) => FeedSessionCache()),
       Provider<HackerNewsClient>.value(value: hn), Provider(create: (_) => HnLikesStore(prefs)),
       Provider(create: (_) => HnSavedStore(prefs)), Provider(create: (_) => HnFollowsStore(prefs)),
       Provider<RssFeedsStore>.value(value: feeds), Provider<RssTimelineStore>.value(value: timeline),

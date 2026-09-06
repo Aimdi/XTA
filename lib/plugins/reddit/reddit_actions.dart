@@ -63,7 +63,7 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
-      tooltip: '${l10n.plugin_reddit_title} · ${l10n.more}',
+      tooltip: '${l10n.plugin_reddit_title} · ${MaterialLocalizations.of(context).moreButtonTooltip}',
       onSelected: (value) => _onMenuSelected(value, prefs),
       itemBuilder: (context) => [
         if (widget.onOpenSaved != null) ...[

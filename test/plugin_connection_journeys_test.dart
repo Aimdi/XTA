@@ -46,6 +46,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetViewInsets);
       final probe = _Probe();
       final prefs = PrefServiceCache(defaults: {
         optionPluginKarakeepServerUrl: 'https://example.test', optionPluginKarakeepApiKey: 'test-key',
@@ -92,6 +93,7 @@ void main() {
       final firstField = find.byKey(const ValueKey('plugin-connection-primary-field'));
       await reveal(firstField, upward: true);
       await tester.enterText(firstField, 'edited-value');
+      tester.view.viewInsets = const FakeViewPadding(bottom: 240);
       probe.response.complete();
       await tester.pumpAndSettle();
       await reveal(testButton);
