@@ -83,7 +83,8 @@ void main() {
     await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
     await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+    // Real SQLite on the widget-test clock, without cross-isolate reply timers.
+    databaseFactory = databaseFactoryFfiNoIsolate;
     final dir = await Directory.systemTemp.createTemp('xta-home-plugin-journeys');
     await databaseFactory.setDatabasesPath(dir.path);
     await Repository().migrate();
