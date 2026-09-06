@@ -5,6 +5,7 @@ on:
     branches: [claude/main]
     paths:
       - 'lib/home/**'
+      - 'lib/group/_feed_shell.dart'
       - 'lib/plugins/**'
       - 'lib/l10n/**'
       - 'test/**'
@@ -67,9 +68,27 @@ jobs:
         run: |
           set -o pipefail
           flutter analyze --no-fatal-infos 2>&1 | tee review-artifacts/analyze.txt
+      - name: Reader journeys
+        timeout-minutes: 3
+        id: journeys
+        if: steps.analyze.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test test/home_plugin_journeys_test.dart test/pixiv_reader_journey_test.dart test/plugin_connection_journeys_test.dart test/plugin_reader_accessibility_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+      - name: Upload journey evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-plugin-journeys-${{ github.event.pull_request.head.sha }}
+          path: |
+            review-artifacts/journeys.txt
+            review-artifacts/renders
+          retention-days: 7
       - name: Deterministic tests
         timeout-minutes: 12
         id: tests
+        if: steps.journeys.outcome == 'success'
         continue-on-error: true
         run: |
           set -o pipefail
@@ -112,9 +131,11 @@ jobs:
         if: always()
         env:
           ANALYZE: ${{ steps.analyze.outcome }}
+          JOURNEYS: ${{ steps.journeys.outcome }}
           TESTS: ${{ steps.tests.outcome }}
           APK: ${{ steps.apk.outcome }}
         run: |
           test "$ANALYZE" = success
+          test "$JOURNEYS" = success
           test "$TESTS" = success
           test "$APK" = success

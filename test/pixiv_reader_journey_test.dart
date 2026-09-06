@@ -83,7 +83,7 @@ void main() {
     await tester.tap(find.text('Daily'));
     await tester.pumpAndSettle();
     expect(find.byType(CheckedPopupMenuItem<String>), findsNWidgets(8));
-    await tester.tap(find.text('Weekly'));
+    await tester.tap(find.byWidgetPredicate((widget) => widget is CheckedPopupMenuItem<String> && widget.value == 'week'));
     await tester.pumpAndSettle();
     expect(client.calls.last, 'rank:week:null');
     final date = find.byIcon(Icons.calendar_today);

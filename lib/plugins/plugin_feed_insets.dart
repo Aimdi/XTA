@@ -21,13 +21,11 @@ EdgeInsets pluginFeedPadding(
 
 /// Scroll controller a plugin list should attach.
 ///
-/// [GroupFeedShell] already owns [requested] as the NestedScrollView *outer*
-/// controller. Giving that same object to an inner ListView paints the first
-/// card under the pinned tab strip, then NestedScrollView.position throws.
-/// When embedded, the list uses the inner [PrimaryScrollController]
-/// NestedScrollView injects. Only one scrollable may attach that inner
-/// controller — [PluginLazyTabs] keeps a single pane mounted so TabBarView
-/// cannot hand the same object to every board.
+/// Embedded readers inherit the shell's [PrimaryScrollController]: Home's
+/// fixed header supplies a direct reader controller, while nested hosts supply
+/// their inner controller. A nested host must never attach its outer controller
+/// to the reader as well. [PluginLazyTabs] mounts one pane at a time so sibling
+/// sections cannot attach the same primary controller simultaneously.
 ScrollController? pluginInnerScrollController(
   BuildContext context,
   ScrollController? requested,

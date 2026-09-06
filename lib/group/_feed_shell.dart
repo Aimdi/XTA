@@ -35,6 +35,10 @@ class GroupFeedShell extends StatefulWidget {
   /// Group routes retain Material's existing app-bar behavior by default.
   final bool flatAppBar;
 
+  /// Home keeps source and plugin controls below a fixed app header. A nested
+  /// outer offset can otherwise move a newly selected plugin under that header.
+  final bool fixedHeader;
+
   /// The app bar's leading slot. The home feed puts the account avatar here (it
   /// opens the drawer, as X's does); a pushed group leaves it null for the
   /// default back button.
@@ -55,6 +59,7 @@ class GroupFeedShell extends StatefulWidget {
     this.bottomBuilder,
     this.centerTitle = false,
     this.flatAppBar = false,
+    this.fixedHeader = false,
     this.leading,
     this.usesFeedCache = false,
   });
@@ -203,7 +208,7 @@ class _GroupFeedShellState extends State<GroupFeedShell>
         builder: (context, child) {
           return Provider<FeedRefreshController>.value(
             value: _feedRefreshController,
-            child: NestedScrollView(
+            child: widget.fixedHeader ? Builder(builder: _fixedHome) : NestedScrollView(
               controller: widget.scrollController,
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                 return [
@@ -233,6 +238,36 @@ class _GroupFeedShellState extends State<GroupFeedShell>
           );
         },
       ),
+    );
+  }
+
+  Widget _fixedHome(BuildContext context) {
+    final bottom = _bottom(context);
+    final toolbarHeight = Theme.of(context).appBarTheme.toolbarHeight ?? kToolbarHeight;
+    return Column(
+      children: [
+        SizedBox(
+          height: toolbarHeight + bottom.preferredSize.height + MediaQuery.paddingOf(context).top,
+          child: AppBar(
+            toolbarHeight: toolbarHeight,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
+            centerTitle: widget.centerTitle,
+            leading: widget.leading,
+            title: widget.titleBuilder(context),
+            actions: widget.actionsBuilder(context),
+            bottom: bottom,
+          ),
+        ),
+        Expanded(
+          child: PrimaryScrollController(
+            controller: widget.scrollController,
+            child: KeyedSubtree(key: ValueKey(_refreshCounter), child: widget.bodyBuilder(context)),
+          ),
+        ),
+      ],
     );
   }
 }

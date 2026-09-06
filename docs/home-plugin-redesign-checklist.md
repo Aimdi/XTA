@@ -77,3 +77,13 @@ to address the actual icon-button constructor and lazy form. Additional Pixiv
 mode/date/private-favorites and RSS unread/reset journeys are included. Test
 renders now load the production Material icon font; the RSS filter row aligns
 to the reading edge. Verification and final APK remain pending.
+
+Checkpoint `14195db8d4448f8d76f314316a986d2df81c5603`: 2,178 tests passed,
+five skipped and one Home journey failed. Advancing the Store test clock
+exposed a real hit-target obstruction: after a scrolled source switch, RSS's
+Unread control was under the pinned Home strip. Home now uses the existing
+shared shell with a fixed header and one primary reader scrollable. The
+journey explicitly asserts the control is hit-testable. A targeted journey
+step now precedes the full suite and publishes its log/renders early. Final
+verification and APK remain pending. The final ARB sort only reorders metadata;
+all parsed keys and values are identical.

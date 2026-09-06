@@ -411,14 +411,12 @@ class _FeedScreenState extends State<FeedScreen> {
     // the indicator without recreating NestedScrollView (two outers on the
     // same ScrollController froze, then crashed, home).
     return GroupFeedShell(
-      // Keep the nested coordinator alive while the keyed source body changes.
-      // Recreating it before its outer position has dimensions prevents Flutter
-      // from restoring the inner list's PageStorage offset.
       key: ValueKey('home-shell-${widget.id}'),
       scrollController: widget.scrollController,
       groupId: widget.id,
       centerTitle: false,
       flatAppBar: true,
+      fixedHeader: true,
       leading: const DrawerAvatarButton(),
       titleBuilder: (context) =>
           HomeAppBarTitle(label: tab.isPlugin ? pluginById(tab.id)!.title(context) : L10n.of(context).home),

@@ -196,7 +196,9 @@ void main() {
     // Store.execute debounces for 50ms; advance the widget clock before awaiting.
     await tester.pump(const Duration(milliseconds: 100));
     await markRead;
-    await tester.tap(find.widgetWithText(FilterChip, 'Unread'));
+    final unread = find.widgetWithText(FilterChip, 'Unread');
+    expect(unread.hitTestable(), findsOneWidget, reason: 'Home must not cover the new source controls.');
+    await tester.tap(unread);
     await tester.pumpAndSettle();
     expect(find.text('No items match these filters'), findsOneWidget);
     await tester.tap(find.text('Reset filters'));

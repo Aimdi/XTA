@@ -117,3 +117,14 @@ Section choices share the session where appropriate; PageStorage keeps pane
 scroll positions. No offstage plugin lists or new network/cache services are
 created. Only a visited reader constructs its stores, and only its selected
 section loads. Home source/refresh epochs now use `HomeFeedViewStore`.
+
+## Fixed Home header refinement
+
+The actual Home journey exposed a pinned-header overlap after scrolling HN
+and switching to RSS: the nested outer offset placed RSS filters beneath the
+Home strip. Home now uses `GroupFeedShell.fixedHeader`, an AppBar and source
+strip above a single primary reader scrollable. Plugin section/filter controls
+remain within that bounded body. Existing pushed group routes retain their
+nested behavior. Source and section PageStorage keys restore offsets directly;
+Home session stores retain pages. This also avoids forcing an outer controller
+onto an inner list or resetting a previous source to reveal the next one.
