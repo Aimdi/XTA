@@ -26,13 +26,13 @@ Enabled/install state, Home pins and bottom-bar visibility remain distinct.
 
 | Plugin | Real sections / content | Search, setup and supporting routes | Presentation work and files | Required checks | Status |
 | --- | --- | --- | --- | --- | --- |
-| Threads | Home, local Liked; social posts | Discover/people search, add handle, session settings, profiles/threads | `threads_screen.dart`: readable local library and discovery context | Section selection, add/search/settings, cached feed | Pending |
-| Bluesky | Following, Discover, Lists, local Liked | People search, imports, lists/feeds, profiles/threads, settings descriptor | `bluesky_screen.dart`, feeds pane: distinct discovery/list/library navigation | Lazy panes, imports/search, local likes | Pending |
-| Mastodon | Explore, Local, Federated, Following | Instance-aware search/add account, settings, hashtag/profile/thread routes | `mastodon_screen.dart`: combine duplicated controls and show instance context | Instance labels, 4 sections, no extra fetch | Pending |
-| TikTok | Following videos, Accounts | Handle search/settings, creator profile and player | `tiktok_screen.dart`: creator navigation and video browsing hierarchy | Following/accounts, playback entry, follow actions | Pending |
-| Instagram | Existing For you, Following, Accounts | Search/settings, profiles, media viewer, local follows/likes | `instagram_screen.dart`: source/creator navigation and lazy discovery | 3 sections, settings return, media entry | Pending |
+| Threads | Home, local Liked; social posts | Discover/people search, add handle, session settings, profiles/threads | `threads_screen.dart`: readable local library and discovery context | Section selection, add/search/settings, cached feed | Implemented; CI pending |
+| Bluesky | Following, Discover, Lists, local Liked | People search, imports, lists/feeds, profiles/threads, settings descriptor | `bluesky_screen.dart`, feeds pane: distinct discovery/list/library navigation | Lazy panes, imports/search, local likes | Implemented; CI pending |
+| Mastodon | Explore, Local, Federated, Following | Instance-aware search/add account, settings, hashtag/profile/thread routes | `mastodon_screen.dart`: combine duplicated controls and show instance context | Instance labels, 4 sections, no extra fetch | Implemented; CI pending |
+| TikTok | Following videos, Accounts | Handle search/settings, creator profile and player | `tiktok_screen.dart`: creator navigation and video browsing hierarchy | Following/accounts, playback entry, follow actions | Implemented; CI pending |
+| Instagram | Existing For you, Following, Accounts | Search/settings, profiles, media viewer, local follows/likes | `instagram_screen.dart`: source/creator navigation and lazy discovery | 3 sections, settings return, media entry | Implemented; CI pending |
 | Reddit | Following/Popular/All or followed subreddit; local Saved | Sort/search, community management, source/auth settings, listings/comments | `reddit_screen.dart`, Home entry: distinguish rail/community/actions | Existing source/sort/saved/navigation tests | Pending pilot |
-| Hacker News | Top/New/Best/Ask/Show/Jobs/Saved/Following; stories/comments | Search, user pages, reader/settings, local saves/follows | `hn_screen.dart`, story card: readable sections and ranked story metadata | Eight sections, story vs comments, lazy fetch | Pending |
+| Hacker News | Top/New/Best/Ask/Show/Jobs/Saved/Following; stories/comments | Search, user pages, reader/settings, local saves/follows | `hn_screen.dart`, story card: readable sections and ranked story metadata | Eight sections, story vs comments, lazy fetch | Implemented; CI pending |
 | Substack | Home/Inbox/Notes/Library; articles and notes | Discovery/add publication, archive, reader/comments/TTS, local read/save/likes | `substack_screen.dart`: article filter/empty hierarchy and publication library | Unread, notes lazy load, archive/reader | Pending |
 | RSS | Home/Feeds; articles | Add/autodiscovery, read/unread, tags, feed reader/settings; no general search descriptor | `rss_screen.dart`, `rss_card.dart`: article rows, source tags, filter reset | Read semantics, empty filters, feed/settings paths | Pending pilot |
 | Pixiv | Home/Rankings/Favorites/Search/More; illustrations | Following/Recommended, mode/date, public/private favorites, auth/history/mute/bookmark | `pixiv_screen.dart`, `pixiv_grid.dart`: compact controls, named sections and artwork metadata | Five sections, ranking/source controls, auth, adaptive grid | Pending pilot |
@@ -53,3 +53,7 @@ verify run `33641378899` and build run `33641378888` both succeeded.
 
 Final commands/results, artifact URLs and remaining device/live-service limits
 will be recorded here as verification completes.
+
+Checkpoint: social/community UI commit `29bc60d558e933721d57859916473740be9a71dd`.
+Pilot static analysis succeeded. Evidence capture required a fake-clock fix;
+tests/build are pending a clean rerun. No runtime-device evidence yet.

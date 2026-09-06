@@ -17,10 +17,6 @@ concurrency:
   group: home-plugin-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-concurrency:
-  group: home-plugin-review-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
-
 jobs:
   review:
     if: github.head_ref == 'codex/home-plugin-redesign'

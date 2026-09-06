@@ -8,6 +8,8 @@ import 'package:xta/plugins/ehviewer/eh_models.dart';
 import 'package:xta/plugins/ehviewer/eh_ui.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_gallery_layout.dart';
+import 'package:xta/ui/contrast.dart';
 
 const ehImageTimeLimit = Duration(seconds: 20);
 
@@ -105,6 +107,10 @@ class EhGalleryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+    final scaler = MediaQuery.textScalerOf(context);
+    final columns = pluginGalleryColumns(constraints.maxWidth, scaler);
+    final tileWidth = (constraints.maxWidth - 16 - (columns - 1) * 8) / columns;
     final grid = NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (onNearEnd == null) return false;
@@ -122,11 +128,11 @@ class EhGalleryGrid extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.all(8),
             sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
                 mainAxisSpacing: 8,
                 crossAxisSpacing: 8,
-                childAspectRatio: 0.62,
+                mainAxisExtent: tileWidth * 1.25 + scaler.scale(72) + 28,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) => EhGalleryTile(gallery: galleries[index]),
@@ -146,6 +152,7 @@ class EhGalleryGrid extends StatelessWidget {
     );
     if (onRefresh == null) return grid;
     return RefreshIndicator(onRefresh: onRefresh!, child: grid);
+    });
   }
 }
 
@@ -203,7 +210,7 @@ class EhGalleryTile extends StatelessWidget {
                               child: Text(
                                 gallery.category!.label,
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: Colors.white,
+                                  color: ensureContrast(Colors.white, ehCategoryColor(gallery.category!)),
                                 ),
                               ),
                             ),
@@ -225,8 +232,13 @@ class EhGalleryTile extends StatelessWidget {
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall,
+                    style: theme.textTheme.bodyMedium,
                   ),
+                  if (gallery.uploader?.isNotEmpty == true) ...[
+                    const SizedBox(height: 4),
+                    Text(gallery.uploader!, maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.labelMedium),
+                  ],
                   if (gallery.pageCount != null) ...[
                     const SizedBox(height: 2),
                     Text(

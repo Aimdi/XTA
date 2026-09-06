@@ -14,9 +14,9 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_footer.dart';
 import 'package:xta/ui/dates.dart';
 
-const double kSubstackLogoSize = 40;
+const double kSubstackLogoSize = 48;
 
-/// A Substack Home-style post card: cover first when present, then title.
+/// Publication and headline lead; optional media and local reading actions follow.
 class SubstackPostCard extends StatelessWidget {
   final SubstackPost post;
 
@@ -74,14 +74,16 @@ class SubstackPostCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (hasCover)
-                  InkWell(onTap: () => _open(context), child: _cover(context)),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _header(context, date, unread: unread),
+                      if (post.authorName?.isNotEmpty == true) ...[
+                        const SizedBox(height: 4),
+                        Text(post.authorName!, style: theme.textTheme.bodySmall),
+                      ],
                       const SizedBox(height: 8),
                       InkWell(
                         onTap: () => _open(context),
@@ -117,6 +119,10 @@ class SubstackPostCard extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (hasCover)
+                  Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: ClipRRect(borderRadius: BorderRadius.circular(8),
+                      child: InkWell(onTap: () => _open(context), child: _cover(context)))),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
                   child: _counts(context),
@@ -144,7 +150,7 @@ class SubstackPostCard extends StatelessWidget {
               Container(
                 width: 8,
                 height: 8,
-                margin: const EdgeInsets.only(right: 8),
+                margin: const EdgeInsetsDirectional.only(end: 8),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary,
                   shape: BoxShape.circle,

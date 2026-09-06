@@ -8,6 +8,7 @@ import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_post_screen.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_gallery_layout.dart';
 
 String booruPostHeroTag(BooruPost post) => 'booru-${post.host}-${post.id}';
 
@@ -26,11 +27,12 @@ class BooruPostGrid extends StatelessWidget {
     this.onRefresh,
     this.onNearEnd,
     this.loadingMore = false,
-    this.padding = const EdgeInsets.all(4),
+    this.padding = const EdgeInsets.all(8),
   });
 
   @override
   Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
     final grid = NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (onNearEnd == null) return false;
@@ -49,9 +51,9 @@ class BooruPostGrid extends StatelessWidget {
           SliverPadding(
             padding: padding,
             sliver: SliverMasonryGrid.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
+              crossAxisCount: pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context)),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
               childCount: posts.length,
               itemBuilder: (context, index) =>
                   BooruPostTile(post: posts[index]),
@@ -70,6 +72,7 @@ class BooruPostGrid extends StatelessWidget {
 
     if (onRefresh == null) return grid;
     return RefreshIndicator(onRefresh: onRefresh!, child: grid);
+    });
   }
 }
 
@@ -147,6 +150,12 @@ class BooruPostTile extends StatelessWidget {
                 ],
               ),
             ),
+            Padding(padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 0),
+              child: Text(post.host, style: theme.textTheme.labelMedium, maxLines: 1, overflow: TextOverflow.ellipsis)),
+            if (post.tags.isNotEmpty)
+              Padding(padding: const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 0),
+                child: Text(post.tags.take(4).join(' · '), maxLines: 2, overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall)),
             if (post.score != null)
               Padding(
                 padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),

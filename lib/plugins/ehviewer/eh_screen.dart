@@ -3,6 +3,10 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_plugin.dart';
 import 'package:xta/plugins/ehviewer/eh_errors.dart';
@@ -27,8 +31,9 @@ class EhScreen extends StatefulWidget {
 }
 
 class _EhScreenState extends State<EhScreen> {
-  var _tab = 0;
-  var _toplistPeriod = EhToplistPeriod.yesterday;
+  final _view = PluginViewStore<({int tab, EhToplistPeriod period})>((tab: 0, period: EhToplistPeriod.yesterday));
+  int get _tab => _view.state.tab;
+  EhToplistPeriod get _toplistPeriod => _view.state.period;
   late final EhFeedStore _popular;
   late final EhFeedStore _front;
   late final EhFeedStore _toplist;
@@ -53,12 +58,13 @@ class _EhScreenState extends State<EhScreen> {
       if (!mounted) return;
       await history.load();
       if (!mounted) return;
-      await _popular.refresh();
+      await _select(_tab);
     });
   }
 
   @override
   void dispose() {
+    _view.destroy();
     _popular.destroy();
     _front.destroy();
     _toplist.destroy();
@@ -69,8 +75,10 @@ class _EhScreenState extends State<EhScreen> {
   Future<void> _select(int tab) async {
     final history = context.read<EhHistoryStore>();
     final favorites = context.read<EhFavoritesStore>();
-    setState(() => _tab = tab);
+    _view.select((tab: tab, period: _toplistPeriod));
     switch (tab) {
+      case 0:
+        if (_popular.state.isEmpty) await _popular.refresh();
       case 1:
         if (_front.state.isEmpty) await _front.refresh();
       case 2:
@@ -86,19 +94,23 @@ class _EhScreenState extends State<EhScreen> {
 
   Future<void> _setToplist(EhToplistPeriod period) async {
     if (period == _toplistPeriod) return;
-    setState(() => _toplistPeriod = period);
+    _view.select((tab: _tab, period: period));
     await _toplist.refresh();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _view.restore(context, 'ehviewer');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      body: Column(
+      body: ScopedBuilder<PluginViewStore<({int tab, EhToplistPeriod period})>, ({int tab, EhToplistPeriod period})>(
+        store: _view, onState: (_, _) => Column(
         children: [
           PluginHomeChrome(
+              title: l10n.plugin_eh_title,
+              mark: pluginMark(EhViewerPlugin(), size: 24),
             accent: EhViewerPlugin().brandColor,
             tabs: [
               PluginHomeTab(
@@ -158,27 +170,17 @@ class _EhScreenState extends State<EhScreen> {
             ],
           ),
           if (_tab == 2)
-            SizedBox(
-              height: 44,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                children: [
-                  for (final period in EhToplistPeriod.values)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: FilterChip(
-                        label: Text(ehToplistLabel(l10n, period)),
-                        selected: _toplistPeriod == period,
-                        onSelected: (_) => _setToplist(period),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          Expanded(child: _body(l10n)),
+            PluginFilterRow(children: [
+              for (final period in EhToplistPeriod.values)
+                ChoiceChip(label: Text(ehToplistLabel(l10n, period)), selected: _toplistPeriod == period,
+                  showCheckmark: true, materialTapTargetSize: MaterialTapTargetSize.padded,
+                  onSelected: (_) => _setToplist(period)),
+            ]),
+          Expanded(child: PluginLazyTabs(index: _tab, children: [
+            for (var i = 0; i < 6; i++) (_) => _body(l10n),
+          ])),
         ],
-      ),
+      )),
     );
   }
 

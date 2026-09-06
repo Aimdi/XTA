@@ -3,6 +3,10 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
+import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/booru/booru_client.dart';
 import 'package:xta/plugins/booru/booru_errors.dart';
@@ -25,9 +29,8 @@ class BooruScreen extends StatefulWidget {
   State<BooruScreen> createState() => _BooruScreenState();
 }
 
-class _BooruScreenState extends State<BooruScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabs;
+class _BooruScreenState extends State<BooruScreen> {
+  final _tabs = PluginViewStore<int>(0);
   late final BooruFeedStore _latest;
   late final BooruFeedStore _following;
   Disposer? _tagsDisposer;
@@ -37,13 +40,6 @@ class _BooruScreenState extends State<BooruScreen>
   @override
   void initState() {
     super.initState();
-    _tabs = TabController(length: 2, vsync: this);
-    _tabs.addListener(() {
-      if (_tabs.indexIsChanging) return;
-      if (_tabs.index == 1) _ensureFollowing();
-      if (mounted) setState(() {});
-    });
-
     final client = context.read<BooruClient>();
     _latest = BooruFeedStore(
       client,
@@ -62,13 +58,17 @@ class _BooruScreenState extends State<BooruScreen>
         onState: (next) {
           if (!_listEquals(next, _lastFollowingTags)) {
             _lastFollowingTags = List.of(next);
-            if (_followingBootstrapped || _tabs.index == 1) {
+            if (_followingBootstrapped || _tabs.state == 1) {
               _following.refresh();
             }
           }
         },
       );
-      await _latest.refresh();
+      if (_tabs.state == 1) {
+        await _ensureFollowing();
+      } else if (_latest.state.isEmpty) {
+        await _latest.refresh();
+      }
     });
   }
 
@@ -107,60 +107,48 @@ class _BooruScreenState extends State<BooruScreen>
       // ignore: discarded_futures
       disposeObserver();
     }
-    _tabs.dispose();
+    _tabs.destroy();
     _latest.destroy();
     _following.destroy();
     super.dispose();
   }
 
+  void _select(int index) {
+    _tabs.select(index);
+    if (index == 1) _ensureFollowing();
+    if (index == 0 && _latest.state.isEmpty) _latest.refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-
+    _tabs.restore(context, 'booru');
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
-      appBar: pluginHomeTabAppBar(
-        tabs: TabBar(
-          controller: _tabs,
-          isScrollable: true,
-          tabAlignment: TabAlignment.start,
-          tabs: [
-            Tab(text: l10n.plugin_booru_tab_latest),
-            Tab(text: l10n.plugin_booru_tab_following),
-          ],
-        ),
-        actions: [
-          IconButton(
-            tooltip: l10n.search,
-            icon: const Icon(Icons.search),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BooruSearchScreen()),
-            ),
+      body: ScopedBuilder<PluginViewStore<int>, int>(store: _tabs,
+        onState: (context, tab) => Column(children: [
+          PluginHomeChrome(title: l10n.plugin_booru_title, mark: pluginMark(BooruPlugin(), size: 24),
+            accent: BooruPlugin().brandColor,
+            tabs: [
+              PluginHomeTab(label: l10n.plugin_booru_tab_latest, icon: Icons.photo_library_outlined,
+                selected: tab == 0, onTap: () => _select(0)),
+              PluginHomeTab(label: l10n.plugin_booru_tab_following, icon: Icons.sell_outlined,
+                selected: tab == 1, onTap: () => _select(1)),
+            ],
+            actions: [
+              IconButton(tooltip: l10n.search, icon: const Icon(Icons.search),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BooruSearchScreen()))),
+              IconButton(tooltip: l10n.settings, icon: const Icon(Icons.settings_outlined),
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BooruSettingsScreen()))),
+            ],
           ),
-          IconButton(
-            tooltip: l10n.settings,
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const BooruSettingsScreen()),
-            ),
-          ),
-        ],
-      ),
-      // Same NestedScrollView trap as Pixiv: TabBarView kept Latest and
-      // Following mounted, so both grids attached the inner controller.
-      body: PluginLazyTabs(
-        index: _tabs.index,
-        children: [
-          (_) => _FeedTab(
-            store: _latest,
-            emptyLabel: l10n.plugin_booru_empty_latest,
-            scrollController: widget.scrollController,
-          ),
-          (_) => _FollowingTab(store: _following),
-        ],
-      ),
+          const Divider(height: 1),
+          Expanded(child: PluginLazyTabs(index: tab, children: [
+            (_) => _FeedTab(store: _latest, emptyLabel: l10n.plugin_booru_empty_latest,
+              scrollController: widget.scrollController),
+            (_) => _FollowingTab(store: _following),
+          ])),
+        ])),
     );
   }
 }
@@ -250,31 +238,14 @@ class _FollowingTab extends StatelessWidget {
         }
         return Column(
           children: [
-            SizedBox(
-              height: 44,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                children: [
-                  for (final tag in tags)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: InputChip(
-                        label: Text(tag),
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                BooruSearchScreen(initialQuery: tag),
-                          ),
-                        ),
-                        onDeleted: () =>
-                            context.read<BooruTagsStore>().remove(tag),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            PluginFilterRow(children: [
+              for (final tag in tags)
+                InputChip(label: Text(tag), materialTapTargetSize: MaterialTapTargetSize.padded,
+                  deleteButtonTooltipMessage: l10n.unsubscribe,
+                  onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => BooruSearchScreen(initialQuery: tag))),
+                  onDeleted: () => context.read<BooruTagsStore>().remove(tag)),
+            ]),
             Expanded(
               child: _FeedTab(
                 store: store,

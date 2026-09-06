@@ -32,7 +32,7 @@ class StocksWatchlistReel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: kStockWatchlistStripHeight,
+      height: 38 + MediaQuery.textScalerOf(context).scale(30),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -87,7 +87,8 @@ class _WatchlistChip extends StatelessWidget {
         ? theme.colorScheme.primary
         : theme.colorScheme.outlineVariant;
 
-    return Material(
+    return Semantics(selected: selected, button: true,
+      child: Material(
       color: selected
           ? theme.colorScheme.primaryContainer
           : xControlFill(context),
@@ -103,7 +104,7 @@ class _WatchlistChip extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '\$$symbol',
+                '${selected ? '✓ ' : ''}\$$symbol',
                 maxLines: 1,
                 style: theme.textTheme.labelLarge!.copyWith(
                   fontWeight: FontWeight.w800,
@@ -132,7 +133,7 @@ class _WatchlistChip extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 
