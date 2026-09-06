@@ -15,8 +15,7 @@ const pluginActionButtonStyle = ButtonStyle(
 class PluginEmbedded extends InheritedWidget {
   const PluginEmbedded({super.key, required super.child});
 
-  static bool maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<PluginEmbedded>() != null;
+  static bool maybeOf(BuildContext context) => context.dependOnInheritedWidgetOfExactType<PluginEmbedded>() != null;
 
   @override
   bool updateShouldNotify(covariant PluginEmbedded oldWidget) => false;
@@ -28,12 +27,7 @@ class PluginHomeTab {
   final bool selected;
   final VoidCallback onTap;
 
-  const PluginHomeTab({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+  const PluginHomeTab({required this.icon, required this.label, required this.selected, required this.onTap});
 }
 
 /// Named, scrollable sections. Full clients also expose their own identity.
@@ -76,9 +70,12 @@ class PluginHomeChrome extends StatelessWidget {
                   Expanded(
                     child: Semantics(
                       header: true,
-                      child: Text(title!, maxLines: 1,
+                      child: Text(
+                        title!,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleLarge),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                     ),
                   ),
                   ...actions,
@@ -95,10 +92,7 @@ class PluginHomeChrome extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       primary: false,
                       padding: const EdgeInsets.symmetric(horizontal: 4),
-                      children: [
-                        for (final tab in tabs)
-                          _TabButton(tab: tab, accent: accent),
-                      ],
+                      children: [for (final tab in tabs) _TabButton(tab: tab, accent: accent)],
                     ),
                   ),
                   if (!hasIdentity) ...actions,
@@ -109,23 +103,17 @@ class PluginHomeChrome extends StatelessWidget {
       ),
     );
     final controls = IconButtonTheme(
-      data: IconButtonThemeData(style:
-        IconButtonTheme.of(context).style?.merge(pluginActionButtonStyle) ?? pluginActionButtonStyle),
+      data: IconButtonThemeData(
+        style: IconButtonTheme.of(context).style?.merge(pluginActionButtonStyle) ?? pluginActionButtonStyle,
+      ),
       child: bar,
     );
     return embedded ? controls : SafeArea(bottom: false, child: controls);
   }
 }
 
-AppBar pluginHomeTabAppBar({
-  required Widget tabs,
-  List<Widget> actions = const [],
-}) => AppBar(
-  automaticallyImplyLeading: false,
-  titleSpacing: 0,
-  title: tabs,
-  actions: actions,
-);
+AppBar pluginHomeTabAppBar({required Widget tabs, List<Widget> actions = const []}) =>
+    AppBar(automaticallyImplyLeading: false, titleSpacing: 0, title: tabs, actions: actions);
 
 class _TabButton extends StatelessWidget {
   final PluginHomeTab tab;
@@ -139,9 +127,7 @@ class _TabButton extends StatelessWidget {
       accent ?? tweetReadableAccentColor(context),
       Theme.of(context).scaffoldBackgroundColor,
     );
-    final foreground = tab.selected
-        ? tweetPrimaryColor(context)
-        : tweetSecondaryColor(context);
+    final foreground = tab.selected ? tweetPrimaryColor(context) : tweetSecondaryColor(context);
     return Semantics(
       button: true,
       selected: tab.selected,
@@ -155,22 +141,21 @@ class _TabButton extends StatelessWidget {
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(
-                color: tab.selected ? selectedColor : Colors.transparent,
-                width: 2,
-              )),
+              border: Border(bottom: BorderSide(color: tab.selected ? selectedColor : Colors.transparent, width: 2)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(tab.icon, size: 20,
-                  color: tab.selected ? selectedColor : foreground),
+                Icon(tab.icon, size: 20, color: tab.selected ? selectedColor : foreground),
                 const SizedBox(width: 8),
-                Text(tab.label, maxLines: 1,
+                Text(
+                  tab.label,
+                  maxLines: 1,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: foreground,
                     fontWeight: tab.selected ? FontWeight.w700 : FontWeight.w500,
-                  )),
+                  ),
+                ),
               ],
             ),
           ),

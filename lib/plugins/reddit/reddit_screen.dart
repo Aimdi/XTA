@@ -29,8 +29,7 @@ class RedditScreen extends StatefulWidget {
   State<RedditScreen> createState() => _RedditScreenState();
 }
 
-class _RedditScreenState extends State<RedditScreen>
-    with AutomaticKeepAliveClientMixin {
+class _RedditScreenState extends State<RedditScreen> with AutomaticKeepAliveClientMixin {
   final _popularKey = GlobalKey<RedditListingBodyState>();
   final _allKey = GlobalKey<RedditListingBodyState>();
   final _subredditKeys = <String, GlobalKey<RedditListingBodyState>>{};
@@ -71,33 +70,23 @@ class _RedditScreenState extends State<RedditScreen>
   }
 
   GlobalKey<RedditListingBodyState> _subredditKey(String name) {
-    return _subredditKeys.putIfAbsent(
-      name.toLowerCase(),
-      GlobalKey<RedditListingBodyState>.new,
-    );
+    return _subredditKeys.putIfAbsent(name.toLowerCase(), GlobalKey<RedditListingBodyState>.new);
   }
 
   Future<void> _refreshCurrent() {
     final source = home.state;
     if (source.viewingSubreddit) {
-      return _subredditKey(source.subreddit!).currentState?.refresh() ??
-          Future.value();
+      return _subredditKey(source.subreddit!).currentState?.refresh() ?? Future.value();
     }
     return switch (source.mode) {
-      RedditFeedMode.following => context.read<RedditFeedStore>().refresh(
-        force: true,
-      ),
-      RedditFeedMode.popular =>
-        _popularKey.currentState?.refresh() ?? Future.value(),
+      RedditFeedMode.following => context.read<RedditFeedStore>().refresh(force: true),
+      RedditFeedMode.popular => _popularKey.currentState?.refresh() ?? Future.value(),
       RedditFeedMode.all => _allKey.currentState?.refresh() ?? Future.value(),
     };
   }
 
   void _openSaved() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const RedditSavedScreen()),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSavedScreen()));
   }
 
   @override
@@ -117,9 +106,7 @@ class _RedditScreenState extends State<RedditScreen>
             RedditHomeChrome(
               source: source,
               onMode: store.selectMode,
-              actions: [
-                RedditFeedActions(onRefresh: _refreshCurrent, onOpenSaved: _openSaved),
-              ],
+              actions: [RedditFeedActions(onRefresh: _refreshCurrent, onOpenSaved: _openSaved)],
             ),
             RedditSubredditChips(home: store),
             Expanded(child: _body(source)),
@@ -140,9 +127,7 @@ class _RedditScreenState extends State<RedditScreen>
       );
     }
     return switch (source.mode) {
-      RedditFeedMode.following => RedditFeedList(
-        scrollController: widget.scrollController,
-      ),
+      RedditFeedMode.following => RedditFeedList(scrollController: widget.scrollController),
       RedditFeedMode.popular => RedditListingBody.subreddit(
         'popular',
         key: _popularKey,
@@ -165,12 +150,7 @@ class RedditHomeChrome extends StatelessWidget {
   final ValueChanged<RedditFeedMode> onMode;
   final List<Widget> actions;
 
-  const RedditHomeChrome({
-    super.key,
-    required this.source,
-    required this.onMode,
-    this.actions = const [],
-  });
+  const RedditHomeChrome({super.key, required this.source, required this.onMode, this.actions = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -227,11 +207,7 @@ class RedditSubredditChips extends StatelessWidget {
     );
   }
 
-  Widget _chipRow(
-    BuildContext context,
-    List<String> names,
-    RedditHomeSource source,
-  ) {
+  Widget _chipRow(BuildContext context, List<String> names, RedditHomeSource source) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
     return Column(
@@ -239,26 +215,29 @@ class RedditSubredditChips extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
-          child: Text(l10n.plugin_reddit_followed_communities,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant)),
+          child: Text(
+            l10n.plugin_reddit_followed_communities,
+            style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
         ),
-        PluginFilterRow(children: [
-          for (final name in names)
-            ChoiceChip(
-              key: ValueKey('reddit-community-$name'),
-              label: Text('r/$name'),
-              selected: isSelectedRedditCommunity(source.subreddit, name),
-              materialTapTargetSize: MaterialTapTargetSize.padded,
-              onSelected: (selected) {
-                if (selected) {
-                  unawaited(home.selectSubreddit(name));
-                } else {
-                  unawaited(home.selectMode(source.mode));
-                }
-              },
-            ),
-        ]),
+        PluginFilterRow(
+          children: [
+            for (final name in names)
+              ChoiceChip(
+                key: ValueKey('reddit-community-$name'),
+                label: Text('r/$name'),
+                selected: isSelectedRedditCommunity(source.subreddit, name),
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                onSelected: (selected) {
+                  if (selected) {
+                    unawaited(home.selectSubreddit(name));
+                  } else {
+                    unawaited(home.selectMode(source.mode));
+                  }
+                },
+              ),
+          ],
+        ),
       ],
     );
   }

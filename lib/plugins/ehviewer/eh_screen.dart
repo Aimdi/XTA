@@ -45,15 +45,18 @@ class _EhScreenState extends State<EhScreen> {
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'ehviewer');
-    _view = _session.obtain('view', () => PluginViewStore<({int tab, EhToplistPeriod period})>(
-      (tab: 0, period: EhToplistPeriod.yesterday)));
+    _view = _session.obtain(
+      'view',
+      () => PluginViewStore<({int tab, EhToplistPeriod period})>((tab: 0, period: EhToplistPeriod.yesterday)),
+    );
     final view = _view;
     final client = context.read<EhClient>();
     _popular = _session.obtain('popular', () => EhFeedStore(({pageUrl}) => client.popular(pageUrl: pageUrl)));
     _front = _session.obtain('front', () => EhFeedStore(({pageUrl}) => client.frontPage(pageUrl: pageUrl)));
-    _toplist = _session.obtain('toplist', () => EhFeedStore(
-      ({pageUrl}) => client.toplist(view.state.period, pageUrl: pageUrl),
-    ));
+    _toplist = _session.obtain(
+      'toplist',
+      () => EhFeedStore(({pageUrl}) => client.toplist(view.state.period, pageUrl: pageUrl)),
+    );
     _watched = _session.obtain('watched', () => EhFeedStore(({pageUrl}) => client.watched(pageUrl: pageUrl)));
 
     final favorites = context.read<EhFavoritesStore>();
@@ -108,91 +111,89 @@ class _EhScreenState extends State<EhScreen> {
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<PluginViewStore<({int tab, EhToplistPeriod period})>, ({int tab, EhToplistPeriod period})>(
-        store: _view, onState: (_, _) => Column(
-        children: [
-          PluginHomeChrome(
+        store: _view,
+        onState: (_, _) => Column(
+          children: [
+            PluginHomeChrome(
               title: l10n.plugin_eh_title,
               mark: pluginMark(EhViewerPlugin(), size: 24),
-            accent: EhViewerPlugin().brandColor,
-            tabs: [
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_popular,
-                icon: Icons.whatshot_outlined,
-                selected: _tab == 0,
-                onTap: () => _select(0),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_front,
-                icon: Icons.home_outlined,
-                selected: _tab == 1,
-                onTap: () => _select(1),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_toplist,
-                icon: Icons.emoji_events_outlined,
-                selected: _tab == 2,
-                onTap: () => _select(2),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_watched,
-                icon: Icons.visibility_outlined,
-                selected: _tab == 3,
-                onTap: () => _select(3),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_history,
-                icon: Icons.history,
-                selected: _tab == 4,
-                onTap: () => _select(4),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_eh_tab_favorites,
-                icon: Icons.favorite_border,
-                selected: _tab == 5,
-                onTap: () => _select(5),
-              ),
-            ],
-            actions: [
-              IconButton(
-                tooltip: l10n.search,
-                icon: const Icon(Icons.search),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EhSearchScreen()),
+              accent: EhViewerPlugin().brandColor,
+              tabs: [
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_popular,
+                  icon: Icons.whatshot_outlined,
+                  selected: _tab == 0,
+                  onTap: () => _select(0),
                 ),
-              ),
-              IconButton(
-                tooltip: l10n.settings,
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EhSettingsScreen()),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_front,
+                  icon: Icons.home_outlined,
+                  selected: _tab == 1,
+                  onTap: () => _select(1),
                 ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_toplist,
+                  icon: Icons.emoji_events_outlined,
+                  selected: _tab == 2,
+                  onTap: () => _select(2),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_watched,
+                  icon: Icons.visibility_outlined,
+                  selected: _tab == 3,
+                  onTap: () => _select(3),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_history,
+                  icon: Icons.history,
+                  selected: _tab == 4,
+                  onTap: () => _select(4),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_eh_tab_favorites,
+                  icon: Icons.favorite_border,
+                  selected: _tab == 5,
+                  onTap: () => _select(5),
+                ),
+              ],
+              actions: [
+                IconButton(
+                  tooltip: l10n.search,
+                  icon: const Icon(Icons.search),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
+                ),
+                IconButton(
+                  tooltip: l10n.settings,
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSettingsScreen())),
+                ),
+              ],
+            ),
+            if (_tab == 2)
+              PluginFilterRow(
+                children: [
+                  for (final period in EhToplistPeriod.values)
+                    ChoiceChip(
+                      label: Text(ehToplistLabel(l10n, period)),
+                      selected: _toplistPeriod == period,
+                      showCheckmark: true,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                      onSelected: (_) => _setToplist(period),
+                    ),
+                ],
               ),
-            ],
-          ),
-          if (_tab == 2)
-            PluginFilterRow(children: [
-              for (final period in EhToplistPeriod.values)
-                ChoiceChip(label: Text(ehToplistLabel(l10n, period)), selected: _toplistPeriod == period,
-                  showCheckmark: true, materialTapTargetSize: MaterialTapTargetSize.padded,
-                  onSelected: (_) => _setToplist(period)),
-            ]),
-          Expanded(child: PluginLazyTabs(index: _tab, children: [
-            for (var i = 0; i < 6; i++) (_) => _body(l10n),
-          ])),
-        ],
-      )),
+            Expanded(
+              child: PluginLazyTabs(index: _tab, children: [for (var i = 0; i < 6; i++) (_) => _body(l10n)]),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _body(L10n l10n) {
     return switch (_tab) {
-      0 => _FeedTab(
-        store: _popular,
-        empty: l10n.plugin_eh_empty_list,
-        scrollController: widget.scrollController,
-      ),
+      0 => _FeedTab(store: _popular, empty: l10n.plugin_eh_empty_list, scrollController: widget.scrollController),
       1 => _FeedTab(store: _front, empty: l10n.plugin_eh_empty_list),
       2 => _FeedTab(store: _toplist, empty: l10n.plugin_eh_empty_list),
       3 => _FeedTab(store: _watched, empty: l10n.plugin_eh_empty_watched),
@@ -207,11 +208,7 @@ class _FeedTab extends StatelessWidget {
   final String empty;
   final ScrollController? scrollController;
 
-  const _FeedTab({
-    required this.store,
-    required this.empty,
-    this.scrollController,
-  });
+  const _FeedTab({required this.store, required this.empty, this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -273,19 +270,13 @@ class _FavoritesTab extends StatelessWidget {
             icon: Icons.favorite_border,
             message: l10n.plugin_eh_empty_favorites,
             action: FilledButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const EhSearchScreen()),
-              ),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
               icon: const Icon(Icons.search),
               label: Text(l10n.search),
             ),
           );
         }
-        return EhGalleryGrid(
-          galleries: galleries,
-          onRefresh: () => context.read<EhFavoritesStore>().load(),
-        );
+        return EhGalleryGrid(galleries: galleries, onRefresh: () => context.read<EhFavoritesStore>().load());
       },
     );
   }
@@ -305,10 +296,7 @@ class _HistoryTab extends StatelessWidget {
             icon: Icons.history,
             message: l10n.plugin_eh_empty_history,
             action: FilledButton.icon(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const EhSearchScreen()),
-              ),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
               icon: const Icon(Icons.search),
               label: Text(l10n.search),
             ),

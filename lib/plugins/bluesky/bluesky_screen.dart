@@ -33,8 +33,7 @@ import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// Home remounts used to poll the AppView whenever the ten-minute TTL expired.
 /// Only a pull-to-refresh, or the first empty paint, should hit the network.
-bool blueskyHomeShouldFetch({required bool force, required bool feedEmpty}) =>
-    force || feedEmpty;
+bool blueskyHomeShouldFetch({required bool force, required bool feedEmpty}) => force || feedEmpty;
 
 /// The Bluesky tab: local follows feed, plus a device-only Liked library.
 class BlueskyScreen extends StatefulWidget {
@@ -46,8 +45,7 @@ class BlueskyScreen extends StatefulWidget {
   State<BlueskyScreen> createState() => _BlueskyScreenState();
 }
 
-class _BlueskyScreenState extends State<BlueskyScreen>
-    with AutomaticKeepAliveClientMixin {
+class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveClientMixin {
   late final PluginSessionLease _session;
   late final _BlueskyShellStore _shell;
   final _algoScrollController = ScrollController();
@@ -84,10 +82,7 @@ class _BlueskyScreenState extends State<BlueskyScreen>
     final feed = context.read<BlueskyFeedStore>();
     // Startup already hydrated these when the plugin was on. A remount from
     // the home strip should not hit SQLite again just to paint the same list.
-    await Future.wait([
-      if (accounts.state.isEmpty) accounts.load(),
-      if (likes.state.isEmpty) likes.load(),
-    ]);
+    await Future.wait([if (accounts.state.isEmpty) accounts.load(), if (likes.state.isEmpty) likes.load()]);
     // Remounts used to poll whenever the ten-minute TTL expired, which
     // jumped the list and flashed a "N more accounts" count. Only a
     // pull-to-refresh, or the first empty paint, should hit the AppView.
@@ -123,9 +118,7 @@ class _BlueskyScreenState extends State<BlueskyScreen>
       await subscriptions.reloadSubscriptions();
     } catch (e) {
       if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(blueskyErrorMessage(l10n, e))),
-        );
+        messenger.showSnackBar(SnackBar(content: Text(blueskyErrorMessage(l10n, e))));
       }
       return;
     }
@@ -197,25 +190,13 @@ class _BlueskyScreenState extends State<BlueskyScreen>
                       _ => null,
                     };
                     if (page != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => page),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => page));
                     }
                   },
                   itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'following',
-                      child: Text(l10n.plugin_bluesky_import_following),
-                    ),
-                    PopupMenuItem(
-                      value: 'list',
-                      child: Text(l10n.plugin_bluesky_import_list),
-                    ),
-                    PopupMenuItem(
-                      value: 'starter',
-                      child: Text(l10n.plugin_bluesky_import_starter),
-                    ),
+                    PopupMenuItem(value: 'following', child: Text(l10n.plugin_bluesky_import_following)),
+                    PopupMenuItem(value: 'list', child: Text(l10n.plugin_bluesky_import_list)),
+                    PopupMenuItem(value: 'starter', child: Text(l10n.plugin_bluesky_import_starter)),
                   ],
                 ),
               ],
@@ -225,19 +206,10 @@ class _BlueskyScreenState extends State<BlueskyScreen>
               child: PluginLazyTabs(
                 index: tab,
                 children: [
-                  (_) => _HomePane(
-                    scrollController: widget.scrollController,
-                    onRefresh: () => _loadHome(force: true),
-                  ),
-                  (_) =>
-                      BlueskyAlgoPane(scrollController: _algoScrollController),
-                  (_) => BlueskyListsPane(
-                    scrollController: _listsScrollController,
-                  ),
-                  (_) => _LikedPane(
-                    scrollController: _likedScrollController,
-                    likes: context.read<BlueskyLikesStore>(),
-                  ),
+                  (_) => _HomePane(scrollController: widget.scrollController, onRefresh: () => _loadHome(force: true)),
+                  (_) => BlueskyAlgoPane(scrollController: _algoScrollController),
+                  (_) => BlueskyListsPane(scrollController: _listsScrollController),
+                  (_) => _LikedPane(scrollController: _likedScrollController, likes: context.read<BlueskyLikesStore>()),
                 ],
               ),
             ),
@@ -301,9 +273,7 @@ class _HomePane extends StatelessWidget {
         onState: (context, accounts) {
           return EmptyPane(
             icon: Icons.cloud_outlined,
-            message: accounts.isEmpty
-                ? l10n.plugin_bluesky_empty
-                : l10n.plugin_bluesky_no_posts,
+            message: accounts.isEmpty ? l10n.plugin_bluesky_empty : l10n.plugin_bluesky_no_posts,
             scrollController: scrollController,
             onRefresh: onRefresh,
             action: _emptyActions(context, l10n, accounts.isEmpty),
@@ -336,27 +306,15 @@ class _HomePane extends StatelessWidget {
                   avatar: (person) => _feedPersonAvatar(context, person),
                   onOpen: (person) => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          BlueskyProfileScreen(actor: person.handle),
-                    ),
+                    MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: person.handle)),
                   ),
-                  onFollow: (person) =>
-                      context.read<BlueskyAccountsStore>().add(
-                        BlueskyAccount(
-                          handle: person.handle,
-                          name: person.name,
-                          avatarUrl: person.avatarUrl,
-                        ),
-                      ),
+                  onFollow: (person) => context.read<BlueskyAccountsStore>().add(
+                    BlueskyAccount(handle: person.handle, name: person.name, avatarUrl: person.avatarUrl),
+                  ),
                 );
               }
               final post = posts[index - peopleOffset];
-              return BlueskyPostCard(
-                key: ValueKey(blueskyFeedRowKey(post)),
-                post: post,
-                showSourceBadge: false,
-              );
+              return BlueskyPostCard(key: ValueKey(blueskyFeedRowKey(post)), post: post, showSourceBadge: false);
             },
           ),
         );
@@ -382,32 +340,20 @@ class _HomePane extends StatelessWidget {
         if (noAccounts) ...[
           const SizedBox(height: 8),
           TextButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const BlueskyImportFollowsScreen(),
-              ),
-            ),
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const BlueskyImportFollowsScreen())),
             icon: const Icon(Icons.group_add_outlined),
             label: Text(l10n.plugin_bluesky_import_following),
           ),
           TextButton.icon(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const BlueskyImportStarterPackScreen(),
-              ),
-            ),
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const BlueskyImportStarterPackScreen())),
             icon: const Icon(Icons.auto_awesome_outlined),
             label: Text(l10n.plugin_bluesky_import_starter),
           ),
         ] else ...[
           const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: onRefresh,
-            icon: const Icon(Icons.refresh),
-            label: Text(l10n.retry),
-          ),
+          TextButton.icon(onPressed: onRefresh, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
         ],
       ],
     );
@@ -451,17 +397,10 @@ class _LikedPane extends StatelessWidget {
         onState: (context, posts) {
           if (posts.isEmpty) {
             return ListView(
-              controller: pluginInnerScrollController(
-                context,
-                scrollController,
-              ),
+              controller: pluginInnerScrollController(context, scrollController),
               padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
               children: [
-                Icon(
-                  Icons.favorite_border,
-                  size: 52,
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+                Icon(Icons.favorite_border, size: 52, color: Theme.of(context).colorScheme.outline),
                 const SizedBox(height: 16),
                 Text(
                   l10n.plugin_bluesky_liked_empty,
@@ -476,11 +415,8 @@ class _LikedPane extends StatelessWidget {
             controller: pluginInnerScrollController(context, scrollController),
             padding: pluginFeedPadding(context),
             itemCount: posts.length,
-            itemBuilder: (context, index) => BlueskyPostCard(
-              key: ValueKey('liked-${posts[index].uri}'),
-              post: posts[index],
-              showSourceBadge: false,
-            ),
+            itemBuilder: (context, index) =>
+                BlueskyPostCard(key: ValueKey('liked-${posts[index].uri}'), post: posts[index], showSourceBadge: false),
           );
         },
       ),
@@ -489,10 +425,7 @@ class _LikedPane extends StatelessWidget {
 }
 
 /// Asks for a handle or DID, and hands back the normalised one.
-Future<String?> showBlueskyAddAccountDialog(
-  BuildContext context, {
-  bool lookup = false,
-}) {
+Future<String?> showBlueskyAddAccountDialog(BuildContext context, {bool lookup = false}) {
   return showDialog<String>(
     context: context,
     builder: (_) => _BlueskyAddAccountDialog(lookup: lookup),
@@ -505,8 +438,7 @@ class _BlueskyAddAccountDialog extends StatefulWidget {
   const _BlueskyAddAccountDialog({required this.lookup});
 
   @override
-  State<_BlueskyAddAccountDialog> createState() =>
-      _BlueskyAddAccountDialogState();
+  State<_BlueskyAddAccountDialog> createState() => _BlueskyAddAccountDialogState();
 }
 
 class _BlueskyAddAccountDialogState extends State<_BlueskyAddAccountDialog> {
@@ -539,23 +471,15 @@ class _BlueskyAddAccountDialogState extends State<_BlueskyAddAccountDialog> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return AlertDialog(
-      title: Text(
-        widget.lookup ? l10n.plugin_bluesky_lookup : l10n.plugin_bluesky_add,
-      ),
+      title: Text(widget.lookup ? l10n.plugin_bluesky_lookup : l10n.plugin_bluesky_add),
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: InputDecoration(
-          hintText: l10n.plugin_bluesky_handle_hint,
-          errorText: _error,
-        ),
+        decoration: InputDecoration(hintText: l10n.plugin_bluesky_handle_hint, errorText: _error),
         onSubmitted: (_) => _submit(),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
         TextButton(onPressed: _submit, child: Text(l10n.ok)),
       ],
     );

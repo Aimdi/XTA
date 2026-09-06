@@ -8,34 +8,16 @@ Widget _app(Widget child) {
 }
 
 void main() {
-  testWidgets('chrome has readable sections in a 48dp row', (
-    tester,
-  ) async {
+  testWidgets('chrome has readable sections in a 48dp row', (tester) async {
     var tapped = 0;
     await tester.pumpWidget(
       _app(
         PluginHomeChrome(
           tabs: [
-            PluginHomeTab(
-              icon: Icons.home_outlined,
-              label: 'Home',
-              selected: true,
-              onTap: () => tapped++,
-            ),
-            PluginHomeTab(
-              icon: Icons.inbox_outlined,
-              label: 'Inbox',
-              selected: false,
-              onTap: () {},
-            ),
+            PluginHomeTab(icon: Icons.home_outlined, label: 'Home', selected: true, onTap: () => tapped++),
+            PluginHomeTab(icon: Icons.inbox_outlined, label: 'Inbox', selected: false, onTap: () {}),
           ],
-          actions: [
-            IconButton(
-              tooltip: 'Discover',
-              icon: const Icon(Icons.explore_outlined),
-              onPressed: () {},
-            ),
-          ],
+          actions: [IconButton(tooltip: 'Discover', icon: const Icon(Icons.explore_outlined), onPressed: () {})],
         ),
       ),
     );
@@ -59,13 +41,7 @@ void main() {
       _app(
         PluginEmbedded(
           child: PluginHomeChrome(
-            actions: [
-              IconButton(
-                tooltip: 'Add',
-                icon: const Icon(Icons.add),
-                onPressed: () {},
-              ),
-            ],
+            actions: [IconButton(tooltip: 'Add', icon: const Icon(Icons.add), onPressed: () {})],
           ),
         ),
       ),
@@ -75,19 +51,11 @@ void main() {
     expect(find.byTooltip('Add'), findsOneWidget);
   });
 
-  testWidgets('standalone chrome keeps a top SafeArea for the status bar', (
-    tester,
-  ) async {
+  testWidgets('standalone chrome keeps a top SafeArea for the status bar', (tester) async {
     await tester.pumpWidget(
       _app(
         PluginHomeChrome(
-          actions: [
-            IconButton(
-              tooltip: 'Add',
-              icon: const Icon(Icons.add),
-              onPressed: () {},
-            ),
-          ],
+          actions: [IconButton(tooltip: 'Add', icon: const Icon(Icons.add), onPressed: () {})],
         ),
       ),
     );
@@ -101,20 +69,16 @@ void main() {
       _app(
         PluginHomeChrome(
           accent: accent,
-          tabs: [
-            PluginHomeTab(
-              icon: Icons.home_outlined,
-              label: 'Home',
-              selected: true,
-              onTap: () {},
-            ),
-          ],
+          tabs: [PluginHomeTab(icon: Icons.home_outlined, label: 'Home', selected: true, onTap: () {})],
         ),
       ),
     );
 
     final icon = tester.widget<Icon>(find.byIcon(Icons.home_outlined));
-    expect(contrastRatio(icon.color!, Theme.of(tester.element(find.byType(PluginHomeChrome))).scaffoldBackgroundColor), greaterThanOrEqualTo(4.5));
+    expect(
+      contrastRatio(icon.color!, Theme.of(tester.element(find.byType(PluginHomeChrome))).scaffoldBackgroundColor),
+      greaterThanOrEqualTo(4.5),
+    );
   });
 
   testWidgets('tab AppBar has no plugin-name title', (tester) async {
@@ -130,13 +94,7 @@ void main() {
                   Tab(text: 'Following'),
                 ],
               ),
-              actions: [
-                IconButton(
-                  tooltip: 'Search',
-                  icon: const Icon(Icons.search),
-                  onPressed: () {},
-                ),
-              ],
+              actions: [IconButton(tooltip: 'Search', icon: const Icon(Icons.search), onPressed: () {})],
             ),
           ),
         ),

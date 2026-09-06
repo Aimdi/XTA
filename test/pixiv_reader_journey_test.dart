@@ -20,19 +20,26 @@ class _Pixiv extends PixivClient {
   Future<int> ensureUserId() async => 1;
   @override
   Future<PixivIllustPage> following({String? nextUrl}) async {
-    calls.add('following'); return const PixivIllustPage(illusts: []);
+    calls.add('following');
+    return const PixivIllustPage(illusts: []);
   }
+
   @override
   Future<PixivIllustPage> recommended({String? nextUrl}) async {
-    calls.add('recommended'); return const PixivIllustPage(illusts: []);
+    calls.add('recommended');
+    return const PixivIllustPage(illusts: []);
   }
+
   @override
   Future<PixivIllustPage> ranking({String mode = 'day', String? date, String? nextUrl}) async {
-    calls.add('rank:$mode:$date'); return const PixivIllustPage(illusts: []);
+    calls.add('rank:$mode:$date');
+    return const PixivIllustPage(illusts: []);
   }
+
   @override
   Future<PixivIllustPage> bookmarks({required int userId, String restrict = 'public', String? nextUrl}) async {
-    calls.add('favorites:$restrict'); return const PixivIllustPage(illusts: []);
+    calls.add('favorites:$restrict');
+    return const PixivIllustPage(illusts: []);
   }
 }
 
@@ -43,15 +50,28 @@ void main() {
     final mute = PixivMuteStore(prefs);
     final feed = PixivFeedStore(client, filter: mute.filter);
     final scroll = ScrollController();
-    await tester.pumpWidget(PrefService(service: prefs, child: MultiProvider(providers: [
-      Provider<PixivClient>.value(value: client), Provider<PixivMuteStore>.value(value: mute),
-      Provider<PixivFeedStore>.value(value: feed),
-    ], child: MaterialApp(
-      localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      supportedLocales: L10n.delegate.supportedLocales,
-      home: PixivPlugin().homeScreen(scrollController: scroll),
-    ))));
+    await tester.pumpWidget(
+      PrefService(
+        service: prefs,
+        child: MultiProvider(
+          providers: [
+            Provider<PixivClient>.value(value: client),
+            Provider<PixivMuteStore>.value(value: mute),
+            Provider<PixivFeedStore>.value(value: feed),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: PixivPlugin().homeScreen(scrollController: scroll),
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(client.calls, ['following']);
     await tester.tap(find.text('Recommended'));
@@ -83,6 +103,8 @@ void main() {
     expect(client.calls.last, 'favorites:private');
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
-    scroll.dispose(); feed.destroy(); mute.destroy();
+    scroll.dispose();
+    feed.destroy();
+    mute.destroy();
   });
 }

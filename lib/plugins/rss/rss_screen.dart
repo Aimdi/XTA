@@ -68,10 +68,7 @@ class _RssScreenState extends State<RssScreen> {
   }
 
   Future<void> _openAdd() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const RssAddScreen()),
-    );
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const RssAddScreen()));
     if (!mounted) return;
     await context.read<RssTimelineStore>().refresh(force: true);
   }
@@ -100,79 +97,67 @@ class _RssScreenState extends State<RssScreen> {
       body: ScopedBuilder<PluginViewStore<int>, int>(
         store: _view,
         onState: (context, _) => Column(
-        children: [
-          PluginHomeChrome(
-            title: l10n.plugin_rss_title,
-            mark: pluginMark(RssPlugin(), size: 24),
-            accent: rssBrand,
-            tabs: [
-              PluginHomeTab(
-                selected: _tab == 0,
-                icon: Icons.home_outlined,
-                label: l10n.plugin_rss_home,
-                onTap: () => _view.select(0),
-              ),
-              PluginHomeTab(
-                selected: _tab == 1,
-                icon: Icons.rss_feed,
-                label: l10n.plugin_rss_feeds,
-                onTap: () => _view.select(1),
-              ),
-            ],
-            actions: [
-              if (_tab == 0)
-                ScopedBuilder<RssTimelineStore, RssFeedSnapshot>(
-                  store: timeline,
-                  onState: (context, _) {
-                    final readIds = context.read<RssReadStore>().state;
-                    final hasUnread = timeline.allItems.any(
-                      (item) => !readIds.contains(item.id),
-                    );
-                    if (!hasUnread) return const SizedBox.shrink();
-                    return IconButton(
-                      tooltip: l10n.plugin_rss_mark_all_read,
-                      icon: const Icon(Icons.done_all),
-                      onPressed: _markAllRead,
-                    );
-                  },
+          children: [
+            PluginHomeChrome(
+              title: l10n.plugin_rss_title,
+              mark: pluginMark(RssPlugin(), size: 24),
+              accent: rssBrand,
+              tabs: [
+                PluginHomeTab(
+                  selected: _tab == 0,
+                  icon: Icons.home_outlined,
+                  label: l10n.plugin_rss_home,
+                  onTap: () => _view.select(0),
                 ),
-              IconButton(
-                tooltip: l10n.settings,
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RssSettingsScreen()),
-                ),
-              ),
-              IconButton(
-                tooltip: l10n.plugin_rss_add,
-                icon: const Icon(Icons.add),
-                onPressed: _openAdd,
-              ),
-            ],
-          ),
-          const Divider(height: 1),
-          Expanded(
-            child: PluginLazyTabs(
-              index: _tab,
-              children: [
-                (_) => _HomePane(
-                  scrollController: widget.scrollController,
-                  feeds: feeds,
-                  timeline: timeline,
-                  onAdd: _openAdd,
-                  onFilter: _setFilter,
-                ),
-                (_) => _FeedsPane(
-                  scrollController: _feedsScroll,
-                  feeds: feeds,
-                  onAdd: _openAdd,
+                PluginHomeTab(
+                  selected: _tab == 1,
+                  icon: Icons.rss_feed,
+                  label: l10n.plugin_rss_feeds,
+                  onTap: () => _view.select(1),
                 ),
               ],
+              actions: [
+                if (_tab == 0)
+                  ScopedBuilder<RssTimelineStore, RssFeedSnapshot>(
+                    store: timeline,
+                    onState: (context, _) {
+                      final readIds = context.read<RssReadStore>().state;
+                      final hasUnread = timeline.allItems.any((item) => !readIds.contains(item.id));
+                      if (!hasUnread) return const SizedBox.shrink();
+                      return IconButton(
+                        tooltip: l10n.plugin_rss_mark_all_read,
+                        icon: const Icon(Icons.done_all),
+                        onPressed: _markAllRead,
+                      );
+                    },
+                  ),
+                IconButton(
+                  tooltip: l10n.settings,
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const RssSettingsScreen())),
+                ),
+                IconButton(tooltip: l10n.plugin_rss_add, icon: const Icon(Icons.add), onPressed: _openAdd),
+              ],
             ),
-          ),
-        ],
-      ),
+            const Divider(height: 1),
+            Expanded(
+              child: PluginLazyTabs(
+                index: _tab,
+                children: [
+                  (_) => _HomePane(
+                    scrollController: widget.scrollController,
+                    feeds: feeds,
+                    timeline: timeline,
+                    onAdd: _openAdd,
+                    onFilter: _setFilter,
+                  ),
+                  (_) => _FeedsPane(scrollController: _feedsScroll, feeds: feeds, onAdd: _openAdd),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -244,35 +229,46 @@ class _HomePane extends StatelessWidget {
                     onTag: timeline.setTag,
                   );
                   final filtered = timeline.filter != RssFeedFilter.all || timeline.tag != null;
-                  return Column(children: [
-                    filterBar,
-                    if (snapshot.failedCount > 0)
-                      ListTile(leading: const Icon(Icons.error_outline),
-                        title: Text(l10n.plugin_reader_partial_error(snapshot.failedCount)),
-                        trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry,
-                          onPressed: () => timeline.refresh(force: true))),
-                    Expanded(child: snapshot.items.isEmpty
-                      ? EmptyPane(
-                          icon: filtered ? Icons.filter_list : Icons.article_outlined,
-                          message: filtered ? l10n.plugin_reader_empty_filter : l10n.plugin_reader_empty,
-                          scrollController: scrollController,
-                          onRefresh: () => timeline.refresh(force: true),
-                          action: TextButton.icon(
-                            onPressed: filtered ? () {
-                              timeline.setTag(null);
-                              onFilter(RssFeedFilter.all);
-                            } : () => timeline.refresh(force: true),
-                            icon: Icon(filtered ? Icons.filter_list_off : Icons.refresh),
-                            label: Text(filtered ? l10n.plugin_reader_reset_filters : l10n.retry),
+                  return Column(
+                    children: [
+                      filterBar,
+                      if (snapshot.failedCount > 0)
+                        ListTile(
+                          leading: const Icon(Icons.error_outline),
+                          title: Text(l10n.plugin_reader_partial_error(snapshot.failedCount)),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.refresh),
+                            tooltip: l10n.retry,
+                            onPressed: () => timeline.refresh(force: true),
                           ),
-                        )
-                      : FeedListView(
-                          controller: pluginInnerScrollController(context, scrollController),
-                          padding: pluginFeedPadding(context),
-                          itemCount: snapshot.items.length,
-                          itemBuilder: (context, index) => RssItemCard(item: snapshot.items[index]),
-                        )),
-                  ]);
+                        ),
+                      Expanded(
+                        child: snapshot.items.isEmpty
+                            ? EmptyPane(
+                                icon: filtered ? Icons.filter_list : Icons.article_outlined,
+                                message: filtered ? l10n.plugin_reader_empty_filter : l10n.plugin_reader_empty,
+                                scrollController: scrollController,
+                                onRefresh: () => timeline.refresh(force: true),
+                                action: TextButton.icon(
+                                  onPressed: filtered
+                                      ? () {
+                                          timeline.setTag(null);
+                                          onFilter(RssFeedFilter.all);
+                                        }
+                                      : () => timeline.refresh(force: true),
+                                  icon: Icon(filtered ? Icons.filter_list_off : Icons.refresh),
+                                  label: Text(filtered ? l10n.plugin_reader_reset_filters : l10n.retry),
+                                ),
+                              )
+                            : FeedListView(
+                                controller: pluginInnerScrollController(context, scrollController),
+                                padding: pluginFeedPadding(context),
+                                itemCount: snapshot.items.length,
+                                itemBuilder: (context, index) => RssItemCard(item: snapshot.items[index]),
+                              ),
+                      ),
+                    ],
+                  );
                 },
               );
             },
@@ -302,45 +298,40 @@ class _FilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return PluginFilterRow(
-        children: [
+      children: [
+        _chip(
+          context,
+          label: l10n.plugin_rss_all,
+          selected: selected == RssFeedFilter.all && selectedTag == null,
+          onTap: () {
+            onTag(null);
+            onFilter(RssFeedFilter.all);
+          },
+        ),
+        _chip(
+          context,
+          label: l10n.plugin_rss_unread,
+          selected: selected == RssFeedFilter.unread,
+          onTap: () {
+            onTag(null);
+            onFilter(RssFeedFilter.unread);
+          },
+        ),
+        for (final tag in tags)
           _chip(
             context,
-            label: l10n.plugin_rss_all,
-            selected: selected == RssFeedFilter.all && selectedTag == null,
+            label: tag,
+            selected: selectedTag == tag,
             onTap: () {
-              onTag(null);
               onFilter(RssFeedFilter.all);
+              onTag(selectedTag == tag ? null : tag);
             },
           ),
-          _chip(
-            context,
-            label: l10n.plugin_rss_unread,
-            selected: selected == RssFeedFilter.unread,
-            onTap: () {
-              onTag(null);
-              onFilter(RssFeedFilter.unread);
-            },
-          ),
-          for (final tag in tags)
-            _chip(
-              context,
-              label: tag,
-              selected: selectedTag == tag,
-              onTap: () {
-                onFilter(RssFeedFilter.all);
-                onTag(selectedTag == tag ? null : tag);
-              },
-            ),
-        ],
+      ],
     );
   }
 
-  Widget _chip(
-    BuildContext context, {
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
+  Widget _chip(BuildContext context, {required String label, required bool selected, required VoidCallback onTap}) {
     return Padding(
       padding: const EdgeInsetsDirectional.only(end: 6),
       child: FilterChip(
@@ -359,11 +350,7 @@ class _FeedsPane extends StatelessWidget {
   final RssFeedsStore feeds;
   final Future<void> Function() onAdd;
 
-  const _FeedsPane({
-    required this.scrollController,
-    required this.feeds,
-    required this.onAdd,
-  });
+  const _FeedsPane({required this.scrollController, required this.feeds, required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
@@ -376,11 +363,7 @@ class _FeedsPane extends StatelessWidget {
             icon: Icons.rss_feed,
             message: l10n.plugin_rss_following_empty,
             scrollController: scrollController,
-            action: FilledButton.icon(
-              onPressed: onAdd,
-              icon: const Icon(Icons.add),
-              label: Text(l10n.plugin_rss_add),
-            ),
+            action: FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: Text(l10n.plugin_rss_add)),
           );
         }
         return ListView.builder(
@@ -394,15 +377,16 @@ class _FeedsPane extends StatelessWidget {
               title: Text(feed.name, maxLines: 2, overflow: TextOverflow.ellipsis),
               subtitle: ScopedBuilder<RssTagsStore, Map<String, List<String>>>(
                 store: context.read<RssTagsStore>(),
-                onState: (_, tags) => Text([
-                  Uri.tryParse(feed.siteUrl ?? feed.feedUrl)?.host ?? feed.feedUrl,
-                  if ((tags[feed.id] ?? const []).isNotEmpty) tags[feed.id]!.join(' · '),
-                ].join('\n'), maxLines: 3, overflow: TextOverflow.ellipsis),
+                onState: (_, tags) => Text(
+                  [
+                    Uri.tryParse(feed.siteUrl ?? feed.feedUrl)?.host ?? feed.feedUrl,
+                    if ((tags[feed.id] ?? const []).isNotEmpty) tags[feed.id]!.join(' · '),
+                  ].join('\n'),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => RssFeedScreen(feed: feed)),
-              ),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RssFeedScreen(feed: feed))),
               trailing: PopupMenuButton<String>(
                 onSelected: (value) async {
                   if (value == 'tag') {
@@ -414,18 +398,9 @@ class _FeedsPane extends StatelessWidget {
                   }
                 },
                 itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'tag',
-                    child: Text(l10n.plugin_rss_set_tag),
-                  ),
-                  PopupMenuItem(
-                    value: 'group',
-                    child: Text(l10n.plugin_rss_add_to_group),
-                  ),
-                  PopupMenuItem(
-                    value: 'unfollow',
-                    child: Text(l10n.plugin_rss_unfollow),
-                  ),
+                  PopupMenuItem(value: 'tag', child: Text(l10n.plugin_rss_set_tag)),
+                  PopupMenuItem(value: 'group', child: Text(l10n.plugin_rss_add_to_group)),
+                  PopupMenuItem(value: 'unfollow', child: Text(l10n.plugin_rss_unfollow)),
                 ],
               ),
             );
@@ -490,14 +465,8 @@ class _RssTagDialogState extends State<_RssTagDialog> {
         autofocus: true,
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, _controller.text),
-          child: Text(l10n.plugin_rss_tag),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        TextButton(onPressed: () => Navigator.pop(context, _controller.text), child: Text(l10n.plugin_rss_tag)),
       ],
     );
   }

@@ -21,22 +21,14 @@ Widget _app(Widget child) {
 }
 
 void main() {
-  testWidgets('Reddit full client identifies itself and labels its feed sections', (
-    tester,
-  ) async {
+  testWidgets('Reddit full client identifies itself and labels its feed sections', (tester) async {
     var mode = RedditFeedMode.following;
     await tester.pumpWidget(
       _app(
         RedditHomeChrome(
           source: RedditHomeSource(mode: mode),
           onMode: (next) => mode = next,
-          actions: [
-            IconButton(
-              tooltip: 'Saved',
-              icon: const Icon(Icons.bookmark_border),
-              onPressed: () {},
-            ),
-          ],
+          actions: [IconButton(tooltip: 'Saved', icon: const Icon(Icons.bookmark_border), onPressed: () {})],
         ),
       ),
     );
@@ -70,20 +62,13 @@ void main() {
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);
   });
 
-  testWidgets('a followed community deselects Home/Popular/All', (
-    tester,
-  ) async {
-    const source = RedditHomeSource(
-      mode: RedditFeedMode.following,
-      subreddit: 'foo',
-    );
+  testWidgets('a followed community deselects Home/Popular/All', (tester) async {
+    const source = RedditHomeSource(mode: RedditFeedMode.following, subreddit: 'foo');
     expect(redditHomeRailSelected(source, RedditFeedMode.following), isFalse);
     expect(redditHomeRailSelected(source, RedditFeedMode.popular), isFalse);
     expect(redditHomeRailSelected(source, RedditFeedMode.all), isFalse);
 
-    await tester.pumpWidget(
-      _app(RedditHomeChrome(source: source, onMode: (_) {})),
-    );
+    await tester.pumpWidget(_app(RedditHomeChrome(source: source, onMode: (_) {})));
 
     expect(find.byType(PluginHomeChrome), findsOneWidget);
   });

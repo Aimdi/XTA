@@ -33,9 +33,7 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
       if (!mounted) {
         return;
       }
-      context.read<BlueskyAlgoStore>().ensureLoaded(
-        discoverName: L10n.of(context).plugin_bluesky_discover,
-      );
+      context.read<BlueskyAlgoStore>().ensureLoaded(discoverName: L10n.of(context).plugin_bluesky_discover);
     });
   }
 
@@ -70,9 +68,7 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
   }
 
   void _snack(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -107,18 +103,11 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
     );
   }
 
-  Widget _body(
-    BuildContext context,
-    L10n l10n,
-    BlueskyAlgoStore store,
-    BlueskyAlgoState state,
-  ) {
+  Widget _body(BuildContext context, L10n l10n, BlueskyAlgoStore store, BlueskyAlgoState state) {
     final chips = _algoChips(l10n, state);
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (state.hasMore &&
-            notification.metrics.pixels >=
-                notification.metrics.maxScrollExtent - 400) {
+        if (state.hasMore && notification.metrics.pixels >= notification.metrics.maxScrollExtent - 400) {
           store.loadMore();
         }
         return false;
@@ -139,10 +128,7 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
                 ),
               )
             : FeedListView(
-                controller: pluginInnerScrollController(
-                  context,
-                  widget.scrollController,
-                ),
+                controller: pluginInnerScrollController(context, widget.scrollController),
                 padding: pluginFeedPadding(context),
                 itemCount: state.posts.length + 2,
                 itemBuilder: (context, index) {
@@ -152,12 +138,8 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
                   if (index == 1) {
                     return _selectedHeader(
                       context,
-                      title: state.selectedName.isEmpty
-                          ? l10n.plugin_bluesky_discover
-                          : state.selectedName,
-                      pinned:
-                          state.selectedUri != null &&
-                          state.isPinned(state.selectedUri!),
+                      title: state.selectedName.isEmpty ? l10n.plugin_bluesky_discover : state.selectedName,
+                      pinned: state.selectedUri != null && state.isPinned(state.selectedUri!),
                       onOpen: _openFeed,
                       openLabel: l10n.plugin_bluesky_open_feed,
                       onPinToggle: () {
@@ -174,11 +156,7 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
                     );
                   }
                   final post = state.posts[index - 2];
-                  return BlueskyPostCard(
-                    key: ValueKey(post.uri),
-                    post: post,
-                    showSourceBadge: false,
-                  );
+                  return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
                 },
               ),
       ),
@@ -196,9 +174,7 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
         _FeedChip(
           uri: uri,
           label: label,
-          selected:
-              state.selectedUri == uri ||
-              (state.selectedUri == null && uri == kBlueskyDiscoverFeedUri),
+          selected: state.selectedUri == uri || (state.selectedUri == null && uri == kBlueskyDiscoverFeedUri),
         ),
       );
     }
@@ -243,8 +219,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
     });
   }
 
-  Future<void> _refresh() =>
-      context.read<BlueskyListsStore>().ensureLoaded(force: true);
+  Future<void> _refresh() => context.read<BlueskyListsStore>().ensureLoaded(force: true);
 
   Future<void> _lookup() async {
     final l10n = L10n.of(context);
@@ -279,9 +254,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
   }
 
   void _snack(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -293,9 +266,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
       distinct: (state) =>
           '${state.selectedUri}\n${blueskyFeedDistinct(state.posts)}\n${state.pinned.length}\n${state.actorLists.length}',
       onLoading: (_) {
-        if (store.state.posts.isNotEmpty ||
-            store.state.pinned.isNotEmpty ||
-            store.state.actorLists.isNotEmpty) {
+        if (store.state.posts.isNotEmpty || store.state.pinned.isNotEmpty || store.state.actorLists.isNotEmpty) {
           return _body(context, l10n, store, store.state);
         }
         return const Center(child: CircularProgressIndicator());
@@ -318,19 +289,12 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
     );
   }
 
-  Widget _body(
-    BuildContext context,
-    L10n l10n,
-    BlueskyListsStore store,
-    BlueskyListsState state,
-  ) {
+  Widget _body(BuildContext context, L10n l10n, BlueskyListsStore store, BlueskyListsState state) {
     final chips = [
       for (final list in [...state.pinned, ...state.actorLists])
         _FeedChip(
           uri: list.uri,
-          label: list.name.isEmpty
-              ? (blueskyRkeyOf(list.uri) ?? list.uri)
-              : list.name,
+          label: list.name.isEmpty ? (blueskyRkeyOf(list.uri) ?? list.uri) : list.name,
           selected: state.selectedUri == list.uri,
         ),
     ];
@@ -342,9 +306,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (state.hasMore &&
-            notification.metrics.pixels >=
-                notification.metrics.maxScrollExtent - 400) {
+        if (state.hasMore && notification.metrics.pixels >= notification.metrics.maxScrollExtent - 400) {
           store.loadMore();
         }
         return false;
@@ -357,12 +319,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
                 message: l10n.plugin_bluesky_lists_empty,
                 scrollController: widget.scrollController,
                 onRefresh: _refresh,
-                leading: unique.isEmpty
-                    ? null
-                    : _ChipStrip(
-                        chips: unique,
-                        onTap: (uri) => store.open(uri),
-                      ),
+                leading: unique.isEmpty ? null : _ChipStrip(chips: unique, onTap: (uri) => store.open(uri)),
                 action: Column(
                   children: [
                     FilledButton.icon(
@@ -375,11 +332,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
                       TextButton.icon(
                         onPressed: () => Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => BlueskyImportListScreen(
-                              initialList: state.selectedUri,
-                            ),
-                          ),
+                          MaterialPageRoute(builder: (_) => BlueskyImportListScreen(initialList: state.selectedUri)),
                         ),
                         icon: const Icon(Icons.cloud_download_outlined),
                         label: Text(l10n.plugin_bluesky_import_list),
@@ -389,26 +342,18 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
                 ),
               )
             : FeedListView(
-                controller: pluginInnerScrollController(
-                  context,
-                  widget.scrollController,
-                ),
+                controller: pluginInnerScrollController(context, widget.scrollController),
                 padding: pluginFeedPadding(context),
                 itemCount: state.posts.length + 2,
                 itemBuilder: (context, index) {
                   if (index == 0) {
-                    return _ChipStrip(
-                      chips: unique,
-                      onTap: (uri) => store.open(uri),
-                    );
+                    return _ChipStrip(chips: unique, onTap: (uri) => store.open(uri));
                   }
                   if (index == 1) {
                     return _selectedHeader(
                       context,
                       title: state.selectedName,
-                      pinned:
-                          state.selectedUri != null &&
-                          state.isPinned(state.selectedUri!),
+                      pinned: state.selectedUri != null && state.isPinned(state.selectedUri!),
                       onOpen: _lookup,
                       openLabel: l10n.plugin_bluesky_lookup_lists,
                       onPinToggle: () {
@@ -419,30 +364,20 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
                         if (state.isPinned(uri)) {
                           store.unpin(uri);
                         } else {
-                          store.pin(
-                            BlueskyListInfo(uri: uri, name: state.selectedName),
-                          );
+                          store.pin(BlueskyListInfo(uri: uri, name: state.selectedName));
                         }
                       },
                       extra: TextButton(
                         onPressed: () => Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => BlueskyImportListScreen(
-                              initialList: state.selectedUri,
-                            ),
-                          ),
+                          MaterialPageRoute(builder: (_) => BlueskyImportListScreen(initialList: state.selectedUri)),
                         ),
                         child: Text(l10n.plugin_bluesky_import_list),
                       ),
                     );
                   }
                   final post = state.posts[index - 2];
-                  return BlueskyPostCard(
-                    key: ValueKey('list-${post.uri}'),
-                    post: post,
-                    showSourceBadge: false,
-                  );
+                  return BlueskyPostCard(key: ValueKey('list-${post.uri}'), post: post, showSourceBadge: false);
                 },
               ),
       ),
@@ -455,11 +390,7 @@ class _FeedChip {
   final String label;
   final bool selected;
 
-  const _FeedChip({
-    required this.uri,
-    required this.label,
-    required this.selected,
-  });
+  const _FeedChip({required this.uri, required this.label, required this.selected});
 }
 
 class _ChipStrip extends StatelessWidget {
@@ -473,19 +404,21 @@ class _ChipStrip extends StatelessWidget {
     if (chips.isEmpty) {
       return const SizedBox.shrink();
     }
-    return PluginFilterRow(children: [
-      for (final chip in chips)
-        ChoiceChip(
-          label: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 240),
-            child: Text(chip.label, maxLines: 2, overflow: TextOverflow.ellipsis),
+    return PluginFilterRow(
+      children: [
+        for (final chip in chips)
+          ChoiceChip(
+            label: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 240),
+              child: Text(chip.label, maxLines: 2, overflow: TextOverflow.ellipsis),
+            ),
+            selected: chip.selected,
+            showCheckmark: true,
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            onSelected: (_) => onTap(chip.uri),
           ),
-          selected: chip.selected,
-          showCheckmark: true,
-          materialTapTargetSize: MaterialTapTargetSize.padded,
-          onSelected: (_) => onTap(chip.uri),
-        ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -501,20 +434,29 @@ Widget _selectedHeader(
   final l10n = L10n.of(context);
   return Padding(
     padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 8),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Semantics(header: true, child: Text(title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))),
-      const SizedBox(height: 4),
-      Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-        TextButton.icon(onPressed: onOpen, icon: const Icon(Icons.link), label: Text(openLabel)),
-        TextButton.icon(
-          icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined),
-          onPressed: onPinToggle,
-          label: Text(pinned ? l10n.unpin : l10n.pin),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
         ),
-        ?extra,
-      ]),
-    ]),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            TextButton.icon(onPressed: onOpen, icon: const Icon(Icons.link), label: Text(openLabel)),
+            TextButton.icon(
+              icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined),
+              onPressed: onPinToggle,
+              label: Text(pinned ? l10n.unpin : l10n.pin),
+            ),
+            ?extra,
+          ],
+        ),
+      ],
+    ),
   );
 }
 
@@ -527,17 +469,11 @@ BlueskyFeedGenerator _selectedGenerator(BlueskyAlgoState state, L10n l10n) {
   }
   return BlueskyFeedGenerator(
     uri: uri,
-    displayName: state.selectedName.isEmpty
-        ? l10n.plugin_bluesky_discover
-        : state.selectedName,
+    displayName: state.selectedName.isEmpty ? l10n.plugin_bluesky_discover : state.selectedName,
   );
 }
 
-Future<String?> _prompt(
-  BuildContext context, {
-  required String title,
-  required String hint,
-}) {
+Future<String?> _prompt(BuildContext context, {required String title, required String hint}) {
   return showDialog<String>(
     context: context,
     builder: (_) => _BlueskyPromptDialog(title: title, hint: hint),
@@ -581,14 +517,8 @@ class _BlueskyPromptDialogState extends State<_BlueskyPromptDialog> {
         onSubmitted: (value) => Navigator.pop(context, value.trim()),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(context, _controller.text.trim()),
-          child: Text(l10n.ok),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+        TextButton(onPressed: () => Navigator.pop(context, _controller.text.trim()), child: Text(l10n.ok)),
       ],
     );
   }

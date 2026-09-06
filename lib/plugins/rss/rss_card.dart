@@ -30,14 +30,23 @@ class RssItemCard extends StatelessWidget {
     final copy = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(item.title, maxLines: 4, overflow: TextOverflow.ellipsis,
+        Text(
+          item.title,
+          maxLines: 4,
+          overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: unread ? FontWeight.w800 : FontWeight.w500, height: 1.3)),
+            fontWeight: unread ? FontWeight.w800 : FontWeight.w500,
+            height: 1.3,
+          ),
+        ),
         if (item.excerpt?.isNotEmpty ?? false) ...[
           const SizedBox(height: 6),
-          Text(item.excerpt!, maxLines: 3, overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: tweetSecondaryColor(context), height: 1.4)),
+          Text(
+            item.excerpt!,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodyMedium?.copyWith(color: tweetSecondaryColor(context), height: 1.4),
+          ),
         ],
       ],
     );
@@ -48,8 +57,7 @@ class RssItemCard extends StatelessWidget {
         child: tweetFlatCard(
           color: theme.scaffoldBackgroundColor,
           child: InkWell(
-            onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (_) => RssReaderScreen(item: item))),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RssReaderScreen(item: item))),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -57,13 +65,16 @@ class RssItemCard extends StatelessWidget {
                 children: [
                   _source(context, unread),
                   const SizedBox(height: 8),
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Expanded(child: copy),
-                    if (hasCover && !largeText) ...[
-                      const SizedBox(width: 16),
-                      SizedBox(width: 88, height: 88, child: _cover(context)),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: copy),
+                      if (hasCover && !largeText) ...[
+                        const SizedBox(width: 16),
+                        SizedBox(width: 88, height: 88, child: _cover(context)),
+                      ],
                     ],
-                  ]),
+                  ),
                   if (hasCover && largeText) ...[
                     const SizedBox(height: 12),
                     SizedBox(height: 140, child: _cover(context)),
@@ -77,31 +88,39 @@ class RssItemCard extends StatelessWidget {
     );
   }
 
-  Widget _source(BuildContext context, bool unread) => Row(children: [
-    if (unread) ...[
-      Icon(Icons.circle, size: 8, color: tweetReadableAccentColor(context)),
-      const SizedBox(width: 8),
+  Widget _source(BuildContext context, bool unread) => Row(
+    children: [
+      if (unread) ...[Icon(Icons.circle, size: 8, color: tweetReadableAccentColor(context)), const SizedBox(width: 8)],
+      Expanded(
+        child: Text(
+          [if (showSourceBadge) item.feedTitle, if (item.author?.isNotEmpty ?? false) item.author!].join(' · '),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: tweetSecondaryColor(context)),
+        ),
+      ),
+      if (item.publishedAt != null) ...[
+        const SizedBox(width: 8),
+        Text(
+          createCompactDate(item.publishedAt!),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: tweetSecondaryColor(context)),
+        ),
+      ],
     ],
-    Expanded(child: Text([
-      if (showSourceBadge) item.feedTitle,
-      if (item.author?.isNotEmpty ?? false) item.author!,
-    ].join(' · '), maxLines: 2, overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-        color: tweetSecondaryColor(context)))),
-    if (item.publishedAt != null) ...[
-      const SizedBox(width: 8),
-      Text(createCompactDate(item.publishedAt!),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: tweetSecondaryColor(context))),
-    ],
-  ]);
+  );
 
   Widget _cover(BuildContext context) => ClipRRect(
     borderRadius: BorderRadius.circular(8),
-    child: ExtendedImage.network(item.imageUrl!, fit: BoxFit.cover, cache: true,
+    child: ExtendedImage.network(
+      item.imageUrl!,
+      fit: BoxFit.cover,
+      cache: true,
       loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed
-        ? ColoredBox(color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: const Icon(Icons.article_outlined))
-        : null),
+          ? ColoredBox(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: const Icon(Icons.article_outlined),
+            )
+          : null,
+    ),
   );
 }

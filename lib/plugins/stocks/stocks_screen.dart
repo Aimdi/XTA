@@ -43,8 +43,10 @@ class _StocksScreenState extends State<StocksScreen> {
   final TickerClient _client = TickerClient();
 
   /// 0 watchlist, 1 trending, 2 markets.
-  final _view = PluginViewStore<_StocksViewState>(const _StocksViewState(),
-    snapshot: (state) => state.copyWith(loading: false));
+  final _view = PluginViewStore<_StocksViewState>(
+    const _StocksViewState(),
+    snapshot: (state) => state.copyWith(loading: false),
+  );
   int get _tab => _view.state.tab;
 
   /// Null = whole watchlist feed; otherwise posts for that one cashtag.
@@ -94,8 +96,9 @@ class _StocksScreenState extends State<StocksScreen> {
     try {
       final raw = await _client.fetchTrending();
       if (!mounted) return;
-      _view.select(_view.state.copyWith(
-        trending: [for (final symbol in raw.take(16)) spokenCashtag(symbol)], loading: false));
+      _view.select(
+        _view.state.copyWith(trending: [for (final symbol in raw.take(16)) spokenCashtag(symbol)], loading: false),
+      );
       await _cache.ensure(_trending);
     } on TickerException {
       if (mounted) _view.select(_view.state.copyWith(loading: false, failed: true));
@@ -108,11 +111,7 @@ class _StocksScreenState extends State<StocksScreen> {
 
     final symbol = StocksWatchlistStore.normaliseTicker(entered);
     if (symbol == null) {
-      showSnackBar(
-        context,
-        icon: '⚠️',
-        message: L10n.of(context).plugin_stocks_error,
-      );
+      showSnackBar(context, icon: '⚠️', message: L10n.of(context).plugin_stocks_error);
       return;
     }
 
@@ -125,9 +124,13 @@ class _StocksScreenState extends State<StocksScreen> {
   Future<void> _remove(String symbol) async {
     await _watchlist.remove(symbol);
     if (mounted && _filterSymbol == symbol) {
-      _view.select(_view.state.copyWith(filters: {
-        for (final entry in _view.state.filters.entries) entry.key: entry.value == symbol ? null : entry.value,
-      }));
+      _view.select(
+        _view.state.copyWith(
+          filters: {
+            for (final entry in _view.state.filters.entries) entry.key: entry.value == symbol ? null : entry.value,
+          },
+        ),
+      );
     }
   }
 
@@ -171,9 +174,9 @@ class _StocksScreenState extends State<StocksScreen> {
   }
 
   void _onChipSelected(String symbol) {
-    _view.select(_view.state.copyWith(filters: {
-      ..._view.state.filters, _tab: _filterSymbol == symbol ? null : symbol,
-    }));
+    _view.select(
+      _view.state.copyWith(filters: {..._view.state.filters, _tab: _filterSymbol == symbol ? null : symbol}),
+    );
   }
 
   @override
@@ -184,49 +187,47 @@ class _StocksScreenState extends State<StocksScreen> {
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<PluginViewStore<_StocksViewState>, _StocksViewState>(
-        store: _view, onState: (_, _) => Column(
-        children: [
-          PluginHomeChrome(
+        store: _view,
+        onState: (_, _) => Column(
+          children: [
+            PluginHomeChrome(
               title: l10n.plugin_stocks_title,
               mark: pluginMark(StocksPlugin(), size: 24),
-            accent: StocksPlugin().brandColor,
-            tabs: [
-              PluginHomeTab(
-                label: l10n.plugin_stocks_watchlist,
-                icon: Icons.star_outline,
-                selected: _tab == 0,
-                onTap: () => _selectTab(0),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_stocks_trending,
-                icon: Icons.trending_up,
-                selected: _tab == 1,
-                onTap: () => _selectTab(1),
-              ),
-              PluginHomeTab(
-                label: l10n.plugin_stocks_markets,
-                icon: Icons.public_outlined,
-                selected: _tab == 2,
-                onTap: () => _selectTab(2),
-              ),
-            ],
-            actions: [
-              IconButton(
-                tooltip: l10n.plugin_stocks_add,
-                icon: const Icon(Icons.add),
-                onPressed: _addSymbol,
-              ),
-              IconButton(
-                tooltip: l10n.plugin_stocks_watchlist,
-                icon: const Icon(Icons.list),
-                onPressed: _manageWatchlist,
-              ),
-            ],
-          ),
-          const Divider(height: 1),
-          Expanded(child: _body(l10n)),
-        ],
-      )),
+              accent: StocksPlugin().brandColor,
+              tabs: [
+                PluginHomeTab(
+                  label: l10n.plugin_stocks_watchlist,
+                  icon: Icons.star_outline,
+                  selected: _tab == 0,
+                  onTap: () => _selectTab(0),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_stocks_trending,
+                  icon: Icons.trending_up,
+                  selected: _tab == 1,
+                  onTap: () => _selectTab(1),
+                ),
+                PluginHomeTab(
+                  label: l10n.plugin_stocks_markets,
+                  icon: Icons.public_outlined,
+                  selected: _tab == 2,
+                  onTap: () => _selectTab(2),
+                ),
+              ],
+              actions: [
+                IconButton(tooltip: l10n.plugin_stocks_add, icon: const Icon(Icons.add), onPressed: _addSymbol),
+                IconButton(
+                  tooltip: l10n.plugin_stocks_watchlist,
+                  icon: const Icon(Icons.list),
+                  onPressed: _manageWatchlist,
+                ),
+              ],
+            ),
+            const Divider(height: 1),
+            Expanded(child: _body(l10n)),
+          ],
+        ),
+      ),
     );
   }
 
@@ -247,63 +248,48 @@ class _StocksScreenState extends State<StocksScreen> {
     );
   }
 
-  Widget _tabHome(
-    List<String> symbols,
-    Map<String, TickerQuote> quotes,
-    L10n l10n,
-  ) {
+  Widget _tabHome(List<String> symbols, Map<String, TickerQuote> quotes, L10n l10n) {
     if (_tab == 2) {
       return StocksMarketsList(quotes: quotes);
     }
     if (_tab == 1) {
       if (_view.state.loading && _trending.isEmpty) return const PluginFeedSkeleton();
-      return _feedHome(
-        symbols: _trending,
-        quotes: quotes,
-        empty: _empty(context, l10n, trending: true),
-      );
+      return _feedHome(symbols: _trending, quotes: quotes, empty: _empty(context, l10n, trending: true));
     }
     if (symbols.isEmpty) {
       return _empty(context, l10n, trending: false);
     }
-    return _feedHome(
-      symbols: symbols,
-      quotes: quotes,
-      empty: _empty(context, l10n, trending: false),
-    );
+    return _feedHome(symbols: symbols, quotes: quotes, empty: _empty(context, l10n, trending: false));
   }
 
-  Widget _feedHome({
-    required List<String> symbols,
-    required Map<String, TickerQuote> quotes,
-    required Widget empty,
-  }) {
+  Widget _feedHome({required List<String> symbols, required Map<String, TickerQuote> quotes, required Widget empty}) {
     if (symbols.isEmpty) {
       return empty;
     }
 
-    final query = _filterSymbol == null
-        ? watchlistCashtagQuery(symbols)
-        : watchlistCashtagQuery([_filterSymbol!]);
+    final query = _filterSymbol == null ? watchlistCashtagQuery(symbols) : watchlistCashtagQuery([_filterSymbol!]);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StocksWatchlistReel(
-          symbols: symbols,
-          quotes: quotes,
-          selected: _filterSymbol,
-          onSelected: _onChipSelected,
+        StocksWatchlistReel(symbols: symbols, quotes: quotes, selected: _filterSymbol, onSelected: _onChipSelected),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
+          child: Wrap(
+            spacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(L10n.of(context).tweets, style: Theme.of(context).textTheme.titleMedium),
+              if (_filterSymbol != null)
+                InputChip(
+                  label: Text('\$$_filterSymbol'),
+                  deleteButtonTooltipMessage: L10n.of(context).plugin_reader_reset_filters,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  onDeleted: () => _onChipSelected(_filterSymbol!),
+                ),
+            ],
+          ),
         ),
-        Padding(padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
-          child: Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-            Text(L10n.of(context).tweets, style: Theme.of(context).textTheme.titleMedium),
-            if (_filterSymbol != null)
-              InputChip(label: Text('\$$_filterSymbol'),
-                deleteButtonTooltipMessage: L10n.of(context).plugin_reader_reset_filters,
-                materialTapTargetSize: MaterialTapTargetSize.padded,
-                onDeleted: () => _onChipSelected(_filterSymbol!)),
-          ])),
         const Divider(height: 1),
         Expanded(
           child: _WatchlistPostsFeed(
@@ -327,11 +313,7 @@ class _StocksScreenState extends State<StocksScreen> {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
       children: [
-        Icon(
-          trending ? Icons.trending_up : Icons.show_chart,
-          size: 48,
-          color: Theme.of(context).colorScheme.outline,
-        ),
+        Icon(trending ? Icons.trending_up : Icons.show_chart, size: 48, color: Theme.of(context).colorScheme.outline),
         const SizedBox(height: 16),
         Text(
           trending
@@ -343,9 +325,9 @@ class _StocksScreenState extends State<StocksScreen> {
         Text(
           l10n.plugin_stocks_feed_hint,
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
         Center(
@@ -388,11 +370,26 @@ class _StocksViewState {
   final List<String> trending;
   final bool loading;
   final bool failed;
-  const _StocksViewState({this.tab = 0, this.filters = const {}, this.trending = const [],
-    this.loading = false, this.failed = false});
-  _StocksViewState copyWith({int? tab, Map<int, String?>? filters, List<String>? trending,
-    bool? loading, bool? failed}) => _StocksViewState(tab: tab ?? this.tab, filters: filters ?? this.filters,
-      trending: trending ?? this.trending, loading: loading ?? this.loading, failed: failed ?? this.failed);
+  const _StocksViewState({
+    this.tab = 0,
+    this.filters = const {},
+    this.trending = const [],
+    this.loading = false,
+    this.failed = false,
+  });
+  _StocksViewState copyWith({
+    int? tab,
+    Map<int, String?>? filters,
+    List<String>? trending,
+    bool? loading,
+    bool? failed,
+  }) => _StocksViewState(
+    tab: tab ?? this.tab,
+    filters: filters ?? this.filters,
+    trending: trending ?? this.trending,
+    loading: loading ?? this.loading,
+    failed: failed ?? this.failed,
+  );
 }
 
 /// Posts about the watchlist (or one filtered ticker), owned as its own feed
@@ -401,11 +398,7 @@ class _WatchlistPostsFeed extends StatefulWidget {
   final String query;
   final Future<void> Function() onRefreshQuotes;
 
-  const _WatchlistPostsFeed({
-    super.key,
-    required this.query,
-    required this.onRefreshQuotes,
-  });
+  const _WatchlistPostsFeed({super.key, required this.query, required this.onRefreshQuotes});
 
   @override
   State<_WatchlistPostsFeed> createState() => _WatchlistPostsFeedState();
@@ -429,11 +422,7 @@ class _WatchlistPostsFeedState extends State<_WatchlistPostsFeed> {
   }
 
   Future<TweetPageResult> _loadPage(String? cursor) async {
-    final result = await Twitter.searchTweets(
-      widget.query,
-      true,
-      cursor: cursor,
-    );
+    final result = await Twitter.searchTweets(widget.query, true, cursor: cursor);
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 

@@ -9,9 +9,12 @@ Future<void> openPluginClient(BuildContext context, XtaPlugin plugin) {
   final session = context.read<PluginSessionStore?>();
   return Navigator.push<void>(
     context,
-    MaterialPageRoute(builder: (_) => Provider<PluginSessionStore?>.value(
-      value: session, child: _PluginClientPage(plugin: plugin),
-    )),
+    MaterialPageRoute(
+      builder: (_) => Provider<PluginSessionStore?>.value(
+        value: session,
+        child: _PluginClientPage(plugin: plugin),
+      ),
+    ),
   );
 }
 
@@ -34,8 +37,6 @@ class _PluginClientPageState extends State<_PluginClientPage> {
   }
 
   @override
-  Widget build(BuildContext context) => XtaSystemBars(
-    child: widget.plugin.homeScreen(scrollController: _scroll) ??
-        const SizedBox.shrink(),
-  );
+  Widget build(BuildContext context) =>
+      XtaSystemBars(child: widget.plugin.homeScreen(scrollController: _scroll) ?? const SizedBox.shrink());
 }

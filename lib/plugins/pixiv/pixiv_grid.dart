@@ -43,8 +43,11 @@ class PixivIllustGrid extends StatelessWidget {
     return ScopedBuilder<PixivMuteStore, PixivMuteState>(
       store: context.read<PixivMuteStore>(),
       onState: (context, mute) => LayoutBuilder(
-        builder: (context, constraints) => _grid(context, mute.filter(illusts),
-          pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context))),
+        builder: (context, constraints) => _grid(
+          context,
+          mute.filter(illusts),
+          pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context)),
+        ),
       ),
     );
   }
@@ -63,8 +66,7 @@ class PixivIllustGrid extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
-            itemBuilder: (context, index) =>
-                PixivIllustTile(illust: visibleIllusts[index]),
+            itemBuilder: (context, index) => PixivIllustTile(illust: visibleIllusts[index]),
           ),
         ),
         if (loadingMore)
@@ -101,10 +103,7 @@ class PixivIllustTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust)),
-        ),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust))),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -121,14 +120,10 @@ class PixivIllustTile extends StatelessWidget {
                         url: illust.thumbnailUrl,
                         fit: BoxFit.cover,
                         loadStateChanged: (state) {
-                          if (state.extendedImageLoadState ==
-                              LoadState.failed) {
+                          if (state.extendedImageLoadState == LoadState.failed) {
                             return ColoredBox(
                               color: theme.colorScheme.surfaceContainerHighest,
-                              child: Icon(
-                                Icons.broken_image_outlined,
-                                color: theme.colorScheme.outline,
-                              ),
+                              child: Icon(Icons.broken_image_outlined, color: theme.colorScheme.outline),
                             );
                           }
                           return null;
@@ -140,37 +135,21 @@ class PixivIllustTile extends StatelessWidget {
                     Positioned(
                       top: 6,
                       right: 6,
-                      child: _chip(
-                        context,
-                        Icons.collections_outlined,
-                        '${illust.pageCount}',
-                      ),
+                      child: _chip(context, Icons.collections_outlined, '${illust.pageCount}'),
                     ),
                   if (illust.isUgoira)
                     Positioned(
                       top: 6,
                       left: 6,
-                      child: _chip(
-                        context,
-                        Icons.play_circle_outline,
-                        l10n.plugin_pixiv_ugoira,
-                      ),
+                      child: _chip(context, Icons.play_circle_outline, l10n.plugin_pixiv_ugoira),
                     ),
                   if (illust.isR18)
                     Positioned(
                       bottom: 6,
                       left: 6,
-                      child: _chip(
-                        context,
-                        Icons.eighteen_up_rating_outlined,
-                        l10n.plugin_pixiv_r18,
-                      ),
+                      child: _chip(context, Icons.eighteen_up_rating_outlined, l10n.plugin_pixiv_r18),
                     ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: PixivBookmarkButton(illust: illust, compact: true),
-                  ),
+                  Positioned(right: 0, bottom: 0, child: PixivBookmarkButton(illust: illust, compact: true)),
                 ],
               ),
             ),
@@ -184,10 +163,7 @@ class PixivIllustTile extends StatelessWidget {
                       illust.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium!.copyWith(
-                        fontWeight: FontWeight.w600,
-                        height: 1.2,
-                      ),
+                      style: theme.textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600, height: 1.2),
                     ),
                   const SizedBox(height: 2),
                   Row(
@@ -197,16 +173,12 @@ class PixivIllustTile extends StatelessWidget {
                           illust.userName,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall!.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                          style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                         ),
                       ),
                       ScopedBuilder<PixivBookmarkStore, Map<int, bool>>(
                         store: context.read<PixivBookmarkStore>(),
-                        distinct: (_) => context
-                            .read<PixivBookmarkStore>()
-                            .isBookmarked(illust),
+                        distinct: (_) => context.read<PixivBookmarkStore>().isBookmarked(illust),
                         onState: (context, _) {
                           final bookmarks = context.read<PixivBookmarkStore>();
                           final bookmarked = bookmarks.isBookmarked(illust);
@@ -214,20 +186,14 @@ class PixivIllustTile extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                bookmarked
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
+                                bookmarked ? Icons.favorite : Icons.favorite_border,
                                 size: 12,
-                                color: bookmarked
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.onSurfaceVariant,
+                                color: bookmarked ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 2),
                               Text(
                                 compactCount(bookmarks.bookmarkCount(illust)),
-                                style: theme.textTheme.labelSmall!.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                                style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                               ),
                             ],
                           );
@@ -246,10 +212,7 @@ class PixivIllustTile extends StatelessWidget {
 
   Widget _chip(BuildContext context, IconData icon, String label) {
     return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(4),
-      ),
+      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.55), borderRadius: BorderRadius.circular(4)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
         child: Row(
@@ -259,11 +222,7 @@ class PixivIllustTile extends StatelessWidget {
             const SizedBox(width: 3),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600),
             ),
           ],
         ),

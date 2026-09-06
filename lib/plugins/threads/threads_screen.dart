@@ -38,8 +38,7 @@ String threadsErrorMessage(L10n l10n, Object error) {
     ThreadsErrorKind.throttled => l10n.plugin_threads_error_throttled,
     ThreadsErrorKind.unreachable => l10n.plugin_threads_error_unreachable,
     ThreadsErrorKind.unauthorized => l10n.plugin_threads_error_unauthorized,
-    ThreadsErrorKind.sessionSuspended =>
-      l10n.plugin_threads_error_session_suspended,
+    ThreadsErrorKind.sessionSuspended => l10n.plugin_threads_error_session_suspended,
   };
 }
 
@@ -84,10 +83,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     // Accounts and likes are independent; waiting on likes before the feed
     // only delayed the first paint. Remounts from the home strip already have
     // both from startup (or the last visit) — don't hit SQLite again.
-    await Future.wait([
-      if (accounts.state.isEmpty) accounts.load(),
-      if (likes.state.isEmpty) likes.load(),
-    ]);
+    await Future.wait([if (accounts.state.isEmpty) accounts.load(), if (likes.state.isEmpty) likes.load()]);
     await feed.refresh(force: force);
   }
 
@@ -161,12 +157,8 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                 IconButton(
                   icon: const Icon(Icons.settings),
                   tooltip: l10n.settings,
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ThreadsSettingsScreen(),
-                    ),
-                  ),
+                  onPressed: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const ThreadsSettingsScreen())),
                 ),
               ],
             ),
@@ -181,10 +173,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                     onLookUpProfile: _lookUpProfile,
                     onRefresh: () => _loadHome(force: true),
                   ),
-                  (_) => _LikedPane(
-                    scrollController: _likedScrollController,
-                    likes: context.read<ThreadsLikesStore>(),
-                  ),
+                  (_) => _LikedPane(scrollController: _likedScrollController, likes: context.read<ThreadsLikesStore>()),
                 ],
               ),
             ),
@@ -213,11 +202,7 @@ class _HomePane extends StatelessWidget {
   });
 
   Widget _feed(BuildContext context, L10n l10n, List<ThreadsPost> posts) {
-    final handles = context
-        .read<ThreadsAccountsStore>()
-        .state
-        .map((e) => e.handle)
-        .toList(growable: false);
+    final handles = context.read<ThreadsAccountsStore>().state.map((e) => e.handle).toList(growable: false);
     final pending = context.read<ThreadsFeedStore>().pending(handles);
 
     if (posts.isEmpty) {
@@ -228,10 +213,7 @@ class _HomePane extends StatelessWidget {
       store: context.read<ThreadsAccountsStore>(),
       onState: (context, _) {
         final accounts = context.read<ThreadsAccountsStore>();
-        final people = peopleToFollowFromThreads(
-          posts: posts,
-          alreadyFollows: accounts.follows,
-        );
+        final people = peopleToFollowFromThreads(posts: posts, alreadyFollows: accounts.follows);
         final peopleOffset = people.isEmpty ? 0 : 1;
         final pendingOffset = pending > 0 ? 1 : 0;
         return RefreshIndicator(
@@ -250,17 +232,10 @@ class _HomePane extends StatelessWidget {
                   avatar: (person) => _feedPersonAvatar(context, person),
                   onOpen: (person) => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          ThreadsProfileScreen(username: person.handle),
-                    ),
+                    MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: person.handle)),
                   ),
                   onFollow: (person) => accounts.add(
-                    ThreadsAccount(
-                      handle: person.handle,
-                      name: person.name,
-                      avatarUrl: person.avatarUrl,
-                    ),
+                    ThreadsAccount(handle: person.handle, name: person.name, avatarUrl: person.avatarUrl),
                   ),
                 );
               }
@@ -313,15 +288,10 @@ class _HomePane extends StatelessWidget {
             color: Theme.of(context).colorScheme.errorContainer,
             child: ListTile(
               dense: true,
-              leading: Icon(
-                Icons.pause_circle_outline,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
+              leading: Icon(Icons.pause_circle_outline, color: Theme.of(context).colorScheme.onErrorContainer),
               title: Text(
                 l10n.plugin_threads_session_parked,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
+                style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
               ),
             ),
           ),
@@ -340,9 +310,7 @@ class _HomePane extends StatelessWidget {
               if (feed.state.isNotEmpty) {
                 return _feed(context, l10n, feed.state);
               }
-              final notConfigured =
-                  error is ThreadsException &&
-                  error.kind == ThreadsErrorKind.notConfigured;
+              final notConfigured = error is ThreadsException && error.kind == ThreadsErrorKind.notConfigured;
               if (notConfigured) {
                 return _empty(context);
               }
@@ -376,28 +344,18 @@ class _HomePane extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
         children: [
           if (pending > 0) _PendingAccountsNote(pending: pending),
-          Icon(
-            Icons.alternate_email,
-            size: 52,
-            color: theme.colorScheme.outline,
-          ),
+          Icon(Icons.alternate_email, size: 52, color: theme.colorScheme.outline),
           const SizedBox(height: 16),
           Text(
-            accounts.isEmpty
-                ? l10n.plugin_threads_no_accounts
-                : l10n.plugin_threads_no_posts,
+            accounts.isEmpty ? l10n.plugin_threads_no_accounts : l10n.plugin_threads_no_posts,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.plugin_threads_empty_cta,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium!.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodyMedium!.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           Center(
@@ -436,17 +394,10 @@ class _LikedPane extends StatelessWidget {
         onState: (context, posts) {
           if (posts.isEmpty) {
             return ListView(
-              controller: pluginInnerScrollController(
-                context,
-                scrollController,
-              ),
+              controller: pluginInnerScrollController(context, scrollController),
               padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
               children: [
-                Icon(
-                  Icons.favorite_border,
-                  size: 52,
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+                Icon(Icons.favorite_border, size: 52, color: Theme.of(context).colorScheme.outline),
                 const SizedBox(height: 16),
                 Text(
                   l10n.plugin_threads_liked_empty,
@@ -461,11 +412,8 @@ class _LikedPane extends StatelessWidget {
             controller: pluginInnerScrollController(context, scrollController),
             padding: pluginFeedPadding(context),
             itemCount: posts.length,
-            itemBuilder: (context, index) => ThreadsPostCard(
-              key: ValueKey('liked-${posts[index].id}'),
-              post: posts[index],
-              showSourceBadge: false,
-            ),
+            itemBuilder: (context, index) =>
+                ThreadsPostCard(key: ValueKey('liked-${posts[index].id}'), post: posts[index], showSourceBadge: false),
           );
         },
       ),
@@ -485,10 +433,7 @@ class ThreadsFollowingStrip extends StatelessWidget {
 
   const ThreadsFollowingStrip({super.key, this.onAddAccount});
 
-  Future<void> _confirmUnfollow(
-    BuildContext context,
-    ThreadsAccount account,
-  ) async {
+  Future<void> _confirmUnfollow(BuildContext context, ThreadsAccount account) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -497,14 +442,8 @@ class ThreadsFollowingStrip extends StatelessWidget {
           title: Text(l10n.plugin_threads_unfollow),
           content: Text('@${account.handle}'),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(l10n.cancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(l10n.plugin_threads_unfollow),
-            ),
+            TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: Text(l10n.cancel)),
+            TextButton(onPressed: () => Navigator.pop(dialogContext, true), child: Text(l10n.plugin_threads_unfollow)),
           ],
         );
       },
@@ -532,32 +471,45 @@ class ThreadsFollowingStrip extends StatelessWidget {
         return PluginFilterRow(
           children: [
             for (final account in accounts)
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                InkWell(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (_) => ThreadsProfileScreen(username: account.handle),
-                  )),
-                  onLongPress: () => _confirmUnfollow(context, account),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 56, maxWidth: 208),
-                    child: Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(4, 8, 8, 8),
-                      child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        _FollowingAvatar(account: account),
-                        const SizedBox(width: 10),
-                        Flexible(child: Text('@${account.handle}', maxLines: 2,
-                          overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge)),
-                      ]),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: account.handle)),
+                    ),
+                    onLongPress: () => _confirmUnfollow(context, account),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 56, maxWidth: 208),
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(4, 8, 8, 8),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _FollowingAvatar(account: account),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              child: Text(
+                                '@${account.handle}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelLarge,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  style: pluginActionButtonStyle,
-                  tooltip: l10n.plugin_threads_unfollow,
-                  onPressed: () => _confirmUnfollow(context, account),
-                  icon: const Icon(Icons.person_remove_outlined, size: 20),
-                ),
-              ]),
+                  IconButton(
+                    style: pluginActionButtonStyle,
+                    tooltip: l10n.plugin_threads_unfollow,
+                    onPressed: () => _confirmUnfollow(context, account),
+                    icon: const Icon(Icons.person_remove_outlined, size: 20),
+                  ),
+                ],
+              ),
             if (onAddAccount != null)
               TextButton.icon(
                 onPressed: () => onAddAccount?.call(),
@@ -603,10 +555,7 @@ class _FollowingAvatar extends StatelessWidget {
 }
 
 /// Asks for a handle, and hands back the normalised one.
-Future<String?> showThreadsAddAccountDialog(
-  BuildContext context, {
-  bool lookup = false,
-}) {
+Future<String?> showThreadsAddAccountDialog(BuildContext context, {bool lookup = false}) {
   return showDialog<String>(
     context: context,
     builder: (_) => _ThreadsAddAccountDialog(lookup: lookup),
@@ -619,8 +568,7 @@ class _ThreadsAddAccountDialog extends StatefulWidget {
   const _ThreadsAddAccountDialog({required this.lookup});
 
   @override
-  State<_ThreadsAddAccountDialog> createState() =>
-      _ThreadsAddAccountDialogState();
+  State<_ThreadsAddAccountDialog> createState() => _ThreadsAddAccountDialogState();
 }
 
 class _ThreadsAddAccountDialogState extends State<_ThreadsAddAccountDialog> {
@@ -653,26 +601,15 @@ class _ThreadsAddAccountDialogState extends State<_ThreadsAddAccountDialog> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return AlertDialog(
-      title: Text(
-        widget.lookup
-            ? l10n.plugin_threads_lookup
-            : l10n.plugin_threads_add_account,
-      ),
+      title: Text(widget.lookup ? l10n.plugin_threads_lookup : l10n.plugin_threads_add_account),
       content: TextField(
         controller: _controller,
         autofocus: true,
-        decoration: InputDecoration(
-          hintText: l10n.plugin_threads_account_hint,
-          errorText: _error,
-          prefixText: '@',
-        ),
+        decoration: InputDecoration(hintText: l10n.plugin_threads_account_hint, errorText: _error, prefixText: '@'),
         onSubmitted: (_) => _submit(),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
         TextButton(onPressed: _submit, child: Text(l10n.ok)),
       ],
     );
@@ -691,9 +628,7 @@ class _PendingAccountsNote extends StatelessWidget {
       child: Text(
         L10n.of(context).plugin_threads_accounts_pending(pending),
         textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
+        style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }

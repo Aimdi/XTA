@@ -98,10 +98,7 @@ class _HnScreenState extends State<HnScreen> {
                 IconButton(
                   tooltip: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HnSettingsScreen()),
-                  ),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HnSettingsScreen())),
                 ),
               ],
             ),
@@ -162,12 +159,7 @@ class _HnScreenState extends State<HnScreen> {
   }
 
   PluginHomeTab _tab(String label, IconData icon, int index) {
-    return PluginHomeTab(
-      label: label,
-      icon: icon,
-      selected: _tabs.state == index,
-      onTap: () => _tabs.select(index),
-    );
+    return PluginHomeTab(label: label, icon: icon, selected: _tabs.state == index, onTap: () => _tabs.select(index));
   }
 }
 
@@ -181,12 +173,7 @@ class _FeedTab extends StatefulWidget {
   final String empty;
   final Future<void> Function() onOpen;
 
-  const _FeedTab({
-    required this.store,
-    required this.scrollController,
-    required this.empty,
-    required this.onOpen,
-  });
+  const _FeedTab({required this.store, required this.scrollController, required this.empty, required this.onOpen});
 
   @override
   State<_FeedTab> createState() => _FeedTabState();
@@ -268,12 +255,7 @@ class _SavedTab extends StatelessWidget {
             scrollController: scrollController,
           );
         }
-        return _StoryList(
-          stories: stories,
-          scrollController: scrollController,
-          onRefresh: store.load,
-          ranked: false,
-        );
+        return _StoryList(stories: stories, scrollController: scrollController, onRefresh: store.load, ranked: false);
       },
     );
   }
@@ -284,11 +266,7 @@ class _FollowingTab extends StatefulWidget {
   final ScrollController scrollController;
   final Future<void> Function() onOpen;
 
-  const _FollowingTab({
-    required this.store,
-    required this.scrollController,
-    required this.onOpen,
-  });
+  const _FollowingTab({required this.store, required this.scrollController, required this.onOpen});
 
   @override
   State<_FollowingTab> createState() => _FollowingTabState();
@@ -308,19 +286,13 @@ class _FollowingTabState extends State<_FollowingTab> {
     return ScopedBuilder<HnFollowingStore, List<HnStory>>(
       store: widget.store,
       onLoading: (_) => const PluginFeedSkeleton(),
-      onError: (_, error) => FullPageErrorWidget(
-        error: error,
-        stackTrace: null,
-        prefix: error.toString(),
-        onRetry: widget.onOpen,
-      ),
+      onError: (_, error) =>
+          FullPageErrorWidget(error: error, stackTrace: null, prefix: error.toString(), onRetry: widget.onOpen),
       onState: (_, stories) {
         if (stories.isEmpty) {
           return EmptyPane(
             icon: Icons.people_outline,
-            message: follows.state.isEmpty
-                ? l10n.plugin_hn_following_empty
-                : l10n.plugin_hn_feed_empty,
+            message: follows.state.isEmpty ? l10n.plugin_hn_following_empty : l10n.plugin_hn_feed_empty,
             scrollController: widget.scrollController,
             onRefresh: widget.onOpen,
             action: TextButton.icon(
@@ -362,9 +334,7 @@ class _StoryList extends StatelessWidget {
       onRefresh: onRefresh,
       child: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
-          if (onMore != null &&
-              notification.metrics.extentAfter < 400 &&
-              notification is ScrollUpdateNotification) {
+          if (onMore != null && notification.metrics.extentAfter < 400 && notification is ScrollUpdateNotification) {
             onMore!();
           }
           return false;
@@ -374,10 +344,7 @@ class _StoryList extends StatelessWidget {
           padding: pluginFeedPadding(context),
           physics: const AlwaysScrollableScrollPhysics(),
           itemCount: stories.length,
-          itemBuilder: (context, index) => HnStoryCard(
-            story: stories[index],
-            rank: ranked ? index + 1 : null,
-          ),
+          itemBuilder: (context, index) => HnStoryCard(story: stories[index], rank: ranked ? index + 1 : null),
         ),
       ),
     );

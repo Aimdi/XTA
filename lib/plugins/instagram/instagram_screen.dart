@@ -115,12 +115,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
                   tooltip: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
                   onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const InstagramSettingsScreen(),
-                      ),
-                    );
+                    await Navigator.push(context, MaterialPageRoute(builder: (_) => const InstagramSettingsScreen()));
                     if (context.mounted) await _refreshFeeds();
                   },
                 ),
@@ -206,9 +201,7 @@ class _ForYouTab extends StatelessWidget {
     final l10n = L10n.of(context);
     return ScopedBuilder<InstagramForYouStore, List<InstagramPost>>(
       store: store,
-      onLoading: (_) => store.state.isNotEmpty
-          ? _forYouList(context, l10n, store.state)
-          : const PluginFeedSkeleton(),
+      onLoading: (_) => store.state.isNotEmpty ? _forYouList(context, l10n, store.state) : const PluginFeedSkeleton(),
       onError: (_, error) => store.state.isNotEmpty
           ? _forYouList(context, l10n, store.state)
           : FullPageErrorWidget(
@@ -219,33 +212,20 @@ class _ForYouTab extends StatelessWidget {
             ),
       onState: (context, posts) {
         if (posts.isEmpty) {
-          return _EmptyForYou(
-            onRefresh: store.refresh,
-            onFindHandle: onFindHandle,
-          );
+          return _EmptyForYou(onRefresh: store.refresh, onFindHandle: onFindHandle);
         }
         return _forYouList(context, l10n, posts);
       },
     );
   }
 
-  Widget _forYouList(
-    BuildContext context,
-    L10n l10n,
-    List<InstagramPost> posts,
-  ) {
+  Widget _forYouList(BuildContext context, L10n l10n, List<InstagramPost> posts) {
     return ScopedBuilder<InstagramFollowsStore, List<InstagramFollow>>(
       store: follows,
       onState: (context, _) {
-        final people = peopleToFollowFromInstagram(
-          posts: posts,
-          alreadyFollows: follows.containsHandle,
-        );
+        final people = peopleToFollowFromInstagram(posts: posts, alreadyFollows: follows.containsHandle);
         final guest = !context.read<InstagramClient>().hasSession;
-        final extras =
-            (people.isEmpty ? 0 : 1) +
-            (store.loadingMore ? 1 : 0) +
-            (guest ? 1 : 0);
+        final extras = (people.isEmpty ? 0 : 1) + (store.loadingMore ? 1 : 0) + (guest ? 1 : 0);
         return NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification.metrics.extentAfter < 600) {
@@ -256,10 +236,7 @@ class _ForYouTab extends StatelessWidget {
           child: RefreshIndicator(
             onRefresh: store.refresh,
             child: FeedListView(
-              controller: pluginInnerScrollController(
-                context,
-                scrollController,
-              ),
+              controller: pluginInnerScrollController(context, scrollController),
               padding: pluginFeedPadding(context),
               itemCount: posts.length + extras,
               itemBuilder: (context, index) {
@@ -270,10 +247,7 @@ class _ForYouTab extends StatelessWidget {
                     onOpen: (author) async {
                       await Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              InstagramProfileScreen(handle: author.username),
-                        ),
+                        MaterialPageRoute(builder: (_) => InstagramProfileScreen(handle: author.username)),
                       );
                       if (context.mounted) await onProfileClosed();
                     },
@@ -303,9 +277,9 @@ class _ForYouTab extends StatelessWidget {
                   child: Text(
                     l10n.plugin_instagram_for_you_guest_note,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 );
               },
@@ -322,11 +296,7 @@ class _DiscoverPeopleStrip extends StatelessWidget {
   final Future<void> Function(InstagramAuthor) onOpen;
   final Future<void> Function(InstagramAuthor) onFollow;
 
-  const _DiscoverPeopleStrip({
-    required this.people,
-    required this.onOpen,
-    required this.onFollow,
-  });
+  const _DiscoverPeopleStrip({required this.people, required this.onOpen, required this.onFollow});
 
   @override
   Widget build(BuildContext context) {
@@ -339,9 +309,7 @@ class _DiscoverPeopleStrip extends StatelessWidget {
         children: [
           Text(
             l10n.plugin_instagram_from_feed,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           SizedBox(
@@ -353,31 +321,65 @@ class _DiscoverPeopleStrip extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final person = people[index];
-                return SizedBox(width: 240, child: DecoratedBox(
-                  decoration: BoxDecoration(border: Border.all(color: theme.dividerColor),
-                    borderRadius: BorderRadius.circular(12)),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    Expanded(child: InkWell(
-                      onTap: () => onOpen(person),
-                      child: Padding(padding: const EdgeInsets.all(12), child: Row(children: [
-                        InstagramAvatar(url: person.avatarUrl, seed: person.username,
-                          name: person.displayName, size: 40),
-                        const SizedBox(width: 12),
-                        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(person.displayName, maxLines: 2, overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.labelLarge),
-                            Text('@${person.username}', maxLines: 1, overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.bodySmall),
-                          ])),
-                      ])),
-                    )),
-                    const Divider(height: 1),
-                    TextButton(onPressed: () => onFollow(person),
-                      style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-                      child: Text(l10n.plugin_instagram_follow)),
-                  ]),
-                ));
+                return SizedBox(
+                  width: 240,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: theme.dividerColor),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => onOpen(person),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Row(
+                                children: [
+                                  InstagramAvatar(
+                                    url: person.avatarUrl,
+                                    seed: person.username,
+                                    name: person.displayName,
+                                    size: 40,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          person.displayName,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.labelLarge,
+                                        ),
+                                        Text(
+                                          '@${person.username}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        TextButton(
+                          onPressed: () => onFollow(person),
+                          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+                          child: Text(l10n.plugin_instagram_follow),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
               },
             ),
           ),
@@ -403,26 +405,18 @@ class _EmptyForYou extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
         children: [
-          Icon(
-            Icons.explore_outlined,
-            size: 52,
-            color: theme.colorScheme.outline,
-          ),
+          Icon(Icons.explore_outlined, size: 52, color: theme.colorScheme.outline),
           const SizedBox(height: 16),
           Text(
             l10n.plugin_instagram_for_you_empty,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.plugin_instagram_for_you_guest_note,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           Center(
@@ -543,22 +537,11 @@ class _AccountsTab extends StatelessWidget {
                   color: Theme.of(context).colorScheme.error,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Icon(
-                    Icons.person_remove_outlined,
-                    color: Theme.of(context).colorScheme.onError,
-                  ),
+                  child: Icon(Icons.person_remove_outlined, color: Theme.of(context).colorScheme.onError),
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 4,
-                  ),
-                  leading: InstagramAvatar(
-                    url: follow.avatarUrl,
-                    seed: follow.id,
-                    name: follow.name,
-                    size: 48,
-                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  leading: InstagramAvatar(url: follow.avatarUrl, seed: follow.id, name: follow.name, size: 48),
                   title: Text(
                     follow.name,
                     maxLines: 1,
@@ -576,27 +559,16 @@ class _AccountsTab extends StatelessWidget {
                           }
                         },
                         itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'unfollow',
-                            child: Text(
-                              L10n.of(context).plugin_instagram_unfollow,
-                            ),
-                          ),
+                          PopupMenuItem(value: 'unfollow', child: Text(L10n.of(context).plugin_instagram_unfollow)),
                         ],
                       ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                      Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ],
                   ),
                   onTap: () async {
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            InstagramProfileScreen(handle: follow.id),
-                      ),
+                      MaterialPageRoute(builder: (_) => InstagramProfileScreen(handle: follow.id)),
                     );
                     if (!context.mounted) return;
                     await onProfileClosed();
@@ -626,14 +598,8 @@ class _AccountsTab extends StatelessWidget {
       builder: (context) => AlertDialog(
         content: Text(l10n.plugin_instagram_unfollow_confirm(handle)),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.plugin_instagram_unfollow),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.plugin_instagram_unfollow)),
         ],
       ),
     );
@@ -646,12 +612,7 @@ class _PostList extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final Future<void> Function()? onProfileClosed;
 
-  const _PostList({
-    this.scrollController,
-    required this.posts,
-    required this.onRefresh,
-    this.onProfileClosed,
-  });
+  const _PostList({this.scrollController, required this.posts, required this.onRefresh, this.onProfileClosed});
 
   @override
   Widget build(BuildContext context) {
@@ -662,10 +623,7 @@ class _PostList extends StatelessWidget {
         padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) {
-          return InstagramPostCard(
-            post: posts[index],
-            onProfileClosed: onProfileClosed,
-          );
+          return InstagramPostCard(post: posts[index], onProfileClosed: onProfileClosed);
         },
       ),
     );
@@ -697,37 +655,25 @@ class _EmptyFollowing extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(32, 72, 32, 32),
         children: [
-          Icon(
-            Icons.photo_library_outlined,
-            size: 52,
-            color: theme.colorScheme.outline,
-          ),
+          Icon(Icons.photo_library_outlined, size: 52, color: theme.colorScheme.outline),
           const SizedBox(height: 16),
           Text(
-            hasAccounts
-                ? l10n.plugin_instagram_no_posts
-                : l10n.plugin_instagram_no_accounts,
+            hasAccounts ? l10n.plugin_instagram_no_posts : l10n.plugin_instagram_no_accounts,
             textAlign: TextAlign.center,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.plugin_instagram_empty_cta,
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           Center(
             child: FilledButton.icon(
               onPressed: hasAccounts ? onRefresh : onFindHandle,
               icon: Icon(hasAccounts ? Icons.refresh : Icons.search),
-              label: Text(
-                hasAccounts ? l10n.retry : l10n.plugin_instagram_search,
-              ),
+              label: Text(hasAccounts ? l10n.retry : l10n.plugin_instagram_search),
             ),
           ),
           if (hasAccounts)

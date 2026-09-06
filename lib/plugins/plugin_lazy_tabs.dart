@@ -10,17 +10,10 @@ class PluginLazyTabs extends StatelessWidget {
   final int index;
   final List<WidgetBuilder> children;
 
-  const PluginLazyTabs({
-    super.key,
-    required this.index,
-    required this.children,
-  });
+  const PluginLazyTabs({super.key, required this.index, required this.children});
 
   @override
   Widget build(BuildContext context) {
-    return KeyedSubtree(
-      key: PageStorageKey<int>(index),
-      child: children[index](context),
-    );
+    return KeyedSubtree(key: PageStorageKey<int>(index), child: children[index](context));
   }
 }

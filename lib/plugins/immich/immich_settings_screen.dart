@@ -80,80 +80,86 @@ class _ImmichSettingsScreenState extends State<ImmichSettingsScreen> {
 
     return SettingsPageScaffold(
       title: l10n.plugin_immich_title,
-      body: ScopedBuilder<PluginConnectionStore, PluginConnectionState>(store: _connection,
+      body: ScopedBuilder<PluginConnectionStore, PluginConnectionState>(
+        store: _connection,
         onState: (context, state) => SettingsList(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(l10n.plugin_immich_settings_intro, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: 20),
-          Semantics(header: true, child: Text(l10n.plugin_integration_connection,
-            style: theme.textTheme.titleMedium)),
-          const SizedBox(height: 16),
-          TextField(
-            key: const ValueKey('plugin-connection-primary-field'),
-            controller: _serverController,
-            keyboardType: TextInputType.url,
-            autocorrect: false,
-            decoration: InputDecoration(
-              labelText: l10n.plugin_immich_server_url,
-              helperMaxLines: 5,
-              helperText: l10n.plugin_immich_server_url_hint,
-              border: const OutlineInputBorder(),
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(l10n.plugin_immich_settings_intro, style: theme.textTheme.bodyMedium),
+            const SizedBox(height: 20),
+            Semantics(
+              header: true,
+              child: Text(l10n.plugin_integration_connection, style: theme.textTheme.titleMedium),
             ),
-            onChanged: (_) => _connection.invalidate(),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _keyController,
-            obscureText: _obscureKey,
-            autocorrect: false,
-            enableSuggestions: false,
-            decoration: InputDecoration(
-              labelText: l10n.plugin_immich_api_key,
-              helperMaxLines: 5,
-              helperText: l10n.plugin_immich_api_key_hint,
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                style: pluginActionButtonStyle,
-                icon: Icon(_obscureKey ? Icons.visibility : Icons.visibility_off),
-                tooltip: _obscureKey ? l10n.show : l10n.hide,
-                onPressed: () => _connection.toggleVisibility(),
+            const SizedBox(height: 16),
+            TextField(
+              key: const ValueKey('plugin-connection-primary-field'),
+              controller: _serverController,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              decoration: InputDecoration(
+                labelText: l10n.plugin_immich_server_url,
+                helperMaxLines: 5,
+                helperText: l10n.plugin_immich_server_url_hint,
+                border: const OutlineInputBorder(),
               ),
+              onChanged: (_) => _connection.invalidate(),
             ),
-            onChanged: (_) => _connection.invalidate(),
-          ),
-          const SizedBox(height: 20),
-          PluginConnectionActions(state: state, testLabel: l10n.plugin_immich_test,
-            onTest: _test, onSave: () async {
-              await _save();
-              if (context.mounted) Navigator.pop(context);
-            }),
-          PluginConnectionFeedback(state: state),
-          const Divider(height: 40),
-          Semantics(header: true, child: Text(l10n.plugin_integration_options,
-            style: theme.textTheme.titleMedium)),
-          const SizedBox(height: 12),
-          PrefSwitch(
-            pref: optionPluginImmichAlbumPerFolder,
-            title: Text(l10n.plugin_immich_album_per_folder),
-            subtitle: Text(l10n.plugin_immich_album_per_folder_description),
-          ),
-          PrefSwitch(
-            pref: optionPluginImmichIncludeVideos,
-            title: Text(l10n.plugin_immich_include_videos),
-            subtitle: Text(l10n.plugin_immich_include_videos_description),
-          ),
-          const SizedBox(height: 12),
-          Text(l10n.plugin_immich_folder_hint, style: theme.textTheme.bodySmall),
-          const SizedBox(height: 20),
-          TextButton.icon(
-            onPressed: () => openUri(context, 'https://immich.app'),
-            icon: const Icon(Icons.open_in_new, size: 18),
-            label: Text(l10n.plugin_immich_learn_more),
-          ),
-        ],
-      )),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _keyController,
+              obscureText: _obscureKey,
+              autocorrect: false,
+              enableSuggestions: false,
+              decoration: InputDecoration(
+                labelText: l10n.plugin_immich_api_key,
+                helperMaxLines: 5,
+                helperText: l10n.plugin_immich_api_key_hint,
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  style: pluginActionButtonStyle,
+                  icon: Icon(_obscureKey ? Icons.visibility : Icons.visibility_off),
+                  tooltip: _obscureKey ? l10n.show : l10n.hide,
+                  onPressed: () => _connection.toggleVisibility(),
+                ),
+              ),
+              onChanged: (_) => _connection.invalidate(),
+            ),
+            const SizedBox(height: 20),
+            PluginConnectionActions(
+              state: state,
+              testLabel: l10n.plugin_immich_test,
+              onTest: _test,
+              onSave: () async {
+                await _save();
+                if (context.mounted) Navigator.pop(context);
+              },
+            ),
+            PluginConnectionFeedback(state: state),
+            const Divider(height: 40),
+            Semantics(header: true, child: Text(l10n.plugin_integration_options, style: theme.textTheme.titleMedium)),
+            const SizedBox(height: 12),
+            PrefSwitch(
+              pref: optionPluginImmichAlbumPerFolder,
+              title: Text(l10n.plugin_immich_album_per_folder),
+              subtitle: Text(l10n.plugin_immich_album_per_folder_description),
+            ),
+            PrefSwitch(
+              pref: optionPluginImmichIncludeVideos,
+              title: Text(l10n.plugin_immich_include_videos),
+              subtitle: Text(l10n.plugin_immich_include_videos_description),
+            ),
+            const SizedBox(height: 12),
+            Text(l10n.plugin_immich_folder_hint, style: theme.textTheme.bodySmall),
+            const SizedBox(height: 20),
+            TextButton.icon(
+              onPressed: () => openUri(context, 'https://immich.app'),
+              icon: const Icon(Icons.open_in_new, size: 18),
+              label: Text(l10n.plugin_immich_learn_more),
+            ),
+          ],
+        ),
+      ),
     );
   }
-
 }

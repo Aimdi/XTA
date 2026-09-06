@@ -37,27 +37,37 @@ class _HnClient extends HackerNewsClient {
   @override
   Future<HnStoryPage> feed(HnFeed feed, {int page = 0}) async {
     calls.add(feed);
-    return HnStoryPage(page: page, hasMore: false, stories: [
-      for (var i = 0; i < 20; i++) HnStory(id: 100 + i,
-        title: '${feed.name} story $i — a useful reading fixture', score: 23, commentCount: 4),
-    ]);
+    return HnStoryPage(
+      page: page,
+      hasMore: false,
+      stories: [
+        for (var i = 0; i < 20; i++)
+          HnStory(id: 100 + i, title: '${feed.name} story $i — a useful reading fixture', score: 23, commentCount: 4),
+      ],
+    );
   }
 }
+
 class _Feeds extends RssFeedsStore {
-  _Feeds(super.prefs) { update(const [RssFeed(id: 'one', feedUrl: 'https://example.test/rss', name: 'Reading room')]); }
+  _Feeds(super.prefs) {
+    update(const [RssFeed(id: 'one', feedUrl: 'https://example.test/rss', name: 'Reading room')]);
+  }
   @override
   Future<void> load() async {}
 }
+
 class _Read extends RssReadStore {
   _Read(super.prefs);
   @override
   Future<void> load() async {}
 }
+
 class _Tags extends RssTagsStore {
   _Tags(super.prefs);
   @override
   Future<void> load() async {}
 }
+
 class _RssClient extends RssClient {
   var calls = 0;
   @override
@@ -79,18 +89,25 @@ void main() {
     await Repository().migrate();
   });
 
-  testWidgets('real Home keeps source, sections, loaded pages and scroll through full client and pin edits', (tester) async {
+  testWidgets('real Home keeps source, sections, loaded pages and scroll through full client and pin edits', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final prefs = PrefServiceCache(defaults: {
-      optionPluginHnEnabled: true, optionPluginHnShowTab: true,
-      optionPluginRssEnabled: true, optionPluginRssShowTab: true,
-      optionHomeFeedStripPlugins: [pluginIdHackerNews, pluginIdRss],
-      optionSeededStripPlugins: [pluginIdHackerNews, pluginIdRss],
-      optionSubscriptionGroupsOrderByField: 'name', optionSubscriptionGroupsOrderByAscending: true,
-    });
+    final prefs = PrefServiceCache(
+      defaults: {
+        optionPluginHnEnabled: true,
+        optionPluginHnShowTab: true,
+        optionPluginRssEnabled: true,
+        optionPluginRssShowTab: true,
+        optionHomeFeedStripPlugins: [pluginIdHackerNews, pluginIdRss],
+        optionSeededStripPlugins: [pluginIdHackerNews, pluginIdRss],
+        optionSubscriptionGroupsOrderByField: 'name',
+        optionSubscriptionGroupsOrderByAscending: true,
+      },
+    );
     final selected = FeedTabStore(const FeedTab(pluginIdHackerNews));
     final strip = FeedStripStore(prefs);
     final outer = ScrollController();
@@ -100,24 +117,48 @@ void main() {
     final feeds = _Feeds(prefs);
     final timeline = RssTimelineStore(rss, feeds);
     final session = PluginSessionStore();
-    await tester.pumpWidget(PrefService(service: prefs, child: MultiProvider(providers: [
-      Provider<FeedTabStore>.value(value: selected), Provider<FeedStripStore>.value(value: strip),
-      Provider(create: (_) => HomeAccountFilterStore(prefs)), Provider(create: (_) => HomeGroupFilterStore(prefs)),
-      Provider(create: (_) => NetworkRecentsStore(prefs)), Provider(create: (_) => ChromeAvatarStore(prefs)),
-      Provider<GroupsModel>.value(value: groups), Provider(create: (_) => SubscriptionsModel(prefs, groups)),
-      Provider(create: (_) => CombinedGroupsStore()), Provider<PluginSessionStore>.value(value: session),
-      Provider(create: (_) => FeedSessionCache()),
-      Provider<HackerNewsClient>.value(value: hn), Provider(create: (_) => HnLikesStore(prefs)),
-      Provider(create: (_) => HnSavedStore(prefs)), Provider(create: (_) => HnFollowsStore(prefs)),
-      Provider<RssFeedsStore>.value(value: feeds), Provider<RssTimelineStore>.value(value: timeline),
-      Provider<RssReadStore>(create: (_) => _Read(prefs)), Provider<RssTagsStore>(create: (_) => _Tags(prefs)),
-    ], child: MaterialApp(
-      theme: xLookLightTheme(null),
-      localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-      supportedLocales: L10n.delegate.supportedLocales,
-      home: Scaffold(drawer: const Drawer(), body: FeedScreen(scrollController: outer, id: '-1', name: 'Home')),
-    ))));
+    await tester.pumpWidget(
+      PrefService(
+        service: prefs,
+        child: MultiProvider(
+          providers: [
+            Provider<FeedTabStore>.value(value: selected),
+            Provider<FeedStripStore>.value(value: strip),
+            Provider(create: (_) => HomeAccountFilterStore(prefs)),
+            Provider(create: (_) => HomeGroupFilterStore(prefs)),
+            Provider(create: (_) => NetworkRecentsStore(prefs)),
+            Provider(create: (_) => ChromeAvatarStore(prefs)),
+            Provider<GroupsModel>.value(value: groups),
+            Provider(create: (_) => SubscriptionsModel(prefs, groups)),
+            Provider(create: (_) => CombinedGroupsStore()),
+            Provider<PluginSessionStore>.value(value: session),
+            Provider(create: (_) => FeedSessionCache()),
+            Provider<HackerNewsClient>.value(value: hn),
+            Provider(create: (_) => HnLikesStore(prefs)),
+            Provider(create: (_) => HnSavedStore(prefs)),
+            Provider(create: (_) => HnFollowsStore(prefs)),
+            Provider<RssFeedsStore>.value(value: feeds),
+            Provider<RssTimelineStore>.value(value: timeline),
+            Provider<RssReadStore>(create: (_) => _Read(prefs)),
+            Provider<RssTagsStore>(create: (_) => _Tags(prefs)),
+          ],
+          child: MaterialApp(
+            theme: xLookLightTheme(null),
+            localizationsDelegates: const [
+              L10n.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: L10n.delegate.supportedLocales,
+            home: Scaffold(
+              drawer: const Drawer(),
+              body: FeedScreen(scrollController: outer, id: '-1', name: 'Home'),
+            ),
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.byType(HnScreen), findsOneWidget);
     expect(hn.calls, [HnFeed.top]);
@@ -179,7 +220,11 @@ void main() {
     await tester.pump();
     await session.destroy();
     outer.dispose();
-    timeline.destroy(); feeds.destroy(); groups.destroy(); selected.destroy(); strip.destroy();
+    timeline.destroy();
+    feeds.destroy();
+    groups.destroy();
+    selected.destroy();
+    strip.destroy();
     expect(tester.takeException(), isNull);
   });
 }
