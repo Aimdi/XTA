@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Открыть {plugin}",
   "plugin_reader_empty_filter": "Нет материалов, соответствующих этим фильтрам",
-  "plugin_reader_reset_filters": "Сбросить фильтры"
+  "plugin_reader_reset_filters": "Сбросить фильтры",
+  "plugin_reader_empty": "Пока нечего читать",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Не удалось загрузить источники: {count}",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Подключение",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Идентификатор подписи",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Параметры отправки",
+  "@plugin_integration_options": {}
 }

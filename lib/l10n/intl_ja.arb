@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "{plugin}を開く",
   "plugin_reader_empty_filter": "このフィルターに一致する項目はありません",
-  "plugin_reader_reset_filters": "フィルターをリセット"
+  "plugin_reader_reset_filters": "フィルターをリセット",
+  "plugin_reader_empty": "まだ読む記事がありません",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "{count}件のソースを読み込めませんでした",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "接続",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "署名の識別情報",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "アップロード設定",
+  "@plugin_integration_options": {}
 }

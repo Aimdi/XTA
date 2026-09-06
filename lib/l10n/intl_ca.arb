@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Obre {plugin}",
   "plugin_reader_empty_filter": "No hi ha contingut que coincideixi amb aquests filtres",
-  "plugin_reader_reset_filters": "Restableix els filtres"
+  "plugin_reader_reset_filters": "Restableix els filtres",
+  "plugin_reader_empty": "Encara no hi ha res per llegir",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "No s’han pogut carregar {count} fonts",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Connexió",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Identitat de signatura",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Opcions de pujada",
+  "@plugin_integration_options": {}
 }

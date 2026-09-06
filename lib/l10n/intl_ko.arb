@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "{plugin} 열기",
   "plugin_reader_empty_filter": "이 필터와 일치하는 항목이 없습니다",
-  "plugin_reader_reset_filters": "필터 초기화"
+  "plugin_reader_reset_filters": "필터 초기화",
+  "plugin_reader_empty": "아직 읽을 항목이 없습니다",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "소스 {count}개를 불러오지 못했습니다",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "연결",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "서명 ID",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "업로드 옵션",
+  "@plugin_integration_options": {}
 }

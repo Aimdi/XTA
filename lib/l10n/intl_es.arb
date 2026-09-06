@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Abrir {plugin}",
   "plugin_reader_empty_filter": "No hay contenido que coincida con estos filtros",
-  "plugin_reader_reset_filters": "Restablecer filtros"
+  "plugin_reader_reset_filters": "Restablecer filtros",
+  "plugin_reader_empty": "Aún no hay nada que leer",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "No se pudieron cargar {count} fuentes",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Conexión",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Identidad de firma",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Opciones de subida",
+  "@plugin_integration_options": {}
 }

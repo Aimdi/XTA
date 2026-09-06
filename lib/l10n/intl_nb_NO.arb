@@ -3179,6 +3179,22 @@
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Åpne {plugin}",
-  "plugin_reader_empty_filter": "Ingen innhold samsvarer med disse filtrene",
-  "plugin_reader_reset_filters": "Nullstill filtre"
+  "plugin_reader_empty_filter": "Ingen elementer samsvarer med filtrene",
+  "plugin_reader_reset_filters": "Nullstill filtre",
+  "plugin_reader_empty": "Ingenting å lese ennå",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Kunne ikke laste inn {count} kilder",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Tilkobling",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Signeringsidentitet",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Opplastingsvalg",
+  "@plugin_integration_options": {}
 }

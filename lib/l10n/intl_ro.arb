@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Deschide {plugin}",
   "plugin_reader_empty_filter": "Niciun conținut nu corespunde acestor filtre",
-  "plugin_reader_reset_filters": "Resetează filtrele"
+  "plugin_reader_reset_filters": "Resetează filtrele",
+  "plugin_reader_empty": "Încă nu există nimic de citit",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Nu s-au putut încărca {count} surse",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Conexiune",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Identitate de semnare",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Opțiuni de încărcare",
+  "@plugin_integration_options": {}
 }

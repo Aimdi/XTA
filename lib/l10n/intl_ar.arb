@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "فتح {plugin}",
   "plugin_reader_empty_filter": "لا توجد عناصر تطابق هذه الفلاتر",
-  "plugin_reader_reset_filters": "إعادة ضبط الفلاتر"
+  "plugin_reader_reset_filters": "إعادة ضبط الفلاتر",
+  "plugin_reader_empty": "لا يوجد ما تقرؤه بعد",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "تعذّر تحميل {count} من المصادر",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "الاتصال",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "هوية التوقيع",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "خيارات الرفع",
+  "@plugin_integration_options": {}
 }

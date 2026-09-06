@@ -238,19 +238,27 @@ class _HomePane extends StatelessWidget {
                     onFilter: onFilter,
                     onTag: timeline.setTag,
                   );
+                  final filtered = timeline.filter != RssFeedFilter.all || timeline.tag != null;
                   return Column(children: [
                     filterBar,
+                    if (snapshot.failedCount > 0)
+                      ListTile(leading: const Icon(Icons.error_outline),
+                        title: Text(l10n.plugin_reader_partial_error(snapshot.failedCount)),
+                        trailing: IconButton(icon: const Icon(Icons.refresh), tooltip: l10n.retry,
+                          onPressed: () => timeline.refresh(force: true))),
                     Expanded(child: snapshot.items.isEmpty
                       ? EmptyPane(
-                          icon: Icons.filter_list,
-                          message: l10n.plugin_reader_empty_filter,
+                          icon: filtered ? Icons.filter_list : Icons.article_outlined,
+                          message: filtered ? l10n.plugin_reader_empty_filter : l10n.plugin_reader_empty,
+                          scrollController: scrollController,
+                          onRefresh: () => timeline.refresh(force: true),
                           action: TextButton.icon(
-                            onPressed: () {
+                            onPressed: filtered ? () {
                               timeline.setTag(null);
                               onFilter(RssFeedFilter.all);
-                            },
-                            icon: const Icon(Icons.filter_list_off),
-                            label: Text(l10n.plugin_reader_reset_filters),
+                            } : () => timeline.refresh(force: true),
+                            icon: Icon(filtered ? Icons.filter_list_off : Icons.refresh),
+                            label: Text(filtered ? l10n.plugin_reader_reset_filters : l10n.retry),
                           ),
                         )
                       : FeedListView(

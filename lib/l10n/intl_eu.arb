@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Ireki {plugin}",
   "plugin_reader_empty_filter": "Ez dago iragazki hauekin bat datorren edukirik",
-  "plugin_reader_reset_filters": "Berrezarri iragazkiak"
+  "plugin_reader_reset_filters": "Berrezarri iragazkiak",
+  "plugin_reader_empty": "Oraindik ez dago irakurtzekorik",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Ezin izan dira {count} iturri kargatu",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Konexioa",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Sinadura-identitatea",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Igotzeko aukerak",
+  "@plugin_integration_options": {}
 }

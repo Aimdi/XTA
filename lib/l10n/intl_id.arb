@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Buka {plugin}",
   "plugin_reader_empty_filter": "Tidak ada konten yang sesuai dengan filter ini",
-  "plugin_reader_reset_filters": "Atur ulang filter"
+  "plugin_reader_reset_filters": "Atur ulang filter",
+  "plugin_reader_empty": "Belum ada yang bisa dibaca",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Tidak dapat memuat {count} sumber",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Koneksi",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Identitas penandatangan",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Opsi unggahan",
+  "@plugin_integration_options": {}
 }

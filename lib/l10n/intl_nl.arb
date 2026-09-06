@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "{plugin} openen",
   "plugin_reader_empty_filter": "Geen inhoud voldoet aan deze filters",
-  "plugin_reader_reset_filters": "Filters herstellen"
+  "plugin_reader_reset_filters": "Filters herstellen",
+  "plugin_reader_empty": "Nog niets te lezen",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "{count} bronnen konden niet worden geladen",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Verbinding",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Ondertekeningsidentiteit",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Uploadopties",
+  "@plugin_integration_options": {}
 }

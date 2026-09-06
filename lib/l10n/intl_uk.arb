@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Відкрити {plugin}",
   "plugin_reader_empty_filter": "Немає матеріалів, що відповідають цим фільтрам",
-  "plugin_reader_reset_filters": "Скинути фільтри"
+  "plugin_reader_reset_filters": "Скинути фільтри",
+  "plugin_reader_empty": "Поки немає що читати",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Не вдалося завантажити джерела: {count}",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "З’єднання",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Ідентифікатор підпису",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Параметри надсилання",
+  "@plugin_integration_options": {}
 }

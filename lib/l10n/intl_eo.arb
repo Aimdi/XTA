@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Malfermi {plugin}",
   "plugin_reader_empty_filter": "Neniu enhavo kongruas kun ĉi tiuj filtriloj",
-  "plugin_reader_reset_filters": "Restarigi filtrilojn"
+  "plugin_reader_reset_filters": "Restarigi filtrilojn",
+  "plugin_reader_empty": "Ankoraŭ nenio por legi",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Ne eblis ŝargi {count} fontojn",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Konekto",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Subskriba identeco",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Alŝutaj opcioj",
+  "@plugin_integration_options": {}
 }

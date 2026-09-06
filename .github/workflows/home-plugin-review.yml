@@ -56,10 +56,12 @@ jobs:
         continue-on-error: true
         run: flutter analyze --no-fatal-infos 2>&1 | tee review-artifacts/analyze.txt
       - name: Deterministic tests
+        timeout-minutes: 12
         id: tests
         continue-on-error: true
         run: flutter test --reporter expanded 2>&1 | tee review-artifacts/tests.txt
       - name: Before test renders
+        timeout-minutes: 8
         if: always()
         continue-on-error: true
         run: |

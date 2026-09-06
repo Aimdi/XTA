@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "打开{plugin}",
   "plugin_reader_empty_filter": "没有符合这些筛选条件的内容",
-  "plugin_reader_reset_filters": "重置筛选"
+  "plugin_reader_reset_filters": "重置筛选",
+  "plugin_reader_empty": "暂无可读内容",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "无法加载 {count} 个来源",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "连接",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "签名身份",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "上传选项",
+  "@plugin_integration_options": {}
 }

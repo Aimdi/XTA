@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Adkryć {plugin}",
   "plugin_reader_empty_filter": "Niama materyjałaŭ, jakija adpaviadajuć hetym filtram",
-  "plugin_reader_reset_filters": "Skinuć filtry"
+  "plugin_reader_reset_filters": "Skinuć filtry",
+  "plugin_reader_empty": "Pakuĺ niama čaho čytać",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Nie ŭdałosia zahruzić krynicy: {count}",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Złučennie",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Identyfikatar podpisu",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Paramietry adpraŭki",
+  "@plugin_integration_options": {}
 }

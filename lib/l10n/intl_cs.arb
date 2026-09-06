@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Otevřít {plugin}",
   "plugin_reader_empty_filter": "Těmto filtrům neodpovídá žádný obsah",
-  "plugin_reader_reset_filters": "Obnovit filtry"
+  "plugin_reader_reset_filters": "Obnovit filtry",
+  "plugin_reader_empty": "Zatím není co číst",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Počet zdrojů, které se nepodařilo načíst: {count}",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Připojení",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Podpisová identita",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Možnosti nahrávání",
+  "@plugin_integration_options": {}
 }

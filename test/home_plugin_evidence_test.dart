@@ -1,8 +1,4 @@
-import 'dart:io';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -63,6 +59,7 @@ class _Communities extends RedditSubredditsStore {
 
 void main() {
   setUpAll(() async {
+    autoUpdateGoldenFiles = true;
     final font = FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'));
     await font.load();
   });
@@ -121,13 +118,5 @@ Future<void> _render(WidgetTester tester, String name, {required Widget child, b
   ));
   await tester.pumpAndSettle();
   expect(tester.takeException(), isNull);
-  final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  await tester.runAsync(() async {
-    final image = await boundary.toImage();
-    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    final file = File('review-artifacts/renders/$name.png');
-    await file.parent.create(recursive: true);
-    await file.writeAsBytes(bytes!.buffer.asUint8List());
-    image.dispose();
-  });
+  await expectLater(find.byKey(key), matchesGoldenFile('../review-artifacts/renders/$name.png'));
 }

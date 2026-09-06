@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "{plugin} खोलें",
   "plugin_reader_empty_filter": "इन फ़िल्टर से मेल खाने वाली कोई सामग्री नहीं है",
-  "plugin_reader_reset_filters": "फ़िल्टर रीसेट करें"
+  "plugin_reader_reset_filters": "फ़िल्टर रीसेट करें",
+  "plugin_reader_empty": "अभी पढ़ने के लिए कुछ नहीं है",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "{count} स्रोत लोड नहीं हो सके",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "कनेक्शन",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "हस्ताक्षर पहचान",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "अपलोड विकल्प",
+  "@plugin_integration_options": {}
 }

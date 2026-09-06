@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "開啟{plugin}",
   "plugin_reader_empty_filter": "沒有符合這些篩選條件的內容",
-  "plugin_reader_reset_filters": "重設篩選"
+  "plugin_reader_reset_filters": "重設篩選",
+  "plugin_reader_empty": "暫無可讀內容",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "無法載入 {count} 個來源",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "連線",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "簽章身分",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "上傳選項",
+  "@plugin_integration_options": {}
 }

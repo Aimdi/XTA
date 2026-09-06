@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "{plugin} aç",
   "plugin_reader_empty_filter": "Bu filtrelerle eşleşen içerik yok",
-  "plugin_reader_reset_filters": "Filtreleri sıfırla"
+  "plugin_reader_reset_filters": "Filtreleri sıfırla",
+  "plugin_reader_empty": "Henüz okunacak bir şey yok",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "{count} kaynak yüklenemedi",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Bağlantı",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "İmza kimliği",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Yükleme seçenekleri",
+  "@plugin_integration_options": {}
 }

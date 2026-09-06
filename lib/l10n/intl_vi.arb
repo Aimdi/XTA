@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Mở {plugin}",
   "plugin_reader_empty_filter": "Không có nội dung phù hợp với các bộ lọc này",
-  "plugin_reader_reset_filters": "Đặt lại bộ lọc"
+  "plugin_reader_reset_filters": "Đặt lại bộ lọc",
+  "plugin_reader_empty": "Chưa có nội dung để đọc",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "Không tải được {count} nguồn",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Kết nối",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Danh tính ký",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Tùy chọn tải lên",
+  "@plugin_integration_options": {}
 }

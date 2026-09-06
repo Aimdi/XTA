@@ -3180,5 +3180,21 @@
   "@zen_mode_page_cap_description": {},
   "plugin_open_client": "Ava {plugin}",
   "plugin_reader_empty_filter": "Ükski sisu ei vasta nendele filtritele",
-  "plugin_reader_reset_filters": "Lähtesta filtrid"
+  "plugin_reader_reset_filters": "Lähtesta filtrid",
+  "plugin_reader_empty": "Pole veel midagi lugeda",
+  "@plugin_reader_empty": {},
+  "plugin_reader_partial_error": "{count} allika laadimine ebaõnnestus",
+  "@plugin_reader_partial_error": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_integration_connection": "Ühendus",
+  "@plugin_integration_connection": {},
+  "plugin_integration_identity": "Allkirjastaja identiteet",
+  "@plugin_integration_identity": {},
+  "plugin_integration_options": "Üleslaadimise valikud",
+  "@plugin_integration_options": {}
 }
