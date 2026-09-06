@@ -122,12 +122,12 @@ Future<void> _render(WidgetTester tester, String name, {required Widget child, b
   await tester.pumpAndSettle();
   expect(tester.takeException(), isNull);
   final boundary = key.currentContext!.findRenderObject()! as RenderRepaintBoundary;
-  final image = await boundary.toImage();
-  final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   await tester.runAsync(() async {
+    final image = await boundary.toImage();
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     final file = File('review-artifacts/renders/$name.png');
     await file.parent.create(recursive: true);
     await file.writeAsBytes(bytes!.buffer.asUint8List());
+    image.dispose();
   });
-  image.dispose();
 }

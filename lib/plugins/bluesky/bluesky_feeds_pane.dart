@@ -10,6 +10,7 @@ import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -472,23 +473,19 @@ class _ChipStrip extends StatelessWidget {
     if (chips.isEmpty) {
       return const SizedBox.shrink();
     }
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-        itemCount: chips.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final chip = chips[index];
-          return ChoiceChip(
-            label: Text(chip.label, overflow: TextOverflow.ellipsis),
-            selected: chip.selected,
-            onSelected: (_) => onTap(chip.uri),
-          );
-        },
-      ),
-    );
+    return PluginFilterRow(children: [
+      for (final chip in chips)
+        ChoiceChip(
+          label: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 240),
+            child: Text(chip.label, maxLines: 2, overflow: TextOverflow.ellipsis),
+          ),
+          selected: chip.selected,
+          showCheckmark: true,
+          materialTapTargetSize: MaterialTapTargetSize.padded,
+          onSelected: (_) => onTap(chip.uri),
+        ),
+    ]);
   }
 }
 
@@ -503,21 +500,21 @@ Widget _selectedHeader(
 }) {
   final l10n = L10n.of(context);
   return Padding(
-    padding: const EdgeInsets.fromLTRB(12, 8, 4, 0),
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(title, style: Theme.of(context).textTheme.titleSmall),
-        ),
-        TextButton(onPressed: onOpen, child: Text(openLabel)),
-        IconButton(
-          tooltip: pinned ? l10n.unpin : l10n.pin,
+    padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 8),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Semantics(header: true, child: Text(title,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))),
+      const SizedBox(height: 4),
+      Wrap(spacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+        TextButton.icon(onPressed: onOpen, icon: const Icon(Icons.link), label: Text(openLabel)),
+        TextButton.icon(
           icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined),
           onPressed: onPinToggle,
+          label: Text(pinned ? l10n.unpin : l10n.pin),
         ),
         ?extra,
-      ],
-    ),
+      ]),
+    ]),
   );
 }
 

@@ -5,6 +5,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_discovery.dart';
@@ -133,6 +135,7 @@ class _BlueskyScreenState extends State<BlueskyScreen>
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = L10n.of(context);
+    _shell.restore(context, 'bluesky');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -141,6 +144,8 @@ class _BlueskyScreenState extends State<BlueskyScreen>
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_bluesky_title,
+              mark: pluginMark(BlueskyPlugin(), size: 24),
               accent: BlueskyPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
@@ -239,10 +244,8 @@ class _BlueskyScreenState extends State<BlueskyScreen>
   }
 }
 
-class _BlueskyShellStore extends Store<int> {
+class _BlueskyShellStore extends PluginViewStore<int> {
   _BlueskyShellStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _HomePane extends StatelessWidget {

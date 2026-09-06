@@ -12,8 +12,11 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
+import 'package:xta/plugins/mastodon/mastodon_settings.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -30,10 +33,8 @@ class MastodonScreen extends StatefulWidget {
   State<MastodonScreen> createState() => _MastodonScreenState();
 }
 
-class _MastodonTabStore extends Store<int> {
+class _MastodonTabStore extends PluginViewStore<int> {
   _MastodonTabStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _MastodonScreenState extends State<MastodonScreen> {
@@ -47,7 +48,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
         // Explore only. Following used to start the same frame and fan out
         // every followed acct across several instances — that is what made
         // opening the tab stall the rest of the app.
-        context.read<MastodonExploreStore>().refresh();
+        _onTab(_tabs.state);
       }
     });
   }
@@ -103,6 +104,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _tabs.restore(context, 'mastodon');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -111,7 +113,19 @@ class _MastodonScreenState extends State<MastodonScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_mastodon_title,
+              mark: pluginMark(MastodonPlugin(), size: 24),
               accent: MastodonPlugin().brandColor,
+              tabs: [
+                PluginHomeTab(label: l10n.plugin_mastodon_tab_explore, icon: Icons.explore_outlined,
+                  selected: tab == 0, onTap: () => _onTab(0)),
+                PluginHomeTab(label: l10n.plugin_mastodon_tab_local, icon: Icons.home_outlined,
+                  selected: tab == 1, onTap: () => _onTab(1)),
+                PluginHomeTab(label: l10n.plugin_mastodon_tab_federated, icon: Icons.public,
+                  selected: tab == 2, onTap: () => _onTab(2)),
+                PluginHomeTab(label: l10n.plugin_mastodon_tab_following, icon: Icons.people_outline,
+                  selected: tab == 3, onTap: () => _onTab(3)),
+              ],
               actions: [
                 IconButton(
                   icon: const Icon(Icons.search),
@@ -123,9 +137,22 @@ class _MastodonScreenState extends State<MastodonScreen> {
                   tooltip: l10n.plugin_mastodon_add,
                   onPressed: _addAccount,
                 ),
+                IconButton(icon: const Icon(Icons.settings_outlined), tooltip: l10n.settings,
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => const MastodonSettingsScreen(),
+                  ))),
               ],
             ),
-            _MastodonTabs(selected: tab, onSelected: _onTab),
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
+              child: Align(alignment: AlignmentDirectional.centerStart, child: Text(
+                mastodonConfiguredInstances(PrefService.of(context)).isEmpty
+                    ? l10n.plugin_mastodon_builtin_instances
+                    : '${l10n.plugin_mastodon_instance}: ${mastodonConfiguredInstances(PrefService.of(context)).join(', ')}',
+                maxLines: 2, overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall,
+              )),
+            ),
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
@@ -157,6 +184,10 @@ class _MastodonScreenState extends State<MastodonScreen> {
   void _onTab(int index) {
     _tabs.select(index);
     if (!mounted) return;
+    if (index == 0) {
+      final store = context.read<MastodonExploreStore>();
+      if (store.state.posts.isEmpty && store.state.tags.isEmpty) unawaited(store.refresh());
+    }
     if (index == 1) {
       final store = context.read<MastodonLocalStore>();
       if (store.state.isEmpty) unawaited(store.refresh());
@@ -169,95 +200,6 @@ class _MastodonScreenState extends State<MastodonScreen> {
       final feed = context.read<MastodonFeedStore>();
       if (feed.state.isEmpty) unawaited(feed.refresh());
     }
-  }
-}
-
-class _MastodonTabs extends StatelessWidget {
-  final int selected;
-  final ValueChanged<int> onSelected;
-
-  const _MastodonTabs({required this.selected, required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Row(
-        children: [
-          _Tab(
-            label: l10n.plugin_mastodon_tab_explore,
-            icon: Icons.explore_outlined,
-            selected: selected == 0,
-            onTap: () => onSelected(0),
-          ),
-          _Tab(
-            label: l10n.plugin_mastodon_tab_local,
-            icon: Icons.home_outlined,
-            selected: selected == 1,
-            onTap: () => onSelected(1),
-          ),
-          _Tab(
-            label: l10n.plugin_mastodon_tab_federated,
-            icon: Icons.public,
-            selected: selected == 2,
-            onTap: () => onSelected(2),
-          ),
-          _Tab(
-            label: l10n.plugin_mastodon_tab_following,
-            icon: Icons.people_outline,
-            selected: selected == 3,
-            onTap: () => onSelected(3),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Tab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _Tab({
-    required this.label,
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final color = selected
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20, color: color),
-              const SizedBox(height: 2),
-              Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
 

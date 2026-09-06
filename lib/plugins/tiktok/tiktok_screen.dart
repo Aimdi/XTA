@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
 import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
@@ -60,6 +62,7 @@ class _TikTokScreenState extends State<TikTokScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _tabs.restore(context, 'tiktok');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -68,6 +71,8 @@ class _TikTokScreenState extends State<TikTokScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_tiktok_title,
+              mark: pluginMark(TikTokPlugin(), size: 24),
               accent: TikTokPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
@@ -117,6 +122,7 @@ class _TikTokScreenState extends State<TikTokScreen> {
                     onProfileClosed: _refreshFollowing,
                   ),
                   (_) => _AccountsTab(
+                    scrollController: widget.scrollController,
                     onFindHandle: _openSearch,
                     onProfileClosed: _refreshFollowing,
                     onUnfollow: _refreshFollowing,
@@ -144,10 +150,8 @@ class _TikTokScreenState extends State<TikTokScreen> {
   }
 }
 
-class _TikTokTabStore extends Store<int> {
+class _TikTokTabStore extends PluginViewStore<int> {
   _TikTokTabStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _FollowingTab extends StatelessWidget {
@@ -211,11 +215,13 @@ class _FollowingTab extends StatelessWidget {
 }
 
 class _AccountsTab extends StatelessWidget {
+  final ScrollController scrollController;
   final Future<void> Function() onFindHandle;
   final Future<void> Function() onProfileClosed;
   final Future<void> Function() onUnfollow;
 
   const _AccountsTab({
+    required this.scrollController,
     required this.onFindHandle,
     required this.onProfileClosed,
     required this.onUnfollow,
@@ -236,9 +242,21 @@ class _AccountsTab extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => context.read<TikTokFollowsStore>().load(),
           child: ListView.builder(
-            itemCount: follows.length,
+            controller: pluginInnerScrollController(context, scrollController),
+            padding: pluginFeedPadding(context),
+            itemCount: follows.length + 1,
             itemBuilder: (context, index) {
-              final follow = follows[index];
+              if (index == 0) {
+                return Padding(padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 12),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(L10n.of(context).plugin_tiktok_tab_accounts,
+                      style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(onPressed: onFindHandle, icon: const Icon(Icons.person_search_outlined),
+                      label: Text(L10n.of(context).plugin_tiktok_search)),
+                  ]));
+              }
+              final follow = follows[index - 1];
               return Dismissible(
                 key: ValueKey(follow.id),
                 direction: DismissDirection.endToStart,
@@ -246,7 +264,7 @@ class _AccountsTab extends StatelessWidget {
                 onDismissed: (_) {},
                 background: Container(
                   color: Theme.of(context).colorScheme.error,
-                  alignment: Alignment.centerRight,
+                  alignment: AlignmentDirectional.centerEnd,
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Icon(
                     Icons.person_remove_outlined,
@@ -266,11 +284,11 @@ class _AccountsTab extends StatelessWidget {
                   ),
                   title: Text(
                     follow.name,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: Text('@${follow.id}'),
+                  subtitle: Text('@${follow.id}', maxLines: 1, overflow: TextOverflow.ellipsis),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -289,10 +307,7 @@ class _AccountsTab extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+
                     ],
                   ),
                   onTap: () async {

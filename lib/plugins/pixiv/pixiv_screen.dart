@@ -37,7 +37,8 @@ class PixivScreen extends StatefulWidget {
 }
 
 class _PixivScreenState extends State<PixivScreen> {
-  final _view = PluginViewStore<PixivViewState>(const PixivViewState());
+  final _view = PluginViewStore<PixivViewState>(const PixivViewState(),
+    snapshot: (state) => state.copyWith(signingIn: false));
   late final PixivIllustListStore _recommended;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
@@ -219,7 +220,9 @@ class _PixivScreenState extends State<PixivScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    _view.restore(context, 'pixiv');
+    if (_view.restore(context, 'pixiv')) {
+      _bookmarks.useLoader(_bookmarksLoader(_bookmarksRestrict));
+    }
     final prefs = PrefService.of(context);
     final hasToken = (prefs.get<String>(optionPluginPixivRefreshToken) ?? '')
         .trim()

@@ -3,8 +3,11 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_feed_people.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_plugin.dart';
@@ -114,6 +117,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _shell.restore(context, 'threads');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -122,6 +126,8 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_threads_title,
+              mark: pluginMark(ThreadsPlugin(), size: 24),
               accent: ThreadsPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
@@ -185,10 +191,8 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
   }
 }
 
-class _ThreadsShellStore extends Store<int> {
+class _ThreadsShellStore extends PluginViewStore<int> {
   _ThreadsShellStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _HomePane extends StatelessWidget {
@@ -521,81 +525,42 @@ class ThreadsFollowingStrip extends StatelessWidget {
           return const SizedBox.shrink();
         }
 
-        final addChip = onAddAccount == null ? 0 : 1;
-
-        return SizedBox(
-          height: 84,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            itemCount: accounts.length + addChip,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              if (index >= accounts.length) {
-                return Tooltip(
-                  message: l10n.plugin_threads_add_account,
-                  child: InkWell(
-                    onTap: () => onAddAccount?.call(),
-                    customBorder: const CircleBorder(),
-                    child: SizedBox(
-                      width: 64,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: theme.colorScheme.outline,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.add,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                          // Match the handle line under avatars so the chip sits level.
-                          const SizedBox(height: 4 + 14),
-                        ],
-                      ),
+        return PluginFilterRow(
+          children: [
+            for (final account in accounts)
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                InkWell(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => ThreadsProfileScreen(username: account.handle),
+                  )),
+                  onLongPress: () => _confirmUnfollow(context, account),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 56, maxWidth: 208),
+                    child: Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(4, 8, 8, 8),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        _FollowingAvatar(account: account),
+                        const SizedBox(width: 10),
+                        Flexible(child: Text('@${account.handle}', maxLines: 2,
+                          overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge)),
+                      ]),
                     ),
                   ),
-                );
-              }
-
-              final account = accounts[index];
-
-              return InkWell(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        ThreadsProfileScreen(username: account.handle),
-                  ),
                 ),
-                onLongPress: () => _confirmUnfollow(context, account),
-                child: SizedBox(
-                  width: 64,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _FollowingAvatar(account: account),
-                      const SizedBox(height: 4),
-                      Text(
-                        account.handle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
+                IconButton(
+                  tooltip: l10n.plugin_threads_unfollow,
+                  onPressed: () => _confirmUnfollow(context, account),
+                  icon: const Icon(Icons.person_remove_outlined, size: 20),
                 ),
-              );
-            },
-          ),
+              ]),
+            if (onAddAccount != null)
+              TextButton.icon(
+                onPressed: () => onAddAccount?.call(),
+                icon: const Icon(Icons.person_add_alt),
+                label: Text(l10n.plugin_threads_add_account),
+                style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+              ),
+          ],
         );
       },
     );

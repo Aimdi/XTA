@@ -14,6 +14,8 @@ import 'package:xta/plugins/instagram/instagram_settings.dart';
 import 'package:xta/plugins/instagram/instagram_store.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -51,9 +53,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
       if (!mounted) return;
       if (history.state.isEmpty) await history.load();
       if (!mounted) return;
-      await _forYou.refresh();
-      if (!mounted) return;
-      await _following.refresh();
+      await _selectTab(_tabs.state);
     });
   }
 
@@ -67,6 +67,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _tabs.restore(context, 'instagram');
 
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
@@ -75,19 +76,21 @@ class _InstagramScreenState extends State<InstagramScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_instagram_title,
+              mark: pluginMark(InstagramPlugin(), size: 24),
               accent: InstagramPlugin().brandColor,
               tabs: [
                 PluginHomeTab(
                   label: l10n.plugin_instagram_tab_for_you,
                   icon: Icons.explore_outlined,
                   selected: tab == 0,
-                  onTap: () => _tabs.select(0),
+                  onTap: () => _selectTab(0),
                 ),
                 PluginHomeTab(
                   label: l10n.plugin_instagram_tab_following,
                   icon: Icons.photo_library_outlined,
                   selected: tab == 1,
-                  onTap: () => _tabs.select(1),
+                  onTap: () => _selectTab(1),
                 ),
                 PluginHomeTab(
                   label: l10n.plugin_instagram_tab_accounts,
@@ -155,6 +158,12 @@ class _InstagramScreenState extends State<InstagramScreen> {
     );
   }
 
+  Future<void> _selectTab(int tab) async {
+    _tabs.select(tab);
+    if (tab == 0 && _forYou.state.isEmpty) await _forYou.refresh();
+    if (tab == 1 && _following.state.isEmpty) await _following.refresh();
+  }
+
   Future<void> _openSearch() async {
     await showInstagramSearchSheet(context);
     if (!mounted) return;
@@ -163,14 +172,13 @@ class _InstagramScreenState extends State<InstagramScreen> {
 
   Future<void> _refreshFeeds() async {
     if (!mounted) return;
-    await Future.wait([_forYou.refresh(), _following.refresh(force: true)]);
+    if (_tabs.state == 0) await _forYou.refresh();
+    if (_tabs.state == 1) await _following.refresh(force: true);
   }
 }
 
-class _InstagramTabStore extends Store<int> {
+class _InstagramTabStore extends PluginViewStore<int> {
   _InstagramTabStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _ForYouTab extends StatelessWidget {
@@ -322,7 +330,7 @@ class _DiscoverPeopleStrip extends StatelessWidget {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 0, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 0, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -334,33 +342,39 @@ class _DiscoverPeopleStrip extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SizedBox(
-            height: 48,
+            height: 96 + MediaQuery.textScalerOf(context).scale(36),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsetsDirectional.only(end: 16),
               itemCount: people.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final person = people[index];
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ActionChip(
-                      avatar: InstagramAvatar(
-                        url: person.avatarUrl,
-                        seed: person.username,
-                        name: person.displayName,
-                        size: 20,
-                      ),
-                      label: Text('@${person.username}'),
-                      onPressed: () => onOpen(person),
-                    ),
-                    TextButton(
-                      onPressed: () => onFollow(person),
-                      child: Text(l10n.plugin_instagram_follow),
-                    ),
-                  ],
-                );
+                return SizedBox(width: 240, child: DecoratedBox(
+                  decoration: BoxDecoration(border: Border.all(color: theme.dividerColor),
+                    borderRadius: BorderRadius.circular(12)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Expanded(child: InkWell(
+                      onTap: () => onOpen(person),
+                      child: Padding(padding: const EdgeInsets.all(12), child: Row(children: [
+                        InstagramAvatar(url: person.avatarUrl, seed: person.username,
+                          name: person.displayName, size: 40),
+                        const SizedBox(width: 12),
+                        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(person.displayName, maxLines: 2, overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelLarge),
+                            Text('@${person.username}', maxLines: 1, overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall),
+                          ])),
+                      ])),
+                    )),
+                    const Divider(height: 1),
+                    TextButton(onPressed: () => onFollow(person),
+                      style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+                      child: Text(l10n.plugin_instagram_follow)),
+                  ]),
+                ));
               },
             ),
           ),

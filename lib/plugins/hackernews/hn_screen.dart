@@ -11,6 +11,8 @@ import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_marks.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -66,6 +68,7 @@ class _HnScreenState extends State<HnScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    _tabs.restore(context, 'hn');
     return Scaffold(
       primary: !PluginEmbedded.maybeOf(context),
       body: ScopedBuilder<_HnTabStore, int>(
@@ -73,6 +76,8 @@ class _HnScreenState extends State<HnScreen> {
         onState: (context, tab) => Column(
           children: [
             PluginHomeChrome(
+              title: l10n.plugin_hn_title,
+              mark: pluginMark(HackerNewsPlugin(), size: 24),
               accent: hackerNewsBrand,
               tabs: [
                 _tab(l10n.plugin_hn_tab_top, Icons.whatshot_outlined, 0),
@@ -166,10 +171,8 @@ class _HnScreenState extends State<HnScreen> {
   }
 }
 
-class _HnTabStore extends Store<int> {
+class _HnTabStore extends PluginViewStore<int> {
   _HnTabStore() : super(0);
-
-  void select(int index) => update(index);
 }
 
 class _FeedTab extends StatefulWidget {
