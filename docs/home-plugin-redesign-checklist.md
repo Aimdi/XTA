@@ -62,3 +62,18 @@ Article/gallery/market commit: `fd7f3c6f143fa7eb11c1fd7d9d4efc6c1e6a7403`.
 Repository verify run `34004211795` succeeded. The separate exact-commit review
 workflow still needs completed evidence captures and APK. Integration setup,
 actual Home journeys and session retention are the next verification checkpoint.
+
+Verification checkpoint `1e6a6ed9b92b4e203097980e081a1c9041000049`: static
+analysis passed; repository verify `34005007294` exposed 16 deterministic test
+failures (12 small action targets, Home scroll after source switching, and three
+integration finder errors). The review workflow `34005007304` incorrectly
+reported success because its shell pipe masked the test exit code; its APK is
+not a final verified deliverable. Explicit Bash/pipefail now fixes that gate.
+
+Next corrective pass keeps Home's nested coordinator mounted, enforces 48dp
+plugin action targets, fits Reddit's full header on 320dp by placing Saved and
+community management in the existing overflow, and corrects integration tests
+to address the actual icon-button constructor and lazy form. Additional Pixiv
+mode/date/private-favorites and RSS unread/reset journeys are included. Test
+renders now load the production Material icon font; the RSS filter row aligns
+to the reading edge. Verification and final APK remain pending.

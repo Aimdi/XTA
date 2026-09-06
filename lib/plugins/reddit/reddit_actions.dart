@@ -32,6 +32,7 @@ class RedditFeedActions extends StatefulWidget {
   /// other route to them.
   final bool showAppSettings;
   final VoidCallback? onOpenClient;
+  final VoidCallback? onOpenSaved;
 
   /// Called after a setting changes what the active Reddit body should fetch.
   final Future<void> Function()? onRefresh;
@@ -40,6 +41,7 @@ class RedditFeedActions extends StatefulWidget {
     super.key,
     this.showAppSettings = false,
     this.onOpenClient,
+    this.onOpenSaved,
     this.onRefresh,
   });
 
@@ -61,9 +63,22 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert),
-      tooltip: l10n.plugin_reddit_source,
+      tooltip: '${l10n.plugin_reddit_title} · ${l10n.more}',
       onSelected: (value) => _onMenuSelected(value, prefs),
       itemBuilder: (context) => [
+        if (widget.onOpenSaved != null) ...[
+          PopupMenuItem(
+            value: _menuSaved,
+            child: ListTile(contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.bookmark_border), title: Text(l10n.saved)),
+          ),
+          PopupMenuItem(
+            value: _menuCommunities,
+            child: ListTile(contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.list), title: Text(l10n.subscriptions)),
+          ),
+          const PopupMenuDivider(),
+        ],
         PopupMenuItem(
           value: redditSourceAuto,
           child: ListTile(
@@ -118,9 +133,19 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
   /// Values the menu uses for the actions that are not a source choice.
   static const _menuPluginSettings = '_pluginSettings';
   static const _menuClient = '_client';
+  static const _menuSaved = '_saved';
+  static const _menuCommunities = '_communities';
   static const _menuAppSettings = '_appSettings';
 
   Future<void> _onMenuSelected(String value, BasePrefService prefs) async {
+    if (value == _menuSaved) {
+      widget.onOpenSaved?.call();
+      return;
+    }
+    if (value == _menuCommunities) {
+      await _manageSubreddits();
+      return;
+    }
     if (value == _menuClient) {
       widget.onOpenClient?.call();
       return;
@@ -177,7 +202,7 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
             MaterialPageRoute(builder: (_) => const RedditSearchScreen()),
           ),
         ),
-        IconButton(
+        if (widget.onOpenSaved == null) IconButton(
           tooltip: l10n.subscriptions,
           icon: const Icon(Icons.list),
           onPressed: _manageSubreddits,

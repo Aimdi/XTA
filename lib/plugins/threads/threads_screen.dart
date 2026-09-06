@@ -552,6 +552,7 @@ class ThreadsFollowingStrip extends StatelessWidget {
                   ),
                 ),
                 IconButton(
+                  style: pluginActionButtonStyle,
                   tooltip: l10n.plugin_threads_unfollow,
                   onPressed: () => _confirmUnfollow(context, account),
                   icon: const Icon(Icons.person_remove_outlined, size: 20),

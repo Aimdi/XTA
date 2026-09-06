@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
@@ -300,10 +301,7 @@ class _FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
-      child: Row(
+    return PluginFilterRow(
         children: [
           _chip(
             context,
@@ -334,7 +332,6 @@ class _FilterBar extends StatelessWidget {
               },
             ),
         ],
-      ),
     );
   }
 

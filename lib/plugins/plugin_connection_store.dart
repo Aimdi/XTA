@@ -59,7 +59,7 @@ class PluginConnectionActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final busy = state.status == PluginConnectionStatus.running;
     return Wrap(spacing: 12, runSpacing: 8, children: [
-      FilledButton.icon(onPressed: busy ? null : onTest,
+      FilledButton.icon(key: const ValueKey('plugin-test-connection'), onPressed: busy ? null : onTest,
         style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
         icon: busy
           ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))

@@ -7,7 +7,8 @@ class PluginFilterRow extends StatelessWidget {
   const PluginFilterRow({super.key, required this.children});
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
+  Widget build(BuildContext context) => Align(alignment: AlignmentDirectional.centerStart,
+    child: SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
     child: Row(children: [
@@ -20,5 +21,5 @@ class PluginFilterRow extends StatelessWidget {
           ),
         ),
     ]),
-  );
+  ));
 }

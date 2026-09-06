@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
@@ -67,6 +68,9 @@ class _RssClient extends RssClient {
 
 void main() {
   setUpAll(() async {
+    autoUpdateGoldenFiles = true;
+    await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
+    await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     final dir = await Directory.systemTemp.createTemp('xta-home-plugin-journeys');
@@ -115,6 +119,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(HnScreen), findsOneWidget);
     expect(hn.calls, [HnFeed.top]);
+    await expectLater(find.byType(FeedScreen), matchesGoldenFile('../review-artifacts/renders/home-hackernews.png'));
     expect(rss.calls, 0, reason: 'An unvisited plugin must not fetch.');
     expect(find.byTooltip('Home feed accounts'), findsNothing);
     final sections = find.descendant(of: find.byType(PluginHomeChrome), matching: find.text('New'));
@@ -142,6 +147,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(rss.calls, 1);
     expect(find.text('A quiet article'), findsOneWidget);
+    await expectLater(find.byType(FeedScreen), matchesGoldenFile('../review-artifacts/renders/home-rss.png'));
+    final rssContext = tester.element(find.text('A quiet article'));
+    await rssContext.read<RssReadStore>().markRead('article');
+    await tester.tap(find.widgetWithText(FilterChip, 'Unread'));
+    await tester.pumpAndSettle();
+    expect(find.text('No items match these filters'), findsOneWidget);
+    await tester.tap(find.text('Reset filters'));
+    await tester.pumpAndSettle();
+    expect(find.text('A quiet article'), findsOneWidget);
+    expect(rss.calls, 1, reason: 'Filtering and resetting must reuse loaded articles.');
     await strip.reorder(1, 0);
     await tester.pumpAndSettle();
     expect(selected.state.id, pluginIdRss);

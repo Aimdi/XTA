@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/deepmarks/deepmarks_client.dart';
 import 'package:xta/plugins/deepmarks/deepmarks_save.dart';
 import 'package:xta/plugins/deepmarks/nostr_event.dart';
@@ -125,6 +126,7 @@ class _DeepmarksSettingsScreenState extends State<DeepmarksSettingsScreen> {
             style: theme.textTheme.titleMedium)),
           const SizedBox(height: 16),
           TextField(
+            key: const ValueKey('plugin-connection-primary-field'),
             controller: _apiKeyController,
             obscureText: _obscureKey,
             autocorrect: false,
@@ -135,6 +137,7 @@ class _DeepmarksSettingsScreenState extends State<DeepmarksSettingsScreen> {
               helperText: l10n.plugin_deepmarks_api_key_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                style: pluginActionButtonStyle,
                 icon: Icon(_obscureKey ? Icons.visibility : Icons.visibility_off),
                 tooltip: _obscureKey ? l10n.show : l10n.hide,
                 onPressed: () => _connection.toggleVisibility(),
@@ -157,6 +160,7 @@ class _DeepmarksSettingsScreenState extends State<DeepmarksSettingsScreen> {
               helperText: l10n.plugin_deepmarks_secret_key_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                style: pluginActionButtonStyle,
                 icon: Icon(_obscureSecret ? Icons.visibility : Icons.visibility_off),
                 tooltip: _obscureSecret ? l10n.show : l10n.hide,
                 onPressed: () => _connection.toggleVisibility(secret: true),

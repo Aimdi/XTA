@@ -372,12 +372,14 @@ class _PixivScreenState extends State<PixivScreen> {
                 .formatCompactDate(_rankingDate!), maxLines: 1,
                 overflow: TextOverflow.ellipsis)),
             IconButton(
+              style: pluginActionButtonStyle,
               icon: const Icon(Icons.calendar_today),
               tooltip: l10n.plugin_pixiv_ranking_pick_date,
               onPressed: _pickRankingDate,
             ),
             if (_rankingDate != null)
               IconButton(
+                style: pluginActionButtonStyle,
                 icon: const Icon(Icons.close),
                 tooltip: l10n.plugin_pixiv_ranking_back_to_today,
                 onPressed: _clearRankingDate,

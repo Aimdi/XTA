@@ -118,12 +118,7 @@ class _RedditScreenState extends State<RedditScreen>
               source: source,
               onMode: store.selectMode,
               actions: [
-                IconButton(
-                  tooltip: L10n.of(context).saved,
-                  icon: const Icon(Icons.bookmark_border),
-                  onPressed: _openSaved,
-                ),
-                RedditFeedActions(onRefresh: _refreshCurrent),
+                RedditFeedActions(onRefresh: _refreshCurrent, onOpenSaved: _openSaved),
               ],
             ),
             RedditSubredditChips(home: store),

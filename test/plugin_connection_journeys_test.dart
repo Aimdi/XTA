@@ -12,6 +12,7 @@ import 'package:xta/plugins/immich/immich_client.dart';
 import 'package:xta/plugins/karakeep/karakeep_client.dart';
 import 'package:xta/plugins/plugin_connection_store.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/settings/settings_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 class _Probe {
@@ -73,32 +74,41 @@ void main() {
       await tester.pumpAndSettle();
       expect(probe.calls, 0, reason: 'Opening settings must not contact a service.');
       expect(tester.takeException(), isNull);
-      final testButton = find.widgetWithText(FilledButton, 'Test connection');
-      await tester.ensureVisible(testButton);
+      Future<void> reveal(Finder target, {bool upward = false}) async {
+        await tester.scrollUntilVisible(target, upward ? -220 : 220,
+          scrollable: find.descendant(of: find.byType(SettingsList), matching: find.byType(Scrollable)).first,
+          maxScrolls: 25);
+        await tester.ensureVisible(target);
+        // A pending connection probe deliberately keeps a spinner animating.
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      final testButton = find.byKey(const ValueKey('plugin-test-connection'));
+      await reveal(testButton);
       await tester.pumpAndSettle();
       expect(tester.getSize(testButton).height, greaterThanOrEqualTo(48));
       await tester.tap(testButton);
       await tester.pump();
       expect(probe.calls, 1);
-      final firstField = find.byType(TextField).first;
-      await tester.ensureVisible(firstField);
+      final firstField = find.byKey(const ValueKey('plugin-connection-primary-field'));
+      await reveal(firstField, upward: true);
       await tester.enterText(firstField, 'edited-value');
       probe.response.complete();
       await tester.pumpAndSettle();
+      await reveal(testButton);
       var feedback = tester.widget<PluginConnectionFeedback>(find.byType(PluginConnectionFeedback));
       expect(feedback.state.status, PluginConnectionStatus.idle);
       expect(feedback.state.message, isNull, reason: 'An old request cannot certify edited credentials.');
-      await tester.ensureVisible(testButton);
       await tester.tap(testButton);
       await tester.pumpAndSettle();
       feedback = tester.widget<PluginConnectionFeedback>(find.byType(PluginConnectionFeedback));
       expect(feedback.state.status, id == 'deepmarks' ? PluginConnectionStatus.warning : PluginConnectionStatus.ok);
-      await tester.ensureVisible(firstField);
+      await reveal(firstField, upward: true);
       await tester.enterText(firstField, 'final-value');
       await tester.pumpAndSettle();
+      await reveal(testButton);
       expect(tester.widget<PluginConnectionFeedback>(find.byType(PluginConnectionFeedback)).state.message, isNull);
       final save = find.widgetWithText(OutlinedButton, 'Save');
-      await tester.ensureVisible(save);
+      await reveal(save);
       await tester.tap(save);
       await tester.pumpAndSettle();
       expect(find.text('Open setup'), findsOneWidget);

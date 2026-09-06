@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_screen.dart';
@@ -54,12 +55,14 @@ class HnStoryCard extends StatelessWidget {
             label: Text(l10n.plugin_hn_comment_count(story.commentCount))),
           ScopedBuilder<HnLikesStore, Set<String>>(store: likes,
             onState: (_, _) => IconButton(
+                style: pluginActionButtonStyle,
               tooltip: likes.isLiked(story.id) ? l10n.unlike_on_this_device : l10n.like_on_this_device,
               icon: Icon(likes.isLiked(story.id) ? Icons.favorite : Icons.favorite_border, size: 20),
               onPressed: () => likes.toggle(story.id),
             )),
           ScopedBuilder<HnSavedStore, List<HnStory>>(store: saved,
             onState: (_, _) => IconButton(
+                style: pluginActionButtonStyle,
               tooltip: saved.isSaved(story.id) ? l10n.unsave_from_this_device : l10n.save_on_this_device,
               icon: Icon(saved.isSaved(story.id) ? Icons.bookmark : Icons.bookmark_border, size: 20),
               onPressed: () => saved.toggle(story),

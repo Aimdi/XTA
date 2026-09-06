@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/contrast.dart';
 
+const pluginActionButtonStyle = ButtonStyle(
+  minimumSize: WidgetStatePropertyAll(Size.square(48)),
+  fixedSize: WidgetStatePropertyAll(Size.square(48)),
+  visualDensity: VisualDensity.standard,
+  tapTargetSize: MaterialTapTargetSize.padded,
+);
+
 /// The Home strip already provides identity and the top safe area.
 class PluginEmbedded extends InheritedWidget {
   const PluginEmbedded({super.key, required super.child});
@@ -101,7 +108,12 @@ class PluginHomeChrome extends StatelessWidget {
         ],
       ),
     );
-    return embedded ? bar : SafeArea(bottom: false, child: bar);
+    final controls = IconButtonTheme(
+      data: IconButtonThemeData(style:
+        IconButtonTheme.of(context).style?.merge(pluginActionButtonStyle) ?? pluginActionButtonStyle),
+      child: bar,
+    );
+    return embedded ? controls : SafeArea(bottom: false, child: controls);
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/immich/immich_client.dart';
 import 'package:xta/utils/urls.dart';
 
@@ -89,6 +90,7 @@ class _ImmichSettingsScreenState extends State<ImmichSettingsScreen> {
             style: theme.textTheme.titleMedium)),
           const SizedBox(height: 16),
           TextField(
+            key: const ValueKey('plugin-connection-primary-field'),
             controller: _serverController,
             keyboardType: TextInputType.url,
             autocorrect: false,
@@ -112,6 +114,7 @@ class _ImmichSettingsScreenState extends State<ImmichSettingsScreen> {
               helperText: l10n.plugin_immich_api_key_hint,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
+                style: pluginActionButtonStyle,
                 icon: Icon(_obscureKey ? Icons.visibility : Icons.visibility_off),
                 tooltip: _obscureKey ? l10n.show : l10n.hide,
                 onPressed: () => _connection.toggleVisibility(),
