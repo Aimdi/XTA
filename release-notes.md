@@ -4,6 +4,44 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi127
+
+Home and all 16 existing plugin experiences have been redesigned on the released
+aimdi126 XTA base. The implementation is merged in PR #254.
+
+For most current Android phones, choose **`xta-aimdi127_arm64-v8a.apk`**. A
+universal APK and ARMv7/x86_64 variants are also available. Release builds use
+the existing signing configuration and application id (`com.aimdi.xta`). The
+base Android version code is 400001086, above every aimdi126 variant; the
+existing per-ABI offsets are retained. Existing databases and settings need no
+reset.
+
+- **Home:** a persistent source strip, contextual actions and a clear route to
+  each full plugin client. Source switches retain loaded content, sections,
+  filters and scroll position. The header keeps reader controls reachable.
+- **Social and video:** Threads, Bluesky, Mastodon, Instagram and TikTok have
+  clearer source, account and creator navigation using their existing features.
+- **Community and articles:** Reddit separates feed/community selection from
+  sorting and search; Hacker News gives headlines and comments distinct
+  actions; RSS and Substack prioritize article text, sources and reading filters.
+- **Artwork and markets:** Pixiv, Booru and EhViewer have readable sections,
+  compact filters and adaptive galleries. Stocks distinguishes quotes from
+  related posts and makes filtering and retry actions clearer.
+- **Integrations:** Karakeep, Deepmarks and Immich have clearer setup and
+  connection feedback. Editing connection fields invalidates old probe results;
+  saves and uploads remain explicit existing actions.
+
+Existing plugin marks, private visibility, navigation customizations, accounts,
+subscriptions, groups, local libraries and content preferences are preserved.
+X remains read-oriented. Backend/database code and dependency/SDK pins are
+unchanged.
+
+Verification of the merged implementation: 2,179 tests passed, five opt-in live
+tests skipped; 30 focused reader journeys, analysis and debug build passed.
+The review report contains before/after production-widget test renders. No
+physical-device or emulator session was available; live accounts, media playback,
+TalkBack and sustained performance still need hands-on review.
+
 ### aimdi126
 
 **XTA, built directly on the released aimdi125 XTA tree. Not QuaX.**
