@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/rss/rss_add_screen.dart';
@@ -30,13 +31,16 @@ class RssScreen extends StatefulWidget {
 }
 
 class _RssScreenState extends State<RssScreen> {
-  final _view = PluginViewStore<int>(0);
+  late final PluginSessionLease _session;
+  late final PluginViewStore<int> _view;
   int get _tab => _view.state;
   final _feedsScroll = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'rss');
+    _view = _session.obtain('view', () => PluginViewStore<int>(0));
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final feeds = context.read<RssFeedsStore>();
@@ -57,7 +61,7 @@ class _RssScreenState extends State<RssScreen> {
 
   @override
   void dispose() {
-    _view.destroy();
+    _session.dispose();
     _feedsScroll.dispose();
     super.dispose();
   }

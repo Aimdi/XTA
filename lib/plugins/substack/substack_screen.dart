@@ -9,6 +9,7 @@ import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/substack/substack_add_screen.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
@@ -34,7 +35,8 @@ class SubstackScreen extends StatefulWidget {
 }
 
 class _SubstackScreenState extends State<SubstackScreen> {
-  final _view = PluginViewStore<int>(0);
+  late final PluginSessionLease _session;
+  late final PluginViewStore<int> _view;
   int get _tab => _view.state;
   final _notesScrollController = ScrollController();
   final _inboxScrollController = ScrollController();
@@ -43,6 +45,8 @@ class _SubstackScreenState extends State<SubstackScreen> {
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'substack');
+    _view = _session.obtain('view', () => PluginViewStore<int>(0));
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final pubs = context.read<SubstackPublicationsStore>();
@@ -69,7 +73,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
 
   @override
   void dispose() {
-    _view.destroy();
+    _session.dispose();
     _notesScrollController.dispose();
     _inboxScrollController.dispose();
     _libraryScrollController.dispose();

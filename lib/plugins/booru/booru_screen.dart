@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
@@ -30,7 +31,8 @@ class BooruScreen extends StatefulWidget {
 }
 
 class _BooruScreenState extends State<BooruScreen> {
-  final _tabs = PluginViewStore<int>(0);
+  late final PluginSessionLease _session;
+  late final PluginViewStore<int> _tabs;
   late final BooruFeedStore _latest;
   late final BooruFeedStore _following;
   Disposer? _tagsDisposer;
@@ -40,12 +42,20 @@ class _BooruScreenState extends State<BooruScreen> {
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'booru');
+    _tabs = _session.obtain('view', () => PluginViewStore<int>(0));
     final client = context.read<BooruClient>();
-    _latest = BooruFeedStore(
+    _latest = _session.obtain('latest', () => BooruFeedStore(
       client,
       ({required page}) => client.latest(page: page),
-    );
-    _following = BooruFeedStore(client, _followingLoader);
+    ));
+    final tagStore = context.read<BooruTagsStore>();
+    _following = _session.obtain('following', () => BooruFeedStore(client, ({required page}) async {
+      final tags = tagStore.state;
+      if (tags.isEmpty || page > 1) return BooruPostPage(posts: const [], page: page, hasMore: false);
+      return BooruPostPage(posts: await client.postsForTags(tags), page: 1, hasMore: false);
+    }));
+    _followingBootstrapped = _following.state.isNotEmpty;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -72,18 +82,6 @@ class _BooruScreenState extends State<BooruScreen> {
     });
   }
 
-  Future<BooruPostPage> _followingLoader({required int page}) async {
-    final tags = context.read<BooruTagsStore>().state;
-    if (tags.isEmpty) {
-      return const BooruPostPage(posts: [], page: 1, hasMore: false);
-    }
-    if (page > 1) {
-      return BooruPostPage(posts: const [], page: page, hasMore: false);
-    }
-    final posts = await context.read<BooruClient>().postsForTags(tags);
-    return BooruPostPage(posts: posts, page: 1, hasMore: false);
-  }
-
   Future<void> _ensureFollowing() async {
     if (_followingBootstrapped) return;
     _followingBootstrapped = true;
@@ -107,9 +105,7 @@ class _BooruScreenState extends State<BooruScreen> {
       // ignore: discarded_futures
       disposeObserver();
     }
-    _tabs.destroy();
-    _latest.destroy();
-    _following.destroy();
+    _session.dispose();
     super.dispose();
   }
 

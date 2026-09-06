@@ -23,6 +23,7 @@ import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/search/search.dart';
 import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
@@ -87,7 +88,11 @@ class HomeScreen extends StatelessWidget {
     var prefs = PrefService.of(context, listen: false);
     var model = context.read<HomeModel>();
 
-    return _HomeScreen(prefs: prefs, model: model);
+    return Provider<PluginSessionStore>(
+      create: (_) => PluginSessionStore(),
+      dispose: (_, session) => session.destroy(),
+      child: _HomeScreen(prefs: prefs, model: model),
+    );
   }
 }
 

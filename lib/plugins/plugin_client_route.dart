@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/ui/reader_chrome.dart';
 
 /// Opens the existing full client without changing pins or navigation settings.
 Future<void> openPluginClient(BuildContext context, XtaPlugin plugin) {
+  final session = context.read<PluginSessionStore?>();
   return Navigator.push<void>(
     context,
-    MaterialPageRoute(builder: (_) => _PluginClientPage(plugin: plugin)),
+    MaterialPageRoute(builder: (_) => Provider<PluginSessionStore?>.value(
+      value: session, child: _PluginClientPage(plugin: plugin),
+    )),
   );
 }
 

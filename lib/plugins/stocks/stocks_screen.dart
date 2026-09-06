@@ -7,6 +7,7 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
@@ -411,11 +412,19 @@ class _WatchlistPostsFeed extends StatefulWidget {
 }
 
 class _WatchlistPostsFeedState extends State<_WatchlistPostsFeed> {
-  late final TweetFeedController _feed = TweetFeedController();
+  late final PluginSessionLease _session;
+  late final TweetFeedController _feed;
+
+  @override
+  void initState() {
+    super.initState();
+    _session = PluginSessionLease(context, 'stocks-posts');
+    _feed = _session.obtain(widget.query, TweetFeedController.new, dispose: (feed) => feed.dispose());
+  }
 
   @override
   void dispose() {
-    _feed.dispose();
+    _session.dispose();
     super.dispose();
   }
 

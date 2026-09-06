@@ -6,6 +6,7 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/tiktok/tiktok_errors.dart';
 import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
@@ -30,12 +31,15 @@ class TikTokScreen extends StatefulWidget {
 }
 
 class _TikTokScreenState extends State<TikTokScreen> {
-  final _tabs = _TikTokTabStore();
+  late final PluginSessionLease _session;
+  late final _TikTokTabStore _tabs;
   late final TikTokFollowingStore _following;
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'tiktok');
+    _tabs = _session.obtain('view', () => _TikTokTabStore());
     _following = context.read<TikTokFollowingStore>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -55,7 +59,7 @@ class _TikTokScreenState extends State<TikTokScreen> {
 
   @override
   void dispose() {
-    _tabs.destroy();
+    _session.dispose();
     super.dispose();
   }
 

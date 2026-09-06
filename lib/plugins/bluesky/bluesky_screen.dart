@@ -7,6 +7,7 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_discovery.dart';
@@ -47,7 +48,8 @@ class BlueskyScreen extends StatefulWidget {
 
 class _BlueskyScreenState extends State<BlueskyScreen>
     with AutomaticKeepAliveClientMixin {
-  final _shell = _BlueskyShellStore();
+  late final PluginSessionLease _session;
+  late final _BlueskyShellStore _shell;
   final _algoScrollController = ScrollController();
   final _listsScrollController = ScrollController();
   final _likedScrollController = ScrollController();
@@ -58,6 +60,8 @@ class _BlueskyScreenState extends State<BlueskyScreen>
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'bluesky');
+    _shell = _session.obtain('view', () => _BlueskyShellStore());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadHome();
@@ -70,7 +74,7 @@ class _BlueskyScreenState extends State<BlueskyScreen>
     _algoScrollController.dispose();
     _listsScrollController.dispose();
     _likedScrollController.dispose();
-    _shell.destroy();
+    _session.dispose();
     super.dispose();
   }
 

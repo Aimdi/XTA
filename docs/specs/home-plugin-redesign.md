@@ -105,3 +105,15 @@ These are source/README observations, not claims of having operated those apps.
 
 Implementation progress and the complete registry matrix live in
 `docs/home-plugin-redesign-checklist.md`.
+
+## Session retention implementation
+
+Home provides a small `PluginSessionStore` that owns the existing screen-local
+reader stores for its lifetime. A lease outside Home keeps the prior route-local
+ownership. This preserves loaded pages and pagination cursors in Pixiv, HN,
+Instagram, Booru and EhViewer when the source shell remounts, and cashtag pages
+for the exact Stocks query. Full-client routes inherit the same session.
+Section choices share the session where appropriate; PageStorage keeps pane
+scroll positions. No offstage plugin lists or new network/cache services are
+created. Only a visited reader constructs its stores, and only its selected
+section loads. Home source/refresh epochs now use `HomeFeedViewStore`.

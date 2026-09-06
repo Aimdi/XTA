@@ -16,6 +16,7 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -32,15 +33,18 @@ class InstagramScreen extends StatefulWidget {
 }
 
 class _InstagramScreenState extends State<InstagramScreen> {
-  final _tabs = _InstagramTabStore();
+  late final PluginSessionLease _session;
+  late final _InstagramTabStore _tabs;
   late final InstagramFollowingStore _following;
   late final InstagramForYouStore _forYou;
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'instagram');
+    _tabs = _session.obtain('view', () => _InstagramTabStore());
     _following = context.read<InstagramFollowingStore>();
-    _forYou = InstagramForYouStore(context.read<InstagramClient>());
+    _forYou = _session.obtain('for-you', () => InstagramForYouStore(context.read<InstagramClient>()));
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -59,8 +63,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
 
   @override
   void dispose() {
-    _tabs.destroy();
-    _forYou.destroy();
+    _session.dispose();
     super.dispose();
   }
 

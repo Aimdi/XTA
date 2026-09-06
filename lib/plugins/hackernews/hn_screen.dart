@@ -13,6 +13,7 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -29,18 +30,21 @@ class HnScreen extends StatefulWidget {
 }
 
 class _HnScreenState extends State<HnScreen> {
-  final _tabs = _HnTabStore();
+  late final PluginSessionLease _session;
+  late final _HnTabStore _tabs;
   late final Map<HnFeed, HnFeedStore> _feeds;
   late final HnFollowingStore _following;
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'hackernews');
+    _tabs = _session.obtain('view', () => _HnTabStore());
     final client = context.read<HackerNewsClient>();
     _feeds = {
-      for (final feed in HnFeed.values) feed: HnFeedStore(client, feed),
+      for (final feed in HnFeed.values) feed: _session.obtain('feed-${feed.name}', () => HnFeedStore(client, feed)),
     };
-    _following = HnFollowingStore(client, context.read<HnFollowsStore>());
+    _following = _session.obtain('following', () => HnFollowingStore(client, context.read<HnFollowsStore>()));
     WidgetsBinding.instance.addPostFrameCallback((_) => _prime());
   }
 
@@ -52,16 +56,12 @@ class _HnScreenState extends State<HnScreen> {
     if (!mounted) return;
     await context.read<HnFollowsStore>().load();
     if (!mounted) return;
-    await _feeds[HnFeed.top]!.refresh();
+    // The selected pane loads itself; opening a restored section must not fetch Top.
   }
 
   @override
   void dispose() {
-    for (final store in _feeds.values) {
-      store.destroy();
-    }
-    _following.destroy();
-    _tabs.destroy();
+    _session.dispose();
     super.dispose();
   }
 

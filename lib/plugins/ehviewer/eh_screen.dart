@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
@@ -31,7 +32,8 @@ class EhScreen extends StatefulWidget {
 }
 
 class _EhScreenState extends State<EhScreen> {
-  final _view = PluginViewStore<({int tab, EhToplistPeriod period})>((tab: 0, period: EhToplistPeriod.yesterday));
+  late final PluginSessionLease _session;
+  late final PluginViewStore<({int tab, EhToplistPeriod period})> _view;
   int get _tab => _view.state.tab;
   EhToplistPeriod get _toplistPeriod => _view.state.period;
   late final EhFeedStore _popular;
@@ -42,13 +44,17 @@ class _EhScreenState extends State<EhScreen> {
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'ehviewer');
+    _view = _session.obtain('view', () => PluginViewStore<({int tab, EhToplistPeriod period})>(
+      (tab: 0, period: EhToplistPeriod.yesterday)));
+    final view = _view;
     final client = context.read<EhClient>();
-    _popular = EhFeedStore(({pageUrl}) => client.popular(pageUrl: pageUrl));
-    _front = EhFeedStore(({pageUrl}) => client.frontPage(pageUrl: pageUrl));
-    _toplist = EhFeedStore(
-      ({pageUrl}) => client.toplist(_toplistPeriod, pageUrl: pageUrl),
-    );
-    _watched = EhFeedStore(({pageUrl}) => client.watched(pageUrl: pageUrl));
+    _popular = _session.obtain('popular', () => EhFeedStore(({pageUrl}) => client.popular(pageUrl: pageUrl)));
+    _front = _session.obtain('front', () => EhFeedStore(({pageUrl}) => client.frontPage(pageUrl: pageUrl)));
+    _toplist = _session.obtain('toplist', () => EhFeedStore(
+      ({pageUrl}) => client.toplist(view.state.period, pageUrl: pageUrl),
+    ));
+    _watched = _session.obtain('watched', () => EhFeedStore(({pageUrl}) => client.watched(pageUrl: pageUrl)));
 
     final favorites = context.read<EhFavoritesStore>();
     final history = context.read<EhHistoryStore>();
@@ -64,11 +70,7 @@ class _EhScreenState extends State<EhScreen> {
 
   @override
   void dispose() {
-    _view.destroy();
-    _popular.destroy();
-    _front.destroy();
-    _toplist.destroy();
-    _watched.destroy();
+    _session.dispose();
     super.dispose();
   }
 

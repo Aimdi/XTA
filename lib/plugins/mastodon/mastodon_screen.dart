@@ -17,6 +17,7 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
@@ -38,11 +39,14 @@ class _MastodonTabStore extends PluginViewStore<int> {
 }
 
 class _MastodonScreenState extends State<MastodonScreen> {
-  final _tabs = _MastodonTabStore();
+  late final PluginSessionLease _session;
+  late final _MastodonTabStore _tabs;
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'mastodon');
+    _tabs = _session.obtain('view', () => _MastodonTabStore());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         // Explore only. Following used to start the same frame and fan out
@@ -55,7 +59,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
 
   @override
   void dispose() {
-    _tabs.destroy();
+    _session.dispose();
     super.dispose();
   }
 

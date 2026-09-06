@@ -8,6 +8,7 @@ import 'package:xta/plugins/plugin_feed_people.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_plugin.dart';
@@ -53,12 +54,15 @@ class ThreadsScreen extends StatefulWidget {
 }
 
 class _ThreadsScreenState extends State<ThreadsScreen> {
-  final _shell = _ThreadsShellStore();
+  late final PluginSessionLease _session;
+  late final _ThreadsShellStore _shell;
   final _likedScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'threads');
+    _shell = _session.obtain('view', () => _ThreadsShellStore());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadHome();
@@ -69,7 +73,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
   @override
   void dispose() {
     _likedScrollController.dispose();
-    _shell.destroy();
+    _session.dispose();
     super.dispose();
   }
 

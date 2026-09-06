@@ -12,6 +12,7 @@ import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/pixiv/pixiv_plugin.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
+import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/pixiv/pixiv_view_state.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -37,8 +38,8 @@ class PixivScreen extends StatefulWidget {
 }
 
 class _PixivScreenState extends State<PixivScreen> {
-  final _view = PluginViewStore<PixivViewState>(const PixivViewState(),
-    snapshot: (state) => state.copyWith(signingIn: false));
+  late final PluginSessionLease _session;
+  late final PluginViewStore<PixivViewState> _view;
   late final PixivIllustListStore _recommended;
   late final PixivIllustListStore _ranking;
   late final PixivIllustListStore _bookmarks;
@@ -63,23 +64,27 @@ class _PixivScreenState extends State<PixivScreen> {
   @override
   void initState() {
     super.initState();
+    _session = PluginSessionLease(context, 'pixiv');
+    _view = _session.obtain('view', () => PluginViewStore<PixivViewState>(const PixivViewState()));
+    final view = _view;
+    final client = context.read<PixivClient>();
     final mute = context.read<PixivMuteStore>();
-    _recommended = PixivIllustListStore(
-      ({nextUrl}) => context.read<PixivClient>().recommended(nextUrl: nextUrl),
+    _recommended = _session.obtain('recommended', () => PixivIllustListStore(
+      ({nextUrl}) => client.recommended(nextUrl: nextUrl),
       filter: mute.filter,
-    );
-    _ranking = PixivIllustListStore(
-      ({nextUrl}) => context.read<PixivClient>().ranking(
-        mode: _rankingMode,
-        date: _rankingDateParam,
+    ));
+    _ranking = _session.obtain('ranking', () => PixivIllustListStore(
+      ({nextUrl}) => client.ranking(
+        mode: view.state.rankingMode,
+        date: pixivRankingDateParam(view.state.rankingDate),
         nextUrl: nextUrl,
       ),
       filter: mute.filter,
-    );
-    _bookmarks = PixivIllustListStore(
+    ));
+    _bookmarks = _session.obtain('bookmarks', () => PixivIllustListStore(
       _bookmarksLoader(_bookmarksRestrict),
       filter: mute.filter,
-    );
+    ));
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       await mute.load();
@@ -98,8 +103,8 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   PixivIllustPageLoader _bookmarksLoader(String restrict) {
+    final client = context.read<PixivClient>();
     return ({nextUrl}) async {
-      final client = context.read<PixivClient>();
       // Prefer the stored id — verify() always hits the token endpoint and made
       // the Bookmarks tab feel like it loaded forever on every open.
       final userId = await client.ensureUserId();
@@ -113,10 +118,8 @@ class _PixivScreenState extends State<PixivScreen> {
 
   @override
   void dispose() {
-    _view.destroy();
-    _recommended.destroy();
-    _ranking.destroy();
-    _bookmarks.destroy();
+    if (_view.state.signingIn) _view.select(_view.state.copyWith(signingIn: false));
+    _session.dispose();
     super.dispose();
   }
 
@@ -148,12 +151,7 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   /// `YYYY-MM-DD` for the archive request, or null for today's board.
-  String? get _rankingDateParam {
-    final date = _rankingDate;
-    if (date == null) return null;
-    String pad(int v) => '$v'.padLeft(2, '0');
-    return '${date.year}-${pad(date.month)}-${pad(date.day)}';
-  }
+  String? get _rankingDateParam => pixivRankingDateParam(_rankingDate);
 
   /// Shaft-style archive picker: any past day's board, one call away.
   Future<void> _pickRankingDate() async {
@@ -177,10 +175,13 @@ class _PixivScreenState extends State<PixivScreen> {
   }
 
   Future<void> _reloadRanking() async {
+    final client = context.read<PixivClient>();
+    final mode = _rankingMode;
+    final date = _rankingDateParam;
     _ranking.useLoader(
-      ({nextUrl}) => context.read<PixivClient>().ranking(
-        mode: _rankingMode,
-        date: _rankingDateParam,
+      ({nextUrl}) => client.ranking(
+        mode: mode,
+        date: date,
         nextUrl: nextUrl,
       ),
     );
@@ -595,4 +596,10 @@ class PixivHomeChrome extends StatelessWidget {
       ],
     );
   }
+}
+
+String? pixivRankingDateParam(DateTime? date) {
+  if (date == null) return null;
+  String pad(int value) => '$value'.padLeft(2, '0');
+  return '${date.year}-${pad(date.month)}-${pad(date.day)}';
 }
