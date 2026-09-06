@@ -3,6 +3,13 @@
 Base: `4c6b8e87f4acce99b6998ac2b65a13892ac41673` (`aimdi126`).
 Branch: `codex/home-plugin-redesign`. No merge, tag or release publication.
 
+Completed implementation and CI verification at
+`8429faa5ccbc662296087350f875f30171971090`: 2,179 tests passed, five opt-in
+live tests skipped, all 30 focused reader journeys passed, analysis and Android
+debug build passed. The final commit updates this checklist only; application
+source is identical to the verified APK commit. Device/live-service limits are
+listed below. Review: [draft PR #254](https://github.com/Aimdi/XTA/pull/254).
+
 ## Checklist
 
 - [x] Read uploaded requirements, AGENTS, CLAUDE, README, SDK pins, workflows,
@@ -12,9 +19,9 @@ Branch: `codex/home-plugin-redesign`. No merge, tag or release publication.
 - [x] Compare two Home layouts; write design/navigation/reference decisions.
 - [x] Home contextual navigation and production-used shared presentation.
 - [x] Reddit, Pixiv, RSS pilots, interaction assertions and test renders.
-- [x] Remaining browsing clients and integration setup (verification pending).
-- [ ] Format, code generation, analysis, deterministic tests, debug APK.
-- [ ] Final frozen-file check, commit and per-plugin evidence review.
+- [x] Remaining browsing clients and integration setup; deterministic scope below.
+- [x] Format, code generation, analysis, deterministic tests, debug APK.
+- [x] Final frozen-file check, commit and per-plugin evidence review.
 
 ## Registry coverage matrix
 
@@ -51,8 +58,8 @@ placeholder warnings. `bash scripts/check_skill_sync.sh` -> pass.
 No local Flutter/FVM/Android SDK and no connected device. Production baseline
 verify run `33641378899` and build run `33641378888` both succeeded.
 
-Final commands/results, artifact URLs and remaining device/live-service limits
-will be recorded here as verification completes.
+The following checkpoints preserve the investigation history; their pending
+items are resolved by the final verification record below.
 
 Checkpoint: social/community UI commit `29bc60d558e933721d57859916473740be9a71dd`.
 Pilot static analysis succeeded. Evidence capture required a fake-clock fix;
@@ -121,7 +128,7 @@ large text and keyboard insets in view. No live service is contacted.
 | Pixiv | descriptor Home journey through source, ranking modes/date picker and private Favorites; auth/mute/bookmark/grid suites; section renders | No live login or artwork download; production grids use fixture data in tests. |
 | Booru | parser and private catalogue tests; empty/one/full gallery controller and translated card fixtures | Private plugin visibility is unchanged; live searches/viewer require device checks. |
 | EhViewer | client/parser/private catalogue tests; gallery-controller and reader jump/cancel fixtures | No private session or live gallery access exercised. |
-| Stocks | watchlist/query/market formatting suites; actual empty Home and add/cancel fixture | No live prices, freshness claim, portfolio or trade action added. |
+| Stocks | watchlist/query and ticker quote/symbol suites; actual empty Home and add/cancel fixture | No live prices, freshness claim, portfolio or trade action added. |
 | Karakeep | actual descriptor settings journey at 320dp, large text and keyboard; stale probe/Save routing; client/title tests | Connection responses are stubbed; no server contact or remote save occurs in UI tests. |
 | Deepmarks | actual descriptor settings journey including stale probe and unknown owner feedback; client/Nostr tests | No real signing identity, owner lookup or remote save exercised. |
 | Immich | actual descriptor settings journey with keyboard; stale probe/Save routing; client/media tests | No server contact, folder selection or upload occurs in UI tests. |
@@ -131,3 +138,47 @@ and gesture navigation, live authentication, media playback, private sessions
 and sustained performance still need device review. Debug builds do not prove
 release signing or upgrade compatibility. Final artifact commit, checksum and
 full-suite results are recorded in the review deliverable and draft PR #254.
+
+## Final verification record — 6 September 2026
+
+Application/APK commit: `8429faa5ccbc662296087350f875f30171971090`.
+The documentation-only closing commit does not alter this tested source.
+The production base remains `4c6b8e87f4acce99b6998ac2b65a13892ac41673`, matching
+`claude/main` and `aimdi126` when rechecked. The final diff contains 79 files.
+Every redesigned component is used by the existing production entry points;
+the matrix above describes each plugin's implemented work and evidence limits.
+
+[Repository verification](https://github.com/Aimdi/XTA/actions/runs/34007374262)
+and the [exact-source review build](https://github.com/Aimdi/XTA/actions/runs/34007374255)
+both succeeded. CI selects Flutter 3.44.4 from the unchanged `.fvmrc`; no local
+Flutter, Android SDK, emulator or connected device was available.
+
+| Command / check | Result |
+| --- | --- |
+| `flutter pub get`; `dart run intl_utils:generate`; `dart run flutter_iconpicker:generate_packs --packs material` | Passed with pinned dependencies. Repository verification also ran `dart run dart_pubspec_licenses:generate`. |
+| `dart format --line-length 120` on the 47 touched Dart files | 47 formatted, zero changed. |
+| `dart run arb_utils sort` and `dart run arb_utils generate-meta` for each ARB | Passed; final combined formatter/ARB patch is zero bytes. |
+| `python scripts/validate_arb.py` | 1,527 keys across 28 translated locales; no errors. Existing placeholder warnings remain. |
+| `bash scripts/check_skill_sync.sh` | Passed. |
+| `flutter analyze --no-fatal-infos` | Passed, no errors or warnings; informational lints remain. |
+| `flutter test test/home_plugin_journeys_test.dart test/pixiv_reader_journey_test.dart test/plugin_connection_journeys_test.dart test/plugin_reader_accessibility_test.dart --reporter expanded --timeout 60s` | All 30 focused checks passed; no missed-tap warnings. |
+| `flutter test --reporter expanded` | 2,179 passed; five opt-in live-service tests skipped in both verification runs. |
+| `flutter test test/home_plugin_evidence_test.dart --reporter expanded` against `aimdi126` | All three baseline fixture render checks passed. |
+| `python generate_icons.py`; `dart run flutter_launcher_icons`; `flutter build apk --debug` | Passed; debug APK built at 02:58:41 UTC. |
+| Final diff scope and artifact integrity | Frozen directories, plugin backend services, dependencies, SDK/package/signing configuration unchanged; APK source SHA, artifact ZIP integrity and checksum verified. |
+
+Artifact `home-plugin-review-8429faa5ccbc662296087350f875f30171971090`
+([GitHub artifact 9981514158](https://github.com/Aimdi/XTA/actions/runs/34007374255/artifacts/9981514158))
+contains the debug APK, source SHA, raw analysis/test/journey logs, zero-byte
+formatter patch and eight PNG renders. GitHub retention is seven days; the APK,
+standalone HTML review and evidence ZIP are also delivered with the task.
+
+APK: `XTA-Home-Plugin-Debug-8429faa5.apk`, 226,415,403 bytes.
+SHA-256: `a54f5f8ef91a50ef365039cf62bd8c40e48b150e37e29a6ec0d6d526bf1fe372`.
+
+The eight images comprise before/after RSS light, RSS dark and Reddit/Pixiv
+section controls, plus the actual Home HN and RSS entry points. All are
+production-widget test renders with deterministic fixture data. They were
+visually reviewed; none is presented as a running-APK screenshot. Manual
+device, live-account, playback, TalkBack and sustained-performance review
+remain outstanding. Debug signing is not proof of release upgrade compatibility.
