@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Адпісацца",
   "@plugin_mastodon_unfollow": {},
   "plugin_open": "Адкрыць",
+  "@plugin_open": {},
   "plugin_open_client": "Адкрыць {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Дадаткова: уставіць refresh-токен",
@@ -3200,6 +3201,5 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open": {}
+  "@zen_mode_page_cap_description": {}
 }

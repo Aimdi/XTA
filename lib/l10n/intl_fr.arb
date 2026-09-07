@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Ne plus suivre",
   "@plugin_mastodon_unfollow": {},
   "plugin_open": "Ouvrir",
+  "@plugin_open": {},
   "plugin_open_client": "Ouvrir {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avancé : coller le jeton d’actualisation",
@@ -3200,6 +3201,5 @@
   "zen_mode_page_cap": "Longueur du fil en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open": {}
+  "@zen_mode_page_cap_description": {}
 }

@@ -417,7 +417,8 @@ class _MastodonEngagementRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
-      child: Row(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
         children: [
           TextButton.icon(
             style: footerButtonStyle,
@@ -446,7 +447,6 @@ class _MastodonEngagementRow extends StatelessWidget {
               style: theme.textTheme.bodySmall!.copyWith(color: muted),
             ),
           ),
-          const Spacer(),
           MastodonBookmark(post: post),
           tweetFooterIconButton(
             context,

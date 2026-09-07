@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Отписаться",
   "@plugin_mastodon_unfollow": {},
   "plugin_open": "Открыть",
+  "@plugin_open": {},
   "plugin_open_client": "Открыть {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Дополнительно: вставить refresh-токен",
@@ -3200,6 +3201,5 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open": {}
+  "@zen_mode_page_cap_description": {}
 }

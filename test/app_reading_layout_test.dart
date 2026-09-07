@@ -21,44 +21,84 @@ void main() {
     await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
     await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
-  for (final variant in ['profile', 'media', 'thread', 'thread-black', 'thread-large-rtl', 'saved', 'discover', 'settings', 'setting-target']) {
+  for (final variant in [
+    'profile',
+    'media',
+    'thread',
+    'thread-black',
+    'thread-large-rtl',
+    'saved',
+    'discover',
+    'settings',
+    'setting-target',
+  ]) {
     testWidgets('app reading layout $variant', (tester) async {
       final large = variant == 'thread-large-rtl';
-      tester.view.physicalSize = Size(large ? 320 : 390, 844); tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize); addTearDown(tester.view.resetDevicePixelRatio);
-      final oldOverrides = HttpOverrides.global;
+      tester.view.physicalSize = Size(large ? 320 : 390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final oldOverrides = HttpOverrides.current;
       final bytes = await tester.runAsync(reviewImageBytes);
       HttpOverrides.global = ReviewImageOverrides(bytes!);
       addTearDown(() => HttpOverrides.global = oldOverrides);
-      final h = ReaderReviewHarness(); addTearDown(() => h.close(tester));
-      for (final entry in readerMediaPreferences().entries) { await h.prefs.set(entry.key, entry.value); }
+      final h = ReaderReviewHarness();
+      addTearDown(() => h.close(tester));
+      for (final entry in readerMediaPreferences().entries) {
+        await h.prefs.set(entry.key, entry.value);
+      }
       await h.prefs.set(optionPluginMastodonEnabled, true);
-      await h.prefs.set(recentSearchesPreference, jsonEncode({'mastodon': ['photography', 'design', 'opensource']}));
-      final scope = SearchScopeStore()..select(pluginIdMastodon); final query = DiscoverQueryStore();
+      await h.prefs.set(
+        recentSearchesPreference,
+        jsonEncode({
+          'mastodon': ['photography', 'design', 'opensource'],
+        }),
+      );
+      final scope = SearchScopeStore()..select(pluginIdMastodon);
+      final query = DiscoverQueryStore();
       final focus = FocusNode();
-      addTearDown(scope.destroy); addTearDown(query.destroy); addTearDown(focus.dispose);
+      addTearDown(scope.destroy);
+      addTearDown(query.destroy);
+      addTearDown(focus.dispose);
       final Widget screen = switch (variant) {
         'profile' || 'media' => const MastodonProfileScreen(acct: 'maya@studio.example'),
         'saved' => SavedScreen(scrollController: h.scroll),
-        'discover' => MultiProvider(providers: [Provider<SearchScopeStore>.value(value: scope),
-          Provider<DiscoverQueryStore>.value(value: query)], child: TrendsScreen(scrollController: h.scroll, focusNode: focus)),
+        'discover' => MultiProvider(
+          providers: [
+            Provider<SearchScopeStore>.value(value: scope),
+            Provider<DiscoverQueryStore>.value(value: query),
+          ],
+          child: TrendsScreen(scrollController: h.scroll, focusNode: focus),
+        ),
         'settings' || 'setting-target' => const SettingsScreen(),
         _ => MastodonThreadScreen(post: reviewPost('root')),
       };
-      await tester.pumpWidget(h.providers(h.app(child: screen, dark: variant == 'thread-black', scale: large ? 2 : 1, rtl: large)));
+      await tester.pumpWidget(
+        h.providers(h.app(child: screen, dark: variant == 'thread-black', scale: large ? 2 : 1, rtl: large)),
+      );
       await tester.pumpAndSettle();
-      if (variant == 'media') { await tester.tap(find.text('Media')); await tester.pumpAndSettle(); }
+      if (variant == 'media') {
+        await tester.tap(find.text('Media'));
+        await tester.pumpAndSettle();
+      }
       if (variant == 'settings' || variant == 'setting-target') {
         await tester.enterText(find.byType(TextField), variant == 'settings' ? 'video' : 'autoplay');
         await tester.pumpAndSettle();
-        if (variant == 'setting-target') { await tester.tap(find.text('Autoplay videos')); await tester.pumpAndSettle(); }
+        if (variant == 'setting-target') {
+          await tester.tap(find.text('Autoplay videos'));
+          await tester.pumpAndSettle();
+        }
       }
       // Image decoding finishes outside the fake test clock.
-      await tester.runAsync(() async { await Future<void>.delayed(const Duration(milliseconds: 80)); });
+      await tester.runAsync(() async {
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+      });
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      await expectLater(find.byKey(const ValueKey('mastodon-window')),
-        matchesGoldenFile('../review-artifacts/renders/app-$variant.png'));
+      await expectLater(
+        find.byKey(const ValueKey('mastodon-window')),
+        matchesGoldenFile('../review-artifacts/renders/app-$variant.png'),
+      );
     });
   }
 }

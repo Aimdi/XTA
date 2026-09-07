@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Jarraitzeari utzi",
   "@plugin_mastodon_unfollow": {},
   "plugin_open": "Ireki",
+  "@plugin_open": {},
   "plugin_open_client": "Ireki {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Aurreratua: itsatsi freskatze-tokena",
@@ -3200,6 +3201,5 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open": {}
+  "@zen_mode_page_cap_description": {}
 }

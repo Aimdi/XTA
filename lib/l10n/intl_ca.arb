@@ -1827,6 +1827,7 @@
   "plugin_mastodon_unfollow": "Deixa de seguir",
   "@plugin_mastodon_unfollow": {},
   "plugin_open": "Obre",
+  "@plugin_open": {},
   "plugin_open_client": "Obre {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avançat: enganxa el testimoni d’actualització",
@@ -3200,6 +3201,5 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {},
-  "@plugin_open": {}
+  "@zen_mode_page_cap_description": {}
 }
