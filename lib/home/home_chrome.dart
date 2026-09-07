@@ -5,7 +5,7 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const double kHomeNavigationHeight = 64;
-const double kHomeFeedStripHeight = kTweetTouchTarget;
+const double kHomeFeedStripHeight = 64;
 const double kHomeFeedTabHorizontalPadding = 12;
 const double kHomeFeedIndicatorThickness = 2;
 const double kHomeAppBarEndInset = kTweetSpace1;
@@ -47,7 +47,7 @@ class HomeAppBarActions extends StatelessWidget {
   }
 }
 
-/// Home's single-row, scrollable feed selector with a fixed add action.
+/// Source dock above the app navigation, separate from the reading controls.
 class HomeFeedStrip extends StatelessWidget {
   final List<Widget> tabs;
   final ValueChanged<int>? onTap;
@@ -69,9 +69,15 @@ class HomeFeedStrip extends StatelessWidget {
 
     return SizedBox(
       height: kHomeFeedStripHeight,
-      child: ColoredBox(
-        color: tokens?.background ?? theme.colorScheme.surface,
-        child: Row(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: tokens?.background ?? theme.colorScheme.surface,
+          border: Border(top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
               child: TabBar(
@@ -84,7 +90,13 @@ class HomeFeedStrip extends StatelessWidget {
                 indicatorColor: tweetReadableAccentColor(context),
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorWeight: kHomeFeedIndicatorThickness,
-                labelColor: tweetPrimaryColor(context),
+                indicator: BoxDecoration(
+                  color: tweetAccentColor(context).withValues(alpha: 0.12),
+                  border: Border.all(color: tweetReadableAccentColor(context).withValues(alpha: 0.5)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
+                labelColor: tweetReadableAccentColor(context),
                 unselectedLabelColor: tweetSecondaryColor(context),
                 labelStyle: tweetLabelStyle(context),
                 unselectedLabelStyle: tweetLabelStyle(
@@ -113,6 +125,7 @@ class HomeFeedStrip extends StatelessWidget {
               ),
             ),
           ],
+          ),
         ),
       ),
     );

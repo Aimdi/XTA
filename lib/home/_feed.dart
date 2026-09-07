@@ -11,12 +11,15 @@ import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_timeline_controls.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/_settings.dart';
+import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/home/home_feed_view_store.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
-import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
@@ -200,6 +203,7 @@ class _FeedScreenState extends State<FeedScreen> {
   HomeAccountFilterStore? _accountFilter;
   HomeGroupFilterStore? _groupFilter;
   Timer? _unreadReloadDebounce;
+  bool _restoredMediaMode = false;
   Set<String> _lastDisabledAccountIds = const {};
   Set<String> _lastDisabledGroupIds = const {};
   List<String> _lastStripPlugins = const [];
@@ -207,6 +211,14 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (!_restoredMediaMode) {
+      _restoredMediaMode = true;
+      try {
+        _view.setFollowingMediaOnly(context.read<FeedSessionCache>().readMediaOnly(homeFollowingCacheKey(widget.id)));
+      } on ProviderNotFoundException {
+        // Standalone Home test hosts do not need a session cache.
+      }
+    }
     final store = context.read<FeedTabStore>();
     if (!identical(store, _tabStore)) {
       _tabStore = store;
@@ -352,12 +364,43 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadUnreadSoon();
   }
 
-  Future<void> _refreshActiveTab(BuildContext feedContext) async {
-    await scrollToTop(context, widget.scrollController);
-    if (!mounted || !feedContext.mounted) {
-      return;
+  void _toggleMediaOnly() {
+    final next = !_view.state.followingMediaOnly;
+    _view.setFollowingMediaOnly(next);
+    try {
+      context.read<FeedSessionCache>().saveMediaOnly(homeFollowingCacheKey(widget.id), next);
+    } on ProviderNotFoundException {
+      // The view store still retains the choice throughout this Home session.
     }
-    await feedContext.read<FeedRefreshController>().refresh();
+  }
+
+  Future<void> _selectOrder(BuildContext context, GroupModel model, int order) async {
+    if (order == 2) {
+      if (!model.state.custom) await model.toggleSubscriptionGroupCustom(true);
+      if (!context.mounted) return;
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => GroupCustomSettingsScreen(model: model)));
+    } else {
+      await model.toggleSubscriptionGroupPopular(order == 1);
+    }
+  }
+
+  PreferredSizeWidget _readingControls(BuildContext context) {
+    final model = context.read<GroupModel>();
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kHomeTimelineControlsHeight),
+      child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+        store: model,
+        onState: (context, group) => group.id.isEmpty
+            ? const SizedBox(height: kHomeTimelineControlsHeight)
+            : HomeTimelineControls(
+                group: group,
+                mediaOnly: _view.state.followingMediaOnly,
+                onOrderSelected: (order) => _selectOrder(context, model, order),
+                onMediaToggle: _toggleMediaOnly,
+                onFilters: () => showFeedSettings(context, model),
+              ),
+      ),
+    );
   }
 
   String _unreadKeyFor(FeedTab tab) {
@@ -418,42 +461,14 @@ class _FeedScreenState extends State<FeedScreen> {
       flatAppBar: true,
       fixedHeader: true,
       leading: const DrawerAvatarButton(),
-      titleBuilder: (context) =>
-          HomeAppBarTitle(label: tab.isPlugin ? pluginById(tab.id)!.title(context) : L10n.of(context).home),
-      bottomBuilder: (context) => PreferredSize(
-        preferredSize: const Size.fromHeight(kHomeFeedStripHeight),
-        child: DefaultTabController(
-          key: ValueKey('${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch'),
-          length: visible.length,
-          initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
-          child: GroupUnreadScope(
-            builder: (context, unreadIds) => HomeFeedStrip(
-              tabs: [
-                for (final e in visible)
-                  Tab(
-                    child: FeedStripTab(
-                      title: e.titleBuilder(context),
-                      icon: e.icon ?? e.id.icon,
-                      mark: e.mark,
-                      unread: unreadIds.contains(_unreadKeyFor(e.id)),
-                    ),
-                  ),
-              ],
-              onTap: (index) {
-                _selectStripTab(visible[index].id);
-              },
-              addTooltip: L10n.of(context).feed_strip_add,
-              onAdd: () async {
-                final pinnedId = await showFeedStripAddSheet(context);
-                if (!context.mounted || pinnedId == null) return;
-                await rememberNetwork(context, pinnedId);
-                if (!context.mounted) return;
-                _selectStripTab(FeedTab(pinnedId));
-              },
-            ),
-          ),
-        ),
-      ),
+      titleBuilder: (context) {
+        final source = available.firstWhere((option) => option.id == tab);
+        return HomeTimelineTitle(
+          label: source.titleBuilder(context),
+          mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+        );
+      },
+      bottomBuilder: tab == FeedTab.following ? _readingControls : null,
       actionsBuilder: (context) {
         // Reddit brings its own bar: sorting, search and adding a subreddit
         // are what this feed is steered with, and the generic feed actions
@@ -495,9 +510,9 @@ class _FeedScreenState extends State<FeedScreen> {
         final actions = defaultGroupActions(
           context,
           model: model,
-          showMore: tab == FeedTab.following,
+          showMore: false,
           showRefresh: tab == FeedTab.foryou,
-          onRefresh: () => _refreshActiveTab(context),
+          onRefresh: () => _remountForYou(scrollToTopFirst: true),
           showSettings: false,
           extra: [
             IconButton(
@@ -514,7 +529,16 @@ class _FeedScreenState extends State<FeedScreen> {
         );
         return [HomeAppBarActions(children: actions)];
       },
-      bodyBuilder: (context) {
+      bodyBuilder: (context) => Column(
+        children: [
+          Expanded(child: _timelineBody(tab, prefs)),
+          _sourceDock(context, visible, tab),
+        ],
+      ),
+    );
+  }
+
+  Widget _timelineBody(FeedTab tab, BasePrefService prefs) {
         if (tab == FeedTab.following) {
           // With a cache key this feed survives a trip to another tab, the
           // way a pushed group route already does. Without one, every
@@ -525,6 +549,7 @@ class _FeedScreenState extends State<FeedScreen> {
             key: ValueKey(_followingEpoch),
             id: widget.id,
             cacheKey: homeFollowingCacheKey(widget.id),
+            mediaOnly: _view.state.followingMediaOnly,
           );
         }
         if (tab == FeedTab.foryou) {
@@ -537,7 +562,39 @@ class _FeedScreenState extends State<FeedScreen> {
           );
         }
         return _pluginBody(tab);
-      },
-    );
   }
+
+  Widget _sourceDock(BuildContext context, List<FeedTabOption> visible, FeedTab tab) =>
+DefaultTabController(
+          key: ValueKey('${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch'),
+          length: visible.length,
+          initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
+          child: GroupUnreadScope(
+            builder: (context, unreadIds) => HomeFeedStrip(
+              tabs: [
+                for (final e in visible)
+                  Tab(
+                    child: FeedStripTab(
+                      title: e.titleBuilder(context),
+                      icon: e.icon ?? e.id.icon,
+                      mark: e.mark,
+                      unread: unreadIds.contains(_unreadKeyFor(e.id)),
+                    ),
+                  ),
+              ],
+              onTap: (index) {
+                _selectStripTab(visible[index].id);
+              },
+              addTooltip: L10n.of(context).feed_strip_add,
+              onAdd: () async {
+                final pinnedId = await showFeedStripAddSheet(context);
+                if (!context.mounted || pinnedId == null) return;
+                await rememberNetwork(context, pinnedId);
+                if (!context.mounted) return;
+                _selectStripTab(FeedTab(pinnedId));
+              },
+            ),
+          ),
+        );
+
 }

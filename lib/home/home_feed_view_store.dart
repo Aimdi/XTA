@@ -5,13 +5,27 @@ class HomeFeedViewState {
   final int followingEpoch;
   final int forYouEpoch;
   final int stripEpoch;
-  const HomeFeedViewState({this.sourceId, this.followingEpoch = 0, this.forYouEpoch = 0, this.stripEpoch = 0});
-  HomeFeedViewState copyWith({String? sourceId, int? followingEpoch, int? forYouEpoch, int? stripEpoch}) =>
+  final bool followingMediaOnly;
+  const HomeFeedViewState({
+    this.sourceId,
+    this.followingEpoch = 0,
+    this.forYouEpoch = 0,
+    this.stripEpoch = 0,
+    this.followingMediaOnly = false,
+  });
+  HomeFeedViewState copyWith({
+    String? sourceId,
+    int? followingEpoch,
+    int? forYouEpoch,
+    int? stripEpoch,
+    bool? followingMediaOnly,
+  }) =>
       HomeFeedViewState(
         sourceId: sourceId ?? this.sourceId,
         followingEpoch: followingEpoch ?? this.followingEpoch,
         forYouEpoch: forYouEpoch ?? this.forYouEpoch,
         stripEpoch: stripEpoch ?? this.stripEpoch,
+        followingMediaOnly: followingMediaOnly ?? this.followingMediaOnly,
       );
 }
 
@@ -24,4 +38,5 @@ class HomeFeedViewStore extends Store<HomeFeedViewState> {
   void refreshFollowing() => update(state.copyWith(followingEpoch: state.followingEpoch + 1));
   void refreshForYou() => update(state.copyWith(forYouEpoch: state.forYouEpoch + 1));
   void refreshStrip() => update(state.copyWith(stripEpoch: state.stripEpoch + 1));
+  void setFollowingMediaOnly(bool value) => update(state.copyWith(followingMediaOnly: value));
 }
