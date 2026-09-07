@@ -24,7 +24,13 @@ class _RetrySearch extends MastodonFixtureClient {
   }
 }
 
-Future<void> _open(WidgetTester tester, MastodonHarness h, {bool embedded = false, Widget? child, bool reducedMotion = true}) async {
+Future<void> _open(
+  WidgetTester tester,
+  MastodonHarness h, {
+  bool embedded = false,
+  Widget? child,
+  bool reducedMotion = true,
+}) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
@@ -59,24 +65,23 @@ void main() {
   });
 
   for (final reducedMotion in [true, false]) {
-  testWidgets('Home controls stay hidden until the top, reduced motion: $reducedMotion', (tester) async {
-    final h = MastodonHarness();
-    await _open(tester, h, embedded: true, reducedMotion: reducedMotion);
-    final chrome = find.byKey(const ValueKey('mastodon-compact-controls'));
-    expect(chrome, findsOneWidget);
-    expect(find.byType(NavigationBar), findsNothing);
-    h.scroll.jumpTo(700);
-    await tester.pumpAndSettle();
-    expect(chrome, findsNothing);
-    h.scroll.jumpTo(250);
-    await tester.pumpAndSettle();
-    expect(chrome, findsNothing);
-    h.scroll.jumpTo(0);
-    await tester.pumpAndSettle();
-    expect(chrome, findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
+    testWidgets('Home controls stay hidden until the top, reduced motion: $reducedMotion', (tester) async {
+      final h = MastodonHarness();
+      await _open(tester, h, embedded: true, reducedMotion: reducedMotion);
+      final chrome = find.byKey(const ValueKey('mastodon-compact-controls'));
+      expect(chrome, findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+      h.scroll.jumpTo(700);
+      await tester.pumpAndSettle();
+      expect(chrome, findsNothing);
+      h.scroll.jumpTo(250);
+      await tester.pumpAndSettle();
+      expect(chrome, findsNothing);
+      h.scroll.jumpTo(0);
+      await tester.pumpAndSettle();
+      expect(chrome, findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('Following exposes people, profiles, and a working add action', (tester) async {

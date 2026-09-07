@@ -170,52 +170,60 @@ class MastodonHarness {
     }
   }
 
-  Widget app({bool embedded = false, Widget? child, bool dark = false, double scale = 1, bool rtl = false, bool reducedMotion = true}) =>
-      PrefService(
-        service: prefs,
-        child: MultiProvider(
-          providers: [
-            Provider<MastodonClient>.value(value: client),
-            Provider<MastodonAccountsStore>.value(value: accounts),
-            Provider<MastodonFeedStore>.value(value: following),
-            Provider<MastodonExploreStore>.value(value: explore),
-            Provider<MastodonLocalStore>.value(value: local),
-            Provider<MastodonFederatedStore>.value(value: federated),
-            Provider<PluginSessionStore>.value(value: session),
-          ],
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
-            localizationsDelegates: const [
-              L10n.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: L10n.delegate.supportedLocales,
-            builder: (context, child) => RepaintBoundary(
-              key: const ValueKey('mastodon-window'),
-              child: MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale), disableAnimations: reducedMotion),
-                child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
-              ),
-            ),
-            home: RepaintBoundary(
-              key: const ValueKey('mastodon-render'),
-              child:
-                  child ??
-                  (embedded
-                      ? PluginEmbedded(
-                          child: PrimaryScrollController(
-                            controller: scroll,
-                            child: MastodonPlugin().homeScreen(scrollController: scroll),
-                          ),
-                        )
-                      : MastodonPlugin().clientScreen(scrollController: scroll)),
-            ),
+  Widget app({
+    bool embedded = false,
+    Widget? child,
+    bool dark = false,
+    double scale = 1,
+    bool rtl = false,
+    bool reducedMotion = true,
+  }) => PrefService(
+    service: prefs,
+    child: MultiProvider(
+      providers: [
+        Provider<MastodonClient>.value(value: client),
+        Provider<MastodonAccountsStore>.value(value: accounts),
+        Provider<MastodonFeedStore>.value(value: following),
+        Provider<MastodonExploreStore>.value(value: explore),
+        Provider<MastodonLocalStore>.value(value: local),
+        Provider<MastodonFederatedStore>.value(value: federated),
+        Provider<PluginSessionStore>.value(value: session),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.delegate.supportedLocales,
+        builder: (context, child) => RepaintBoundary(
+          key: const ValueKey('mastodon-window'),
+          child: MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(scale), disableAnimations: reducedMotion),
+            child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
           ),
         ),
-      );
+        home: RepaintBoundary(
+          key: const ValueKey('mastodon-render'),
+          child:
+              child ??
+              (embedded
+                  ? PluginEmbedded(
+                      child: PrimaryScrollController(
+                        controller: scroll,
+                        child: MastodonPlugin().homeScreen(scrollController: scroll),
+                      ),
+                    )
+                  : MastodonPlugin().clientScreen(scrollController: scroll)),
+        ),
+      ),
+    ),
+  );
 
   Future<void> close(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox());
