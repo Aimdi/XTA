@@ -282,7 +282,7 @@ class MainActivity : AudioServiceActivity() {
     private fun cancelDownloadSave(call: MethodCall, result: MethodChannel.Result) {
         val operationId = call.argument<String>("operationId")
         if (operationId == null) { result.success(null); return }
-        downloadCopies[operationId]?.let { cancelled -> synchronized(cancelled) { cancelled.set(true) } }
+        downloadCopies[operationId]?.set(true)
         result.success(null)
     }
 
