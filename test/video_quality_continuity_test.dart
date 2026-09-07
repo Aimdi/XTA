@@ -238,7 +238,12 @@ void main() {
   test('latest choice unblocks when an uncancellable open is still stalled', () async {
     final gate = Completer<void>();
     final player = _player()..beforeOpen = (_) => gate.future;
-    final store = VideoSourceStore(player, _old, isDisposed: () => false, commandTimeout: const Duration(milliseconds: 20));
+    final store = VideoSourceStore(
+      player,
+      _old,
+      isDisposed: () => false,
+      commandTimeout: const Duration(milliseconds: 20),
+    );
     final first = store.change(_high);
     await Future<void>.delayed(Duration.zero);
     final latest = store.change(_medium);
