@@ -6,7 +6,8 @@ import 'package:xta/utils/json.dart';
 String mastodonArchiveId(MastodonPost post) => 'mastodon:${post.url}';
 
 Map<String, dynamic> mastodonArchiveBlob(MastodonPost post) => {
-  'xtaPlugin': 'mastodon', 'post': mastodonPostSnapshot(post),
+  'xtaPlugin': 'mastodon',
+  'post': mastodonPostSnapshot(post),
 };
 
 MastodonPost? mastodonPostFromArchive(Object? value) {
@@ -15,7 +16,10 @@ MastodonPost? mastodonPostFromArchive(Object? value) {
 }
 
 String mastodonArchiveHaystack(MastodonPost post) => [
-  post.text, post.authorName, post.acct, post.spoilerText,
+  post.text,
+  post.authorName,
+  post.acct,
+  post.spoilerText,
   if (post.quote case final quote?) quote.text,
   if (post.linkCard case final card?) ...[card.title ?? '', card.description ?? ''],
 ].join('\n').toLowerCase();

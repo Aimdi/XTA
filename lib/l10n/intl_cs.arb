@@ -1826,6 +1826,7 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "Přestat sledovat",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "Otevřít",
   "plugin_open_client": "Otevřít {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Pokročilé: vložit refresh token",
@@ -3200,5 +3201,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
   "@zen_mode_page_cap_description": {},
-  "plugin_open": "Otevřít"
+  "@plugin_open": {}
 }

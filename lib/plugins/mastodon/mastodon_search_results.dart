@@ -15,8 +15,13 @@ class MastodonSearchResults extends StatelessWidget {
   final VoidCallback onRetry;
   final ValueChanged<int> onSelected;
   final List<ScrollController> positions;
-  const MastodonSearchResults({super.key, required this.state, required this.onRetry,
-    required this.onSelected, required this.positions});
+  const MastodonSearchResults({
+    super.key,
+    required this.state,
+    required this.onRetry,
+    required this.onSelected,
+    required this.positions,
+  });
   List<MastodonTrendingTag> get _tags => state.tags;
   MastodonSearchPage get _results => state.results;
   Object? get _error => state.error;
@@ -24,21 +29,25 @@ class MastodonSearchResults extends StatelessWidget {
   bool get _searched => state.query.isNotEmpty;
   int get _tab => state.tab;
 
-  void _openTag(BuildContext context, MastodonTrendingTag tag) => Navigator.push(context,
-    MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name)));
-  void _openProfile(BuildContext context, MastodonProfile profile) => Navigator.push(context,
-    MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: profile.acct)));
+  void _openTag(BuildContext context, MastodonTrendingTag tag) =>
+      Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name)));
+  void _openProfile(BuildContext context, MastodonProfile profile) =>
+      Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: profile.acct)));
 
   List<Widget> _people(BuildContext context) {
     final accounts = context.read<MastodonAccountsStore?>()?.state ?? const <MastodonAccount>[];
     if (accounts.isEmpty) return const [];
     return [
       Text(L10n.of(context).following, style: Theme.of(context).textTheme.titleSmall),
-      for (final account in accounts.take(4)) ListTile(contentPadding: EdgeInsets.zero,
-        leading: MastodonPersonAvatar(acct: account.acct, name: account.name, url: account.avatarUrl),
-        title: Text(account.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        subtitle: Text('@${account.acct}', maxLines: 1, overflow: TextOverflow.ellipsis),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct)))),
+      for (final account in accounts.take(4))
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: MastodonPersonAvatar(acct: account.acct, name: account.name, url: account.avatarUrl),
+          title: Text(account.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text('@${account.acct}', maxLines: 1, overflow: TextOverflow.ellipsis),
+          onTap: () =>
+              Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct))),
+        ),
       const SizedBox(height: 16),
     ];
   }
@@ -53,11 +62,14 @@ class MastodonSearchResults extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(mastodonErrorMessage(l10n, _error!), textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-          ]),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(mastodonErrorMessage(l10n, _error!), textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              FilledButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+            ],
+          ),
         ),
       );
     }
@@ -65,10 +77,7 @@ class MastodonSearchResults extends StatelessWidget {
     if (_searched) {
       return Column(
         children: [
-          _SearchTabs(
-            selected: _tab,
-            onSelected: onSelected,
-          ),
+          _SearchTabs(selected: _tab, onSelected: onSelected),
           const Divider(height: 1),
           Expanded(child: _resultsPane(context, l10n)),
         ],
@@ -80,22 +89,17 @@ class MastodonSearchResults extends StatelessWidget {
       children: [
         ..._people(context),
         if (_tags.isEmpty) Text(l10n.plugin_mastodon_search_hint),
-        if (_tags.isNotEmpty) Text(
-          l10n.plugin_mastodon_trending,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-        ),
+        if (_tags.isNotEmpty)
+          Text(
+            l10n.plugin_mastodon_trending,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
-            for (final tag in _tags)
-              ActionChip(
-                label: Text('#${tag.name}'),
-                onPressed: () => _openTag(context, tag),
-              ),
+            for (final tag in _tags) ActionChip(label: Text('#${tag.name}'), onPressed: () => _openTag(context, tag)),
           ],
         ),
       ],
@@ -108,7 +112,8 @@ class MastodonSearchResults extends StatelessWidget {
         return Center(child: Text(l10n.plugin_mastodon_no_posts));
       }
       return ListView.builder(
-        key: const PageStorageKey('mastodon-search-posts'), controller: positions[1],
+        key: const PageStorageKey('mastodon-search-posts'),
+        controller: positions[1],
         itemCount: _results.posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
           key: ValueKey(_results.posts[index].id),
@@ -122,7 +127,8 @@ class MastodonSearchResults extends StatelessWidget {
         return Center(child: Text(l10n.plugin_mastodon_no_hashtags));
       }
       return ListView(
-        key: const PageStorageKey('mastodon-search-tags'), controller: positions[2],
+        key: const PageStorageKey('mastodon-search-tags'),
+        controller: positions[2],
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           Wrap(
@@ -130,10 +136,7 @@ class MastodonSearchResults extends StatelessWidget {
             runSpacing: 8,
             children: [
               for (final tag in _results.tags)
-                ActionChip(
-                  label: Text('#${tag.name}'),
-                  onPressed: () => _openTag(context, tag),
-                ),
+                ActionChip(label: Text('#${tag.name}'), onPressed: () => _openTag(context, tag)),
             ],
           ),
         ],
@@ -143,7 +146,8 @@ class MastodonSearchResults extends StatelessWidget {
       return Center(child: Text(l10n.plugin_mastodon_no_results));
     }
     return ListView.separated(
-      key: const PageStorageKey('mastodon-search-accounts'), controller: positions[0],
+      key: const PageStorageKey('mastodon-search-accounts'),
+      controller: positions[0],
       itemCount: _results.accounts.length,
       separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (context, index) {
@@ -155,19 +159,15 @@ class MastodonSearchResults extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          subtitle: Text(
-            '@${profile.acct}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
+          subtitle: Text('@${profile.acct}', maxLines: 1, overflow: TextOverflow.ellipsis),
           onTap: () => _openProfile(context, profile),
         );
       },
     );
   }
 
-  Widget _avatar(BuildContext context, MastodonProfile profile) => MastodonPersonAvatar(
-    acct: profile.acct, name: profile.displayName, url: profile.avatarUrl);
+  Widget _avatar(BuildContext context, MastodonProfile profile) =>
+      MastodonPersonAvatar(acct: profile.acct, name: profile.displayName, url: profile.avatarUrl);
 }
 
 class _SearchTabs extends StatelessWidget {
@@ -179,13 +179,27 @@ class _SearchTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return PluginHomeChrome(tabs: [
-      PluginHomeTab(label: l10n.plugin_mastodon_accounts, icon: Icons.people_outline,
-        selected: selected == 0, onTap: () => onSelected(0)),
-      PluginHomeTab(label: l10n.tweets, icon: Icons.view_stream_outlined,
-        selected: selected == 1, onTap: () => onSelected(1)),
-      PluginHomeTab(label: l10n.plugin_mastodon_hashtags, icon: Icons.tag,
-        selected: selected == 2, onTap: () => onSelected(2)),
-    ]);
+    return PluginHomeChrome(
+      tabs: [
+        PluginHomeTab(
+          label: l10n.plugin_mastodon_accounts,
+          icon: Icons.people_outline,
+          selected: selected == 0,
+          onTap: () => onSelected(0),
+        ),
+        PluginHomeTab(
+          label: l10n.tweets,
+          icon: Icons.view_stream_outlined,
+          selected: selected == 1,
+          onTap: () => onSelected(1),
+        ),
+        PluginHomeTab(
+          label: l10n.plugin_mastodon_hashtags,
+          icon: Icons.tag,
+          selected: selected == 2,
+          onTap: () => onSelected(2),
+        ),
+      ],
+    );
   }
 }

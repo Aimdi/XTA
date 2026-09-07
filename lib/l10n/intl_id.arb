@@ -1826,6 +1826,7 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "Berhenti mengikuti",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "Buka",
   "plugin_open_client": "Buka {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Lanjutan: tempel refresh token",
@@ -3200,5 +3201,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
   "@zen_mode_page_cap_description": {},
-  "plugin_open": "Buka"
+  "@plugin_open": {}
 }

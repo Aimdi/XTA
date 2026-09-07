@@ -224,13 +224,11 @@ class _PluginIconButton extends StatelessWidget {
   final String tooltip;
   final IconData icon;
   final VoidCallback onPressed;
-  final bool selected;
 
   const _PluginIconButton({
     required this.tooltip,
     required this.icon,
     required this.onPressed,
-    this.selected = false,
   });
 
   @override
@@ -245,7 +243,7 @@ class _PluginIconButton extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
       icon: Icon(
         icon,
-        color: selected ? scheme.primary : scheme.onSurfaceVariant,
+        color: scheme.onSurfaceVariant,
       ),
     );
   }

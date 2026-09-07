@@ -12,8 +12,10 @@ class MastodonReplyRow {
 
 /// Preserve API sibling order, keep orphans readable and tolerate cycles.
 List<MastodonReplyRow> mastodonReplyRows(MastodonThread thread, Set<String> collapsed) {
-  final posts = {for (final post in thread.descendants)
-    if (post.id != thread.status.id) post.id: post};
+  final posts = {
+    for (final post in thread.descendants)
+      if (post.id != thread.status.id) post.id: post,
+  };
   final children = <String?, List<String>>{};
   for (final post in posts.values) {
     final parent = posts.containsKey(post.replyToId) && post.replyToId != post.id ? post.replyToId : null;
@@ -28,6 +30,7 @@ List<MastodonReplyRow> mastodonReplyRows(MastodonThread thread, Set<String> coll
     }
     return seen.length - 1;
   }
+
   final rows = <MastodonReplyRow>[];
   final visited = <String>{};
   void visit(String root) {
@@ -41,9 +44,14 @@ List<MastodonReplyRow> mastodonReplyRows(MastodonThread thread, Set<String> coll
       }
     }
   }
-  for (final root in children[null] ?? const <String>[]) { visit(root); }
+
+  for (final root in children[null] ?? const <String>[]) {
+    visit(root);
+  }
   // Cyclic or disconnected data still has a readable representation.
-  for (final id in posts.keys) { if (!visited.contains(id)) visit(id); }
+  for (final id in posts.keys) {
+    if (!visited.contains(id)) visit(id);
+  }
   return rows;
 }
 
@@ -53,8 +61,13 @@ class MastodonThreadState {
   final bool ancestorsOpen;
   final bool loading;
   final Object? error;
-  const MastodonThreadState(this.thread, {this.collapsed = const {}, this.ancestorsOpen = false,
-    this.loading = false, this.error});
+  const MastodonThreadState(
+    this.thread, {
+    this.collapsed = const {},
+    this.ancestorsOpen = false,
+    this.loading = false,
+    this.error,
+  });
 }
 
 class MastodonThreadStore extends Store<MastodonThreadState> {
@@ -68,27 +81,53 @@ class MastodonThreadStore extends Store<MastodonThreadState> {
   void toggle(String id) {
     final collapsed = {...state.collapsed};
     if (!collapsed.remove(id)) collapsed.add(id);
-    update(MastodonThreadState(state.thread, collapsed: collapsed, ancestorsOpen: state.ancestorsOpen,
-      loading: state.loading, error: state.error));
+    update(
+      MastodonThreadState(
+        state.thread,
+        collapsed: collapsed,
+        ancestorsOpen: state.ancestorsOpen,
+        loading: state.loading,
+        error: state.error,
+      ),
+    );
   }
 
-  void toggleAncestors() => update(MastodonThreadState(state.thread, collapsed: state.collapsed,
-    ancestorsOpen: !state.ancestorsOpen, loading: state.loading, error: state.error));
+  void toggleAncestors() => update(
+    MastodonThreadState(
+      state.thread,
+      collapsed: state.collapsed,
+      ancestorsOpen: !state.ancestorsOpen,
+      loading: state.loading,
+      error: state.error,
+    ),
+  );
 
   Future<void> refresh() async {
     final request = ++_request;
-    update(MastodonThreadState(state.thread, collapsed: state.collapsed,
-      ancestorsOpen: state.ancestorsOpen, loading: true));
+    update(
+      MastodonThreadState(state.thread, collapsed: state.collapsed, ancestorsOpen: state.ancestorsOpen, loading: true),
+    );
     try {
       final thread = await client.fetchThreadAnywhere(instances, state.thread.status);
       if (_closed || request != _request) return;
       update(MastodonThreadState(thread, collapsed: state.collapsed, ancestorsOpen: state.ancestorsOpen));
     } catch (error) {
-      if (!_closed && request == _request) update(MastodonThreadState(state.thread,
-        collapsed: state.collapsed, ancestorsOpen: state.ancestorsOpen, error: error));
+      if (!_closed && request == _request)
+        update(
+          MastodonThreadState(
+            state.thread,
+            collapsed: state.collapsed,
+            ancestorsOpen: state.ancestorsOpen,
+            error: error,
+          ),
+        );
     }
   }
 
   @override
-  Future<void> destroy() { _closed = true; _request++; return super.destroy(); }
+  Future<void> destroy() {
+    _closed = true;
+    _request++;
+    return super.destroy();
+  }
 }

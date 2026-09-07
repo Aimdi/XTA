@@ -16,27 +16,43 @@ class MastodonReadPoint {
   final String anchor;
   final double leading;
   final String? instance;
-  const MastodonReadPoint({required this.posts, this.tags = const [], required this.anchor,
-    this.leading = 0, this.instance});
+  const MastodonReadPoint({
+    required this.posts,
+    this.tags = const [],
+    required this.anchor,
+    this.leading = 0,
+    this.instance,
+  });
 
   Map<String, Object?> toJson() => {
-    'posts': posts.map(mastodonPostSnapshot).toList(), 'anchor': anchor,
-    'leading': leading, 'instance': instance,
-    'tags': [for (final tag in tags.take(20)) {'name': tag.name, 'url': tag.url, 'uses': tag.uses}],
+    'posts': posts.map(mastodonPostSnapshot).toList(),
+    'anchor': anchor,
+    'leading': leading,
+    'instance': instance,
+    'tags': [
+      for (final tag in tags.take(20)) {'name': tag.name, 'url': tag.url, 'uses': tag.uses},
+    ],
   };
 
   static MastodonReadPoint? parse(Object? value) {
     final json = Json(value);
-    final posts = [for (final item in json['posts'].list.take(mastodonReadingLimit))
-      ?mastodonPostFromSnapshot(item.raw)];
+    final posts = [
+      for (final item in json['posts'].list.take(mastodonReadingLimit)) ?mastodonPostFromSnapshot(item.raw),
+    ];
     if (posts.isEmpty) return null;
     final rawLeading = json['leading'].raw;
     final leading = rawLeading is num && rawLeading.isFinite ? rawLeading.toDouble().clamp(-10000.0, 10000.0) : 0.0;
-    return MastodonReadPoint(posts: posts, anchor: json['anchor'].string ?? posts.first.url,
-      leading: leading, instance: json['instance'].string,
-      tags: [for (final tag in json['tags'].list.take(20))
-        if ((tag['name'].string ?? '').isNotEmpty) MastodonTrendingTag(
-          name: tag['name'].string!, url: tag['url'].string, uses: tag['uses'].integer ?? 0)]);
+    return MastodonReadPoint(
+      posts: posts,
+      anchor: json['anchor'].string ?? posts.first.url,
+      leading: leading,
+      instance: json['instance'].string,
+      tags: [
+        for (final tag in json['tags'].list.take(20))
+          if ((tag['name'].string ?? '').isNotEmpty)
+            MastodonTrendingTag(name: tag['name'].string!, url: tag['url'].string, uses: tag['uses'].integer ?? 0),
+      ],
+    );
   }
 }
 
@@ -57,12 +73,14 @@ class MastodonReadingStore extends Store<MastodonReadingState> {
   final _diskPoints = <String>{};
   final _origins = <String, MastodonReadPoint?>{};
   final _positioned = <String>{};
-  bool get enabled => !prefs.getKeys().contains(optionFeedReadingPosition) || prefs.get(optionFeedReadingPosition) != false;
+  bool get enabled =>
+      !prefs.getKeys().contains(optionFeedReadingPosition) || prefs.get(optionFeedReadingPosition) != false;
   MastodonReadingStore(this.prefs, this.scope) : super(const MastodonReadingState()) {
     try {
       if (!enabled) return;
       final raw = prefs.getKeys().contains(mastodonReadingPreference)
-          ? prefs.get<String>(mastodonReadingPreference) : null;
+          ? prefs.get<String>(mastodonReadingPreference)
+          : null;
       if (raw == null || raw.length > 3000000) return;
       final json = Json(jsonDecode(raw));
       if (json['scope'].string != scope || json['version'].integer != 1) return;
@@ -74,16 +92,25 @@ class MastodonReadingStore extends Store<MastodonReadingState> {
           if (point != null) points[key] = point;
         }
       }
-      update(MastodonReadingState(tab: (json['tab'].integer ?? 0).clamp(0, 3),
-        people: json['people'].boolean ?? false, points: points));
+      update(
+        MastodonReadingState(
+          tab: (json['tab'].integer ?? 0).clamp(0, 3),
+          people: json['people'].boolean ?? false,
+          points: points,
+        ),
+      );
       _diskPoints.addAll(points.keys);
-    } catch (_) { /* A broken snapshot must not prevent opening the reader. */ }
+    } catch (_) {
+      /* A broken snapshot must not prevent opening the reader. */
+    }
   }
 
   void changeScope(String value) {
     if (scope == value) return;
     scope = value;
-    _diskPoints.clear(); _origins.clear(); _positioned.clear();
+    _diskPoints.clear();
+    _origins.clear();
+    _positioned.clear();
     update(const MastodonReadingState());
     _schedule();
   }
@@ -105,12 +132,19 @@ class MastodonReadingStore extends Store<MastodonReadingState> {
     _schedule();
   }
 
-  void _schedule() { _timer?.cancel(); _timer = Timer(const Duration(milliseconds: 350), flush); }
+  void _schedule() {
+    _timer?.cancel();
+    _timer = Timer(const Duration(milliseconds: 350), flush);
+  }
 
   Future<void> flush() {
     _timer?.cancel();
     if (!enabled) {
-      _writes = _writes.then((_) async { await prefs.set(mastodonReadingPreference, ''); }).catchError((Object _) {});
+      _writes = _writes
+          .then((_) async {
+            await prefs.set(mastodonReadingPreference, '');
+          })
+          .catchError((Object _) {});
       return _writes;
     }
     final points = <String, Object?>{};
@@ -122,13 +156,20 @@ class MastodonReadingStore extends Store<MastodonReadingState> {
       budget -= length;
       points[entry.key] = value;
     }
-    final raw = jsonEncode({'version': 1, 'scope': scope, 'tab': state.tab,
-      'people': state.people, 'points': points});
+    final raw = jsonEncode({'version': 1, 'scope': scope, 'tab': state.tab, 'people': state.people, 'points': points});
     // Queue writes so a slower old write cannot replace the latest position.
-    _writes = _writes.then((_) async { await prefs.set(mastodonReadingPreference, raw); }).catchError((Object _) {});
+    _writes = _writes
+        .then((_) async {
+          await prefs.set(mastodonReadingPreference, raw);
+        })
+        .catchError((Object _) {});
     return _writes;
   }
 
   @override
-  Future<void> destroy() async { _closed = true; await flush(); await super.destroy(); }
+  Future<void> destroy() async {
+    _closed = true;
+    await flush();
+    await super.destroy();
+  }
 }

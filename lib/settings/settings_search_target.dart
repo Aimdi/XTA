@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class SettingsSearchTarget extends InheritedWidget {
   final String id;
   const SettingsSearchTarget({super.key, required this.id, required super.child});
-  static SettingsSearchTarget? maybeOf(BuildContext context) => context.dependOnInheritedWidgetOfExactType<SettingsSearchTarget>();
+  static SettingsSearchTarget? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<SettingsSearchTarget>();
   @override
   bool updateShouldNotify(SettingsSearchTarget oldWidget) => oldWidget.id != id;
 }
@@ -14,7 +15,8 @@ class SettingsControlTarget extends StatelessWidget {
   const SettingsControlTarget({super.key, required this.id, required this.child});
   @override
   Widget build(BuildContext context) => SettingsSearchTarget.maybeOf(context)?.id == id
-    ? _FocusedSetting(key: ValueKey('settings-focus-$id'), child: child) : child;
+      ? _FocusedSetting(key: ValueKey('settings-focus-$id'), child: child)
+      : child;
 }
 
 class _FocusedSetting extends StatefulWidget {
@@ -35,13 +37,22 @@ class _FocusedSettingState extends State<_FocusedSetting> {
       _focus.requestFocus();
     });
   }
+
   @override
-  void dispose() { _focus.dispose(); super.dispose(); }
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
   @override
-  Widget build(BuildContext context) => Focus(focusNode: _focus,
-    child: DecoratedBox(decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
-      border: BorderDirectional(start: BorderSide(color: Theme.of(context).colorScheme.primary, width: 3))),
-      child: widget.child),
+  Widget build(BuildContext context) => Focus(
+    focusNode: _focus,
+    child: DecoratedBox(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
+        border: BorderDirectional(start: BorderSide(color: Theme.of(context).colorScheme.primary, width: 3)),
+      ),
+      child: widget.child,
+    ),
   );
 }

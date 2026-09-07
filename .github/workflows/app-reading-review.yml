@@ -79,7 +79,7 @@ jobs:
         timeout-minutes: 5
         run: |
           set -o pipefail
-          flutter test test/mastodon_client_layout_test.dart test/mastodon_client_journeys_test.dart test/mastodon_content_warning_test.dart test/mastodon_reading_experience_test.dart test/mastodon_archive_test.dart test/discover_reading_test.dart test/settings_direct_access_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+          flutter test test/mastodon_client_layout_test.dart test/mastodon_client_journeys_test.dart test/mastodon_content_warning_test.dart test/mastodon_reading_experience_test.dart test/mastodon_archive_test.dart test/discover_reading_test.dart test/settings_direct_access_test.dart test/app_reading_layout_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
       - name: Upload layout evidence
         if: always()
         uses: actions/upload-artifact@v4

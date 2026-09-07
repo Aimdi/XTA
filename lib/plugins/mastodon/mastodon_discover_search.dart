@@ -20,26 +20,39 @@ class _MastodonDiscoverSearchState extends State<MastodonDiscoverSearch> {
   @override
   void initState() {
     super.initState();
-    _store = MastodonSearchStore(context.read<MastodonClient>(),
-      mastodonDiscoveryInstances(PrefService.of(context, listen: false)));
+    _store = MastodonSearchStore(
+      context.read<MastodonClient>(),
+      mastodonDiscoveryInstances(PrefService.of(context, listen: false)),
+    );
     _search();
   }
+
   @override
   void didUpdateWidget(covariant MastodonDiscoverSearch oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.query != widget.query) _search();
   }
+
   void _search() {
-    for (final position in _positions) { if (position.hasClients) position.jumpTo(0); }
+    for (final position in _positions) {
+      if (position.hasClients) position.jumpTo(0);
+    }
     _store.search(widget.query);
   }
+
   @override
   void dispose() {
-    _store.destroy(); for (final position in _positions) { position.dispose(); } super.dispose();
+    _store.destroy();
+    for (final position in _positions) {
+      position.dispose();
+    }
+    super.dispose();
   }
+
   @override
   Widget build(BuildContext context) => ScopedBuilder<MastodonSearchStore, MastodonSearchState>(
-    store: _store, onState: (context, state) => MastodonSearchResults(
-      state: state, onRetry: _search, onSelected: _store.select, positions: _positions),
+    store: _store,
+    onState: (context, state) =>
+        MastodonSearchResults(state: state, onRetry: _search, onSelected: _store.select, positions: _positions),
   );
 }

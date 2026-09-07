@@ -67,12 +67,14 @@ class _MastodonSearchScreenState extends State<MastodonSearchScreen> {
   }
 
   Future<void> _search() async {
+    final query = _controller.text;
     FocusScope.of(context).unfocus();
     for (final controller in _positions) {
       if (controller.hasClients) controller.jumpTo(0);
     }
-    await _history.remember('mastodon', _controller.text);
-    await _store.search(_controller.text);
+    await _history.remember('mastodon', query);
+    if (!mounted || _controller.text != query) return;
+    await _store.search(query);
   }
 
   @override

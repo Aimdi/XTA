@@ -1826,6 +1826,7 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "언팔로우",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "열기",
   "plugin_open_client": "{plugin} 열기",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "고급: 리프레시 토큰 붙여넣기",
@@ -3200,5 +3201,5 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
   "@zen_mode_page_cap_description": {},
-  "plugin_open": "열기"
+  "@plugin_open": {}
 }
