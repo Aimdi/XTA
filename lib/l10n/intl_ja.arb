@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "フォロー解除",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "開く",
+  "@plugin_open": {},
   "plugin_open_client": "{plugin}を開く",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "詳細: リフレッシュトークンを貼り付け",

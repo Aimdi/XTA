@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "Slutt å følge",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "Åpne",
+  "@plugin_open": {},
   "plugin_open_client": "Åpne {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avansert: lim inn oppfriskningstoken",

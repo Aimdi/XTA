@@ -1,3 +1,4 @@
+import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -140,32 +141,32 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
           SettingsSection(
             title: L10n.of(context).tweets,
             children: [
-              PrefSwitch(
+              SettingsControlTarget(id: optionUseAbsoluteTimestamp, child: PrefSwitch(
                 pref: optionUseAbsoluteTimestamp,
                 title: Text(L10n.of(context).use_absolute_timestamp),
                 subtitle: Text(
                   L10n.of(context).use_absolute_timestamp_description,
                 ),
-              ),
-              PrefCheckbox(
+              )),
+              SettingsControlTarget(id: optionTweetsHideSensitive, child: PrefCheckbox(
                 title: Text(L10n.of(context).hide_sensitive_tweets),
                 subtitle: Text(
                   L10n.of(context).whether_to_hide_tweets_marked_as_sensitive,
                 ),
                 pref: optionTweetsHideSensitive,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionAlwaysShowSensitiveMedia, child: PrefSwitch(
                 title: Text(L10n.of(context).sensitive_media_always_show),
                 pref: optionAlwaysShowSensitiveMedia,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: alwaysShowFullTweetContents, child: PrefSwitch(
                 title: Text(L10n.of(context).always_show_full_tweet_contents),
                 subtitle: Text(
                   L10n.of(context).always_show_full_tweet_contents_description,
                 ),
                 pref: alwaysShowFullTweetContents,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionNonConfirmationBiasMode, child: PrefSwitch(
                 title: Text(
                   L10n.of(context).activate_non_confirmation_bias_mode_label,
                 ),
@@ -175,8 +176,8 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
                     context,
                   ).activate_non_confirmation_bias_mode_description,
                 ),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionDisableWarningsForUnrelatedPostsInFeed, child: PrefSwitch(
                 title: Text(
                   L10n.of(context).disable_warnings_for_unrelated_posts_in_feed,
                 ),
@@ -186,33 +187,33 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
                   ).disable_warnings_for_unrelated_posts_in_feed_description,
                 ),
                 pref: optionDisableWarningsForUnrelatedPostsInFeed,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionTweetsShowSubscribeBadge, child: PrefSwitch(
                 title: Text(L10n.of(context).show_subscribe_button_on_avatars),
                 subtitle: Text(
                   L10n.of(context).show_subscribe_button_on_avatars_description,
                 ),
                 pref: optionTweetsShowSubscribeBadge,
-              ),
+              )),
             ],
           ),
           SettingsSection(
             title: L10n.of(context).default_feed_tab,
             children: [
-              PrefSwitch(
+              SettingsControlTarget(id: optionGlobalIncludeReplies, child: PrefSwitch(
                 title: Text(L10n.of(context).include_replies),
                 subtitle: Text(
                   L10n.of(context).feed_default_filter_description,
                 ),
                 pref: optionGlobalIncludeReplies,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionGlobalIncludeRetweets, child: PrefSwitch(
                 title: Text(L10n.of(context).include_retweets),
                 subtitle: Text(
                   L10n.of(context).feed_default_filter_description,
                 ),
                 pref: optionGlobalIncludeRetweets,
-              ),
+              )),
               SettingsRow(
                 icon: Icons.restart_alt_outlined,
                 title: L10n.of(context).feed_defaults_apply_all,
@@ -228,27 +229,27 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
           SettingsSection(
             title: L10n.of(context).zen_mode,
             children: [
-              PrefSwitch(
+              SettingsControlTarget(id: optionThreadedReplies, child: PrefSwitch(
                 title: Text(L10n.of(context).threaded_replies),
                 subtitle: Text(L10n.of(context).threaded_replies_description),
                 pref: optionThreadedReplies,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionFeedCollapseBoosts, child: PrefSwitch(
                 title: Text(L10n.of(context).collapse_boosts),
                 subtitle: Text(L10n.of(context).collapse_boosts_description),
                 pref: optionFeedCollapseBoosts,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionZenMode, child: PrefSwitch(
                 title: Text(L10n.of(context).zen_mode),
                 subtitle: Text(L10n.of(context).zen_mode_description),
                 pref: optionZenMode,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionCalmMode, child: PrefSwitch(
                 title: Text(L10n.of(context).calm_mode),
                 subtitle: Text(L10n.of(context).calm_mode_description),
                 pref: optionCalmMode,
-              ),
-              PrefDropdown(
+              )),
+              SettingsControlTarget(id: optionZenModePageCap, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).zen_mode_page_cap),
                 subtitle: Text(L10n.of(context).zen_mode_page_cap_description),
@@ -257,14 +258,14 @@ class _SettingsPostsFragmentState extends State<SettingsPostsFragment> {
                   for (final pages in zenModePageCapChoices)
                     DropdownMenuItem(value: pages, child: Text('$pages')),
                 ],
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionFeedReadingPosition, child: PrefSwitch(
                 title: Text(L10n.of(context).remember_reading_position),
                 subtitle: Text(
                   L10n.of(context).remember_reading_position_description,
                 ),
                 pref: optionFeedReadingPosition,
-              ),
+              )),
             ],
           ),
           SettingsSection(

@@ -65,6 +65,7 @@ class MastodonPost {
 
   /// Handle this status is a reply to, when the payload names one.
   final String? replyToAcct;
+  final String? replyToId;
 
   /// `acct` values from the status mentions, used to resolve `@name` taps.
   final List<String> mentionAccts;
@@ -91,6 +92,7 @@ class MastodonPost {
     this.boosted = false,
     this.boostedBy,
     this.replyToAcct,
+    this.replyToId,
     this.mentionAccts = const [],
     this.editedAt,
     this.quote,
@@ -651,6 +653,7 @@ MastodonPost? mastodonPostFromStatus(
     boosted: boosted,
     boostedBy: boosted ? _boostedByName(root, homeDomain: homeDomain) : null,
     replyToAcct: _replyToAcct(status),
+    replyToId: status['in_reply_to_id'].string,
     mentionAccts: _mentionAccts(status),
     editedAt: DateTime.tryParse(status['edited_at'].string ?? '')?.toLocal(),
     quote: includeQuote
@@ -808,6 +811,7 @@ MastodonPost? mastodonPostFromMisskeyNote(
         ? (boosterName.isNotEmpty ? boosterName : boosterUser)
         : null,
     replyToAcct: _misskeyReplyTo(source),
+    replyToId: source['replyId'].string,
     quote: isQuote ? _misskeyQuote(note['renote'], instance: instance) : null,
     repliesCount: source['repliesCount'].integer ?? 0,
     reblogsCount: source['renoteCount'].integer ?? 0,

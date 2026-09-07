@@ -7,6 +7,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/instagram/instagram_discover_search.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/mastodon/mastodon_discover_search.dart';
 import 'package:xta/plugins/reddit/reddit_search_body.dart';
 import 'package:xta/plugins/substack/substack_discover_search.dart';
 import 'package:xta/search/search_scope.dart';
@@ -36,6 +37,7 @@ class DiscoverPluginPane extends StatelessWidget {
             }
 
             final query = queryTriple.state;
+            if (plugin.id == pluginIdMastodon) return MastodonDiscoverSearch(query: query);
             if (discoverBodyKind(scope, query) ==
                 DiscoverBodyKind.pluginEmpty) {
               return DiscoverPluginEmpty(
@@ -83,6 +85,7 @@ Widget discoverPluginSearch({
   required ScrollController scrollController,
 }) {
   return switch (plugin.id) {
+    pluginIdMastodon => MastodonDiscoverSearch(query: query),
     pluginIdReddit => RedditSearchBody(query: query),
     pluginIdInstagram => InstagramDiscoverSearch(query: query),
     pluginIdSubstack => SubstackDiscoverSearch(query: query),

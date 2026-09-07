@@ -10,6 +10,8 @@ import 'package:xta/trends/_settings.dart';
 import 'package:xta/trends/_tabs.dart';
 import 'package:xta/trends/discover_plugin_search.dart';
 import 'package:xta/trends/discover_shortcuts.dart';
+import 'package:xta/search/recent_searches_store.dart';
+import 'package:xta/search/recent_searches_bar.dart';
 
 class TrendsScreen extends StatefulWidget {
   final ScrollController scrollController;
@@ -30,6 +32,24 @@ class _TrendsScreenState extends State<TrendsScreen>
   @override
   bool get wantKeepAlive => true;
   final TextEditingController _queryController = TextEditingController();
+  late final RecentSearchesStore _history;
+
+  @override
+  void initState() {
+    super.initState();
+    _history = RecentSearchesStore(PrefService.of(context, listen: false));
+    _queryController.text = context.read<DiscoverQueryStore>().state;
+  }
+
+  @override
+  void dispose() {
+    _history.destroy(); _queryController.dispose(); super.dispose();
+  }
+
+  void _recent(String query) {
+    _queryController.value = TextEditingValue(text: query, selection: TextSelection.collapsed(offset: query.length));
+    _submit(context, query);
+  }
 
   void _commitQuery(String query) {
     context.read<DiscoverQueryStore>().commit(query);
@@ -43,6 +63,7 @@ class _TrendsScreenState extends State<TrendsScreen>
       widget.focusNode.requestFocus();
       return;
     }
+    _history.remember(_scopeOf(context), query);
     if (_scopeOf(context) != searchScopeX) {
       return;
     }
@@ -87,6 +108,10 @@ class _TrendsScreenState extends State<TrendsScreen>
                 8,
               ),
               child: SearchBar(
+                constraints: const BoxConstraints(minHeight: 44),
+                elevation: const WidgetStatePropertyAll(0),
+                side: WidgetStatePropertyAll(BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+                backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surfaceContainerLow),
                 controller: _queryController,
                 focusNode: widget.focusNode,
                 textInputAction: TextInputAction.search,
@@ -97,9 +122,7 @@ class _TrendsScreenState extends State<TrendsScreen>
                   onPressed: () => _submit(context, _queryController.text),
                 ),
                 onChanged: (value) {
-                  if (scope != searchScopeX) {
-                    context.read<DiscoverQueryStore>().type(value);
-                  }
+                  context.read<DiscoverQueryStore>().type(value);
                 },
                 onSubmitted: (query) => _submit(context, query),
               ),
@@ -127,6 +150,9 @@ class _TrendsScreenState extends State<TrendsScreen>
                   );
                 },
               ),
+              ScopedBuilder<DiscoverQueryStore, String>(store: context.read<DiscoverQueryStore>(),
+                onState: (context, query) => query.isEmpty
+                  ? RecentSearchesBar(store: _history, scope: scope, onSelected: _recent) : const SizedBox.shrink()),
               Expanded(
                 child: showX
                     ? TrendsList(scrollController: widget.scrollController)

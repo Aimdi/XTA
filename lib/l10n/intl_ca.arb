@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "Deixa de seguir",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "Obre",
+  "@plugin_open": {},
   "plugin_open_client": "Obre {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avançat: enganxa el testimoni d’actualització",

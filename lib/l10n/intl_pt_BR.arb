@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "Deixar de seguir",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "Abrir",
+  "@plugin_open": {},
   "plugin_open_client": "Abrir {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avançado: colar token de atualização",

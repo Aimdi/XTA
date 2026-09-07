@@ -6,6 +6,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_storage.dart';
 import 'package:xta/utils/pref_lists.dart';
@@ -62,11 +63,12 @@ class InstalledPluginRow extends StatelessWidget {
     final l10n = L10n.of(context);
     final tabPref = plugin.homeTabPrefKey;
     final settings = plugin.settingsScreen(context);
+    final canOpen = plugin.homePage(context) != null;
 
     return _PluginStoreTile(
       plugin: plugin,
       subtitleWidget: PluginFootprintText(plugin: plugin),
-      onTap: settings == null
+      onTap: canOpen ? () => openPluginClient(context, plugin) : settings == null
           ? null
           : () async {
               await Navigator.push(
@@ -78,15 +80,10 @@ class InstalledPluginRow extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (tabPref != null)
-            _PluginIconButton(
-              tooltip: l10n.plugin_show_as_tab_description,
-              icon: plugin.showsHomeTab(prefs)
-                  ? Icons.tab
-                  : Icons.tab_unselected,
-              selected: plugin.showsHomeTab(prefs),
-              onPressed: () => _setShowsTab(context, prefs, tabPref),
-            ),
+          if (canOpen) TextButton(
+            key: ValueKey('plugin-open-${plugin.id}'),
+            onPressed: () => openPluginClient(context, plugin),
+            child: Text(l10n.plugin_open)),
           if (settings != null)
             _PluginIconButton(
               tooltip: l10n.settings,
@@ -100,7 +97,7 @@ class InstalledPluginRow extends StatelessWidget {
               },
             ),
           PopupMenuButton<String>(
-            tooltip: l10n.plugin_uninstall,
+            tooltip: MaterialLocalizations.of(context).showMenuTooltip,
             padding: EdgeInsets.zero,
             iconSize: 20,
             style: const ButtonStyle(
@@ -108,11 +105,14 @@ class InstalledPluginRow extends StatelessWidget {
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             onSelected: (value) {
+              if (value == 'tab' && tabPref != null) _setShowsTab(context, prefs, tabPref);
               if (value == 'uninstall') {
                 onUninstall();
               }
             },
             itemBuilder: (context) => [
+              if (tabPref != null) CheckedPopupMenuItem(value: 'tab',
+                checked: plugin.showsHomeTab(prefs), child: Text(l10n.plugin_show_as_tab)),
               PopupMenuItem(
                 value: 'uninstall',
                 child: Text(l10n.plugin_uninstall),
@@ -224,13 +224,11 @@ class _PluginIconButton extends StatelessWidget {
   final String tooltip;
   final IconData icon;
   final VoidCallback onPressed;
-  final bool selected;
 
   const _PluginIconButton({
     required this.tooltip,
     required this.icon,
     required this.onPressed,
-    this.selected = false,
   });
 
   @override
@@ -245,7 +243,7 @@ class _PluginIconButton extends StatelessWidget {
       constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
       icon: Icon(
         icon,
-        color: selected ? scheme.primary : scheme.onSurfaceVariant,
+        color: scheme.onSurfaceVariant,
       ),
     );
   }

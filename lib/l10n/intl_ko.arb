@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "언팔로우",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "열기",
+  "@plugin_open": {},
   "plugin_open_client": "{plugin} 열기",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "고급: 리프레시 토큰 붙여넣기",

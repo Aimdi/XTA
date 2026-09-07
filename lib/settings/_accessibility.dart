@@ -1,3 +1,4 @@
+import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:pref/pref.dart';
@@ -17,7 +18,7 @@ class SettingsAccessibilityFragment extends StatelessWidget {
         children: [
           SettingsSection(
             children: [
-              PrefSlider(
+              SettingsControlTarget(id: optionTextScaleFactor, child: PrefSlider(
                 title: Text(L10n.of(context).text_scale_factor),
                 pref: optionTextScaleFactor,
                 subtitle: Text(
@@ -26,26 +27,26 @@ class SettingsAccessibilityFragment extends StatelessWidget {
                 min: 1.0,
                 max: 1.5,
                 divisions: 10,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionDisableAnimations, child: PrefSwitch(
                 title: Text(L10n.of(context).disable_animations),
                 pref: optionDisableAnimations,
                 subtitle: Text(
                   L10n.of(context).disable_animations_description,
                 ),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionTickerChart, child: PrefSwitch(
                 title: Text(L10n.of(context).ticker_chart),
                 pref: optionTickerChart,
                 subtitle: Text(L10n.of(context).ticker_chart_description),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionGestureDoubleTapLike, child: PrefSwitch(
                 title: Text(L10n.of(context).gesture_double_tap_like),
                 pref: optionGestureDoubleTapLike,
                 subtitle: Text(
                   L10n.of(context).gesture_double_tap_like_description,
                 ),
-              ),
+              )),
               SettingsNavigationRow(
                 icon: Icons.record_voice_over_outlined,
                 title: L10n.of(context).settings_speech,

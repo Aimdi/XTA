@@ -2,7 +2,7 @@ import 'package:dart_twitter_api/twitter_api.dart' show Media;
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
-import 'package:xta/client/client.dart';
+import 'package:xta/saved/saved_media.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/immich/immich_client.dart';
 import 'package:xta/plugins/immich/immich_media.dart';
@@ -159,8 +159,7 @@ class ImmichUploader {
 
   List<Media> _mediaOf(Map<String, dynamic> content) {
     try {
-      final tweet = TweetWithCard.fromJson(content);
-      return tweet.extendedEntities?.media ?? tweet.entities?.media ?? const <Media>[];
+      return mediaOfSavedContent(content);
     } catch (e) {
       _log.warning('Could not read the media of a saved post: $e');
       return const [];

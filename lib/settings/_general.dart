@@ -1,3 +1,4 @@
+import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/utils/native_locale_names.dart';
 import 'package:xta/constants.dart';
@@ -103,40 +104,40 @@ class SettingsGeneralFragment extends StatelessWidget {
           SettingsSection(
             title: L10n.of(context).general,
             children: [
-              languagePicker(),
-              PrefSwitch(
+              SettingsControlTarget(id: optionLocale, child: languagePicker()),
+              SettingsControlTarget(id: optionShouldCheckForUpdates, child: PrefSwitch(
                 title: Text(L10n.of(context).should_check_for_updates_label),
                 pref: optionShouldCheckForUpdates,
                 subtitle: Text(
                   L10n.of(context).should_check_for_updates_description,
                 ),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionConfirmClose, child: PrefSwitch(
                 title: Text(L10n.of(context).option_confirm_close_label),
                 subtitle: Text(
                   L10n.of(context).option_confirm_close_description,
                 ),
                 pref: optionConfirmClose,
-              ),
+              )),
               const BrowserPickerTile(),
-              PrefSwitch(
+              SettingsControlTarget(id: optionCleanLinks, child: PrefSwitch(
                 title: Text(L10n.of(context).option_clean_links_label),
                 subtitle: Text(
                   L10n.of(context).option_clean_links_description,
                 ),
                 pref: optionCleanLinks,
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionDisableScreenshots, child: PrefSwitch(
                 title: Text(L10n.of(context).disable_screenshots),
                 subtitle: Text(L10n.of(context).disable_screenshots_hint),
                 pref: optionDisableScreenshots,
-              ),
+              )),
             ],
           ),
           SettingsSection(
             title: L10n.of(context).default_tab,
             children: [
-              PrefDropdown(
+              SettingsControlTarget(id: optionHomeInitialTab, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).default_tab),
                 subtitle: Text(
@@ -151,8 +152,8 @@ class SettingsGeneralFragment extends StatelessWidget {
                       ),
                     )
                     .toList(),
-              ),
-              PrefDropdown(
+              )),
+              SettingsControlTarget(id: optionHomeDefaultFeedTab, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).default_feed_tab),
                 subtitle: Text(
@@ -167,8 +168,8 @@ class SettingsGeneralFragment extends StatelessWidget {
                       ),
                     )
                     .toList(),
-              ),
-              PrefDropdown(
+              )),
+              SettingsControlTarget(id: optionDefaultProfileTab, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).default_profile_tab),
                 subtitle: Text(
@@ -183,7 +184,7 @@ class SettingsGeneralFragment extends StatelessWidget {
                       ),
                     )
                     .toList(),
-              ),
+              )),
               PrefDialogButton(
                 title: Text(L10n.of(context).share_base_url),
                 subtitle: Text(

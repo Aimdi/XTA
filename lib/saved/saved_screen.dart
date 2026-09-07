@@ -27,6 +27,9 @@ import 'package:xta/ui/feed_list.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/saved/library_on_device.dart';
 import 'package:xta/saved/saved_content_index.dart';
+import 'package:xta/saved/saved_source_filter.dart';
+import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/saved/local_post_compose.dart';
 import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/saved/local_post_model.dart';
@@ -56,6 +59,7 @@ class _SavedScreenState extends State<SavedScreen>
     with AutomaticKeepAliveClientMixin<SavedScreen> {
   // Selected folder filter: savedTabAll, savedTabUnfiled, or a folder id.
   String _filter = savedTabAll;
+  final _source = SavedSourceStore();
   bool _mediaOnly = false;
   bool _searching = false;
 
@@ -109,6 +113,7 @@ class _SavedScreenState extends State<SavedScreen>
   @override
   void dispose() {
     _searchDebounce?.cancel();
+    _source.destroy();
     _searchFocusNode.dispose();
     super.dispose();
   }
@@ -369,6 +374,7 @@ class _SavedScreenState extends State<SavedScreen>
           likesByGroup: _likesByGroup,
           folders: options,
           showMedia: _filter != savedTabNotes,
+          sourceFilter: _filter == savedTabNotes ? null : SavedSourceButton(selected: _source.state, onSelected: _source.select),
           onFolderSelected: (value) => setState(() {
             if (value == savedTabFavorites && _filter == savedTabFavorites) {
               _likesByGroup = !_likesByGroup;
@@ -579,9 +585,12 @@ class _SavedScreenState extends State<SavedScreen>
       ),
       onLoading: (_) => const Center(child: CircularProgressIndicator()),
       onState: (_, data) {
-        var filtered = _applySavedSearch(_applyFilter(data), model.contentOf);
+        var filtered = _applySavedSearch(_applyFilter(data), model.contentOf)
+          .where((entry) => matchesSavedSource(model.contentOf(entry.id), _source.state)).toList();
+        final onlyX = filtered.every((entry) => model.contentOf(entry.id)?.tweet != null);
+        if (_mediaOnly && !onlyX) filtered = filtered.where((entry) => savedContentHasMedia(model.contentOf(entry.id))).toList();
 
-        if (_mediaOnly && filtered.isNotEmpty) {
+        if (_mediaOnly && onlyX && filtered.isNotEmpty) {
           return _buildMediaGrid(
             filtered.map((e) => model.contentOf(e.id)?.tweet),
             onDelete: (id) => model.deleteSavedTweet(id),
@@ -598,6 +607,7 @@ class _SavedScreenState extends State<SavedScreen>
                     saved: filtered[i],
                     tweet: model.contentOf(filtered[i].id)?.tweet,
                     reddit: model.contentOf(filtered[i].id)?.reddit,
+                    mastodon: model.contentOf(filtered[i].id)?.mastodon,
                     onNoteChanged: (note) =>
                         model.setNote(filtered[i].id, note),
                   ),
@@ -656,6 +666,7 @@ class _SavedScreenState extends State<SavedScreen>
           id: like.id,
           tweet: model.contentOf(like.id)?.tweet,
           reddit: model.contentOf(like.id)?.reddit,
+          mastodon: model.contentOf(like.id)?.mastodon,
         );
       },
     );
@@ -680,7 +691,10 @@ class _SavedScreenState extends State<SavedScreen>
           model.contentOf,
         );
 
-        if (_mediaOnly && filtered.isNotEmpty) {
+        filtered = filtered.where((entry) => matchesSavedSource(model.contentOf(entry.id), _source.state)).toList();
+        final onlyX = filtered.every((entry) => model.contentOf(entry.id)?.tweet != null);
+        if (_mediaOnly && !onlyX) filtered = filtered.where((entry) => savedContentHasMedia(model.contentOf(entry.id))).toList();
+        if (_mediaOnly && onlyX && filtered.isNotEmpty) {
           return _buildMediaGrid(
             filtered.map((e) => model.contentOf(e.id)?.tweet),
             onDelete: (id) => model.unlikeTweet(id),
@@ -704,6 +718,7 @@ class _SavedScreenState extends State<SavedScreen>
                     id: filtered[i].id,
                     tweet: model.contentOf(filtered[i].id)?.tweet,
                     reddit: model.contentOf(filtered[i].id)?.reddit,
+                    mastodon: model.contentOf(filtered[i].id)?.mastodon,
                   ),
                 ),
         );
@@ -718,7 +733,8 @@ class _SavedScreenState extends State<SavedScreen>
 
     var prefs = PrefService.of(context, listen: false);
 
-    return XtaSystemBars(
+    return ScopedBuilder<SavedSourceStore, SavedSource>(store: _source,
+      onState: (context, source) => XtaSystemBars(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: Padding(
@@ -787,7 +803,7 @@ class _SavedScreenState extends State<SavedScreen>
           ),
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -796,6 +812,7 @@ class SavedClipTile extends StatefulWidget {
   final SavedTweet saved;
   final TweetWithCard? tweet;
   final RedditPost? reddit;
+  final MastodonPost? mastodon;
   final Future<void> Function(String?) onNoteChanged;
 
   const SavedClipTile({
@@ -803,6 +820,7 @@ class SavedClipTile extends StatefulWidget {
     required this.saved,
     this.tweet,
     this.reddit,
+    this.mastodon,
     required this.onNoteChanged,
   });
 
@@ -851,6 +869,7 @@ class _SavedClipTileState extends State<SavedClipTile> {
           id: widget.saved.id,
           tweet: widget.tweet,
           reddit: widget.reddit,
+          mastodon: widget.mastodon,
         ),
         if (_editing)
           Padding(
@@ -922,6 +941,7 @@ class SavedTweetTile extends StatelessWidget {
   final String? content;
   final TweetWithCard? tweet;
   final RedditPost? reddit;
+  final MastodonPost? mastodon;
 
   const SavedTweetTile({
     super.key,
@@ -929,11 +949,14 @@ class SavedTweetTile extends StatelessWidget {
     this.content,
     this.tweet,
     this.reddit,
+    this.mastodon,
   });
 
   @override
   Widget build(BuildContext context) {
     final stored = parseSavedContent(content);
+    final mastodonPost = mastodon ?? stored.mastodon;
+    if (mastodonPost != null) return MastodonPostCard(post: mastodonPost);
     final redditPost = reddit ?? stored.reddit;
     if (redditPost != null) {
       return RedditPostCard(post: redditPost, showSourceBadge: true);

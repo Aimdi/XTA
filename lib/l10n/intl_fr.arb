@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "Ne plus suivre",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "Ouvrir",
+  "@plugin_open": {},
   "plugin_open_client": "Ouvrir {plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "Avancé : coller le jeton d’actualisation",

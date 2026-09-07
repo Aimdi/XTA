@@ -1,3 +1,4 @@
+import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
@@ -30,7 +31,7 @@ class SettingsThemeFragment extends StatelessWidget {
             title: l10n.theme_background,
             description: l10n.theme_background_description,
             children: [
-              SettingsPreferenceSelector<String>(
+              SettingsControlTarget(id: optionXLookBackground, child: SettingsPreferenceSelector<String>(
                 prefs: prefs,
                 pref: optionXLookBackground,
                 options: [
@@ -55,14 +56,14 @@ class SettingsThemeFragment extends StatelessWidget {
                     color: const Color(0xFF000000),
                   ),
                 ],
-              ),
+              )),
             ],
           ),
           SettingsSection(
             title: l10n.theme_accent,
             description: l10n.theme_accent_description,
             children: [
-              SettingsPreferenceSelector<String>(
+              SettingsControlTarget(id: optionXLookAccent, child: SettingsPreferenceSelector<String>(
                 prefs: prefs,
                 pref: optionXLookAccent,
                 options: xLookAccents.entries
@@ -74,29 +75,29 @@ class SettingsThemeFragment extends StatelessWidget {
                       ),
                     )
                     .toList(growable: false),
-              ),
+              )),
             ],
           ),
           SettingsSection(
             children: [
-              PrefSwitch(
+              SettingsControlTarget(id: optionThemeTrueBlack, child: PrefSwitch(
                 title: Text(l10n.true_black),
                 pref: optionThemeTrueBlack,
                 subtitle: Text(l10n.use_true_black_for_the_dark_mode_theme),
                 onChange: (value) {
                   prefs.set(optionThemeTrueBlackTweetCards, value);
                 },
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionThemeTrueBlackTweetCards, child: PrefSwitch(
                 title: Text(l10n.true_black_tweet_cards),
                 pref: optionThemeTrueBlackTweetCards,
                 disabled: !prefs.get(optionThemeTrueBlack),
                 subtitle: Text(l10n.use_true_black_for_tweet_cards),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionShowNavigationLabels, child: PrefSwitch(
                 title: Text(l10n.show_navigation_labels),
                 pref: optionShowNavigationLabels,
-              ),
+              )),
             ],
           ),
         ],

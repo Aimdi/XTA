@@ -5,6 +5,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/settings/settings_search_target.dart';
 
 const double kSettingsContentWidth = 720;
 const double kSettingsRowRadius = 12;
@@ -70,16 +71,17 @@ class SettingsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottom = MediaQuery.paddingOf(context).bottom;
+    final insets = padding ?? EdgeInsets.fromLTRB(0, kTweetSpace2, 0, kTweetSpace6 + bottom);
+    final focused = SettingsSearchTarget.maybeOf(context) != null;
     return Align(
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: kSettingsContentWidth),
-        child: ListView(
+        child: focused ? SingleChildScrollView(controller: controller, physics: physics, padding: insets,
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children)) : ListView(
           controller: controller,
           physics: physics,
-          padding:
-              padding ??
-              EdgeInsets.fromLTRB(0, kTweetSpace2, 0, kTweetSpace6 + bottom),
+          padding: insets,
           children: children,
         ),
       ),

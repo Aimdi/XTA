@@ -1826,6 +1826,8 @@
   "@plugin_mastodon_trending": {},
   "plugin_mastodon_unfollow": "取消关注",
   "@plugin_mastodon_unfollow": {},
+  "plugin_open": "打开",
+  "@plugin_open": {},
   "plugin_open_client": "打开{plugin}",
   "@plugin_open_client": {},
   "plugin_pixiv_advanced_token": "高级：粘贴刷新令牌",

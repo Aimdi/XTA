@@ -39,6 +39,9 @@ class DiscoverQueryStore extends Store<String> {
     _debounce?.cancel();
     update(value.trim());
   }
+
+  @override
+  Future<void> destroy() { _debounce?.cancel(); return super.destroy(); }
 }
 
 /// What Discover should put in the body for this chip + query.
