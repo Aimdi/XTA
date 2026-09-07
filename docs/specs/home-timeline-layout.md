@@ -15,6 +15,15 @@ The previous redesign retained the same Home header, horizontal tabs, and feed a
 - For you retains its explicit refresh and account controls. Embedded plugins keep their own sections and contextual actions.
 - Keep source dock and feed in separate layout regions, not overlaid on posts. Keep the fixed header so a source switch at a restored scroll offset cannot cover controls.
 
+## Follow-up: recover space while reading
+
+- Collapse the Following reading toolbar and Home source dock after the feed scrolls away from the top. Keep the title/actions and app navigation available. Reclaim their layout space, rather than drawing posts behind hidden controls.
+- Once collapsed, scrolling upward partway must not reveal either row. Reveal them together only at the actual top (including pull-to-refresh overscroll).
+- Follow the active vertical timeline, ignoring horizontal tabs and nested post scrollers. Restore the collapsed state when returning to a source with a saved reading position; an empty or newly opened feed starts with controls available.
+- Keep short feeds expanded if removing the controls would make the content fit and force its offset back to zero. Avoid repeated collapse/expand cycles.
+- Use the existing motion preference for the transition. Hidden controls must not take taps, keyboard focus, or screen-reader focus. Keep feed controllers, cached pages, and source-tab state mounted through the animation.
+- Verify downward scroll, partial upward scroll, exact-top return, source restoration, short content, and reduced motion with the production Home widget. Capture both expanded and reading views.
+
 ## Boundaries
 
 Only Home presentation, Home state, focused tests, this spec, and review evidence wiring, plus the two existing GroupModel order setters used by the new toolbar. The interaction check exposed their unawaited boolean SQLite arguments; persist integer flags and await the write before publishing the selected order. No group UI, plugin-client, shared tweet-card, bottom-navigation, client, database, dependency, SDK, signing, or release changes. Retain localized labels and current icons/marks. No new service APIs or X write actions.

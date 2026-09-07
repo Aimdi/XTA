@@ -204,9 +204,43 @@ class _FeedScreenState extends State<FeedScreen> {
   HomeGroupFilterStore? _groupFilter;
   Timer? _unreadReloadDebounce;
   bool _restoredMediaMode = false;
+  bool _controlsUpdateQueued = false;
   Set<String> _lastDisabledAccountIds = const {};
   Set<String> _lastDisabledGroupIds = const {};
   List<String> _lastStripPlugins = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    widget.scrollController.addListener(_queueControlsUpdate);
+  }
+
+  @override
+  void didUpdateWidget(covariant FeedScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scrollController != widget.scrollController) {
+      oldWidget.scrollController.removeListener(_queueControlsUpdate);
+      widget.scrollController.addListener(_queueControlsUpdate);
+    }
+    _queueControlsUpdate();
+  }
+
+  void _queueControlsUpdate() {
+    if (!mounted || _controlsUpdateQueued) return;
+    _controlsUpdateQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controlsUpdateQueued = false;
+      if (!mounted || widget.scrollController.positions.length != 1) return;
+      final position = widget.scrollController.positions.single;
+      if (!position.hasContentDimensions || position.axis != Axis.vertical) return;
+      _view.observeScroll(
+        extentBefore: position.extentBefore,
+        scrollExtent: position.maxScrollExtent - position.minScrollExtent,
+        controlsHeight: kHomeFeedStripHeight + (_tab == FeedTab.following ? kHomeTimelineControlsHeight : 0),
+      );
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
+  }
 
   @override
   void didChangeDependencies() {
@@ -327,6 +361,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   void dispose() {
+    widget.scrollController.removeListener(_queueControlsUpdate);
     _unreadReloadDebounce?.cancel();
     _forYouFeed.dispose();
     _view.destroy();
@@ -433,6 +468,7 @@ class _FeedScreenState extends State<FeedScreen> {
       ScopedBuilder<HomeFeedViewStore, HomeFeedViewState>(store: _view, onState: (context, _) => _buildFeed(context));
 
   Widget _buildFeed(BuildContext context) {
+    _queueControlsUpdate();
     // Strip membership is observed separately; listening to every pref here
     // rebuilt Following on theme, zen, and unrelated plugin writes.
     final BasePrefService prefs = PrefService.of(context, listen: false);
@@ -471,7 +507,6 @@ class _FeedScreenState extends State<FeedScreen> {
           mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
         );
       },
-      bottomBuilder: tab == FeedTab.following ? _readingControls : null,
       actionsBuilder: (context) {
         // Reddit brings its own bar: sorting, search and adding a subreddit
         // are what this feed is steered with, and the generic feed actions
@@ -534,8 +569,27 @@ class _FeedScreenState extends State<FeedScreen> {
       },
       bodyBuilder: (context) => Column(
         children: [
-          Expanded(child: _timelineBody(tab, prefs)),
-          _sourceDock(context, visible, tab),
+          HomeCollapsingControls(
+            key: const ValueKey('home-reading-controls'),
+            visible: _view.state.controlsVisible && tab == FeedTab.following,
+            child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
+          ),
+          Expanded(
+            child: NotificationListener<ScrollMetricsNotification>(
+              onNotification: (notification) {
+                if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
+                  _queueControlsUpdate();
+                }
+                return false;
+              },
+              child: _timelineBody(tab, prefs),
+            ),
+          ),
+          HomeCollapsingControls(
+            key: const ValueKey('home-source-controls'),
+            visible: _view.state.controlsVisible,
+            child: _sourceDock(context, visible, tab),
+          ),
         ],
       ),
     );

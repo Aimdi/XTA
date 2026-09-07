@@ -105,6 +105,18 @@ jobs:
           dart run flutter_iconpicker:generate_packs --packs material
           flutter test test/home_timeline_layout_test.dart --dart-define=HOME_LAYOUT_BEFORE=true --reporter expanded
           cp -r review-artifacts/renders "$GITHUB_WORKSPACE/review-artifacts/before"
+      - name: Upload comparisons before the Android build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-timeline-comparison-${{ github.event.pull_request.head.sha }}
+          path: |
+            review-artifacts/before
+            review-artifacts/renders
+            review-artifacts/tests.txt
+            review-artifacts/analyze.txt
+            review-artifacts/commit.txt
+          retention-days: 7
       - name: Debug APK
         id: apk
         if: steps.tests.outcome == 'success'

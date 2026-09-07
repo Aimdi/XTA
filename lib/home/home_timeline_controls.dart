@@ -3,8 +3,37 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/motion.dart';
 
 const double kHomeTimelineControlsHeight = 56;
+
+/// Reclaims space while retaining the controls' selection and scroll state.
+class HomeCollapsingControls extends StatelessWidget {
+  final bool visible;
+  final Widget child;
+
+  const HomeCollapsingControls({super.key, required this.visible, required this.child});
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+    ignoring: !visible,
+    child: ExcludeFocus(
+      excluding: !visible,
+      child: ExcludeSemantics(
+        excluding: !visible,
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: visible ? 1 : 0, end: visible ? 1 : 0),
+          duration: xtaMotionDuration(context, kXtaMotionStandard),
+          curve: Curves.easeInOut,
+          child: child,
+          builder: (_, factor, child) => ClipRect(
+            child: Align(alignment: Alignment.topCenter, heightFactor: factor, child: child),
+          ),
+        ),
+      ),
+    ),
+  );
+}
 
 class HomeTimelineTitle extends StatelessWidget {
   final String label;

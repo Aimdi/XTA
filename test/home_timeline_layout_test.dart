@@ -35,8 +35,10 @@ import 'package:xta/ui/x_look_theme.dart';
 const _before = bool.fromEnvironment('HOME_LAYOUT_BEFORE');
 const _media = ValueKey('home-media-toggle');
 const _order = ValueKey('home-order-menu');
+const _readingControls = ValueKey('home-reading-controls');
+const _sourceControls = ValueKey('home-source-controls');
 
-List<TweetChain> _posts() {
+List<TweetChain> _posts({int count = 5}) {
   const texts = [
     'Took the long way home today. The best part of the walk was the bit without a destination.',
     'A small weekend project: a reading lamp made from an old camera tripod. Finally found a use for the spare parts.',
@@ -46,22 +48,22 @@ List<TweetChain> _posts() {
   ];
   const names = ['Maya Chen', 'Alex Morgan', 'Sam Rivera', 'Jordan Lee', 'Maya Chen'];
   return [
-    for (var i = 0; i < texts.length; i++)
+    for (var i = 0; i < count; i++)
       TweetChain(
         id: '${100 + i}',
         isPinned: false,
         tweets: [
           TweetWithCard()
             ..idStr = '${100 + i}'
-            ..fullText = texts[i]
+            ..fullText = i < texts.length ? texts[i] : 'Reading fixture $i. Another note from the week.'
             ..lang = 'en'
             ..createdAt = DateTime(2026, 9, 7, 8, i)
             ..favoriteCount = 12 + i
             ..retweetCount = 3 + i
             ..user = (User()
               ..idStr = 'reader'
-              ..name = names[i]
-              ..screenName = ['mayac', 'alexm', 'samr', 'jordanl', 'mayac'][i]
+              ..name = names[i % names.length]
+              ..screenName = ['mayac', 'alexm', 'samr', 'jordanl', 'mayac'][i % names.length]
               ..verified = false),
         ],
       ),
@@ -97,7 +99,7 @@ class _HomeHarness {
   final scroll = ScrollController();
   late final groups = GroupsModel(prefs);
 
-  Future<void> seed() async {
+  Future<void> seed({int postCount = 5}) async {
     final db = await Repository.writable();
     await db.delete(tableSubscription);
     await db.update(tableSubscriptionGroup, {'popular': 0, 'custom': 0}, where: 'id = ?', whereArgs: ['-1']);
@@ -114,9 +116,9 @@ class _HomeHarness {
       ).toMap(),
     );
     final controller = cache.getOrCreateController('home--1');
-    controller.loader = (_) async => (chains: _posts(), nextCursor: null);
+    controller.loader = (_) async => (chains: _posts(count: postCount), nextCursor: null);
     await controller.softRefresh();
-    expect(controller.items, hasLength(5));
+    expect(controller.items, hasLength(postCount));
   }
 
   Widget app(ThemeData theme, {double scale = 1, bool rtl = false}) => PrefService(
@@ -263,6 +265,95 @@ void main() {
       }
     });
   }
+
+  for (final reduceMotion in [false, true]) {
+    testWidgets('Home controls return only at the top (reduced motion $reduceMotion)', (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final semantics = tester.ensureSemantics();
+      addTearDown(semantics.dispose);
+      final h = _HomeHarness();
+      addTearDown(() => h.close(tester));
+      await tester.runAsync(() async {
+        await h.seed(postCount: 20);
+        await h.prefs.set(optionDisableAnimations, reduceMotion);
+      });
+      await tester.pumpWidget(h.app(xLookLightTheme(null)));
+      await _waitForFollowing(tester);
+      final feed = find.byType(SubscriptionGroupScreenContent);
+      final heightAtTop = tester.getSize(feed).height;
+      final position = h.scroll.position;
+      final items = h.cache.getOrCreateController('home--1').items!;
+      expect(tester.getSize(find.byKey(_readingControls)).height, 56);
+      expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+      expect(find.bySemanticsLabel('Media'), findsWidgets);
+      if (reduceMotion) {
+        await expectLater(
+          find.byKey(const ValueKey('home-render')),
+          matchesGoldenFile('../review-artifacts/renders/home-following-top.png'),
+        );
+      }
+      await tester.drag(feed, const Offset(0, -260));
+      await tester.pumpAndSettle();
+      expect(position.pixels, greaterThan(100));
+      expect(h.scroll.position, same(position));
+      expect(tester.getSize(find.byKey(_readingControls)).height, 0);
+      expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+      expect(tester.getSize(feed).height, closeTo(heightAtTop + 120, 1));
+      expect(find.byKey(_media).hitTestable(), findsNothing);
+      expect(find.bySemanticsLabel('Media'), findsNothing);
+      expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
+      expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
+      if (reduceMotion) {
+        await expectLater(
+          find.byKey(const ValueKey('home-render')),
+          matchesGoldenFile('../review-artifacts/renders/home-following-reading.png'),
+        );
+      }
+      await tester.drag(feed, const Offset(0, 60));
+      await tester.pumpAndSettle();
+      expect(position.pixels, greaterThan(0));
+      expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+      position.jumpTo(1);
+      await tester.pumpAndSettle();
+      expect(tester.getSize(find.byKey(_readingControls)).height, 0);
+      expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+      position.jumpTo(0);
+      await tester.pumpAndSettle();
+      expect(tester.getSize(find.byKey(_readingControls)).height, 56);
+      expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+      expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
+      expect(find.byKey(_media).hitTestable(), findsOneWidget);
+      expect(find.bySemanticsLabel('Media'), findsWidgets);
+      expect(h.cache.getOrCreateController('home--1').items, orderedEquals(items));
+      expect(tester.takeException(), isNull);
+    }, skip: _before);
+  }
+
+  testWidgets('A short scrollable Home keeps controls stable', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+    final position = h.scroll.position;
+    expect(position.maxScrollExtent, greaterThan(0));
+    tester.view.physicalSize = Size(390, 844 + position.maxScrollExtent - 80);
+    await tester.pumpAndSettle();
+    expect(position.maxScrollExtent, closeTo(80, 1));
+    position.jumpTo(60);
+    await tester.pumpAndSettle();
+    expect(position.pixels, closeTo(60, 1));
+    expect(tester.getSize(find.byKey(_readingControls)).height, 56);
+    expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+    expect(tester.takeException(), isNull);
+  }, skip: _before);
 
   testWidgets('Home media reuses cached posts and survives switching sources', (tester) async {
     final h = _HomeHarness();

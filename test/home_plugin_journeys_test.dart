@@ -175,6 +175,7 @@ void main() {
     await tester.pumpAndSettle();
     final scrollBefore = tester.state<ScrollableState>(hnList).position.pixels;
     expect(scrollBefore, greaterThan(0));
+    expect(tester.getSize(find.byKey(const ValueKey('home-source-controls'))).height, 0);
     final open = find.byKey(const ValueKey('open-client-hackernews'));
     expect(tester.getSize(open).height, greaterThanOrEqualTo(48));
     await tester.tap(open);
@@ -185,9 +186,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(selected.state.id, pluginIdHackerNews);
     expect(tester.state<ScrollableState>(hnList).position.pixels, closeTo(scrollBefore, 1));
-    final homeRss = find.descendant(of: find.byType(HomeFeedStrip), matching: find.text('RSS'));
-    await tester.ensureVisible(homeRss);
-    await tester.tap(homeRss);
+    expect(tester.getSize(find.byKey(const ValueKey('home-source-controls'))).height, 0);
+    // An external source choice preserves this reading position while the
+    // dock stays hidden. Its own tabs become available again at the top.
+    selected.select(const FeedTab(pluginIdRss));
     await tester.pumpAndSettle();
     expect(rss.calls, 1);
     expect(find.text('A quiet article'), findsOneWidget);
@@ -215,6 +217,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top, HnFeed.newest]);
     expect(tester.state<ScrollableState>(hnList).position.pixels, closeTo(scrollBefore, 1));
+    expect(tester.getSize(find.byKey(const ValueKey('home-source-controls'))).height, 0);
     // Disabling through the same persisted setting + strip update as management.
     await prefs.set(optionPluginHnEnabled, false);
     await strip.remove(pluginIdHackerNews);
