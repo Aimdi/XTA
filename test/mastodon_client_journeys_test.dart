@@ -15,6 +15,15 @@ class _DelayedSearch extends MastodonFixtureClient {
       (replies[q] = Completer<MastodonSearchPage>()).future;
 }
 
+class _RetrySearch extends MastodonFixtureClient {
+  bool fail = true;
+  @override
+  Future<MastodonSearchPage> searchAnywhere(List<String> instances, String q, {int limit = 20}) async {
+    if (fail) throw Exception('Temporary fixture failure');
+    return super.searchAnywhere(instances, q, limit: limit);
+  }
+}
+
 Future<void> _open(WidgetTester tester, MastodonHarness h, {bool embedded = false, Widget? child}) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
@@ -121,6 +130,19 @@ void main() {
     await tester.tap(find.text('Posts'));
     await tester.pumpAndSettle();
     expect(tester.state<ScrollableState>(scrollable).position.pixels, closeTo(offset, 1));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('failed search can be retried without losing the query', (tester) async {
+    final client = _RetrySearch();
+    final h = MastodonHarness(client: client);
+    await _open(tester, h, child: const MastodonSearchScreen(initialQuery: 'design'));
+    expect(find.text('Retry'), findsOneWidget);
+    client.fail = false;
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(find.text('Maya Chen'), findsOneWidget);
+    expect(tester.widget<TextField>(find.byKey(const ValueKey('mastodon-search-field'))).controller!.text, 'design');
     expect(tester.takeException(), isNull);
   });
 

@@ -10,6 +10,7 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_navigation.dart';
 import 'package:xta/plugins/mastodon/mastodon_people.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
+import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_settings.dart';

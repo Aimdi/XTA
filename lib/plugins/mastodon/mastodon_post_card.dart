@@ -111,28 +111,22 @@ class MastodonPostCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              GestureDetector(
-                                onTap: () => _openAuthor(context),
-                                behavior: HitTestBehavior.opaque,
-                                child: _header(context),
-                              ),
-
-                            ],
+                          child: GestureDetector(
+                            onTap: () => _openAuthor(context),
+                            behavior: HitTestBehavior.opaque,
+                            child: _header(context),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                              if (post.replyToAcct != null) _replyLine(context),
-                              _SpoilerBody(post: post, media: _media(context)),
-                              _MastodonEngagementRow(
-                                post: post,
-                                onOpen: () => _open(context),
-                                onOpenBrowser: () => _openBrowser(context),
-                              ),
+                    if (post.replyToAcct != null) _replyLine(context),
+                    _SpoilerBody(post: post, media: _media(context)),
+                    _MastodonEngagementRow(
+                      post: post,
+                      onOpen: () => _open(context),
+                      onOpenBrowser: () => _openBrowser(context),
+                    ),
                   ],
                 ),
               ),

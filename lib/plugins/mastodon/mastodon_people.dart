@@ -18,13 +18,30 @@ class MastodonFollowingControls extends StatelessWidget {
   const MastodonFollowingControls({super.key, required this.people, required this.onSelected, required this.onAdd});
 
   @override
-  Widget build(BuildContext context) => PluginHomeChrome(tabs: [
-    PluginHomeTab(label: L10n.of(context).tweets, icon: Icons.view_stream_outlined,
-      selected: !people, onTap: () => onSelected(false)),
-    PluginHomeTab(label: L10n.of(context).plugin_mastodon_accounts, icon: Icons.people_outline,
-      selected: people, onTap: () => onSelected(true)),
-  ], actions: [IconButton(key: const ValueKey('mastodon-add-account'),
-    tooltip: L10n.of(context).plugin_mastodon_add, onPressed: onAdd, icon: const Icon(Icons.person_add_alt))]);
+  Widget build(BuildContext context) => PluginHomeChrome(
+    tabs: [
+      PluginHomeTab(
+        label: L10n.of(context).tweets,
+        icon: Icons.view_stream_outlined,
+        selected: !people,
+        onTap: () => onSelected(false),
+      ),
+      PluginHomeTab(
+        label: L10n.of(context).plugin_mastodon_accounts,
+        icon: Icons.people_outline,
+        selected: people,
+        onTap: () => onSelected(true),
+      ),
+    ],
+    actions: [
+      IconButton(
+        key: const ValueKey('mastodon-add-account'),
+        tooltip: L10n.of(context).plugin_mastodon_add,
+        onPressed: onAdd,
+        icon: const Icon(Icons.person_add_alt),
+      ),
+    ],
+  );
 }
 
 class MastodonPeoplePane extends StatelessWidget {
@@ -37,10 +54,16 @@ class MastodonPeoplePane extends StatelessWidget {
     store: context.read<MastodonAccountsStore>(),
     onState: (context, accounts) {
       final l10n = L10n.of(context);
-      if (accounts.isEmpty) return EmptyPane(
-        icon: Icons.people_outline, message: l10n.plugin_mastodon_empty,
-        action: FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.person_add_alt),
-          label: Text(l10n.plugin_mastodon_add)));
+      if (accounts.isEmpty)
+        return EmptyPane(
+          icon: Icons.people_outline,
+          message: l10n.plugin_mastodon_empty,
+          action: FilledButton.icon(
+            onPressed: onAdd,
+            icon: const Icon(Icons.person_add_alt),
+            label: Text(l10n.plugin_mastodon_add),
+          ),
+        );
       return ListView.separated(
         key: const PageStorageKey('mastodon-following-people'),
         controller: pluginInnerScrollController(context, scrollController),
@@ -55,8 +78,8 @@ class MastodonPeoplePane extends StatelessWidget {
             title: Text(account.name, maxLines: 2, overflow: TextOverflow.ellipsis),
             subtitle: Text('@${account.acct}', maxLines: 2, overflow: TextOverflow.ellipsis),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct))),
+            onTap: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct))),
           );
         },
       );
@@ -72,12 +95,23 @@ class MastodonPersonAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fallback = FallbackAvatar(seed: acct, displayName: name, size: 44,
-      accent: Theme.of(context).colorScheme.primary);
-    return ClipOval(child: url == null || url!.isEmpty ? fallback : ExtendedImage.network(
-      url!, width: 44, height: 44, fit: BoxFit.cover,
-      cacheWidth: (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
-      loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? fallback : null,
-    ));
+    final fallback = FallbackAvatar(
+      seed: acct,
+      displayName: name,
+      size: 44,
+      accent: Theme.of(context).colorScheme.primary,
+    );
+    return ClipOval(
+      child: url == null || url!.isEmpty
+          ? fallback
+          : ExtendedImage.network(
+              url!,
+              width: 44,
+              height: 44,
+              fit: BoxFit.cover,
+              cacheWidth: (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+              loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? fallback : null,
+            ),
+    );
   }
 }

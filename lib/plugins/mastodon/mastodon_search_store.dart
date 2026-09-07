@@ -9,8 +9,14 @@ class MastodonSearchState {
   final int tab;
   final MastodonSearchPage results;
   final List<MastodonTrendingTag> tags;
-  const MastodonSearchState({this.query = '', this.loading = false, this.error,
-    this.tab = 0, this.results = const MastodonSearchPage(), this.tags = const []});
+  const MastodonSearchState({
+    this.query = '',
+    this.loading = false,
+    this.error,
+    this.tab = 0,
+    this.results = const MastodonSearchPage(),
+    this.tags = const [],
+  });
 }
 
 /// A slower response must never replace a newer search or update a closed route.
@@ -21,8 +27,16 @@ class MastodonSearchStore extends Store<MastodonSearchState> {
   bool _closed = false;
   MastodonSearchStore(this.client, this.instances) : super(const MastodonSearchState());
 
-  void select(int tab) => update(MastodonSearchState(query: state.query, loading: state.loading,
-    error: state.error, tab: tab, results: state.results, tags: state.tags));
+  void select(int tab) => update(
+    MastodonSearchState(
+      query: state.query,
+      loading: state.loading,
+      error: state.error,
+      tab: tab,
+      results: state.results,
+      tags: state.tags,
+    ),
+  );
 
   Future<void> search(String input) async {
     final query = input.trim();
@@ -48,8 +62,17 @@ class MastodonSearchStore extends Store<MastodonSearchState> {
     } else {
       results = await client.searchAnywhere(instances, query);
     }
-    return MastodonSearchState(query: query, results: results,
-      tab: results.accounts.isNotEmpty ? 0 : results.posts.isNotEmpty ? 1 : results.tags.isNotEmpty ? 2 : 0);
+    return MastodonSearchState(
+      query: query,
+      results: results,
+      tab: results.accounts.isNotEmpty
+          ? 0
+          : results.posts.isNotEmpty
+          ? 1
+          : results.tags.isNotEmpty
+          ? 2
+          : 0,
+    );
   }
 
   @override

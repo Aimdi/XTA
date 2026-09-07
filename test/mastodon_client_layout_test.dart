@@ -20,8 +20,9 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       final h = MastodonHarness();
       addTearDown(() => h.close(tester));
-      await tester.pumpWidget(h.app(embedded: variant == 'compact', dark: variant == 'black',
-        scale: large ? 2 : 1, rtl: large));
+      await tester.pumpWidget(
+        h.app(embedded: variant == 'compact', dark: variant == 'black', scale: large ? 2 : 1, rtl: large),
+      );
       await tester.pumpAndSettle();
       expect(find.byType(MastodonPostCard), findsWidgets);
       if (variant == 'people') {
@@ -38,8 +39,10 @@ void main() {
         await tester.pumpAndSettle();
       }
       expect(tester.takeException(), isNull);
-      await expectLater(find.byKey(const ValueKey('mastodon-window')),
-        matchesGoldenFile('../review-artifacts/renders/mastodon-$variant.png'));
+      await expectLater(
+        find.byKey(const ValueKey('mastodon-window')),
+        matchesGoldenFile('../review-artifacts/renders/mastodon-$variant.png'),
+      );
     });
   }
 }
