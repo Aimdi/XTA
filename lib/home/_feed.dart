@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -11,19 +10,22 @@ import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_timeline_controls.dart';
+import 'package:xta/home/home_timeline_picker.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/_settings.dart';
+import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/home/home_feed_view_store.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
-import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/feed_read_position.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
-import 'package:xta/home/feed_strip_tab.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_client_route.dart';
@@ -191,22 +193,61 @@ class _FeedScreenState extends State<FeedScreen> {
   // leave home--1 showing pages fetched with the old mix.
   int get _followingEpoch => _view.state.followingEpoch;
 
-  /// Bumped only when the feed is chosen from somewhere other than these tabs,
-  /// so the bar is rebuilt at the new index. A tap on the bar itself leaves it
-  /// alone: the controller survives and the indicator slides, as it should.
-  int get _externalTabEpoch => _view.state.stripEpoch;
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
   HomeAccountFilterStore? _accountFilter;
   HomeGroupFilterStore? _groupFilter;
   Timer? _unreadReloadDebounce;
+  bool _restoredMediaMode = false;
+  bool _controlsUpdateQueued = false;
   Set<String> _lastDisabledAccountIds = const {};
   Set<String> _lastDisabledGroupIds = const {};
   List<String> _lastStripPlugins = const [];
 
   @override
+  void initState() {
+    super.initState();
+    widget.scrollController.addListener(_queueControlsUpdate);
+  }
+
+  @override
+  void didUpdateWidget(covariant FeedScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scrollController != widget.scrollController) {
+      oldWidget.scrollController.removeListener(_queueControlsUpdate);
+      widget.scrollController.addListener(_queueControlsUpdate);
+    }
+    _queueControlsUpdate();
+  }
+
+  void _queueControlsUpdate() {
+    if (!mounted || _controlsUpdateQueued) return;
+    _controlsUpdateQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controlsUpdateQueued = false;
+      if (!mounted || widget.scrollController.positions.length != 1) return;
+      final position = widget.scrollController.positions.single;
+      if (!position.hasContentDimensions || position.axis != Axis.vertical) return;
+      _view.observeScroll(
+        extentBefore: position.extentBefore,
+        scrollExtent: position.maxScrollExtent - position.minScrollExtent,
+        controlsHeight: _tab == FeedTab.following ? kHomeTimelineControlsHeight : 0,
+      );
+    });
+    WidgetsBinding.instance.ensureVisualUpdate();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (!_restoredMediaMode) {
+      _restoredMediaMode = true;
+      try {
+        _view.setFollowingMediaOnly(context.read<FeedSessionCache>().readMediaOnly(homeFollowingCacheKey(widget.id)));
+      } on ProviderNotFoundException {
+        // Standalone Home test hosts do not need a session cache.
+      }
+    }
     final store = context.read<FeedTabStore>();
     if (!identical(store, _tabStore)) {
       _tabStore = store;
@@ -294,12 +335,15 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadHomeFeeds();
   }
 
-  /// Following's [FeedRefreshController] lives *inside* [GroupFeedShell], so
+  /// Following's refresh controller lives *inside* [GroupFeedShell], so
   /// this State's context cannot see it. Evict the cached pages and remount
   /// instead — otherwise the toggle looks like it did nothing.
   void _reloadHomeFeeds() {
     try {
-      context.read<FeedSessionCache>().evict(homeFollowingCacheKey(widget.id));
+      final cache = context.read<FeedSessionCache>();
+      final key = homeFollowingCacheKey(widget.id);
+      cache.evict(key);
+      cache.saveMediaOnly(key, _view.state.followingMediaOnly);
     } on ProviderNotFoundException {
       // Tests and routes without a session cache still remount the tab.
     }
@@ -312,6 +356,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   void dispose() {
+    widget.scrollController.removeListener(_queueControlsUpdate);
     _unreadReloadDebounce?.cancel();
     _forYouFeed.dispose();
     _view.destroy();
@@ -352,12 +397,43 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadUnreadSoon();
   }
 
-  Future<void> _refreshActiveTab(BuildContext feedContext) async {
-    await scrollToTop(context, widget.scrollController);
-    if (!mounted || !feedContext.mounted) {
-      return;
+  void _toggleMediaOnly() {
+    final next = !_view.state.followingMediaOnly;
+    _view.setFollowingMediaOnly(next);
+    try {
+      context.read<FeedSessionCache>().saveMediaOnly(homeFollowingCacheKey(widget.id), next);
+    } on ProviderNotFoundException {
+      // The view store still retains the choice throughout this Home session.
     }
-    await feedContext.read<FeedRefreshController>().refresh();
+  }
+
+  Future<void> _selectOrder(BuildContext context, GroupModel model, int order) async {
+    if (order == 2) {
+      if (!model.state.custom) await model.toggleSubscriptionGroupCustom(true);
+      if (!context.mounted) return;
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => GroupCustomSettingsScreen(model: model)));
+    } else {
+      await model.toggleSubscriptionGroupPopular(order == 1);
+    }
+  }
+
+  PreferredSizeWidget _readingControls(BuildContext context) {
+    final model = context.read<GroupModel>();
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kHomeTimelineControlsHeight),
+      child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+        store: model,
+        onState: (context, group) => group.id.isEmpty
+            ? const SizedBox(height: kHomeTimelineControlsHeight)
+            : HomeTimelineControls(
+                group: group,
+                mediaOnly: _view.state.followingMediaOnly,
+                onOrderSelected: (order) => _selectOrder(context, model, order),
+                onMediaToggle: _toggleMediaOnly,
+                onFilters: () => showFeedSettings(context, model),
+              ),
+      ),
+    );
   }
 
   String _unreadKeyFor(FeedTab tab) {
@@ -387,6 +463,7 @@ class _FeedScreenState extends State<FeedScreen> {
       ScopedBuilder<HomeFeedViewStore, HomeFeedViewState>(store: _view, onState: (context, _) => _buildFeed(context));
 
   Widget _buildFeed(BuildContext context) {
+    _queueControlsUpdate();
     // Strip membership is observed separately; listening to every pref here
     // rebuilt Following on theme, zen, and unrelated plugin writes.
     final BasePrefService prefs = PrefService.of(context, listen: false);
@@ -405,11 +482,6 @@ class _FeedScreenState extends State<FeedScreen> {
       });
     }
 
-    final visible = visibleFeedTabs(available: available, recent: const [], current: tab);
-
-    // TabBar lives in its own DefaultTabController so a strip edit can remount
-    // the indicator without recreating NestedScrollView (two outers on the
-    // same ScrollController froze, then crashed, home).
     return GroupFeedShell(
       key: ValueKey('home-shell-${widget.id}'),
       scrollController: widget.scrollController,
@@ -418,42 +490,17 @@ class _FeedScreenState extends State<FeedScreen> {
       flatAppBar: true,
       fixedHeader: true,
       leading: const DrawerAvatarButton(),
-      titleBuilder: (context) =>
-          HomeAppBarTitle(label: tab.isPlugin ? pluginById(tab.id)!.title(context) : L10n.of(context).home),
-      bottomBuilder: (context) => PreferredSize(
-        preferredSize: const Size.fromHeight(kHomeFeedStripHeight),
-        child: DefaultTabController(
-          key: ValueKey('${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch'),
-          length: visible.length,
-          initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
-          child: GroupUnreadScope(
-            builder: (context, unreadIds) => HomeFeedStrip(
-              tabs: [
-                for (final e in visible)
-                  Tab(
-                    child: FeedStripTab(
-                      title: e.titleBuilder(context),
-                      icon: e.icon ?? e.id.icon,
-                      mark: e.mark,
-                      unread: unreadIds.contains(_unreadKeyFor(e.id)),
-                    ),
-                  ),
-              ],
-              onTap: (index) {
-                _selectStripTab(visible[index].id);
-              },
-              addTooltip: L10n.of(context).feed_strip_add,
-              onAdd: () async {
-                final pinnedId = await showFeedStripAddSheet(context);
-                if (!context.mounted || pinnedId == null) return;
-                await rememberNetwork(context, pinnedId);
-                if (!context.mounted) return;
-                _selectStripTab(FeedTab(pinnedId));
-              },
-            ),
+      titleBuilder: (context) {
+        final source = available.firstWhere((option) => option.id == tab);
+        return GroupUnreadScope(
+          builder: (context, unreadIds) => HomeTimelineTitle(
+            label: source.titleBuilder(context),
+            mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+            unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
+            onPressed: () => _pickSource(context),
           ),
-        ),
-      ),
+        );
+      },
       actionsBuilder: (context) {
         // Reddit brings its own bar: sorting, search and adding a subreddit
         // are what this feed is steered with, and the generic feed actions
@@ -495,9 +542,9 @@ class _FeedScreenState extends State<FeedScreen> {
         final actions = defaultGroupActions(
           context,
           model: model,
-          showMore: tab == FeedTab.following,
+          showMore: false,
           showRefresh: tab == FeedTab.foryou,
-          onRefresh: () => _refreshActiveTab(context),
+          onRefresh: () => _remountForYou(scrollToTopFirst: true),
           showSettings: false,
           extra: [
             IconButton(
@@ -514,30 +561,86 @@ class _FeedScreenState extends State<FeedScreen> {
         );
         return [HomeAppBarActions(children: actions)];
       },
-      bodyBuilder: (context) {
-        if (tab == FeedTab.following) {
-          // With a cache key this feed survives a trip to another tab, the
-          // way a pushed group route already does. Without one, every
-          // Following -> For you -> Following swipe rebuilt the whole
-          // per-chunk fan-out. Namespaced so it never shares state with the
-          // pushed route for the same group.
-          return SubscriptionGroupScreenContent(
-            key: ValueKey(_followingEpoch),
-            id: widget.id,
-            cacheKey: homeFollowingCacheKey(widget.id),
-          );
-        }
-        if (tab == FeedTab.foryou) {
-          return ForYouTweets(
-            _forYouFeed,
-            key: ValueKey(_forYouEpoch),
-            type: 'profile',
-            includeReplies: false,
-            pref: prefs,
-          );
-        }
-        return _pluginBody(tab);
-      },
+      bodyBuilder: (context) => Column(
+        children: [
+          HomeCollapsingControls(
+            key: const ValueKey('home-reading-controls'),
+            visible: _view.state.controlsVisible && tab == FeedTab.following,
+            child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
+          ),
+          Expanded(
+            child: NotificationListener<ScrollMetricsNotification>(
+              onNotification: (notification) {
+                if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
+                  _queueControlsUpdate();
+                }
+                return false;
+              },
+              child: _timelineBody(tab, prefs),
+            ),
+          ),
+        ],
+      ),
     );
   }
+
+  Widget _timelineBody(FeedTab tab, BasePrefService prefs) {
+    if (tab == FeedTab.following) {
+      // With a cache key this feed survives a trip to another tab, the
+      // way a pushed group route already does. Without one, every
+      // Following -> For you -> Following swipe rebuilt the whole
+      // per-chunk fan-out. Namespaced so it never shares state with the
+      // pushed route for the same group.
+      return SubscriptionGroupScreenContent(
+        key: ValueKey(_followingEpoch),
+        id: widget.id,
+        cacheKey: homeFollowingCacheKey(widget.id),
+        mediaOnly: _view.state.followingMediaOnly,
+      );
+    }
+    if (tab == FeedTab.foryou) {
+      return ForYouTweets(
+        _forYouFeed,
+        key: ValueKey(_forYouEpoch),
+        type: 'profile',
+        includeReplies: false,
+        pref: prefs,
+      );
+    }
+    return _pluginBody(tab);
+  }
+
+  Future<void> _pickSource(BuildContext context) async {
+    final selection = await showModalBottomSheet<HomeTimelineSelection>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => ScopedBuilder<FeedStripStore, List<String>>(
+        store: _stripStore!,
+        onState: (context, pins) => GroupUnreadScope(
+          builder: (context, unread) => HomeTimelinePicker(
+            selected: _tab?.id ?? FeedTab.following.id,
+            options: _sourceOptions(context, pins, unread),
+          ),
+        ),
+      ),
+    );
+    if (!mounted || !context.mounted || selection == null) return;
+    final id = selection.id ?? await showFeedStripAddSheet(context);
+    if (!mounted || !context.mounted || id == null) return;
+    final available = availableFeedTabsFromIds(_stripStore!.state, PrefService.of(context, listen: false));
+    if (available.any((option) => option.id.id == id)) _selectStripTab(FeedTab(id));
+  }
+
+  List<HomeTimelineOption> _sourceOptions(BuildContext context, List<String> pins, Set<String> unread) => [
+    for (final option in availableFeedTabsFromIds(pins, PrefService.of(context, listen: false)))
+      HomeTimelineOption(
+        id: option.id.id,
+        label: option.titleBuilder(context),
+        mark: option.mark ?? Icon(option.icon ?? option.id.icon, size: 22),
+        plugin: option.id.isPlugin,
+        unread: unread.contains(_unreadKeyFor(option.id)),
+      ),
+  ];
 }

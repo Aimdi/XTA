@@ -211,7 +211,7 @@ void main() {
     );
   });
 
-  testWidgets('home feed strip keeps compact tabs and a fixed add action', (
+  testWidgets('home source dock keeps contained selection and a fixed add action', (
     tester,
   ) async {
     var added = false;
@@ -266,7 +266,8 @@ void main() {
       tabBar.labelPadding,
       const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
     );
-    expect(tabBar.indicatorWeight, kHomeFeedIndicatorThickness);
+    expect(tabBar.indicator, isA<BoxDecoration>());
+    expect((tabBar.indicator! as BoxDecoration).border, isNotNull);
 
     final addBoundary = tester
         .widgetList<DecoratedBox>(find.byType(DecoratedBox))

@@ -1,0 +1,150 @@
+name: Home timeline review
+
+on:
+  pull_request:
+    branches: [claude/main]
+    paths:
+      - 'lib/home/**'
+      - 'test/**'
+      - '.github/workflows/home-timeline-review.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: home-timeline-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  review:
+    if: github.head_ref == 'codex/home-timeline-layout'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          mkdir -p review-artifacts
+          git rev-parse HEAD > review-artifacts/commit.txt
+      - name: Format new Dart
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          # Match verify.yml: avoid reformatting old modules for a small fix.
+          mapfile -t changed < <(git diff --name-only --diff-filter=A "$BASE_SHA" HEAD -- '*.dart')
+          dart format --line-length 120 "${changed[@]}"
+          git diff --binary > review-artifacts/format.patch
+      - name: Upload formatting
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-timeline-format-${{ github.event.pull_request.head.sha }}
+          path: review-artifacts/format.patch
+          retention-days: 7
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos 2>&1 | tee review-artifacts/analyze.txt
+      - name: Home layout and navigation journeys
+        id: journeys
+        if: steps.analyze.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          set -o pipefail
+          flutter test test/home_timeline_layout_test.dart test/home_timeline_picker_test.dart test/home_plugin_journeys_test.dart test/home_chrome_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+      - name: Upload layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-timeline-layout-${{ github.event.pull_request.head.sha }}
+          path: |
+            review-artifacts/journeys.txt
+            review-artifacts/renders
+          retention-days: 7
+      - name: Full tests
+        id: tests
+        if: steps.journeys.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 12
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee review-artifacts/tests.txt
+      - name: Base version renders
+        id: before
+        if: steps.journeys.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add --detach ../xta-home-before "$BASE_SHA"
+          cp test/home_timeline_layout_test.dart ../xta-home-before/test/
+          cd ../xta-home-before
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          flutter test test/home_timeline_layout_test.dart --dart-define=HOME_LAYOUT_BEFORE=true --reporter expanded
+          cp -r review-artifacts/renders "$GITHUB_WORKSPACE/review-artifacts/before"
+      - name: Upload comparisons before the Android build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-timeline-comparison-${{ github.event.pull_request.head.sha }}
+          path: |
+            review-artifacts/before
+            review-artifacts/renders
+            review-artifacts/tests.txt
+            review-artifacts/analyze.txt
+            review-artifacts/commit.txt
+          retention-days: 7
+      - name: Debug APK
+        id: apk
+        if: steps.tests.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python -m pip install -r requirements.txt
+          python generate_icons.py
+          dart run flutter_launcher_icons
+          flutter build apk --debug
+          cp build/app/outputs/flutter-apk/app-debug.apk review-artifacts/xta-home-timeline-debug.apk
+      - name: Upload review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-timeline-review-${{ github.event.pull_request.head.sha }}
+          path: review-artifacts
+          retention-days: 7
+      - name: Enforce verification
+        if: always()
+        env:
+          ANALYZE: ${{ steps.analyze.outcome }}
+          JOURNEYS: ${{ steps.journeys.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          BEFORE: ${{ steps.before.outcome }}
+          APK: ${{ steps.apk.outcome }}
+        run: |
+          test "$ANALYZE" = success
+          test "$JOURNEYS" = success
+          test "$TESTS" = success
+          test "$BEFORE" = success
+          test "$APK" = success
