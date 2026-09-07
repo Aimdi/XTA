@@ -320,10 +320,7 @@ void main() {
       await tester.tap(find.byKey(_order));
       await tester.pumpAndSettle();
       await tester.tap(find.text(labels[order]));
-      await _waitForNativeWork(
-        tester,
-        () => model.state.popular == (order == 1) && model.state.custom == (order == 2),
-      );
+      await _waitForNativeWork(tester, () => model.state.popular == (order == 1) && model.state.custom == (order == 2));
       expect(model.state.popular, order == 1);
       expect(model.state.custom, order == 2);
       final rows = await tester.runAsync(() async {
