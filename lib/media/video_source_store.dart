@@ -64,7 +64,12 @@ class VideoSourceStore extends Store<VideoSourceState> {
 
   Future<void> _command(int generation, Completer<void> cancel, Future<void> Function() action) {
     if (!_current(generation)) return Future.error(const PlaybackCommandCancelled());
-    return _commands.run(action, cancelled: cancel.future, timeout: commandTimeout);
+    return _commands.run(
+      action,
+      cancelled: cancel.future,
+      timeout: commandTimeout,
+      isCurrent: () => _current(generation),
+    );
   }
 
   Future<VideoSwitchResult> _change(String url, int generation, Completer<void> cancel) async {

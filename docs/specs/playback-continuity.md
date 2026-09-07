@@ -50,7 +50,9 @@ command itself has the same two-second bound as the acknowledgment wait.
 
 The native API cannot cancel an issued command. A timed-out or cancelled command
 therefore quarantines its player: a new source request returns a retryable failure
-until that command settles, instead of overlapping a late open/seek. Abandoned
+if that command cannot settle within the next request's deadline, instead of
+overlapping a late open/seek. Waiting for idle and executing the next command share
+one deadline, so healthy rapid selections can finish in order. Abandoned
 commands are paused on completion. Disposal returns promptly but defers freeing
 the native player until outstanding native work and that pause have settled.
 

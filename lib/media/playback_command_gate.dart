@@ -15,8 +15,18 @@ class PlaybackCommandGate {
     Future<void> Function() command, {
     required Future<void> cancelled,
     required Duration timeout,
+    required bool Function() isCurrent,
   }) async {
-    if (busy) throw StateError('A previous native playback command is still pending');
+    final elapsed = Stopwatch()..start();
+    while (busy) {
+      if (!isCurrent()) throw const PlaybackCommandCancelled();
+      final remaining = timeout - elapsed.elapsed;
+      if (remaining <= Duration.zero) throw TimeoutException('Native playback command deadline elapsed');
+      await _waitUntilIdle(cancelled: cancelled, timeout: remaining);
+    }
+    if (!isCurrent()) throw const PlaybackCommandCancelled();
+    final remaining = timeout - elapsed.elapsed;
+    if (remaining <= Duration.zero) throw TimeoutException('Native playback command deadline elapsed');
     final result = Completer<void>();
     final idle = Completer<void>();
     _pending = idle.future;
@@ -27,7 +37,7 @@ class PlaybackCommandGate {
       result.completeError(error);
     }
 
-    final timer = Timer(timeout, () => abandon(TimeoutException('Native playback command timed out')));
+    final timer = Timer(remaining, () => abandon(TimeoutException('Native playback command timed out')));
     cancelled.then((_) => abandon(const PlaybackCommandCancelled()));
     Future<void> settle([Object? error, StackTrace? stack]) async {
       if (abandoned) {
@@ -48,6 +58,24 @@ class PlaybackCommandGate {
     }
 
     Future<void>.sync(command).then((_) => settle(), onError: (Object error, StackTrace stack) => settle(error, stack));
+    try {
+      await result.future;
+    } finally {
+      timer.cancel();
+    }
+  }
+
+  Future<void> _waitUntilIdle({required Future<void> cancelled, required Duration timeout}) async {
+    final result = Completer<void>();
+    void fail(Object error) {
+      if (!result.isCompleted) result.completeError(error);
+    }
+
+    final timer = Timer(timeout, () => fail(TimeoutException('A previous native playback command is still pending')));
+    cancelled.then((_) => fail(const PlaybackCommandCancelled()));
+    _pending!.then((_) {
+      if (!result.isCompleted) result.complete();
+    });
     try {
       await result.future;
     } finally {

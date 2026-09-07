@@ -118,7 +118,12 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
   Future<void> _command(int generation, Future<void> Function() action) {
     if (!_current(generation)) return Future.error(const PlaybackCommandCancelled());
     final cancel = _cancel ??= Completer<void>();
-    return _commands.run(action, cancelled: cancel.future, timeout: commandTimeout);
+    return _commands.run(
+      action,
+      cancelled: cancel.future,
+      timeout: commandTimeout,
+      isCurrent: () => _current(generation),
+    );
   }
 
   Future<void> _open(String url, Duration position, int generation, Completer<void> cancel) async {

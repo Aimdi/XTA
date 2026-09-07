@@ -33,7 +33,7 @@ Future<bool> restorePlaybackPosition(
   final target = playbackResumeTarget(position, player.frame.duration);
   bool reached() => (player.frame.position - target).abs() <= const Duration(seconds: 1);
   if (reached()) return true;
-  await commands.run(() => player.seek(target), cancelled: cancelled, timeout: seekTimeout);
+  await commands.run(() => player.seek(target), cancelled: cancelled, timeout: seekTimeout, isCurrent: isCurrent);
   if (!isCurrent()) return false;
   return waitForPlayback(player, reached, cancelled: cancelled, timeout: seekTimeout);
 }
