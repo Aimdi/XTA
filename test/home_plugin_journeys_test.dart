@@ -17,7 +17,6 @@ import 'package:xta/home/_feed.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
-import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/hackernews/hn_client.dart';
@@ -175,7 +174,7 @@ void main() {
     await tester.pumpAndSettle();
     final scrollBefore = tester.state<ScrollableState>(hnList).position.pixels;
     expect(scrollBefore, greaterThan(0));
-    expect(tester.getSize(find.byKey(const ValueKey('home-source-controls'))).height, 0);
+    expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
     final open = find.byKey(const ValueKey('open-client-hackernews'));
     expect(tester.getSize(open).height, greaterThanOrEqualTo(48));
     await tester.tap(open);
@@ -186,10 +185,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(selected.state.id, pluginIdHackerNews);
     expect(tester.state<ScrollableState>(hnList).position.pixels, closeTo(scrollBefore, 1));
-    expect(tester.getSize(find.byKey(const ValueKey('home-source-controls'))).height, 0);
-    // An external source choice preserves this reading position while the
-    // dock stays hidden. Its own tabs become available again at the top.
-    selected.select(const FeedTab(pluginIdRss));
+    expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
+    // Source selection remains reachable at the saved reading position.
+    await tester.tap(find.byKey(const ValueKey('home-source-picker')));
+    await tester.pumpAndSettle();
+    final hnOption = find.byKey(const ValueKey('home-source-hackernews'));
+    final rssOption = find.byKey(const ValueKey('home-source-rss'));
+    expect(tester.getTopLeft(hnOption).dy, lessThan(tester.getTopLeft(rssOption).dy));
+    await expectLater(find.byType(Overlay).first, matchesGoldenFile('../review-artifacts/renders/home-source-picker.png'));
+    await tester.tap(rssOption);
     await tester.pumpAndSettle();
     expect(rss.calls, 1);
     expect(find.text('A quiet article'), findsOneWidget);
@@ -211,13 +215,16 @@ void main() {
     await strip.reorder(1, 0);
     await tester.pumpAndSettle();
     expect(selected.state.id, pluginIdRss);
-    final homeHn = find.descendant(of: find.byType(HomeFeedStrip), matching: find.text('Hacker News'));
-    await tester.ensureVisible(homeHn);
+    await tester.tap(find.byKey(const ValueKey('home-source-picker')));
+    await tester.pumpAndSettle();
+    final homeHn = find.byKey(const ValueKey('home-source-hackernews'));
+    final homeRss = find.byKey(const ValueKey('home-source-rss'));
+    expect(tester.getTopLeft(homeRss).dy, lessThan(tester.getTopLeft(homeHn).dy));
     await tester.tap(homeHn);
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top, HnFeed.newest]);
     expect(tester.state<ScrollableState>(hnList).position.pixels, closeTo(scrollBefore, 1));
-    expect(tester.getSize(find.byKey(const ValueKey('home-source-controls'))).height, 0);
+    expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
     // Disabling through the same persisted setting + strip update as management.
     await prefs.set(optionPluginHnEnabled, false);
     await strip.remove(pluginIdHackerNews);

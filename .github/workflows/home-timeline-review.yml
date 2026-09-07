@@ -71,7 +71,7 @@ jobs:
         timeout-minutes: 5
         run: |
           set -o pipefail
-          flutter test test/home_timeline_layout_test.dart test/home_plugin_journeys_test.dart test/home_chrome_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+          flutter test test/home_timeline_layout_test.dart test/home_timeline_picker_test.dart test/home_plugin_journeys_test.dart test/home_chrome_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
       - name: Upload layout evidence
         if: always()
         uses: actions/upload-artifact@v4

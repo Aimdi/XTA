@@ -38,30 +38,58 @@ class HomeCollapsingControls extends StatelessWidget {
 class HomeTimelineTitle extends StatelessWidget {
   final String label;
   final Widget mark;
+  final bool unread;
+  final VoidCallback onPressed;
 
-  const HomeTimelineTitle({super.key, required this.label, required this.mark});
+  const HomeTimelineTitle({
+    super.key,
+    required this.label,
+    required this.mark,
+    required this.onPressed,
+    this.unread = false,
+  });
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    header: true,
-    child: Row(
-      children: [
-        ExcludeSemantics(child: mark),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+  Widget build(BuildContext context) => Tooltip(
+    message: L10n.of(context).home_networks,
+    child: Semantics(
+      button: true,
+      label: unread ? '$label, ${L10n.of(context).group_has_unread}' : label,
+      child: InkWell(
+        key: const ValueKey('home-source-picker'),
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: ExcludeSemantics(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Badge(isLabelVisible: unread, smallSize: 7, child: mark),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.expand_more, size: 20, color: tweetSecondaryColor(context)),
+                ],
+              ),
+            ),
           ),
         ),
-      ],
+      ),
     ),
   );
 }
 
-/// Reading choices operate on Following; source selection lives in the dock.
+/// Presentation stays one tap away; ordering and filters share one menu.
 class HomeTimelineControls extends StatelessWidget {
   final SubscriptionGroupGet group;
   final bool mediaOnly;
@@ -83,61 +111,83 @@ class HomeTimelineControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final accent = tweetReadableAccentColor(context);
     final labels = [l10n.recent, l10n.popular, l10n.custom];
     return SizedBox(
       height: kHomeTimelineControlsHeight,
-      child: Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(12, 0, 8, 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _orderButton(context, labels),
-                    const SizedBox(width: 8),
-                    Semantics(
-                      selected: mediaOnly,
-                      child: TextButton.icon(
-                        key: const ValueKey('home-media-toggle'),
-                        onPressed: onMediaToggle,
-                        icon: Icon(mediaOnly ? Icons.photo_library : Icons.photo_library_outlined, size: 20),
-                        label: Text(l10n.media),
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(48, 48),
-                          foregroundColor: mediaOnly ? accent : tweetSecondaryColor(context),
-                          backgroundColor: mediaOnly ? tweetAccentColor(context).withValues(alpha: 0.12) : null,
-                          side: BorderSide(color: mediaOnly ? accent : tweetDividerColor(context)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                        ),
-                      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: tweetDividerColor(context)))),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(8, 0, 8, 4),
+          child: LayoutBuilder(
+            builder: (context, constraints) => Row(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _modeTab(context, false, l10n.tweets),
+                        _modeTab(context, true, l10n.media),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                _orderButton(
+                  context,
+                  labels,
+                  compact: constraints.maxWidth < 350 || MediaQuery.textScalerOf(context).scale(14) > 18,
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            SizedBox.square(
-              dimension: kTweetTouchTarget,
-              child: IconButton(tooltip: l10n.filters, icon: const Icon(Icons.build_outlined), onPressed: onFilters),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _orderButton(BuildContext context, List<String> labels) {
+  Widget _modeTab(BuildContext context, bool media, String label) {
+    final selected = mediaOnly == media;
+    return Semantics(
+      selected: selected,
+      child: TextButton(
+        key: ValueKey(media ? 'home-media-toggle' : 'home-posts-tab'),
+        onPressed: () {
+          if (!selected) onMediaToggle();
+        },
+        style: TextButton.styleFrom(
+          minimumSize: const Size(72, kTweetTouchTarget),
+          foregroundColor: selected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
+          padding: EdgeInsets.zero,
+          shape: const RoundedRectangleBorder(),
+        ),
+        child: AnimatedContainer(
+          duration: xtaMotionDuration(context, kXtaMotionStandard),
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: selected ? tweetReadableAccentColor(context) : Colors.transparent, width: 3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (media) ...[const Icon(Icons.photo_library_outlined, size: 20), const SizedBox(width: 6)],
+              Text(label, style: TextStyle(fontWeight: selected ? FontWeight.w700 : FontWeight.w500)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _orderButton(BuildContext context, List<String> labels, {required bool compact}) {
     final filters = groupActiveFilterCount(group);
     return PopupMenuButton<int>(
       key: const ValueKey('home-order-menu'),
       initialValue: _order,
-      tooltip: labels[_order],
+      tooltip: '${labels[_order]} · ${L10n.of(context).filters}',
       position: PopupMenuPosition.under,
-      onSelected: onOrderSelected,
+      onSelected: (value) => value == 3 ? onFilters() : onOrderSelected(value),
       itemBuilder: (_) => [
         for (var index = 0; index < labels.length; index++)
           PopupMenuItem(
@@ -155,25 +205,36 @@ class HomeTimelineControls extends StatelessWidget {
               ],
             ),
           ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: 3,
+          height: kTweetTouchTarget,
+          child: Row(
+            children: [
+              const Icon(Icons.build_outlined, size: 24),
+              const SizedBox(width: 12),
+              Expanded(child: Text(L10n.of(context).filters)),
+              if (filters > 0) Badge.count(count: filters),
+            ],
+          ),
+        ),
       ],
       child: Semantics(
         button: true,
         child: Container(
-          constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          constraints: const BoxConstraints(minHeight: kTweetTouchTarget, minWidth: kTweetTouchTarget),
+          padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 12),
           decoration: BoxDecoration(
-            border: Border.all(color: tweetDividerColor(context)),
+            color: tweetSecondaryColor(context).withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.sort, size: 20),
-              const SizedBox(width: 8),
-              Text(labels[_order], style: tweetLabelStyle(context)),
+              if (!compact) ...[const SizedBox(width: 8), Text(labels[_order], style: tweetLabelStyle(context))],
               if (filters > 0) ...[const SizedBox(width: 8), Badge.count(count: filters)],
-              const SizedBox(width: 4),
-              const Icon(Icons.expand_more, size: 18),
+              if (!compact) ...[const SizedBox(width: 4), const Icon(Icons.expand_more, size: 18)],
             ],
           ),
         ),

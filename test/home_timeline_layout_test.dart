@@ -37,7 +37,8 @@ const _before = bool.fromEnvironment('HOME_LAYOUT_BEFORE');
 const _media = ValueKey('home-media-toggle');
 const _order = ValueKey('home-order-menu');
 const _readingControls = ValueKey('home-reading-controls');
-const _sourceControls = ValueKey('home-source-controls');
+const _picker = ValueKey('home-source-picker');
+const _postsTab = ValueKey('home-posts-tab');
 
 List<TweetChain> _posts({int count = 5}) {
   const texts = [
@@ -268,17 +269,29 @@ void main() {
       );
       expect(find.textContaining('Took the long way home', findRichText: true), findsOneWidget);
       if (!_before) {
-        final dock = tester.getRect(find.byType(HomeFeedStrip));
+        expect(find.byType(HomeFeedStrip), findsNothing);
         final feed = tester.getRect(find.byType(SubscriptionGroupScreenContent));
         final nav = tester.getRect(find.byType(HomeNavigationBar));
-        expect(feed.bottom, lessThanOrEqualTo(dock.top));
-        expect(dock.bottom, closeTo(nav.top, 1));
+        expect(feed.bottom, closeTo(nav.top, 1));
         expect(tester.getSize(find.byKey(_media)).height, greaterThanOrEqualTo(48));
-        expect(find.byTooltip('Filters').hitTestable(), findsOneWidget);
+        expect(find.byKey(_order).hitTestable(), findsOneWidget);
+        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
         expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
         final media = find.byKey(_media);
         await tester.ensureVisible(media);
         expect(media.hitTestable(), findsOneWidget);
+        await tester.tap(find.byKey(_picker));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const ValueKey('home-source-following')).hitTestable(), findsOneWidget);
+        expect(find.byKey(const ValueKey('home-source-foryou')).hitTestable(), findsOneWidget);
+        expect(find.byKey(const ValueKey('home-add-timeline')).hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await expectLater(
+          find.byType(Overlay).first,
+          matchesGoldenFile('../review-artifacts/renders/home-source-picker-$variant.png'),
+        );
+        await tester.tap(find.byTooltip(L10n.current.close));
+        await tester.pumpAndSettle();
       }
     });
   }
@@ -304,7 +317,7 @@ void main() {
         final position = h.scroll.position;
         final items = h.cache.getOrCreateController('home--1').items!;
         expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-        expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+        expect(find.byType(HomeFeedStrip), findsNothing);
         expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
         if (reduceMotion) {
           await expectLater(
@@ -317,8 +330,8 @@ void main() {
         expect(position.pixels, greaterThan(100));
         expect(h.scroll.position, same(position));
         expect(tester.getSize(find.byKey(_readingControls)).height, 0);
-        expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
-        expect(tester.getSize(feed).height, closeTo(heightAtTop + 120, 1));
+        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
+        expect(tester.getSize(feed).height, closeTo(heightAtTop + 56, 1));
         expect(find.byKey(_media).hitTestable(), findsNothing);
         expect(_hasAccessibleLabel(tester, 'Media'), isFalse);
         expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
@@ -332,15 +345,15 @@ void main() {
         await tester.drag(feed, const Offset(0, 60));
         await tester.pumpAndSettle();
         expect(position.pixels, greaterThan(0));
-        expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
         position.jumpTo(1);
         await tester.pumpAndSettle();
         expect(tester.getSize(find.byKey(_readingControls)).height, 0);
-        expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+        expect(find.byKey(_picker).hitTestable(), findsOneWidget);
         position.jumpTo(0);
         await tester.pumpAndSettle();
         expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-        expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+        expect(find.byType(HomeFeedStrip), findsNothing);
         expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
         expect(find.byKey(_media).hitTestable(), findsOneWidget);
         expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
@@ -364,14 +377,45 @@ void main() {
     await _waitForFollowing(tester);
     final position = h.scroll.position;
     expect(position.maxScrollExtent, greaterThan(0));
-    tester.view.physicalSize = Size(390, 844 + position.maxScrollExtent - 80);
+    tester.view.physicalSize = Size(390, 844 + position.maxScrollExtent - 40);
     await tester.pumpAndSettle();
-    expect(position.maxScrollExtent, closeTo(80, 1));
-    position.jumpTo(60);
+    expect(position.maxScrollExtent, closeTo(40, 1));
+    position.jumpTo(30);
     await tester.pumpAndSettle();
-    expect(position.pixels, closeTo(60, 1));
+    expect(position.pixels, closeTo(30, 1));
     expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-    expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+    expect(find.byType(HomeFeedStrip), findsNothing);
+    expect(tester.takeException(), isNull);
+  }, skip: _before);
+
+  testWidgets('Source picker preserves a reading position and opens timeline management', (tester) async {
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(() => h.seed(postCount: 20));
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+    final feed = find.byType(SubscriptionGroupScreenContent);
+    final cached = h.cache.getOrCreateController('home--1').items!;
+    await tester.drag(feed, const Offset(0, -260));
+    await tester.pumpAndSettle();
+    final offset = h.scroll.offset;
+    expect(offset, greaterThan(0));
+    await tester.tap(find.byKey(_picker));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-source-following')));
+    await tester.pumpAndSettle();
+    expect(h.scroll.offset, closeTo(offset, 1));
+    expect(tester.getSize(find.byKey(_readingControls)).height, 0);
+    expect(h.cache.getOrCreateController('home--1').items, orderedEquals(cached));
+    await tester.tap(find.byKey(_picker));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-add-timeline')));
+    await tester.pumpAndSettle();
+    expect(find.text(L10n.current.feed_strip_add_empty), findsOneWidget);
+    expect(find.byKey(const ValueKey('home-source-sheet')), findsNothing);
+    Navigator.pop(tester.element(find.text(L10n.current.feed_strip_add_empty)));
+    await tester.pumpAndSettle();
+    expect(h.scroll.offset, closeTo(offset, 1));
     expect(tester.takeException(), isNull);
   }, skip: _before);
 
@@ -407,8 +451,13 @@ void main() {
       tester.widget<SubscriptionGroupScreenContent>(find.byType(SubscriptionGroupScreenContent)).mediaOnly,
       isTrue,
     );
+    // Selecting the already active Media tab must not toggle back to Posts.
     await tester.tap(find.byKey(_media));
     await tester.pumpAndSettle();
+    expect(h.cache.readMediaOnly('home--1'), isTrue);
+    await tester.tap(find.byKey(_postsTab));
+    await tester.pumpAndSettle();
+    expect(h.cache.readMediaOnly('home--1'), isFalse);
     expect(cached.items, orderedEquals(items));
     expect(find.textContaining('Took the long way home', findRichText: true), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -420,7 +469,9 @@ void main() {
     await tester.runAsync(h.seed);
     await tester.pumpWidget(h.app(xLookLightTheme(null)));
     await _waitForFollowing(tester);
-    await tester.tap(find.byTooltip('Filters'));
+    await tester.tap(find.byKey(_order));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(L10n.current.filters));
     await tester.pumpAndSettle();
     expect(find.text(L10n.current.include_replies), findsOneWidget);
     Navigator.pop(tester.element(find.text(L10n.current.include_replies)));

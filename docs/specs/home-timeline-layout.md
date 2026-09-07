@@ -24,8 +24,6 @@ The previous redesign retained the same Home header, horizontal tabs, and feed a
 - Use the existing motion preference for the transition. Hidden controls must not take taps, keyboard focus, or screen-reader focus. Keep feed controllers, cached pages, and source-tab state mounted through the animation.
 - Verify downward scroll, partial upward scroll, exact-top return, source restoration, short content, and reduced motion with the production Home widget. Capture both expanded and reading views.
 
-## Boundaries
-
 ## Latest direction: compact reader and a source picker
 
 The user asked for a more substantial redesign informed by internet/GitHub research. This direction supersedes the dock and toolbar arrangement above, while preserving top-only return.
