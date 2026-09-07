@@ -66,6 +66,10 @@ class MastodonPlugin extends XtaPlugin with SubscriptionSource {
   }
 
   @override
+  Widget clientScreen({required ScrollController scrollController}) =>
+      MastodonScreen(scrollController: scrollController, fullClient: true);
+
+  @override
   Widget? settingsScreen(BuildContext context) =>
       const MastodonSettingsScreen();
 

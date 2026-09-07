@@ -224,6 +224,9 @@ class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
     : super(const []);
 
   String? _instance;
+
+  /// The server that supplied this timeline, including a fallback when used.
+  String? get instance => _instance;
   var _hasMore = true;
   var _loadingMore = false;
   var _backedOff = false;

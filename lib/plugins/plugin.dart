@@ -51,6 +51,10 @@ abstract class XtaPlugin {
   /// Root screen for the home tab (used by [HomeScreen]).
   Widget? homeScreen({required ScrollController scrollController}) => null;
 
+  /// Dedicated route; plugins may provide navigation suited to a full client.
+  Widget? clientScreen({required ScrollController scrollController}) =>
+      homeScreen(scrollController: scrollController);
+
   /// Whether this plugin can be pinned next to Following / For you.
   ///
   /// Defaults to plugins that already expose a home tab — helpers without a
