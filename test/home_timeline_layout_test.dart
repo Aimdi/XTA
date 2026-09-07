@@ -196,7 +196,10 @@ class _HomeHarness {
 
 Future<void> _waitForFollowing(WidgetTester tester) async {
   final post = find.textContaining('Took the long way home', findRichText: true);
-  for (var frame = 0; frame < 12 && post.evaluate().isEmpty; frame++) {
+  for (var frame = 0; frame < 20 && post.evaluate().isEmpty; frame++) {
+    // Native SQLite opens the read connection on the real event loop.
+    // Pumping only Flutter's fake clock leaves GroupModel on its skeleton.
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
     await tester.pump(const Duration(milliseconds: 100));
   }
   await tester.pumpAndSettle();
