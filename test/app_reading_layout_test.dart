@@ -72,7 +72,7 @@ void main() {
       addTearDown(focus.dispose);
       final Widget screen = switch (variant) {
         'profile' || 'media' => const MastodonProfileScreen(acct: 'maya@studio.example'),
-        'saved' => SavedScreen(scrollController: h.scroll),
+        'saved' => Scaffold(body: SavedScreen(scrollController: h.scroll)),
         'discover' => MultiProvider(
           providers: [
             Provider<SearchScopeStore>.value(value: scope),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/database/entities.dart';
@@ -38,21 +39,32 @@ class MemorySaved extends SavedTweetModel {
 }
 
 class MemoryFolders extends SavedTweetFolderModel {
+  int reads = 0;
   MemoryFolders() {
     update([SavedTweetFolder(id: 'inspiration', name: 'Inspiration', createdAt: DateTime(2026))]);
   }
   @override
-  Future<void> listFolders() async {}
+  Future<void> listFolders() async {
+    reads++;
+  }
 }
 
 void main() {
   testWidgets('Saved combines network, folder and note search, then opens the stored conversation', (tester) async {
     final h = ReaderReviewHarness();
     h.saved.update([
-      SavedTweet(id: mastodonArchiveId(reviewPost('root')), user: 'maya', folderId: 'inspiration',
-        note: 'Colours to come back to.', content: jsonEncode(mastodonArchiveBlob(reviewPost('root')))),
-      SavedTweet(id: mastodonArchiveId(reviewPost('b')), user: 'maya',
-        content: jsonEncode(mastodonArchiveBlob(reviewPost('b')))),
+      SavedTweet(
+        id: mastodonArchiveId(reviewPost('root')),
+        user: 'maya',
+        folderId: 'inspiration',
+        note: 'Colours to come back to.',
+        content: jsonEncode(mastodonArchiveBlob(reviewPost('root'))),
+      ),
+      SavedTweet(
+        id: mastodonArchiveId(reviewPost('b')),
+        user: 'maya',
+        content: jsonEncode(mastodonArchiveBlob(reviewPost('b'))),
+      ),
     ]);
     await tester.pumpWidget(h.providers(h.app(child: SavedScreen(scrollController: h.scroll))));
     await tester.pumpAndSettle();
@@ -119,16 +131,21 @@ void main() {
   });
 
   testWidgets('bookmark writes the shared archive and can undo it', (tester) async {
+    final messenger = tester.binding.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (_) async => null);
+    addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
     final h = MastodonHarness();
     final saved = MemorySaved();
     final folders = MemoryFolders();
     await tester.pumpWidget(
       MultiProvider(
-          providers: [
-            Provider<SavedTweetModel>.value(value: saved),
-            Provider<SavedTweetFolderModel>.value(value: folders),
-          ],
-          child: h.app(child: const Scaffold(body: MastodonBookmark(post: archivedPost))),
+        providers: [
+          Provider<SavedTweetModel>.value(value: saved),
+          Provider<SavedTweetFolderModel>.value(value: folders),
+        ],
+        child: h.app(
+          child: const Scaffold(body: MastodonBookmark(post: archivedPost)),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -140,6 +157,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(saved.state, isEmpty);
     await tester.longPress(find.byIcon(Icons.bookmark_border));
+    expect(folders.reads, 1);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Inspiration'));
     await tester.pumpAndSettle();

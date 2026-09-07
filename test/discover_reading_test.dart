@@ -11,7 +11,12 @@ import 'support/mastodon_harness.dart';
 void main() {
   testWidgets('a recent search fills the field and submits the same query', (tester) async {
     final h = MastodonHarness();
-    await h.prefs.set(recentSearchesPreference, jsonEncode({'mastodon': ['design']}));
+    await h.prefs.set(
+      recentSearchesPreference,
+      jsonEncode({
+        'mastodon': ['design'],
+      }),
+    );
     await tester.pumpWidget(h.app(child: const MastodonSearchScreen()));
     await tester.pumpAndSettle();
     await tester.tap(find.text('design'));

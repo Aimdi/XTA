@@ -7,7 +7,10 @@ import 'package:xta/plugins/plugin_feed_insets.dart';
 
 List<MastodonPost> uniqueMastodonReadingPosts(List<MastodonPost> posts) {
   final seen = <String>{};
-  final unique = [for (final post in posts) if (seen.add(post.url)) post];
+  final unique = [
+    for (final post in posts)
+      if (seen.add(post.url)) post,
+  ];
   return unique.length == posts.length ? posts : unique;
 }
 
