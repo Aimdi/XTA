@@ -15,6 +15,7 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/feed_session_cache.dart';
+import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/_feed.dart';
@@ -196,7 +197,11 @@ class _HomeHarness {
 
 Future<void> _waitForFollowing(WidgetTester tester) async {
   final post = find.textContaining('Took the long way home', findRichText: true);
-  for (var frame = 0; frame < 20 && post.evaluate().isEmpty; frame++) {
+  await _waitForNativeWork(tester, () => post.evaluate().isNotEmpty);
+}
+
+Future<void> _waitForNativeWork(WidgetTester tester, bool Function() ready) async {
+  for (var frame = 0; frame < 20 && !ready(); frame++) {
     // Native SQLite opens the read connection on the real event loop.
     // Pumping only Flutter's fake clock leaves GroupModel on its skeleton.
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
@@ -266,14 +271,15 @@ void main() {
     await tester.pumpWidget(h.app(xLookLightTheme(null)));
     await _waitForFollowing(tester);
     final cached = h.cache.getOrCreateController('home--1');
-    final items = cached.items;
+    // The getter flattens pages into a new list; the post objects must survive.
+    final items = cached.items!;
     await tester.tap(find.byKey(_media));
     await tester.pumpAndSettle();
     expect(
       tester.widget<SubscriptionGroupScreenContent>(find.byType(SubscriptionGroupScreenContent)).mediaOnly,
       isTrue,
     );
-    expect(cached.items, same(items));
+    expect(cached.items, orderedEquals(items));
     expect(h.cache.readMediaOnly('home--1'), isTrue);
     expect(find.text(L10n.current.could_not_find_any_posts_with_media), findsOneWidget);
     h.selected.select(FeedTab.foryou);
@@ -292,7 +298,7 @@ void main() {
     );
     await tester.tap(find.byKey(_media));
     await tester.pumpAndSettle();
-    expect(cached.items, same(items));
+    expect(cached.items, orderedEquals(items));
     expect(find.textContaining('Took the long way home', findRichText: true), findsOneWidget);
     expect(tester.takeException(), isNull);
   }, skip: _before);
@@ -308,18 +314,30 @@ void main() {
     expect(find.text(L10n.current.include_replies), findsOneWidget);
     Navigator.pop(tester.element(find.text(L10n.current.include_replies)));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(_order));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(L10n.current.popular));
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump();
     final model = tester.element(find.byType(SubscriptionGroupScreenContent)).read<GroupModel>();
-    expect(model.state.popular, isTrue);
-    final rows = await tester.runAsync(() async {
-      final db = await Repository.readOnly();
-      return db.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
-    });
-    expect(rows!.single['popular'], 1);
+    final labels = [L10n.current.recent, L10n.current.popular, L10n.current.custom];
+    for (final order in [1, 0, 2]) {
+      await tester.tap(find.byKey(_order));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(labels[order]));
+      await _waitForNativeWork(
+        tester,
+        () => model.state.popular == (order == 1) && model.state.custom == (order == 2),
+      );
+      expect(model.state.popular, order == 1);
+      expect(model.state.custom, order == 2);
+      final rows = await tester.runAsync(() async {
+        final db = await Repository.readOnly();
+        return db.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+      });
+      expect(rows!.single['popular'], order == 1 ? 1 : 0);
+      expect(rows.single['custom'], order == 2 ? 1 : 0);
+      if (order == 2) {
+        expect(find.byType(GroupCustomSettingsScreen), findsOneWidget);
+        Navigator.pop(tester.element(find.byType(GroupCustomSettingsScreen)));
+        await tester.pumpAndSettle();
+      }
+    }
     expect(tester.takeException(), isNull);
   }, skip: _before);
 }

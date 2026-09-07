@@ -17,7 +17,7 @@ The previous redesign retained the same Home header, horizontal tabs, and feed a
 
 ## Boundaries
 
-Only Home presentation, Home state, focused tests, this spec, and review evidence wiring. No plugin-client, shared tweet-card, bottom-navigation, client, database, dependency, SDK, signing, or release changes. Retain localized labels and current icons/marks. No new service APIs or X write actions.
+Only Home presentation, Home state, focused tests, this spec, and review evidence wiring, plus the two existing GroupModel order setters used by the new toolbar. The interaction check exposed their unawaited boolean SQLite arguments; persist integer flags and await the write before publishing the selected order. No group UI, plugin-client, shared tweet-card, bottom-navigation, client, database, dependency, SDK, signing, or release changes. Retain localized labels and current icons/marks. No new service APIs or X write actions.
 
 ## Verification
 

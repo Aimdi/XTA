@@ -44,11 +44,12 @@ jobs:
           dart run flutter_iconpicker:generate_packs --packs material
           mkdir -p review-artifacts
           git rev-parse HEAD > review-artifacts/commit.txt
-      - name: Format touched Dart
+      - name: Format new Dart
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          mapfile -t changed < <(git diff --name-only --diff-filter=AM "$BASE_SHA" HEAD -- '*.dart')
+          # Match verify.yml: avoid reformatting old modules for a small fix.
+          mapfile -t changed < <(git diff --name-only --diff-filter=A "$BASE_SHA" HEAD -- '*.dart')
           dart format --line-length 120 "${changed[@]}"
           git diff --binary > review-artifacts/format.patch
       - name: Upload formatting

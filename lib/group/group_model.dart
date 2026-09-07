@@ -205,9 +205,9 @@ class GroupModel extends Store<SubscriptionGroupGet> {
 
   Future<void> toggleSubscriptionGroupPopular(bool value) async {
     await execute(() async {
-      (await Repository.writable()).rawUpdate(
+      await (await Repository.writable()).rawUpdate(
         'UPDATE $tableSubscriptionGroup SET popular = ?, custom = 0 WHERE id = ?',
-        [value, state.id],
+        [value ? 1 : 0, state.id],
       );
       return state.copyWith(popular: value, custom: false);
     });
@@ -215,9 +215,9 @@ class GroupModel extends Store<SubscriptionGroupGet> {
 
   Future<void> toggleSubscriptionGroupCustom(bool value) async {
     await execute(() async {
-      (await Repository.writable()).rawUpdate(
+      await (await Repository.writable()).rawUpdate(
         'UPDATE $tableSubscriptionGroup SET custom = ?, popular = 0 WHERE id = ?',
-        [value, state.id],
+        [value ? 1 : 0, state.id],
       );
       return state.copyWith(custom: value, popular: false);
     });
