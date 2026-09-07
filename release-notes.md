@@ -4,6 +4,28 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi128
+
+Home uses a compact source picker and Posts / Media tabs. Reading controls hide
+while scrolling and return only when you reach the top.
+
+Mastodon now has dedicated timeline navigation, a profile thumbnail grid,
+connected and collapsible conversations, and reading-position restoration
+across app restarts. Installed plugins have a direct Open action and a separate
+settings gear. Mastodon joins the shared Saved collection with folders, notes,
+search and source filters. Discover includes recent searches and inline Mastodon
+results; settings search opens and highlights individual controls.
+
+For most current Android phones, choose **`xta-aimdi128_arm64-v8a.apk`**.
+Universal, ARMv7 and x86_64 APKs are also provided. Builds use the existing
+release signing key and application id (`com.aimdi.xta`). The base version code
+is 400001090, above all aimdi127 variants, with existing ABI offsets retained.
+
+Merged PRs: #256, #257 and #258. The merged application tree matches the reviewed
+implementation exactly. Verification: 2,234 tests passed, five skipped; all
+46 focused journeys/render checks, analysis and debug APK build passed.
+Physical-device and live-account testing were not performed.
+
 ### aimdi127
 
 Home and all 16 existing plugin experiences have been redesigned on the released
