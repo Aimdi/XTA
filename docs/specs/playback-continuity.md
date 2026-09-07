@@ -14,6 +14,8 @@ in place; client and database code are outside this change.
   to the background and when the store closes. Completion and explicit Stop clear
   the retained episode. A changed episode must not receive stale events or seeks.
 - Preserve the existing app-wide media session, with native playback kept lazy.
+- If a podcast resume cannot be acknowledged, retain its checkpoint paused and
+  offer retry instead of overwriting progress with a silent restart.
 
 ## Video quality behavior
 
@@ -34,3 +36,16 @@ completion, corrupt/oversized records, queued writes, late events, quality seek
 success and fallback, rapid selections and disposal. Run focused tests and the
 repository verification/build gates on pinned Flutter 3.44.4. Android/libmpv
 device validation remains necessary; fake tests do not claim native seek proof.
+
+## Implementation evidence
+
+The pinned [media_kit 1.2.6 Media constructor](https://pub.dev/documentation/media_kit/1.2.6/media_kit/Media/Media.html)
+supports an initial `start` duration, and [open](https://pub.dev/documentation/media_kit/1.2.6/media_kit/Player/open.html)
+supports `play: false`. The [native implementation](https://github.com/media-kit/media-kit/blob/main/media_kit/lib/src/player/native/player/real.dart)
+queues loading and resets playback state, so awaiting open is insufficient evidence
+that a subsequent seek can succeed. The policy uses observed duration and position,
+with a five-second readiness wait and two-second seek acknowledgment window.
+
+Focused tests: `test/podcast_continuity_test.dart` and
+`test/video_quality_continuity_test.dart`. Playback goes through an injectable port;
+its fake records source requests, seeks, play intent, cancellations and disposal.

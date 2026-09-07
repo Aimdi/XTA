@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/substack/podcast_store.dart';
 
 /// The reader screen's controls for a podcast post's episode.
@@ -34,14 +35,19 @@ class SubstackAudioPlayer extends StatelessWidget {
           onState: (context, playback) {
             final thisEpisode = playback.url == url;
             final playing = thisEpisode && playback.playing;
+            final loading = thisEpisode && playback.loading;
+            final failed = thisEpisode && playback.failed;
             final hasLength = thisEpisode && playback.duration > Duration.zero;
 
             return Row(
               children: [
                 IconButton(
-                  icon: Icon(playing ? Icons.pause_circle : Icons.play_circle, size: 34),
+                  tooltip: failed ? L10n.of(context).retry : title,
+                  icon: loading
+                      ? const SizedBox(width: 28, height: 28, child: CircularProgressIndicator(strokeWidth: 2))
+                      : Icon(failed ? Icons.refresh : playing ? Icons.pause_circle : Icons.play_circle, size: 34),
                   color: theme.colorScheme.primary,
-                  onPressed: () => store.toggle(url: url, title: title),
+                  onPressed: loading ? null : () => store.toggle(url: url, title: title),
                 ),
                 const SizedBox(width: 4),
                 Expanded(
@@ -51,10 +57,10 @@ class SubstackAudioPlayer extends StatelessWidget {
                               .clamp(0, playback.duration.inMilliseconds)
                               .toDouble(),
                           max: playback.duration.inMilliseconds.toDouble(),
-                          onChanged: (value) => store.seek(Duration(milliseconds: value.round())),
+                          onChanged: loading ? null : (value) => store.seek(Duration(milliseconds: value.round())),
                         )
                       : Text(
-                          title,
+                          failed ? L10n.of(context).plugin_substack_load_error : title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall,

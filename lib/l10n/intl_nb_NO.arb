@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Lesevisning",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Linjeavstand",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Merk som ferdiglest",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Ferdiglest",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "Tilbake til begynnelsen",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Åpnet",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Gjenopptatt",
+  "@article_reader_resumed": {},
+  "downloads_title": "Nedlastinger",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Tøm historikken for fullførte nedlastinger",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "Kunne ikke lagre nedlastingshistorikken. Sjekk ledig lagringsplass og prøv på nytt.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "Nedlastingene dine vises her. Lagre medier fra et innlegg for å komme i gang.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Sjekk tilkoblingen og nedlastingsmappen, og prøv på nytt.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Åpne fil",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "Kunne ikke åpne denne filen. Den kan ha blitt flyttet eller slettet.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "Venter",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Velg hvor filen skal lagres",
+  "@downloads_choose_location": {},
+  "downloads_saving": "Lagrer fil…",
+  "@downloads_saving": {},
+  "downloads_completed": "Lagret",
+  "@downloads_completed": {},
+  "downloads_failed": "Nedlasting mislyktes",
+  "@downloads_failed": {},
+  "downloads_cancelled": "Avbrutt",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Avbrutt · Prøv på nytt for å fortsette",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Lagrede filer: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Tekstskalafaktor",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Frakoblet samling",
+  "@offline_library_title": {},
+  "offline_keep": "Behold frakoblet",
+  "@offline_keep": {},
+  "offline_remove": "Fjern frakoblet kopi",
+  "@offline_remove": {},
+  "offline_available": "Tilgjengelig frakoblet",
+  "@offline_available": {},
+  "offline_partial": "Delvis tilgjengelig frakoblet",
+  "@offline_partial": {},
+  "offline_unavailable": "Frakoblet kopi utilgjengelig",
+  "@offline_unavailable": {},
+  "offline_failed": "Kunne ikke beholde alt frakoblet. Sjekk tilkoblingen og ledig lagringsplass, og prøv på nytt.",
+  "@offline_failed": {},
+  "offline_storage_error": "Kunne ikke lese eller oppdatere frakoblet lagring. Sjekk ledig lagringsplass og prøv på nytt.",
+  "@offline_storage_error": {},
+  "offline_empty": "Behold artikler eller medier fra lagrede innlegg frakoblet for å finne dem her.",
+  "@offline_empty": {},
+  "offline_storage_used": "{used} av {limit} brukt",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Beholdte mediefiler: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Artikkeltekst beholdt · Bilder: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Tøm frakoblet samling",
+  "@offline_clear": {},
+  "offline_clear_question": "Fjerne alle frakoblede kopier?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "Dette fjerner beholdte artikler og medier fra denne enheten. Lagrede innlegg og mapper blir værende i biblioteket.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "Beholde sensitive medier frakoblet?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Disse filene kan inneholde sensitivt innhold. De lagres på denne enheten og holdes skjult til du velger å åpne dem.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Åpne sensitive medier",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Mediefil {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Kopier av Reddit-videoer kan mangle lyd.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "Frakoblet lagring er begrenset til {limit}. Store filer eller strømmer som ikke støttes, kan forbli utilgjengelige.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Artikkelteksten beholdes. Innebygd lyd og video krever fortsatt en tilkobling.",
+  "@offline_article_text_only": {}
 }

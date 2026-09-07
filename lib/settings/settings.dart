@@ -1,3 +1,5 @@
+import 'package:xta/downloads/downloads_screen.dart';
+import 'package:xta/offline/offline_library_screen.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -249,6 +251,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ...everyday,
               ...accounts,
               data,
+              _SettingsEntry(icon: Icons.download_outlined, title: l10n.downloads_title,
+                description: l10n.media, builder: (_) => const DownloadsScreen()),
+              _SettingsEntry(icon: Icons.offline_pin_outlined, title: l10n.offline_library_title,
+                description: l10n.saved, builder: (_) => const OfflineLibraryScreen()),
               ...advanced,
             ].where((e) => e.matches(query)))
               _entryTile(context, entry),

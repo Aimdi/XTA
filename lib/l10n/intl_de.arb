@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Leseansicht",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Zeilenabstand",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Als fertig gelesen markieren",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Fertig gelesen",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "Zum Anfang",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Geöffnet",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Fortgesetzt",
+  "@article_reader_resumed": {},
+  "downloads_title": "Downloads",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Abgeschlossenen Verlauf leeren",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "Der Downloadverlauf konnte nicht gespeichert werden. Prüfe den freien Speicherplatz und versuche es erneut.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "Hier erscheinen deine Downloads. Speichere Medien aus einem Beitrag, um loszulegen.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Prüfe deine Verbindung und den Downloadordner und versuche es erneut.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Datei öffnen",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "Diese Datei konnte nicht geöffnet werden. Sie wurde möglicherweise verschoben oder gelöscht.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "Wartet",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Speicherort wählen",
+  "@downloads_choose_location": {},
+  "downloads_saving": "Datei wird gespeichert…",
+  "@downloads_saving": {},
+  "downloads_completed": "Gespeichert",
+  "@downloads_completed": {},
+  "downloads_failed": "Download fehlgeschlagen",
+  "@downloads_failed": {},
+  "downloads_cancelled": "Abgebrochen",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Unterbrochen · Zum Fortfahren erneut versuchen",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Gespeicherte Dateien: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Textskalierungsfaktor",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Offline-Sammlung",
+  "@offline_library_title": {},
+  "offline_keep": "Offline behalten",
+  "@offline_keep": {},
+  "offline_remove": "Offline-Kopie entfernen",
+  "@offline_remove": {},
+  "offline_available": "Offline verfügbar",
+  "@offline_available": {},
+  "offline_partial": "Teilweise offline verfügbar",
+  "@offline_partial": {},
+  "offline_unavailable": "Offline-Kopie nicht verfügbar",
+  "@offline_unavailable": {},
+  "offline_failed": "Nicht alle Inhalte konnten offline gespeichert werden. Prüfe deine Verbindung und den freien Speicherplatz und versuche es erneut.",
+  "@offline_failed": {},
+  "offline_storage_error": "Der Offline-Speicher konnte nicht gelesen oder aktualisiert werden. Prüfe den freien Speicherplatz und versuche es erneut.",
+  "@offline_storage_error": {},
+  "offline_empty": "Behalte Artikel oder Medien aus gespeicherten Beiträgen offline, um sie hier zu finden.",
+  "@offline_empty": {},
+  "offline_storage_used": "{used} von {limit} belegt",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Aufbewahrte Mediendateien: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Artikeltext aufbewahrt · Bilder: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Offline-Sammlung leeren",
+  "@offline_clear": {},
+  "offline_clear_question": "Alle Offline-Kopien entfernen?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "Dadurch werden aufbewahrte Artikel und Medien von diesem Gerät entfernt. Gespeicherte Beiträge und Ordner bleiben im Archiv.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "Sensible Medien offline behalten?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Diese Dateien können sensible Inhalte enthalten. Sie werden auf diesem Gerät gespeichert und erst angezeigt, wenn du sie öffnest.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Sensible Medien öffnen",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Medium {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Reddit-Videokopien enthalten möglicherweise keinen Ton.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "Der Offline-Speicher ist auf {limit} begrenzt. Große Dateien oder nicht unterstützte Streams sind möglicherweise nicht verfügbar.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Der Artikeltext wird aufbewahrt. Eingebettete Audio- und Videoinhalte benötigen weiterhin eine Verbindung.",
+  "@offline_article_text_only": {}
 }

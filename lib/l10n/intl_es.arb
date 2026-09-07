@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Longitud del feed en modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Cuántas páginas carga el feed en modo zen antes de hacer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Apariencia de lectura",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Interlineado",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Marcar como terminado",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Terminado",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "Volver al principio",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Abierto",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Reanudado",
+  "@article_reader_resumed": {},
+  "downloads_title": "Descargas",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Borrar el historial de descargas completadas",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "No se ha podido guardar el historial de descargas. Comprueba el espacio disponible y vuelve a intentarlo.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "Tus descargas aparecerán aquí. Guarda contenido multimedia de una publicación para empezar.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Comprueba tu conexión y la carpeta de descargas y vuelve a intentarlo.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Abrir archivo",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "No se ha podido abrir este archivo. Puede que se haya movido o eliminado.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "En espera",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Elegir dónde guardar",
+  "@downloads_choose_location": {},
+  "downloads_saving": "Guardando archivo…",
+  "@downloads_saving": {},
+  "downloads_completed": "Guardado",
+  "@downloads_completed": {},
+  "downloads_failed": "Error de descarga",
+  "@downloads_failed": {},
+  "downloads_cancelled": "Cancelado",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Interrumpido · Reintenta para continuar",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Archivos guardados: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Factor de escala del texto",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Colección sin conexión",
+  "@offline_library_title": {},
+  "offline_keep": "Conservar sin conexión",
+  "@offline_keep": {},
+  "offline_remove": "Eliminar copia sin conexión",
+  "@offline_remove": {},
+  "offline_available": "Disponible sin conexión",
+  "@offline_available": {},
+  "offline_partial": "Parcialmente disponible sin conexión",
+  "@offline_partial": {},
+  "offline_unavailable": "Copia sin conexión no disponible",
+  "@offline_unavailable": {},
+  "offline_failed": "No se ha podido conservar todo sin conexión. Comprueba la conexión y el espacio disponible y vuelve a intentarlo.",
+  "@offline_failed": {},
+  "offline_storage_error": "No se ha podido leer ni actualizar el almacenamiento sin conexión. Comprueba el espacio disponible y vuelve a intentarlo.",
+  "@offline_storage_error": {},
+  "offline_empty": "Conserva artículos o contenido multimedia de publicaciones guardadas sin conexión para encontrarlos aquí.",
+  "@offline_empty": {},
+  "offline_storage_used": "{used} de {limit} en uso",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Archivos multimedia conservados: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Texto del artículo conservado · Imágenes: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Vaciar colección sin conexión",
+  "@offline_clear": {},
+  "offline_clear_question": "¿Eliminar todas las copias sin conexión?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "Se eliminarán los artículos y el contenido multimedia conservados en este dispositivo. Las publicaciones guardadas y las carpetas permanecerán en tu biblioteca.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "¿Conservar contenido multimedia sensible sin conexión?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Estos archivos pueden contener contenido sensible. Se almacenarán en este dispositivo y permanecerán ocultos hasta que decidas abrirlos.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Abrir contenido multimedia sensible",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Contenido multimedia {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Las copias de vídeos de Reddit pueden no incluir sonido.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "El almacenamiento sin conexión está limitado a {limit}. Los archivos grandes o las transmisiones no compatibles pueden seguir sin estar disponibles.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Se conserva el texto del artículo. El audio y el vídeo incrustados siguen necesitando conexión.",
+  "@offline_article_text_only": {}
 }

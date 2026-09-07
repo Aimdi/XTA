@@ -1,6 +1,8 @@
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/media/continuity_player.dart';
+import 'package:xta/media/video_source_store.dart';
 import 'package:xta/tweet/video_playback_policy.dart';
 import 'package:xta/tweet/video_quality.dart';
 
@@ -27,6 +29,7 @@ class PooledVideo {
   final Map<String, String>? httpHeaders;
 
   bool _disposed = false;
+  VideoSourceStore? _sourceStore;
 
   PooledVideo({
     required this.player,
@@ -40,12 +43,29 @@ class PooledVideo {
 
   bool get isDisposed => _disposed;
 
+  VideoSourceStore get sourceStore => _sourceStore ??= VideoSourceStore(
+    MediaKitContinuityPlayer(player, httpHeaders: httpHeaders),
+    currentStreamUrl,
+    isDisposed: () => _disposed,
+  );
+
+  void suppressQualityResume() => _sourceStore?.suppressResume();
+
+  Future<VideoSwitchResult> changeQuality(String url) async {
+    if (_disposed) return VideoSwitchResult.cancelled;
+    final result = await sourceStore.change(url);
+    if (!_disposed) currentStreamUrl = sourceStore.state.url;
+    return result;
+  }
+
   Future<void> dispose() async {
     // Two disposal paths can race on the same pair — an explicit restart and the
     // widget's own teardown — and disposing a [Player] twice trips libmpv's
     // "[Player] has been disposed" assertion. Guard so only the first wins.
     if (_disposed) return;
     _disposed = true;
+    _sourceStore?.cancel();
+    await _sourceStore?.destroy();
     // Disposing a still-active [Player] races an in-flight libmpv wakeup callback
     // against the FFI callback being freed, aborting the process with
     // "Callback invoked after it has been deleted". Unloading the media first —
@@ -107,7 +127,10 @@ class VideoControllerPool {
     final tokens = _visibleTokens[key];
     if (tokens == null) return;
     tokens.remove(token);
-    if (tokens.isEmpty) _visibleTokens.remove(key);
+    if (tokens.isEmpty) {
+      _visibleTokens.remove(key);
+      peek(key)?.suppressQualityResume();
+    }
   }
 
   bool anyVisible(String key) => _visibleTokens[key]?.isNotEmpty ?? false;
@@ -120,6 +143,7 @@ class VideoControllerPool {
         continue;
       }
       if (!video.pausableByPolicy) continue;
+      video.suppressQualityResume();
       try {
         if (video.player.state.playing) video.player.pause();
       } catch (_) {}
@@ -165,6 +189,7 @@ class VideoControllerPool {
     final entry = _entries[key];
     if (entry == null) return;
     if (entry.refCount > 0) entry.refCount--;
+    if (entry.refCount == 0) entry.value?.suppressQualityResume();
     _evict();
   }
 

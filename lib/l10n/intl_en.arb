@@ -3255,5 +3255,239 @@
   "zen_mode_page_cap": "Zen feed length",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "How many pages a feed loads in zen mode before pausing.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Reading appearance",
+  "@article_reader_appearance": {
+    "description": "Title of the article reading appearance controls."
+  },
+  "article_reader_text_size": "Text size",
+  "@article_reader_text_size": {
+    "description": "Article text size control; same meaning as the existing text size setting."
+  },
+  "article_reader_line_spacing": "Line spacing",
+  "@article_reader_line_spacing": {
+    "description": "Article line spacing control."
+  },
+  "article_reader_finish": "Mark as finished",
+  "@article_reader_finish": {
+    "description": "Action that marks the article as finished reading."
+  },
+  "article_reader_finished": "Finished",
+  "@article_reader_finished": {
+    "description": "Status: the article has been finished reading."
+  },
+  "article_reader_start_over": "Back to beginning",
+  "@article_reader_start_over": {
+    "description": "Action that scrolls back to the beginning of the article."
+  },
+  "article_reader_opened": "Opened",
+  "@article_reader_opened": {
+    "description": "Status: the article was opened but not finished."
+  },
+  "article_reader_resumed": "Resumed",
+  "@article_reader_resumed": {
+    "description": "Status: a saved article reading position was restored."
+  },
+  "downloads_title": "Downloads",
+  "@downloads_title": {
+    "description": "Screen title; files downloaded by the user."
+  },
+  "downloads_clear_finished": "Clear completed history",
+  "@downloads_clear_finished": {
+    "description": "Toolbar action removes completed download entries from the list only; downloaded files are kept."
+  },
+  "downloads_history_unavailable": "Download history could not be saved. Check available storage and try again.",
+  "@downloads_history_unavailable": {
+    "description": "Banner when durable download metadata storage fails."
+  },
+  "downloads_empty": "Your downloads will appear here. Save media from a post to get started.",
+  "@downloads_empty": {
+    "description": "Empty Downloads screen; supports existing media save actions."
+  },
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "description": "Downloaded size and total size; both placeholders are preformatted byte sizes, e.g. 4.2 MB / 10.0 MB.",
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_retry_hint": "Check your connection and download folder, then retry.",
+  "@downloads_retry_hint": {
+    "description": "Failed download troubleshooting hint."
+  },
+  "downloads_open_file": "Open file",
+  "@downloads_open_file": {
+    "description": "Opens a successfully downloaded media file using an Android app."
+  },
+  "downloads_open_failed": "This file could not be opened. It may have been moved or deleted.",
+  "@downloads_open_failed": {
+    "description": "Toast when Android cannot open a previously downloaded file."
+  },
+  "downloads_queued": "Waiting",
+  "@downloads_queued": {
+    "description": "Download is queued behind another download."
+  },
+  "downloads_choose_location": "Choose where to save",
+  "@downloads_choose_location": {
+    "description": "Download finished; the Android save picker is awaiting user input."
+  },
+  "downloads_saving": "Saving file…",
+  "@downloads_saving": {
+    "description": "Downloaded data is being copied to the chosen destination."
+  },
+  "downloads_completed": "Saved",
+  "@downloads_completed": {
+    "description": "Download finished and the file was saved successfully."
+  },
+  "downloads_failed": "Download failed",
+  "@downloads_failed": {
+    "description": "Terminal failure of media download or destination saving; retry is available."
+  },
+  "downloads_cancelled": "Cancelled",
+  "@downloads_cancelled": {
+    "description": "The user cancelled this download; retry is available."
+  },
+  "downloads_interrupted": "Interrupted · tap retry to continue",
+  "@downloads_interrupted": {
+    "description": "A previous download was active when the app closed. Retry restarts the transfer."
+  },
+  "downloads_batch_result": "Files saved: {saved} / {total}",
+  "@downloads_batch_result": {
+    "description": "Accurate result of automatic photo download batch; count only successful destination saves, including zero or partial success.",
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_library_title": "Offline collection",
+  "@offline_library_title": {
+    "description": "Screen title for explicitly retained offline articles and saved media."
+  },
+  "offline_keep": "Keep offline",
+  "@offline_keep": {
+    "description": "Button: retain article text/images or saved-post media on this device."
+  },
+  "offline_remove": "Remove offline copy",
+  "@offline_remove": {
+    "description": "Remove retained files; the saved post itself remains saved."
+  },
+  "offline_available": "Available offline",
+  "@offline_available": {
+    "description": "Status: all requested media files and article text exist on disk."
+  },
+  "offline_partial": "Partly available offline",
+  "@offline_partial": {
+    "description": "Status: some requested media files are missing; available files or text can be opened."
+  },
+  "offline_unavailable": "Offline copy unavailable",
+  "@offline_unavailable": {
+    "description": "Status: nothing usable is retained, e.g. files were removed."
+  },
+  "offline_failed": "Could not keep everything offline. Check your connection and available storage, then try again.",
+  "@offline_failed": {
+    "description": "Failure shown after explicit retention fails; no false success."
+  },
+  "offline_storage_error": "Offline storage could not be read or updated. Check available storage and try again.",
+  "@offline_storage_error": {
+    "description": "Persistent storage error banner."
+  },
+  "offline_empty": "Keep articles or saved post media offline to find them here.",
+  "@offline_empty": {
+    "description": "Empty offline collection description."
+  },
+  "offline_storage_used": "{used} of {limit} used",
+  "@offline_storage_used": {
+    "description": "Storage summary; used and limit are localized byte quantities formatted separately.",
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Media files retained: {saved} / {total}",
+  "@offline_media_count": {
+    "description": "Availability detail; saved and total are numeric counts, both may be 0.",
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Article text retained · Images: {saved} / {total}",
+  "@offline_article_detail": {
+    "description": "Availability detail for article text plus images; saved/total counts can be 0.",
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Clear offline collection",
+  "@offline_clear": {
+    "description": "Button to delete every retained offline article/media copy."
+  },
+  "offline_clear_question": "Remove all offline copies?",
+  "@offline_clear_question": {
+    "description": "Confirmation title before deleting all retained files."
+  },
+  "offline_clear_description": "This removes retained articles and media from this device. Saved posts and folders stay in your library.",
+  "@offline_clear_description": {
+    "description": "Confirmation body, clear all retained copies."
+  },
+  "offline_sensitive_question": "Keep sensitive media offline?",
+  "@offline_sensitive_question": {
+    "description": "Confirmation title when the explicitly retained post has a content warning."
+  },
+  "offline_sensitive_description": "These files may contain sensitive content. They will be stored on this device and kept hidden until you choose to open them.",
+  "@offline_sensitive_description": {
+    "description": "Confirmation body for user-requested retention of sensitive attachments."
+  },
+  "offline_sensitive_open": "Open sensitive media",
+  "@offline_sensitive_open": {
+    "description": "Explicit reveal button for retained sensitive media; thumbnails stay hidden."
+  },
+  "offline_media_label": "Media {number}",
+  "@offline_media_label": {
+    "description": "Accessible media button label; number is the 1-based attachment number.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Reddit video copies may not include sound.",
+  "@offline_video_only": {
+    "description": "Accurate notice about progressive Reddit fallback videos."
+  },
+  "offline_storage_limit": "Offline storage is limited to {limit}. Large files or unsupported streams may remain unavailable.",
+  "@offline_storage_limit": {
+    "description": "Brief storage limits explanation; limit formatted localized byte amount.",
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Article text is kept. Embedded audio and video still require a connection.",
+  "@offline_article_text_only": {
+    "description": "Clarifies article pin scope; only text and images retained."
+  }
 }

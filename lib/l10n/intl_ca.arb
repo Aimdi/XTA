@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Aspecte de lectura",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Interlineat",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Marca com a acabat",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Acabat",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "Torna al principi",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Obert",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Reprès",
+  "@article_reader_resumed": {},
+  "downloads_title": "Baixades",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Esborra l’historial de baixades completades",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "No s’ha pogut desar l’historial de baixades. Comprova l’espai disponible i torna-ho a provar.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "Les teves baixades apareixeran aquí. Desa contingut multimèdia d’una publicació per començar.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Comprova la connexió i la carpeta de baixades i torna-ho a provar.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Obre el fitxer",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "No s’ha pogut obrir aquest fitxer. Pot ser que s’hagi mogut o suprimit.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "En espera",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Tria on desar",
+  "@downloads_choose_location": {},
+  "downloads_saving": "S’està desant el fitxer…",
+  "@downloads_saving": {},
+  "downloads_completed": "Desat",
+  "@downloads_completed": {},
+  "downloads_failed": "La baixada ha fallat",
+  "@downloads_failed": {},
+  "downloads_cancelled": "Cancel·lat",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Interromput · Torna-ho a provar per continuar",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Fitxers desats: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Factor d'escala del text",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Col·lecció sense connexió",
+  "@offline_library_title": {},
+  "offline_keep": "Conserva sense connexió",
+  "@offline_keep": {},
+  "offline_remove": "Elimina la còpia sense connexió",
+  "@offline_remove": {},
+  "offline_available": "Disponible sense connexió",
+  "@offline_available": {},
+  "offline_partial": "Parcialment disponible sense connexió",
+  "@offline_partial": {},
+  "offline_unavailable": "Còpia sense connexió no disponible",
+  "@offline_unavailable": {},
+  "offline_failed": "No s’ha pogut conservar tot sense connexió. Comprova la connexió i l’espai disponible i torna-ho a provar.",
+  "@offline_failed": {},
+  "offline_storage_error": "No s’ha pogut llegir ni actualitzar l’emmagatzematge sense connexió. Comprova l’espai disponible i torna-ho a provar.",
+  "@offline_storage_error": {},
+  "offline_empty": "Conserva articles o contingut multimèdia de publicacions desades sense connexió per trobar-los aquí.",
+  "@offline_empty": {},
+  "offline_storage_used": "{used} de {limit} utilitzats",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Fitxers multimèdia conservats: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Text de l’article conservat · Imatges: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Buida la col·lecció sense connexió",
+  "@offline_clear": {},
+  "offline_clear_question": "Vols eliminar totes les còpies sense connexió?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "S’eliminaran els articles i el contingut multimèdia conservats en aquest dispositiu. Les publicacions desades i les carpetes romandran a la biblioteca.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "Vols conservar contingut multimèdia sensible sense connexió?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Aquests fitxers poden contenir contingut sensible. Es desaran en aquest dispositiu i romandran ocults fins que decideixis obrir-los.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Obre el contingut multimèdia sensible",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Contingut multimèdia {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "És possible que les còpies de vídeos de Reddit no incloguin so.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "L’emmagatzematge sense connexió està limitat a {limit}. Els fitxers grans o les transmissions no compatibles poden continuar sense estar disponibles.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Es conserva el text de l’article. L’àudio i el vídeo incrustats continuen necessitant connexió.",
+  "@offline_article_text_only": {}
 }

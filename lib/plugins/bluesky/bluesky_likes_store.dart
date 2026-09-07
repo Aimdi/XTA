@@ -69,7 +69,7 @@ class BlueskyLikesStore extends Store<List<BlueskyPost>> {
   }
 }
 
-/// Local likes this profile wrote — the Saved tab on a Bluesky profile.
+/// Local likes this profile wrote — the Likes tab on a Bluesky profile.
 ///
 /// Likes are device-only and belong to the reader, so another author's
 /// profile only lists the posts of theirs that were hearted here.

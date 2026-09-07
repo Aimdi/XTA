@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Leesweergave",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Regelafstand",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Markeren als uitgelezen",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Uitgelezen",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "Terug naar het begin",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Geopend",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Hervat",
+  "@article_reader_resumed": {},
+  "downloads_title": "Downloads",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Voltooide downloadgeschiedenis wissen",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "De downloadgeschiedenis kon niet worden opgeslagen. Controleer de beschikbare opslagruimte en probeer het opnieuw.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "Je downloads verschijnen hier. Sla media uit een bericht op om te beginnen.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Controleer je verbinding en de downloadmap en probeer het opnieuw.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Bestand openen",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "Dit bestand kon niet worden geopend. Het is mogelijk verplaatst of verwijderd.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "In de wachtrij",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Opslaglocatie kiezen",
+  "@downloads_choose_location": {},
+  "downloads_saving": "Bestand opslaan…",
+  "@downloads_saving": {},
+  "downloads_completed": "Opgeslagen",
+  "@downloads_completed": {},
+  "downloads_failed": "Download mislukt",
+  "@downloads_failed": {},
+  "downloads_cancelled": "Geannuleerd",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Onderbroken · Probeer opnieuw om door te gaan",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Opgeslagen bestanden: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Tekstschaalfactor",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Offlinecollectie",
+  "@offline_library_title": {},
+  "offline_keep": "Offline bewaren",
+  "@offline_keep": {},
+  "offline_remove": "Offlinekopie verwijderen",
+  "@offline_remove": {},
+  "offline_available": "Offline beschikbaar",
+  "@offline_available": {},
+  "offline_partial": "Gedeeltelijk offline beschikbaar",
+  "@offline_partial": {},
+  "offline_unavailable": "Offlinekopie niet beschikbaar",
+  "@offline_unavailable": {},
+  "offline_failed": "Niet alles kon offline worden bewaard. Controleer je verbinding en de beschikbare opslagruimte en probeer het opnieuw.",
+  "@offline_failed": {},
+  "offline_storage_error": "De offlineopslag kon niet worden gelezen of bijgewerkt. Controleer de beschikbare opslagruimte en probeer het opnieuw.",
+  "@offline_storage_error": {},
+  "offline_empty": "Bewaar artikelen of media uit opgeslagen berichten offline om ze hier terug te vinden.",
+  "@offline_empty": {},
+  "offline_storage_used": "{used} van {limit} gebruikt",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Bewaarde mediabestanden: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Artikeltekst bewaard · Afbeeldingen: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Offlinecollectie leegmaken",
+  "@offline_clear": {},
+  "offline_clear_question": "Alle offlinekopieën verwijderen?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "Hiermee verwijder je bewaarde artikelen en media van dit apparaat. Opgeslagen berichten en mappen blijven in je bibliotheek staan.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "Gevoelige media offline bewaren?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Deze bestanden kunnen gevoelige inhoud bevatten. Ze worden op dit apparaat opgeslagen en blijven verborgen totdat je ze opent.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Gevoelige media openen",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Mediabestand {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Kopieën van Reddit-video’s bevatten mogelijk geen geluid.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "Offlineopslag is beperkt tot {limit}. Grote bestanden of niet-ondersteunde streams blijven mogelijk onbeschikbaar.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "De artikeltekst wordt bewaard. Ingesloten audio en video hebben nog steeds een verbinding nodig.",
+  "@offline_article_text_only": {}
 }

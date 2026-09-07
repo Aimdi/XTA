@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Оформление для чтения",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Межстрочный интервал",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Отметить как прочитанное",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Прочитано",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "К началу",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Открыто",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Продолжено",
+  "@article_reader_resumed": {},
+  "downloads_title": "Загрузки",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Очистить историю завершённых загрузок",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "Не удалось сохранить историю загрузок. Проверьте свободное место и повторите попытку.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "Здесь появятся ваши загрузки. Для начала сохраните медиа из публикации.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Проверьте подключение и папку загрузок, затем повторите попытку.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Открыть файл",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "Не удалось открыть этот файл. Возможно, он был перемещён или удалён.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "Ожидание",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Выбрать место сохранения",
+  "@downloads_choose_location": {},
+  "downloads_saving": "Сохранение файла…",
+  "@downloads_saving": {},
+  "downloads_completed": "Сохранено",
+  "@downloads_completed": {},
+  "downloads_failed": "Не удалось скачать",
+  "@downloads_failed": {},
+  "downloads_cancelled": "Отменено",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Прервано · Повторите попытку, чтобы продолжить",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Сохранённые файлы: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Коэффициент масштабирования текста",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Офлайн-коллекция",
+  "@offline_library_title": {},
+  "offline_keep": "Оставить офлайн",
+  "@offline_keep": {},
+  "offline_remove": "Удалить офлайн-копию",
+  "@offline_remove": {},
+  "offline_available": "Доступно офлайн",
+  "@offline_available": {},
+  "offline_partial": "Частично доступно офлайн",
+  "@offline_partial": {},
+  "offline_unavailable": "Офлайн-копия недоступна",
+  "@offline_unavailable": {},
+  "offline_failed": "Не удалось сохранить всё офлайн. Проверьте подключение и свободное место, затем повторите попытку.",
+  "@offline_failed": {},
+  "offline_storage_error": "Не удалось прочитать или обновить офлайн-хранилище. Проверьте свободное место и повторите попытку.",
+  "@offline_storage_error": {},
+  "offline_empty": "Сохраняйте статьи или медиа из сохранённых публикаций офлайн, чтобы находить их здесь.",
+  "@offline_empty": {},
+  "offline_storage_used": "Использовано {used} из {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Сохранённые медиафайлы: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Текст статьи сохранён · Изображения: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Очистить офлайн-коллекцию",
+  "@offline_clear": {},
+  "offline_clear_question": "Удалить все офлайн-копии?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "С этого устройства будут удалены сохранённые для офлайн-доступа статьи и медиа. Сохранённые публикации и папки останутся в вашей библиотеке.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "Оставить чувствительные медиа офлайн?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Эти файлы могут содержать чувствительный контент. Они будут храниться на этом устройстве и останутся скрытыми, пока вы не откроете их.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Открыть чувствительные медиа",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Медиафайл {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Копии видео с Reddit могут не содержать звука.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "Офлайн-хранилище ограничено до {limit}. Большие файлы или неподдерживаемые потоки могут остаться недоступными.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Текст статьи сохранён. Для встроенного аудио и видео по-прежнему требуется подключение.",
+  "@offline_article_text_only": {}
 }

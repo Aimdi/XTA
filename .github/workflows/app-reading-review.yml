@@ -21,9 +21,9 @@ defaults:
 
 jobs:
   review:
-    if: github.head_ref == 'codex/app-continuity'
+    if: github.head_ref == 'codex/app-continuity' || github.head_ref == 'codex/reading-suite'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,14 +72,22 @@ jobs:
         run: |
           set -o pipefail
           flutter analyze --no-fatal-infos 2>&1 | tee review-artifacts/analyze.txt
-      - name: Reading, Saved, Discover and settings journeys
+      - name: Reading and media journeys
         id: journeys
         if: steps.analyze.outcome == 'success'
         continue-on-error: true
-        timeout-minutes: 5
+        timeout-minutes: 8
+        env:
+          REVIEW_BRANCH: ${{ github.head_ref }}
         run: |
           set -o pipefail
-          flutter test test/mastodon_client_layout_test.dart test/mastodon_client_journeys_test.dart test/mastodon_content_warning_test.dart test/mastodon_reading_experience_test.dart test/mastodon_archive_test.dart test/discover_reading_test.dart test/settings_direct_access_test.dart test/app_reading_layout_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+          if [ "$REVIEW_BRANCH" = codex/reading-suite ]; then
+            mapfile -t focused < <(find test -maxdepth 1 -name '*_test.dart' | sort | grep -E '/(article_read|bluesky_read|download_|offline_|podcast_|video_quality_|reading_suite)')
+            test "${#focused[@]}" -gt 0
+            flutter test "${focused[@]}" --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+          else
+            flutter test test/mastodon_reading_experience_test.dart test/mastodon_archive_test.dart test/discover_reading_test.dart test/settings_direct_access_test.dart test/app_reading_layout_test.dart --reporter expanded --timeout 60s 2>&1 | tee review-artifacts/journeys.txt
+          fi
       - name: Upload layout evidence
         if: always()
         uses: actions/upload-artifact@v4

@@ -3201,5 +3201,154 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "article_reader_appearance": "Okuma görünümü",
+  "@article_reader_appearance": {},
+  "article_reader_line_spacing": "Satır aralığı",
+  "@article_reader_line_spacing": {},
+  "article_reader_finish": "Okuma tamamlandı olarak işaretle",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Okuma tamamlandı",
+  "@article_reader_finished": {},
+  "article_reader_start_over": "Başa dön",
+  "@article_reader_start_over": {},
+  "article_reader_opened": "Açıldı",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Okumaya devam edildi",
+  "@article_reader_resumed": {},
+  "downloads_title": "İndirilenler",
+  "@downloads_title": {},
+  "downloads_clear_finished": "Tamamlanan indirme geçmişini temizle",
+  "@downloads_clear_finished": {},
+  "downloads_history_unavailable": "İndirme geçmişi kaydedilemedi. Kullanılabilir depolama alanını kontrol edip tekrar deneyin.",
+  "@downloads_history_unavailable": {},
+  "downloads_empty": "İndirilen dosyalarınız burada görünecek. Başlamak için bir gönderideki medyayı kaydedin.",
+  "@downloads_empty": {},
+  "downloads_retry_hint": "Bağlantınızı ve indirme klasörünü kontrol edip tekrar deneyin.",
+  "@downloads_retry_hint": {},
+  "downloads_open_file": "Dosyayı aç",
+  "@downloads_open_file": {},
+  "downloads_open_failed": "Bu dosya açılamadı. Taşınmış veya silinmiş olabilir.",
+  "@downloads_open_failed": {},
+  "downloads_queued": "Bekliyor",
+  "@downloads_queued": {},
+  "downloads_choose_location": "Kayıt konumunu seç",
+  "@downloads_choose_location": {},
+  "downloads_saving": "Dosya kaydediliyor…",
+  "@downloads_saving": {},
+  "downloads_completed": "Kaydedildi",
+  "@downloads_completed": {},
+  "downloads_failed": "İndirme başarısız",
+  "@downloads_failed": {},
+  "downloads_cancelled": "İptal edildi",
+  "@downloads_cancelled": {},
+  "downloads_interrupted": "Kesildi · Devam etmek için yeniden deneyin",
+  "@downloads_interrupted": {},
+  "downloads_batch_result": "Kaydedilen dosyalar: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "article_reader_text_size": "Metin ölçek faktörü",
+  "@article_reader_text_size": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_library_title": "Çevrimdışı koleksiyon",
+  "@offline_library_title": {},
+  "offline_keep": "Çevrimdışı sakla",
+  "@offline_keep": {},
+  "offline_remove": "Çevrimdışı kopyayı kaldır",
+  "@offline_remove": {},
+  "offline_available": "Çevrimdışı kullanılabilir",
+  "@offline_available": {},
+  "offline_partial": "Kısmen çevrimdışı kullanılabilir",
+  "@offline_partial": {},
+  "offline_unavailable": "Çevrimdışı kopya kullanılamıyor",
+  "@offline_unavailable": {},
+  "offline_failed": "Her şey çevrimdışı saklanamadı. Bağlantınızı ve kullanılabilir depolama alanını kontrol edip tekrar deneyin.",
+  "@offline_failed": {},
+  "offline_storage_error": "Çevrimdışı depolama okunamadı veya güncellenemedi. Kullanılabilir depolama alanını kontrol edip tekrar deneyin.",
+  "@offline_storage_error": {},
+  "offline_empty": "Burada bulmak için makaleleri veya kayıtlı gönderilerin medyalarını çevrimdışı saklayın.",
+  "@offline_empty": {},
+  "offline_storage_used": "{limit} alanın {used} kadarı kullanılıyor",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_media_count": "Saklanan medya dosyaları: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_detail": "Makale metni saklandı · Görseller: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_clear": "Çevrimdışı koleksiyonu temizle",
+  "@offline_clear": {},
+  "offline_clear_question": "Tüm çevrimdışı kopyalar kaldırılsın mı?",
+  "@offline_clear_question": {},
+  "offline_clear_description": "Saklanan makaleler ve medyalar bu cihazdan kaldırılır. Kayıtlı gönderiler ve klasörler kitaplığınızda kalır.",
+  "@offline_clear_description": {},
+  "offline_sensitive_question": "Hassas medyalar çevrimdışı saklansın mı?",
+  "@offline_sensitive_question": {},
+  "offline_sensitive_description": "Bu dosyalar hassas içerik barındırabilir. Bu cihazda saklanır ve siz açmayı seçene kadar gizli tutulur.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Hassas medyaları aç",
+  "@offline_sensitive_open": {},
+  "offline_media_label": "Medya {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_video_only": "Reddit video kopyaları ses içermeyebilir.",
+  "@offline_video_only": {},
+  "offline_storage_limit": "Çevrimdışı depolama {limit} ile sınırlıdır. Büyük dosyalar veya desteklenmeyen akışlar kullanılamayabilir.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_article_text_only": "Makale metni saklanır. Gömülü ses ve video için bağlantı gerekmeye devam eder.",
+  "@offline_article_text_only": {}
 }

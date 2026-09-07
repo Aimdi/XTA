@@ -1,6 +1,5 @@
 import 'package:dart_twitter_api/twitter_api.dart' show Media;
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
 import 'package:xta/client/client.dart';
 import 'package:xta/plugins/mastodon/mastodon_archive.dart';
@@ -8,7 +7,8 @@ import 'package:xta/saved/saved_media.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/utils/download_directory.dart';
+import 'package:xta/downloads/download_entry.dart';
+import 'package:xta/downloads/download_store.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pref/pref.dart';
@@ -43,74 +43,43 @@ Future<void> autoDownloadTweetPhotos({
   final downloadType = prefs.get(optionDownloadType);
   final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
   if (downloadType == optionDownloadTypeAsk || treeUri.isEmpty) {
-    messenger.showSnackBar(SnackBar(content: Text(needFolderLabel)));
+    if (messenger.mounted) messenger.showSnackBar(SnackBar(content: Text(needFolderLabel)));
     return;
   }
 
-  messenger.showSnackBar(workingSnackBar(downloadingLabel));
-  var saved = 0;
-  Object? failure;
-  for (final media in photos) {
-    try {
-      final url = content['xtaPlugin'] == 'mastodon' ? media.mediaUrlHttps! : '${media.mediaUrlHttps}:orig';
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode != 200) {
-        continue;
-      }
-      final fileName = '$username-${p.basename(media.mediaUrlHttps!)}'.split('?')[0];
-      await DownloadDirectory.save(treeUri: treeUri, fileName: fileName, bytes: response.bodyBytes);
-      saved++;
-    } catch (e) {
-      failure ??= e;
-    }
-  }
-
+  if (messenger.mounted) messenger.showSnackBar(workingSnackBar(downloadingLabel));
+  final requests = photos.map((media) {
+    final uri = originalDownloadUri(Uri.parse(media.mediaUrlHttps!));
+    return DownloadRequest(uri: uri,
+      fileName: '$username-${p.basename(uri.path).replaceFirst(RegExp(r':orig$'), '')}', treeUri: treeUri);
+  }).toList();
+  final result = await DownloadStore.shared.enqueueBatch(requests);
+  if (!messenger.mounted) return;
   messenger.hideCurrentSnackBar(reason: SnackBarClosedReason.hide);
-  if (saved > 0) {
-    messenger.showSnackBar(SnackBar(content: Text(doneLabel)));
-  } else if (failure != null) {
-    // Silent failure is what made this hard to diagnose; say what to do.
-    messenger.showSnackBar(SnackBar(content: Text(needFolderLabel)));
-  }
+  messenger.showSnackBar(SnackBar(content: Text(L10n.current.downloads_batch_result(result.saved, result.total))));
 }
 
 Future<void> downloadUriToPickedFile(BuildContext context, Uri uri, String fileName,
     {required BasePrefService prefs, required Function() onStart, required Function() onSuccess}) async {
-  var sanitizedFilename = fileName.split("?")[0];
-
+  final messenger = ScaffoldMessenger.of(context);
+  final l10n = L10n.of(context);
   try {
     onStart();
-    var responseTask = downloadFile(context, uri);
-
-    var response = await responseTask;
-    if (response == null) {
-      return;
-    }
-
     final downloadType = prefs.get(optionDownloadType);
     final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
-
-    // Ask every time, or fall back to asking when no folder is usable yet — a
-    // folder chosen by an older build cannot be written to any more.
-    if (downloadType == optionDownloadTypeAsk || treeUri.isEmpty) {
-      var fileInfo =
-          await FlutterFileDialog.saveFile(params: SaveFileDialogParams(fileName: sanitizedFilename, data: response));
-      if (fileInfo == null) {
-        return;
-      }
-
+    final result = await DownloadStore.shared.enqueue(uri: uri, fileName: fileName,
+      treeUri: downloadType == optionDownloadTypeAsk || treeUri.isEmpty ? null : treeUri);
+    if (messenger.mounted) messenger.hideCurrentSnackBar();
+    if (!context.mounted) return;
+    if (result.status == DownloadStatus.completed) {
       onSuccess();
-      return;
+    } else if (result.status == DownloadStatus.failed) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_retry_hint)));
     }
-
-    // Write through the document tree the user granted, which is the only way
-    // to reach shared storage on Android 11 and later.
-    await DownloadDirectory.save(treeUri: treeUri, fileName: sanitizedFilename, bytes: response);
-
-    onSuccess();
-  } catch (e) {
-    if (context.mounted) {
-      showSnackBar(context, icon: '🙊', message: e.toString());
+  } catch (_) {
+    if (messenger.mounted) {
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(SnackBar(content: Text(l10n.downloads_failed)));
     }
   }
 }
