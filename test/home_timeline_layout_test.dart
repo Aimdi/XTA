@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dart_twitter_api/twitter_api.dart' show User;
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -212,6 +213,22 @@ Future<void> _waitForNativeWork(WidgetTester tester, bool Function() ready) asyn
   await tester.pumpAndSettle();
 }
 
+bool _hasAccessibleLabel(WidgetTester tester, String label) {
+  bool containsLabel(SemanticsNode node) {
+    if (node.label.split('\n').contains(label)) return true;
+    var found = false;
+    node.visitChildren((child) {
+      found = containsLabel(child);
+      return !found;
+    });
+    return found;
+  }
+
+  // Detached cached nodes still have labels on their widgets. Follow only
+  // the live tree exposed by the route to accessibility services.
+  return containsLabel(tester.getSemantics(find.byType(Scaffold).first));
+}
+
 void main() {
   setUpAll(() async {
     autoUpdateGoldenFiles = true;
@@ -288,7 +305,7 @@ void main() {
       final items = h.cache.getOrCreateController('home--1').items!;
       expect(tester.getSize(find.byKey(_readingControls)).height, 56);
       expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
-      expect(find.bySemanticsLabel('Media'), findsWidgets);
+      expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
       if (reduceMotion) {
         await expectLater(
           find.byKey(const ValueKey('home-render')),
@@ -303,7 +320,7 @@ void main() {
       expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
       expect(tester.getSize(feed).height, closeTo(heightAtTop + 120, 1));
       expect(find.byKey(_media).hitTestable(), findsNothing);
-      expect(find.bySemanticsLabel('Media'), findsNothing);
+      expect(_hasAccessibleLabel(tester, 'Media'), isFalse);
       expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
       expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
       if (reduceMotion) {
@@ -326,7 +343,7 @@ void main() {
       expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
       expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
       expect(find.byKey(_media).hitTestable(), findsOneWidget);
-      expect(find.bySemanticsLabel('Media'), findsWidgets);
+      expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
       expect(h.cache.getOrCreateController('home--1').items, orderedEquals(items));
       expect(tester.takeException(), isNull);
     }, skip: _before);
