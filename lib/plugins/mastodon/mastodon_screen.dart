@@ -7,7 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
-import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
+import 'package:xta/plugins/mastodon/mastodon_navigation.dart';
+import 'package:xta/plugins/mastodon/mastodon_people.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
@@ -15,7 +16,6 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_settings.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
@@ -24,11 +24,13 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
-/// The Mastodon tab: Explore / Local / Federated / Following, like Tusky.
+/// A compact Home reader or a dedicated Mastodon client.
 class MastodonScreen extends StatefulWidget {
   final ScrollController scrollController;
 
-  const MastodonScreen({super.key, required this.scrollController});
+  final bool fullClient;
+
+  const MastodonScreen({super.key, required this.scrollController, this.fullClient = false});
 
   @override
   State<MastodonScreen> createState() => _MastodonScreenState();
@@ -41,12 +43,17 @@ class _MastodonTabStore extends PluginViewStore<int> {
 class _MastodonScreenState extends State<MastodonScreen> {
   late final PluginSessionLease _session;
   late final _MastodonTabStore _tabs;
+  late final PluginViewStore<bool> _people;
+  final _chrome = PluginViewStore(true);
+  late final PageStorageBucket _pageStorage;
 
   @override
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'mastodon');
     _tabs = _session.obtain('view', () => _MastodonTabStore());
+    _people = _session.obtain('people', () => PluginViewStore(false));
+    _pageStorage = _session.obtain(widget.fullClient ? 'client-scroll' : 'home-scroll', PageStorageBucket.new);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         // Explore only. Following used to start the same frame and fan out
@@ -59,15 +66,38 @@ class _MastodonScreenState extends State<MastodonScreen> {
 
   @override
   void dispose() {
+    _chrome.destroy();
     _session.dispose();
     super.dispose();
   }
 
-  Future<void> _lookUpProfile() async {
-    await showMastodonSearchSheet(context);
-    if (mounted) {
-      await context.read<MastodonFeedStore>().refresh();
+  Future<void> _lookUpProfile() => showMastodonSearchSheet(context);
+
+  Future<void> _settings() async {
+    final prefs = PrefService.of(context, listen: false);
+    final previous = mastodonConfiguredInstances(prefs).join('|');
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const MastodonSettingsScreen()));
+    if (!mounted || previous == mastodonConfiguredInstances(prefs).join('|')) return;
+    // Invalidate old servers, but fetch only the visible destination.
+    context.read<MastodonExploreStore>().forget();
+    context.read<MastodonLocalStore>().forget();
+    context.read<MastodonFederatedStore>().forget();
+    context.read<MastodonFeedStore>().forget();
+    _onTab(_tabs.state);
+  }
+
+  void _updateChrome(ScrollMetrics metrics, int depth) {
+    if (widget.fullClient || depth != 0 || metrics.axis != Axis.vertical) return;
+    if (metrics.pixels <= metrics.minScrollExtent + 0.5) {
+      _chrome.select(true);
+    } else if (metrics.pixels > metrics.minScrollExtent + 24) {
+      _chrome.select(false);
     }
+  }
+
+  void _selectPeople(bool people) {
+    _people.select(people);
+    if (!people) _onTab(3);
   }
 
   Future<void> _addAccount() async {
@@ -102,106 +132,60 @@ class _MastodonScreenState extends State<MastodonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     _tabs.restore(context, 'mastodon');
-
-    return Scaffold(
-      primary: !PluginEmbedded.maybeOf(context),
-      body: ScopedBuilder<_MastodonTabStore, int>(
-        store: _tabs,
-        onState: (context, tab) => Column(
-          children: [
-            PluginHomeChrome(
-              title: l10n.plugin_mastodon_title,
-              mark: pluginMark(MastodonPlugin(), size: 24),
-              accent: MastodonPlugin().brandColor,
-              tabs: [
-                PluginHomeTab(
-                  label: l10n.plugin_mastodon_tab_explore,
-                  icon: Icons.explore_outlined,
-                  selected: tab == 0,
-                  onTap: () => _onTab(0),
-                ),
-                PluginHomeTab(
-                  label: l10n.plugin_mastodon_tab_local,
-                  icon: Icons.home_outlined,
-                  selected: tab == 1,
-                  onTap: () => _onTab(1),
-                ),
-                PluginHomeTab(
-                  label: l10n.plugin_mastodon_tab_federated,
-                  icon: Icons.public,
-                  selected: tab == 2,
-                  onTap: () => _onTab(2),
-                ),
-                PluginHomeTab(
-                  label: l10n.plugin_mastodon_tab_following,
-                  icon: Icons.people_outline,
-                  selected: tab == 3,
-                  onTap: () => _onTab(3),
-                ),
-              ],
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  tooltip: l10n.plugin_mastodon_search,
-                  onPressed: _lookUpProfile,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.person_add_alt),
-                  tooltip: l10n.plugin_mastodon_add,
-                  onPressed: _addAccount,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.settings_outlined),
-                  tooltip: l10n.settings,
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const MastodonSettingsScreen())),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Text(
-                  mastodonConfiguredInstances(PrefService.of(context)).isEmpty
-                      ? l10n.plugin_mastodon_builtin_instances
-                      : '${l10n.plugin_mastodon_instance}: ${mastodonConfiguredInstances(PrefService.of(context)).join(', ')}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: PluginLazyTabs(
-                index: tab,
-                children: [
-                  (_) => _ExplorePane(scrollController: widget.scrollController),
-                  (_) => _PublicPane(
-                    store: context.read<MastodonLocalStore>(),
-                    emptyIcon: Icons.home_outlined,
-                    scrollController: widget.scrollController,
-                  ),
-                  (_) => _PublicPane(
-                    store: context.read<MastodonFederatedStore>(),
-                    emptyIcon: Icons.public,
-                    scrollController: widget.scrollController,
-                  ),
-                  (_) => _FollowingPane(scrollController: widget.scrollController),
-                ],
-              ),
-            ),
-          ],
+    return ScopedBuilder<_MastodonTabStore, int>(
+      store: _tabs,
+      onState: (context, tab) => Scaffold(
+        primary: !PluginEmbedded.maybeOf(context),
+        appBar: widget.fullClient ? MastodonClientBar(selected: tab,
+          height: (MediaQuery.textScalerOf(context).scale(40) + 16).clamp(64, double.infinity),
+          onSearch: _lookUpProfile, onSettings: _settings) : null,
+        bottomNavigationBar: widget.fullClient ? MastodonNavigation(selected: tab, onSelected: _onTab) : null,
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (notification) { _updateChrome(notification.metrics, notification.depth); return false; },
+          child: NotificationListener<ScrollMetricsNotification>(
+            onNotification: (notification) { _updateChrome(notification.metrics, notification.depth); return false; },
+            child: Column(children: [
+            _controls(context, tab),
+            Expanded(child: PageStorage(bucket: _pageStorage,
+              child: PluginLazyTabs(index: tab, children: [
+                (_) => _ExplorePane(scrollController: widget.scrollController),
+                (_) => _PublicPane(store: context.read<MastodonLocalStore>(),
+                  emptyIcon: Icons.home_outlined, scrollController: widget.scrollController),
+                (_) => _PublicPane(store: context.read<MastodonFederatedStore>(),
+                  emptyIcon: Icons.public, scrollController: widget.scrollController),
+                (_) => ScopedBuilder<PluginViewStore<bool>, bool>(store: _people,
+                  onState: (context, people) => people
+                    ? MastodonPeoplePane(onAdd: _addAccount, scrollController: widget.scrollController)
+                    : _FollowingPane(scrollController: widget.scrollController)),
+              ]),
+            )),
+          ])),
         ),
       ),
     );
   }
 
+  Widget _controls(BuildContext context, int tab) => ScopedBuilder<PluginViewStore<bool>, bool>(
+    store: _chrome,
+    onState: (context, visible) {
+      final child = widget.fullClient || visible ? Column(mainAxisSize: MainAxisSize.min, children: [
+        if (!widget.fullClient) MastodonCompactBar(selected: tab, onSelected: _onTab,
+          onSearch: _lookUpProfile, onSettings: _settings),
+        if (tab == 3) ScopedBuilder<PluginViewStore<bool>, bool>(
+          store: _people, onState: (context, people) => MastodonFollowingControls(
+            people: people, onSelected: _selectPeople, onAdd: _addAccount)),
+      ]) : const SizedBox.shrink();
+      // Bypass the render animation for reduced motion. A zero-duration
+      // AnimatedSize can redirty its own layout in Flutter 3.44.
+      if (widget.fullClient || MediaQuery.disableAnimationsOf(context)) return child;
+      return AnimatedSize(duration: const Duration(milliseconds: 180), alignment: Alignment.topCenter, child: child);
+    },
+  );
+
   void _onTab(int index) {
     _tabs.select(index);
+    _chrome.select(true);
     if (!mounted) return;
     if (index == 0) {
       final store = context.read<MastodonExploreStore>();
@@ -215,7 +199,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
       final store = context.read<MastodonFederatedStore>();
       if (store.state.isEmpty) unawaited(store.refresh());
     }
-    if (index == 3) {
+    if (index == 3 && !_people.state) {
       final feed = context.read<MastodonFeedStore>();
       if (feed.state.isEmpty) unawaited(feed.refresh());
     }
@@ -236,7 +220,7 @@ class _ExplorePane extends StatelessWidget {
       onLoading: (_) => store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
           : const PluginFeedSkeleton(),
-      onError: (_, error) => store.state.posts.isNotEmpty
+      onError: (_, error) => store.state.posts.isNotEmpty || store.state.tags.isNotEmpty
           ? _exploreBody(context, l10n, store.state)
           : Padding(
               padding: const EdgeInsets.all(24),
@@ -296,18 +280,15 @@ class _TrendingTags extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final tag in tags.take(12))
-                ActionChip(
-                  label: Text('#${tag.name}'),
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name))),
-                ),
-            ],
-          ),
+          SizedBox(height: MediaQuery.textScalerOf(context).scale(14) + 40, child: ListView.separated(
+            scrollDirection: Axis.horizontal, itemCount: tags.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
+            itemBuilder: (context, index) => Center(child: ActionChip(
+              avatar: const Icon(Icons.tag, size: 16), label: Text(tags[index].name),
+              onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tags[index].name))),
+            )),
+          )),
         ],
       ),
     );
@@ -434,7 +415,8 @@ class _FollowingPane extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
       child: FeedListView(
-        controller: scrollController,
+        key: const PageStorageKey('mastodon-following-posts'),
+        controller: pluginInnerScrollController(context, scrollController),
         padding: pluginFeedPadding(context),
         itemCount: posts.length,
         itemBuilder: (context, index) =>
@@ -462,7 +444,7 @@ class _MastodonAddAccountDialog extends StatefulWidget {
 
 class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
   late final TextEditingController _controller;
-  String? _error;
+  final _form = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -477,13 +459,8 @@ class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
   }
 
   void _submit() {
-    final l10n = L10n.of(context);
-    final acct = normaliseMastodonAcct(_controller.text);
-    if (acct == null) {
-      setState(() => _error = l10n.plugin_mastodon_invalid_handle);
-    } else {
-      Navigator.pop(context, acct);
-    }
+    if (_form.currentState?.validate() != true) return;
+    Navigator.pop(context, normaliseMastodonAcct(_controller.text));
   }
 
   @override
@@ -491,12 +468,13 @@ class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
     final l10n = L10n.of(context);
     return AlertDialog(
       title: Text(widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add),
-      content: TextField(
+      content: Form(key: _form, child: TextFormField(
         controller: _controller,
         autofocus: true,
-        decoration: InputDecoration(hintText: l10n.plugin_mastodon_handle_hint, errorText: _error),
-        onSubmitted: (_) => _submit(),
-      ),
+        decoration: InputDecoration(hintText: l10n.plugin_mastodon_handle_hint),
+        validator: (value) => normaliseMastodonAcct(value ?? '') == null ? l10n.plugin_mastodon_invalid_handle : null,
+        onFieldSubmitted: (_) => _submit(),
+      )),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
         TextButton(onPressed: _submit, child: Text(l10n.ok)),

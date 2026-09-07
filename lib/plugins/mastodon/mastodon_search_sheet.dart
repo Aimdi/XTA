@@ -1,4 +1,7 @@
-import 'package:extended_image/extended_image.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_store.dart';
+import 'package:xta/plugins/mastodon/mastodon_people.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -8,21 +11,12 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
-import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/feed_list.dart';
 
-/// Discover Mastodon accounts and trending tags on the reader's instances.
-Future<void> showMastodonSearchSheet(
-  BuildContext context, {
-  String? initialQuery,
-}) {
-  return showModalBottomSheet<void>(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (_) => _MastodonSearchSheet(initialQuery: initialQuery),
-  );
-}
+/// Kept as an entry-point alias for plugin search; discovery now has a full route.
+Future<void> showMastodonSearchSheet(BuildContext context, {String? initialQuery}) =>
+    Navigator.push<void>(context, MaterialPageRoute(
+      builder: (_) => MastodonSearchScreen(initialQuery: initialQuery)));
 
 List<String> _discoveryInstances(BuildContext context) {
   final configured = mastodonConfiguredInstances(
@@ -38,173 +32,76 @@ List<String> _discoveryInstances(BuildContext context) {
   ];
 }
 
-class _MastodonSearchSheet extends StatefulWidget {
+class MastodonSearchScreen extends StatefulWidget {
   final String? initialQuery;
 
-  const _MastodonSearchSheet({this.initialQuery});
+  const MastodonSearchScreen({super.key, this.initialQuery});
 
   @override
-  State<_MastodonSearchSheet> createState() => _MastodonSearchSheetState();
+  State<MastodonSearchScreen> createState() => _MastodonSearchScreenState();
 }
 
-class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
+class _MastodonSearchScreenState extends State<MastodonSearchScreen> {
   late final TextEditingController _controller;
-  List<MastodonTrendingTag> _tags = const [];
-  MastodonSearchPage _results = const MastodonSearchPage();
-  Object? _error;
-  var _loading = false;
-  var _searched = false;
-  var _tab = 0;
+  late final MastodonSearchStore _store;
+  final _positions = [ScrollController(), ScrollController(), ScrollController()];
+  List<MastodonTrendingTag> get _tags => _store.state.tags;
+  MastodonSearchPage get _results => _store.state.results;
+  Object? get _error => _store.state.error;
+  bool get _loading => _store.state.loading;
+  bool get _searched => _store.state.query.isNotEmpty;
+  int get _tab => _store.state.tab;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialQuery ?? '');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if ((widget.initialQuery ?? '').trim().isNotEmpty) {
-        _search();
-      } else {
-        _loadTrends();
-      }
-    });
+    _store = MastodonSearchStore(context.read<MastodonClient>(), _discoveryInstances(context));
+    WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _search(); });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    for (final controller in _positions) { controller.dispose(); }
+    _store.destroy();
     super.dispose();
   }
 
-  Future<void> _loadTrends() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-      _searched = false;
-    });
-    try {
-      final tags = await context.read<MastodonClient>().getTrendingTagsAnywhere(
-        _discoveryInstances(context),
-      );
-      if (!mounted) return;
-      setState(() {
-        _tags = tags;
-        _loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e;
-        _loading = false;
-      });
-    }
-  }
-
   Future<void> _search() async {
-    final query = _controller.text.trim();
-    if (query.isEmpty) {
-      await _loadTrends();
-      return;
+    FocusScope.of(context).unfocus();
+    for (final controller in _positions) {
+      if (controller.hasClients) controller.jumpTo(0);
     }
-
-    final direct = normaliseMastodonAcct(query);
-    if (direct != null && query.contains('@')) {
-      if (!mounted) return;
-      Navigator.pop(context);
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: direct)),
-      );
-      return;
-    }
-
-    setState(() {
-      _loading = true;
-      _error = null;
-      _searched = true;
-    });
-    try {
-      final results = await context.read<MastodonClient>().searchAnywhere(
-        _discoveryInstances(context),
-        query,
-      );
-      if (!mounted) return;
-      setState(() {
-        _results = results;
-        _tab = _defaultTab(query, results);
-        _loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e;
-        _loading = false;
-        _results = const MastodonSearchPage();
-      });
-    }
+    await _store.search(_controller.text);
   }
 
-  int _defaultTab(String query, MastodonSearchPage results) {
-    if (query.startsWith('#') && results.tags.isNotEmpty) return 2;
-    if (results.accounts.isNotEmpty) return 0;
-    if (results.posts.isNotEmpty) return 1;
-    if (results.tags.isNotEmpty) return 2;
-    return 0;
-  }
+  void _openTag(MastodonTrendingTag tag) => Navigator.push(context,
+    MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name)));
 
-  Future<void> _openTag(MastodonTrendingTag tag) async {
-    if (!mounted) return;
-    Navigator.pop(context);
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name)),
-    );
-  }
-
-  Future<void> _openProfile(MastodonProfile profile) async {
-    if (!mounted) return;
-    Navigator.pop(context);
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MastodonProfileScreen(acct: profile.acct),
-      ),
-    );
-  }
+  void _openProfile(MastodonProfile profile) => Navigator.push(context,
+    MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: profile.acct)));
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final bottom = MediaQuery.viewInsetsOf(context).bottom;
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottom),
-      child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * 0.75,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: TextField(
-                controller: _controller,
-                autofocus: (widget.initialQuery ?? '').trim().isEmpty,
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                  hintText: l10n.plugin_mastodon_search_hint,
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.arrow_forward),
-                    tooltip: l10n.plugin_mastodon_search,
-                    onPressed: _search,
-                  ),
-                ),
-                onSubmitted: (_) => _search(),
-              ),
-            ),
-            Expanded(child: _body(l10n)),
-          ],
-        ),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.plugin_mastodon_search)),
+      body: Column(children: [
+        Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 12), child: TextField(
+          key: const ValueKey('mastodon-search-field'), controller: _controller,
+          textInputAction: TextInputAction.search,
+          decoration: InputDecoration(hintText: l10n.plugin_mastodon_search_hint,
+            prefixIcon: const Icon(Icons.search), filled: true,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(28), borderSide: BorderSide.none),
+            suffixIcon: IconButton(icon: const Icon(Icons.arrow_forward),
+              tooltip: l10n.plugin_mastodon_search, onPressed: _search)),
+          onSubmitted: (_) => _search(),
+        )),
+        Expanded(child: ScopedBuilder<MastodonSearchStore, MastodonSearchState>(
+          store: _store, onState: (context, state) => KeyedSubtree(
+            key: PageStorageKey('mastodon-search-${state.query}'), child: _body(l10n)))),
+      ]),
     );
   }
 
@@ -216,10 +113,11 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: Text(
-            mastodonErrorMessage(l10n, _error!),
-            textAlign: TextAlign.center,
-          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text(mastodonErrorMessage(l10n, _error!), textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton.icon(onPressed: _search, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+          ]),
         ),
       );
     }
@@ -229,7 +127,7 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
         children: [
           _SearchTabs(
             selected: _tab,
-            onSelected: (index) => setState(() => _tab = index),
+            onSelected: _store.select,
           ),
           const Divider(height: 1),
           Expanded(child: _resultsPane(l10n)),
@@ -280,6 +178,7 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
         return Center(child: Text(l10n.plugin_mastodon_no_posts));
       }
       return ListView.builder(
+        key: const PageStorageKey('mastodon-search-posts'), controller: _positions[1],
         itemCount: _results.posts.length,
         itemBuilder: (context, index) => MastodonPostCard(
           key: ValueKey(_results.posts[index].id),
@@ -293,6 +192,7 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
         return Center(child: Text(l10n.plugin_mastodon_no_hashtags));
       }
       return ListView(
+        key: const PageStorageKey('mastodon-search-tags'), controller: _positions[2],
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
           Wrap(
@@ -313,6 +213,7 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
       return Center(child: Text(l10n.plugin_mastodon_no_results));
     }
     return ListView.separated(
+      key: const PageStorageKey('mastodon-search-accounts'), controller: _positions[0],
       itemCount: _results.accounts.length,
       separatorBuilder: (_, _) => const Divider(height: 1),
       itemBuilder: (context, index) {
@@ -335,26 +236,8 @@ class _MastodonSearchSheetState extends State<_MastodonSearchSheet> {
     );
   }
 
-  Widget _avatar(BuildContext context, MastodonProfile profile) {
-    final theme = Theme.of(context);
-    final avatar = profile.avatarUrl;
-    return ClipOval(
-      child: avatar == null || avatar.isEmpty
-          ? FallbackAvatar(
-              seed: profile.acct,
-              displayName: profile.displayName,
-              size: 40,
-              accent: theme.colorScheme.primary,
-            )
-          : ExtendedImage.network(
-              avatar,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
-              cacheWidth: (40 * MediaQuery.devicePixelRatioOf(context)).ceil(),
-            ),
-    );
-  }
+  Widget _avatar(BuildContext context, MastodonProfile profile) => MastodonPersonAvatar(
+    acct: profile.acct, name: profile.displayName, url: profile.avatarUrl);
 }
 
 class _SearchTabs extends StatelessWidget {
@@ -366,60 +249,14 @@ class _SearchTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Row(
-      children: [
-        _SearchTab(
-          label: l10n.plugin_mastodon_accounts,
-          selected: selected == 0,
-          onTap: () => onSelected(0),
-        ),
-        _SearchTab(
-          label: l10n.tweets,
-          selected: selected == 1,
-          onTap: () => onSelected(1),
-        ),
-        _SearchTab(
-          label: l10n.plugin_mastodon_hashtags,
-          selected: selected == 2,
-          onTap: () => onSelected(2),
-        ),
-      ],
-    );
-  }
-}
-
-class _SearchTab extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _SearchTab({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: selected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurfaceVariant,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            ),
-          ),
-        ),
-      ),
-    );
+    return PluginHomeChrome(tabs: [
+      PluginHomeTab(label: l10n.plugin_mastodon_accounts, icon: Icons.people_outline,
+        selected: selected == 0, onTap: () => onSelected(0)),
+      PluginHomeTab(label: l10n.tweets, icon: Icons.view_stream_outlined,
+        selected: selected == 1, onTap: () => onSelected(1)),
+      PluginHomeTab(label: l10n.plugin_mastodon_hashtags, icon: Icons.tag,
+        selected: selected == 2, onTap: () => onSelected(2)),
+    ]);
   }
 }
 

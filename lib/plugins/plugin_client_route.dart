@@ -38,5 +38,5 @@ class _PluginClientPageState extends State<_PluginClientPage> {
 
   @override
   Widget build(BuildContext context) =>
-      XtaSystemBars(child: widget.plugin.homeScreen(scrollController: _scroll) ?? const SizedBox.shrink());
+      XtaSystemBars(child: widget.plugin.clientScreen(scrollController: _scroll) ?? const SizedBox.shrink());
 }
