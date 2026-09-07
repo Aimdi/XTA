@@ -93,11 +93,7 @@ class HomeTimelineControls extends StatelessWidget {
             const SizedBox(width: 8),
             SizedBox.square(
               dimension: kTweetTouchTarget,
-              child: IconButton(
-                tooltip: l10n.filters,
-                icon: const Icon(Icons.build_outlined),
-                onPressed: onFilters,
-              ),
+              child: IconButton(tooltip: l10n.filters, icon: const Icon(Icons.build_outlined), onPressed: onFilters),
             ),
           ],
         ),
@@ -146,10 +142,7 @@ class HomeTimelineControls extends StatelessWidget {
               const Icon(Icons.sort, size: 20),
               const SizedBox(width: 8),
               Text(labels[_order], style: tweetLabelStyle(context)),
-              if (filters > 0) ...[
-                const SizedBox(width: 8),
-                Badge.count(count: filters),
-              ],
+              if (filters > 0) ...[const SizedBox(width: 8), Badge.count(count: filters)],
               const SizedBox(width: 4),
               const Icon(Icons.expand_more, size: 18),
             ],

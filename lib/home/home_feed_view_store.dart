@@ -19,14 +19,13 @@ class HomeFeedViewState {
     int? forYouEpoch,
     int? stripEpoch,
     bool? followingMediaOnly,
-  }) =>
-      HomeFeedViewState(
-        sourceId: sourceId ?? this.sourceId,
-        followingEpoch: followingEpoch ?? this.followingEpoch,
-        forYouEpoch: forYouEpoch ?? this.forYouEpoch,
-        stripEpoch: stripEpoch ?? this.stripEpoch,
-        followingMediaOnly: followingMediaOnly ?? this.followingMediaOnly,
-      );
+  }) => HomeFeedViewState(
+    sourceId: sourceId ?? this.sourceId,
+    followingEpoch: followingEpoch ?? this.followingEpoch,
+    forYouEpoch: forYouEpoch ?? this.forYouEpoch,
+    stripEpoch: stripEpoch ?? this.stripEpoch,
+    followingMediaOnly: followingMediaOnly ?? this.followingMediaOnly,
+  );
 }
 
 /// Only presentation invalidation belongs here; the existing feed controllers

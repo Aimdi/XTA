@@ -539,62 +539,60 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   Widget _timelineBody(FeedTab tab, BasePrefService prefs) {
-        if (tab == FeedTab.following) {
-          // With a cache key this feed survives a trip to another tab, the
-          // way a pushed group route already does. Without one, every
-          // Following -> For you -> Following swipe rebuilt the whole
-          // per-chunk fan-out. Namespaced so it never shares state with the
-          // pushed route for the same group.
-          return SubscriptionGroupScreenContent(
-            key: ValueKey(_followingEpoch),
-            id: widget.id,
-            cacheKey: homeFollowingCacheKey(widget.id),
-            mediaOnly: _view.state.followingMediaOnly,
-          );
-        }
-        if (tab == FeedTab.foryou) {
-          return ForYouTweets(
-            _forYouFeed,
-            key: ValueKey(_forYouEpoch),
-            type: 'profile',
-            includeReplies: false,
-            pref: prefs,
-          );
-        }
-        return _pluginBody(tab);
+    if (tab == FeedTab.following) {
+      // With a cache key this feed survives a trip to another tab, the
+      // way a pushed group route already does. Without one, every
+      // Following -> For you -> Following swipe rebuilt the whole
+      // per-chunk fan-out. Namespaced so it never shares state with the
+      // pushed route for the same group.
+      return SubscriptionGroupScreenContent(
+        key: ValueKey(_followingEpoch),
+        id: widget.id,
+        cacheKey: homeFollowingCacheKey(widget.id),
+        mediaOnly: _view.state.followingMediaOnly,
+      );
+    }
+    if (tab == FeedTab.foryou) {
+      return ForYouTweets(
+        _forYouFeed,
+        key: ValueKey(_forYouEpoch),
+        type: 'profile',
+        includeReplies: false,
+        pref: prefs,
+      );
+    }
+    return _pluginBody(tab);
   }
 
-  Widget _sourceDock(BuildContext context, List<FeedTabOption> visible, FeedTab tab) =>
-DefaultTabController(
-          key: ValueKey('${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch'),
-          length: visible.length,
-          initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
-          child: GroupUnreadScope(
-            builder: (context, unreadIds) => HomeFeedStrip(
-              tabs: [
-                for (final e in visible)
-                  Tab(
-                    child: FeedStripTab(
-                      title: e.titleBuilder(context),
-                      icon: e.icon ?? e.id.icon,
-                      mark: e.mark,
-                      unread: unreadIds.contains(_unreadKeyFor(e.id)),
-                    ),
-                  ),
-              ],
-              onTap: (index) {
-                _selectStripTab(visible[index].id);
-              },
-              addTooltip: L10n.of(context).feed_strip_add,
-              onAdd: () async {
-                final pinnedId = await showFeedStripAddSheet(context);
-                if (!context.mounted || pinnedId == null) return;
-                await rememberNetwork(context, pinnedId);
-                if (!context.mounted) return;
-                _selectStripTab(FeedTab(pinnedId));
-              },
+  Widget _sourceDock(BuildContext context, List<FeedTabOption> visible, FeedTab tab) => DefaultTabController(
+    key: ValueKey('${visible.map((e) => e.id.id).join(',')}:$_externalTabEpoch'),
+    length: visible.length,
+    initialIndex: max(0, visible.indexWhere((e) => e.id == tab)),
+    child: GroupUnreadScope(
+      builder: (context, unreadIds) => HomeFeedStrip(
+        tabs: [
+          for (final e in visible)
+            Tab(
+              child: FeedStripTab(
+                title: e.titleBuilder(context),
+                icon: e.icon ?? e.id.icon,
+                mark: e.mark,
+                unread: unreadIds.contains(_unreadKeyFor(e.id)),
+              ),
             ),
-          ),
-        );
-
+        ],
+        onTap: (index) {
+          _selectStripTab(visible[index].id);
+        },
+        addTooltip: L10n.of(context).feed_strip_add,
+        onAdd: () async {
+          final pinnedId = await showFeedStripAddSheet(context);
+          if (!context.mounted || pinnedId == null) return;
+          await rememberNetwork(context, pinnedId);
+          if (!context.mounted) return;
+          _selectStripTab(FeedTab(pinnedId));
+        },
+      ),
+    ),
+  );
 }

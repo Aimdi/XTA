@@ -54,13 +54,7 @@ class HomeFeedStrip extends StatelessWidget {
   final String addTooltip;
   final VoidCallback onAdd;
 
-  const HomeFeedStrip({
-    super.key,
-    required this.tabs,
-    this.onTap,
-    required this.addTooltip,
-    required this.onAdd,
-  });
+  const HomeFeedStrip({super.key, required this.tabs, this.onTap, required this.addTooltip, required this.onAdd});
 
   @override
   Widget build(BuildContext context) {
@@ -72,59 +66,50 @@ class HomeFeedStrip extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: tokens?.background ?? theme.colorScheme.surface,
-          border: Border(top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness)),
+          border: Border(
+            top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: TabBar(
-                dividerHeight: 0,
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                labelPadding: const EdgeInsets.symmetric(
-                  horizontal: kHomeFeedTabHorizontalPadding,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: TabBar(
+                  dividerHeight: 0,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  labelPadding: const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
+                  indicatorColor: tweetReadableAccentColor(context),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorWeight: kHomeFeedIndicatorThickness,
+                  indicator: BoxDecoration(
+                    color: tweetAccentColor(context).withValues(alpha: 0.12),
+                    border: Border.all(color: tweetReadableAccentColor(context).withValues(alpha: 0.5)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
+                  labelColor: tweetReadableAccentColor(context),
+                  unselectedLabelColor: tweetSecondaryColor(context),
+                  labelStyle: tweetLabelStyle(context),
+                  unselectedLabelStyle: tweetLabelStyle(context).copyWith(fontWeight: FontWeight.w500),
+                  tabs: tabs,
+                  onTap: onTap,
                 ),
-                indicatorColor: tweetReadableAccentColor(context),
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicatorWeight: kHomeFeedIndicatorThickness,
-                indicator: BoxDecoration(
-                  color: tweetAccentColor(context).withValues(alpha: 0.12),
-                  border: Border.all(color: tweetReadableAccentColor(context).withValues(alpha: 0.5)),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
-                labelColor: tweetReadableAccentColor(context),
-                unselectedLabelColor: tweetSecondaryColor(context),
-                labelStyle: tweetLabelStyle(context),
-                unselectedLabelStyle: tweetLabelStyle(
-                  context,
-                ).copyWith(fontWeight: FontWeight.w500),
-                tabs: tabs,
-                onTap: onTap,
               ),
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: BorderDirectional(
-                  start: BorderSide(
-                    color: tweetDividerColor(context),
-                    width: kTweetDividerThickness,
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: BorderDirectional(
+                    start: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
                   ),
                 ),
-              ),
-              child: SizedBox.square(
-                dimension: kTweetTouchTarget,
-                child: IconButton(
-                  tooltip: addTooltip,
-                  icon: const Icon(Icons.add),
-                  onPressed: onAdd,
+                child: SizedBox.square(
+                  dimension: kTweetTouchTarget,
+                  child: IconButton(tooltip: addTooltip, icon: const Icon(Icons.add), onPressed: onAdd),
                 ),
               ),
-            ),
-          ],
+            ],
           ),
         ),
       ),
@@ -146,24 +131,13 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
   final List<HomeSwitcherOption<T>> options;
   final ValueChanged<T> onSelected;
 
-  const HomeFeedSwitcher({
-    super.key,
-    required this.selected,
-    required this.options,
-    required this.onSelected,
-  });
+  const HomeFeedSwitcher({super.key, required this.selected, required this.options, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
-    final selectedOption = options.firstWhere(
-      (option) => option.value == selected,
-    );
+    final selectedOption = options.firstWhere((option) => option.value == selected);
     if (options.length == 1) {
-      return Text(
-        selectedOption.label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      );
+      return Text(selectedOption.label, maxLines: 1, overflow: TextOverflow.ellipsis);
     }
 
     return PopupMenuButton<T>(
@@ -172,9 +146,8 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
       tooltip: selectedOption.label,
       position: PopupMenuPosition.under,
       constraints: const BoxConstraints(minWidth: 200, maxWidth: 280),
-      itemBuilder: (context) => options
-          .map((option) => _menuItem(context, option, option.value == selected))
-          .toList(growable: false),
+      itemBuilder: (context) =>
+          options.map((option) => _menuItem(context, option, option.value == selected)).toList(growable: false),
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
         child: Row(
@@ -189,22 +162,14 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
               ),
             ),
             const SizedBox(width: kTweetSpace1),
-            Icon(
-              Icons.expand_more,
-              size: kTweetActionIconSize,
-              color: tweetSecondaryColor(context),
-            ),
+            Icon(Icons.expand_more, size: kTweetActionIconSize, color: tweetSecondaryColor(context)),
           ],
         ),
       ),
     );
   }
 
-  PopupMenuItem<T> _menuItem(
-    BuildContext context,
-    HomeSwitcherOption<T> option,
-    bool isSelected,
-  ) {
+  PopupMenuItem<T> _menuItem(BuildContext context, HomeSwitcherOption<T> option, bool isSelected) {
     return PopupMenuItem<T>(
       value: option.value,
       height: kTweetTouchTarget,
@@ -215,11 +180,7 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
             SizedBox(
               width: kTweetSpace6,
               child: isSelected
-                  ? Icon(
-                      Icons.check,
-                      size: kTweetActionIconSize,
-                      color: tweetReadableAccentColor(context),
-                    )
+                  ? Icon(Icons.check, size: kTweetActionIconSize, color: tweetReadableAccentColor(context))
                   : null,
             ),
             const SizedBox(width: kTweetSpace2),
@@ -229,9 +190,7 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isSelected
-                      ? tweetPrimaryColor(context)
-                      : tweetSecondaryColor(context),
+                  color: isSelected ? tweetPrimaryColor(context) : tweetSecondaryColor(context),
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 ),
               ),
@@ -249,11 +208,7 @@ class HomeNavigationItem {
   final Widget icon;
   final Widget selectedIcon;
 
-  const HomeNavigationItem({
-    required this.label,
-    required this.icon,
-    required this.selectedIcon,
-  });
+  const HomeNavigationItem({required this.label, required this.icon, required this.selectedIcon});
 }
 
 /// Home's edge-to-edge navigation surface with quiet, explicit selection.
@@ -276,8 +231,7 @@ class HomeNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
-    final reduceMotion =
-        disableAnimations || MediaQuery.disableAnimationsOf(context);
+    final reduceMotion = disableAnimations || MediaQuery.disableAnimationsOf(context);
     final theme = Theme.of(context);
     final navigationTheme = NavigationBarTheme.of(context);
     final selectedColor = tweetReadableAccentColor(context);
@@ -306,15 +260,9 @@ class HomeNavigationBar extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color:
-            navigationTheme.backgroundColor ??
-            tokens?.background ??
-            theme.colorScheme.surface,
+        color: navigationTheme.backgroundColor ?? tokens?.background ?? theme.colorScheme.surface,
         border: Border(
-          top: BorderSide(
-            color: tweetDividerColor(context),
-            width: kTweetDividerThickness,
-          ),
+          top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
         ),
       ),
       child: SafeArea(
@@ -330,14 +278,7 @@ class HomeNavigationBar extends StatelessWidget {
             destinations: items
                 .asMap()
                 .entries
-                .map(
-                  (entry) => _destination(
-                    context,
-                    entry.value,
-                    entry.key == selectedIndex,
-                    reduceMotion,
-                  ),
-                )
+                .map((entry) => _destination(context, entry.value, entry.key == selectedIndex, reduceMotion))
                 .toList(growable: false),
             onDestinationSelected: onSelected,
           ),
@@ -346,31 +287,14 @@ class HomeNavigationBar extends StatelessWidget {
     );
   }
 
-  NavigationDestination _destination(
-    BuildContext context,
-    HomeNavigationItem item,
-    bool selected,
-    bool reduceMotion,
-  ) {
-    final duration = reduceMotion
-        ? Duration.zero
-        : xtaMotionDuration(context, kXtaMotionStandard);
+  NavigationDestination _destination(BuildContext context, HomeNavigationItem item, bool selected, bool reduceMotion) {
+    final duration = reduceMotion ? Duration.zero : xtaMotionDuration(context, kXtaMotionStandard);
     final scale = selected ? 1.08 : 1.0;
     final icon = selected ? item.selectedIcon : item.icon;
 
     return NavigationDestination(
-      icon: AnimatedScale(
-        scale: scale,
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: icon,
-      ),
-      selectedIcon: AnimatedScale(
-        scale: scale,
-        duration: duration,
-        curve: Curves.easeOutCubic,
-        child: icon,
-      ),
+      icon: AnimatedScale(scale: scale, duration: duration, curve: Curves.easeOutCubic, child: icon),
+      selectedIcon: AnimatedScale(scale: scale, duration: duration, curve: Curves.easeOutCubic, child: icon),
       label: item.label,
     );
   }
@@ -389,10 +313,7 @@ class HomeLoadingState extends StatelessWidget {
               dimension: kTweetTouchTarget,
               child: Padding(
                 padding: const EdgeInsets.all(kTweetSpace3),
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: tweetReadableAccentColor(context),
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, color: tweetReadableAccentColor(context)),
               ),
             ),
           ),

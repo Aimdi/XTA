@@ -68,27 +68,29 @@ List<TweetChain> _posts() {
 }
 
 class _HomeHarness {
-  final prefs = PrefServiceCache(defaults: {
-    optionHomeFeedStripPlugins: <String>[],
-    optionSeededStripPlugins: <String>[],
-    optionMediaDefaultMute: true,
-    optionMediaGridColumns: 2,
-    optionMediaGridLayout: mediaGridLayoutMasonry,
-    optionNonConfirmationBiasMode: false,
-    optionThemeTrueBlack: true,
-    optionThemeTrueBlackTweetCards: true,
-    optionTweetsShowSubscribeBadge: false,
-    optionUseAbsoluteTimestamp: true,
-    optionShareBaseUrl: 'https://x.com',
-    optionLocale: optionLocaleDefault,
-    optionZenMode: false,
-    optionCalmMode: false,
-    optionDisableAnimations: true,
-    optionSubscriptionGroupsOrderByField: 'name',
-    optionSubscriptionGroupsOrderByAscending: true,
-    optionGlobalIncludeReplies: true,
-    optionGlobalIncludeRetweets: true,
-  });
+  final prefs = PrefServiceCache(
+    defaults: {
+      optionHomeFeedStripPlugins: <String>[],
+      optionSeededStripPlugins: <String>[],
+      optionMediaDefaultMute: true,
+      optionMediaGridColumns: 2,
+      optionMediaGridLayout: mediaGridLayoutMasonry,
+      optionNonConfirmationBiasMode: false,
+      optionThemeTrueBlack: true,
+      optionThemeTrueBlackTweetCards: true,
+      optionTweetsShowSubscribeBadge: false,
+      optionUseAbsoluteTimestamp: true,
+      optionShareBaseUrl: 'https://x.com',
+      optionLocale: optionLocaleDefault,
+      optionZenMode: false,
+      optionCalmMode: false,
+      optionDisableAnimations: true,
+      optionSubscriptionGroupsOrderByField: 'name',
+      optionSubscriptionGroupsOrderByAscending: true,
+      optionGlobalIncludeReplies: true,
+      optionGlobalIncludeRetweets: true,
+    },
+  );
   final selected = FeedTabStore(FeedTab.following);
   final cache = FeedSessionCache();
   final scroll = ScrollController();
@@ -98,13 +100,22 @@ class _HomeHarness {
     final db = await Repository.writable();
     await db.delete(tableSubscription);
     await db.update(tableSubscriptionGroup, {'popular': 0, 'custom': 0}, where: 'id = ?', whereArgs: ['-1']);
-    await db.insert(tableSubscription, UserSubscription(
-      id: 'reader', screenName: 'reader', name: 'Reading fixture', profileImageUrlHttps: null,
-      verified: false, createdAt: DateTime(2026, 9, 7), inFeed: true,
-    ).toMap());
+    await db.insert(
+      tableSubscription,
+      UserSubscription(
+        id: 'reader',
+        screenName: 'reader',
+        name: 'Reading fixture',
+        profileImageUrlHttps: null,
+        verified: false,
+        createdAt: DateTime(2026, 9, 7),
+        inFeed: true,
+      ).toMap(),
+    );
     final controller = cache.getOrCreateController('home--1');
     controller.loader = (_) async => (chains: _posts(), nextCursor: null);
     await controller.softRefresh();
+    expect(controller.items, hasLength(5));
   }
 
   Widget app(ThemeData theme, {double scale = 1, bool rtl = false}) => PrefService(
@@ -128,8 +139,10 @@ class _HomeHarness {
       child: MaterialApp(
         theme: theme,
         localizationsDelegates: const [
-          L10n.delegate, GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: L10n.delegate.supportedLocales,
         builder: (context, child) => MediaQuery(
@@ -142,12 +155,27 @@ class _HomeHarness {
             drawer: const Drawer(child: Center(child: Text('Drawer fixture'))),
             body: FeedScreen(scrollController: scroll, id: '-1', name: 'Home'),
             bottomNavigationBar: HomeNavigationBar(
-              selectedIndex: 0, showLabels: true, disableAnimations: true, onSelected: (_) {},
+              selectedIndex: 0,
+              showLabels: true,
+              disableAnimations: true,
+              onSelected: (_) {},
               items: const [
                 HomeNavigationItem(label: 'Home', icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home)),
-                HomeNavigationItem(label: 'Subscriptions', icon: Icon(Icons.people_outlined), selectedIcon: Icon(Icons.people)),
-                HomeNavigationItem(label: 'Discover', icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search)),
-                HomeNavigationItem(label: 'Saved', icon: Icon(Icons.bookmark_border_outlined), selectedIcon: Icon(Icons.bookmark)),
+                HomeNavigationItem(
+                  label: 'Subscriptions',
+                  icon: Icon(Icons.people_outlined),
+                  selectedIcon: Icon(Icons.people),
+                ),
+                HomeNavigationItem(
+                  label: 'Discover',
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                ),
+                HomeNavigationItem(
+                  label: 'Saved',
+                  icon: Icon(Icons.bookmark_border_outlined),
+                  selectedIcon: Icon(Icons.bookmark),
+                ),
               ],
             ),
           ),
@@ -164,6 +192,14 @@ class _HomeHarness {
     groups.destroy();
     cache.getOrCreateController('home--1').dispose();
   }
+}
+
+Future<void> _waitForFollowing(WidgetTester tester) async {
+  final post = find.textContaining('Took the long way home', findRichText: true);
+  for (var frame = 0; frame < 12 && post.evaluate().isEmpty; frame++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -186,15 +222,20 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final h = _HomeHarness();
-      await h.seed();
+      addTearDown(() => h.close(tester));
+      await tester.runAsync(h.seed);
       final theme = switch (variant) {
         'dark' => xLookDimTheme(null),
         'black' => xLookLightsOutTheme(null),
         _ => xLookLightTheme(null),
       };
       await tester.pumpWidget(h.app(theme, scale: large ? 2 : 1, rtl: large));
-      await tester.pumpAndSettle();
+      await _waitForFollowing(tester);
       expect(tester.takeException(), isNull);
+      await expectLater(
+        find.byKey(const ValueKey('home-render')),
+        matchesGoldenFile('../review-artifacts/renders/home-following-$variant.png'),
+      );
       expect(find.textContaining('Took the long way home', findRichText: true), findsOneWidget);
       if (!_before) {
         final dock = tester.getRect(find.byType(HomeFeedStrip));
@@ -209,22 +250,23 @@ void main() {
         await tester.ensureVisible(media);
         expect(media.hitTestable(), findsOneWidget);
       }
-      await expectLater(find.byKey(const ValueKey('home-render')),
-        matchesGoldenFile('../review-artifacts/renders/home-following-$variant.png'));
-      await h.close(tester);
     });
   }
 
   testWidgets('Home media reuses cached posts and survives switching sources', (tester) async {
     final h = _HomeHarness();
-    await h.seed();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
     await tester.pumpWidget(h.app(xLookLightTheme(null)));
-    await tester.pumpAndSettle();
+    await _waitForFollowing(tester);
     final cached = h.cache.getOrCreateController('home--1');
     final items = cached.items;
     await tester.tap(find.byKey(_media));
     await tester.pumpAndSettle();
-    expect(tester.widget<SubscriptionGroupScreenContent>(find.byType(SubscriptionGroupScreenContent)).mediaOnly, isTrue);
+    expect(
+      tester.widget<SubscriptionGroupScreenContent>(find.byType(SubscriptionGroupScreenContent)).mediaOnly,
+      isTrue,
+    );
     expect(cached.items, same(items));
     expect(h.cache.readMediaOnly('home--1'), isTrue);
     expect(find.text(L10n.current.could_not_find_any_posts_with_media), findsOneWidget);
@@ -238,20 +280,23 @@ void main() {
     expect(tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed, isNot(same(original)));
     h.selected.select(FeedTab.following);
     await tester.pumpAndSettle();
-    expect(tester.widget<SubscriptionGroupScreenContent>(find.byType(SubscriptionGroupScreenContent)).mediaOnly, isTrue);
+    expect(
+      tester.widget<SubscriptionGroupScreenContent>(find.byType(SubscriptionGroupScreenContent)).mediaOnly,
+      isTrue,
+    );
     await tester.tap(find.byKey(_media));
     await tester.pumpAndSettle();
     expect(cached.items, same(items));
     expect(find.textContaining('Took the long way home', findRichText: true), findsOneWidget);
-    await h.close(tester);
     expect(tester.takeException(), isNull);
   }, skip: _before);
 
   testWidgets('Home order updates the actual Following group and keeps filters reachable', (tester) async {
     final h = _HomeHarness();
-    await h.seed();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
     await tester.pumpWidget(h.app(xLookLightTheme(null)));
-    await tester.pumpAndSettle();
+    await _waitForFollowing(tester);
     await tester.tap(find.byTooltip('Filters'));
     await tester.pumpAndSettle();
     expect(find.text(L10n.current.include_replies), findsOneWidget);
@@ -264,9 +309,11 @@ void main() {
     await tester.pump();
     final model = tester.element(find.byType(SubscriptionGroupScreenContent)).read<GroupModel>();
     expect(model.state.popular, isTrue);
-    final rows = await (await Repository.readOnly()).query(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
-    expect(rows.single['popular'], 1);
-    await h.close(tester);
+    final rows = await tester.runAsync(() async {
+      final db = await Repository.readOnly();
+      return db.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+    });
+    expect(rows!.single['popular'], 1);
     expect(tester.takeException(), isNull);
   }, skip: _before);
 }
