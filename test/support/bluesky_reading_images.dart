@@ -46,6 +46,9 @@ Future<void> settleBlueskyReadingImages(WidgetTester tester) async {
   }
   final images = tester.stateList(find.byType(ExtendedImage)).cast<ExtendedImageState>().toList();
   expect(images, isNotEmpty, reason: 'The production image widgets must be mounted.');
-  expect(images.map((state) => state.extendedImageLoadState), everyElement(LoadState.completed),
-    reason: 'All fixture thumbnails must decode before the screenshot or reveal assertion.');
+  expect(
+    images.map((state) => state.extendedImageLoadState),
+    everyElement(LoadState.completed),
+    reason: 'All fixture thumbnails must decode before the screenshot or reveal assertion.',
+  );
 }

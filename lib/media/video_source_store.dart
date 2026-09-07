@@ -71,7 +71,11 @@ class VideoSourceStore extends Store<VideoSourceState> {
     if (!_current(generation)) return VideoSwitchResult.cancelled;
     final origin = _origin!;
     try {
-      await _command(generation, cancel, () => player.open(url, start: origin.completed ? Duration.zero : origin.position));
+      await _command(
+        generation,
+        cancel,
+        () => player.open(url, start: origin.completed ? Duration.zero : origin.position),
+      );
       if (!_current(generation)) return VideoSwitchResult.cancelled;
       final restored = await _restore(origin, generation, cancel);
       if (!_current(generation)) return VideoSwitchResult.cancelled;
@@ -85,12 +89,15 @@ class VideoSourceStore extends Store<VideoSourceState> {
       if (_commands.busy) {
         update(VideoSourceState(state.url, failed: true));
       } else {
-      await _recover(origin, generation, cancel);
+        await _recover(origin, generation, cancel);
       }
       return VideoSwitchResult.failed;
     } finally {
       if (_current(generation)) {
-        if (!state.failed) { _origin = null; _originUrl = null; }
+        if (!state.failed) {
+          _origin = null;
+          _originUrl = null;
+        }
         update(VideoSourceState(state.url, failed: state.failed));
       }
     }
@@ -99,7 +106,11 @@ class VideoSourceStore extends Store<VideoSourceState> {
   Future<void> _recover(PlaybackFrame origin, int generation, Completer<void> cancel) async {
     final previous = _originUrl!;
     try {
-      await _command(generation, cancel, () => player.open(previous, start: origin.completed ? Duration.zero : origin.position));
+      await _command(
+        generation,
+        cancel,
+        () => player.open(previous, start: origin.completed ? Duration.zero : origin.position),
+      );
       if (!_current(generation)) return;
       await _restore(origin, generation, cancel);
       if (!_current(generation)) return;

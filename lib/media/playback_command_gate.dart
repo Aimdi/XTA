@@ -11,7 +11,8 @@ class PlaybackCommandGate {
   bool get busy => _pending != null;
   Future<void> get whenIdle => _pending ?? Future.value();
 
-  Future<void> run(Future<void> Function() command, {
+  Future<void> run(
+    Future<void> Function() command, {
     required Future<void> cancelled,
     required Duration timeout,
   }) async {
@@ -25,20 +26,33 @@ class PlaybackCommandGate {
       abandoned = true;
       result.completeError(error);
     }
+
     final timer = Timer(timeout, () => abandon(TimeoutException('Native playback command timed out')));
     cancelled.then((_) => abandon(const PlaybackCommandCancelled()));
     Future<void> settle([Object? error, StackTrace? stack]) async {
       if (abandoned) {
-        try { await onAbandonedSettled(); } catch (_) { /* Keep disposal safe after the command settles. */ }
+        try {
+          await onAbandonedSettled();
+        } catch (_) {
+          /* Keep disposal safe after the command settles. */
+        }
       }
       _pending = null;
       idle.complete();
       if (result.isCompleted) return;
-      if (error == null) { result.complete(); } else { result.completeError(error, stack); }
+      if (error == null) {
+        result.complete();
+      } else {
+        result.completeError(error, stack);
+      }
     }
 
     Future<void>.sync(command).then((_) => settle(), onError: (Object error, StackTrace stack) => settle(error, stack));
-    try { await result.future; } finally { timer.cancel(); }
+    try {
+      await result.future;
+    } finally {
+      timer.cancel();
+    }
   }
 }
 

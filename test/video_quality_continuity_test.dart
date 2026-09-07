@@ -203,7 +203,9 @@ void main() {
 
   test('stalled native seek fails promptly without overlapping a fallback open', () async {
     final gate = Completer<void>();
-    final player = _player()..honorStart = false..beforeSeek = (_) => gate.future;
+    final player = _player()
+      ..honorStart = false
+      ..beforeSeek = (_) => gate.future;
     final store = _store(player);
     expect(await store.change(_high).timeout(const Duration(seconds: 1)), VideoSwitchResult.failed);
     expect(store.nativeCommandPending, isTrue);
@@ -236,8 +238,7 @@ void main() {
   test('latest choice unblocks when an uncancellable open is still stalled', () async {
     final gate = Completer<void>();
     final player = _player()..beforeOpen = (_) => gate.future;
-    final store = VideoSourceStore(player, _old, isDisposed: () => false,
-      commandTimeout: const Duration(minutes: 1));
+    final store = VideoSourceStore(player, _old, isDisposed: () => false, commandTimeout: const Duration(minutes: 1));
     final first = store.change(_high);
     await Future<void>.delayed(Duration.zero);
     final latest = store.change(_medium);
@@ -257,9 +258,10 @@ void main() {
 
   test('latest choice cannot receive the seek of an abandoned earlier source', () async {
     final gate = Completer<void>();
-    final player = _player()..honorStart = false..beforeSeek = (_) => gate.future;
-    final store = VideoSourceStore(player, _old, isDisposed: () => false,
-      seekTimeout: const Duration(minutes: 1));
+    final player = _player()
+      ..honorStart = false
+      ..beforeSeek = (_) => gate.future;
+    final store = VideoSourceStore(player, _old, isDisposed: () => false, seekTimeout: const Duration(minutes: 1));
     final first = store.change(_high);
     await Future<void>.delayed(Duration.zero);
     final latest = store.change(_medium);

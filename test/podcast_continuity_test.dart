@@ -70,20 +70,20 @@ void main() {
     await restored.destroy();
   });
 
-  testWidgets('continuous playback writes periodically instead of starving a debounce', (tester) async {
+  test('continuous playback writes periodically instead of starving a debounce', () async {
     final prefs = PrefServiceCache();
     final player = FakeContinuityPlayer();
     final store = _store(prefs, player);
     await store.toggle(url: _url, title: 'Episode one');
     for (var i = 1; i <= 5; i++) {
       player.emit(position: Duration(seconds: i));
-      await tester.pump(const Duration(milliseconds: 500));
+      await Future<void>.delayed(const Duration(milliseconds: 500));
     }
     final saved = PodcastCheckpoint.decode(prefs.get(podcastCheckpointPreference));
     expect(saved, isNotNull);
     expect(saved!.position, greaterThan(Duration.zero));
     await store.destroy();
-  });
+  }, timeout: const Timeout(Duration(seconds: 15)));
 
   test('completion clears progress and does not resurrect on restart', () async {
     final prefs = PrefServiceCache();
@@ -220,7 +220,9 @@ void main() {
   test('a stalled resume seek preserves the checkpoint and permits a later retry', () async {
     final prefs = PrefServiceCache(defaults: {podcastCheckpointPreference: _checkpoint()});
     final gate = Completer<void>();
-    final player = FakeContinuityPlayer()..honorStart = false..beforeSeek = (_) => gate.future;
+    final player = FakeContinuityPlayer()
+      ..honorStart = false
+      ..beforeSeek = (_) => gate.future;
     final store = _store(prefs, player);
     await store.toggle(url: _url, title: 'Episode one').timeout(const Duration(seconds: 1));
     expect(store.state.failed, isTrue);

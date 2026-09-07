@@ -138,9 +138,11 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
       ),
     );
     final payload = jsonEncode({'fontSize': state.fontSize, 'lineHeight': state.lineHeight});
-    unawaited(_write(() async {
-      await prefs.set(articleAppearancePreference, payload);
-    }));
+    unawaited(
+      _write(() async {
+        await prefs.set(articleAppearancePreference, payload);
+      }),
+    );
   }
 
   void receiveProgress(String message) {
@@ -248,8 +250,7 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   static Future<void> _write(Future<void> Function() task) {
     final previous = _writes;
-    final next = (previous == null ? Future<void>.sync(task) : previous.then((_) => task()))
-        .catchError((Object _) {});
+    final next = (previous == null ? Future<void>.sync(task) : previous.then((_) => task())).catchError((Object _) {});
     _writes = next;
     return next.whenComplete(() {
       // Drop the completed future and its async zone after the queue drains.
