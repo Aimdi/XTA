@@ -204,34 +204,25 @@ class MastodonPostCard extends StatelessWidget {
     final l10n = L10n.of(context);
     final date = post.publishedAt;
     final muted = theme.colorScheme.onSurfaceVariant;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        PluginNameMetaRow(
-          name: Text(
-            post.authorName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall!.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          meta: [
-            if (date != null) createRelativeDate(date),
-            if (post.edited) l10n.plugin_mastodon_edited,
-          ],
-        ),
-        PluginHandleBadgeRow(
-          handle: _MastodonHandle(acct: post.acct, muted: muted),
-          badges: [
-            if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned),
-            if (showSourceBadge)
-              PluginCardBadge(label: l10n.plugin_mastodon_title),
-          ],
-        ),
-      ],
-    );
+    final large = MediaQuery.textScalerOf(context).scale(14) > 21;
+    final name = Text(post.authorName, maxLines: large ? 2 : 1, overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800));
+    final meta = [if (date != null) createRelativeDate(date), if (post.edited) l10n.plugin_mastodon_edited];
+    final badges = [
+      if (pinned) PluginCardBadge(label: l10n.plugin_mastodon_pinned),
+      if (showSourceBadge) PluginCardBadge(label: l10n.plugin_mastodon_title),
+    ];
+    if (large) return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      name,
+      Text('@${post.acct}', textDirection: TextDirection.ltr, maxLines: 2, overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+      if (meta.isNotEmpty) Text(meta.join(' · '), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+      if (badges.isNotEmpty) Wrap(spacing: 6, runSpacing: 4, children: badges),
+    ]);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      PluginNameMetaRow(name: name, meta: meta),
+      PluginHandleBadgeRow(handle: _MastodonHandle(acct: post.acct, muted: muted), badges: badges),
+    ]);
   }
 
   Widget _media(BuildContext context) {

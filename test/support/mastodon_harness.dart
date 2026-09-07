@@ -170,7 +170,7 @@ class MastodonHarness {
     }
   }
 
-  Widget app({bool embedded = false, Widget? child, bool dark = false, double scale = 1, bool rtl = false}) =>
+  Widget app({bool embedded = false, Widget? child, bool dark = false, double scale = 1, bool rtl = false, bool reducedMotion = true}) =>
       PrefService(
         service: prefs,
         child: MultiProvider(
@@ -196,7 +196,7 @@ class MastodonHarness {
             builder: (context, child) => RepaintBoundary(
               key: const ValueKey('mastodon-window'),
               child: MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale), disableAnimations: true),
+                data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale), disableAnimations: reducedMotion),
                 child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
               ),
             ),

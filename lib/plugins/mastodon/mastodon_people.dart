@@ -54,7 +54,7 @@ class MastodonPeoplePane extends StatelessWidget {
     store: context.read<MastodonAccountsStore>(),
     onState: (context, accounts) {
       final l10n = L10n.of(context);
-      if (accounts.isEmpty)
+      if (accounts.isEmpty) {
         return EmptyPane(
           icon: Icons.people_outline,
           message: l10n.plugin_mastodon_empty,
@@ -64,6 +64,7 @@ class MastodonPeoplePane extends StatelessWidget {
             label: Text(l10n.plugin_mastodon_add),
           ),
         );
+      }
       return ListView.separated(
         key: const PageStorageKey('mastodon-following-people'),
         controller: pluginInnerScrollController(context, scrollController),

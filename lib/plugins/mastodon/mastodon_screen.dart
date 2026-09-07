@@ -146,17 +146,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
           child: NotificationListener<ScrollMetricsNotification>(
             onNotification: (notification) { _updateChrome(notification.metrics, notification.depth); return false; },
             child: Column(children: [
-            ScopedBuilder<PluginViewStore<bool>, bool>(store: _chrome, onState: (context, visible) => AnimatedSize(
-              duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 180),
-              alignment: Alignment.topCenter,
-              child: widget.fullClient || visible ? Column(mainAxisSize: MainAxisSize.min, children: [
-                if (!widget.fullClient) MastodonCompactBar(selected: tab, onSelected: _onTab,
-                  onSearch: _lookUpProfile, onSettings: _settings),
-                if (tab == 3) ScopedBuilder<PluginViewStore<bool>, bool>(
-                  store: _people, onState: (context, people) => MastodonFollowingControls(
-                    people: people, onSelected: _selectPeople, onAdd: _addAccount)),
-              ]) : const SizedBox.shrink(),
-            )),
+            _controls(context, tab),
             Expanded(child: PageStorage(bucket: _pageStorage,
               child: PluginLazyTabs(index: tab, children: [
                 (_) => _ExplorePane(scrollController: widget.scrollController),
@@ -175,6 +165,23 @@ class _MastodonScreenState extends State<MastodonScreen> {
       ),
     );
   }
+
+  Widget _controls(BuildContext context, int tab) => ScopedBuilder<PluginViewStore<bool>, bool>(
+    store: _chrome,
+    onState: (context, visible) {
+      final child = widget.fullClient || visible ? Column(mainAxisSize: MainAxisSize.min, children: [
+        if (!widget.fullClient) MastodonCompactBar(selected: tab, onSelected: _onTab,
+          onSearch: _lookUpProfile, onSettings: _settings),
+        if (tab == 3) ScopedBuilder<PluginViewStore<bool>, bool>(
+          store: _people, onState: (context, people) => MastodonFollowingControls(
+            people: people, onSelected: _selectPeople, onAdd: _addAccount)),
+      ]) : const SizedBox.shrink();
+      // Bypass the render animation for reduced motion. A zero-duration
+      // AnimatedSize can redirty its own layout in Flutter 3.44.
+      if (widget.fullClient || MediaQuery.disableAnimationsOf(context)) return child;
+      return AnimatedSize(duration: const Duration(milliseconds: 180), alignment: Alignment.topCenter, child: child);
+    },
+  );
 
   void _onTab(int index) {
     _tabs.select(index);

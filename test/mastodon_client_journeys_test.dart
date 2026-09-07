@@ -24,13 +24,13 @@ class _RetrySearch extends MastodonFixtureClient {
   }
 }
 
-Future<void> _open(WidgetTester tester, MastodonHarness h, {bool embedded = false, Widget? child}) async {
+Future<void> _open(WidgetTester tester, MastodonHarness h, {bool embedded = false, Widget? child, bool reducedMotion = true}) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(() => h.close(tester));
-  await tester.pumpWidget(h.app(embedded: embedded, child: child));
+  await tester.pumpWidget(h.app(embedded: embedded, child: child, reducedMotion: reducedMotion));
   await tester.pumpAndSettle();
 }
 
@@ -58,9 +58,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Home controls stay hidden on upward scrolling until the top', (tester) async {
+  for (final reducedMotion in [true, false]) {
+  testWidgets('Home controls stay hidden until the top, reduced motion: $reducedMotion', (tester) async {
     final h = MastodonHarness();
-    await _open(tester, h, embedded: true);
+    await _open(tester, h, embedded: true, reducedMotion: reducedMotion);
     final chrome = find.byKey(const ValueKey('mastodon-compact-controls'));
     expect(chrome, findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
@@ -75,6 +76,8 @@ void main() {
     expect(chrome, findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  }
 
   testWidgets('Following exposes people, profiles, and a working add action', (tester) async {
     final h = MastodonHarness();
