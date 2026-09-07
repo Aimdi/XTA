@@ -143,6 +143,7 @@ void main() {
             Provider<RssTagsStore>(create: (_) => _Tags(prefs)),
           ],
           child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: xLookLightTheme(null),
             localizationsDelegates: const [
               L10n.delegate,

@@ -48,8 +48,17 @@ class HomeTimelinePicker extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 8, 8),
               child: Row(
                 children: [
-                  Expanded(child: Text(l10n.home, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700))),
-                  IconButton(tooltip: l10n.close, onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
+                  Expanded(
+                    child: Text(
+                      l10n.home,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: l10n.close,
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
                 ],
               ),
             ),
@@ -62,7 +71,10 @@ class HomeTimelinePicker extends StatelessWidget {
                   if (options.any((option) => option.plugin)) ...[
                     Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(12, 20, 12, 8),
-                      child: Text(l10n.feed_strip_add_title, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: tweetSecondaryColor(context))),
+                      child: Text(
+                        l10n.feed_strip_add_title,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: tweetSecondaryColor(context)),
+                      ),
                     ),
                     for (final option in options.where((option) => option.plugin)) _row(context, option),
                   ],
@@ -116,7 +128,11 @@ class HomeTimelinePicker extends StatelessWidget {
                 if (option.unread)
                   Semantics(
                     label: L10n.of(context).group_has_unread,
-                    child: Container(width: 8, height: 8, decoration: BoxDecoration(color: accent, shape: BoxShape.circle)),
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
+                    ),
                   ),
                 if (isSelected) ...[const SizedBox(width: 12), Icon(Icons.check, color: accent)],
               ],

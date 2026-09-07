@@ -142,6 +142,7 @@ class _HomeHarness {
         Provider(create: (_) => SavedTweetModel(), dispose: (_, store) => store.destroy()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: theme,
         localizationsDelegates: const [
           L10n.delegate,

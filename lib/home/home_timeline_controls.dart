@@ -115,7 +115,9 @@ class HomeTimelineControls extends StatelessWidget {
     return SizedBox(
       height: kHomeTimelineControlsHeight,
       child: DecoratedBox(
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: tweetDividerColor(context)))),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: tweetDividerColor(context))),
+        ),
         child: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(8, 0, 8, 4),
           child: LayoutBuilder(
@@ -124,12 +126,7 @@ class HomeTimelineControls extends StatelessWidget {
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _modeTab(context, false, l10n.tweets),
-                        _modeTab(context, true, l10n.media),
-                      ],
-                    ),
+                    child: Row(children: [_modeTab(context, false, l10n.tweets), _modeTab(context, true, l10n.media)]),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -166,7 +163,9 @@ class HomeTimelineControls extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: selected ? tweetReadableAccentColor(context) : Colors.transparent, width: 3)),
+            border: Border(
+              bottom: BorderSide(color: selected ? tweetReadableAccentColor(context) : Colors.transparent, width: 3),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
