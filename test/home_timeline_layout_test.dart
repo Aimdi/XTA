@@ -215,6 +215,9 @@ void main() {
     final dir = await Directory.systemTemp.createTemp('xta-home-layout');
     await databaseFactory.setDatabasesPath(dir.path);
     await Repository().migrate();
+    // Repository caches this Future. Create it outside any widget-test zone,
+    // otherwise later tests inherit the first test's stopped fake clock.
+    await Repository.readOnly();
   });
 
   for (final variant in ['light', 'dark', 'black', 'large-rtl']) {
