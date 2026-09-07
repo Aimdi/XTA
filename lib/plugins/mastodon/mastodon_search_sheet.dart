@@ -1,7 +1,5 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_store.dart';
-import 'package:xta/plugins/mastodon/mastodon_people.dart';
-import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +10,9 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/mastodon/mastodon_search_results.dart';
+import 'package:xta/search/recent_searches_store.dart';
+import 'package:xta/search/recent_searches_bar.dart';
 
 /// Kept as an entry-point alias for plugin search; discovery now has a full route.
 Future<void> showMastodonSearchSheet(BuildContext context, {String? initialQuery}) =>
@@ -45,18 +46,14 @@ class _MastodonSearchScreenState extends State<MastodonSearchScreen> {
   late final TextEditingController _controller;
   late final MastodonSearchStore _store;
   final _positions = [ScrollController(), ScrollController(), ScrollController()];
-  List<MastodonTrendingTag> get _tags => _store.state.tags;
-  MastodonSearchPage get _results => _store.state.results;
-  Object? get _error => _store.state.error;
-  bool get _loading => _store.state.loading;
-  bool get _searched => _store.state.query.isNotEmpty;
-  int get _tab => _store.state.tab;
+  late final RecentSearchesStore _history;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialQuery ?? '');
     _store = MastodonSearchStore(context.read<MastodonClient>(), _discoveryInstances(context));
+    _history = RecentSearchesStore(PrefService.of(context, listen: false));
     WidgetsBinding.instance.addPostFrameCallback((_) { if (mounted) _search(); });
   }
 
@@ -65,6 +62,7 @@ class _MastodonSearchScreenState extends State<MastodonSearchScreen> {
     _controller.dispose();
     for (final controller in _positions) { controller.dispose(); }
     _store.destroy();
+    _history.destroy();
     super.dispose();
   }
 
@@ -73,14 +71,9 @@ class _MastodonSearchScreenState extends State<MastodonSearchScreen> {
     for (final controller in _positions) {
       if (controller.hasClients) controller.jumpTo(0);
     }
+    await _history.remember('mastodon', _controller.text);
     await _store.search(_controller.text);
   }
-
-  void _openTag(MastodonTrendingTag tag) => Navigator.push(context,
-    MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag.name)));
-
-  void _openProfile(MastodonProfile profile) => Navigator.push(context,
-    MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: profile.acct)));
 
   @override
   Widget build(BuildContext context) {
@@ -100,164 +93,16 @@ class _MastodonSearchScreenState extends State<MastodonSearchScreen> {
         )),
         Expanded(child: ScopedBuilder<MastodonSearchStore, MastodonSearchState>(
           store: _store, onState: (context, state) => KeyedSubtree(
-            key: PageStorageKey('mastodon-search-${state.query}'), child: _body(l10n)))),
+            key: PageStorageKey('mastodon-search-${state.query}'), child: Column(children: [
+              if (state.query.isEmpty) RecentSearchesBar(store: _history, scope: 'mastodon',
+                onSelected: (query) { _controller.text = query; _search(); }),
+              Expanded(child: MastodonSearchResults(state: state, onRetry: _search,
+                onSelected: _store.select, positions: _positions)),
+            ])))),
       ]),
     );
   }
 
-  Widget _body(L10n l10n) {
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text(mastodonErrorMessage(l10n, _error!), textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton.icon(onPressed: _search, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-          ]),
-        ),
-      );
-    }
-
-    if (_searched) {
-      return Column(
-        children: [
-          _SearchTabs(
-            selected: _tab,
-            onSelected: _store.select,
-          ),
-          const Divider(height: 1),
-          Expanded(child: _resultsPane(l10n)),
-        ],
-      );
-    }
-
-    if (_tags.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            l10n.plugin_mastodon_search_hint,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-      children: [
-        Text(
-          l10n.plugin_mastodon_trending,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final tag in _tags)
-              ActionChip(
-                label: Text('#${tag.name}'),
-                onPressed: () => _openTag(tag),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _resultsPane(L10n l10n) {
-    if (_tab == 1) {
-      if (_results.posts.isEmpty) {
-        return Center(child: Text(l10n.plugin_mastodon_no_posts));
-      }
-      return ListView.builder(
-        key: const PageStorageKey('mastodon-search-posts'), controller: _positions[1],
-        itemCount: _results.posts.length,
-        itemBuilder: (context, index) => MastodonPostCard(
-          key: ValueKey(_results.posts[index].id),
-          post: _results.posts[index],
-          showSourceBadge: false,
-        ),
-      );
-    }
-    if (_tab == 2) {
-      if (_results.tags.isEmpty) {
-        return Center(child: Text(l10n.plugin_mastodon_no_hashtags));
-      }
-      return ListView(
-        key: const PageStorageKey('mastodon-search-tags'), controller: _positions[2],
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        children: [
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final tag in _results.tags)
-                ActionChip(
-                  label: Text('#${tag.name}'),
-                  onPressed: () => _openTag(tag),
-                ),
-            ],
-          ),
-        ],
-      );
-    }
-    if (_results.accounts.isEmpty) {
-      return Center(child: Text(l10n.plugin_mastodon_no_results));
-    }
-    return ListView.separated(
-      key: const PageStorageKey('mastodon-search-accounts'), controller: _positions[0],
-      itemCount: _results.accounts.length,
-      separatorBuilder: (_, _) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final profile = _results.accounts[index];
-        return ListTile(
-          leading: _avatar(context, profile),
-          title: Text(
-            profile.displayName.isEmpty ? profile.acct : profile.displayName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          subtitle: Text(
-            '@${profile.acct}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          onTap: () => _openProfile(profile),
-        );
-      },
-    );
-  }
-
-  Widget _avatar(BuildContext context, MastodonProfile profile) => MastodonPersonAvatar(
-    acct: profile.acct, name: profile.displayName, url: profile.avatarUrl);
-}
-
-class _SearchTabs extends StatelessWidget {
-  final int selected;
-  final ValueChanged<int> onSelected;
-
-  const _SearchTabs({required this.selected, required this.onSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return PluginHomeChrome(tabs: [
-      PluginHomeTab(label: l10n.plugin_mastodon_accounts, icon: Icons.people_outline,
-        selected: selected == 0, onTap: () => onSelected(0)),
-      PluginHomeTab(label: l10n.tweets, icon: Icons.view_stream_outlined,
-        selected: selected == 1, onTap: () => onSelected(1)),
-      PluginHomeTab(label: l10n.plugin_mastodon_hashtags, icon: Icons.tag,
-        selected: selected == 2, onTap: () => onSelected(2)),
-    ]);
-  }
 }
 
 /// Public posts for one hashtag on the reader's discovery instances.

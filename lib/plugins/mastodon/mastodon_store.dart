@@ -227,6 +227,14 @@ class MastodonPublicFeedStore extends Store<List<MastodonPost>> {
 
   /// The server that supplied this timeline, including a fallback when used.
   String? get instance => _instance;
+
+  void restoreReading(List<MastodonPost> posts, String? instance) {
+    if (state.isNotEmpty || posts.isEmpty) return;
+    _instance = normaliseMastodonInstance(instance ?? '');
+    _hasMore = true;
+    _backedOff = false;
+    update(posts);
+  }
   var _hasMore = true;
   var _loadingMore = false;
   var _backedOff = false;

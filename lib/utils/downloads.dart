@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
 import 'package:xta/client/client.dart';
+import 'package:xta/plugins/mastodon/mastodon_archive.dart';
+import 'package:xta/saved/saved_media.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/ui/errors.dart';
@@ -27,9 +29,9 @@ Future<void> autoDownloadTweetPhotos({
   String username;
   List<Media> photos;
   try {
-    final tweet = TweetWithCard.fromJson(content);
-    username = tweet.user?.screenName ?? 'xta';
-    final media = tweet.extendedEntities?.media ?? tweet.entities?.media ?? const <Media>[];
+    final mastodon = mastodonPostFromArchive(content);
+    username = mastodon?.acct.split('@').first ?? TweetWithCard.fromJson(content).user?.screenName ?? 'xta';
+    final media = mediaOfSavedContent(content);
     photos = media.where((m) => m.type == 'photo' && m.mediaUrlHttps != null).toList();
   } catch (_) {
     return;
@@ -50,7 +52,8 @@ Future<void> autoDownloadTweetPhotos({
   Object? failure;
   for (final media in photos) {
     try {
-      final response = await http.get(Uri.parse('${media.mediaUrlHttps}:orig'));
+      final url = content['xtaPlugin'] == 'mastodon' ? media.mediaUrlHttps! : '${media.mediaUrlHttps}:orig';
+      final response = await http.get(Uri.parse(url));
       if (response.statusCode != 200) {
         continue;
       }

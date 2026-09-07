@@ -24,7 +24,7 @@ class SearchScopeChips extends StatelessWidget {
       builder: (context, triple) {
         final selected = effectiveSearchScope(triple.state, plugins);
         return SizedBox(
-          height: 44,
+          height: MediaQuery.textScalerOf(context).scale(14) + 30,
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),

@@ -1,5 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/plugins/mastodon/mastodon_profile_store.dart';
+import 'package:xta/plugins/mastodon/mastodon_media_grid.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -11,7 +14,6 @@ import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
 String mastodonErrorMessage(L10n l10n, Object error) {
@@ -39,248 +41,109 @@ class MastodonProfileScreen extends StatefulWidget {
 }
 
 class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
-  MastodonProfile? _profile;
-  List<MastodonPost> _posts = const [];
-  List<MastodonPost> _media = const [];
-  Set<String> _pinnedIds = const {};
-  String? _instance;
-  Object? _error;
-  var _loading = true;
-  var _mediaTab = false;
-  var _loadingMore = false;
-  var _hasMorePosts = true;
-  var _hasMoreMedia = true;
-  var _mediaLoaded = false;
-  var _backedOff = false;
+  late final MastodonProfileStore _store;
+  final _postsScroll = ScrollController();
+  final _mediaScroll = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-      _backedOff = false;
-    });
-
     final prefs = PrefService.of(context, listen: false);
-    final client = context.read<MastodonClient>();
-    try {
-      final candidates = mastodonInstanceCandidates(
-        widget.acct,
-        configured: mastodonConfiguredInstances(prefs),
-      );
-      final page = await client.profileAnywhere(candidates, widget.acct);
-      if (mounted) {
-        setState(() {
-          _profile = page.profile;
-          _posts = page.posts;
-          _pinnedIds = page.pinnedIds;
-          _instance = page.instance;
-          _hasMorePosts = page.posts.length >= 20;
-          _media = const [];
-          _mediaLoaded = false;
-          _hasMoreMedia = true;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e;
-          _loading = false;
-        });
-      }
-    }
+    _store = MastodonProfileStore(context.read<MastodonClient>(),
+      mastodonInstanceCandidates(widget.acct, configured: mastodonConfiguredInstances(prefs)), widget.acct);
+    _store.refresh();
   }
 
-  List<MastodonPost> get _visible => _mediaTab ? _media : _posts;
-
-  Future<void> _showMedia() async {
-    setState(() => _mediaTab = true);
-    if (_mediaLoaded || _profile == null || _instance == null) return;
-    final client = context.read<MastodonClient>();
-    try {
-      final posts = await client.getStatuses(
-        _instance!,
-        _profile!.id,
-        onlyMedia: true,
-      );
-      if (!mounted) return;
-      setState(() {
-        _media = posts;
-        _mediaLoaded = true;
-        _hasMoreMedia = posts.length >= 20;
-      });
-    } catch (_) {
-      if (mounted) setState(() => _mediaLoaded = true);
-    }
-  }
-
-  Future<void> _loadMore() async {
-    final profile = _profile;
-    final instance = _instance;
-    final current = _visible;
-    if (profile == null ||
-        instance == null ||
-        _loadingMore ||
-        _backedOff ||
-        current.isEmpty) {
-      return;
-    }
-    if (_mediaTab ? !_hasMoreMedia : !_hasMorePosts) return;
-
-    setState(() => _loadingMore = true);
-    try {
-      final more = await context.read<MastodonClient>().getStatuses(
-        instance,
-        profile.id,
-        onlyMedia: _mediaTab,
-        maxId: current.last.id,
-      );
-      if (!mounted) return;
-      setState(() {
-        if (_mediaTab) {
-          _media = appendUniqueMastodonPosts(_media, more);
-          _hasMoreMedia = more.length >= 20;
-        } else {
-          _posts = appendUniqueMastodonPosts(_posts, more);
-          _hasMorePosts = more.length >= 20;
-        }
-        _loadingMore = false;
-      });
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _loadingMore = false;
-          _backedOff = true;
-        });
-      }
-    }
+  @override
+  void dispose() {
+    _store.destroy();
+    _postsScroll.dispose();
+    _mediaScroll.dispose();
+    super.dispose();
   }
 
   Future<void> _toggleFollow(MastodonProfile profile) async {
     final accounts = context.read<MastodonAccountsStore>();
     final feed = context.read<MastodonFeedStore>();
-
-    if (accounts.follows(profile.acct)) {
-      await accounts.remove(profile.acct);
-    } else {
-      await accounts.add(profile.toAccount());
-    }
-    if (mounted) {
+    try {
+      if (accounts.follows(profile.acct)) {
+        await accounts.remove(profile.acct);
+      } else {
+        await accounts.add(profile.toAccount());
+      }
       await feed.refresh();
-      setState(() {});
+    } catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(mastodonErrorMessage(L10n.of(context), error))));
     }
   }
 
   Future<void> _addToGroup(MastodonProfile profile) async {
     final accounts = context.read<MastodonAccountsStore>();
     final groupsModel = context.read<GroupsModel>();
-    if (!accounts.follows(profile.acct)) {
-      await accounts.add(profile.toAccount());
-    }
+    if (!accounts.follows(profile.acct)) await accounts.add(profile.toAccount());
     if (!mounted) return;
     final user = subscriptionOf(profile.toAccount());
     final groups = await groupsModel.listGroupsForUser(user.id);
     if (!mounted) return;
-    await pickUserGroups(
-      context,
-      user: user,
-      followed: true,
-      groupsForUser: groups,
-    );
-    if (mounted) setState(() {});
+    await pickUserGroups(context, user: user, followed: true, groupsForUser: groups);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final title = _profile?.acct ?? widget.acct;
+  Widget build(BuildContext context) => ScopedBuilder<MastodonProfileStore, MastodonProfileState>(
+    store: _store,
+    onState: (context, state) => Scaffold(
+      appBar: AppBar(title: Text('@${state.profile?.acct ?? widget.acct}')),
+      body: _body(context, state),
+    ),
+  );
 
-    return Scaffold(
-      appBar: AppBar(title: Text('@$title')),
-      body: _body(context),
-    );
-  }
-
-  Widget _body(BuildContext context) {
+  Widget _body(BuildContext context, MastodonProfileState state) {
     final l10n = L10n.of(context);
-
-    if (_loading) {
+    final profile = state.profile;
+    if (profile == null) {
+      if (state.error != null) return Padding(padding: const EdgeInsets.all(24),
+        child: FullPageErrorWidget(error: state.error, stackTrace: null,
+          prefix: mastodonErrorMessage(l10n, state.error!), onRetry: _store.refresh));
       return const Center(child: CircularProgressIndicator());
     }
-
-    final error = _error;
-    if (error != null) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: FullPageErrorWidget(
-          error: error,
-          stackTrace: null,
-          prefix: mastodonErrorMessage(l10n, error),
-          onRetry: _load,
-        ),
-      );
-    }
-
-    final profile = _profile!;
-    final following = context.read<MastodonAccountsStore>().follows(
-      profile.acct,
-    );
-
-    final posts = _visible;
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification is UserScrollNotification) _backedOff = false;
-        if (notification.metrics.pixels >=
-            notification.metrics.maxScrollExtent - 400) {
-          _loadMore();
-        }
+        if (notification is ScrollUpdateNotification && notification.depth == 0 &&
+            state.error == null && notification.metrics.extentAfter < 500) _store.loadMore();
         return false;
       },
-      child: FeedListView(
-        padding: const EdgeInsets.only(bottom: 24),
-        itemCount: 1 + posts.length + (_loadingMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  MastodonProfileCard(
-                    profile: profile,
-                    following: following,
-                    onFollowToggle: () => _toggleFollow(profile),
-                    onAddToGroup: () => _addToGroup(profile),
-                  ),
-                  const SizedBox(height: 12),
-                  _ProfileTabs(
-                    media: _mediaTab,
-                    onPosts: () => setState(() => _mediaTab = false),
-                    onMedia: _showMedia,
-                  ),
-                ],
-              ),
-            );
-          }
-          final postIndex = index - 1;
-          if (postIndex < posts.length) {
-            final post = posts[postIndex];
-            return MastodonPostCard(
-              key: ValueKey('${_mediaTab ? 'm' : 'p'}-${post.id}'),
-              post: post,
-              showSourceBadge: false,
-              pinned: !_mediaTab && _pinnedIds.contains(post.id),
-            );
-          }
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
-          );
-        },
+      child: RefreshIndicator(onRefresh: _store.refresh,
+        child: CustomScrollView(
+          key: ValueKey('mastodon-profile-${state.mediaSelected}'),
+          controller: state.mediaSelected ? _mediaScroll : _postsScroll,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16),
+              child: ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
+                store: context.read<MastodonAccountsStore>(),
+                onState: (context, accounts) => MastodonProfileCard(profile: profile,
+                  following: accounts.any((account) => account.acct == profile.acct),
+                  onFollowToggle: () => _toggleFollow(profile), onAddToGroup: () => _addToGroup(profile)),
+              ))),
+            SliverToBoxAdapter(child: _ProfileTabs(media: state.mediaSelected,
+              onPosts: () => _store.selectMedia(false), onMedia: () => _store.selectMedia(true))),
+            if (state.mediaSelected) MastodonMediaGrid(posts: state.media)
+            else SliverList.builder(itemCount: state.posts.length,
+              itemBuilder: (context, index) => MastodonPostCard(key: ValueKey(state.posts[index].id),
+                post: state.posts[index], showSourceBadge: false, pinned: state.pinnedIds.contains(state.posts[index].id))),
+            if (state.loading || state.loadingMore) const SliverToBoxAdapter(
+              child: Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()))),
+            if (!state.loading && !state.loadingMore && state.visible.isEmpty && state.error == null)
+              SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(32),
+                child: Text(l10n.plugin_mastodon_no_posts, textAlign: TextAlign.center))),
+            if (state.error != null) SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(16),
+              child: FullPageErrorWidget(error: state.error, stackTrace: null,
+                prefix: mastodonErrorMessage(l10n, state.error!),
+                onRetry: state.visible.isEmpty && !state.mediaSelected ? _store.refresh : _store.loadMore))),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
+        ),
       ),
     );
   }

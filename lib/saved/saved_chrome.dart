@@ -34,6 +34,7 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueChanged<SavedFolderOption> onFolderLongPress;
   final VoidCallback onMediaToggle;
   final bool showMedia;
+  final Widget? sourceFilter;
 
   const SavedControlBar({
     super.key,
@@ -45,6 +46,7 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onFolderLongPress,
     required this.onMediaToggle,
     this.showMedia = true,
+    this.sourceFilter,
   });
 
   @override
@@ -73,10 +75,12 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
             horizontal: kTweetHorizontalPadding,
             vertical: kTweetSpace1,
           ),
-          itemCount: folders.length + (showMedia ? 1 : 0),
+          itemCount: folders.length + (showMedia ? 1 : 0) + (sourceFilter == null ? 0 : 1),
           separatorBuilder: (_, __) => const SizedBox(width: kTweetSpace2),
           itemBuilder: (context, index) {
-            if (showMedia && index == folders.length) {
+            if (sourceFilter != null && index == 0) return sourceFilter!;
+            final position = index - (sourceFilter == null ? 0 : 1);
+            if (showMedia && position == folders.length) {
               return SavedChoiceChip(
                 label: L10n.of(context).media,
                 icon: mediaOnly
@@ -86,7 +90,7 @@ class SavedControlBar extends StatelessWidget implements PreferredSizeWidget {
                 onTap: onMediaToggle,
               );
             }
-            final option = folders[index];
+            final option = folders[position];
             return SavedChoiceChip(
               label: option.label,
               icon: option.icon,

@@ -1,3 +1,4 @@
+import 'package:xta/settings/settings_search_target.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
@@ -41,14 +42,14 @@ class SettingsMediaFragment extends StatelessWidget {
           SettingsSection(
             title: L10n.of(context).image_quality,
             children: [
-              PrefSwitch(
+              SettingsControlTarget(id: optionMediaDisableAutoload, child: PrefSwitch(
                 pref: optionMediaDisableAutoload,
                 title: Text(L10n.of(context).load_media_manually),
                 subtitle: Text(
                   L10n.of(context).load_media_manually_description,
                 ),
-              ),
-              PrefDropdown(
+              )),
+              SettingsControlTarget(id: optionImageQuality, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).image_quality),
                 subtitle: Text(
@@ -56,8 +57,8 @@ class SettingsMediaFragment extends StatelessWidget {
                 ),
                 pref: optionImageQuality,
                 items: qualityItems(),
-              ),
-              PrefDropdown(
+              )),
+              SettingsControlTarget(id: optionMediaGridColumns, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).media_grid_columns),
                 subtitle: Text(
@@ -68,13 +69,13 @@ class SettingsMediaFragment extends StatelessWidget {
                   for (var count in [1, 2, 3, 4, 5])
                     DropdownMenuItem(value: count, child: Text('$count')),
                 ],
-              ),
+              )),
             ],
           ),
           SettingsSection(
             title: L10n.of(context).media_layout,
             children: [
-              SettingsPreferenceSelector<String>(
+              SettingsControlTarget(id: optionMediaGridLayout, child: SettingsPreferenceSelector<String>(
                 prefs: prefs,
                 pref: optionMediaGridLayout,
                 options: [
@@ -94,35 +95,35 @@ class SettingsMediaFragment extends StatelessWidget {
                     icon: Icons.grid_view_outlined,
                   ),
                 ],
-              ),
+              )),
             ],
           ),
           SettingsSection(
             title: L10n.of(context).video_quality,
             children: [
-              PrefDropdown(
+              SettingsControlTarget(id: optionMediaVideoQuality, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).video_quality),
                 subtitle: Text(L10n.of(context).video_quality_description),
                 pref: optionMediaVideoQuality,
                 items: qualityItems(),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionMediaDefaultMute, child: PrefSwitch(
                 pref: optionMediaDefaultMute,
                 title: Text(L10n.of(context).mute_videos),
                 subtitle: Text(L10n.of(context).mute_video_description),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionMediaDefaultLoop, child: PrefSwitch(
                 pref: optionMediaDefaultLoop,
                 title: Text(L10n.of(context).loop_videos),
                 subtitle: Text(L10n.of(context).loop_videos_description),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionMediaDefaultAutoPlay, child: PrefSwitch(
                 pref: optionMediaDefaultAutoPlay,
                 title: Text(L10n.of(context).autoplay_videos),
                 subtitle: Text(L10n.of(context).autoplay_videos_description),
-              ),
-              PrefDropdown(
+              )),
+              SettingsControlTarget(id: optionMediaVideoPrefetchSeconds, child: PrefDropdown(
                 fullWidth: false,
                 title: Text(L10n.of(context).video_prefetch),
                 subtitle: Text(L10n.of(context).video_prefetch_description),
@@ -140,22 +141,22 @@ class SettingsMediaFragment extends StatelessWidget {
                       ),
                     ),
                 ],
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionMediaDirectHardwareDecoding, child: PrefSwitch(
                 pref: optionMediaDirectHardwareDecoding,
                 title: Text(L10n.of(context).direct_hardware_decoding),
                 subtitle: Text(
                   L10n.of(context).direct_hardware_decoding_description,
                 ),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionMediaBackgroundPlayback, child: PrefSwitch(
                 pref: optionMediaBackgroundPlayback,
                 title: Text(L10n.of(context).allow_background_play),
                 subtitle: Text(
                   L10n.of(context).allow_background_play_description,
                 ),
-              ),
-              PrefSwitch(
+              )),
+              SettingsControlTarget(id: optionMediaAllowBackgroundPlayOtherApps, child: PrefSwitch(
                 pref: optionMediaAllowBackgroundPlayOtherApps,
                 title: Text(
                   L10n.of(context).allow_background_play_other_apps,
@@ -165,12 +166,12 @@ class SettingsMediaFragment extends StatelessWidget {
                     context,
                   ).allow_background_play_other_apps_description,
                 ),
-              ),
+              )),
             ],
           ),
           SettingsSection(
             title: L10n.of(context).download_handling,
-            children: [DownloadTypeSetting(prefs: prefs)],
+            children: [SettingsControlTarget(id: optionDownloadPath, child: DownloadTypeSetting(prefs: prefs))],
           ),
         ],
       ),
@@ -224,7 +225,7 @@ class DownloadTypeSettingState extends State<DownloadTypeSetting> {
             widget.prefs.get<String>(optionDownloadTreeUri) ?? '';
         return Column(
           children: [
-            PrefDropdown(
+            SettingsControlTarget(id: optionDownloadType, child: PrefDropdown(
               onChange: (_) => _viewStore.refresh(),
               fullWidth: false,
               title: Text(L10n.current.download_handling),
@@ -240,7 +241,7 @@ class DownloadTypeSettingState extends State<DownloadTypeSetting> {
                   child: Text(L10n.current.download_handling_type_directory),
                 ),
               ],
-            ),
+            )),
             if (widget.prefs.get(optionDownloadType) ==
                 optionDownloadTypeDirectory)
               PrefButton(

@@ -79,7 +79,7 @@ UploadableMedia? _photo(MediaCandidate m) {
   return UploadableMedia(
     // `:orig` is the untouched upload rather than the display-sized copy, and a
     // photo library should hold the former.
-    url: '$url:orig',
+    url: Uri.tryParse(url)?.host == 'pbs.twimg.com' ? '$url:orig' : url,
     id: url,
     fileName: _fileNameOf(url, fallback: 'photo.jpg'),
     isVideo: false,

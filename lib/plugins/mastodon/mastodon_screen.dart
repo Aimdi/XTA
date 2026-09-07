@@ -9,7 +9,6 @@ import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_navigation.dart';
 import 'package:xta/plugins/mastodon/mastodon_people.dart';
-import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
@@ -21,7 +20,8 @@ import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/feed_list.dart';
+import 'package:xta/plugins/mastodon/mastodon_reading_store.dart';
+import 'package:xta/plugins/mastodon/mastodon_reading_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// A compact Home reader or a dedicated Mastodon client.
@@ -37,12 +37,15 @@ class MastodonScreen extends StatefulWidget {
 }
 
 class _MastodonTabStore extends PluginViewStore<int> {
-  _MastodonTabStore() : super(0);
+  _MastodonTabStore(int initial) : super(initial);
 }
 
 class _MastodonScreenState extends State<MastodonScreen> {
   late final PluginSessionLease _session;
   late final _MastodonTabStore _tabs;
+  late final MastodonReadingStore _reading;
+  final _restoredTabs = <int>{};
+  String get _surface => widget.fullClient ? 'client' : 'home';
   late final PluginViewStore<bool> _people;
   final _chrome = PluginViewStore(true);
   late final PageStorageBucket _pageStorage;
@@ -51,14 +54,16 @@ class _MastodonScreenState extends State<MastodonScreen> {
   void initState() {
     super.initState();
     _session = PluginSessionLease(context, 'mastodon');
-    _tabs = _session.obtain('view', () => _MastodonTabStore());
-    _people = _session.obtain('people', () => PluginViewStore(false));
+    final prefs = PrefService.of(context, listen: false);
+    final scope = mastodonConfiguredInstances(prefs).join('|');
+    _reading = _session.obtain('reading', () => MastodonReadingStore(prefs, scope));
+    _reading.changeScope(scope);
+    _tabs = _session.obtain('view', () => _MastodonTabStore(_reading.state.tab));
+    _people = _session.obtain('people', () => PluginViewStore(_reading.state.people));
     _pageStorage = _session.obtain(widget.fullClient ? 'client-scroll' : 'home-scroll', PageStorageBucket.new);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        // Explore only. Following used to start the same frame and fan out
-        // every followed acct across several instances — that is what made
-        // opening the tab stall the rest of the app.
+        // Restore the chosen timeline before considering a network request.
         _onTab(_tabs.state);
       }
     });
@@ -83,6 +88,8 @@ class _MastodonScreenState extends State<MastodonScreen> {
     context.read<MastodonLocalStore>().forget();
     context.read<MastodonFederatedStore>().forget();
     context.read<MastodonFeedStore>().forget();
+    _reading.changeScope(mastodonConfiguredInstances(prefs).join('|'));
+    _restoredTabs.clear();
     _onTab(_tabs.state);
   }
 
@@ -97,6 +104,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
 
   void _selectPeople(bool people) {
     _people.select(people);
+    _reading.select(_tabs.state, people);
     if (!people) _onTab(3);
   }
 
@@ -133,7 +141,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     _tabs.restore(context, 'mastodon');
-    return ScopedBuilder<_MastodonTabStore, int>(
+    return Provider<MastodonReadingStore>.value(value: _reading, child: ScopedBuilder<_MastodonTabStore, int>(
       store: _tabs,
       onState: (context, tab) => Scaffold(
         primary: !PluginEmbedded.maybeOf(context),
@@ -149,21 +157,21 @@ class _MastodonScreenState extends State<MastodonScreen> {
             _controls(context, tab),
             Expanded(child: PageStorage(bucket: _pageStorage,
               child: PluginLazyTabs(index: tab, children: [
-                (_) => _ExplorePane(scrollController: widget.scrollController),
-                (_) => _PublicPane(store: context.read<MastodonLocalStore>(),
+                (_) => _ExplorePane(slot: '$_surface:0', scrollController: widget.scrollController),
+                (_) => _PublicPane(slot: '$_surface:1', store: context.read<MastodonLocalStore>(),
                   emptyIcon: Icons.home_outlined, scrollController: widget.scrollController),
-                (_) => _PublicPane(store: context.read<MastodonFederatedStore>(),
+                (_) => _PublicPane(slot: '$_surface:2', store: context.read<MastodonFederatedStore>(),
                   emptyIcon: Icons.public, scrollController: widget.scrollController),
                 (_) => ScopedBuilder<PluginViewStore<bool>, bool>(store: _people,
                   onState: (context, people) => people
                     ? MastodonPeoplePane(onAdd: _addAccount, scrollController: widget.scrollController)
-                    : _FollowingPane(scrollController: widget.scrollController)),
+                    : _FollowingPane(slot: '$_surface:3', scrollController: widget.scrollController)),
               ]),
             )),
           ])),
         ),
       ),
-    );
+    ));
   }
 
   Widget _controls(BuildContext context, int tab) => ScopedBuilder<PluginViewStore<bool>, bool>(
@@ -183,7 +191,27 @@ class _MastodonScreenState extends State<MastodonScreen> {
     },
   );
 
+  void _restoreReading(int index) {
+    if (!_restoredTabs.add(index)) return;
+    final point = _reading.state.points['$_surface:$index'];
+    if (point == null) return;
+    if (index == 0) {
+      final store = context.read<MastodonExploreStore>();
+      if (store.state.posts.isEmpty) store.update(MastodonExplorePage(posts: point.posts, tags: point.tags));
+    } else if (index == 1) {
+      context.read<MastodonLocalStore>().restoreReading(point.posts, point.instance);
+    } else if (index == 2) {
+      context.read<MastodonFederatedStore>().restoreReading(point.posts, point.instance);
+    } else {
+      final store = context.read<MastodonFeedStore>();
+      final accounts = context.read<MastodonAccountsStore>();
+      if (store.state.isEmpty) store.update(point.posts.where((post) => accounts.follows(post.acct)).toList());
+    }
+  }
+
   void _onTab(int index) {
+    _restoreReading(index);
+    _reading.select(index, _people.state);
     _tabs.select(index);
     _chrome.select(true);
     if (!mounted) return;
@@ -207,9 +235,10 @@ class _MastodonScreenState extends State<MastodonScreen> {
 }
 
 class _ExplorePane extends StatelessWidget {
+  final String slot;
   final ScrollController scrollController;
 
-  const _ExplorePane({required this.scrollController});
+  const _ExplorePane({required this.slot, required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -246,18 +275,9 @@ class _ExplorePane extends StatelessWidget {
     }
     return RefreshIndicator(
       onRefresh: context.read<MastodonExploreStore>().refresh,
-      child: FeedListView(
-        controller: pluginInnerScrollController(context, scrollController),
-        padding: pluginFeedPadding(context),
-        itemCount: page.posts.length + (page.tags.isEmpty ? 0 : 1),
-        itemBuilder: (context, index) {
-          if (page.tags.isNotEmpty && index == 0) {
-            return _TrendingTags(tags: page.tags);
-          }
-          final post = page.posts[index - (page.tags.isEmpty ? 0 : 1)];
-          return MastodonPostCard(key: ValueKey(post.id), post: post, showSourceBadge: false);
-        },
-      ),
+      child: MastodonReadingList(slot: slot, controller: scrollController,
+        posts: page.posts, tags: page.tags,
+        heading: page.tags.isEmpty ? null : _TrendingTags(tags: page.tags)),
     );
   }
 }
@@ -296,11 +316,12 @@ class _TrendingTags extends StatelessWidget {
 }
 
 class _PublicPane extends StatelessWidget {
+  final String slot;
   final MastodonPublicFeedStore store;
   final IconData emptyIcon;
   final ScrollController scrollController;
 
-  const _PublicPane({required this.store, required this.emptyIcon, required this.scrollController});
+  const _PublicPane({required this.slot, required this.store, required this.emptyIcon, required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -343,29 +364,18 @@ class _PublicPane extends StatelessWidget {
       },
       child: RefreshIndicator(
         onRefresh: store.refresh,
-        child: FeedListView(
-          controller: pluginInnerScrollController(context, scrollController),
-          padding: pluginFeedPadding(context),
-          itemCount: posts.length + (store.loadingMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index >= posts.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return MastodonPostCard(key: ValueKey(posts[index].id), post: posts[index], showSourceBadge: false);
-          },
-        ),
+        child: MastodonReadingList(slot: slot, controller: scrollController,
+          posts: posts, instance: store.instance, loadingMore: store.loadingMore),
       ),
     );
   }
 }
 
 class _FollowingPane extends StatelessWidget {
+  final String slot;
   final ScrollController scrollController;
 
-  const _FollowingPane({required this.scrollController});
+  const _FollowingPane({required this.slot, required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -414,14 +424,8 @@ class _FollowingPane extends StatelessWidget {
     }
     return RefreshIndicator(
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
-      child: FeedListView(
-        key: const PageStorageKey('mastodon-following-posts'),
-        controller: pluginInnerScrollController(context, scrollController),
-        padding: pluginFeedPadding(context),
-        itemCount: posts.length,
-        itemBuilder: (context, index) =>
-            MastodonPostCard(key: ValueKey(posts[index].id), post: posts[index], showSourceBadge: false),
-      ),
+      child: MastodonReadingList(key: const PageStorageKey('mastodon-following-posts'),
+        slot: slot, controller: scrollController, posts: posts),
     );
   }
 }

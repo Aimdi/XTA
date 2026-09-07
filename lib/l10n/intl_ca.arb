@@ -3199,5 +3199,6 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open": "Obre"
 }

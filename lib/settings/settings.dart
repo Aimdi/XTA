@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/settings/settings_view_store.dart';
+import 'package:xta/settings/settings_search_index.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/_about.dart';
 import 'package:xta/settings/_ai.dart';
@@ -52,7 +55,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     version: '',
     buildNumber: '',
   );
-  String _query = '';
+  final _search = SettingsValueStore<String>('');
+  String get _query => _search.state;
   late final TextEditingController _searchController;
 
   @override
@@ -73,6 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _search.destroy();
     super.dispose();
   }
 
@@ -189,7 +194,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: XSearchField(
         controller: _searchController,
         hintText: l10n.search_settings,
-        onChanged: (value) => setState(() => _query = value),
+        onChanged: _search.setValue,
       ),
     );
   }
@@ -212,7 +217,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ScopedBuilder<SettingsValueStore<String>, String>(store: _search,
+    onState: (context, query) => _body(context));
+
+  Widget _body(BuildContext context) {
     final l10n = L10n.of(context);
     var key = widget.key ?? const Key("Settings");
     var appVersion = 'v${_packageInfo.version}+${_packageInfo.buildNumber}';
@@ -227,15 +235,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SettingsList(
         children: [
           _searchField(l10n),
-          if (query.isNotEmpty)
+          if (query.isNotEmpty) ...[
+            for (final result in searchSettingsControls(l10n, query))
+              ListTile(key: ValueKey('settings-result-${result.target}-${result.title}'),
+                leading: const Icon(Icons.tune), title: Text(result.title),
+                subtitle: Text('${result.sectionTitle(l10n)} · ${result.description}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => result.destination()));
+                }),
             for (final entry in [
               ...everyday,
               ...accounts,
               data,
               ...advanced,
             ].where((e) => e.matches(query)))
-              _entryTile(context, entry)
-          else ...[
+              _entryTile(context, entry),
+          ] else ...[
             SettingsSection(
               title: l10n.general,
               children: [

@@ -3199,5 +3199,6 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open": "Ireki"
 }

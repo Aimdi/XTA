@@ -3199,5 +3199,6 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "plugin_open": "Öffnen"
 }

@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/mastodon/mastodon_bookmark.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
@@ -446,6 +447,7 @@ class _MastodonEngagementRow extends StatelessWidget {
             ),
           ),
           const Spacer(),
+          MastodonBookmark(post: post),
           tweetFooterIconButton(
             context,
             Icons.open_in_new,
