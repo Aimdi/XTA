@@ -11,8 +11,7 @@ class PodcastCheckpoint {
   final Duration position;
   final Duration duration;
 
-  const PodcastCheckpoint({required this.url, required this.title,
-    required this.position, required this.duration});
+  const PodcastCheckpoint({required this.url, required this.title, required this.position, required this.duration});
 
   static bool validUrl(String url) {
     if (url.isEmpty || url.length > 4096) return false;
@@ -21,7 +20,9 @@ class PodcastCheckpoint {
   }
 
   String encode() => jsonEncode({
-    'version': 1, 'url': url, 'title': title.length > 512 ? title.substring(0, 512) : title,
+    'version': 1,
+    'url': url,
+    'title': title.length > 512 ? title.substring(0, 512) : title,
     'position': position.inMilliseconds.clamp(0, _maximumDuration.inMilliseconds),
     'duration': duration.inMilliseconds.clamp(0, _maximumDuration.inMilliseconds),
   });
@@ -34,11 +35,21 @@ class PodcastCheckpoint {
       final title = json['title'].string ?? '';
       final position = json['position'].integer ?? -1;
       final duration = json['duration'].integer ?? -1;
-      if (json['version'].integer != 1 || !validUrl(url) || title.length > 512 ||
-          position < 0 || duration < 0 || position > _maximumDuration.inMilliseconds ||
-          duration > _maximumDuration.inMilliseconds || (duration > 0 && position >= duration)) return null;
-      return PodcastCheckpoint(url: url, title: title,
-        position: Duration(milliseconds: position), duration: Duration(milliseconds: duration));
+      if (json['version'].integer != 1 ||
+          !validUrl(url) ||
+          title.length > 512 ||
+          position < 0 ||
+          duration < 0 ||
+          position > _maximumDuration.inMilliseconds ||
+          duration > _maximumDuration.inMilliseconds ||
+          (duration > 0 && position >= duration))
+        return null;
+      return PodcastCheckpoint(
+        url: url,
+        title: title,
+        position: Duration(milliseconds: position),
+        duration: Duration(milliseconds: duration),
+      );
     } catch (_) {
       return null;
     }

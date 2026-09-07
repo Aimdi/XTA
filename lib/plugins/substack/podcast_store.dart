@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/media/continuity_player.dart';
+import 'package:xta/media/playback_command_gate.dart';
 import 'package:xta/media/playback_restore.dart';
 import 'package:xta/media/podcast_checkpoint.dart';
 import 'package:xta/media/xta_audio_handler.dart';
@@ -38,6 +39,8 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
   final bool observeLifecycle;
   final Duration readyTimeout;
   final Duration seekTimeout;
+  final Duration commandTimeout;
+  late final _commands = PlaybackCommandGate(onAbandonedSettled: () async { await _playerOrNull?.pause(); });
   ContinuityPlayer? _playerOrNull;
   StreamSubscription<void>? _subscription;
   Future<void> _operations = Future.value();
@@ -54,6 +57,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     this.observeLifecycle = true,
     this.readyTimeout = const Duration(seconds: 5),
     this.seekTimeout = const Duration(seconds: 2),
+    this.commandTimeout = const Duration(seconds: 8),
   }) : createPlayer = createPlayer ?? MediaKitContinuityPlayer.createPodcast,
        super(const PodcastPlayback()) {
     _restore();
@@ -93,7 +97,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     if (_closed || !PodcastCheckpoint.validUrl(url)) return;
     if (state.url == url && (_loadedUrl == url || state.loading)) {
       _wantsPlay = state.loading ? !_wantsPlay : !state.playing;
-      if (!state.loading) await (_wantsPlay ? _player.play() : _player.pause());
+      if (!state.loading) await _control(_wantsPlay);
       return;
     }
     final position = state.url == url ? state.position : Duration.zero;
@@ -111,10 +115,16 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
 
   bool _current(int generation) => !_closed && _generation == generation;
 
+  Future<void> _command(int generation, Future<void> Function() action) {
+    if (!_current(generation)) return Future.error(const PlaybackCommandCancelled());
+    final cancel = _cancel ??= Completer<void>();
+    return _commands.run(action, cancelled: cancel.future, timeout: commandTimeout);
+  }
+
   Future<void> _open(String url, Duration position, int generation, Completer<void> cancel) async {
     if (!_current(generation)) return;
     try {
-      await _player.open(url, start: position);
+      await _command(generation, () => _player.open(url, start: position));
       if (!_current(generation)) return;
       final restored = await _restorePosition(position, generation, cancel);
       if (!_current(generation)) return;
@@ -124,7 +134,7 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
       update(state.copyWith(loading: false, failed: false));
       _bind();
       _receive();
-      if (_current(generation) && !state.failed && _wantsPlay) await _player.play();
+      if (_current(generation) && !state.failed && _wantsPlay) await _command(generation, _player.play);
     } catch (_) {
       if (!_current(generation)) return;
       _failed();
@@ -143,24 +153,42 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     try {
       return await restorePlaybackPosition(_player, position,
         cancelled: cancel.future, isCurrent: () => _current(generation),
+        commands: _commands,
         readyTimeout: readyTimeout, seekTimeout: seekTimeout);
     } catch (_) { return false; }
   }
 
   void _bind() => audioHandler?.bindSession(title: state.title, binding: (
-    onPlay: () { _wantsPlay = true; if (!_closed) unawaited(_player.play()); },
-    onPause: () { _wantsPlay = false; if (!_closed) unawaited(_player.pause()); },
+    onPlay: () => unawaited(_control(true)),
+    onPause: () => unawaited(_control(false)),
     onStop: () => unawaited(stop()), onSeek: (position) => unawaited(seek(position)),
   ));
 
   void _session() => audioHandler?.updateSession(
     playing: state.playing, position: state.position, duration: state.duration);
 
+  Future<void> _control(bool play) async {
+    if (_closed || !state.active) return;
+    _wantsPlay = play;
+    if (state.loading) return;
+    final generation = _generation;
+    try {
+      await _command(generation, play ? _player.play : _player.pause);
+    } catch (_) {
+      if (_current(generation)) _failed();
+    }
+  }
+
   Future<void> seek(Duration position) async {
     if (_closed || !state.active || state.loading) return;
     final generation = _generation;
     final target = playbackResumeTarget(position, state.duration);
-    if (_loadedUrl == state.url) await _player.seek(target);
+    try {
+      if (_loadedUrl == state.url) await _command(generation, () => _player.seek(target));
+    } catch (_) {
+      if (_current(generation)) _failed();
+      return;
+    }
     if (!_current(generation)) return;
     update(state.copyWith(position: target));
     await flush();
@@ -177,7 +205,11 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     update(const PodcastPlayback());
     audioHandler?.clearSession();
     final pending = _operations;
-    _operations = pending.then((_) async { await _playerOrNull?.stop(); }).catchError((Object _) {});
+    final generation = _generation;
+    _operations = pending.then((_) async {
+      if (_commands.busy || _playerOrNull == null) return;
+      await _command(generation, _playerOrNull!.stop);
+    }).catchError((Object _) {});
     await flush();
     await _operations;
   }
@@ -214,7 +246,8 @@ class PodcastStore extends Store<PodcastPlayback> with WidgetsBindingObserver {
     await flush();
     await _operations;
     await _subscription?.cancel();
-    await _playerOrNull?.dispose();
+    final release = _commands.whenIdle.then((_) async { await _playerOrNull?.dispose(); });
+    if (_commands.busy) { unawaited(release.catchError((Object _) {})); } else { await release; }
     return super.destroy();
   }
 }

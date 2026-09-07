@@ -45,6 +45,14 @@ supports `play: false`. The [native implementation](https://github.com/media-kit
 queues loading and resets playback state, so awaiting open is insufficient evidence
 that a subsequent seek can succeed. The policy uses observed duration and position,
 with a five-second readiness wait and two-second seek acknowledgment window.
+Native open/control commands have an eight-second deadline; the native seek
+command itself has the same two-second bound as the acknowledgment wait.
+
+The native API cannot cancel an issued command. A timed-out or cancelled command
+therefore quarantines its player: a new source request returns a retryable failure
+until that command settles, instead of overlapping a late open/seek. Abandoned
+commands are paused on completion. Disposal returns promptly but defers freeing
+the native player until outstanding native work and that pause have settled.
 
 Focused tests: `test/podcast_continuity_test.dart` and
 `test/video_quality_continuity_test.dart`. Playback goes through an injectable port;

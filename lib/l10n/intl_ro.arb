@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Articol pe X",
   "@article_on_x": {},
+  "article_reader_appearance": "Aspectul lecturii",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Marchează ca terminat",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Terminat",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Spațiere între rânduri",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Deschis",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Reluat",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Înapoi la început",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Factorul de scalare a textului",
+  "@article_reader_text_size": {},
   "auto_download_images": "Descarcă imaginile automat",
   "@auto_download_images": {},
   "auto_download_images_description": "Salvează imaginile oricărei postări adăugate în acest dosar în dosarul tău de descărcări.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Descărcare media...",
   "@downloading_media": {},
+  "downloads_batch_result": "Fișiere salvate: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Anulat",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Alege unde să salvezi",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Șterge istoricul descărcărilor finalizate",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Salvat",
+  "@downloads_completed": {},
+  "downloads_empty": "Descărcările tale vor apărea aici. Salvează conținut media dintr-o postare pentru a începe.",
+  "@downloads_empty": {},
+  "downloads_failed": "Descărcare eșuată",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Istoricul descărcărilor nu a putut fi salvat. Verifică spațiul disponibil și încearcă din nou.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Întrerupt · Reîncearcă pentru a continua",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Acest fișier nu a putut fi deschis. Este posibil să fi fost mutat sau șters.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Deschide fișierul",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "În așteptare",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Verifică conexiunea și folderul de descărcări, apoi încearcă din nou.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Se salvează fișierul…",
+  "@downloads_saving": {},
+  "downloads_title": "Descărcări",
+  "@downloads_title": {},
   "edit_folder": "Editează dosarul",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "S-a încheiat {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Niciun vot} one{Un vot} few{{numFormatted} voturi} other{{numFormatted} voturi}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Textul articolului păstrat · Imagini: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Textul articolului este păstrat. Conținutul audio și video încorporat necesită în continuare o conexiune.",
+  "@offline_article_text_only": {},
+  "offline_available": "Disponibil offline",
+  "@offline_available": {},
+  "offline_clear": "Golește colecția offline",
+  "@offline_clear": {},
+  "offline_clear_description": "Articolele și conținutul media păstrate vor fi eliminate de pe acest dispozitiv. Postările salvate și folderele rămân în bibliotecă.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Elimini toate copiile offline?",
+  "@offline_clear_question": {},
+  "offline_empty": "Păstrează offline articole sau conținut media din postările salvate pentru a le găsi aici.",
+  "@offline_empty": {},
+  "offline_failed": "Nu s-a putut păstra totul offline. Verifică conexiunea și spațiul disponibil, apoi încearcă din nou.",
+  "@offline_failed": {},
+  "offline_keep": "Păstrează offline",
+  "@offline_keep": {},
+  "offline_library_title": "Colecție offline",
+  "@offline_library_title": {},
+  "offline_media_count": "Fișiere media păstrate: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Fișier media {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Disponibil parțial offline",
+  "@offline_partial": {},
+  "offline_remove": "Elimină copia offline",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Aceste fișiere pot avea conținut sensibil. Vor fi stocate pe acest dispozitiv și vor rămâne ascunse până când alegi să le deschizi.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Deschide conținutul media sensibil",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Păstrezi offline conținut media sensibil?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Stocarea offline nu a putut fi citită sau actualizată. Verifică spațiul disponibil și încearcă din nou.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Stocarea offline este limitată la {limit}. Fișierele mari sau fluxurile neacceptate pot rămâne indisponibile.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} utilizați din {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Copie offline indisponibilă",
+  "@offline_unavailable": {},
+  "offline_video_only": "Copiile videoclipurilor Reddit pot să nu includă sunet.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Afișează doar tweeturile cu conținut media",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Lungimea fluxului în modul zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Câte pagini încarcă fluxul în modul zen înainte de a se opri.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Aspectul lecturii",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Spațiere între rânduri",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Marchează ca terminat",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Terminat",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "Înapoi la început",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Deschis",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Reluat",
-  "@article_reader_resumed": {},
-  "downloads_title": "Descărcări",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Șterge istoricul descărcărilor finalizate",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Istoricul descărcărilor nu a putut fi salvat. Verifică spațiul disponibil și încearcă din nou.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "Descărcările tale vor apărea aici. Salvează conținut media dintr-o postare pentru a începe.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Verifică conexiunea și folderul de descărcări, apoi încearcă din nou.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Deschide fișierul",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Acest fișier nu a putut fi deschis. Este posibil să fi fost mutat sau șters.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "În așteptare",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Alege unde să salvezi",
-  "@downloads_choose_location": {},
-  "downloads_saving": "Se salvează fișierul…",
-  "@downloads_saving": {},
-  "downloads_completed": "Salvat",
-  "@downloads_completed": {},
-  "downloads_failed": "Descărcare eșuată",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Anulat",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Întrerupt · Reîncearcă pentru a continua",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Fișiere salvate: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Factorul de scalare a textului",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Colecție offline",
-  "@offline_library_title": {},
-  "offline_keep": "Păstrează offline",
-  "@offline_keep": {},
-  "offline_remove": "Elimină copia offline",
-  "@offline_remove": {},
-  "offline_available": "Disponibil offline",
-  "@offline_available": {},
-  "offline_partial": "Disponibil parțial offline",
-  "@offline_partial": {},
-  "offline_unavailable": "Copie offline indisponibilă",
-  "@offline_unavailable": {},
-  "offline_failed": "Nu s-a putut păstra totul offline. Verifică conexiunea și spațiul disponibil, apoi încearcă din nou.",
-  "@offline_failed": {},
-  "offline_storage_error": "Stocarea offline nu a putut fi citită sau actualizată. Verifică spațiul disponibil și încearcă din nou.",
-  "@offline_storage_error": {},
-  "offline_empty": "Păstrează offline articole sau conținut media din postările salvate pentru a le găsi aici.",
-  "@offline_empty": {},
-  "offline_storage_used": "{used} utilizați din {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Fișiere media păstrate: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Textul articolului păstrat · Imagini: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Golește colecția offline",
-  "@offline_clear": {},
-  "offline_clear_question": "Elimini toate copiile offline?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "Articolele și conținutul media păstrate vor fi eliminate de pe acest dispozitiv. Postările salvate și folderele rămân în bibliotecă.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Păstrezi offline conținut media sensibil?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Aceste fișiere pot avea conținut sensibil. Vor fi stocate pe acest dispozitiv și vor rămâne ascunse până când alegi să le deschizi.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Deschide conținutul media sensibil",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Fișier media {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Copiile videoclipurilor Reddit pot să nu includă sunet.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "Stocarea offline este limitată la {limit}. Fișierele mari sau fluxurile neacceptate pot rămâne indisponibile.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "Textul articolului este păstrat. Conținutul audio și video încorporat necesită în continuare o conexiune.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

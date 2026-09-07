@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:xta/constants.dart';
@@ -66,6 +68,17 @@ class PooledVideo {
     _disposed = true;
     _sourceStore?.cancel();
     await _sourceStore?.destroy();
+    final source = _sourceStore;
+    if (source != null && source.nativeCommandPending) {
+      // A native Future cannot be cancelled; freeing its player underneath a
+      // late command is unsafe. Release only after it and its pause settle.
+      unawaited(source.whenNativeIdle.then((_) => _disposePlayer()).catchError((Object _) {}));
+      return;
+    }
+    await _disposePlayer();
+  }
+
+  Future<void> _disposePlayer() async {
     // Disposing a still-active [Player] races an in-flight libmpv wakeup callback
     // against the FFI callback being freed, aborting the process with
     // "Callback invoked after it has been deleted". Unloading the media first —

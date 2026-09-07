@@ -34,6 +34,7 @@ List<BlueskyReplyBranch> blueskyReplyBranches(BlueskyThread thread) {
     }
     return BlueskyReplyBranch(posts[uri]!, nested);
   }
+
   final result = <BlueskyReplyBranch>[];
   for (final uri in [...roots, ...posts.keys]) {
     if (!visited.contains(uri)) result.add(build(uri));
@@ -54,10 +55,15 @@ List<BlueskyReplyRow> blueskyVisibleReplies(List<BlueskyReplyBranch> branches, S
     final hidden = collapsed.contains(branch.post.uri);
     rows.add(BlueskyReplyRow(branch, depth, hidden));
     if (!hidden) {
-      for (final child in branch.children) { append(child, depth + 1); }
+      for (final child in branch.children) {
+        append(child, depth + 1);
+      }
     }
   }
-  for (final branch in branches) { append(branch, 0); }
+
+  for (final branch in branches) {
+    append(branch, 0);
+  }
   return rows;
 }
 
@@ -69,28 +75,38 @@ class BlueskyThreadState {
   final bool loading;
   final Object? error;
   const BlueskyThreadState({
-    required this.thread, this.branches = const [], this.collapsed = const {},
-    this.contextOpen = false, this.loading = false, this.error,
+    required this.thread,
+    this.branches = const [],
+    this.collapsed = const {},
+    this.contextOpen = false,
+    this.loading = false,
+    this.error,
   });
 
-  BlueskyThreadState copyWith({BlueskyThread? thread, Set<String>? collapsed,
-    bool? contextOpen, bool loading = false, Object? error}) => BlueskyThreadState(
-      thread: thread ?? this.thread,
-      branches: thread == null ? branches : blueskyReplyBranches(thread),
-      collapsed: collapsed ?? this.collapsed,
-      contextOpen: contextOpen ?? this.contextOpen, loading: loading, error: error,
-    );
+  BlueskyThreadState copyWith({
+    BlueskyThread? thread,
+    Set<String>? collapsed,
+    bool? contextOpen,
+    bool loading = false,
+    Object? error,
+  }) => BlueskyThreadState(
+    thread: thread ?? this.thread,
+    branches: thread == null ? branches : blueskyReplyBranches(thread),
+    collapsed: collapsed ?? this.collapsed,
+    contextOpen: contextOpen ?? this.contextOpen,
+    loading: loading,
+    error: error,
+  );
 }
 
 class BlueskyThreadStore extends Store<BlueskyThreadState> {
   final BlueskyClient client;
   var _request = 0;
   var _closed = false;
-  BlueskyThreadStore(this.client, BlueskyPost post)
-      : super(BlueskyThreadState(thread: BlueskyThread(post: post)));
+  BlueskyThreadStore(this.client, BlueskyPost post) : super(BlueskyThreadState(thread: BlueskyThread(post: post)));
 
-  void toggleContext() => update(state.copyWith(contextOpen: !state.contextOpen,
-    loading: state.loading, error: state.error));
+  void toggleContext() =>
+      update(state.copyWith(contextOpen: !state.contextOpen, loading: state.loading, error: state.error));
 
   void toggle(String uri) {
     final collapsed = {...state.collapsed};

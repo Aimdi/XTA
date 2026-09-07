@@ -30,9 +30,10 @@ class DownloadStore extends Store<DownloadCenterState> {
   DateTime _lastProgress = DateTime.fromMillisecondsSinceEpoch(0);
 
   DownloadStore({DownloadHistory? history, DownloadRunner? runner, Future<void> Function()? cleanup})
-      : history = history ?? FileDownloadHistory(), runner = runner ?? DownloadTransfer().call,
-        cleanup = cleanup ?? (runner == null ? DownloadTransfer.clearInterruptedFiles : null),
-        super(const DownloadCenterState());
+    : history = history ?? FileDownloadHistory(),
+      runner = runner ?? DownloadTransfer().call,
+      cleanup = cleanup ?? (runner == null ? DownloadTransfer.clearInterruptedFiles : null),
+      super(const DownloadCenterState());
 
   Future<void> initialize() => _initializing ??= _load();
 
@@ -40,7 +41,9 @@ class DownloadStore extends Store<DownloadCenterState> {
     _loading = true;
     try {
       final entries = await history.read();
-      try { await cleanup?.call(); } catch (_) {}
+      try {
+        await cleanup?.call();
+      } catch (_) {}
       _historyLoaded = true;
       if (!_closed) update(DownloadCenterState(entries: entries, ready: true));
     } catch (_) {
@@ -71,8 +74,13 @@ class DownloadStore extends Store<DownloadCenterState> {
       throw ArgumentError.value(uri, 'uri', 'Expected a web media URL');
     }
     if (state.entries.where((entry) => entry.active).length >= 100) throw StateError('Download queue is full');
-    final entry = DownloadEntry(id: const Uuid().v4(), uri: uri, fileName: safeDownloadName(fileName),
-      treeUri: treeUri == null || treeUri.isEmpty ? null : treeUri, createdAt: DateTime.now());
+    final entry = DownloadEntry(
+      id: const Uuid().v4(),
+      uri: uri,
+      fileName: safeDownloadName(fileName),
+      treeUri: treeUri == null || treeUri.isEmpty ? null : treeUri,
+      createdAt: DateTime.now(),
+    );
     final completion = Completer<DownloadEntry>();
     _completion[entry.id] = completion;
     _publish([entry, ...state.entries]);
@@ -86,12 +94,16 @@ class DownloadStore extends Store<DownloadCenterState> {
   }
 
   Future<DownloadBatchResult> enqueueBatch(List<DownloadRequest> requests) async {
-    final completed = await Future.wait(requests.map((request) async {
-      try {
-        final entry = await enqueue(uri: request.uri, fileName: request.fileName, treeUri: request.treeUri);
-        return entry.status == DownloadStatus.completed;
-      } catch (_) { return false; }
-    }));
+    final completed = await Future.wait(
+      requests.map((request) async {
+        try {
+          final entry = await enqueue(uri: request.uri, fileName: request.fileName, treeUri: request.treeUri);
+          return entry.status == DownloadStatus.completed;
+        } catch (_) {
+          return false;
+        }
+      }),
+    );
     return DownloadBatchResult(saved: completed.where((saved) => saved).length, total: requests.length);
   }
 
@@ -147,13 +159,26 @@ class DownloadStore extends Store<DownloadCenterState> {
     try {
       await _persist();
       token.check();
-      final savedUri = await runner(entry, token,
-        (received, total) { if (currentAttempt()) _progress(entry.id, received, total); },
-        (status) { final current = _find(entry.id); if (current != null && !token.cancelled && currentAttempt()) _replace(current.copyWith(status: status)); });
+      final savedUri = await runner(
+        entry,
+        token,
+        (received, total) {
+          if (currentAttempt()) _progress(entry.id, received, total);
+        },
+        (status) {
+          final current = _find(entry.id);
+          if (current != null && !token.cancelled && currentAttempt()) _replace(current.copyWith(status: status));
+        },
+      );
       token.check();
       if (!currentAttempt()) return;
       final current = _find(entry.id) ?? entry;
-      _finish(current.copyWith(status: savedUri == null ? DownloadStatus.cancelled : DownloadStatus.completed, savedUri: savedUri));
+      _finish(
+        current.copyWith(
+          status: savedUri == null ? DownloadStatus.cancelled : DownloadStatus.completed,
+          savedUri: savedUri,
+        ),
+      );
     } catch (_) {
       if (!currentAttempt()) return;
       final current = _find(entry.id) ?? entry;
@@ -174,7 +199,9 @@ class DownloadStore extends Store<DownloadCenterState> {
   }
 
   DownloadEntry? _find(String id) {
-    for (final entry in state.entries) { if (entry.id == id) return entry; }
+    for (final entry in state.entries) {
+      if (entry.id == id) return entry;
+    }
     return null;
   }
 
@@ -186,8 +213,13 @@ class DownloadStore extends Store<DownloadCenterState> {
     final finished = entries.where((entry) => !entry.active).take(200 - active.length).toList();
     final retained = {...active.map((entry) => entry.id), ...finished.map((entry) => entry.id)};
     _attempts.removeWhere((id, _) => !retained.contains(id));
-    update(DownloadCenterState(entries: List.unmodifiable(entries.where((entry) => retained.contains(entry.id))),
-      ready: true, storageError: state.storageError));
+    update(
+      DownloadCenterState(
+        entries: List.unmodifiable(entries.where((entry) => retained.contains(entry.id))),
+        ready: true,
+        storageError: state.storageError,
+      ),
+    );
   }
 
   void _finish(DownloadEntry entry) {
@@ -209,12 +241,18 @@ class DownloadStore extends Store<DownloadCenterState> {
     return write;
   }
 
-  Future<void> _persistQuietly() async { try { await _persist(); } catch (_) {} }
+  Future<void> _persistQuietly() async {
+    try {
+      await _persist();
+    } catch (_) {}
+  }
 
   @override
   Future<void> destroy() async {
     _closed = true;
-    for (final token in _cancellation.values) { token.cancel(); }
+    for (final token in _cancellation.values) {
+      token.cancel();
+    }
     for (final entry in state.entries.where((entry) => entry.active)) {
       final completion = _completion.remove(entry.id);
       completion?.complete(entry.copyWith(status: DownloadStatus.interrupted));

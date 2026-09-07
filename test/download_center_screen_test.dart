@@ -10,22 +10,44 @@ import 'package:xta/generated/l10n.dart';
 import 'download_center_test.dart' show MemoryHistory;
 
 DownloadEntry sampleDownload(String id, String name, DownloadStatus status, {int received = 0, int? total}) =>
-  DownloadEntry(id: id, uri: Uri.parse('https://media.example/$id'), fileName: name,
-    createdAt: DateTime.utc(2026, 9, 7, 12, int.parse(id)), status: status,
-    received: received, total: total,
-    savedUri: status == DownloadStatus.completed ? 'content://provider/document/$id' : null);
+    DownloadEntry(
+      id: id,
+      uri: Uri.parse('https://media.example/$id'),
+      fileName: name,
+      createdAt: DateTime.utc(2026, 9, 7, 12, int.parse(id)),
+      status: status,
+      received: received,
+      total: total,
+      savedUri: status == DownloadStatus.completed ? 'content://provider/document/$id' : null,
+    );
 
 Widget downloadApp(DownloadStore store, {bool dark = false, bool large = false}) => MaterialApp(
-  theme: ThemeData(brightness: dark ? Brightness.dark : Brightness.light, fontFamily: 'Inter',
-    colorSchemeSeed: const Color(0xff1d9bf0), scaffoldBackgroundColor: dark ? Colors.black : null),
-  localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+  theme: ThemeData(
+    brightness: dark ? Brightness.dark : Brightness.light,
+    fontFamily: 'Inter',
+    colorSchemeSeed: const Color(0xff1d9bf0),
+    scaffoldBackgroundColor: dark ? Colors.black : null,
+  ),
+  localizationsDelegates: const [
+    L10n.delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ],
   supportedLocales: L10n.delegate.supportedLocales,
   locale: const Locale('en'),
-  home: Builder(builder: (context) => MediaQuery(data: MediaQuery.of(context).copyWith(
-      textScaler: TextScaler.linear(large ? 2 : 1)), child: Directionality(
+  home: Builder(
+    builder: (context) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(large ? 2 : 1)),
+      child: Directionality(
         textDirection: large ? TextDirection.rtl : TextDirection.ltr,
-        child: RepaintBoundary(key: const ValueKey('download-review'), child: DownloadsScreen(store: store))))),
+        child: RepaintBoundary(
+          key: const ValueKey('download-review'),
+          child: DownloadsScreen(store: store),
+        ),
+      ),
+    ),
+  ),
 );
 
 void main() {
@@ -43,8 +65,13 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final history = MemoryHistory([
-        sampleDownload('1', 'maya-weekend-on-the-coast.mp4', DownloadStatus.downloading,
-          received: 12976128, total: 32505856),
+        sampleDownload(
+          '1',
+          'maya-weekend-on-the-coast.mp4',
+          DownloadStatus.downloading,
+          received: 12976128,
+          total: 32505856,
+        ),
         sampleDownload('2', 'maya-colour-study.jpg', DownloadStatus.queued),
         sampleDownload('3', 'field-notes-autumn.jpg', DownloadStatus.completed),
         sampleDownload('4', 'architecture-details.jpg', DownloadStatus.completed),
@@ -56,8 +83,10 @@ void main() {
       await tester.pumpWidget(downloadApp(store, dark: variant.endsWith('dark'), large: large));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
-      await expectLater(find.byKey(const ValueKey('download-review')),
-        matchesGoldenFile('../review-artifacts/renders/$variant.png'));
+      await expectLater(
+        find.byKey(const ValueKey('download-review')),
+        matchesGoldenFile('../review-artifacts/renders/$variant.png'),
+      );
       await tester.pumpWidget(const SizedBox());
       await store.destroy();
     });
@@ -65,10 +94,16 @@ void main() {
 
   testWidgets('retry and clear history act on real store without deleting downloaded files', (tester) async {
     var requests = 0;
-    final store = DownloadStore(history: MemoryHistory([
-      sampleDownload('1', 'retry.jpg', DownloadStatus.failed),
-      sampleDownload('2', 'keep-on-device.jpg', DownloadStatus.completed),
-    ]), runner: (_, _, _, _) async { requests++; return 'content://provider/document/retried'; });
+    final store = DownloadStore(
+      history: MemoryHistory([
+        sampleDownload('1', 'retry.jpg', DownloadStatus.failed),
+        sampleDownload('2', 'keep-on-device.jpg', DownloadStatus.completed),
+      ]),
+      runner: (_, _, _, _) async {
+        requests++;
+        return 'content://provider/document/retried';
+      },
+    );
     await store.initialize();
     await tester.pumpWidget(downloadApp(store));
     await tester.pumpAndSettle();

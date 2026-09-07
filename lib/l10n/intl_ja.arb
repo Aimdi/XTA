@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "X の記事",
   "@article_on_x": {},
+  "article_reader_appearance": "読書画面の表示",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "読了にする",
+  "@article_reader_finish": {},
+  "article_reader_finished": "読了",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "行間",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "閲覧済み",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "続きから再開",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "先頭に戻る",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "文字サイズ",
+  "@article_reader_text_size": {},
   "auto_download_images": "画像を自動ダウンロード",
   "@auto_download_images": {},
   "auto_download_images_description": "このフォルダーに保存した投稿の画像を、ダウンロードフォルダーに保存します。",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "メディアをダウンロード中...",
   "@downloading_media": {},
+  "downloads_batch_result": "保存したファイル数: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "キャンセル済み",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "保存先を選択",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "完了したダウンロードの履歴を消去",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "保存済み",
+  "@downloads_completed": {},
+  "downloads_empty": "ダウンロードしたファイルがここに表示されます。投稿のメディアを保存して始めましょう。",
+  "@downloads_empty": {},
+  "downloads_failed": "ダウンロード失敗",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "ダウンロード履歴を保存できませんでした。ストレージの空き容量を確認して、もう一度お試しください。",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "中断 · 再試行して続行",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "このファイルを開けませんでした。移動または削除された可能性があります。",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "ファイルを開く",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "待機中",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "接続とダウンロード先のフォルダーを確認して、もう一度お試しください。",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "ファイルを保存中…",
+  "@downloads_saving": {},
+  "downloads_title": "ダウンロード",
+  "@downloads_title": {},
   "edit_folder": "フォルダーを編集",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "{timeagoFormat}に終了",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{0 票} one{1 票} two{2 票} few{{numFormatted} 票} many{{numFormatted} 票} other{{numFormatted} 票}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "記事本文を保持 · 画像: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "記事本文を保持します。埋め込みの音声や動画には引き続き接続が必要です。",
+  "@offline_article_text_only": {},
+  "offline_available": "オフラインで利用可能",
+  "@offline_available": {},
+  "offline_clear": "オフラインコレクションを空にする",
+  "@offline_clear": {},
+  "offline_clear_description": "この端末で保持している記事とメディアが削除されます。保存した投稿とフォルダーはライブラリに残ります。",
+  "@offline_clear_description": {},
+  "offline_clear_question": "すべてのオフラインコピーを削除しますか？",
+  "@offline_clear_question": {},
+  "offline_empty": "記事や保存した投稿のメディアをオフラインで保持すると、ここに表示されます。",
+  "@offline_empty": {},
+  "offline_failed": "すべてをオフラインで保持できませんでした。接続とストレージの空き容量を確認して、もう一度お試しください。",
+  "@offline_failed": {},
+  "offline_keep": "オフラインで保持",
+  "@offline_keep": {},
+  "offline_library_title": "オフラインコレクション",
+  "@offline_library_title": {},
+  "offline_media_count": "保持したメディアファイル数: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "メディア {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "一部をオフラインで利用可能",
+  "@offline_partial": {},
+  "offline_remove": "オフラインコピーを削除",
+  "@offline_remove": {},
+  "offline_sensitive_description": "これらのファイルにはセンシティブな内容が含まれる場合があります。この端末に保存され、開くことを選択するまで非表示になります。",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "センシティブなメディアを開く",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "センシティブなメディアをオフラインで保持しますか？",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "オフラインストレージを読み取りまたは更新できませんでした。空き容量を確認して、もう一度お試しください。",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "オフラインストレージの上限は{limit}です。大きなファイルや未対応のストリームは利用できない場合があります。",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{limit} 中 {used} を使用",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "オフラインコピーを利用できません",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit動画のコピーには音声が含まれない場合があります。",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "メディア付きのツイートのみ表示",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "読書画面の表示",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "行間",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "読了にする",
-  "@article_reader_finish": {},
-  "article_reader_finished": "読了",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "先頭に戻る",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "閲覧済み",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "続きから再開",
-  "@article_reader_resumed": {},
-  "downloads_title": "ダウンロード",
-  "@downloads_title": {},
-  "downloads_clear_finished": "完了したダウンロードの履歴を消去",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "ダウンロード履歴を保存できませんでした。ストレージの空き容量を確認して、もう一度お試しください。",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "ダウンロードしたファイルがここに表示されます。投稿のメディアを保存して始めましょう。",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "接続とダウンロード先のフォルダーを確認して、もう一度お試しください。",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "ファイルを開く",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "このファイルを開けませんでした。移動または削除された可能性があります。",
-  "@downloads_open_failed": {},
-  "downloads_queued": "待機中",
-  "@downloads_queued": {},
-  "downloads_choose_location": "保存先を選択",
-  "@downloads_choose_location": {},
-  "downloads_saving": "ファイルを保存中…",
-  "@downloads_saving": {},
-  "downloads_completed": "保存済み",
-  "@downloads_completed": {},
-  "downloads_failed": "ダウンロード失敗",
-  "@downloads_failed": {},
-  "downloads_cancelled": "キャンセル済み",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "中断 · 再試行して続行",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "保存したファイル数: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "文字サイズ",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "オフラインコレクション",
-  "@offline_library_title": {},
-  "offline_keep": "オフラインで保持",
-  "@offline_keep": {},
-  "offline_remove": "オフラインコピーを削除",
-  "@offline_remove": {},
-  "offline_available": "オフラインで利用可能",
-  "@offline_available": {},
-  "offline_partial": "一部をオフラインで利用可能",
-  "@offline_partial": {},
-  "offline_unavailable": "オフラインコピーを利用できません",
-  "@offline_unavailable": {},
-  "offline_failed": "すべてをオフラインで保持できませんでした。接続とストレージの空き容量を確認して、もう一度お試しください。",
-  "@offline_failed": {},
-  "offline_storage_error": "オフラインストレージを読み取りまたは更新できませんでした。空き容量を確認して、もう一度お試しください。",
-  "@offline_storage_error": {},
-  "offline_empty": "記事や保存した投稿のメディアをオフラインで保持すると、ここに表示されます。",
-  "@offline_empty": {},
-  "offline_storage_used": "{limit} 中 {used} を使用",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "保持したメディアファイル数: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "記事本文を保持 · 画像: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "オフラインコレクションを空にする",
-  "@offline_clear": {},
-  "offline_clear_question": "すべてのオフラインコピーを削除しますか？",
-  "@offline_clear_question": {},
-  "offline_clear_description": "この端末で保持している記事とメディアが削除されます。保存した投稿とフォルダーはライブラリに残ります。",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "センシティブなメディアをオフラインで保持しますか？",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "これらのファイルにはセンシティブな内容が含まれる場合があります。この端末に保存され、開くことを選択するまで非表示になります。",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "センシティブなメディアを開く",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "メディア {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Reddit動画のコピーには音声が含まれない場合があります。",
-  "@offline_video_only": {},
-  "offline_storage_limit": "オフラインストレージの上限は{limit}です。大きなファイルや未対応のストリームは利用できない場合があります。",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "記事本文を保持します。埋め込みの音声や動画には引き続き接続が必要です。",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

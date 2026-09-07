@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:xta/reading/article_reading_store.dart';
 
 /// Only injected into the app's sanitized article document, never a live site.
-String articleReadingBridge(ArticleReadingState state, {double textScale = 1}) => '''
+String articleReadingBridge(ArticleReadingState state, {double textScale = 1}) =>
+    '''
 (function() {
   if (window.xtaArticle) { window.xtaArticle.apply(${state.fontSize * textScale}, ${state.lineHeight}); return; }
   const saved = ${jsonEncode(state.point.toJson())};

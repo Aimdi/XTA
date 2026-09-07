@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "X 上的文章",
   "@article_on_x": {},
+  "article_reader_appearance": "阅读外观",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "标为已读完",
+  "@article_reader_finish": {},
+  "article_reader_finished": "已读完",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "行间距",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "已打开",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "已恢复阅读位置",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "返回开头",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "文字缩放比例",
+  "@article_reader_text_size": {},
   "auto_download_images": "自动下载图片",
   "@auto_download_images": {},
   "auto_download_images_description": "将归入此文件夹的任何帖子的图片保存到你的下载文件夹。",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "正在下载媒体...",
   "@downloading_media": {},
+  "downloads_batch_result": "已保存文件：{saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "已取消",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "选择保存位置",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "清除已完成的下载记录",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "已保存",
+  "@downloads_completed": {},
+  "downloads_empty": "下载的文件将显示在这里。从帖子中保存媒体即可开始。",
+  "@downloads_empty": {},
+  "downloads_failed": "下载失败",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "无法保存下载记录。请检查可用存储空间后重试。",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "已中断 · 点按重试以继续",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "无法打开此文件。它可能已被移动或删除。",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "打开文件",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "等待中",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "请检查网络连接和下载文件夹后重试。",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "正在保存文件…",
+  "@downloads_saving": {},
+  "downloads_title": "下载",
+  "@downloads_title": {},
   "edit_folder": "编辑文件夹",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "{timeagoFormat} 已结束",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{0 票} one{1 票} two{2 票} few{{numFormatted} 票} many{{numFormatted} 票} other{{numFormatted} 票}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "已保留文章正文 · 图片：{saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "文章正文会被保留。嵌入的音频和视频仍需网络连接。",
+  "@offline_article_text_only": {},
+  "offline_available": "可离线使用",
+  "@offline_available": {},
+  "offline_clear": "清空离线收藏",
+  "@offline_clear": {},
+  "offline_clear_description": "这会从此设备中移除保留的文章和媒体。已保存的帖子和文件夹将保留在收藏库中。",
+  "@offline_clear_description": {},
+  "offline_clear_question": "移除所有离线副本？",
+  "@offline_clear_question": {},
+  "offline_empty": "离线保留文章或已保存帖子的媒体，即可在这里找到它们。",
+  "@offline_empty": {},
+  "offline_failed": "无法离线保留全部内容。请检查网络连接和可用存储空间后重试。",
+  "@offline_failed": {},
+  "offline_keep": "离线保留",
+  "@offline_keep": {},
+  "offline_library_title": "离线收藏",
+  "@offline_library_title": {},
+  "offline_media_count": "已保留媒体文件：{saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "媒体 {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "部分可离线使用",
+  "@offline_partial": {},
+  "offline_remove": "移除离线副本",
+  "@offline_remove": {},
+  "offline_sensitive_description": "这些文件可能包含敏感内容。它们将存储在此设备上，并保持隐藏，直到你选择打开。",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "打开敏感媒体",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "离线保留敏感媒体？",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "无法读取或更新离线存储。请检查可用存储空间后重试。",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "离线存储上限为 {limit}。大文件或不支持的流媒体可能仍无法使用。",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "已用 {used}，共 {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "离线副本不可用",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit 视频副本可能不包含声音。",
+  "@offline_video_only": {},
   "ok": "确定",
   "@ok": {},
   "only_show_posts_with_media": "仅显示包含媒体的推文",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "阅读外观",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "行间距",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "标为已读完",
-  "@article_reader_finish": {},
-  "article_reader_finished": "已读完",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "返回开头",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "已打开",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "已恢复阅读位置",
-  "@article_reader_resumed": {},
-  "downloads_title": "下载",
-  "@downloads_title": {},
-  "downloads_clear_finished": "清除已完成的下载记录",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "无法保存下载记录。请检查可用存储空间后重试。",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "下载的文件将显示在这里。从帖子中保存媒体即可开始。",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "请检查网络连接和下载文件夹后重试。",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "打开文件",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "无法打开此文件。它可能已被移动或删除。",
-  "@downloads_open_failed": {},
-  "downloads_queued": "等待中",
-  "@downloads_queued": {},
-  "downloads_choose_location": "选择保存位置",
-  "@downloads_choose_location": {},
-  "downloads_saving": "正在保存文件…",
-  "@downloads_saving": {},
-  "downloads_completed": "已保存",
-  "@downloads_completed": {},
-  "downloads_failed": "下载失败",
-  "@downloads_failed": {},
-  "downloads_cancelled": "已取消",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "已中断 · 点按重试以继续",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "已保存文件：{saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "文字缩放比例",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "离线收藏",
-  "@offline_library_title": {},
-  "offline_keep": "离线保留",
-  "@offline_keep": {},
-  "offline_remove": "移除离线副本",
-  "@offline_remove": {},
-  "offline_available": "可离线使用",
-  "@offline_available": {},
-  "offline_partial": "部分可离线使用",
-  "@offline_partial": {},
-  "offline_unavailable": "离线副本不可用",
-  "@offline_unavailable": {},
-  "offline_failed": "无法离线保留全部内容。请检查网络连接和可用存储空间后重试。",
-  "@offline_failed": {},
-  "offline_storage_error": "无法读取或更新离线存储。请检查可用存储空间后重试。",
-  "@offline_storage_error": {},
-  "offline_empty": "离线保留文章或已保存帖子的媒体，即可在这里找到它们。",
-  "@offline_empty": {},
-  "offline_storage_used": "已用 {used}，共 {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "已保留媒体文件：{saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "已保留文章正文 · 图片：{saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "清空离线收藏",
-  "@offline_clear": {},
-  "offline_clear_question": "移除所有离线副本？",
-  "@offline_clear_question": {},
-  "offline_clear_description": "这会从此设备中移除保留的文章和媒体。已保存的帖子和文件夹将保留在收藏库中。",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "离线保留敏感媒体？",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "这些文件可能包含敏感内容。它们将存储在此设备上，并保持隐藏，直到你选择打开。",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "打开敏感媒体",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "媒体 {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Reddit 视频副本可能不包含声音。",
-  "@offline_video_only": {},
-  "offline_storage_limit": "离线存储上限为 {limit}。大文件或不支持的流媒体可能仍无法使用。",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "文章正文会被保留。嵌入的音频和视频仍需网络连接。",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

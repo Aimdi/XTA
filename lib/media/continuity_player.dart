@@ -53,10 +53,12 @@ class MediaKitContinuityPlayer implements ContinuityPlayer {
     ]) {
       _subscriptions.add(stream.listen((_) => _changes.add(null)));
     }
-    _subscriptions.add(player.stream.error.listen((_) {
-      _failed = true;
-      _changes.add(null);
-    }));
+    _subscriptions.add(
+      player.stream.error.listen((_) {
+        _failed = true;
+        _changes.add(null);
+      }),
+    );
   }
 
   static ContinuityPlayer createPodcast() {

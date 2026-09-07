@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artikulua X-en",
   "@article_on_x": {},
+  "article_reader_appearance": "Irakurketa-itxura",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Markatu irakurrita",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Irakurrita",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Lerroartea",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Irekita",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Irakurketa jarraituta",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Itzuli hasierara",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Testuaren eskala-faktorea",
+  "@article_reader_text_size": {},
   "auto_download_images": "Deskargatu irudiak automatikoki",
   "@auto_download_images": {},
   "auto_download_images_description": "Gorde karpeta honetan artxibatutako edozein argitalpenen irudiak zure deskarga-karpetan.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Multimedia deskargatzen...",
   "@downloading_media": {},
+  "downloads_batch_result": "Gordetako fitxategiak: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Bertan behera utzita",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Aukeratu gordetzeko kokalekua",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Garbitu amaitutako deskargen historia",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Gordeta",
+  "@downloads_completed": {},
+  "downloads_empty": "Zure deskargak hemen agertuko dira. Hasteko, gorde argitalpen bateko multimedia-edukia.",
+  "@downloads_empty": {},
+  "downloads_failed": "Deskargak huts egin du",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Ezin izan da deskargen historia gorde. Egiaztatu biltegiratze-leku librea eta saiatu berriro.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Etenda · Saiatu berriro jarraitzeko",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Ezin izan da fitxategi hau ireki. Baliteke lekuz aldatu edo ezabatu izana.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Ireki fitxategia",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Zain",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Egiaztatu konexioa eta deskargen karpeta, eta saiatu berriro.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Fitxategia gordetzen…",
+  "@downloads_saving": {},
+  "downloads_title": "Deskargak",
+  "@downloads_title": {},
   "edit_folder": "Editatu karpeta",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Amaituta {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Botorik gabea} one{Boto bat} two{Bi boto} few{{numFormatted} boto} many{{numFormatted} boto} other{{numFormatted} boto}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Artikuluaren testua gordeta · Irudiak: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Artikuluaren testua gordetzen da. Kapsulatutako audioak eta bideoak konexioa behar dute oraindik.",
+  "@offline_article_text_only": {},
+  "offline_available": "Lineaz kanpo erabilgarri",
+  "@offline_available": {},
+  "offline_clear": "Hustu lineaz kanpoko bilduma",
+  "@offline_clear": {},
+  "offline_clear_description": "Gailu honetan gordetako artikuluak eta multimedia-edukia kenduko dira. Gordetako argitalpenak eta karpetak liburutegian geratuko dira.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Kendu lineaz kanpoko kopia guztiak?",
+  "@offline_clear_question": {},
+  "offline_empty": "Gorde artikuluak edo gordetako argitalpenen multimedia-edukia lineaz kanpo, hemen aurkitzeko.",
+  "@offline_empty": {},
+  "offline_failed": "Ezin izan da dena lineaz kanpo gorde. Egiaztatu konexioa eta biltegiratze-leku librea, eta saiatu berriro.",
+  "@offline_failed": {},
+  "offline_keep": "Gorde lineaz kanpo",
+  "@offline_keep": {},
+  "offline_library_title": "Lineaz kanpoko bilduma",
+  "@offline_library_title": {},
+  "offline_media_count": "Gordetako multimedia-fitxategiak: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Multimedia-fitxategia {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Zati bat lineaz kanpo erabilgarri",
+  "@offline_partial": {},
+  "offline_remove": "Kendu lineaz kanpoko kopia",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Fitxategi hauek eduki sentikorra izan dezakete. Gailu honetan gordeko dira eta ezkutuan egongo dira irekitzea erabaki arte.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Ireki eduki sentikorreko multimedia",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Gorde eduki sentikorreko multimedia lineaz kanpo?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Ezin izan da lineaz kanpoko biltegiratzea irakurri edo eguneratu. Egiaztatu biltegiratze-leku librea eta saiatu berriro.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Lineaz kanpoko biltegiratzea {limit}-ra mugatuta dago. Fitxategi handiak edo onartzen ez diren korronteak erabilgarri egon gabe gera daitezke.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} erabilita, {limit} guztira",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Lineaz kanpoko kopia ez dago erabilgarri",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit bideoen kopiek agian ez dute soinurik izango.",
+  "@offline_video_only": {},
   "ok": "Ados",
   "@ok": {},
   "only_show_posts_with_media": "Erakutsi multimedia duten txioak soilik",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Irakurketa-itxura",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Lerroartea",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Markatu irakurrita",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Irakurrita",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "Itzuli hasierara",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Irekita",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Irakurketa jarraituta",
-  "@article_reader_resumed": {},
-  "downloads_title": "Deskargak",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Garbitu amaitutako deskargen historia",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Ezin izan da deskargen historia gorde. Egiaztatu biltegiratze-leku librea eta saiatu berriro.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "Zure deskargak hemen agertuko dira. Hasteko, gorde argitalpen bateko multimedia-edukia.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Egiaztatu konexioa eta deskargen karpeta, eta saiatu berriro.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Ireki fitxategia",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Ezin izan da fitxategi hau ireki. Baliteke lekuz aldatu edo ezabatu izana.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "Zain",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Aukeratu gordetzeko kokalekua",
-  "@downloads_choose_location": {},
-  "downloads_saving": "Fitxategia gordetzen…",
-  "@downloads_saving": {},
-  "downloads_completed": "Gordeta",
-  "@downloads_completed": {},
-  "downloads_failed": "Deskargak huts egin du",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Bertan behera utzita",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Etenda · Saiatu berriro jarraitzeko",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Gordetako fitxategiak: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Testuaren eskala-faktorea",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Lineaz kanpoko bilduma",
-  "@offline_library_title": {},
-  "offline_keep": "Gorde lineaz kanpo",
-  "@offline_keep": {},
-  "offline_remove": "Kendu lineaz kanpoko kopia",
-  "@offline_remove": {},
-  "offline_available": "Lineaz kanpo erabilgarri",
-  "@offline_available": {},
-  "offline_partial": "Zati bat lineaz kanpo erabilgarri",
-  "@offline_partial": {},
-  "offline_unavailable": "Lineaz kanpoko kopia ez dago erabilgarri",
-  "@offline_unavailable": {},
-  "offline_failed": "Ezin izan da dena lineaz kanpo gorde. Egiaztatu konexioa eta biltegiratze-leku librea, eta saiatu berriro.",
-  "@offline_failed": {},
-  "offline_storage_error": "Ezin izan da lineaz kanpoko biltegiratzea irakurri edo eguneratu. Egiaztatu biltegiratze-leku librea eta saiatu berriro.",
-  "@offline_storage_error": {},
-  "offline_empty": "Gorde artikuluak edo gordetako argitalpenen multimedia-edukia lineaz kanpo, hemen aurkitzeko.",
-  "@offline_empty": {},
-  "offline_storage_used": "{used} erabilita, {limit} guztira",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Gordetako multimedia-fitxategiak: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Artikuluaren testua gordeta · Irudiak: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Hustu lineaz kanpoko bilduma",
-  "@offline_clear": {},
-  "offline_clear_question": "Kendu lineaz kanpoko kopia guztiak?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "Gailu honetan gordetako artikuluak eta multimedia-edukia kenduko dira. Gordetako argitalpenak eta karpetak liburutegian geratuko dira.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Gorde eduki sentikorreko multimedia lineaz kanpo?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Fitxategi hauek eduki sentikorra izan dezakete. Gailu honetan gordeko dira eta ezkutuan egongo dira irekitzea erabaki arte.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Ireki eduki sentikorreko multimedia",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Multimedia-fitxategia {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Reddit bideoen kopiek agian ez dute soinurik izango.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "Lineaz kanpoko biltegiratzea {limit}-ra mugatuta dago. Fitxategi handiak edo onartzen ez diren korronteak erabilgarri egon gabe gera daitezke.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "Artikuluaren testua gordetzen da. Kapsulatutako audioak eta bideoak konexioa behar dute oraindik.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

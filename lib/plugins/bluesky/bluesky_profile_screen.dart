@@ -302,6 +302,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
                     indicatorSize: TabBarIndicatorSize.label,
                     labelColor: theme.colorScheme.onSurface,
                     unselectedLabelColor: theme.colorScheme.onSurfaceVariant,

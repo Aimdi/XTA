@@ -58,8 +58,7 @@ class ArticleReadingState {
   });
 }
 
-double _number(Object? value, double fallback) =>
-    value is num && value.isFinite ? value.toDouble() : fallback;
+double _number(Object? value, double fallback) => value is num && value.isFinite ? value.toDouble() : fallback;
 
 Map<String, dynamic> _preferenceMap(BasePrefService prefs, String key) {
   try {
@@ -79,14 +78,14 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
   final String articleId;
   final Future<void> Function() onCompleted;
   final Stopwatch activeTime;
-  static Future<void> _writes = Future.value();
+  static Future<void>? _writes;
   Timer? _debounce;
   Timer? _endTimer;
   bool _closed = false;
   bool _completionPending = false;
   bool allowAutomaticCompletion;
-  bool get remembersPosition => !prefs.getKeys().contains(optionFeedReadingPosition) ||
-    prefs.get(optionFeedReadingPosition) != false;
+  bool get remembersPosition =>
+      !prefs.getKeys().contains(optionFeedReadingPosition) || prefs.get(optionFeedReadingPosition) != false;
 
   ArticleReadingStore({
     required this.prefs,
@@ -95,22 +94,25 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
     this.allowAutomaticCompletion = true,
     bool alreadyCompleted = false,
     Stopwatch? clock,
-  }) : activeTime = clock ?? Stopwatch(), super(const ArticleReadingState()) {
+  }) : activeTime = clock ?? Stopwatch(),
+       super(const ArticleReadingState()) {
     final appearance = _preferenceMap(prefs, articleAppearancePreference);
     final saved = remembersPosition ? _preferenceMap(prefs, articleReadingPreference)[articleId] : null;
     final point = ArticleReadPoint.parse(saved);
-    update(ArticleReadingState(
-      fontSize: _number(appearance['fontSize'], 18).clamp(16, 28),
-      lineHeight: _number(appearance['lineHeight'], 1.7).clamp(1.4, 2.2),
-      point: ArticleReadPoint(
-        fraction: point.fraction,
-        paragraph: point.paragraph,
-        leading: point.leading,
-        completed: point.completed || alreadyCompleted,
-        updatedAt: DateTime.now().millisecondsSinceEpoch,
+    update(
+      ArticleReadingState(
+        fontSize: _number(appearance['fontSize'], 18).clamp(16, 28),
+        lineHeight: _number(appearance['lineHeight'], 1.7).clamp(1.4, 2.2),
+        point: ArticleReadPoint(
+          fraction: point.fraction,
+          paragraph: point.paragraph,
+          leading: point.leading,
+          completed: point.completed || alreadyCompleted,
+          updatedAt: DateTime.now().millisecondsSinceEpoch,
+        ),
+        resumed: point.fraction > 0.01 && !point.completed,
       ),
-      resumed: point.fraction > 0.01 && !point.completed,
-    ));
+    );
     _schedule();
   }
 
@@ -127,16 +129,18 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   void appearance({double? fontSize, double? lineHeight}) {
     if (_closed) return;
-    update(ArticleReadingState(
-      fontSize: (fontSize ?? state.fontSize).clamp(16, 28),
-      lineHeight: (lineHeight ?? state.lineHeight).clamp(1.4, 2.2),
-      point: state.point,
-      resumed: state.resumed,
-    ));
+    update(
+      ArticleReadingState(
+        fontSize: (fontSize ?? state.fontSize).clamp(16, 28),
+        lineHeight: (lineHeight ?? state.lineHeight).clamp(1.4, 2.2),
+        point: state.point,
+        resumed: state.resumed,
+      ),
+    );
     final payload = jsonEncode({'fontSize': state.fontSize, 'lineHeight': state.lineHeight});
-    _writes = _writes.then((_) async {
+    unawaited(_write(() async {
       await prefs.set(articleAppearancePreference, payload);
-    }).catchError((Object _) {});
+    }));
   }
 
   void receiveProgress(String message) {
@@ -145,18 +149,20 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
       final raw = jsonDecode(message);
       if (raw is! Map) return;
       final point = ArticleReadPoint.parse(raw);
-      update(ArticleReadingState(
-        fontSize: state.fontSize,
-        lineHeight: state.lineHeight,
-        point: ArticleReadPoint(
-          fraction: point.fraction,
-          paragraph: point.paragraph,
-          leading: point.leading,
-          completed: state.point.completed,
-          updatedAt: DateTime.now().millisecondsSinceEpoch,
+      update(
+        ArticleReadingState(
+          fontSize: state.fontSize,
+          lineHeight: state.lineHeight,
+          point: ArticleReadPoint(
+            fraction: point.fraction,
+            paragraph: point.paragraph,
+            leading: point.leading,
+            completed: state.point.completed,
+            updatedAt: DateTime.now().millisecondsSinceEpoch,
+          ),
+          resumed: state.resumed && raw['interacted'] != true,
         ),
-        resumed: state.resumed && raw['interacted'] != true,
-      ));
+      );
       _schedule();
       _checkCompletion(raw);
     } catch (_) {
@@ -166,8 +172,8 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   void _checkCompletion(Map<dynamic, dynamic> raw) {
     _endTimer?.cancel();
-    if (!allowAutomaticCompletion || raw['userScrolled'] != true ||
-        raw['atEnd'] != true || !activeTime.isRunning) return;
+    if (!allowAutomaticCompletion || raw['userScrolled'] != true || raw['atEnd'] != true || !activeTime.isRunning)
+      return;
     final remaining = const Duration(seconds: 12) - activeTime.elapsed;
     if (remaining <= Duration.zero) {
       unawaited(complete());
@@ -187,17 +193,19 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
       await onCompleted();
       if (_closed) return;
       final point = state.point;
-      update(ArticleReadingState(
-        fontSize: state.fontSize,
-        lineHeight: state.lineHeight,
-        point: ArticleReadPoint(
-          fraction: point.fraction,
-          paragraph: point.paragraph,
-          leading: point.leading,
-          completed: true,
-          updatedAt: DateTime.now().millisecondsSinceEpoch,
+      update(
+        ArticleReadingState(
+          fontSize: state.fontSize,
+          lineHeight: state.lineHeight,
+          point: ArticleReadPoint(
+            fraction: point.fraction,
+            paragraph: point.paragraph,
+            leading: point.leading,
+            completed: true,
+            updatedAt: DateTime.now().millisecondsSinceEpoch,
+          ),
         ),
-      ));
+      );
       await flush();
     } catch (_) {
       // Leave the finish action available when the local read store cannot save.
@@ -208,11 +216,13 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   void startOver() {
     if (_closed) return;
-    update(ArticleReadingState(
-      fontSize: state.fontSize,
-      lineHeight: state.lineHeight,
-      point: ArticleReadPoint(completed: state.point.completed),
-    ));
+    update(
+      ArticleReadingState(
+        fontSize: state.fontSize,
+        lineHeight: state.lineHeight,
+        point: ArticleReadPoint(completed: state.point.completed),
+      ),
+    );
     _schedule();
   }
 
@@ -223,16 +233,28 @@ class ArticleReadingStore extends Store<ArticleReadingState> {
 
   Future<void> flush() {
     _debounce?.cancel();
-    if (!remembersPosition) return _writes;
+    if (!remembersPosition) return _writes ?? Future.value();
     final point = state.point.toJson();
-    _writes = _writes.then((_) async {
+    return _write(() async {
       final journal = _preferenceMap(prefs, articleReadingPreference);
       journal[articleId] = point;
-      final entries = journal.entries.toList()..sort((a, b) =>
-        ArticleReadPoint.parse(b.value).updatedAt.compareTo(ArticleReadPoint.parse(a.value).updatedAt));
+      final entries = journal.entries.toList()
+        ..sort(
+          (a, b) => ArticleReadPoint.parse(b.value).updatedAt.compareTo(ArticleReadPoint.parse(a.value).updatedAt),
+        );
       await prefs.set(articleReadingPreference, jsonEncode(Map.fromEntries(entries.take(articleReadingLimit))));
-    }).catchError((Object _) {});
-    return _writes;
+    });
+  }
+
+  static Future<void> _write(Future<void> Function() task) {
+    final previous = _writes;
+    final next = (previous == null ? Future<void>.sync(task) : previous.then((_) => task()))
+        .catchError((Object _) {});
+    _writes = next;
+    return next.whenComplete(() {
+      // Drop the completed future and its async zone after the queue drains.
+      if (identical(_writes, next)) _writes = null;
+    });
   }
 
   @override

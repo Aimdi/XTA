@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Bài viết trên X",
   "@article_on_x": {},
+  "article_reader_appearance": "Giao diện đọc",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Đánh dấu đã đọc xong",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Đã đọc xong",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Giãn dòng",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Đã mở",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Đã tiếp tục đọc",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Về đầu bài",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Kích thước chữ",
+  "@article_reader_text_size": {},
   "auto_download_images": "Tự động tải ảnh",
   "@auto_download_images": {},
   "auto_download_images_description": "Lưu ảnh của mọi bài đăng được xếp vào thư mục này vào thư mục tải xuống của bạn.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Đang tải xuống đa phương tiện...",
   "@downloading_media": {},
+  "downloads_batch_result": "Số tệp đã lưu: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Đã hủy",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Chọn nơi lưu",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Xóa lịch sử tải xuống đã hoàn tất",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Đã lưu",
+  "@downloads_completed": {},
+  "downloads_empty": "Các tệp tải xuống sẽ xuất hiện ở đây. Hãy lưu nội dung đa phương tiện từ một bài đăng để bắt đầu.",
+  "@downloads_empty": {},
+  "downloads_failed": "Tải xuống thất bại",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Không thể lưu lịch sử tải xuống. Hãy kiểm tra dung lượng trống rồi thử lại.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Bị gián đoạn · Thử lại để tiếp tục",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Không thể mở tệp này. Tệp có thể đã bị di chuyển hoặc xóa.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Mở tệp",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Đang chờ",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Hãy kiểm tra kết nối và thư mục tải xuống rồi thử lại.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Đang lưu tệp…",
+  "@downloads_saving": {},
+  "downloads_title": "Tệp tải xuống",
+  "@downloads_title": {},
   "edit_folder": "Chỉnh sửa thư mục",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Ended {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{No votes} one{One vote} two{Two votes} few{{numFormatted} votes} many{{numFormatted} vote} other{{numFormatted} votes}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Đã giữ văn bản bài viết · Hình ảnh: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Văn bản bài viết được giữ lại. Âm thanh và video nhúng vẫn cần kết nối.",
+  "@offline_article_text_only": {},
+  "offline_available": "Có thể dùng ngoại tuyến",
+  "@offline_available": {},
+  "offline_clear": "Xóa bộ sưu tập ngoại tuyến",
+  "@offline_clear": {},
+  "offline_clear_description": "Thao tác này xóa các bài viết và nội dung đa phương tiện đã giữ khỏi thiết bị. Các bài đăng đã lưu và thư mục vẫn còn trong thư viện.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Xóa tất cả bản sao ngoại tuyến?",
+  "@offline_clear_question": {},
+  "offline_empty": "Giữ bài viết hoặc nội dung đa phương tiện của bài đăng đã lưu để dùng ngoại tuyến và tìm lại tại đây.",
+  "@offline_empty": {},
+  "offline_failed": "Không thể giữ toàn bộ nội dung ngoại tuyến. Hãy kiểm tra kết nối và dung lượng trống rồi thử lại.",
+  "@offline_failed": {},
+  "offline_keep": "Giữ ngoại tuyến",
+  "@offline_keep": {},
+  "offline_library_title": "Bộ sưu tập ngoại tuyến",
+  "@offline_library_title": {},
+  "offline_media_count": "Số tệp đa phương tiện đã giữ: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Nội dung đa phương tiện {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Một phần có thể dùng ngoại tuyến",
+  "@offline_partial": {},
+  "offline_remove": "Xóa bản sao ngoại tuyến",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Các tệp này có thể chứa nội dung nhạy cảm. Chúng sẽ được lưu trên thiết bị này và ẩn đi cho đến khi bạn chọn mở.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Mở nội dung đa phương tiện nhạy cảm",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Giữ nội dung đa phương tiện nhạy cảm ngoại tuyến?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Không thể đọc hoặc cập nhật bộ nhớ ngoại tuyến. Hãy kiểm tra dung lượng trống rồi thử lại.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Bộ nhớ ngoại tuyến được giới hạn ở {limit}. Các tệp lớn hoặc luồng không được hỗ trợ có thể vẫn không khả dụng.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "Đã dùng {used} trên {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Bản sao ngoại tuyến không khả dụng",
+  "@offline_unavailable": {},
+  "offline_video_only": "Bản sao video Reddit có thể không có âm thanh.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Chỉ hiển thị bài viết có nội dung đa phương tiện",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Độ dài bảng tin ở chế độ zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Số trang bảng tin tải ở chế độ zen trước khi tạm dừng.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Giao diện đọc",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Giãn dòng",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Đánh dấu đã đọc xong",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Đã đọc xong",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "Về đầu bài",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Đã mở",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Đã tiếp tục đọc",
-  "@article_reader_resumed": {},
-  "downloads_title": "Tệp tải xuống",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Xóa lịch sử tải xuống đã hoàn tất",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Không thể lưu lịch sử tải xuống. Hãy kiểm tra dung lượng trống rồi thử lại.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "Các tệp tải xuống sẽ xuất hiện ở đây. Hãy lưu nội dung đa phương tiện từ một bài đăng để bắt đầu.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Hãy kiểm tra kết nối và thư mục tải xuống rồi thử lại.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Mở tệp",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Không thể mở tệp này. Tệp có thể đã bị di chuyển hoặc xóa.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "Đang chờ",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Chọn nơi lưu",
-  "@downloads_choose_location": {},
-  "downloads_saving": "Đang lưu tệp…",
-  "@downloads_saving": {},
-  "downloads_completed": "Đã lưu",
-  "@downloads_completed": {},
-  "downloads_failed": "Tải xuống thất bại",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Đã hủy",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Bị gián đoạn · Thử lại để tiếp tục",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Số tệp đã lưu: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Kích thước chữ",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Bộ sưu tập ngoại tuyến",
-  "@offline_library_title": {},
-  "offline_keep": "Giữ ngoại tuyến",
-  "@offline_keep": {},
-  "offline_remove": "Xóa bản sao ngoại tuyến",
-  "@offline_remove": {},
-  "offline_available": "Có thể dùng ngoại tuyến",
-  "@offline_available": {},
-  "offline_partial": "Một phần có thể dùng ngoại tuyến",
-  "@offline_partial": {},
-  "offline_unavailable": "Bản sao ngoại tuyến không khả dụng",
-  "@offline_unavailable": {},
-  "offline_failed": "Không thể giữ toàn bộ nội dung ngoại tuyến. Hãy kiểm tra kết nối và dung lượng trống rồi thử lại.",
-  "@offline_failed": {},
-  "offline_storage_error": "Không thể đọc hoặc cập nhật bộ nhớ ngoại tuyến. Hãy kiểm tra dung lượng trống rồi thử lại.",
-  "@offline_storage_error": {},
-  "offline_empty": "Giữ bài viết hoặc nội dung đa phương tiện của bài đăng đã lưu để dùng ngoại tuyến và tìm lại tại đây.",
-  "@offline_empty": {},
-  "offline_storage_used": "Đã dùng {used} trên {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Số tệp đa phương tiện đã giữ: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Đã giữ văn bản bài viết · Hình ảnh: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Xóa bộ sưu tập ngoại tuyến",
-  "@offline_clear": {},
-  "offline_clear_question": "Xóa tất cả bản sao ngoại tuyến?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "Thao tác này xóa các bài viết và nội dung đa phương tiện đã giữ khỏi thiết bị. Các bài đăng đã lưu và thư mục vẫn còn trong thư viện.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Giữ nội dung đa phương tiện nhạy cảm ngoại tuyến?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Các tệp này có thể chứa nội dung nhạy cảm. Chúng sẽ được lưu trên thiết bị này và ẩn đi cho đến khi bạn chọn mở.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Mở nội dung đa phương tiện nhạy cảm",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Nội dung đa phương tiện {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Bản sao video Reddit có thể không có âm thanh.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "Bộ nhớ ngoại tuyến được giới hạn ở {limit}. Các tệp lớn hoặc luồng không được hỗ trợ có thể vẫn không khả dụng.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "Văn bản bài viết được giữ lại. Âm thanh và video nhúng vẫn cần kết nối.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

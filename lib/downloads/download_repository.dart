@@ -13,7 +13,8 @@ abstract interface class DownloadHistory {
 class FileDownloadHistory implements DownloadHistory {
   final Future<Directory> Function() directory;
   FileDownloadHistory({Future<Directory> Function()? directory})
-      : directory = directory ?? (() async => Directory(p.join((await getApplicationSupportDirectory()).path, 'downloads')));
+    : directory =
+          directory ?? (() async => Directory(p.join((await getApplicationSupportDirectory()).path, 'downloads')));
 
   Future<File> _file() async {
     final root = await directory();
@@ -30,8 +31,12 @@ class FileDownloadHistory implements DownloadHistory {
       final value = jsonDecode(await file.readAsString());
       if (value is! Map || value['version'] != 1 || value['entries'] is! List) return [];
       final ids = <String>{};
-      return (value['entries'] as List).take(200).map(DownloadEntry.fromJson).whereType<DownloadEntry>()
-        .where((entry) => ids.add(entry.id)).toList();
+      return (value['entries'] as List)
+          .take(200)
+          .map(DownloadEntry.fromJson)
+          .whereType<DownloadEntry>()
+          .where((entry) => ids.add(entry.id))
+          .toList();
     } on FormatException {
       return [];
     }

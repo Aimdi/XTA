@@ -14,12 +14,17 @@ const _nextUrl = 'https://publication.example/episode-2.mp3';
 const _position = Duration(minutes: 8, seconds: 12);
 const _duration = Duration(minutes: 30);
 
-String _checkpoint() => const PodcastCheckpoint(url: _url, title: 'Episode one',
-  position: _position, duration: _duration).encode();
+String _checkpoint() =>
+    const PodcastCheckpoint(url: _url, title: 'Episode one', position: _position, duration: _duration).encode();
 
 PodcastStore _store(BasePrefService prefs, FakeContinuityPlayer player) => PodcastStore(
-  prefs: prefs, createPlayer: () => player, observeLifecycle: false,
-  readyTimeout: const Duration(milliseconds: 20), seekTimeout: const Duration(milliseconds: 20));
+  prefs: prefs,
+  createPlayer: () => player,
+  observeLifecycle: false,
+  readyTimeout: const Duration(milliseconds: 20),
+  seekTimeout: const Duration(milliseconds: 20),
+  commandTimeout: const Duration(milliseconds: 20),
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +33,14 @@ void main() {
     final prefs = PrefServiceCache(defaults: {podcastCheckpointPreference: _checkpoint()});
     var creations = 0;
     final player = FakeContinuityPlayer();
-    final store = PodcastStore(prefs: prefs, observeLifecycle: false,
-      createPlayer: () { creations++; return player; });
+    final store = PodcastStore(
+      prefs: prefs,
+      observeLifecycle: false,
+      createPlayer: () {
+        creations++;
+        return player;
+      },
+    );
     expect(store.state.url, _url);
     expect(store.state.position, _position);
     expect(store.state.playing, isFalse);
@@ -93,7 +104,9 @@ void main() {
     final prefs = PrefServiceCache(defaults: {podcastCheckpointPreference: _checkpoint()});
     final player = FakeContinuityPlayer();
     final gate = Completer<void>();
-    player.beforeOpen = (url) async { if (url == _url) await gate.future; };
+    player.beforeOpen = (url) async {
+      if (url == _url) await gate.future;
+    };
     final store = _store(prefs, player);
     final first = store.toggle(url: _url, title: 'Episode one');
     await Future<void>.delayed(Duration.zero);
@@ -173,7 +186,9 @@ void main() {
 
   test('unrestorable podcast stays paused and keeps the checkpoint for retry', () async {
     final prefs = PrefServiceCache(defaults: {podcastCheckpointPreference: _checkpoint()});
-    final player = FakeContinuityPlayer()..honorStart = false..honorSeek = false;
+    final player = FakeContinuityPlayer()
+      ..honorStart = false
+      ..honorSeek = false;
     final store = _store(prefs, player);
     await store.toggle(url: _url, title: 'Episode one');
     expect(store.state.failed, isTrue);
@@ -187,7 +202,9 @@ void main() {
   test('malformed, oversized, unsafe and completed records are ignored', () {
     final base = jsonDecode(_checkpoint()) as Map<String, dynamic>;
     for (final value in [
-      '{broken', 'x' * 16385, '[]',
+      '{broken',
+      'x' * 16385,
+      '[]',
       jsonEncode({...base, 'version': 5}),
       jsonEncode({...base, 'url': 'file:///secret.mp3'}),
       jsonEncode({...base, 'position': -1}),
@@ -198,6 +215,45 @@ void main() {
       expect(PodcastCheckpoint.decode(value), isNull);
     }
     expect(PodcastCheckpoint.decode(_checkpoint())!.title, 'Episode one');
+  });
+
+  test('a stalled resume seek preserves the checkpoint and permits a later retry', () async {
+    final prefs = PrefServiceCache(defaults: {podcastCheckpointPreference: _checkpoint()});
+    final gate = Completer<void>();
+    final player = FakeContinuityPlayer()..honorStart = false..beforeSeek = (_) => gate.future;
+    final store = _store(prefs, player);
+    await store.toggle(url: _url, title: 'Episode one').timeout(const Duration(seconds: 1));
+    expect(store.state.failed, isTrue);
+    expect(store.state.position, _position);
+    expect(player.commands, isNot(contains('play')));
+    await store.toggle(url: _url, title: 'Episode one');
+    expect(player.opens.length, 1);
+    gate.complete();
+    await Future<void>.delayed(Duration.zero);
+    expect(player.frame.playing, isFalse);
+    await store.toggle(url: _url, title: 'Episode one');
+    expect(store.state.playing, isTrue);
+    expect(store.state.position, _position);
+    await store.destroy();
+  });
+
+  test('a stalled open does not block stop or free a player beneath native work', () async {
+    final prefs = PrefServiceCache(defaults: {podcastCheckpointPreference: _checkpoint()});
+    final gate = Completer<void>();
+    final player = FakeContinuityPlayer()..beforeOpen = (_) => gate.future;
+    final store = _store(prefs, player);
+    final opening = store.toggle(url: _url, title: 'Episode one');
+    await Future<void>.delayed(Duration.zero);
+    await store.stop().timeout(const Duration(seconds: 1));
+    await opening;
+    expect(store.state.active, isFalse);
+    await store.destroy().timeout(const Duration(seconds: 1));
+    expect(player.disposed, isFalse);
+    gate.complete();
+    await Future<void>.delayed(Duration.zero);
+    expect(player.disposed, isTrue);
+    expect(player.commands, isNot(contains('play')));
+    expect(PodcastCheckpoint.decode(prefs.get(podcastCheckpointPreference)), isNull);
   });
 }
 

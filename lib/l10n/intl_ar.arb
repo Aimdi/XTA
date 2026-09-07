@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "مقال على X",
   "@article_on_x": {},
+  "article_reader_appearance": "مظهر القراءة",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "وضع علامة اكتمال القراءة",
+  "@article_reader_finish": {},
+  "article_reader_finished": "اكتملت القراءة",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "تباعد الأسطر",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "تم الفتح",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "تم استئناف القراءة",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "العودة إلى البداية",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "معامل مقياس النص",
+  "@article_reader_text_size": {},
   "auto_download_images": "تنزيل الصور تلقائيًا",
   "@auto_download_images": {},
   "auto_download_images_description": "احفظ صور أي منشور يُصنّف في هذا المجلد إلى مجلد التنزيلات.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "تحميل الوسائط...",
   "@downloading_media": {},
+  "downloads_batch_result": "الملفات المحفوظة: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "تم الإلغاء",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "اختيار مكان الحفظ",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "مسح سجل التنزيلات المكتملة",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "تم الحفظ",
+  "@downloads_completed": {},
+  "downloads_empty": "ستظهر تنزيلاتك هنا. احفظ وسائط من منشور للبدء.",
+  "@downloads_empty": {},
+  "downloads_failed": "فشل التنزيل",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "تعذّر حفظ سجل التنزيلات. تحقق من مساحة التخزين المتاحة وحاول مجددًا.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "انقطع التنزيل · أعد المحاولة للمتابعة",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "تعذّر فتح هذا الملف. ربما تم نقله أو حذفه.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "فتح الملف",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "قيد الانتظار",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "تحقق من اتصالك ومجلد التنزيلات، ثم حاول مجددًا.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "جارٍ حفظ الملف…",
+  "@downloads_saving": {},
+  "downloads_title": "التنزيلات",
+  "@downloads_title": {},
   "edit_folder": "تعديل المجلد",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "اتنهى {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{ولا تصويت} one{تصويت واحد} two{تصويتان} few{{numFormatted} تصويتات} many{{numFormatted} تصويت} other{{numFormatted} تصويتات}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "تم الاحتفاظ بنص المقال · الصور: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "يُحتفظ بنص المقال. يظل الصوت والفيديو المضمّنان بحاجة إلى اتصال.",
+  "@offline_article_text_only": {},
+  "offline_available": "متاح بلا اتصال",
+  "@offline_available": {},
+  "offline_clear": "إفراغ المجموعة المحفوظة بلا اتصال",
+  "@offline_clear": {},
+  "offline_clear_description": "ستُزال المقالات والوسائط المحتفظ بها من هذا الجهاز. ستبقى المنشورات المحفوظة والمجلدات في مكتبتك.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "إزالة جميع النسخ المحفوظة بلا اتصال؟",
+  "@offline_clear_question": {},
+  "offline_empty": "احتفظ بالمقالات أو وسائط المنشورات المحفوظة بلا اتصال لتجدها هنا.",
+  "@offline_empty": {},
+  "offline_failed": "تعذّر الاحتفاظ بكل المحتوى بلا اتصال. تحقق من اتصالك ومساحة التخزين المتاحة، ثم حاول مجددًا.",
+  "@offline_failed": {},
+  "offline_keep": "الاحتفاظ بلا اتصال",
+  "@offline_keep": {},
+  "offline_library_title": "مجموعة بلا اتصال",
+  "@offline_library_title": {},
+  "offline_media_count": "ملفات الوسائط المحتفظ بها: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "ملف وسائط {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "متاح جزئيًا بلا اتصال",
+  "@offline_partial": {},
+  "offline_remove": "إزالة النسخة المحفوظة بلا اتصال",
+  "@offline_remove": {},
+  "offline_sensitive_description": "قد تحتوي هذه الملفات على محتوى حساس. ستُخزّن على هذا الجهاز وستبقى مخفية حتى تختار فتحها.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "فتح الوسائط الحساسة",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "الاحتفاظ بالوسائط الحساسة بلا اتصال؟",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "تعذّرت قراءة التخزين بلا اتصال أو تحديثه. تحقق من مساحة التخزين المتاحة وحاول مجددًا.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "مساحة التخزين بلا اتصال محدودة بـ {limit}. قد تبقى الملفات الكبيرة أو التدفقات غير المدعومة غير متاحة.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "المستخدم: {used} من {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "النسخة المحفوظة بلا اتصال غير متاحة",
+  "@offline_unavailable": {},
+  "offline_video_only": "قد لا تتضمن نسخ فيديوهات Reddit صوتًا.",
+  "@offline_video_only": {},
   "ok": "تمام",
   "@ok": {},
   "only_show_posts_with_media": "عرض التغريدات التي تحتوي على وسائط فقط",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "مظهر القراءة",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "تباعد الأسطر",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "وضع علامة اكتمال القراءة",
-  "@article_reader_finish": {},
-  "article_reader_finished": "اكتملت القراءة",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "العودة إلى البداية",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "تم الفتح",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "تم استئناف القراءة",
-  "@article_reader_resumed": {},
-  "downloads_title": "التنزيلات",
-  "@downloads_title": {},
-  "downloads_clear_finished": "مسح سجل التنزيلات المكتملة",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "تعذّر حفظ سجل التنزيلات. تحقق من مساحة التخزين المتاحة وحاول مجددًا.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "ستظهر تنزيلاتك هنا. احفظ وسائط من منشور للبدء.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "تحقق من اتصالك ومجلد التنزيلات، ثم حاول مجددًا.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "فتح الملف",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "تعذّر فتح هذا الملف. ربما تم نقله أو حذفه.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "قيد الانتظار",
-  "@downloads_queued": {},
-  "downloads_choose_location": "اختيار مكان الحفظ",
-  "@downloads_choose_location": {},
-  "downloads_saving": "جارٍ حفظ الملف…",
-  "@downloads_saving": {},
-  "downloads_completed": "تم الحفظ",
-  "@downloads_completed": {},
-  "downloads_failed": "فشل التنزيل",
-  "@downloads_failed": {},
-  "downloads_cancelled": "تم الإلغاء",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "انقطع التنزيل · أعد المحاولة للمتابعة",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "الملفات المحفوظة: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "معامل مقياس النص",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "مجموعة بلا اتصال",
-  "@offline_library_title": {},
-  "offline_keep": "الاحتفاظ بلا اتصال",
-  "@offline_keep": {},
-  "offline_remove": "إزالة النسخة المحفوظة بلا اتصال",
-  "@offline_remove": {},
-  "offline_available": "متاح بلا اتصال",
-  "@offline_available": {},
-  "offline_partial": "متاح جزئيًا بلا اتصال",
-  "@offline_partial": {},
-  "offline_unavailable": "النسخة المحفوظة بلا اتصال غير متاحة",
-  "@offline_unavailable": {},
-  "offline_failed": "تعذّر الاحتفاظ بكل المحتوى بلا اتصال. تحقق من اتصالك ومساحة التخزين المتاحة، ثم حاول مجددًا.",
-  "@offline_failed": {},
-  "offline_storage_error": "تعذّرت قراءة التخزين بلا اتصال أو تحديثه. تحقق من مساحة التخزين المتاحة وحاول مجددًا.",
-  "@offline_storage_error": {},
-  "offline_empty": "احتفظ بالمقالات أو وسائط المنشورات المحفوظة بلا اتصال لتجدها هنا.",
-  "@offline_empty": {},
-  "offline_storage_used": "المستخدم: {used} من {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "ملفات الوسائط المحتفظ بها: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "تم الاحتفاظ بنص المقال · الصور: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "إفراغ المجموعة المحفوظة بلا اتصال",
-  "@offline_clear": {},
-  "offline_clear_question": "إزالة جميع النسخ المحفوظة بلا اتصال؟",
-  "@offline_clear_question": {},
-  "offline_clear_description": "ستُزال المقالات والوسائط المحتفظ بها من هذا الجهاز. ستبقى المنشورات المحفوظة والمجلدات في مكتبتك.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "الاحتفاظ بالوسائط الحساسة بلا اتصال؟",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "قد تحتوي هذه الملفات على محتوى حساس. ستُخزّن على هذا الجهاز وستبقى مخفية حتى تختار فتحها.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "فتح الوسائط الحساسة",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "ملف وسائط {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "قد لا تتضمن نسخ فيديوهات Reddit صوتًا.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "مساحة التخزين بلا اتصال محدودة بـ {limit}. قد تبقى الملفات الكبيرة أو التدفقات غير المدعومة غير متاحة.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "يُحتفظ بنص المقال. يظل الصوت والفيديو المضمّنان بحاجة إلى اتصال.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

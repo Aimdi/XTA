@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Артыкул на X",
   "@article_on_x": {},
+  "article_reader_appearance": "Выгляд для чытання",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Пазначыць як прачытанае",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Прачытана",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Міжрадковы інтэрвал",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Адкрыта",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Працягнута",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Да пачатку",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Каэфіцыент маштабавання тэксту",
+  "@article_reader_text_size": {},
   "auto_download_images": "Аўтаспампоўка выяў",
   "@auto_download_images": {},
   "auto_download_images_description": "Захоўваць выявы кожнага допісу, дададзенага ў гэтую тэчку, у тэчку спамповак.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Загрузка медыя...",
   "@downloading_media": {},
+  "downloads_batch_result": "Захаваныя файлы: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Скасавана",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Выбраць месца захавання",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Ачысціць гісторыю завершаных спамповак",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Захавана",
+  "@downloads_completed": {},
+  "downloads_empty": "Тут будуць вашы спампоўкі. Для пачатку захавайце медыя з публікацыі.",
+  "@downloads_empty": {},
+  "downloads_failed": "Не ўдалося спампаваць",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Не ўдалося захаваць гісторыю спамповак. Праверце вольнае месца і паўтарыце спробу.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Перапынена · Паўтарыце спробу, каб працягнуць",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Не ўдалося адкрыць гэты файл. Магчыма, ён быў перамешчаны або выдалены.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Адкрыць файл",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "У чаканні",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Праверце злучэнне і папку спамповак, затым паўтарыце спробу.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Захаванне файла…",
+  "@downloads_saving": {},
+  "downloads_title": "Спампоўкі",
+  "@downloads_title": {},
   "edit_folder": "Рэдагаваць тэчку",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Завершана {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{няма галасоў} one{голас} two{галасы} few{{numFormatted} галасы} many{{numFormatted} галасоў} other{{numFormatted} голас}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Тэкст артыкула захаваны · Відарысы: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Тэкст артыкула захаваны. Для ўбудаваных аўдыя і відэа па-ранейшаму патрэбнае злучэнне.",
+  "@offline_article_text_only": {},
+  "offline_available": "Даступна пазасеткава",
+  "@offline_available": {},
+  "offline_clear": "Ачысціць пазасеткавы збор",
+  "@offline_clear": {},
+  "offline_clear_description": "З гэтай прылады будуць выдаленыя пазасеткавыя артыкулы і медыя. Захаваныя публікацыі і папкі застануцца ў вашай бібліятэцы.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Выдаліць усе пазасеткавыя копіі?",
+  "@offline_clear_question": {},
+  "offline_empty": "Захоўвайце артыкулы або медыя з захаваных публікацый пазасеткава, каб знаходзіць іх тут.",
+  "@offline_empty": {},
+  "offline_failed": "Не ўдалося захаваць усё пазасеткава. Праверце злучэнне і вольнае месца, затым паўтарыце спробу.",
+  "@offline_failed": {},
+  "offline_keep": "Захаваць пазасеткава",
+  "@offline_keep": {},
+  "offline_library_title": "Пазасеткавы збор",
+  "@offline_library_title": {},
+  "offline_media_count": "Захаваныя медыяфайлы: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Медыяфайл {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Часткова даступна пазасеткава",
+  "@offline_partial": {},
+  "offline_remove": "Выдаліць пазасеткавую копію",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Гэтыя файлы могуць змяшчаць адчувальны змест. Яны будуць захоўвацца на гэтай прыладзе і застануцца схаванымі, пакуль вы не адкрыеце іх.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Адкрыць адчувальныя медыя",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Захаваць адчувальныя медыя пазасеткава?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Не ўдалося прачытаць або абнавіць пазасеткавае сховішча. Праверце вольнае месца і паўтарыце спробу.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Пазасеткавае сховішча абмежавана да {limit}. Вялікія файлы або патокі, якія не падтрымліваюцца, могуць застацца недаступнымі.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "Выкарыстана {used} з {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Пазасеткавая копія недаступная",
+  "@offline_unavailable": {},
+  "offline_video_only": "Копіі відэа з Reddit могуць не змяшчаць гуку.",
+  "@offline_video_only": {},
   "ok": "Добра",
   "@ok": {},
   "only_show_posts_with_media": "Паказваць толькі твіты з медыя",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Даўжыня стужкі ў дзэн-рэжыме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Колькі старонак загружае стужка ў дзэн-рэжыме перад паўзай.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Выгляд для чытання",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Міжрадковы інтэрвал",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Пазначыць як прачытанае",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Прачытана",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "Да пачатку",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Адкрыта",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Працягнута",
-  "@article_reader_resumed": {},
-  "downloads_title": "Спампоўкі",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Ачысціць гісторыю завершаных спамповак",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Не ўдалося захаваць гісторыю спамповак. Праверце вольнае месца і паўтарыце спробу.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "Тут будуць вашы спампоўкі. Для пачатку захавайце медыя з публікацыі.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Праверце злучэнне і папку спамповак, затым паўтарыце спробу.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Адкрыць файл",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Не ўдалося адкрыць гэты файл. Магчыма, ён быў перамешчаны або выдалены.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "У чаканні",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Выбраць месца захавання",
-  "@downloads_choose_location": {},
-  "downloads_saving": "Захаванне файла…",
-  "@downloads_saving": {},
-  "downloads_completed": "Захавана",
-  "@downloads_completed": {},
-  "downloads_failed": "Не ўдалося спампаваць",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Скасавана",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Перапынена · Паўтарыце спробу, каб працягнуць",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Захаваныя файлы: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Каэфіцыент маштабавання тэксту",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Пазасеткавы збор",
-  "@offline_library_title": {},
-  "offline_keep": "Захаваць пазасеткава",
-  "@offline_keep": {},
-  "offline_remove": "Выдаліць пазасеткавую копію",
-  "@offline_remove": {},
-  "offline_available": "Даступна пазасеткава",
-  "@offline_available": {},
-  "offline_partial": "Часткова даступна пазасеткава",
-  "@offline_partial": {},
-  "offline_unavailable": "Пазасеткавая копія недаступная",
-  "@offline_unavailable": {},
-  "offline_failed": "Не ўдалося захаваць усё пазасеткава. Праверце злучэнне і вольнае месца, затым паўтарыце спробу.",
-  "@offline_failed": {},
-  "offline_storage_error": "Не ўдалося прачытаць або абнавіць пазасеткавае сховішча. Праверце вольнае месца і паўтарыце спробу.",
-  "@offline_storage_error": {},
-  "offline_empty": "Захоўвайце артыкулы або медыя з захаваных публікацый пазасеткава, каб знаходзіць іх тут.",
-  "@offline_empty": {},
-  "offline_storage_used": "Выкарыстана {used} з {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Захаваныя медыяфайлы: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Тэкст артыкула захаваны · Відарысы: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Ачысціць пазасеткавы збор",
-  "@offline_clear": {},
-  "offline_clear_question": "Выдаліць усе пазасеткавыя копіі?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "З гэтай прылады будуць выдаленыя пазасеткавыя артыкулы і медыя. Захаваныя публікацыі і папкі застануцца ў вашай бібліятэцы.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Захаваць адчувальныя медыя пазасеткава?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Гэтыя файлы могуць змяшчаць адчувальны змест. Яны будуць захоўвацца на гэтай прыладзе і застануцца схаванымі, пакуль вы не адкрыеце іх.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Адкрыць адчувальныя медыя",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Медыяфайл {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Копіі відэа з Reddit могуць не змяшчаць гуку.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "Пазасеткавае сховішча абмежавана да {limit}. Вялікія файлы або патокі, якія не падтрымліваюцца, могуць застацца недаступнымі.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "Тэкст артыкула захаваны. Для ўбудаваных аўдыя і відэа па-ранейшаму патрэбнае злучэнне.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

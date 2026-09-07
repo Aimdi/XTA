@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artigo no X",
   "@article_on_x": {},
+  "article_reader_appearance": "Aspeto da leitura",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Marcar como concluído",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Concluído",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Espaçamento entre linhas",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Aberto",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Retomado",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Voltar ao início",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Fator de escala do texto",
+  "@article_reader_text_size": {},
   "auto_download_images": "Descarregar imagens automaticamente",
   "@auto_download_images": {},
   "auto_download_images_description": "Guarda as imagens de qualquer publicação colocada nesta pasta na tua pasta de transferências.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Descarregando mídia...",
   "@downloading_media": {},
+  "downloads_batch_result": "Ficheiros guardados: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Cancelado",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Escolher onde guardar",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Limpar o histórico de transferências concluídas",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Guardado",
+  "@downloads_completed": {},
+  "downloads_empty": "As suas transferências aparecerão aqui. Guarde conteúdos multimédia de uma publicação para começar.",
+  "@downloads_empty": {},
+  "downloads_failed": "Falha na transferência",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Não foi possível guardar o histórico de transferências. Verifique o espaço disponível e tente novamente.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Interrompido · Tente novamente para continuar",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Não foi possível abrir este ficheiro. Pode ter sido movido ou eliminado.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Abrir ficheiro",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Em espera",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Verifique a ligação e a pasta de transferências e tente novamente.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "A guardar ficheiro…",
+  "@downloads_saving": {},
+  "downloads_title": "Transferências",
+  "@downloads_title": {},
   "edit_folder": "Editar pasta",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Finalizado {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Nenhum voto} one{Um voto} two{Dois votos} few{{numFormatted} votos} many{{numFormatted} voto} other{{numFormatted} votos}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Texto do artigo mantido · Imagens: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "O texto do artigo é mantido. O áudio e o vídeo incorporados continuam a necessitar de uma ligação.",
+  "@offline_article_text_only": {},
+  "offline_available": "Disponível offline",
+  "@offline_available": {},
+  "offline_clear": "Esvaziar coleção offline",
+  "@offline_clear": {},
+  "offline_clear_description": "Os artigos e conteúdos multimédia mantidos serão removidos deste dispositivo. As publicações guardadas e as pastas permanecem na sua biblioteca.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Remover todas as cópias offline?",
+  "@offline_clear_question": {},
+  "offline_empty": "Mantenha artigos ou conteúdos multimédia de publicações guardadas offline para os encontrar aqui.",
+  "@offline_empty": {},
+  "offline_failed": "Não foi possível manter tudo offline. Verifique a ligação e o espaço disponível e tente novamente.",
+  "@offline_failed": {},
+  "offline_keep": "Manter offline",
+  "@offline_keep": {},
+  "offline_library_title": "Coleção offline",
+  "@offline_library_title": {},
+  "offline_media_count": "Ficheiros multimédia mantidos: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Conteúdo multimédia {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Parcialmente disponível offline",
+  "@offline_partial": {},
+  "offline_remove": "Remover cópia offline",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Estes ficheiros podem conter conteúdo sensível. Serão armazenados neste dispositivo e permanecerão ocultos até decidir abri-los.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Abrir conteúdos multimédia sensíveis",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Manter conteúdos multimédia sensíveis offline?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Não foi possível ler ou atualizar o armazenamento offline. Verifique o espaço disponível e tente novamente.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "O armazenamento offline está limitado a {limit}. Os ficheiros grandes ou as transmissões não suportadas podem continuar indisponíveis.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} de {limit} utilizados",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Cópia offline indisponível",
+  "@offline_unavailable": {},
+  "offline_video_only": "As cópias de vídeos do Reddit podem não incluir som.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Mostrar apenas tweets com multimédia",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Comprimento do feed no modo zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantas páginas o feed carrega no modo zen antes de fazer uma pausa.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Aspeto da leitura",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Espaçamento entre linhas",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Marcar como concluído",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Concluído",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "Voltar ao início",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Aberto",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Retomado",
-  "@article_reader_resumed": {},
-  "downloads_title": "Transferências",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Limpar o histórico de transferências concluídas",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Não foi possível guardar o histórico de transferências. Verifique o espaço disponível e tente novamente.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "As suas transferências aparecerão aqui. Guarde conteúdos multimédia de uma publicação para começar.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Verifique a ligação e a pasta de transferências e tente novamente.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Abrir ficheiro",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Não foi possível abrir este ficheiro. Pode ter sido movido ou eliminado.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "Em espera",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Escolher onde guardar",
-  "@downloads_choose_location": {},
-  "downloads_saving": "A guardar ficheiro…",
-  "@downloads_saving": {},
-  "downloads_completed": "Guardado",
-  "@downloads_completed": {},
-  "downloads_failed": "Falha na transferência",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Cancelado",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Interrompido · Tente novamente para continuar",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Ficheiros guardados: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Fator de escala do texto",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Coleção offline",
-  "@offline_library_title": {},
-  "offline_keep": "Manter offline",
-  "@offline_keep": {},
-  "offline_remove": "Remover cópia offline",
-  "@offline_remove": {},
-  "offline_available": "Disponível offline",
-  "@offline_available": {},
-  "offline_partial": "Parcialmente disponível offline",
-  "@offline_partial": {},
-  "offline_unavailable": "Cópia offline indisponível",
-  "@offline_unavailable": {},
-  "offline_failed": "Não foi possível manter tudo offline. Verifique a ligação e o espaço disponível e tente novamente.",
-  "@offline_failed": {},
-  "offline_storage_error": "Não foi possível ler ou atualizar o armazenamento offline. Verifique o espaço disponível e tente novamente.",
-  "@offline_storage_error": {},
-  "offline_empty": "Mantenha artigos ou conteúdos multimédia de publicações guardadas offline para os encontrar aqui.",
-  "@offline_empty": {},
-  "offline_storage_used": "{used} de {limit} utilizados",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Ficheiros multimédia mantidos: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Texto do artigo mantido · Imagens: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Esvaziar coleção offline",
-  "@offline_clear": {},
-  "offline_clear_question": "Remover todas as cópias offline?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "Os artigos e conteúdos multimédia mantidos serão removidos deste dispositivo. As publicações guardadas e as pastas permanecem na sua biblioteca.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Manter conteúdos multimédia sensíveis offline?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Estes ficheiros podem conter conteúdo sensível. Serão armazenados neste dispositivo e permanecerão ocultos até decidir abri-los.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Abrir conteúdos multimédia sensíveis",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Conteúdo multimédia {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "As cópias de vídeos do Reddit podem não incluir som.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "O armazenamento offline está limitado a {limit}. Os ficheiros grandes ou as transmissões não suportadas podem continuar indisponíveis.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "O texto do artigo é mantido. O áudio e o vídeo incorporados continuam a necessitar de uma ligação.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

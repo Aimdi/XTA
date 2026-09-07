@@ -6,14 +6,15 @@ import 'package:xta/offline/offline_models.dart';
 
 /// Accept only raster bytes when embedding images into a sanitized document.
 String? offlineImageMime(List<int> bytes) {
-  bool prefix(List<int> expected, [int start = 0]) => bytes.length >= start + expected.length &&
-    List.generate(expected.length, (i) => bytes[start + i] == expected[i]).every((v) => v);
+  bool prefix(List<int> expected, [int start = 0]) =>
+      bytes.length >= start + expected.length &&
+      List.generate(expected.length, (i) => bytes[start + i] == expected[i]).every((v) => v);
   if (prefix([137, 80, 78, 71, 13, 10, 26, 10])) return 'image/png';
   if (prefix([255, 216, 255])) return 'image/jpeg';
   if (prefix([71, 73, 70, 56, 55, 97]) || prefix([71, 73, 70, 56, 57, 97])) return 'image/gif';
   if (prefix([82, 73, 70, 70]) && prefix([87, 69, 66, 80], 8)) return 'image/webp';
-  if (prefix([102, 116, 121, 112], 4) &&
-      (prefix([97, 118, 105, 102], 8) || prefix([97, 118, 105, 115], 8))) return 'image/avif';
+  if (prefix([102, 116, 121, 112], 4) && (prefix([97, 118, 105, 102], 8) || prefix([97, 118, 105, 115], 8)))
+    return 'image/avif';
   return null;
 }
 
@@ -24,9 +25,13 @@ String? _mediaMime(List<int> bytes, bool video) {
   return null;
 }
 
-Future<OfflineFile> retainOfflineMedia({required http.Client client,
-  required OfflineMediaSource source, required File target, required int limit,
-  required bool Function() cancelled}) async {
+Future<OfflineFile> retainOfflineMedia({
+  required http.Client client,
+  required OfflineMediaSource source,
+  required File target,
+  required int limit,
+  required bool Function() cancelled,
+}) async {
   final uri = Uri.tryParse(source.url);
   if (uri == null || !['http', 'https'].contains(uri.scheme) || uri.host.isEmpty || limit <= 0) {
     throw const FormatException('Unsupported offline media');

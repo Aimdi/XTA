@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Стаття в X",
   "@article_on_x": {},
+  "article_reader_appearance": "Вигляд для читання",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Позначити як прочитане",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Прочитано",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Міжрядковий інтервал",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Відкрито",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Продовжено",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "До початку",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Коефіцієнт масштабування тексту",
+  "@article_reader_text_size": {},
   "auto_download_images": "Автозавантаження зображень",
   "@auto_download_images": {},
   "auto_download_images_description": "Зберігати зображення кожного допису, доданого до цієї теки, у теку завантажень.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Завантаження медіа...",
   "@downloading_media": {},
+  "downloads_batch_result": "Збережені файли: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Скасовано",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Вибрати місце збереження",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Очистити історію завершених завантажень",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Збережено",
+  "@downloads_completed": {},
+  "downloads_empty": "Тут з’являться ваші завантаження. Для початку збережіть медіа з допису.",
+  "@downloads_empty": {},
+  "downloads_failed": "Не вдалося завантажити",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Не вдалося зберегти історію завантажень. Перевірте вільне місце й повторіть спробу.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Перервано · Повторіть спробу, щоб продовжити",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Не вдалося відкрити цей файл. Можливо, його переміщено або видалено.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Відкрити файл",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Очікування",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Перевірте з’єднання та папку завантажень, а потім повторіть спробу.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Збереження файлу…",
+  "@downloads_saving": {},
+  "downloads_title": "Завантаження",
+  "@downloads_title": {},
   "edit_folder": "Редагувати теку",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Закінчилося {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Немає голосів} one{Один голос} few{{numFormatted} голоси} many{{numFormatted} голосів} other{{numFormatted} голосів}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Текст статті збережено · Зображення: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Текст статті збережено. Для вбудованого аудіо та відео досі потрібне з’єднання.",
+  "@offline_article_text_only": {},
+  "offline_available": "Доступно офлайн",
+  "@offline_available": {},
+  "offline_clear": "Очистити офлайн-колекцію",
+  "@offline_clear": {},
+  "offline_clear_description": "З цього пристрою буде видалено статті й медіа, збережені для офлайн-доступу. Збережені дописи та папки залишаться у вашій бібліотеці.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Видалити всі офлайн-копії?",
+  "@offline_clear_question": {},
+  "offline_empty": "Зберігайте статті або медіа зі збережених дописів офлайн, щоб знаходити їх тут.",
+  "@offline_empty": {},
+  "offline_failed": "Не вдалося зберегти все офлайн. Перевірте з’єднання та вільне місце, а потім повторіть спробу.",
+  "@offline_failed": {},
+  "offline_keep": "Зберегти офлайн",
+  "@offline_keep": {},
+  "offline_library_title": "Офлайн-колекція",
+  "@offline_library_title": {},
+  "offline_media_count": "Збережені медіафайли: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Медіафайл {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Частково доступно офлайн",
+  "@offline_partial": {},
+  "offline_remove": "Видалити офлайн-копію",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Ці файли можуть містити чутливий вміст. Вони зберігатимуться на цьому пристрої та залишатимуться прихованими, доки ви не відкриєте їх.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Відкрити чутливі медіа",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Зберегти чутливі медіа офлайн?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Не вдалося прочитати або оновити офлайн-сховище. Перевірте вільне місце й повторіть спробу.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Обсяг офлайн-сховища обмежено до {limit}. Великі файли або непідтримувані потоки можуть залишитися недоступними.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "Використано {used} із {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Офлайн-копія недоступна",
+  "@offline_unavailable": {},
+  "offline_video_only": "Копії відео з Reddit можуть не містити звуку.",
+  "@offline_video_only": {},
   "ok": "Добре",
   "@ok": {},
   "only_show_posts_with_media": "Показувати лише твіти з медіа",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Довжина стрічки в дзен-режимі",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Скільки сторінок завантажує стрічка в дзен-режимі перед паузою.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Вигляд для читання",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Міжрядковий інтервал",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Позначити як прочитане",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Прочитано",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "До початку",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Відкрито",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Продовжено",
-  "@article_reader_resumed": {},
-  "downloads_title": "Завантаження",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Очистити історію завершених завантажень",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Не вдалося зберегти історію завантажень. Перевірте вільне місце й повторіть спробу.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "Тут з’являться ваші завантаження. Для початку збережіть медіа з допису.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Перевірте з’єднання та папку завантажень, а потім повторіть спробу.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Відкрити файл",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Не вдалося відкрити цей файл. Можливо, його переміщено або видалено.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "Очікування",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Вибрати місце збереження",
-  "@downloads_choose_location": {},
-  "downloads_saving": "Збереження файлу…",
-  "@downloads_saving": {},
-  "downloads_completed": "Збережено",
-  "@downloads_completed": {},
-  "downloads_failed": "Не вдалося завантажити",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Скасовано",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Перервано · Повторіть спробу, щоб продовжити",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Збережені файли: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Коефіцієнт масштабування тексту",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Офлайн-колекція",
-  "@offline_library_title": {},
-  "offline_keep": "Зберегти офлайн",
-  "@offline_keep": {},
-  "offline_remove": "Видалити офлайн-копію",
-  "@offline_remove": {},
-  "offline_available": "Доступно офлайн",
-  "@offline_available": {},
-  "offline_partial": "Частково доступно офлайн",
-  "@offline_partial": {},
-  "offline_unavailable": "Офлайн-копія недоступна",
-  "@offline_unavailable": {},
-  "offline_failed": "Не вдалося зберегти все офлайн. Перевірте з’єднання та вільне місце, а потім повторіть спробу.",
-  "@offline_failed": {},
-  "offline_storage_error": "Не вдалося прочитати або оновити офлайн-сховище. Перевірте вільне місце й повторіть спробу.",
-  "@offline_storage_error": {},
-  "offline_empty": "Зберігайте статті або медіа зі збережених дописів офлайн, щоб знаходити їх тут.",
-  "@offline_empty": {},
-  "offline_storage_used": "Використано {used} із {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Збережені медіафайли: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Текст статті збережено · Зображення: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Очистити офлайн-колекцію",
-  "@offline_clear": {},
-  "offline_clear_question": "Видалити всі офлайн-копії?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "З цього пристрою буде видалено статті й медіа, збережені для офлайн-доступу. Збережені дописи та папки залишаться у вашій бібліотеці.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Зберегти чутливі медіа офлайн?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Ці файли можуть містити чутливий вміст. Вони зберігатимуться на цьому пристрої та залишатимуться прихованими, доки ви не відкриєте їх.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Відкрити чутливі медіа",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Медіафайл {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Копії відео з Reddit можуть не містити звуку.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "Обсяг офлайн-сховища обмежено до {limit}. Великі файли або непідтримувані потоки можуть залишитися недоступними.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "Текст статті збережено. Для вбудованого аудіо та відео досі потрібне з’єднання.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

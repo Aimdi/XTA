@@ -17,15 +17,21 @@ String offlineStatus(L10n l10n, OfflineEntry entry) => switch (entry.availabilit
 };
 
 String offlineDetails(L10n l10n, OfflineEntry entry) => entry.hasArticle
-  ? l10n.offline_article_detail(entry.files.length, entry.totalMedia)
-  : l10n.offline_media_count(entry.files.length, entry.totalMedia);
+    ? l10n.offline_article_detail(entry.files.length, entry.totalMedia)
+    : l10n.offline_media_count(entry.files.length, entry.totalMedia);
 
 Future<bool> confirmOfflineSensitive(BuildContext context) async {
   final l10n = L10n.of(context);
-  return await showDialog<bool>(context: context, builder: (context) => AlertDialog(
-    title: Text(l10n.offline_sensitive_question),
-    content: Text(l10n.offline_sensitive_description),
-    actions: [TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
-      FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.offline_keep))],
-  )) ?? false;
+  return await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(l10n.offline_sensitive_question),
+          content: Text(l10n.offline_sensitive_description),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
+            FilledButton(onPressed: () => Navigator.pop(context, true), child: Text(l10n.offline_keep)),
+          ],
+        ),
+      ) ??
+      false;
 }

@@ -21,11 +21,26 @@ class OfflineSavedAction extends StatelessWidget {
     final sensitive = offlineSavedSensitive(content);
     if (sensitive && !await confirmOfflineSensitive(context)) return;
     if (!context.mounted) return;
-    await model.keepMedia(id: _key, title: offlineSavedTitle(content), source: offlineSavedSource(content),
-      url: offlineSavedUrl(content), media: offlineMediaOf(content), sensitive: sensitive);
+    await model.keepMedia(
+      id: _key,
+      title: offlineSavedTitle(content),
+      source: offlineSavedSource(content),
+      url: offlineSavedUrl(content),
+      media: offlineMediaOf(content),
+      sensitive: sensitive,
+    );
     final entry = model.state.entry(_key);
-    messenger.showSnackBar(SnackBar(content: Text(model.state.failed.contains(_key)
-      ? l10n.offline_failed : entry == null ? l10n.offline_unavailable : offlineDetails(l10n, entry))));
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          model.state.failed.contains(_key)
+              ? l10n.offline_failed
+              : entry == null
+              ? l10n.offline_unavailable
+              : offlineDetails(l10n, entry),
+        ),
+      ),
+    );
   }
 
   @override
@@ -33,20 +48,34 @@ class OfflineSavedAction extends StatelessWidget {
     if (!hasOfflineMedia(content)) return const SizedBox.shrink();
     final model = store ?? OfflineStore.shared;
     model.load();
-    return ScopedBuilder<OfflineStore, OfflineState>(store: model, onState: (context, state) {
-      final l10n = L10n.of(context);
-      final entry = state.entry(_key);
-      final busy = state.busy.contains(_key);
-      return ListTile(
-        leading: busy ? const SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2))
-          : Icon(entry?.canOpen == true ? Icons.offline_pin : Icons.offline_pin_outlined),
-        title: Text(entry == null ? l10n.offline_keep : offlineStatus(l10n, entry)),
-        subtitle: Text(content.reddit?.videoFallbackUrl != null ? l10n.offline_video_only :
-          entry != null ? offlineDetails(l10n, entry) : l10n.offline_media_count(0, offlineMediaOf(content).length)),
-        onTap: busy ? null : () => _keep(context, model),
-        trailing: entry == null ? null : IconButton(icon: const Icon(Icons.delete_outline),
-          tooltip: l10n.offline_remove, onPressed: () => model.remove(_key)),
-      );
-    });
+    return ScopedBuilder<OfflineStore, OfflineState>(
+      store: model,
+      onState: (context, state) {
+        final l10n = L10n.of(context);
+        final entry = state.entry(_key);
+        final busy = state.busy.contains(_key);
+        return ListTile(
+          leading: busy
+              ? const SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2))
+              : Icon(entry?.canOpen == true ? Icons.offline_pin : Icons.offline_pin_outlined),
+          title: Text(entry == null ? l10n.offline_keep : offlineStatus(l10n, entry)),
+          subtitle: Text(
+            content.reddit?.videoFallbackUrl != null
+                ? l10n.offline_video_only
+                : entry != null
+                ? offlineDetails(l10n, entry)
+                : l10n.offline_media_count(0, offlineMediaOf(content).length),
+          ),
+          onTap: busy ? null : () => _keep(context, model),
+          trailing: entry == null
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: l10n.offline_remove,
+                  onPressed: () => model.remove(_key),
+                ),
+        );
+      },
+    );
   }
 }

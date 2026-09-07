@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/media/continuity_player.dart';
+import 'package:xta/media/playback_command_gate.dart';
 import 'package:xta/media/playback_restore.dart';
 
 enum VideoSwitchResult { restored, restarted, cancelled, failed }
@@ -19,7 +20,10 @@ class VideoSourceStore extends Store<VideoSourceState> {
   final bool Function() isDisposed;
   final Duration readyTimeout;
   final Duration seekTimeout;
+  final Duration commandTimeout;
+  late final _commands = PlaybackCommandGate(onAbandonedSettled: player.pause);
   Future<void> _operations = Future.value();
+  Future<void>? _release;
   Completer<void>? _cancel;
   PlaybackFrame? _origin;
   String? _originUrl;
@@ -27,10 +31,13 @@ class VideoSourceStore extends Store<VideoSourceState> {
   int _generation = 0;
   bool _closed = false;
 
-  VideoSourceStore(this.player, String url, {
+  VideoSourceStore(
+    this.player,
+    String url, {
     required this.isDisposed,
     this.readyTimeout = const Duration(seconds: 5),
     this.seekTimeout = const Duration(seconds: 2),
+    this.commandTimeout = const Duration(seconds: 8),
   }) : super(VideoSourceState(url));
 
   Future<VideoSwitchResult> change(String url) {
@@ -52,27 +59,38 @@ class VideoSourceStore extends Store<VideoSourceState> {
 
   bool _current(int generation) => !_closed && !isDisposed() && generation == _generation;
 
+  bool get nativeCommandPending => _commands.busy;
+  Future<void> get whenNativeIdle => _release ?? _commands.whenIdle;
+
+  Future<void> _command(int generation, Completer<void> cancel, Future<void> Function() action) {
+    if (!_current(generation)) return Future.error(const PlaybackCommandCancelled());
+    return _commands.run(action, cancelled: cancel.future, timeout: commandTimeout);
+  }
+
   Future<VideoSwitchResult> _change(String url, int generation, Completer<void> cancel) async {
     if (!_current(generation)) return VideoSwitchResult.cancelled;
     final origin = _origin!;
     try {
-      await player.open(url, start: origin.completed ? Duration.zero : origin.position);
+      await _command(generation, cancel, () => player.open(url, start: origin.completed ? Duration.zero : origin.position));
       if (!_current(generation)) return VideoSwitchResult.cancelled;
       final restored = await _restore(origin, generation, cancel);
       if (!_current(generation)) return VideoSwitchResult.cancelled;
-      if (!restored) await player.open(url);
+      if (!restored) await _command(generation, cancel, () => player.open(url));
       if (!_current(generation)) return VideoSwitchResult.cancelled;
-      await _settings(origin, generation);
+      await _settings(origin, generation, cancel);
       if (!_current(generation)) return VideoSwitchResult.cancelled;
       return restored ? VideoSwitchResult.restored : VideoSwitchResult.restarted;
     } catch (_) {
       if (!_current(generation)) return VideoSwitchResult.cancelled;
+      if (_commands.busy) {
+        update(VideoSourceState(state.url, failed: true));
+      } else {
       await _recover(origin, generation, cancel);
+      }
       return VideoSwitchResult.failed;
     } finally {
       if (_current(generation)) {
-        _origin = null;
-        _originUrl = null;
+        if (!state.failed) { _origin = null; _originUrl = null; }
         update(VideoSourceState(state.url, failed: state.failed));
       }
     }
@@ -81,11 +99,11 @@ class VideoSourceStore extends Store<VideoSourceState> {
   Future<void> _recover(PlaybackFrame origin, int generation, Completer<void> cancel) async {
     final previous = _originUrl!;
     try {
-      await player.open(previous, start: origin.completed ? Duration.zero : origin.position);
+      await _command(generation, cancel, () => player.open(previous, start: origin.completed ? Duration.zero : origin.position));
       if (!_current(generation)) return;
       await _restore(origin, generation, cancel);
       if (!_current(generation)) return;
-      await _settings(origin, generation);
+      await _settings(origin, generation, cancel);
       if (_current(generation)) update(VideoSourceState(previous));
     } catch (_) {
       if (_current(generation)) update(VideoSourceState(state.url, failed: true));
@@ -95,28 +113,34 @@ class VideoSourceStore extends Store<VideoSourceState> {
   Future<bool> _restore(PlaybackFrame origin, int generation, Completer<void> cancel) async {
     try {
       return await restorePlaybackPosition(
-        player, origin.completed ? Duration.zero : origin.position,
-        cancelled: cancel.future, isCurrent: () => _current(generation),
-        readyTimeout: readyTimeout, seekTimeout: seekTimeout,
+        player,
+        origin.completed ? Duration.zero : origin.position,
+        cancelled: cancel.future,
+        isCurrent: () => _current(generation),
+        commands: _commands,
+        readyTimeout: readyTimeout,
+        seekTimeout: seekTimeout,
       );
     } catch (_) {
       return false;
     }
   }
 
-  Future<void> _settings(PlaybackFrame origin, int generation) async {
+  Future<void> _settings(PlaybackFrame origin, int generation, Completer<void> cancel) async {
     // media_kit preserves these across open. Read them again so a mute or speed
     // adjustment made during loading is not replaced by the older snapshot.
     final volume = player.frame.volume;
     if (volume.isFinite && volume >= 0 && volume <= 100) {
-      await player.setVolume(volume);
+      await _command(generation, cancel, () => player.setVolume(volume));
     }
     if (!_current(generation)) return;
     final rate = player.frame.rate;
     if (rate.isFinite && rate >= 0.25 && rate <= 4) {
-      await player.setRate(rate);
+      await _command(generation, cancel, () => player.setRate(rate));
     }
-    if (_current(generation) && _resumeAllowed && origin.playing && !origin.completed) await player.play();
+    if (_current(generation) && _resumeAllowed && origin.playing && !origin.completed) {
+      await _command(generation, cancel, player.play);
+    }
   }
 
   /// Hidden videos and another active player must keep this source paused.
@@ -134,7 +158,12 @@ class VideoSourceStore extends Store<VideoSourceState> {
   Future<void> destroy() async {
     cancel();
     await _operations;
-    await player.dispose();
+    _release = _commands.whenIdle.then((_) => player.dispose());
+    if (_commands.busy) {
+      unawaited(_release!.catchError((Object _) {}));
+    } else {
+      await _release;
+    }
     return super.destroy();
   }
 }

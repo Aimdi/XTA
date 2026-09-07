@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "X पर लेख",
   "@article_on_x": {},
+  "article_reader_appearance": "पढ़ने का स्वरूप",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "पढ़ना पूरा हुआ चिह्नित करें",
+  "@article_reader_finish": {},
+  "article_reader_finished": "पढ़ना पूरा हुआ",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "पंक्तियों के बीच दूरी",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "खोला गया",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "पढ़ना फिर शुरू किया",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "शुरुआत पर लौटें",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "टेक्स्ट स्केल फ़ैक्टर",
+  "@article_reader_text_size": {},
   "auto_download_images": "छवियाँ स्वतः डाउनलोड करें",
   "@auto_download_images": {},
   "auto_download_images_description": "इस फ़ोल्डर में सहेजी गई किसी भी पोस्ट की छवियाँ आपके डाउनलोड फ़ोल्डर में सहेजें।",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "मीडिया डाउनलोड हो रहा है...",
   "@downloading_media": {},
+  "downloads_batch_result": "सहेजी गई फ़ाइलें: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "रद्द किया गया",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "सहेजने की जगह चुनें",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "पूरे हुए डाउनलोड का इतिहास मिटाएँ",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "सहेजा गया",
+  "@downloads_completed": {},
+  "downloads_empty": "आपके डाउनलोड यहाँ दिखेंगे। शुरू करने के लिए किसी पोस्ट से मीडिया सहेजें।",
+  "@downloads_empty": {},
+  "downloads_failed": "डाउनलोड विफल हुआ",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "डाउनलोड का इतिहास सहेजा नहीं जा सका। खाली स्टोरेज देखें और फिर कोशिश करें।",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "बीच में रुका · जारी रखने के लिए फिर कोशिश करें",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "यह फ़ाइल खोली नहीं जा सकी। हो सकता है कि इसे कहीं और ले जाया गया हो या मिटा दिया गया हो।",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "फ़ाइल खोलें",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "इंतज़ार में",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "अपना कनेक्शन और डाउनलोड फ़ोल्डर जाँचें, फिर कोशिश करें।",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "फ़ाइल सहेजी जा रही है…",
+  "@downloads_saving": {},
+  "downloads_title": "डाउनलोड",
+  "@downloads_title": {},
   "edit_folder": "फ़ोल्डर संपादित करें",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "{timeagoFormat} समाप्त हुआ",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{कोई वोट नहीं} one{एक वोट} other{{numFormatted} वोट}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "लेख का टेक्स्ट रखा गया · तस्वीरें: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "लेख का टेक्स्ट रखा जाता है। इसमें जोड़े गए ऑडियो और वीडियो के लिए अब भी कनेक्शन चाहिए।",
+  "@offline_article_text_only": {},
+  "offline_available": "ऑफ़लाइन उपलब्ध",
+  "@offline_available": {},
+  "offline_clear": "ऑफ़लाइन संग्रह खाली करें",
+  "@offline_clear": {},
+  "offline_clear_description": "इससे इस डिवाइस पर रखे गए लेख और मीडिया हट जाएँगे। सहेजी गई पोस्ट और फ़ोल्डर आपकी लाइब्रेरी में बने रहेंगे।",
+  "@offline_clear_description": {},
+  "offline_clear_question": "सभी ऑफ़लाइन कॉपी हटाएँ?",
+  "@offline_clear_question": {},
+  "offline_empty": "लेख या सहेजी गई पोस्ट का मीडिया ऑफ़लाइन रखें ताकि वे यहाँ मिलें।",
+  "@offline_empty": {},
+  "offline_failed": "सब कुछ ऑफ़लाइन नहीं रखा जा सका। अपना कनेक्शन और खाली स्टोरेज जाँचें, फिर कोशिश करें।",
+  "@offline_failed": {},
+  "offline_keep": "ऑफ़लाइन रखें",
+  "@offline_keep": {},
+  "offline_library_title": "ऑफ़लाइन संग्रह",
+  "@offline_library_title": {},
+  "offline_media_count": "रखी गई मीडिया फ़ाइलें: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "मीडिया {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "कुछ हिस्सा ऑफ़लाइन उपलब्ध",
+  "@offline_partial": {},
+  "offline_remove": "ऑफ़लाइन कॉपी हटाएँ",
+  "@offline_remove": {},
+  "offline_sensitive_description": "इन फ़ाइलों में संवेदनशील सामग्री हो सकती है। ये इस डिवाइस पर रखी जाएँगी और आपके खोलने तक छिपी रहेंगी।",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "संवेदनशील मीडिया खोलें",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "संवेदनशील मीडिया ऑफ़लाइन रखें?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "ऑफ़लाइन स्टोरेज पढ़ा या अपडेट नहीं किया जा सका। खाली स्टोरेज जाँचें और फिर कोशिश करें।",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "ऑफ़लाइन स्टोरेज की सीमा {limit} है। बड़ी फ़ाइलें या ऐसे स्ट्रीम जिनका समर्थन नहीं है, उपलब्ध नहीं हो सकते हैं।",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{limit} में से {used} इस्तेमाल हुआ",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "ऑफ़लाइन कॉपी उपलब्ध नहीं",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit वीडियो की कॉपी में आवाज़ नहीं भी हो सकती है।",
+  "@offline_video_only": {},
   "ok": "ठीक है",
   "@ok": {},
   "only_show_posts_with_media": "केवल मीडिया वाली पोस्ट दिखाएँ",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "पढ़ने का स्वरूप",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "पंक्तियों के बीच दूरी",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "पढ़ना पूरा हुआ चिह्नित करें",
-  "@article_reader_finish": {},
-  "article_reader_finished": "पढ़ना पूरा हुआ",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "शुरुआत पर लौटें",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "खोला गया",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "पढ़ना फिर शुरू किया",
-  "@article_reader_resumed": {},
-  "downloads_title": "डाउनलोड",
-  "@downloads_title": {},
-  "downloads_clear_finished": "पूरे हुए डाउनलोड का इतिहास मिटाएँ",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "डाउनलोड का इतिहास सहेजा नहीं जा सका। खाली स्टोरेज देखें और फिर कोशिश करें।",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "आपके डाउनलोड यहाँ दिखेंगे। शुरू करने के लिए किसी पोस्ट से मीडिया सहेजें।",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "अपना कनेक्शन और डाउनलोड फ़ोल्डर जाँचें, फिर कोशिश करें।",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "फ़ाइल खोलें",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "यह फ़ाइल खोली नहीं जा सकी। हो सकता है कि इसे कहीं और ले जाया गया हो या मिटा दिया गया हो।",
-  "@downloads_open_failed": {},
-  "downloads_queued": "इंतज़ार में",
-  "@downloads_queued": {},
-  "downloads_choose_location": "सहेजने की जगह चुनें",
-  "@downloads_choose_location": {},
-  "downloads_saving": "फ़ाइल सहेजी जा रही है…",
-  "@downloads_saving": {},
-  "downloads_completed": "सहेजा गया",
-  "@downloads_completed": {},
-  "downloads_failed": "डाउनलोड विफल हुआ",
-  "@downloads_failed": {},
-  "downloads_cancelled": "रद्द किया गया",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "बीच में रुका · जारी रखने के लिए फिर कोशिश करें",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "सहेजी गई फ़ाइलें: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "टेक्स्ट स्केल फ़ैक्टर",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "ऑफ़लाइन संग्रह",
-  "@offline_library_title": {},
-  "offline_keep": "ऑफ़लाइन रखें",
-  "@offline_keep": {},
-  "offline_remove": "ऑफ़लाइन कॉपी हटाएँ",
-  "@offline_remove": {},
-  "offline_available": "ऑफ़लाइन उपलब्ध",
-  "@offline_available": {},
-  "offline_partial": "कुछ हिस्सा ऑफ़लाइन उपलब्ध",
-  "@offline_partial": {},
-  "offline_unavailable": "ऑफ़लाइन कॉपी उपलब्ध नहीं",
-  "@offline_unavailable": {},
-  "offline_failed": "सब कुछ ऑफ़लाइन नहीं रखा जा सका। अपना कनेक्शन और खाली स्टोरेज जाँचें, फिर कोशिश करें।",
-  "@offline_failed": {},
-  "offline_storage_error": "ऑफ़लाइन स्टोरेज पढ़ा या अपडेट नहीं किया जा सका। खाली स्टोरेज जाँचें और फिर कोशिश करें।",
-  "@offline_storage_error": {},
-  "offline_empty": "लेख या सहेजी गई पोस्ट का मीडिया ऑफ़लाइन रखें ताकि वे यहाँ मिलें।",
-  "@offline_empty": {},
-  "offline_storage_used": "{limit} में से {used} इस्तेमाल हुआ",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "रखी गई मीडिया फ़ाइलें: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "लेख का टेक्स्ट रखा गया · तस्वीरें: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "ऑफ़लाइन संग्रह खाली करें",
-  "@offline_clear": {},
-  "offline_clear_question": "सभी ऑफ़लाइन कॉपी हटाएँ?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "इससे इस डिवाइस पर रखे गए लेख और मीडिया हट जाएँगे। सहेजी गई पोस्ट और फ़ोल्डर आपकी लाइब्रेरी में बने रहेंगे।",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "संवेदनशील मीडिया ऑफ़लाइन रखें?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "इन फ़ाइलों में संवेदनशील सामग्री हो सकती है। ये इस डिवाइस पर रखी जाएँगी और आपके खोलने तक छिपी रहेंगी।",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "संवेदनशील मीडिया खोलें",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "मीडिया {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Reddit वीडियो की कॉपी में आवाज़ नहीं भी हो सकती है।",
-  "@offline_video_only": {},
-  "offline_storage_limit": "ऑफ़लाइन स्टोरेज की सीमा {limit} है। बड़ी फ़ाइलें या ऐसे स्ट्रीम जिनका समर्थन नहीं है, उपलब्ध नहीं हो सकते हैं।",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "लेख का टेक्स्ट रखा जाता है। इसमें जोड़े गए ऑडियो और वीडियो के लिए अब भी कनेक्शन चाहिए।",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

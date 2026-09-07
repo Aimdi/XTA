@@ -13,13 +13,23 @@ const _medium = 'https://video.example/720.mp4';
 const _position = Duration(seconds: 42);
 
 FakeContinuityPlayer _player({bool playing = true}) => FakeContinuityPlayer(
-  frame: PlaybackFrame(position: _position, duration: const Duration(minutes: 2),
-    playing: playing, volume: 27, rate: 1.5),
+  frame: PlaybackFrame(
+    position: _position,
+    duration: const Duration(minutes: 2),
+    playing: playing,
+    volume: 27,
+    rate: 1.5,
+  ),
 )..mediaDuration = const Duration(minutes: 2);
 
-VideoSourceStore _store(FakeContinuityPlayer player, {bool Function()? disposed}) =>
-  VideoSourceStore(player, _old, isDisposed: disposed ?? () => false,
-    readyTimeout: const Duration(milliseconds: 20), seekTimeout: const Duration(milliseconds: 20));
+VideoSourceStore _store(FakeContinuityPlayer player, {bool Function()? disposed}) => VideoSourceStore(
+  player,
+  _old,
+  isDisposed: disposed ?? () => false,
+  readyTimeout: const Duration(milliseconds: 20),
+  seekTimeout: const Duration(milliseconds: 20),
+  commandTimeout: const Duration(milliseconds: 20),
+);
 
 void main() {
   test('quality switch preserves position, volume, rate and active play intent', () async {
@@ -46,7 +56,9 @@ void main() {
   });
 
   test('if native start is ignored seek waits until new duration arrives', () async {
-    final player = _player()..honorStart = false..publishDuration = false;
+    final player = _player()
+      ..honorStart = false
+      ..publishDuration = false;
     final store = _store(player);
     final changing = store.change(_high);
     await Future<void>.delayed(Duration.zero);
@@ -60,7 +72,9 @@ void main() {
   });
 
   test('unacknowledged seek falls back once to a playable start', () async {
-    final player = _player()..honorStart = false..honorSeek = false;
+    final player = _player()
+      ..honorStart = false
+      ..honorSeek = false;
     final store = _store(player);
     expect(await store.change(_high), VideoSwitchResult.restarted);
     expect(player.opens.map((item) => item.start), [_position, Duration.zero]);
@@ -71,7 +85,9 @@ void main() {
   });
 
   test('missing duration times out without seeking an unready decoder', () async {
-    final player = _player()..publishDuration = false..honorStart = false;
+    final player = _player()
+      ..publishDuration = false
+      ..honorStart = false;
     final store = _store(player);
     expect(await store.change(_high), VideoSwitchResult.restarted);
     expect(player.commands.where((command) => command.startsWith('seek:')), isEmpty);
@@ -82,7 +98,9 @@ void main() {
   test('rapid quality choices serialize native opens and latest choice wins', () async {
     final player = _player();
     final gate = Completer<void>();
-    player.beforeOpen = (url) async { if (url == _high) await gate.future; };
+    player.beforeOpen = (url) async {
+      if (url == _high) await gate.future;
+    };
     final store = _store(player);
     final first = store.change(_high);
     await Future<void>.delayed(Duration.zero);
@@ -100,8 +118,7 @@ void main() {
 
   test('new choice cancels a duration wait rather than waiting for timeout', () async {
     final player = _player()..publishDuration = false;
-    final store = VideoSourceStore(player, _old, isDisposed: () => false,
-      readyTimeout: const Duration(minutes: 1));
+    final store = VideoSourceStore(player, _old, isDisposed: () => false, readyTimeout: const Duration(minutes: 1));
     final first = store.change(_high);
     await Future<void>.delayed(Duration.zero);
     player.publishDuration = true;
@@ -153,9 +170,10 @@ void main() {
   });
 
   test('failed variant restores the original source and remains retryable', () async {
-    final player = _player()..beforeOpen = (url) async {
-      if (url == _high) throw StateError('variant unavailable');
-    };
+    final player = _player()
+      ..beforeOpen = (url) async {
+        if (url == _high) throw StateError('variant unavailable');
+      };
     final store = _store(player);
     expect(await store.change(_high), VideoSwitchResult.failed);
     expect(store.state.url, _old);
@@ -181,5 +199,76 @@ void main() {
     expect(playbackResumeTarget(_position, const Duration(seconds: 30)), const Duration(milliseconds: 29500));
     expect(playbackResumeTarget(const Duration(seconds: -5), _position), Duration.zero);
     expect(playbackResumeTarget(_position, Duration.zero), Duration.zero);
+  });
+
+  test('stalled native seek fails promptly without overlapping a fallback open', () async {
+    final gate = Completer<void>();
+    final player = _player()..honorStart = false..beforeSeek = (_) => gate.future;
+    final store = _store(player);
+    expect(await store.change(_high).timeout(const Duration(seconds: 1)), VideoSwitchResult.failed);
+    expect(store.nativeCommandPending, isTrue);
+    expect(player.opens.length, 1);
+    expect(player.commands, isNot(contains('play')));
+    expect(await store.change(_medium), VideoSwitchResult.failed);
+    expect(player.opens.length, 1);
+    gate.complete();
+    await store.whenNativeIdle;
+    expect(player.frame.playing, isFalse);
+    expect(await store.change(_medium), VideoSwitchResult.restored);
+    expect(player.opens.last.start, _position);
+    await store.destroy();
+  });
+
+  test('stalled native open fails promptly and disposal waits for its late completion', () async {
+    final gate = Completer<void>();
+    final player = _player()..beforeOpen = (_) => gate.future;
+    final store = _store(player);
+    expect(await store.change(_high).timeout(const Duration(seconds: 1)), VideoSwitchResult.failed);
+    expect(store.nativeCommandPending, isTrue);
+    await store.destroy().timeout(const Duration(seconds: 1));
+    expect(player.disposed, isFalse);
+    gate.complete();
+    await store.whenNativeIdle;
+    expect(player.disposed, isTrue);
+    expect(player.commands, ['open:$_high', 'pause', 'dispose']);
+  });
+
+  test('latest choice unblocks when an uncancellable open is still stalled', () async {
+    final gate = Completer<void>();
+    final player = _player()..beforeOpen = (_) => gate.future;
+    final store = VideoSourceStore(player, _old, isDisposed: () => false,
+      commandTimeout: const Duration(minutes: 1));
+    final first = store.change(_high);
+    await Future<void>.delayed(Duration.zero);
+    final latest = store.change(_medium);
+    expect(await first.timeout(const Duration(seconds: 1)), VideoSwitchResult.cancelled);
+    expect(await latest.timeout(const Duration(seconds: 1)), VideoSwitchResult.failed);
+    expect(player.opens.map((open) => open.url), [_high]);
+    expect(store.state.failed, isTrue);
+    gate.complete();
+    await store.whenNativeIdle;
+    expect(player.frame.playing, isFalse);
+    expect(player.commands, isNot(contains('play')));
+    player.beforeOpen = null;
+    expect(await store.change(_medium), VideoSwitchResult.restored);
+    expect(player.opens.last.url, _medium);
+    await store.destroy();
+  });
+
+  test('latest choice cannot receive the seek of an abandoned earlier source', () async {
+    final gate = Completer<void>();
+    final player = _player()..honorStart = false..beforeSeek = (_) => gate.future;
+    final store = VideoSourceStore(player, _old, isDisposed: () => false,
+      seekTimeout: const Duration(minutes: 1));
+    final first = store.change(_high);
+    await Future<void>.delayed(Duration.zero);
+    final latest = store.change(_medium);
+    expect(await first.timeout(const Duration(seconds: 1)), VideoSwitchResult.cancelled);
+    expect(await latest.timeout(const Duration(seconds: 1)), VideoSwitchResult.failed);
+    expect(player.opens.map((open) => open.url), [_high]);
+    gate.complete();
+    await store.whenNativeIdle;
+    expect(player.commands, ['open:$_high', 'seek:42000', 'pause']);
+    await store.destroy();
   });
 }

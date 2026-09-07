@@ -15,32 +15,52 @@ class DownloadCancelled implements Exception {
 class DownloadCancellation {
   bool cancelled = false;
   final List<void Function()> _listeners = [];
-  void check() { if (cancelled) throw const DownloadCancelled(); }
-  void onCancel(void Function() callback) {
-    if (cancelled) { callback(); } else { _listeners.add(callback); }
+  void check() {
+    if (cancelled) throw const DownloadCancelled();
   }
+
+  void onCancel(void Function() callback) {
+    if (cancelled) {
+      callback();
+    } else {
+      _listeners.add(callback);
+    }
+  }
+
   void cancel() {
     if (cancelled) return;
     cancelled = true;
-    for (final listener in _listeners) { listener(); }
+    for (final listener in _listeners) {
+      listener();
+    }
     _listeners.clear();
   }
 }
 
 typedef DownloadProgress = void Function(int received, int? total);
 typedef DownloadPhase = void Function(DownloadStatus status);
-typedef DownloadRunner = Future<String?> Function(DownloadEntry entry, DownloadCancellation cancellation,
-  DownloadProgress progress, DownloadPhase phase);
-typedef SaveStagedDownload = Future<String?> Function(DownloadEntry entry, File file, DownloadCancellation cancellation);
+typedef DownloadRunner =
+    Future<String?> Function(
+      DownloadEntry entry,
+      DownloadCancellation cancellation,
+      DownloadProgress progress,
+      DownloadPhase phase,
+    );
+typedef SaveStagedDownload =
+    Future<String?> Function(DownloadEntry entry, File file, DownloadCancellation cancellation);
 
 class DownloadTransfer {
   final http.Client Function() clientFactory;
   final Future<Directory> Function() temporaryDirectory;
   final SaveStagedDownload save;
 
-  DownloadTransfer({http.Client Function()? clientFactory, Future<Directory> Function()? temporaryDirectory,
-      SaveStagedDownload? save}) : clientFactory = clientFactory ?? http.Client.new,
-      temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory, save = save ?? _save;
+  DownloadTransfer({
+    http.Client Function()? clientFactory,
+    Future<Directory> Function()? temporaryDirectory,
+    SaveStagedDownload? save,
+  }) : clientFactory = clientFactory ?? http.Client.new,
+       temporaryDirectory = temporaryDirectory ?? getTemporaryDirectory,
+       save = save ?? _save;
 
   static Future<void> clearInterruptedFiles() async {
     final root = await getTemporaryDirectory();
@@ -48,8 +68,12 @@ class DownloadTransfer {
     if (await directory.exists()) await directory.delete(recursive: true);
   }
 
-  Future<String?> call(DownloadEntry entry, DownloadCancellation cancellation,
-      DownloadProgress progress, DownloadPhase phase) async {
+  Future<String?> call(
+    DownloadEntry entry,
+    DownloadCancellation cancellation,
+    DownloadProgress progress,
+    DownloadPhase phase,
+  ) async {
     final root = await temporaryDirectory();
     cancellation.check();
     final directory = await Directory(p.join(root.path, 'xta-download-staging')).create(recursive: true);
@@ -69,8 +93,13 @@ class DownloadTransfer {
     }
   }
 
-  Future<void> _receive(http.Client client, Uri uri, File file, DownloadCancellation cancellation,
-      DownloadProgress progress) async {
+  Future<void> _receive(
+    http.Client client,
+    Uri uri,
+    File file,
+    DownloadCancellation cancellation,
+    DownloadProgress progress,
+  ) async {
     final response = await client.send(http.Request('GET', uri)).timeout(const Duration(seconds: 45));
     cancellation.check();
     if (response.statusCode != 200) throw HttpException('HTTP ${response.statusCode}', uri: uri);
@@ -96,12 +125,23 @@ class DownloadTransfer {
   static Future<String?> _save(DownloadEntry entry, File file, DownloadCancellation cancellation) async {
     cancellation.check();
     if (entry.treeUri == null) {
-      return FlutterFileDialog.saveFile(params: SaveFileDialogParams(fileName: entry.fileName, sourceFilePath: file.path,
-        mimeTypesFilter: [mimeTypeFor(entry.fileName)]));
+      return FlutterFileDialog.saveFile(
+        params: SaveFileDialogParams(
+          fileName: entry.fileName,
+          sourceFilePath: file.path,
+          mimeTypesFilter: [mimeTypeFor(entry.fileName)],
+        ),
+      );
     }
-    cancellation.onCancel(() { unawaited(DownloadDirectory.cancelSave(entry.id).catchError((Object _) {})); });
-    final result = await DownloadDirectory.saveFile(treeUri: entry.treeUri!, fileName: entry.fileName,
-      sourcePath: file.path, operationId: entry.id);
+    cancellation.onCancel(() {
+      unawaited(DownloadDirectory.cancelSave(entry.id).catchError((Object _) {}));
+    });
+    final result = await DownloadDirectory.saveFile(
+      treeUri: entry.treeUri!,
+      fileName: entry.fileName,
+      sourcePath: file.path,
+      operationId: entry.id,
+    );
     if (cancellation.cancelled && result != null) {
       await DownloadDirectory.deleteDocument(result);
     }

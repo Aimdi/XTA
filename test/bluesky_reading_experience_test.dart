@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,14 +15,27 @@ import 'package:xta/plugins/bluesky/bluesky_thread_store.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
 import 'package:xta/utils/json.dart';
 import 'support/bluesky_reading_harness.dart';
-import 'support/reader_review_harness.dart' show reviewImageBytes, ReviewImageOverrides;
+import 'support/bluesky_reading_images.dart';
 
 Map<String, Object?> _view(String id, {String? parent}) => {
   'uri': 'at://did:plc:maya/app.bsky.feed.post/$id',
   'author': {'did': 'did:plc:maya', 'handle': 'maya.bsky.social'},
-  'record': {'text': id, if (parent != null) 'reply': {'parent': {'uri': parent}},
-    'labels': {'values': [{'val': 'nudity'}]}},
-  'labels': [{'val': 'sexual', 'neg': true}, {'val': 'graphic-media'}],
+  'record': {
+    'text': id,
+    if (parent != null)
+      'reply': {
+        'parent': {'uri': parent},
+      },
+    'labels': {
+      'values': [
+        {'val': 'nudity'},
+      ],
+    },
+  },
+  'labels': [
+    {'val': 'sexual', 'neg': true},
+    {'val': 'graphic-media'},
+  ],
 };
 
 void main() {
@@ -39,24 +51,43 @@ void main() {
   });
 
   test('thread topology supplies a parent when a record omits it', () {
-    final parsed = parseBlueskyThread({'thread': {'post': _view('root'), 'replies': [
-      {'post': _view('child'), 'replies': [{'post': _view('grandchild')}]},
-    ]}})!;
+    final parsed = parseBlueskyThread({
+      'thread': {
+        'post': _view('root'),
+        'replies': [
+          {
+            'post': _view('child'),
+            'replies': [
+              {'post': _view('grandchild')},
+            ],
+          },
+        ],
+      },
+    })!;
     expect(parsed.replies.first.replyToUri, parsed.post.uri);
     expect(parsed.replies.last.replyToUri, parsed.replies.first.uri);
   });
 
   test('branch collapse retains siblings, orphans and cyclic posts exactly once', () {
-    final thread = BlueskyThread(post: bluePost('root'), replies: [
-      bluePost('a', parent: 'root'), bluePost('b', parent: 'root'),
-      bluePost('a1', parent: 'a'), bluePost('orphan', parent: 'missing'),
-      bluePost('cycle-a', parent: 'cycle-b'), bluePost('cycle-b', parent: 'cycle-a'),
-      bluePost('a', parent: 'root'), bluePost('root'),
-    ]);
+    final thread = BlueskyThread(
+      post: bluePost('root'),
+      replies: [
+        bluePost('a', parent: 'root'),
+        bluePost('b', parent: 'root'),
+        bluePost('a1', parent: 'a'),
+        bluePost('orphan', parent: 'missing'),
+        bluePost('cycle-a', parent: 'cycle-b'),
+        bluePost('cycle-b', parent: 'cycle-a'),
+        bluePost('a', parent: 'root'),
+        bluePost('root'),
+      ],
+    );
     final branches = blueskyReplyBranches(thread);
     final expanded = blueskyVisibleReplies(branches, {});
     expect(expanded.take(3).map((row) => row.branch.post.uri), [
-      bluePost('a').uri, bluePost('a1').uri, bluePost('b').uri,
+      bluePost('a').uri,
+      bluePost('a1').uri,
+      bluePost('b').uri,
     ]);
     expect(expanded.map((row) => row.branch.post.uri).toSet().length, 6);
     expect(expanded.first.branch.descendants, 1);
@@ -78,9 +109,16 @@ void main() {
     client.nextPage = Completer<BlueskyFeedPage>();
     final paging = store.loadMore();
     await store.select(PluginProfileFeedTab.media);
-    client.nextPage!.complete(BlueskyFeedPage(posts: [
-      bluePost('unrelated'), bluePost('a2', parent: 'a'), bluePost('a2', parent: 'a'),
-    ], cursor: 'replies-final'));
+    client.nextPage!.complete(
+      BlueskyFeedPage(
+        posts: [
+          bluePost('unrelated'),
+          bluePost('a2', parent: 'a'),
+          bluePost('a2', parent: 'a'),
+        ],
+        cursor: 'replies-final',
+      ),
+    );
     await paging;
     expect(store.state.selected, PluginProfileFeedTab.media);
     expect(store.state.feed.posts.every((post) => post.hasMedia), isTrue);
@@ -145,26 +183,30 @@ void main() {
   testWidgets('sensitive grid and card do not mount media until revealed', (tester) async {
     final h = BlueReadingHarness();
     addTearDown(() => h.close(tester));
-    final previous = HttpOverrides.current;
-    final bytes = await tester.runAsync(reviewImageBytes);
-    HttpOverrides.global = ReviewImageOverrides(bytes!);
-    addTearDown(() => HttpOverrides.global = previous);
+    await installBlueskyReadingImages(tester);
     final post = bluePost('private', media: true, sensitive: true);
-    await tester.pumpWidget(h.app(Scaffold(body: SizedBox(width: 160, height: 160,
-      child: BlueskyMediaTile(post: post)))));
+    await tester.pumpWidget(
+      h.app(
+        Scaffold(
+          body: SizedBox(width: 160, height: 160, child: BlueskyMediaTile(post: post)),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.byType(ExtendedImage), findsNothing);
     expect(find.text('Content warning'), findsOneWidget);
-    await tester.pumpWidget(h.app(Scaffold(body: SingleChildScrollView(child: BlueskyPostCard(post: post)))));
+    await tester.pumpWidget(
+      h.app(
+        Scaffold(
+          body: SingleChildScrollView(child: BlueskyPostCard(post: post)),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.byType(ExtendedImage), findsNothing);
     expect(find.byType(BlueskyContentWarning), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('bluesky-content-warning')));
-    await tester.pump();
-    await tester.runAsync(() async {
-      await Future<void>.delayed(const Duration(milliseconds: 80));
-    });
-    await tester.pumpAndSettle();
+    await settleBlueskyReadingImages(tester);
     expect(find.byType(ExtendedImage), findsOneWidget);
   });
 

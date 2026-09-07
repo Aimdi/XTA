@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artikkel X-is",
   "@article_on_x": {},
+  "article_reader_appearance": "Lugemisvaate välimus",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Märgi lõpuni loetuks",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Lõpuni loetud",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Reavahe",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Avatud",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Jätkatud",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Tagasi algusesse",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Teksti skaleerimistegur",
+  "@article_reader_text_size": {},
   "auto_download_images": "Laadi pildid automaatselt alla",
   "@auto_download_images": {},
   "auto_download_images_description": "Salvesta iga sellesse kausta pandud postituse pildid oma allalaadimiskausta.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Laadin alla meediat...",
   "@downloading_media": {},
+  "downloads_batch_result": "Salvestatud failid: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Tühistatud",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Vali salvestuskoht",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Tühjenda lõpetatud allalaadimiste ajalugu",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Salvestatud",
+  "@downloads_completed": {},
+  "downloads_empty": "Sinu allalaadimised ilmuvad siia. Alustamiseks salvesta postitusest meedia.",
+  "@downloads_empty": {},
+  "downloads_failed": "Allalaadimine nurjus",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Allalaadimiste ajalugu ei saanud salvestada. Kontrolli vaba salvestusruumi ja proovi uuesti.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Katkes · Jätkamiseks proovi uuesti",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Seda faili ei saanud avada. See võib olla teisaldatud või kustutatud.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Ava fail",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Ootel",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Kontrolli ühendust ja allalaadimiskausta ning proovi uuesti.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Faili salvestamine…",
+  "@downloads_saving": {},
+  "downloads_title": "Allalaadimised",
+  "@downloads_title": {},
   "edit_folder": "Muuda kausta",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Lõppes {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{pole hääletatud} one{üks hääl} two{kaks häält} few{{numFormatted} häält} many{{numFormatted} häält} other{{numFormatted} häält}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Artikli tekst säilitatud · Pildid: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Artikli tekst säilitatakse. Manustatud heli ja video vajavad endiselt ühendust.",
+  "@offline_article_text_only": {},
+  "offline_available": "Saadaval võrguühenduseta",
+  "@offline_available": {},
+  "offline_clear": "Tühjenda võrguühenduseta kogu",
+  "@offline_clear": {},
+  "offline_clear_description": "See eemaldab säilitatud artiklid ja meedia sellest seadmest. Salvestatud postitused ja kaustad jäävad sinu kogusse alles.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Kas eemaldada kõik võrguühenduseta koopiad?",
+  "@offline_clear_question": {},
+  "offline_empty": "Säilita artikleid või salvestatud postituste meediat võrguühenduseta, et need siit leida.",
+  "@offline_empty": {},
+  "offline_failed": "Kõike ei saanud võrguühenduseta säilitada. Kontrolli ühendust ja vaba salvestusruumi ning proovi uuesti.",
+  "@offline_failed": {},
+  "offline_keep": "Säilita võrguühenduseta",
+  "@offline_keep": {},
+  "offline_library_title": "Võrguühenduseta kogu",
+  "@offline_library_title": {},
+  "offline_media_count": "Säilitatud meediafailid: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Meediafail {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Osaliselt saadaval võrguühenduseta",
+  "@offline_partial": {},
+  "offline_remove": "Eemalda võrguühenduseta koopia",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Need failid võivad sisaldada tundlikku sisu. Need salvestatakse sellesse seadmesse ja jäävad peidetuks, kuni otsustad need avada.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Ava tundlik meedia",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Kas säilitada tundlik meedia võrguühenduseta?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Võrguühenduseta salvestusruumi ei saanud lugeda ega uuendada. Kontrolli vaba salvestusruumi ja proovi uuesti.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Võrguühenduseta salvestusruumi piirang on {limit}. Suured failid või toetamata vood võivad jääda kättesaamatuks.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "Kasutusel {used} / {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Võrguühenduseta koopia pole saadaval",
+  "@offline_unavailable": {},
+  "offline_video_only": "Redditi videokoopiad ei pruugi sisaldada heli.",
+  "@offline_video_only": {},
   "ok": "Sobib",
   "@ok": {},
   "only_show_posts_with_media": "Kuva ainult meediaga säutsud",
@@ -3201,154 +3350,5 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {},
-  "article_reader_appearance": "Lugemisvaate välimus",
-  "@article_reader_appearance": {},
-  "article_reader_line_spacing": "Reavahe",
-  "@article_reader_line_spacing": {},
-  "article_reader_finish": "Märgi lõpuni loetuks",
-  "@article_reader_finish": {},
-  "article_reader_finished": "Lõpuni loetud",
-  "@article_reader_finished": {},
-  "article_reader_start_over": "Tagasi algusesse",
-  "@article_reader_start_over": {},
-  "article_reader_opened": "Avatud",
-  "@article_reader_opened": {},
-  "article_reader_resumed": "Jätkatud",
-  "@article_reader_resumed": {},
-  "downloads_title": "Allalaadimised",
-  "@downloads_title": {},
-  "downloads_clear_finished": "Tühjenda lõpetatud allalaadimiste ajalugu",
-  "@downloads_clear_finished": {},
-  "downloads_history_unavailable": "Allalaadimiste ajalugu ei saanud salvestada. Kontrolli vaba salvestusruumi ja proovi uuesti.",
-  "@downloads_history_unavailable": {},
-  "downloads_empty": "Sinu allalaadimised ilmuvad siia. Alustamiseks salvesta postitusest meedia.",
-  "@downloads_empty": {},
-  "downloads_retry_hint": "Kontrolli ühendust ja allalaadimiskausta ning proovi uuesti.",
-  "@downloads_retry_hint": {},
-  "downloads_open_file": "Ava fail",
-  "@downloads_open_file": {},
-  "downloads_open_failed": "Seda faili ei saanud avada. See võib olla teisaldatud või kustutatud.",
-  "@downloads_open_failed": {},
-  "downloads_queued": "Ootel",
-  "@downloads_queued": {},
-  "downloads_choose_location": "Vali salvestuskoht",
-  "@downloads_choose_location": {},
-  "downloads_saving": "Faili salvestamine…",
-  "@downloads_saving": {},
-  "downloads_completed": "Salvestatud",
-  "@downloads_completed": {},
-  "downloads_failed": "Allalaadimine nurjus",
-  "@downloads_failed": {},
-  "downloads_cancelled": "Tühistatud",
-  "@downloads_cancelled": {},
-  "downloads_interrupted": "Katkes · Jätkamiseks proovi uuesti",
-  "@downloads_interrupted": {},
-  "downloads_batch_result": "Salvestatud failid: {saved} / {total}",
-  "@downloads_batch_result": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "article_reader_text_size": "Teksti skaleerimistegur",
-  "@article_reader_text_size": {},
-  "downloads_progress": "{received} / {total}",
-  "@downloads_progress": {
-    "placeholders": {
-      "received": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_library_title": "Võrguühenduseta kogu",
-  "@offline_library_title": {},
-  "offline_keep": "Säilita võrguühenduseta",
-  "@offline_keep": {},
-  "offline_remove": "Eemalda võrguühenduseta koopia",
-  "@offline_remove": {},
-  "offline_available": "Saadaval võrguühenduseta",
-  "@offline_available": {},
-  "offline_partial": "Osaliselt saadaval võrguühenduseta",
-  "@offline_partial": {},
-  "offline_unavailable": "Võrguühenduseta koopia pole saadaval",
-  "@offline_unavailable": {},
-  "offline_failed": "Kõike ei saanud võrguühenduseta säilitada. Kontrolli ühendust ja vaba salvestusruumi ning proovi uuesti.",
-  "@offline_failed": {},
-  "offline_storage_error": "Võrguühenduseta salvestusruumi ei saanud lugeda ega uuendada. Kontrolli vaba salvestusruumi ja proovi uuesti.",
-  "@offline_storage_error": {},
-  "offline_empty": "Säilita artikleid või salvestatud postituste meediat võrguühenduseta, et need siit leida.",
-  "@offline_empty": {},
-  "offline_storage_used": "Kasutusel {used} / {limit}",
-  "@offline_storage_used": {
-    "placeholders": {
-      "used": {
-        "type": "String"
-      },
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_media_count": "Säilitatud meediafailid: {saved} / {total}",
-  "@offline_media_count": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_article_detail": "Artikli tekst säilitatud · Pildid: {saved} / {total}",
-  "@offline_article_detail": {
-    "placeholders": {
-      "saved": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_clear": "Tühjenda võrguühenduseta kogu",
-  "@offline_clear": {},
-  "offline_clear_question": "Kas eemaldada kõik võrguühenduseta koopiad?",
-  "@offline_clear_question": {},
-  "offline_clear_description": "See eemaldab säilitatud artiklid ja meedia sellest seadmest. Salvestatud postitused ja kaustad jäävad sinu kogusse alles.",
-  "@offline_clear_description": {},
-  "offline_sensitive_question": "Kas säilitada tundlik meedia võrguühenduseta?",
-  "@offline_sensitive_question": {},
-  "offline_sensitive_description": "Need failid võivad sisaldada tundlikku sisu. Need salvestatakse sellesse seadmesse ja jäävad peidetuks, kuni otsustad need avada.",
-  "@offline_sensitive_description": {},
-  "offline_sensitive_open": "Ava tundlik meedia",
-  "@offline_sensitive_open": {},
-  "offline_media_label": "Meediafail {number}",
-  "@offline_media_label": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
-  "offline_video_only": "Redditi videokoopiad ei pruugi sisaldada heli.",
-  "@offline_video_only": {},
-  "offline_storage_limit": "Võrguühenduseta salvestusruumi piirang on {limit}. Suured failid või toetamata vood võivad jääda kättesaamatuks.",
-  "@offline_storage_limit": {
-    "placeholders": {
-      "limit": {
-        "type": "String"
-      }
-    }
-  },
-  "offline_article_text_only": "Artikli tekst säilitatakse. Manustatud heli ja video vajavad endiselt ühendust.",
-  "@offline_article_text_only": {}
+  "@zen_mode_page_cap_description": {}
 }

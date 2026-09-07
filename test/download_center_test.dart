@@ -11,8 +11,13 @@ import 'package:xta/downloads/download_store.dart';
 import 'package:xta/downloads/download_transfer.dart';
 
 DownloadEntry entry(String id, {DownloadStatus status = DownloadStatus.queued}) => DownloadEntry(
-  id: id, uri: Uri.parse('https://media.example/$id.jpg'), fileName: '$id.jpg',
-  treeUri: 'content://provider/tree/photos', createdAt: DateTime.utc(2026), status: status);
+  id: id,
+  uri: Uri.parse('https://media.example/$id.jpg'),
+  fileName: '$id.jpg',
+  treeUri: 'content://provider/tree/photos',
+  createdAt: DateTime.utc(2026),
+  status: status,
+);
 
 class MemoryHistory implements DownloadHistory {
   List<DownloadEntry> entries;
@@ -36,6 +41,7 @@ class ReadFailureHistory extends MemoryHistory {
     if (failReads) throw const FileSystemException('Storage unavailable');
     return super.read();
   }
+
   @override
   Future<void> write(List<DownloadEntry> entries) async {
     writes++;
@@ -50,19 +56,28 @@ class StreamingClient extends http.BaseClient {
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) => respond(request);
   @override
-  void close() { closed = true; }
+  void close() {
+    closed = true;
+  }
 }
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('only the X image host receives original-image normalization', () {
-    expect(originalDownloadUri(Uri.parse('https://pbs.twimg.com/media/a.jpg')).toString(),
-      'https://pbs.twimg.com/media/a.jpg:orig');
-    expect(originalDownloadUri(Uri.parse('https://pbs.twimg.com/media/a?format=png&name=small')).queryParameters,
-      {'format': 'png', 'name': 'orig'});
-    for (final url in ['https://mastodon.social/media/a.jpg?token=abc', 'https://i.redd.it/a.jpg',
-        'https://pbs.twimg.com.evil.example/a.jpg']) {
+    expect(
+      originalDownloadUri(Uri.parse('https://pbs.twimg.com/media/a.jpg')).toString(),
+      'https://pbs.twimg.com/media/a.jpg:orig',
+    );
+    expect(originalDownloadUri(Uri.parse('https://pbs.twimg.com/media/a?format=png&name=small')).queryParameters, {
+      'format': 'png',
+      'name': 'orig',
+    });
+    for (final url in [
+      'https://mastodon.social/media/a.jpg?token=abc',
+      'https://i.redd.it/a.jpg',
+      'https://pbs.twimg.com.evil.example/a.jpg',
+    ]) {
       expect(originalDownloadUri(Uri.parse(url)).toString(), url);
     }
   });
@@ -95,7 +110,12 @@ void main() {
     await history.write(List.generate(250, (i) => entry('$i', status: DownloadStatus.completed)));
     expect((await history.read()).length, 200);
     final file = File(p.join(directory.path, 'history-v1.json'));
-    await file.writeAsString(jsonEncode({'version': 1, 'entries': [null, {}, entry('valid').toJson()]}));
+    await file.writeAsString(
+      jsonEncode({
+        'version': 1,
+        'entries': [null, {}, entry('valid').toJson()],
+      }),
+    );
     expect((await history.read()).single.id, 'valid');
     await file.writeAsString('x' * 2000001);
     expect(await history.read(), isEmpty);
@@ -104,17 +124,33 @@ void main() {
   test('streams chunks to disk, reports progress and deletes the staging file', () async {
     final directory = await Directory.systemTemp.createTemp('xta-stream-test');
     addTearDown(() => directory.delete(recursive: true));
-    final client = StreamingClient((_) async => http.StreamedResponse(Stream.fromIterable([[1, 2], [3, 4, 5]]),
-      200, contentLength: 5));
+    final client = StreamingClient(
+      (_) async => http.StreamedResponse(
+        Stream.fromIterable([
+          [1, 2],
+          [3, 4, 5],
+        ]),
+        200,
+        contentLength: 5,
+      ),
+    );
     final progress = <int>[];
     String? stagedPath;
-    final transfer = DownloadTransfer(clientFactory: () => client, temporaryDirectory: () async => directory,
+    final transfer = DownloadTransfer(
+      clientFactory: () => client,
+      temporaryDirectory: () async => directory,
       save: (entry, file, token) async {
         stagedPath = file.path;
         expect(await file.readAsBytes(), [1, 2, 3, 4, 5]);
         return 'content://provider/document/42';
-      });
-    final saved = await transfer.call(entry('stream'), DownloadCancellation(), (received, _) => progress.add(received), (_) {});
+      },
+    );
+    final saved = await transfer.call(
+      entry('stream'),
+      DownloadCancellation(),
+      (received, _) => progress.add(received),
+      (_) {},
+    );
     expect(saved, 'content://provider/document/42');
     expect(progress, [0, 2, 5]);
     expect(client.closed, isTrue);
@@ -125,10 +161,19 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('xta-short-test');
     addTearDown(() => directory.delete(recursive: true));
     var saves = 0;
-    final transfer = DownloadTransfer(temporaryDirectory: () async => directory,
-      clientFactory: () => StreamingClient((_) async => http.StreamedResponse(Stream.value([1, 2]), 200, contentLength: 4)),
-      save: (_, _, _) async { saves++; return 'saved'; });
-    await expectLater(transfer.call(entry('short'), DownloadCancellation(), (_, _) {}, (_) {}), throwsA(isA<HttpException>()));
+    final transfer = DownloadTransfer(
+      temporaryDirectory: () async => directory,
+      clientFactory: () =>
+          StreamingClient((_) async => http.StreamedResponse(Stream.value([1, 2]), 200, contentLength: 4)),
+      save: (_, _, _) async {
+        saves++;
+        return 'saved';
+      },
+    );
+    await expectLater(
+      transfer.call(entry('short'), DownloadCancellation(), (_, _) {}, (_) {}),
+      throwsA(isA<HttpException>()),
+    );
     expect(saves, 0);
     expect(await Directory(p.join(directory.path, 'xta-download-staging')).list().toList(), isEmpty);
   });
@@ -138,10 +183,19 @@ void main() {
     addTearDown(() => directory.delete(recursive: true));
     final started = Completer<void>();
     final response = Completer<http.StreamedResponse>();
-    final client = StreamingClient((_) { started.complete(); return response.future; });
+    final client = StreamingClient((_) {
+      started.complete();
+      return response.future;
+    });
     var saves = 0;
-    final transfer = DownloadTransfer(temporaryDirectory: () async => directory, clientFactory: () => client,
-      save: (_, _, _) async { saves++; return 'saved'; });
+    final transfer = DownloadTransfer(
+      temporaryDirectory: () async => directory,
+      clientFactory: () => client,
+      save: (_, _, _) async {
+        saves++;
+        return 'saved';
+      },
+    );
     final cancellation = DownloadCancellation();
     final result = transfer.call(entry('cancel'), cancellation, (_, _) {}, (_) {});
     final assertion = expectLater(result, throwsA(isA<DownloadCancelled>()));
@@ -158,10 +212,18 @@ void main() {
     final directory = await Directory.systemTemp.createTemp('xta-server-test');
     addTearDown(() => directory.delete(recursive: true));
     var saves = 0;
-    final transfer = DownloadTransfer(temporaryDirectory: () async => directory,
+    final transfer = DownloadTransfer(
+      temporaryDirectory: () async => directory,
       clientFactory: () => StreamingClient((_) async => http.StreamedResponse(const Stream.empty(), 503)),
-      save: (_, _, _) async { saves++; return 'saved'; });
-    await expectLater(transfer.call(entry('error'), DownloadCancellation(), (_, _) {}, (_) {}), throwsA(isA<HttpException>()));
+      save: (_, _, _) async {
+        saves++;
+        return 'saved';
+      },
+    );
+    await expectLater(
+      transfer.call(entry('error'), DownloadCancellation(), (_, _) {}, (_) {}),
+      throwsA(isA<HttpException>()),
+    );
     expect(saves, 0);
   });
 
@@ -169,11 +231,14 @@ void main() {
     final started = Completer<void>();
     final release = Completer<String?>();
     final calls = <String>[];
-    final store = DownloadStore(history: MemoryHistory(), runner: (entry, token, progress, phase) {
-      calls.add(entry.fileName);
-      started.complete();
-      return release.future;
-    });
+    final store = DownloadStore(
+      history: MemoryHistory(),
+      runner: (entry, token, progress, phase) {
+        calls.add(entry.fileName);
+        started.complete();
+        return release.future;
+      },
+    );
     final first = store.enqueue(uri: Uri.parse('https://media.example/first'), fileName: 'first');
     await started.future;
     final second = store.enqueue(uri: Uri.parse('https://media.example/second'), fileName: 'second');
@@ -191,11 +256,14 @@ void main() {
 
   test('retry uses the same history entry and batch results count only saved destinations', () async {
     var attempts = 0;
-    final store = DownloadStore(history: MemoryHistory(), runner: (entry, token, progress, phase) async {
-      attempts++;
-      if (attempts == 1) throw const HttpException('offline');
-      return 'content://provider/${entry.id}';
-    });
+    final store = DownloadStore(
+      history: MemoryHistory(),
+      runner: (entry, token, progress, phase) async {
+        attempts++;
+        if (attempts == 1) throw const HttpException('offline');
+        return 'content://provider/${entry.id}';
+      },
+    );
     final failed = await store.enqueue(uri: Uri.parse('https://media.example/photo'), fileName: 'photo');
     expect(failed.status, DownloadStatus.failed);
     await store.retry(failed.id);
@@ -205,12 +273,16 @@ void main() {
     expect(store.state.entries.single.status, DownloadStatus.completed);
     await store.destroy();
 
-    final batchStore = DownloadStore(history: MemoryHistory(), runner: (entry, token, progress, phase) async {
-      if (int.parse(entry.fileName) >= 7) throw const HttpException('failed');
-      return 'content://provider/${entry.id}';
-    });
-    final batch = await batchStore.enqueueBatch(List.generate(10, (i) => DownloadRequest(
-      uri: Uri.parse('https://media.example/$i'), fileName: '$i')));
+    final batchStore = DownloadStore(
+      history: MemoryHistory(),
+      runner: (entry, token, progress, phase) async {
+        if (int.parse(entry.fileName) >= 7) throw const HttpException('failed');
+        return 'content://provider/${entry.id}';
+      },
+    );
+    final batch = await batchStore.enqueueBatch(
+      List.generate(10, (i) => DownloadRequest(uri: Uri.parse('https://media.example/$i'), fileName: '$i')),
+    );
     expect(batch.saved, 7);
     expect(batch.total, 10);
     expect(batchStore.state.entries.where((entry) => entry.status == DownloadStatus.failed).length, 3);
@@ -222,15 +294,18 @@ void main() {
     final oldResponse = Completer<String?>();
     final retried = Completer<void>();
     var requests = 0;
-    final store = DownloadStore(history: MemoryHistory(), runner: (entry, token, progress, phase) {
-      requests++;
-      if (requests == 1) {
-        started.complete();
-        return oldResponse.future;
-      }
-      retried.complete();
-      return Future.value('content://provider/retried');
-    });
+    final store = DownloadStore(
+      history: MemoryHistory(),
+      runner: (entry, token, progress, phase) {
+        requests++;
+        if (requests == 1) {
+          started.complete();
+          return oldResponse.future;
+        }
+        retried.complete();
+        return Future.value('content://provider/retried');
+      },
+    );
     final first = store.enqueue(uri: Uri.parse('https://media.example/photo'), fileName: 'photo');
     await started.future;
     final id = store.state.entries.single.id;
@@ -251,7 +326,13 @@ void main() {
   test('a failed history read cannot erase existing records and can be retried', () async {
     final history = ReadFailureHistory([entry('existing', status: DownloadStatus.completed)]);
     var requests = 0;
-    final store = DownloadStore(history: history, runner: (_, _, _, _) async { requests++; return 'saved'; });
+    final store = DownloadStore(
+      history: history,
+      runner: (_, _, _, _) async {
+        requests++;
+        return 'saved';
+      },
+    );
     await store.initialize();
     expect(store.state.storageError, isTrue);
     await expectLater(store.enqueue(uri: Uri.parse('https://media.example/new'), fileName: 'new'), throwsStateError);
@@ -285,7 +366,13 @@ void main() {
   test('network does not start when the queued work cannot be persisted', () async {
     final history = MemoryHistory()..failWrites = true;
     var requests = 0;
-    final store = DownloadStore(history: history, runner: (_, _, _, _) async { requests++; return 'saved'; });
+    final store = DownloadStore(
+      history: history,
+      runner: (_, _, _, _) async {
+        requests++;
+        return 'saved';
+      },
+    );
     final failed = await store.enqueue(uri: Uri.parse('https://media.example/photo'), fileName: 'photo');
     expect(failed.status, DownloadStatus.failed);
     expect(requests, 0);

@@ -9,27 +9,47 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/reading/article_reader_controls.dart';
 import 'package:xta/reading/article_reading_store.dart';
 
-Widget readerApp(ArticleReadingStore store, {double scale = 1, bool dark = false,
-  bool rtl = false, VoidCallback? changed}) => RepaintBoundary(
-  key: const ValueKey('article-controls-review'), child: MaterialApp(
-  localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
-  supportedLocales: L10n.delegate.supportedLocales,
-  theme: ThemeData(useMaterial3: true, brightness: dark ? Brightness.dark : Brightness.light,
-    fontFamily: 'Inter'),
-  builder: (context, child) => MediaQuery(data: MediaQuery.of(context).copyWith(
-    textScaler: TextScaler.linear(scale)), child: Directionality(
-      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!)),
-  home: Scaffold(
-    appBar: AppBar(title: const Text('Field notes')),
-    body: Column(children: [
-      ArticleReaderControls(store: store, onAppearanceChanged: changed ?? () {}, onStartOver: () {}),
-      const Expanded(child: Padding(padding: EdgeInsets.all(20), child: Text(
-        'Space for a slower read\n\nYour article stays where you left it. Reading appearance is shared between RSS and newsletters.',
-        style: TextStyle(fontFamily: 'serif', fontSize: 20, height: 1.7)))),
-    ]),
+Widget readerApp(
+  ArticleReadingStore store, {
+  double scale = 1,
+  bool dark = false,
+  bool rtl = false,
+  VoidCallback? changed,
+}) => RepaintBoundary(
+  key: const ValueKey('article-controls-review'),
+  child: MaterialApp(
+    debugShowCheckedModeBanner: false,
+    localizationsDelegates: const [
+      L10n.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: L10n.delegate.supportedLocales,
+    theme: ThemeData(useMaterial3: true, brightness: dark ? Brightness.dark : Brightness.light, fontFamily: 'Inter'),
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+      child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
+    ),
+    home: Scaffold(
+      appBar: AppBar(title: const Text('Field notes')),
+      body: Column(
+        children: [
+          ArticleReaderControls(store: store, onAppearanceChanged: changed ?? () {}, onStartOver: () {}),
+          const Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Text(
+                'Space for a slower read\n\nYour article stays where you left it. Reading appearance is shared between RSS and newsletters.',
+                style: TextStyle(fontFamily: 'Inter', fontSize: 20, height: 1.7),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
   ),
-));
+);
 
 void main() {
   setUpAll(() async {
@@ -38,16 +58,32 @@ void main() {
     await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
-  testWidgets('appearance changes are shared, finish is explicit and controls fit narrow large-text RTL', (tester) async {
+  testWidgets('appearance changes are shared, finish is explicit and controls fit narrow large-text RTL', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(320, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     var finishes = 0;
     var appearanceChanges = 0;
-    final store = ArticleReadingStore(prefs: PrefServiceCache(), articleId: 'rss:feed:item',
-      onCompleted: () async { finishes++; });
-    await tester.pumpWidget(readerApp(store, scale: 2, rtl: true, changed: () { appearanceChanges++; }));
+    final store = ArticleReadingStore(
+      prefs: PrefServiceCache(),
+      articleId: 'rss:feed:item',
+      onCompleted: () async {
+        finishes++;
+      },
+    );
+    await tester.pumpWidget(
+      readerApp(
+        store,
+        scale: 2,
+        rtl: true,
+        changed: () {
+          appearanceChanges++;
+        },
+      ),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Opened'), findsOneWidget);
     expect(finishes, 0);
@@ -77,9 +113,17 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final store = ArticleReadingStore(prefs: PrefServiceCache(defaults: {
-        articleReadingPreference: jsonEncode({'a': {'fraction': 0.42, 'paragraph': 8}}),
-      }), articleId: 'a', onCompleted: () async {});
+      final store = ArticleReadingStore(
+        prefs: PrefServiceCache(
+          defaults: {
+            articleReadingPreference: jsonEncode({
+              'a': {'fraction': 0.42, 'paragraph': 8},
+            }),
+          },
+        ),
+        articleId: 'a',
+        onCompleted: () async {},
+      );
       await tester.pumpWidget(readerApp(store, scale: large ? 2 : 1, dark: large, rtl: large));
       await tester.pumpAndSettle();
       if (variant == 'article-appearance') {
@@ -87,9 +131,12 @@ void main() {
         await tester.pumpAndSettle();
       }
       expect(tester.takeException(), isNull);
-      await expectLater(find.byKey(const ValueKey('article-controls-review')), matchesGoldenFile('../review-artifacts/renders/$variant.png'));
+      await expectLater(
+        find.byKey(const ValueKey('article-controls-review')),
+        matchesGoldenFile('../review-artifacts/renders/$variant.png'),
+      );
       await tester.pumpWidget(const SizedBox());
       await store.destroy();
-    });
+    }, timeout: const Timeout(Duration(seconds: 45)));
   }
 }
