@@ -290,62 +290,65 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
-      final h = _HomeHarness();
-      addTearDown(() => h.close(tester));
-      await tester.runAsync(() async {
-        await h.seed(postCount: 20);
-        await h.prefs.set(optionDisableAnimations, reduceMotion);
-      });
-      await tester.pumpWidget(h.app(xLookLightTheme(null)));
-      await _waitForFollowing(tester);
-      final feed = find.byType(SubscriptionGroupScreenContent);
-      final heightAtTop = tester.getSize(feed).height;
-      final position = h.scroll.position;
-      final items = h.cache.getOrCreateController('home--1').items!;
-      expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-      expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
-      expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
-      if (reduceMotion) {
-        await expectLater(
-          find.byKey(const ValueKey('home-render')),
-          matchesGoldenFile('../review-artifacts/renders/home-following-top.png'),
-        );
+      try {
+        final h = _HomeHarness();
+        addTearDown(() => h.close(tester));
+        await tester.runAsync(() async {
+          await h.seed(postCount: 20);
+          await h.prefs.set(optionDisableAnimations, reduceMotion);
+        });
+        await tester.pumpWidget(h.app(xLookLightTheme(null)));
+        await _waitForFollowing(tester);
+        final feed = find.byType(SubscriptionGroupScreenContent);
+        final heightAtTop = tester.getSize(feed).height;
+        final position = h.scroll.position;
+        final items = h.cache.getOrCreateController('home--1').items!;
+        expect(tester.getSize(find.byKey(_readingControls)).height, 56);
+        expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+        expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
+        if (reduceMotion) {
+          await expectLater(
+            find.byKey(const ValueKey('home-render')),
+            matchesGoldenFile('../review-artifacts/renders/home-following-top.png'),
+          );
+        }
+        await tester.drag(feed, const Offset(0, -260));
+        await tester.pumpAndSettle();
+        expect(position.pixels, greaterThan(100));
+        expect(h.scroll.position, same(position));
+        expect(tester.getSize(find.byKey(_readingControls)).height, 0);
+        expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+        expect(tester.getSize(feed).height, closeTo(heightAtTop + 120, 1));
+        expect(find.byKey(_media).hitTestable(), findsNothing);
+        expect(_hasAccessibleLabel(tester, 'Media'), isFalse);
+        expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
+        expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
+        if (reduceMotion) {
+          await expectLater(
+            find.byKey(const ValueKey('home-render')),
+            matchesGoldenFile('../review-artifacts/renders/home-following-reading.png'),
+          );
+        }
+        await tester.drag(feed, const Offset(0, 60));
+        await tester.pumpAndSettle();
+        expect(position.pixels, greaterThan(0));
+        expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+        position.jumpTo(1);
+        await tester.pumpAndSettle();
+        expect(tester.getSize(find.byKey(_readingControls)).height, 0);
+        expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
+        position.jumpTo(0);
+        await tester.pumpAndSettle();
+        expect(tester.getSize(find.byKey(_readingControls)).height, 56);
+        expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
+        expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
+        expect(find.byKey(_media).hitTestable(), findsOneWidget);
+        expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
+        expect(h.cache.getOrCreateController('home--1').items, orderedEquals(items));
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
       }
-      await tester.drag(feed, const Offset(0, -260));
-      await tester.pumpAndSettle();
-      expect(position.pixels, greaterThan(100));
-      expect(h.scroll.position, same(position));
-      expect(tester.getSize(find.byKey(_readingControls)).height, 0);
-      expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
-      expect(tester.getSize(feed).height, closeTo(heightAtTop + 120, 1));
-      expect(find.byKey(_media).hitTestable(), findsNothing);
-      expect(_hasAccessibleLabel(tester, 'Media'), isFalse);
-      expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
-      expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
-      if (reduceMotion) {
-        await expectLater(
-          find.byKey(const ValueKey('home-render')),
-          matchesGoldenFile('../review-artifacts/renders/home-following-reading.png'),
-        );
-      }
-      await tester.drag(feed, const Offset(0, 60));
-      await tester.pumpAndSettle();
-      expect(position.pixels, greaterThan(0));
-      expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
-      position.jumpTo(1);
-      await tester.pumpAndSettle();
-      expect(tester.getSize(find.byKey(_readingControls)).height, 0);
-      expect(tester.getSize(find.byKey(_sourceControls)).height, 0);
-      position.jumpTo(0);
-      await tester.pumpAndSettle();
-      expect(tester.getSize(find.byKey(_readingControls)).height, 56);
-      expect(tester.getSize(find.byKey(_sourceControls)).height, 64);
-      expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
-      expect(find.byKey(_media).hitTestable(), findsOneWidget);
-      expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
-      expect(h.cache.getOrCreateController('home--1').items, orderedEquals(items));
-      expect(tester.takeException(), isNull);
     }, skip: _before);
   }
 
