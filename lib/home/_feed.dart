@@ -306,12 +306,15 @@ class _FeedScreenState extends State<FeedScreen> {
     _reloadHomeFeeds();
   }
 
-  /// Following's [FeedRefreshController] lives *inside* [GroupFeedShell], so
+  /// Following's refresh controller lives *inside* [GroupFeedShell], so
   /// this State's context cannot see it. Evict the cached pages and remount
   /// instead — otherwise the toggle looks like it did nothing.
   void _reloadHomeFeeds() {
     try {
-      context.read<FeedSessionCache>().evict(homeFollowingCacheKey(widget.id));
+      final cache = context.read<FeedSessionCache>();
+      final key = homeFollowingCacheKey(widget.id);
+      cache.evict(key);
+      cache.saveMediaOnly(key, _view.state.followingMediaOnly);
     } on ProviderNotFoundException {
       // Tests and routes without a session cache still remount the tab.
     }

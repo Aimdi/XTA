@@ -24,7 +24,9 @@ void main() {
     expect(store.state, 1);
   });
 
-  testWidgets('feed switcher marks and returns the selected feed', (tester) async {
+  testWidgets('feed switcher marks and returns the selected feed', (
+    tester,
+  ) async {
     int? selected;
     await tester.pumpWidget(
       _app(
@@ -39,7 +41,10 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(find.byType(HomeFeedSwitcher<int>)).height, greaterThanOrEqualTo(kTweetTouchTarget));
+    expect(
+      tester.getSize(find.byType(HomeFeedSwitcher<int>)).height,
+      greaterThanOrEqualTo(kTweetTouchTarget),
+    );
     await tester.tap(find.text('Following'));
     await tester.pumpAndSettle();
 
@@ -49,47 +54,65 @@ void main() {
     expect(selected, 1);
   });
 
-  testWidgets('bottom navigation uses distinct selected icons and a hairline boundary', (tester) async {
-    int? selected;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: xLookLightTheme(null),
-        home: Scaffold(
-          bottomNavigationBar: HomeNavigationBar(
-            selectedIndex: 0,
-            showLabels: true,
-            disableAnimations: true,
-            items: const [
-              HomeNavigationItem(label: 'Home', icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home)),
-              HomeNavigationItem(label: 'Search', icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search)),
-            ],
-            onSelected: (value) => selected = value,
+  testWidgets(
+    'bottom navigation uses distinct selected icons and a hairline boundary',
+    (tester) async {
+      int? selected;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: xLookLightTheme(null),
+          home: Scaffold(
+            bottomNavigationBar: HomeNavigationBar(
+              selectedIndex: 0,
+              showLabels: true,
+              disableAnimations: true,
+              items: const [
+                HomeNavigationItem(
+                  label: 'Home',
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                ),
+                HomeNavigationItem(
+                  label: 'Search',
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                ),
+              ],
+              onSelected: (value) => selected = value,
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final navigation = tester.widget<NavigationBar>(find.byType(NavigationBar));
-    expect(navigation.height, kHomeNavigationHeight);
-    expect(find.byIcon(Icons.home), findsWidgets);
-    expect(find.byIcon(Icons.home_outlined), findsNothing);
+      final navigation = tester.widget<NavigationBar>(
+        find.byType(NavigationBar),
+      );
+      expect(navigation.height, kHomeNavigationHeight);
+      expect(find.byIcon(Icons.home), findsWidgets);
+      expect(find.byIcon(Icons.home_outlined), findsNothing);
 
-    final decorated = tester.widgetList<DecoratedBox>(find.byType(DecoratedBox)).firstWhere((widget) {
-      final decoration = widget.decoration;
-      if (decoration is! BoxDecoration || decoration.border is! Border) {
-        return false;
-      }
-      return (decoration.border! as Border).top.width == kTweetDividerThickness;
-    });
-    final border = (decorated.decoration as BoxDecoration).border! as Border;
-    expect(border.top.width, kTweetDividerThickness);
+      final decorated = tester
+          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+          .firstWhere((widget) {
+            final decoration = widget.decoration;
+            if (decoration is! BoxDecoration || decoration.border is! Border) {
+              return false;
+            }
+            return (decoration.border! as Border).top.width ==
+                kTweetDividerThickness;
+          });
+      final border = (decorated.decoration as BoxDecoration).border! as Border;
+      expect(border.top.width, kTweetDividerThickness);
 
-    await tester.tap(find.text('Search'));
-    await tester.pump();
-    expect(selected, 1);
-  });
+      await tester.tap(find.text('Search'));
+      await tester.pump();
+      expect(selected, 1);
+    },
+  );
 
-  testWidgets('selected navigation remains legible with a yellow accent', (tester) async {
+  testWidgets('selected navigation remains legible with a yellow accent', (
+    tester,
+  ) async {
     final accent = xLookAccents['yellow']!;
     final tokens = XLookTokens.light.copyWith(accent: accent);
     await tester.pumpWidget(
@@ -101,8 +124,16 @@ void main() {
             showLabels: true,
             disableAnimations: true,
             items: const [
-              HomeNavigationItem(label: 'Home', icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home)),
-              HomeNavigationItem(label: 'Search', icon: Icon(Icons.search_outlined), selectedIcon: Icon(Icons.search)),
+              HomeNavigationItem(
+                label: 'Home',
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+              ),
+              HomeNavigationItem(
+                label: 'Search',
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+              ),
             ],
             onSelected: (_) {},
           ),
@@ -112,24 +143,44 @@ void main() {
 
     final context = tester.element(find.byType(NavigationBar));
     final navigationTheme = NavigationBarTheme.of(context);
-    final selectedColor = navigationTheme.iconTheme!.resolve(<WidgetState>{WidgetState.selected})!.color!;
-    expect(contrastRatio(selectedColor, tokens.background), greaterThanOrEqualTo(4.5));
+    final selectedColor = navigationTheme.iconTheme!
+        .resolve(<WidgetState>{WidgetState.selected})!
+        .color!;
+    expect(
+      contrastRatio(selectedColor, tokens.background),
+      greaterThanOrEqualTo(4.5),
+    );
   });
 
-  testWidgets('home title and actions remain bounded at large text scale', (tester) async {
+  testWidgets('home title and actions remain bounded at large text scale', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookLightTheme(null),
         home: MediaQuery(
-          data: const MediaQueryData(size: Size(320, 640), textScaler: TextScaler.linear(2)),
+          data: const MediaQueryData(
+            size: Size(320, 640),
+            textScaler: TextScaler.linear(2),
+          ),
           child: Scaffold(
             appBar: AppBar(
-              title: const HomeAppBarTitle(label: 'A deliberately long localized Home title'),
+              title: const HomeAppBarTitle(
+                label: 'A deliberately long localized Home title',
+              ),
               actions: [
                 HomeAppBarActions(
                   children: [
-                    IconButton(tooltip: 'Filter', icon: const Icon(Icons.tune), onPressed: () {}),
-                    IconButton(tooltip: 'Accounts', icon: const Icon(Icons.manage_accounts_outlined), onPressed: () {}),
+                    IconButton(
+                      tooltip: 'Filter',
+                      icon: const Icon(Icons.tune),
+                      onPressed: () {},
+                    ),
+                    IconButton(
+                      tooltip: 'Accounts',
+                      icon: const Icon(Icons.manage_accounts_outlined),
+                      onPressed: () {},
+                    ),
                   ],
                 ),
               ],
@@ -141,25 +192,37 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(
-      tester.widget<Text>(find.text('A deliberately long localized Home title')),
+      tester.widget<Text>(
+        find.text('A deliberately long localized Home title'),
+      ),
       isA<Text>()
           .having((text) => text.maxLines, 'maxLines', 1)
           .having((text) => text.overflow, 'overflow', TextOverflow.ellipsis),
     );
-    expect(tester.getSize(find.widgetWithIcon(IconButton, Icons.tune)), const Size.square(kTweetTouchTarget));
     expect(
-      tester.getSize(find.widgetWithIcon(IconButton, Icons.manage_accounts_outlined)),
+      tester.getSize(find.widgetWithIcon(IconButton, Icons.tune)),
+      const Size.square(kTweetTouchTarget),
+    );
+    expect(
+      tester.getSize(
+        find.widgetWithIcon(IconButton, Icons.manage_accounts_outlined),
+      ),
       const Size.square(kTweetTouchTarget),
     );
   });
 
-  testWidgets('home source dock keeps contained selection and a fixed add action', (tester) async {
+  testWidgets('home source dock keeps contained selection and a fixed add action', (
+    tester,
+  ) async {
     var added = false;
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookLightTheme(null),
         home: MediaQuery(
-          data: const MediaQueryData(size: Size(320, 640), textScaler: TextScaler.linear(2)),
+          data: const MediaQueryData(
+            size: Size(320, 640),
+            textScaler: TextScaler.linear(2),
+          ),
           child: Scaffold(
             body: Align(
               alignment: Alignment.topCenter,
@@ -186,14 +249,23 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
-    expect(tester.getSize(find.byType(HomeFeedStrip)), const Size(320, kHomeFeedStripHeight));
-    expect(tester.getSize(find.byTooltip('Add timeline')), const Size.square(kTweetTouchTarget));
+    expect(
+      tester.getSize(find.byType(HomeFeedStrip)),
+      const Size(320, kHomeFeedStripHeight),
+    );
+    expect(
+      tester.getSize(find.byTooltip('Add timeline')),
+      const Size.square(kTweetTouchTarget),
+    );
 
     final tabBar = tester.widget<TabBar>(find.byType(TabBar));
     expect(tabBar.dividerHeight, 0);
     expect(tabBar.isScrollable, isTrue);
     expect(tabBar.tabAlignment, TabAlignment.start);
-    expect(tabBar.labelPadding, const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding));
+    expect(
+      tabBar.labelPadding,
+      const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
+    );
     expect(tabBar.indicator, isA<BoxDecoration>());
     expect((tabBar.indicator! as BoxDecoration).border, isNotNull);
 
