@@ -108,6 +108,10 @@ class _TrendsScreenState extends State<TrendsScreen>
                 8,
               ),
               child: SearchBar(
+                constraints: const BoxConstraints(minHeight: 44),
+                elevation: const WidgetStatePropertyAll(0),
+                side: WidgetStatePropertyAll(BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
+                backgroundColor: WidgetStatePropertyAll(Theme.of(context).colorScheme.surfaceContainerLow),
                 controller: _queryController,
                 focusNode: widget.focusNode,
                 textInputAction: TextInputAction.search,

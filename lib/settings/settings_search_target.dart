@@ -47,12 +47,14 @@ class _FocusedSettingState extends State<_FocusedSetting> {
   @override
   Widget build(BuildContext context) => Focus(
     focusNode: _focus,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
-        border: BorderDirectional(start: BorderSide(color: Theme.of(context).colorScheme.primary, width: 3)),
+    child: Material(
+      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: BorderDirectional(start: BorderSide(color: Theme.of(context).colorScheme.primary, width: 3)),
+        ),
+        child: widget.child,
       ),
-      child: widget.child,
     ),
   );
 }

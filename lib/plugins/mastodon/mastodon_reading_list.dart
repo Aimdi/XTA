@@ -5,6 +5,12 @@ import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_reading_store.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 
+List<MastodonPost> uniqueMastodonReadingPosts(List<MastodonPost> posts) {
+  final seen = <String>{};
+  final unique = [for (final post in posts) if (seen.add(post.url)) post];
+  return unique.length == posts.length ? posts : unique;
+}
+
 class MastodonReadingList extends StatefulWidget {
   final String slot;
   final List<MastodonPost> posts;
@@ -13,16 +19,16 @@ class MastodonReadingList extends StatefulWidget {
   final ScrollController controller;
   final Widget? heading;
   final bool loadingMore;
-  const MastodonReadingList({
+  MastodonReadingList({
     super.key,
     required this.slot,
-    required this.posts,
+    required List<MastodonPost> posts,
     required this.controller,
     this.heading,
     this.tags = const [],
     this.instance,
     this.loadingMore = false,
-  });
+  }) : posts = uniqueMastodonReadingPosts(posts);
   @override
   State<MastodonReadingList> createState() => _MastodonReadingListState();
 }

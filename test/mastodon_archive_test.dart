@@ -6,12 +6,17 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/plugins/mastodon/mastodon_archive.dart';
 import 'package:xta/plugins/mastodon/mastodon_bookmark.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
+import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
+import 'package:xta/saved/saved_screen.dart';
+import 'package:xta/saved/saved_chrome.dart';
 import 'package:xta/saved/saved_content_index.dart';
 import 'package:xta/saved/saved_media.dart';
 import 'package:xta/saved/saved_source_filter.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'support/mastodon_harness.dart';
+import 'support/reader_review_harness.dart';
 
 const archivedPost = MastodonPost(
   id: '123',
@@ -32,7 +37,55 @@ class MemorySaved extends SavedTweetModel {
   Future<void> deleteSavedTweet(String id) async => update(state.where((post) => post.id != id).toList());
 }
 
+class MemoryFolders extends SavedTweetFolderModel {
+  MemoryFolders() {
+    update([SavedTweetFolder(id: 'inspiration', name: 'Inspiration', createdAt: DateTime(2026))]);
+  }
+  @override
+  Future<void> listFolders() async {}
+}
+
 void main() {
+  testWidgets('Saved combines network, folder and note search, then opens the stored conversation', (tester) async {
+    final h = ReaderReviewHarness();
+    h.saved.update([
+      SavedTweet(id: mastodonArchiveId(reviewPost('root')), user: 'maya', folderId: 'inspiration',
+        note: 'Colours to come back to.', content: jsonEncode(mastodonArchiveBlob(reviewPost('root')))),
+      SavedTweet(id: mastodonArchiveId(reviewPost('b')), user: 'maya',
+        content: jsonEncode(mastodonArchiveBlob(reviewPost('b')))),
+    ]);
+    await tester.pumpWidget(h.providers(h.app(child: SavedScreen(scrollController: h.scroll))));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('saved-source-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('X'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MastodonPostCard), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('saved-source-filter')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mastodon'));
+    await tester.pumpAndSettle();
+    final folders = find.descendant(of: find.byType(SavedControlBar), matching: find.byType(Scrollable));
+    await tester.scrollUntilVisible(find.text('Inspiration'), 300, scrollable: folders);
+    await tester.tap(find.text('Inspiration'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.search));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'colours');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    expect(find.byType(MastodonPostCard), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.mode_comment_outlined));
+    await tester.pumpAndSettle();
+    expect(find.byType(MastodonThreadScreen), findsOneWidget);
+    expect(find.byKey(const ValueKey('mastodon-thread-selected')), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.byType(MastodonPostCard), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await h.close(tester);
+  });
+
   test('same status id from two servers never collides in Saved', () {
     const remote = MastodonPost(
       id: '123',
@@ -68,16 +121,14 @@ void main() {
   testWidgets('bookmark writes the shared archive and can undo it', (tester) async {
     final h = MastodonHarness();
     final saved = MemorySaved();
-    final folders = SavedTweetFolderModel();
+    final folders = MemoryFolders();
     await tester.pumpWidget(
-      h.app(
-        child: MultiProvider(
+      MultiProvider(
           providers: [
             Provider<SavedTweetModel>.value(value: saved),
             Provider<SavedTweetFolderModel>.value(value: folders),
           ],
-          child: const Scaffold(body: MastodonBookmark(post: archivedPost)),
-        ),
+          child: h.app(child: const Scaffold(body: MastodonBookmark(post: archivedPost))),
       ),
     );
     await tester.pumpAndSettle();
@@ -88,6 +139,12 @@ void main() {
     await tester.tap(find.byIcon(Icons.bookmark));
     await tester.pumpAndSettle();
     expect(saved.state, isEmpty);
+    await tester.longPress(find.byIcon(Icons.bookmark_border));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Inspiration'));
+    await tester.pumpAndSettle();
+    expect(saved.state.single.folderId, 'inspiration');
+    expect(saved.contentOf(saved.state.single.id)!.mastodon!.url, archivedPost.url);
     expect(tester.takeException(), isNull);
     await h.close(tester);
     await saved.destroy();

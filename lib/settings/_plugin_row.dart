@@ -97,7 +97,7 @@ class InstalledPluginRow extends StatelessWidget {
               },
             ),
           PopupMenuButton<String>(
-            tooltip: l10n.settings,
+            tooltip: MaterialLocalizations.of(context).showMenuTooltip,
             padding: EdgeInsets.zero,
             iconSize: 20,
             style: const ButtonStyle(

@@ -38,7 +38,7 @@ void main() {
     expect(find.byType(ListTile), findsNothing);
   });
 
-  testWidgets('an installed plugin keeps tab and settings on the same row', (
+  testWidgets('an installed plugin keeps Open and settings, with tab visibility in its menu', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -54,16 +54,13 @@ void main() {
 
     expect(find.byType(SwitchListTile), findsNothing);
     expect(find.text('Show as a tab'), findsNothing);
-    expect(
-      find.byTooltip(
-        L10n.of(
-          tester.element(find.byType(Scaffold)),
-        ).plugin_show_as_tab_description,
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Open'), findsOneWidget);
     expect(find.byTooltip('Settings'), findsOneWidget);
     expect(find.byType(PopupMenuButton<String>), findsOneWidget);
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    expect(find.text('Show as a tab'), findsOneWidget);
+    expect(find.text('Uninstall'), findsOneWidget);
   });
 
   testWidgets('available plugins start open so a new plugin is visible', (

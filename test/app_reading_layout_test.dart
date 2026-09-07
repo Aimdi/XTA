@@ -15,6 +15,16 @@ import 'package:xta/trends/trends_screen.dart';
 import 'settings_direct_access_test.dart' show readerMediaPreferences;
 import 'support/reader_review_harness.dart';
 
+Future<void> settleReviewImages(WidgetTester tester) async {
+  for (var i = 0; i < 2; i++) {
+    await tester.pump();
+    await tester.runAsync(() async {
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+    });
+  }
+  await tester.pumpAndSettle();
+}
+
 void main() {
   setUpAll(() async {
     autoUpdateGoldenFiles = true;
@@ -76,10 +86,10 @@ void main() {
       await tester.pumpWidget(
         h.providers(h.app(child: screen, dark: variant == 'thread-black', scale: large ? 2 : 1, rtl: large)),
       );
-      await tester.pumpAndSettle();
+      await settleReviewImages(tester);
       if (variant == 'media') {
         await tester.tap(find.text('Media'));
-        await tester.pumpAndSettle();
+        await settleReviewImages(tester);
       }
       if (variant == 'settings' || variant == 'setting-target') {
         await tester.enterText(find.byType(TextField), variant == 'settings' ? 'video' : 'autoplay');
