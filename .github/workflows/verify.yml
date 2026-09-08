@@ -47,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install and set up Flutter
         uses: subosito/flutter-action@v2
@@ -73,11 +75,12 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           git fetch --no-tags --depth=1 origin "$BASE"
-          mapfile -t added < <(git diff --diff-filter=A --name-only "origin/$BASE"...HEAD -- '*.dart')
-          if [ ${#added[@]} -eq 0 ]; then
+          added_files=$(git diff --diff-filter=A --name-only "origin/$BASE"...HEAD -- '*.dart')
+          if [ -z "$added_files" ]; then
             echo "No new Dart files."
             exit 0
           fi
+          mapfile -t added <<< "$added_files"
           printf '%s\n' "${added[@]}"
           dart format --output=none --set-exit-if-changed --line-length 120 "${added[@]}"
         env:

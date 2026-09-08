@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artikel di X",
   "@article_on_x": {},
+  "article_reader_appearance": "Tampilan membaca",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Tandai selesai dibaca",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Selesai dibaca",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Jarak antarbaris",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Dibuka",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Dilanjutkan",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Kembali ke awal",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Faktor skala teks",
+  "@article_reader_text_size": {},
   "auto_download_images": "Unduh gambar otomatis",
   "@auto_download_images": {},
   "auto_download_images_description": "Simpan gambar dari setiap postingan yang dimasukkan ke folder ini ke folder unduhan Anda.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Mengunduh media...",
   "@downloading_media": {},
+  "downloads_batch_result": "File tersimpan: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Dibatalkan",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Pilih lokasi penyimpanan",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Hapus riwayat unduhan selesai",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Disimpan",
+  "@downloads_completed": {},
+  "downloads_empty": "Unduhan Anda akan muncul di sini. Simpan media dari postingan untuk memulai.",
+  "@downloads_empty": {},
+  "downloads_failed": "Unduhan gagal",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Riwayat unduhan tidak dapat disimpan. Periksa ruang penyimpanan yang tersedia dan coba lagi.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Terputus · Coba lagi untuk melanjutkan",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "File ini tidak dapat dibuka. Mungkin sudah dipindahkan atau dihapus.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Buka file",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Menunggu",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Periksa koneksi dan folder unduhan Anda, lalu coba lagi.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Menyimpan file…",
+  "@downloads_saving": {},
+  "downloads_title": "Unduhan",
+  "@downloads_title": {},
   "edit_folder": "Edit folder",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Selesai {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Tidak ada pemilihan} one{Satu pemilihan} two{Dua pemilihan} few{{numFormatted} pemilihan} many{{numFormatted} pemilihan} other{{numFormatted} pemilihan}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Teks artikel disimpan · Gambar: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Teks artikel disimpan. Audio dan video tersemat masih memerlukan koneksi.",
+  "@offline_article_text_only": {},
+  "offline_available": "Tersedia offline",
+  "@offline_available": {},
+  "offline_clear": "Kosongkan koleksi offline",
+  "@offline_clear": {},
+  "offline_clear_description": "Artikel dan media yang disimpan untuk offline akan dihapus dari perangkat ini. Postingan tersimpan dan folder tetap ada di pustaka Anda.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Hapus semua salinan offline?",
+  "@offline_clear_question": {},
+  "offline_empty": "Simpan artikel atau media dari postingan tersimpan untuk offline agar muncul di sini.",
+  "@offline_empty": {},
+  "offline_failed": "Tidak semua konten dapat disimpan untuk offline. Periksa koneksi dan ruang penyimpanan yang tersedia, lalu coba lagi.",
+  "@offline_failed": {},
+  "offline_keep": "Simpan untuk offline",
+  "@offline_keep": {},
+  "offline_library_title": "Koleksi offline",
+  "@offline_library_title": {},
+  "offline_media_count": "File media yang disimpan: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Media {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Sebagian tersedia offline",
+  "@offline_partial": {},
+  "offline_remove": "Hapus salinan offline",
+  "@offline_remove": {},
+  "offline_sensitive_description": "File ini mungkin berisi konten sensitif. File akan disimpan di perangkat ini dan tetap tersembunyi sampai Anda memilih untuk membukanya.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Buka media sensitif",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Simpan media sensitif untuk offline?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Penyimpanan offline tidak dapat dibaca atau diperbarui. Periksa ruang penyimpanan yang tersedia dan coba lagi.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Penyimpanan offline dibatasi hingga {limit}. File besar atau aliran yang tidak didukung mungkin tetap tidak tersedia.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} dari {limit} digunakan",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Salinan offline tidak tersedia",
+  "@offline_unavailable": {},
+  "offline_video_only": "Salinan video Reddit mungkin tidak menyertakan suara.",
+  "@offline_video_only": {},
   "ok": "Oke",
   "@ok": {},
   "only_show_posts_with_media": "Hanya tampilkan cuitan dengan media",

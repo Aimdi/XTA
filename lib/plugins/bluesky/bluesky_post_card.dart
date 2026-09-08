@@ -9,6 +9,7 @@ import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/bluesky/bluesky_facets.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
+import 'package:xta/plugins/bluesky/bluesky_content_warning.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
@@ -158,18 +159,10 @@ class BlueskyPostCard extends StatelessWidget {
                                       _onFacet(context, facet),
                                 ),
                               ],
-                              if (post.hasMedia) ...[
-                                const SizedBox(height: 10),
-                                PluginPostMedia(items: post.mediaItems),
-                              ],
-                              if (post.quotedPost != null) ...[
-                                const SizedBox(height: 10),
-                                _QuotedPost(quote: post.quotedPost!),
-                              ],
-                              if (post.linkCard != null) ...[
-                                const SizedBox(height: 10),
-                                _BlueskyLinkPreview(card: post.linkCard!),
-                              ],
+                              if (post.hasMedia || post.hasQuote || post.hasLinkCard)
+                                post.sensitive
+                                    ? BlueskyContentWarning(key: ValueKey('warning-${post.uri}'), child: _attachments())
+                                    : _attachments(),
                               _BlueskyEngagementRow(
                                 post: post,
                                 onOpen: () => _open(context),
@@ -190,6 +183,21 @@ class BlueskyPostCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _attachments() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    if (post.hasMedia) ...[
+      const SizedBox(height: 10),
+      PluginPostMedia(items: post.mediaItems),
+    ],
+    if (post.quotedPost != null) ...[
+      const SizedBox(height: 10),
+      _QuotedPost(quote: post.quotedPost!),
+    ],
+    if (post.linkCard != null) ...[
+      const SizedBox(height: 10),
+      _BlueskyLinkPreview(card: post.linkCard!),
+    ],
+  ]);
 
   Widget _repostBanner(BuildContext context) {
     final theme = Theme.of(context);
@@ -353,7 +361,10 @@ class _QuotedPost extends StatelessWidget {
               ),
               if (quote.hasMedia) ...[
                 const SizedBox(height: 8),
-                PluginPostMedia(items: quote.mediaItems),
+                quote.sensitive
+                    ? BlueskyContentWarning(key: ValueKey('warning-${quote.uri}'),
+                        child: PluginPostMedia(items: quote.mediaItems))
+                    : PluginPostMedia(items: quote.mediaItems),
               ],
               if (quote.text.isNotEmpty) ...[
                 const SizedBox(height: 6),
@@ -500,7 +511,9 @@ class _BlueskyEngagementRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
-      child: Row(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           TextButton.icon(
             style: footerButtonStyle,
@@ -540,7 +553,6 @@ class _BlueskyEngagementRow extends StatelessWidget {
               );
             },
           ),
-          const Spacer(),
           tweetFooterIconButton(
             context,
             Icons.open_in_new,

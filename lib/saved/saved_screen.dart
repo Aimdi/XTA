@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:xta/downloads/downloads_screen.dart';
+import 'package:xta/offline/offline_library_screen.dart';
+import 'package:xta/offline/offline_saved_action.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -467,6 +470,12 @@ class _SavedScreenState extends State<SavedScreen>
         await Navigator.pushNamed(context, routeSavedFolders);
         if (mounted) setState(() {});
         return;
+      case SavedOverflowAction.downloads:
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => const DownloadsScreen()));
+        return;
+      case SavedOverflowAction.offline:
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => const OfflineLibraryScreen()));
+        return;
       case SavedOverflowAction.cleanup:
         if (!mounted) return;
         await showDialog<void>(
@@ -859,9 +868,17 @@ class _SavedClipTileState extends State<SavedClipTile> {
     }
   }
 
+  Widget _offlineMenu(BuildContext context, SavedContent content) => IconButton(
+    icon: const Icon(Icons.offline_pin_outlined, size: 20),
+    tooltip: L10n.of(context).offline_library_title,
+    onPressed: () => showModalBottomSheet<void>(context: context, useRootNavigator: true,
+      builder: (_) => SafeArea(child: OfflineSavedAction(id: widget.saved.id, content: content))),
+  );
+
   @override
   Widget build(BuildContext context) {
     final note = widget.saved.note;
+    final offlineContent = SavedContent(tweet: widget.tweet, reddit: widget.reddit, mastodon: widget.mastodon, haystack: '');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -919,14 +936,16 @@ class _SavedClipTileState extends State<SavedClipTile> {
             ),
           )
         else
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
+          Row(children: [
+            Expanded(child: Align(alignment: AlignmentDirectional.centerStart, child: TextButton.icon(
               onPressed: () => setState(() => _editing = true),
               icon: const Icon(Icons.note_add_outlined, size: 18),
               label: Text(L10n.of(context).clip_note_hint),
-            ),
-          ),
+            ))),
+            if (hasOfflineMedia(offlineContent)) _offlineMenu(context, offlineContent),
+          ]),
+        if (note != null && note.isNotEmpty && !_editing && hasOfflineMedia(offlineContent))
+          Align(alignment: AlignmentDirectional.centerEnd, child: _offlineMenu(context, offlineContent)),
       ],
     );
   }

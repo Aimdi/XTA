@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "X 上的文章",
   "@article_on_x": {},
+  "article_reader_appearance": "閱讀外觀",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "標示為已讀完",
+  "@article_reader_finish": {},
+  "article_reader_finished": "已讀完",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "行距",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "已開啟",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "已恢復閱讀位置",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "返回開頭",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "文字大小",
+  "@article_reader_text_size": {},
   "auto_download_images": "自動下載圖片",
   "@auto_download_images": {},
   "auto_download_images_description": "將歸入此資料夾的任何貼文的圖片儲存到你的下載資料夾。",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "正在下載媒體…",
   "@downloading_media": {},
+  "downloads_batch_result": "已儲存檔案：{saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "已取消",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "選擇儲存位置",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "清除已完成的下載記錄",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "已儲存",
+  "@downloads_completed": {},
+  "downloads_empty": "下載的檔案將顯示在這裡。從貼文儲存媒體即可開始。",
+  "@downloads_empty": {},
+  "downloads_failed": "下載失敗",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "無法儲存下載記錄。請檢查可用儲存空間後重試。",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "已中斷 · 點選重試以繼續",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "無法開啟此檔案。它可能已被移動或刪除。",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "開啟檔案",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "等待中",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "請檢查網路連線和下載資料夾後重試。",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "正在儲存檔案…",
+  "@downloads_saving": {},
+  "downloads_title": "下載",
+  "@downloads_title": {},
   "edit_folder": "編輯資料夾",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "已於 {timeagoFormat} 結束",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{無投票} one{一票} other{{numFormatted} 票}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "已保留文章內文 · 圖片：{saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "文章內文會被保留。內嵌的音訊和影片仍需網路連線。",
+  "@offline_article_text_only": {},
+  "offline_available": "可離線使用",
+  "@offline_available": {},
+  "offline_clear": "清空離線收藏",
+  "@offline_clear": {},
+  "offline_clear_description": "這會從此裝置移除保留的文章和媒體。已儲存的貼文和資料夾將保留在收藏庫中。",
+  "@offline_clear_description": {},
+  "offline_clear_question": "移除所有離線副本？",
+  "@offline_clear_question": {},
+  "offline_empty": "離線保留文章或已儲存貼文的媒體，即可在這裡找到它們。",
+  "@offline_empty": {},
+  "offline_failed": "無法離線保留所有內容。請檢查網路連線和可用儲存空間後重試。",
+  "@offline_failed": {},
+  "offline_keep": "離線保留",
+  "@offline_keep": {},
+  "offline_library_title": "離線收藏",
+  "@offline_library_title": {},
+  "offline_media_count": "已保留媒體檔案：{saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "媒體 {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "部分可離線使用",
+  "@offline_partial": {},
+  "offline_remove": "移除離線副本",
+  "@offline_remove": {},
+  "offline_sensitive_description": "這些檔案可能包含敏感內容。它們將儲存在此裝置上，並保持隱藏，直到你選擇開啟。",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "開啟敏感媒體",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "離線保留敏感媒體？",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "無法讀取或更新離線儲存空間。請檢查可用儲存空間後重試。",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "離線儲存空間上限為 {limit}。大型檔案或不支援的串流可能仍無法使用。",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "已用 {used}，共 {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "離線副本無法使用",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit 影片副本可能不包含聲音。",
+  "@offline_video_only": {},
   "ok": "確定",
   "@ok": {},
   "only_show_posts_with_media": "僅顯示包含媒體的推文",

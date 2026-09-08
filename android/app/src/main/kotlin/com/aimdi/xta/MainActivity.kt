@@ -8,6 +8,10 @@ import android.util.Rational
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.DocumentsContract
+import java.io.File
+import java.io.InterruptedIOException
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 import com.ryanheise.audioservice.AudioServiceActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -15,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : AudioServiceActivity() {
     private val CHANNEL = "browser_resolver"
+    private val downloadCopies = ConcurrentHashMap<String, AtomicBoolean>()
     private val REQUEST_PICK_DIRECTORY = 0xD17
 
     // Set while the document-tree picker is open, so its result can be handed
@@ -33,6 +38,10 @@ class MainActivity : AudioServiceActivity() {
                     "pickDownloadDirectory" -> pickDownloadDirectory(result)
                     "hasDownloadDirectoryAccess" -> hasDownloadDirectoryAccess(call, result)
                     "saveToDownloadDirectory" -> saveToDownloadDirectory(call, result)
+                    "saveFileToDownloadDirectory" -> saveFileToDownloadDirectory(call, result)
+                    "cancelDownloadSave" -> cancelDownloadSave(call, result)
+                    "deleteDownloadedDocument" -> deleteDownloadedDocument(call, result)
+                    "openDownloadedDocument" -> openDownloadedDocument(call, result)
                     "enterPictureInPicture" -> enterPictureInPicture(call, result)
                     else -> result.notImplemented()
                 }
@@ -206,6 +215,99 @@ class MainActivity : AudioServiceActivity() {
         } catch (e: Exception) {
             result.error("SAVE_FAILED", e.message, null)
         }
+    }
+
+    private fun saveFileToDownloadDirectory(call: MethodCall, result: MethodChannel.Result) {
+        val treeUri = call.argument<String>("treeUri")
+        val fileName = call.argument<String>("fileName")
+        val sourcePath = call.argument<String>("sourcePath")
+        val operationId = call.argument<String>("operationId")
+        val mimeType = call.argument<String>("mimeType") ?: "application/octet-stream"
+        if (treeUri.isNullOrEmpty() || fileName.isNullOrEmpty() || sourcePath.isNullOrEmpty() || operationId.isNullOrEmpty()) {
+            result.error("INVALID_ARGUMENT", "A tree, name, staged file and operation are required", null)
+            return
+        }
+        val source = File(sourcePath).canonicalFile
+        if (!source.path.startsWith(cacheDir.canonicalPath + File.separator) || !source.isFile) {
+            result.error("INVALID_SOURCE", "Expected a staged file in app cache", null)
+            return
+        }
+        val cancelled = AtomicBoolean(false)
+        if (downloadCopies.putIfAbsent(operationId, cancelled) != null) {
+            result.error("ALREADY_SAVING", "This operation is already saving", null)
+            return
+        }
+        Thread {
+            var document: Uri? = null
+            try {
+                val tree = Uri.parse(treeUri)
+                val directory = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
+                synchronized(cancelled) {
+                    if (cancelled.get()) throw InterruptedIOException()
+                    document = DocumentsContract.createDocument(contentResolver, directory, mimeType, fileName)
+                        ?: throw java.io.IOException("Could not create destination")
+                }
+                val output = contentResolver.openOutputStream(document!!)
+                    ?: throw java.io.IOException("Could not open destination")
+                output.use { destination ->
+                    source.inputStream().use { input ->
+                        val buffer = ByteArray(64 * 1024)
+                        while (true) {
+                            if (cancelled.get()) throw InterruptedIOException()
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            synchronized(cancelled) {
+                                if (cancelled.get()) throw InterruptedIOException()
+                                destination.write(buffer, 0, count)
+                            }
+                        }
+                    }
+                }
+                if (cancelled.get()) throw InterruptedIOException()
+                runOnUiThread {
+                    downloadCopies.remove(operationId)
+                    result.success(document.toString())
+                }
+            } catch (e: Exception) {
+                document?.let { try { DocumentsContract.deleteDocument(contentResolver, it) } catch (_: Exception) {} }
+                runOnUiThread {
+                    downloadCopies.remove(operationId)
+                    if (cancelled.get()) result.success(null)
+                    else result.error(if (e is SecurityException) "PERMISSION_LOST" else "SAVE_FAILED", e.message, null)
+                }
+            }
+        }.start()
+    }
+
+    private fun cancelDownloadSave(call: MethodCall, result: MethodChannel.Result) {
+        val operationId = call.argument<String>("operationId")
+        if (operationId == null) { result.success(null); return }
+        downloadCopies[operationId]?.set(true)
+        result.success(null)
+    }
+
+    private fun deleteDownloadedDocument(call: MethodCall, result: MethodChannel.Result) {
+        val uri = call.argument<String>("documentUri")
+        try {
+            if (uri == null || Uri.parse(uri).scheme != "content") throw IllegalArgumentException("Expected document URI")
+            DocumentsContract.deleteDocument(contentResolver, Uri.parse(uri))
+            result.success(null)
+        } catch (e: Exception) { result.error("DELETE_FAILED", e.message, null) }
+    }
+
+    private fun openDownloadedDocument(call: MethodCall, result: MethodChannel.Result) {
+        val raw = call.argument<String>("documentUri")
+        try {
+            if (raw == null) throw IllegalArgumentException("Expected document URI")
+            val uri = Uri.parse(raw)
+            if (uri.scheme != "content") throw IllegalArgumentException("Expected document URI")
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, call.argument<String>("mimeType") ?: "application/octet-stream")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(intent)
+            result.success(null)
+        } catch (e: Exception) { result.error("OPEN_FAILED", e.message, null) }
     }
 
     @Deprecated("Deprecated in Java")

@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artikel auf X",
   "@article_on_x": {},
+  "article_reader_appearance": "Leseansicht",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Als fertig gelesen markieren",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Fertig gelesen",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Zeilenabstand",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Geöffnet",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Fortgesetzt",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Zum Anfang",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Textskalierungsfaktor",
+  "@article_reader_text_size": {},
   "auto_download_images": "Bilder automatisch herunterladen",
   "@auto_download_images": {},
   "auto_download_images_description": "Die Bilder jedes in diesem Ordner abgelegten Beitrags im Download-Ordner speichern.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Medien werden heruntergeladen...",
   "@downloading_media": {},
+  "downloads_batch_result": "Gespeicherte Dateien: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Abgebrochen",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Speicherort wählen",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Abgeschlossenen Verlauf leeren",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Gespeichert",
+  "@downloads_completed": {},
+  "downloads_empty": "Hier erscheinen deine Downloads. Speichere Medien aus einem Beitrag, um loszulegen.",
+  "@downloads_empty": {},
+  "downloads_failed": "Download fehlgeschlagen",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Der Downloadverlauf konnte nicht gespeichert werden. Prüfe den freien Speicherplatz und versuche es erneut.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Unterbrochen · Zum Fortfahren erneut versuchen",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Diese Datei konnte nicht geöffnet werden. Sie wurde möglicherweise verschoben oder gelöscht.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Datei öffnen",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Wartet",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Prüfe deine Verbindung und den Downloadordner und versuche es erneut.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Datei wird gespeichert…",
+  "@downloads_saving": {},
+  "downloads_title": "Downloads",
+  "@downloads_title": {},
   "edit_folder": "Ordner bearbeiten",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Beendet {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{keine Stimmen} one{eine Stimme} two{zwei Stimmen} few{{numFormatted} Stimmen} many{{numFormatted} Stimmen} other{{numFormatted} Stimmen}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Artikeltext aufbewahrt · Bilder: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Der Artikeltext wird aufbewahrt. Eingebettete Audio- und Videoinhalte benötigen weiterhin eine Verbindung.",
+  "@offline_article_text_only": {},
+  "offline_available": "Offline verfügbar",
+  "@offline_available": {},
+  "offline_clear": "Offline-Sammlung leeren",
+  "@offline_clear": {},
+  "offline_clear_description": "Dadurch werden aufbewahrte Artikel und Medien von diesem Gerät entfernt. Gespeicherte Beiträge und Ordner bleiben im Archiv.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Alle Offline-Kopien entfernen?",
+  "@offline_clear_question": {},
+  "offline_empty": "Behalte Artikel oder Medien aus gespeicherten Beiträgen offline, um sie hier zu finden.",
+  "@offline_empty": {},
+  "offline_failed": "Nicht alle Inhalte konnten offline gespeichert werden. Prüfe deine Verbindung und den freien Speicherplatz und versuche es erneut.",
+  "@offline_failed": {},
+  "offline_keep": "Offline behalten",
+  "@offline_keep": {},
+  "offline_library_title": "Offline-Sammlung",
+  "@offline_library_title": {},
+  "offline_media_count": "Aufbewahrte Mediendateien: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Medium {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Teilweise offline verfügbar",
+  "@offline_partial": {},
+  "offline_remove": "Offline-Kopie entfernen",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Diese Dateien können sensible Inhalte enthalten. Sie werden auf diesem Gerät gespeichert und erst angezeigt, wenn du sie öffnest.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Sensible Medien öffnen",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Sensible Medien offline behalten?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Der Offline-Speicher konnte nicht gelesen oder aktualisiert werden. Prüfe den freien Speicherplatz und versuche es erneut.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Der Offline-Speicher ist auf {limit} begrenzt. Große Dateien oder nicht unterstützte Streams sind möglicherweise nicht verfügbar.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} von {limit} belegt",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Offline-Kopie nicht verfügbar",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit-Videokopien enthalten möglicherweise keinen Ton.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Nur Tweets mit Medien anzeigen",

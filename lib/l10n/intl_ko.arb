@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "X의 아티클",
   "@article_on_x": {},
+  "article_reader_appearance": "읽기 화면 설정",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "다 읽음으로 표시",
+  "@article_reader_finish": {},
+  "article_reader_finished": "다 읽음",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "줄 간격",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "열어봄",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "이어서 읽기 복원됨",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "처음으로 돌아가기",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "텍스트 배율",
+  "@article_reader_text_size": {},
   "auto_download_images": "이미지 자동 다운로드",
   "@auto_download_images": {},
   "auto_download_images_description": "이 폴더에 저장한 게시물의 이미지를 다운로드 폴더에 저장합니다.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "미디어 다운로드 중...",
   "@downloading_media": {},
+  "downloads_batch_result": "저장된 파일: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "취소됨",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "저장 위치 선택",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "완료된 다운로드 기록 지우기",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "저장됨",
+  "@downloads_completed": {},
+  "downloads_empty": "다운로드한 파일이 여기에 표시됩니다. 게시물에서 미디어를 저장하여 시작하세요.",
+  "@downloads_empty": {},
+  "downloads_failed": "다운로드 실패",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "다운로드 기록을 저장할 수 없습니다. 사용 가능한 저장 공간을 확인하고 다시 시도하세요.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "중단됨 · 다시 시도하여 계속",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "이 파일을 열 수 없습니다. 이동되었거나 삭제되었을 수 있습니다.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "파일 열기",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "대기 중",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "연결과 다운로드 폴더를 확인한 후 다시 시도하세요.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "파일 저장 중…",
+  "@downloads_saving": {},
+  "downloads_title": "다운로드",
+  "@downloads_title": {},
   "edit_folder": "폴더 편집",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "{timeagoFormat}에 종료됨",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{투표 없음} one{투표 1개} other{{numFormatted}개의 투표}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "글 본문 보관됨 · 이미지: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "글 본문이 보관됩니다. 삽입된 오디오와 동영상에는 여전히 연결이 필요합니다.",
+  "@offline_article_text_only": {},
+  "offline_available": "오프라인 사용 가능",
+  "@offline_available": {},
+  "offline_clear": "오프라인 모음 비우기",
+  "@offline_clear": {},
+  "offline_clear_description": "이 기기에 보관된 글과 미디어가 삭제됩니다. 저장한 게시물과 폴더는 보관함에 남습니다.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "모든 오프라인 사본을 삭제할까요?",
+  "@offline_clear_question": {},
+  "offline_empty": "글이나 저장한 게시물의 미디어를 오프라인으로 보관하면 여기에 표시됩니다.",
+  "@offline_empty": {},
+  "offline_failed": "모든 콘텐츠를 오프라인으로 보관할 수 없습니다. 연결과 사용 가능한 저장 공간을 확인한 후 다시 시도하세요.",
+  "@offline_failed": {},
+  "offline_keep": "오프라인으로 보관",
+  "@offline_keep": {},
+  "offline_library_title": "오프라인 모음",
+  "@offline_library_title": {},
+  "offline_media_count": "보관된 미디어 파일: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "미디어 {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "일부 오프라인 사용 가능",
+  "@offline_partial": {},
+  "offline_remove": "오프라인 사본 삭제",
+  "@offline_remove": {},
+  "offline_sensitive_description": "이 파일에는 민감한 콘텐츠가 포함될 수 있습니다. 이 기기에 저장되며 직접 열기 전까지 숨겨집니다.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "민감한 미디어 열기",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "민감한 미디어를 오프라인으로 보관할까요?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "오프라인 저장소를 읽거나 업데이트할 수 없습니다. 사용 가능한 저장 공간을 확인하고 다시 시도하세요.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "오프라인 저장 공간은 {limit}로 제한됩니다. 대용량 파일이나 지원되지 않는 스트림은 사용하지 못할 수 있습니다.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{limit} 중 {used} 사용",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "오프라인 사본 사용 불가",
+  "@offline_unavailable": {},
+  "offline_video_only": "Reddit 동영상 사본에는 소리가 포함되지 않을 수 있습니다.",
+  "@offline_video_only": {},
   "ok": "확인",
   "@ok": {},
   "only_show_posts_with_media": "미디어가 있는 트윗만 표시",

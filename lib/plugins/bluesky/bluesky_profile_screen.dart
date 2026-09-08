@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -9,6 +10,8 @@ import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
+import 'package:xta/plugins/bluesky/bluesky_profile_store.dart';
+import 'package:xta/plugins/bluesky/bluesky_media_grid.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/plugin_counts.dart';
@@ -17,7 +20,6 @@ import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/feed_list.dart';
 import 'package:xta/user.dart';
 
 /// What a failed Bluesky read should say.
@@ -71,7 +73,7 @@ const _profileTabs = [
 String _tweetsLabel(L10n l10n) => l10n.tweets;
 String _repliesLabel(L10n l10n) => l10n.plugin_profile_replies;
 String _mediaLabel(L10n l10n) => l10n.media;
-String _savedLabel(L10n l10n) => l10n.saved;
+String _savedLabel(L10n l10n) => l10n.favorites;
 
 /// One Bluesky profile and a page of its posts, looked up on the public AppView.
 class BlueskyProfileScreen extends StatefulWidget {
@@ -83,225 +85,34 @@ class BlueskyProfileScreen extends StatefulWidget {
   State<BlueskyProfileScreen> createState() => _BlueskyProfileScreenState();
 }
 
-class _TabFeed {
-  List<BlueskyPost> posts = const [];
-  String? cursor;
-  var loaded = false;
-  var loading = false;
-  var loadingMore = false;
-  var loadMoreBackedOff = false;
-}
-
 class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
     with TickerProviderStateMixin {
-  BlueskyProfile? _profile;
-  Object? _error;
-  bool _loading = true;
-  var _tab = PluginProfileFeedTab.posts;
-  final _feeds = {
-    for (final tab in PluginProfileFeedTab.values) tab: _TabFeed(),
-  };
+  late final BlueskyProfileStore _store;
   final _nestedKey = GlobalKey<NestedScrollViewState>();
   late final TabController _tabController;
-
-  String get _actor {
-    final profile = _profile;
-    if (profile == null) {
-      return widget.actor;
-    }
-    return profile.did.isNotEmpty ? profile.did : profile.handle;
-  }
-
-  String _filterFor(PluginProfileFeedTab tab) => switch (tab) {
-    PluginProfileFeedTab.posts => kBlueskyAuthorFeedPosts,
-    PluginProfileFeedTab.replies => kBlueskyAuthorFeedReplies,
-    PluginProfileFeedTab.media => kBlueskyAuthorFeedMedia,
-    PluginProfileFeedTab.saved => kBlueskyAuthorFeedPosts,
-  };
-
-  List<BlueskyPost> _applyTabFilter(
-    PluginProfileFeedTab tab,
-    List<BlueskyPost> posts,
-  ) {
-    if (tab == PluginProfileFeedTab.replies) {
-      return [
-        for (final post in posts)
-          if (post.isReply) post,
-      ];
-    }
-    return posts;
-  }
 
   @override
   void initState() {
     super.initState();
+    _store = BlueskyProfileStore(
+      context.read<BlueskyClient>(), context.read<BlueskyLikesStore>(), widget.actor,
+    );
     _tabController = TabController(length: _profileTabs.length, vsync: this);
     _tabController.addListener(_onTabController);
-    _load();
+    _store.refresh();
   }
 
   @override
   void dispose() {
     _tabController.removeListener(_onTabController);
     _tabController.dispose();
+    _store.destroy();
     super.dispose();
   }
 
   void _onTabController() {
-    if (_tabController.indexIsChanging) {
-      return;
-    }
-    _selectTab(_profileTabs[_tabController.index].tab);
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-      for (final feed in _feeds.values) {
-        feed.posts = const [];
-        feed.cursor = null;
-        feed.loaded = false;
-        feed.loading = false;
-        feed.loadingMore = false;
-        feed.loadMoreBackedOff = false;
-      }
-    });
-
-    final client = context.read<BlueskyClient>();
-    try {
-      final profile = await client.getProfile(widget.actor);
-      if (!mounted) {
-        return;
-      }
-      _profile = profile;
-      await _loadTab(PluginProfileFeedTab.posts, reset: true);
-      if (mounted) {
-        setState(() => _loading = false);
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e;
-          _loading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _selectTab(PluginProfileFeedTab tab) async {
-    if (_tab == tab) {
-      return;
-    }
-    setState(() => _tab = tab);
-    if (tab == PluginProfileFeedTab.saved) {
-      await _loadSaved();
-      return;
-    }
-    final feed = _feeds[tab]!;
-    if (!feed.loaded && !feed.loading) {
-      await _loadTab(tab, reset: true);
-    }
-  }
-
-  /// Device likes by this author. Cheap to rebuild from the in-memory store.
-  Future<void> _loadSaved() async {
-    final feed = _feeds[PluginProfileFeedTab.saved]!;
-    setState(() => feed.loading = true);
-    final likes = context.read<BlueskyLikesStore>();
-    if (likes.state.isEmpty) {
-      await likes.load();
-    }
-    if (!mounted) {
-      return;
-    }
-    final profile = _profile;
-    final posts = profile == null
-        ? const <BlueskyPost>[]
-        : blueskyLikesByAuthor(
-            likes.likedPosts,
-            did: profile.did,
-            handle: profile.handle,
-          );
-    setState(() {
-      feed.posts = posts;
-      feed.cursor = null;
-      feed.loaded = true;
-      feed.loading = false;
-    });
-  }
-
-  Future<void> _loadTab(PluginProfileFeedTab tab, {required bool reset}) async {
-    if (tab == PluginProfileFeedTab.saved) {
-      await _loadSaved();
-      return;
-    }
-    final feed = _feeds[tab]!;
-    if (feed.loading) {
-      return;
-    }
-    setState(() => feed.loading = true);
-    final client = context.read<BlueskyClient>();
-    try {
-      final page = await client.getAuthorFeed(_actor, filter: _filterFor(tab));
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        feed.posts = _applyTabFilter(tab, page.posts);
-        feed.cursor = page.cursor;
-        feed.loaded = true;
-        feed.loading = false;
-      });
-    } catch (e) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        feed.loading = false;
-        if (reset && !feed.loaded) {
-          _error = e;
-        }
-      });
-    }
-  }
-
-  Future<void> _loadMore() async {
-    final feed = _feeds[_tab]!;
-    final cursor = feed.cursor;
-    if (cursor == null || feed.loadingMore) {
-      return;
-    }
-
-    setState(() => feed.loadingMore = true);
-    final client = context.read<BlueskyClient>();
-    try {
-      final page = await client.getAuthorFeed(
-        _actor,
-        cursor: cursor,
-        filter: _filterFor(_tab),
-      );
-      if (!mounted) {
-        return;
-      }
-      final seen = feed.posts.map((p) => p.uri).toSet();
-      final extra = _applyTabFilter(_tab, page.posts);
-      setState(() {
-        feed.posts = [
-          ...feed.posts,
-          for (final post in extra)
-            if (!seen.contains(post.uri)) post,
-        ];
-        feed.cursor = page.cursor;
-        feed.loadingMore = false;
-      });
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          feed.loadingMore = false;
-          feed.loadMoreBackedOff = true;
-        });
-      }
+    if (!_tabController.indexIsChanging) {
+      _store.select(_profileTabs[_tabController.index].tab);
     }
   }
 
@@ -318,7 +129,6 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
     await subscriptions.reloadSubscriptions();
     if (mounted) {
       await feed.refresh(force: true);
-      setState(() {});
     }
   }
 
@@ -346,13 +156,10 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
       followed: true,
       groupsForUser: groups,
     );
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   void _openMedia(String url) {
-    final handle = _profile?.handle ?? widget.actor;
+    final handle = _store.state.profile?.handle ?? widget.actor;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -372,66 +179,54 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
     if (controller == null || !controller.hasClients) {
       return;
     }
+    final inner = nested?.innerController;
+    if (inner != null && inner.hasClients) inner.jumpTo(0);
     controller.jumpTo(0);
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    final error = _error;
-    if (error != null) {
-      final l10n = L10n.of(context);
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(_appBarTitle(widget.actor)),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: blueskyErrorMessage(l10n, error),
-            onRetry: _load,
-          ),
-        ),
+  Widget build(BuildContext context) => ScopedBuilder<BlueskyProfileStore, BlueskyProfileState>(
+    store: _store,
+    onState: (context, state) {
+      if (state.profile == null) {
+        final error = state.error;
+        return Scaffold(
+          appBar: AppBar(title: Text(_appBarTitle(widget.actor))),
+          body: error == null
+              ? const Center(child: CircularProgressIndicator())
+              : Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: FullPageErrorWidget(error: error, stackTrace: null,
+                    prefix: blueskyErrorMessage(L10n.of(context), error), onRetry: _store.refresh),
+                ),
+        );
+      }
+      return ScopedBuilder<BlueskyAccountsStore, List<BlueskyAccount>>(
+        store: context.read<BlueskyAccountsStore>(),
+        onState: (context, _) => Scaffold(body: _loadedBody(context, state)),
       );
-    }
+    },
+  );
 
-    return Scaffold(body: _loadedBody(context, _profile!));
-  }
-
-  Widget _loadedBody(BuildContext context, BlueskyProfile profile) {
+  Widget _loadedBody(BuildContext context, BlueskyProfileState state) {
+    final profile = state.profile!;
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    final media = MediaQuery.of(context);
-    final bannerHeight = media.size.width * _kBannerAspect;
-    final following = context.read<BlueskyAccountsStore>().follows(
-      profile.handle,
-    );
-    final feed = _feeds[_tab]!;
-    final posts = feed.posts;
-    final showMore = feed.cursor != null;
-    final empty = posts.isEmpty && !feed.loading && feed.loaded;
-    final busy = feed.loadingMore || (feed.loading && posts.isEmpty);
+    final bannerHeight = MediaQuery.sizeOf(context).width * _kBannerAspect;
+    final following = context.read<BlueskyAccountsStore>().follows(profile.handle);
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification is UserScrollNotification) {
-          feed.loadMoreBackedOff = false;
-        }
-        if (showMore &&
-            !feed.loadingMore &&
-            !feed.loadMoreBackedOff &&
-            notification.metrics.pixels >=
-                notification.metrics.maxScrollExtent - 400) {
-          _loadMore();
+        if (notification.depth == 1 && notification.metrics.axis == Axis.vertical &&
+            notification.metrics.extentAfter < 400) {
+          _store.loadMore();
         }
         return false;
       },
-      child: NestedScrollView(
+      child: RefreshIndicator(
+        onRefresh: _store.refresh,
+        notificationPredicate: (notification) => notification.depth <= 1,
+        child: NestedScrollView(
         key: _nestedKey,
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -507,6 +302,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
                     indicatorSize: TabBarIndicatorSize.label,
                     labelColor: theme.colorScheme.onSurface,
                     unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
@@ -514,7 +310,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
                       150,
                     ),
                     onTap: (index) {
-                      if (index == _tabController.index) {
+                      if (_profileTabs[index].tab == state.selected) {
                         _scrollToTop();
                       }
                     },
@@ -534,37 +330,67 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
             ),
           ];
         },
-        body: FeedListView(
-          padding: const EdgeInsets.only(bottom: 24),
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: (empty ? 1 : posts.length) + (busy ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (empty && index == 0) {
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                child: Text(
-                  _tab == PluginProfileFeedTab.saved
-                      ? l10n.plugin_bluesky_liked_empty
-                      : l10n.plugin_bluesky_no_posts,
-                  textAlign: TextAlign.center,
-                ),
-              );
-            }
-            if (index < posts.length) {
-              final post = posts[index];
-              return BlueskyPostCard(
-                key: ValueKey(post.uri),
-                post: post,
-                showSourceBadge: false,
-              );
-            }
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          },
+        body: state.selected == PluginProfileFeedTab.saved
+            ? ScopedBuilder<BlueskyLikesStore, List<BlueskyPost>>(
+                store: context.read<BlueskyLikesStore>(),
+                onState: (context, liked) => _feedBody(context, state,
+                  posts: blueskyLikesByAuthor(liked, did: profile.did, handle: profile.handle)),
+              )
+            : _feedBody(context, state),
         ),
       ),
+    );
+  }
+
+  Widget _feedBody(BuildContext context, BlueskyProfileState state, {List<BlueskyPost>? posts}) {
+    final l10n = L10n.of(context);
+    final feed = state.feed;
+    final visible = posts ?? feed.posts;
+    final error = feed.error ?? state.error;
+    return CustomScrollView(
+      key: PageStorageKey('bluesky-profile-${widget.actor}-${state.selected.name}'),
+      physics: const AlwaysScrollableScrollPhysics(),
+      slivers: [
+        if (state.selected == PluginProfileFeedTab.saved)
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Text(l10n.likes_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
+          )),
+        if (state.selected == PluginProfileFeedTab.media)
+          BlueskyMediaGrid(posts: visible)
+        else
+          SliverList.builder(
+            itemCount: visible.length,
+            itemBuilder: (context, index) => BlueskyPostCard(
+              key: ValueKey(visible[index].uri), post: visible[index], showSourceBadge: false,
+            ),
+          ),
+        if (visible.isEmpty && feed.loaded && !feed.loading)
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Text(state.selected == PluginProfileFeedTab.saved
+                ? l10n.plugin_bluesky_liked_empty : l10n.plugin_bluesky_no_posts,
+              textAlign: TextAlign.center),
+          )),
+        if (feed.loading || state.loading)
+          const SliverToBoxAdapter(child: Padding(
+            padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()),
+          )),
+        if (error != null)
+          SliverToBoxAdapter(child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: FullPageErrorWidget(error: error, stackTrace: null,
+              prefix: blueskyErrorMessage(l10n, error),
+              onRetry: () => state.error == null
+                  ? _store.load(state.selected, more: feed.loaded && feed.cursor != null)
+                  : _store.refresh()),
+          )),
+        if (feed.cursor != null && !feed.loading && error == null)
+          SliverToBoxAdapter(child: Center(child: TextButton(
+            onPressed: _store.loadMore, child: Text(l10n.plugin_reddit_load_more),
+          ))),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+      ],
     );
   }
 }

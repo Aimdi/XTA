@@ -97,6 +97,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artikkel på X",
   "@article_on_x": {},
+  "article_reader_appearance": "Lesevisning",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Merk som ferdiglest",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Ferdiglest",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Linjeavstand",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Åpnet",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Gjenopptatt",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Tilbake til begynnelsen",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Tekstskalafaktor",
+  "@article_reader_text_size": {},
   "auto_download_images": "Last ned bilder automatisk",
   "@auto_download_images": {},
   "auto_download_images_description": "Lagre bildene fra alle innlegg som legges i denne mappen i nedlastingsmappen din.",
@@ -399,6 +415,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Laster ned media …",
   "@downloading_media": {},
+  "downloads_batch_result": "Lagrede filer: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Avbrutt",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Velg hvor filen skal lagres",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Tøm historikken for fullførte nedlastinger",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Lagret",
+  "@downloads_completed": {},
+  "downloads_empty": "Nedlastingene dine vises her. Lagre medier fra et innlegg for å komme i gang.",
+  "@downloads_empty": {},
+  "downloads_failed": "Nedlasting mislyktes",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Kunne ikke lagre nedlastingshistorikken. Sjekk ledig lagringsplass og prøv på nytt.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Avbrutt · Prøv på nytt for å fortsette",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Kunne ikke åpne denne filen. Den kan ha blitt flyttet eller slettet.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Åpne fil",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Venter",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Sjekk tilkoblingen og nedlastingsmappen, og prøv på nytt.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Lagrer fil…",
+  "@downloads_saving": {},
+  "downloads_title": "Nedlastinger",
+  "@downloads_title": {},
   "edit_folder": "Rediger mappe",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Sluttet {timeagoFormat}",
@@ -831,6 +897,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{ingen stemmer} one{én stemme} two{to stemmer} few{{numFormatted} stemmer} many{{numFormatted} stemme} other{{numFormatted} stemmer}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Artikkeltekst beholdt · Bilder: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Artikkelteksten beholdes. Innebygd lyd og video krever fortsatt en tilkobling.",
+  "@offline_article_text_only": {},
+  "offline_available": "Tilgjengelig frakoblet",
+  "@offline_available": {},
+  "offline_clear": "Tøm frakoblet samling",
+  "@offline_clear": {},
+  "offline_clear_description": "Dette fjerner beholdte artikler og medier fra denne enheten. Lagrede innlegg og mapper blir værende i biblioteket.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Fjerne alle frakoblede kopier?",
+  "@offline_clear_question": {},
+  "offline_empty": "Behold artikler eller medier fra lagrede innlegg frakoblet for å finne dem her.",
+  "@offline_empty": {},
+  "offline_failed": "Kunne ikke beholde alt frakoblet. Sjekk tilkoblingen og ledig lagringsplass, og prøv på nytt.",
+  "@offline_failed": {},
+  "offline_keep": "Behold frakoblet",
+  "@offline_keep": {},
+  "offline_library_title": "Frakoblet samling",
+  "@offline_library_title": {},
+  "offline_media_count": "Beholdte mediefiler: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Mediefil {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Delvis tilgjengelig frakoblet",
+  "@offline_partial": {},
+  "offline_remove": "Fjern frakoblet kopi",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Disse filene kan inneholde sensitivt innhold. De lagres på denne enheten og holdes skjult til du velger å åpne dem.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Åpne sensitive medier",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Beholde sensitive medier frakoblet?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Kunne ikke lese eller oppdatere frakoblet lagring. Sjekk ledig lagringsplass og prøv på nytt.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Frakoblet lagring er begrenset til {limit}. Store filer eller strømmer som ikke støttes, kan forbli utilgjengelige.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} av {limit} brukt",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Frakoblet kopi utilgjengelig",
+  "@offline_unavailable": {},
+  "offline_video_only": "Kopier av Reddit-videoer kan mangle lyd.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Vis kun tweets med media",

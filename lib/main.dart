@@ -760,7 +760,7 @@ Future<void> main() async {
     final stocksWatchlist = StocksWatchlistStore();
     final tickerQuotes = TickerQuoteCache();
     final speech = SpeechStore();
-    final podcast = PodcastStore();
+    final podcast = PodcastStore(prefs: prefService);
     final substackClient = SubstackClient();
     final substackPublications = SubstackPublicationsStore(prefService);
     final substackRead = SubstackReadStore(prefService);
