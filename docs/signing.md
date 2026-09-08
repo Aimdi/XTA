@@ -55,14 +55,17 @@ gh secret set KEY_PASSWORD --body 'CHOOSE_A_KEY_PASSWORD'
 gh secret set KEY_ALIAS --body 'xta'
 ```
 
-### 3. Publish fingerprints (optional but useful)
+### 3. Publish and verify fingerprints
 
 ```bash
 keytool -list -v -keystore xta.jks -alias xta
 ```
 
-Put the SHA-1 / SHA-256 into `release-notes.md` (and keep them in sync) so
-users can verify downloads.
+Keep SHA-1 / SHA-256 in `certificate-fingerprints.txt` so users and release
+checks can verify downloads. On 2026-09-08 this file was corrected against
+the actual published aimdi128 arm64 APK, verified with `apksigner`. Its SHA256
+is `b4706dc61aebaa6c40663455e615592d3db8bcfc77467c6d31ae222875cb0e34`.
+This corrects the public record; it does not change the existing signing key.
 
 ### 4. Cut a new release
 
@@ -73,8 +76,33 @@ apply in place.
 
 ## What stays debug-signed
 
-`ci.yml` may still produce **debug-signed** APK artifacts for PR testing.
-Those are not for Obtainium or long-lived installs.
+`ci.yml` may still produce **debug-signed** APK artifacts for review.
+The artifact publisher rejects them. It requires all four APK variants, the
+release application ID, matching versions/ABIs, and the certificate recorded
+in `certificate-fingerprints.txt`.
+
+## Release source and artifact checks
+
+Release workflows resolve an existing full tag ref to its commit and check
+that commit out before setup/build. They verify translations, skill sync,
+analysis and app tests before generating APKs. Publication uses the resolved
+commit, not the event's `github.sha`.
+
+Each build includes `release-build.json` and `SHA256SUMS`. To publish a `ci.yml`
+artifact, the selected run must have succeeded in this repository on the tag's
+exact commit; its manifest must record the same release-tag build argument,
+source and run attempt. The actual APK checksums and metadata are inspected
+again. Untagged builds and older artifacts without a manifest must be rebuilt
+through the tagged release workflow; they cannot be relabeled as releases.
+
+The workflow saves its helper and current certificate record in runner
+temporary storage before checking out a requested historical tag. This lets
+it verify releases such as aimdi128 whose source still had the outdated
+fingerprint file. It does not change the historical tag.
+
+These guards establish build traceability and signing identity. They are not
+a reproducible-build result or an independently signed attestation. See
+`docs/specs/release-integrity.md` and `docs/app-development-audit-2026-09.md`.
 
 ### Agent / API cut
 

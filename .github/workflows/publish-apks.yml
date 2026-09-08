@@ -20,16 +20,54 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out the requested release tag
+        id: tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          cp scripts/release_integrity.py "$RUNNER_TEMP/xta-release-integrity.py"
+          cp certificate-fingerprints.txt "$RUNNER_TEMP/xta-release-certificate.txt"
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" checkout -- "$RELEASE_TAG"
+
+      - name: Read artifact workflow identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_RUN_ID: ${{ inputs.run_id }}
+        run: |
+          [[ "$ARTIFACT_RUN_ID" =~ ^[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$ARTIFACT_RUN_ID" > "$RUNNER_TEMP/xta-artifact-run.json"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+
       - name: Download APK artifact
         uses: actions/download-artifact@v4
         with:
           name: apks
           run-id: ${{ inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: build/app/outputs/release
+
+      - name: Verify artifact source, checks and signing identity
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+        run: python3 "$RUNNER_TEMP/xta-release-integrity.py" verify build/app/outputs/release --tag "$RELEASE_TAG" --run "$RUNNER_TEMP/xta-artifact-run.json" --certificate "$RUNNER_TEMP/xta-release-certificate.txt"
 
       - name: Create release with APKs
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ inputs.tag }}
-          name: ${{ inputs.tag }}
-          files: "*.apk"
+          tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ steps.tag.outputs.sha }}
+          name: ${{ steps.tag.outputs.tag }}
+          body_path: release-notes.md
+          files: |
+            build/app/outputs/release/*.apk
+            build/app/outputs/release/release-build.json
+            build/app/outputs/release/SHA256SUMS
+          fail_on_unmatched_files: true
