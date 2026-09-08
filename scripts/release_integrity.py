@@ -85,22 +85,25 @@ def parse_apk_details(badging, certificates):
     package = re.search(r"^package: name='([^']+)' versionCode='(\d+)' versionName='([^']*)'", badging, re.M)
     require(package is not None, "Cannot read APK package/version metadata")
     native = re.search(r"^native-code: (.+)$", badging, re.M)
-    fingerprints = re.findall(r"^Signer #\d+ certificate SHA-256 digest: ([0-9a-fA-F]{64})$", certificates, re.M)
-    require(bool(fingerprints), "Cannot read APK signing certificate")
+    fingerprints = re.findall(
+        r"^Signer (?:#\d+|\(minSdkVersion=.*\)) certificate SHA-256 digest: ([0-9a-fA-F]{64})\s*$",
+        certificates, re.M,
+    )
+    require(bool(fingerprints), f"Cannot read APK signing certificate from apksigner output:\n{certificates}")
     return {
         "application_id": package[1],
         "version_code": int(package[2]),
         "version_name": package[3],
         "debuggable": bool(re.search(r"^application-debuggable(?:\s|$)", badging, re.M)),
         "abis": sorted(re.findall(r"'([^']+)'", native[1])) if native else [],
-        "signer_sha256": sorted(fingerprint.lower() for fingerprint in fingerprints),
+        "signer_sha256": sorted({fingerprint.lower() for fingerprint in fingerprints}),
     }
 
 
 def inspect_apk(path):
     return parse_apk_details(
         output(android_tool("aapt"), "dump", "badging", str(path)),
-        output(android_tool("apksigner"), "verify", "--print-certs", str(path)),
+        output(android_tool("apksigner"), "verify", "--verbose", "--print-certs", str(path)),
     )
 
 

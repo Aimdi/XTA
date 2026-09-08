@@ -132,6 +132,15 @@ class ApkDetailsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             release.parse_apk_details("package: name='x' versionCode='1' versionName='1'", "")
 
+    def test_sdk_range_signers_are_deduplicated_and_source_stamps_are_excluded(self):
+        details = release.parse_apk_details(
+            "package: name='com.aimdi.xta' versionCode='1' versionName='1'\n",
+            f"Signer (minSdkVersion=24, maxSdkVersion=32) certificate SHA-256 digest: {FINGERPRINT}\n"
+            f"Signer (minSdkVersion=33, maxSdkVersion=2147483647) certificate SHA-256 digest: {FINGERPRINT}\n"
+            f"Source Stamp Signer certificate SHA-256 digest: {'b' * 64}\n",
+        )
+        self.assertEqual(details["signer_sha256"], [FINGERPRINT])
+
 
 class RepositoryTest(unittest.TestCase):
     def setUp(self):
