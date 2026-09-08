@@ -4,6 +4,11 @@ name: Build and release
 # intermediate Actions artifact — release assets do not count against the
 # account's artifact storage quota.
 on:
+  # A reviewed release PR can cut its tag and publish in this same job.
+  # GITHUB_TOKEN tag pushes do not trigger another release workflow.
+  pull_request:
+    types: [closed]
+    branches: [claude/main]
   workflow_dispatch:
     inputs:
       tag:
@@ -21,17 +26,52 @@ permissions:
 
 jobs:
   build-release:
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.merged == true &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.base.ref == 'claude/main' &&
+       startsWith(github.event.pull_request.head.ref, 'release/aimdi'))
     runs-on: ubuntu-latest
     steps:
       - name: Clone the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
+
+      - name: Tag the merged release commit
+        id: merged_release
+        if: github.event_name == 'pull_request'
+        env:
+          RELEASE_BRANCH: ${{ github.event.pull_request.head.ref }}
+          RELEASE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_BRANCH" =~ ^release/(aimdi[1-9][0-9]*)$ ]]; then
+            echo "::error::Release branch must be release/aimdi followed by a positive number"
+            exit 1
+          fi
+          tag="${BASH_REMATCH[1]}"
+          if [[ ! "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || [ "$(git rev-parse HEAD)" != "$RELEASE_SHA" ]; then
+            echo "::error::Checkout must match the release PR's merge commit"
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$tag"; then
+            if [ "$(git rev-parse "refs/tags/$tag^{commit}")" != "$RELEASE_SHA" ]; then
+              echo "::error::Release tag already points to different source; it will not be moved"
+              exit 1
+            fi
+          else
+            git tag "$tag" "$RELEASE_SHA"
+            git push origin "refs/tags/$tag:refs/tags/$tag"
+          fi
+          printf 'tag=%s\n' "$tag" >> "$GITHUB_OUTPUT"
 
       - name: Check out the requested release tag
         id: tag
         env:
-          RELEASE_TAG: ${{ github.event.client_payload.tag || inputs.tag }}
+          RELEASE_TAG: ${{ steps.merged_release.outputs.tag || github.event.client_payload.tag || inputs.tag }}
         run: |
           cp scripts/release_integrity.py "$RUNNER_TEMP/xta-release-integrity.py"
           cp certificate-fingerprints.txt "$RUNNER_TEMP/xta-release-certificate.txt"
