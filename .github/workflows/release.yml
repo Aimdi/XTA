@@ -17,23 +17,18 @@ jobs:
       contents: write
     steps:
       - name: Clone the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # On a tag push the ref is the tag; run by hand it is a branch, which is
-      # how a release once built an APK stamped `main` and then published
-      # nothing at all — `action-gh-release` has no tag to attach assets to
-      # unless it is given one.
-      - name: Resolve the release tag
+      - name: Check out the requested release tag
         id: tag
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          TAG="${{ inputs.tag || github.ref_name }}"
-          if ! git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-            echo "::error::'$TAG' is not a tag in this repository. Tag the commit first, then release it."
-            exit 1
-          fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          cp scripts/release_integrity.py "$RUNNER_TEMP/xta-release-integrity.py"
+          cp certificate-fingerprints.txt "$RUNNER_TEMP/xta-release-certificate.txt"
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" checkout -- "$RELEASE_TAG"
 
       - name: Install and set up Java
         uses: actions/setup-java@v2
@@ -89,9 +84,9 @@ jobs:
           flutter config --no-analytics
           flutter pub get
           dart run flutter_launcher_icons
-          dart run dart_pubspec_licenses:generate || true
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" check-source "$RUNNER_TEMP/xta-source-checks.json"
 
           mkdir -pv build/app/outputs/release
 
@@ -111,17 +106,28 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
 
+      - name: Verify release APKs and record provenance
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" record build/app/outputs/release --tag "$RELEASE_TAG" --checks "$RUNNER_TEMP/xta-source-checks.json"
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" verify build/app/outputs/release --tag "$RELEASE_TAG" --certificate "$RUNNER_TEMP/xta-release-certificate.txt"
+
       - name: Create release
         id: upload-release-assets
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ steps.tag.outputs.sha }}
           draft: true
           prerelease: false
           body_path: release-notes.md
           files: |
             build/app/outputs/release/*.apk
+            build/app/outputs/release/release-build.json
+            build/app/outputs/release/SHA256SUMS
+          fail_on_unmatched_files: true
 
       - name: Publish the release
         uses: eregon/publish-release@v1

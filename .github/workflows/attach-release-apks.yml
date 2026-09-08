@@ -13,36 +13,28 @@ permissions:
 
 jobs:
   attach:
-    if: startsWith(github.head_ref, 'cursor/attach-') && contains(github.event.pull_request.title, '[attach-apks]')
+    if: github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.head_ref, 'cursor/attach-') && contains(github.event.pull_request.title, '[attach-apks]')
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve tag from branch name
-        id: tag
-        run: |
-          # cursor/attach-aimdi78-apks-bfa2 → aimdi78
-          ref="${{ github.head_ref }}"
-          tag=$(echo "$ref" | sed -n 's|^cursor/attach-\(.*\)-apks-bfa2$|\1|p')
-          if [ -z "$tag" ]; then
-            echo "::error::Branch $ref does not match cursor/attach-<tag>-apks-bfa2"
-            exit 1
-          fi
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "Building APKs for tag: $tag"
-
-      - name: Clone the tagged commit
-        uses: actions/checkout@v3
+      - name: Clone the repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ steps.tag.outputs.tag }}
 
-      # What the tag must point at. Without this the release action creates the
-      # tag with no target, and GitHub puts an untargeted tag on the default
-      # branch's head — which is how aimdi81, 82 and 88..91 all ended up
-      # pointing at an unrelated commit while their APKs were built from the
-      # right one. Cloning at a tag gave you somebody else's source.
-      - name: Resolve the commit being built
-        id: commit
-        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Resolve tag from branch name
+        id: tag
+        env:
+          ATTACH_BRANCH: ${{ github.head_ref }}
+        run: |
+          # cursor/attach-aimdi78-apks-bfa2 → aimdi78
+          tag=$(printf '%s\n' "$ATTACH_BRANCH" | sed -n 's|^cursor/attach-\(.*\)-apks-bfa2$|\1|p')
+          if [ -z "$tag" ]; then
+            echo "::error::Branch does not match cursor/attach-<tag>-apks-bfa2"
+            exit 1
+          fi
+          cp scripts/release_integrity.py "$RUNNER_TEMP/xta-release-integrity.py"
+          cp certificate-fingerprints.txt "$RUNNER_TEMP/xta-release-certificate.txt"
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" checkout -- "$tag"
 
       - name: Install and set up Java
         uses: actions/setup-java@v2
@@ -89,14 +81,14 @@ jobs:
       - name: Build
         run: |
           export KEY_PATH=key.jks
-          RELEASE_TAG="${{ steps.tag.outputs.tag }}"
+          RELEASE_TAG="${RELEASE_TAG:?no tag resolved}"
 
           flutter config --no-analytics
           flutter pub get
           dart run flutter_launcher_icons
-          dart run dart_pubspec_licenses:generate || true
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" check-source "$RUNNER_TEMP/xta-source-checks.json"
 
           mkdir -pv build/app/outputs/release
 
@@ -111,27 +103,24 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          RELEASE_TAG: ${{ steps.tag.outputs.tag }}
 
-      - name: Upload APKs to the release
+      - name: Verify release APKs and record provenance
         env:
-          GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ steps.tag.outputs.tag }}
         run: |
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release view "$RELEASE_TAG" --json assets --jq '.assets[].name' |
-              while IFS= read -r asset; do
-                case "$asset" in
-                  *.apk) gh release delete-asset "$RELEASE_TAG" "$asset" --yes ;;
-                esac
-              done
-          fi
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" record build/app/outputs/release --tag "$RELEASE_TAG" --checks "$RUNNER_TEMP/xta-source-checks.json"
+          python3 "$RUNNER_TEMP/xta-release-integrity.py" verify build/app/outputs/release --tag "$RELEASE_TAG" --certificate "$RUNNER_TEMP/xta-release-certificate.txt"
 
       - name: Publish APKs to the release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
-          target_commitish: ${{ steps.commit.outputs.sha }}
+          target_commitish: ${{ steps.tag.outputs.sha }}
           name: ${{ steps.tag.outputs.tag }}
           body_path: release-notes.md
-          files: build/app/outputs/release/*.apk
+          files: |
+            build/app/outputs/release/*.apk
+            build/app/outputs/release/release-build.json
+            build/app/outputs/release/SHA256SUMS
           fail_on_unmatched_files: true
