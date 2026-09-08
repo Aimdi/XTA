@@ -1,3 +1,11 @@
+## XTA aimdi129
+
+- Release APKs are checked against the tagged source, expected package/version,
+  architecture and existing signing certificate before publication.
+- APK downloads now include SHA256SUMS and release-build.json.
+- Retains aimdi128's app features and interface; uses a higher Android build
+  number for in-place updates.
+
 ## XTA aimdi125
 
 What's new in XTA aimdi125:

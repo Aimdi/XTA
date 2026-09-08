@@ -106,6 +106,20 @@ a reproducible-build result or an independently signed attestation. See
 
 ### Agent / API cut
 
+Create a same-repository branch named `release/aimdiNN` from `claude/main`.
+Update the APK filenames in `android/app/build.gradle`, release notes, and
+the `pubspec.yaml` build number. The new base build number must exceed every
+previous release variant (the highest ABI offset is +3).
+
+Open the release PR against `claude/main` and merge after verification passes.
+`build-release.yml` handles the
+[merged pull request event](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#running-your-pull_request-workflow-when-a-pull-request-merges):
+it checks out that exact merge commit, creates `aimdiNN`, and runs the existing
+verified build/publication steps in the same job. Closing an unmerged PR or
+merging a fork/ordinary feature branch does not cut a release. An existing tag
+may only be reused if it already points to that merge commit; it is never moved.
+Re-run a failed build job to retry the same release.
+
 From a token that can create `repository_dispatch` events (but not
 `workflow_dispatch`):
 

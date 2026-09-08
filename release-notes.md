@@ -4,6 +4,22 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi129
+
+This maintenance release adds the release-integrity improvements from PR #262.
+Each download is checked against the tagged source, Android package/version,
+architecture and existing release signing certificate before publication.
+`SHA256SUMS` and `release-build.json` accompany the APKs so downloads can be
+matched to the verified build.
+
+For most current Android phones, choose **`xta-aimdi129_arm64-v8a.apk`**.
+Universal, ARMv7 and x86_64 APKs are also available. The base version code is
+400001094, above every aimdi128 variant, with the existing ABI offsets and
+application id (`com.aimdi.xta`) retained for in-place updates.
+
+The app retains aimdi128's features and interface. This release changes the
+build and publication process; it does not introduce a new UI redesign.
+
 ### aimdi128
 
 Home uses a compact source picker and Posts / Media tabs. Reading controls hide
