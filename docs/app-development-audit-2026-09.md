@@ -74,7 +74,7 @@ reproducibility. It does not decode the Dart release-tag constant from AOT.
 
 ## Verification of this change
 
-- 26 local regression/integration tests pass, including real temporary Git
+- 27 local regression/integration tests pass, including real temporary Git
   repositories, wrong/foreign/failed workflow runs, modified artifacts,
   signing/version/ABI mismatches, workflow wiring and shell syntax.
 - The published `xta-aimdi128_arm64-v8a.apk` was downloaded directly from the

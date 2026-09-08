@@ -86,7 +86,7 @@ def parse_apk_details(badging, certificates):
     require(package is not None, "Cannot read APK package/version metadata")
     native = re.search(r"^native-code: (.+)$", badging, re.M)
     fingerprints = re.findall(
-        r"^Signer (?:#\d+|\(minSdkVersion=.*\)) certificate SHA-256 digest: ([0-9a-fA-F]{64})\s*$",
+        r"^(?:V\d+(?:\.\d+)? )?Signer(?: #\d+| \(minSdkVersion=[^\n]*\))?:? certificate SHA-256 digest: ([0-9a-fA-F]{64})\s*$",
         certificates, re.M,
     )
     require(bool(fingerprints), f"Cannot read APK signing certificate from apksigner output:\n{certificates}")

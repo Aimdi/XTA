@@ -141,6 +141,14 @@ class ApkDetailsTest(unittest.TestCase):
         )
         self.assertEqual(details["signer_sha256"], [FINGERPRINT])
 
+    def test_scheme_prefixed_signer_from_current_android_tools_is_parsed(self):
+        details = release.parse_apk_details(
+            "package: name='com.aimdi.xta' versionCode='1' versionName='1'\n",
+            f"V2 Signer: certificate SHA-256 digest: {FINGERPRINT}\n"
+            f"V2 Signer: public key SHA-256 digest: {'b' * 64}\n",
+        )
+        self.assertEqual(details["signer_sha256"], [FINGERPRINT])
+
 
 class RepositoryTest(unittest.TestCase):
     def setUp(self):
