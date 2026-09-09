@@ -1,0 +1,99 @@
+name: Plugin experience review
+
+on:
+  pull_request:
+    branches: [claude/main]
+    paths: ['lib/**', 'test/**', '.github/workflows/plugin-experience-review.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plugin-experience-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.head_ref == 'codex/plugin-groups-experience'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          mkdir -p review-artifacts
+          git rev-parse HEAD > review-artifacts/commit.txt
+      - name: Format added Dart files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mapfile -t added < <(git diff --name-only --diff-filter=A "$BASE_SHA" HEAD -- '*.dart')
+          if [ ${#added[@]} -gt 0 ]; then dart format --line-length 120 "${added[@]}"; fi
+          git diff --binary > review-artifacts/format.patch
+      - name: Upload formatting
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-experience-format-${{ github.event.pull_request.head.sha }}
+          path: review-artifacts/format.patch
+          retention-days: 3
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos 2>&1 | tee review-artifacts/analyze.txt
+      - name: Test
+        id: tests
+        if: steps.analyze.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee review-artifacts/tests.txt
+      - name: Upload validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-experience-checks-${{ github.event.pull_request.head.sha }}
+          path: review-artifacts
+          retention-days: 3
+      - name: Debug APK
+        id: apk
+        if: steps.tests.outcome == 'success'
+        continue-on-error: true
+        run: |
+          python -m pip install -r requirements.txt
+          python generate_icons.py
+          dart run flutter_launcher_icons
+          flutter build apk --debug
+      - name: Upload APK
+        if: steps.apk.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-experience-apk-${{ github.event.pull_request.head.sha }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 3
+      - name: Require validation
+        if: always()
+        env:
+          ANALYZE: ${{ steps.analyze.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          APK: ${{ steps.apk.outcome }}
+        run: |
+          test "$ANALYZE" = success
+          test "$TESTS" = success
+          test "$APK" = success
