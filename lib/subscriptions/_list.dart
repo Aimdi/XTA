@@ -1,3 +1,4 @@
+import 'package:xta/subscriptions/plugin_group_action.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -97,7 +98,7 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
 
     final subLst = <Subscription>[];
     if (orderCustom.isNotEmpty) {
-      final byName = {for (final s in state) s.screenName: s};
+      final byName = {for (final s in state) s.id: s};
       for (final sn in orderCustom.split(',')) {
         final match = byName[sn];
         if (match != null) subLst.add(match);
@@ -112,14 +113,14 @@ class _SubscriptionUsersPageState extends State<SubscriptionUsersPage> {
     return SliverReorderableList(
       itemCount: subLst.length,
       itemBuilder: (context, i) => ReorderableDelayedDragStartListener(
-        key: ValueKey(subLst[i].screenName),
+        key: ValueKey(subLst[i].id),
         index: i,
         child: buildSubscriptionTile(context, subLst[i]),
       ),
       onReorderItem: (oldIndex, newIndex) async {
         final s = subLst.removeAt(oldIndex);
         subLst.insert(newIndex, s);
-        final lst = subLst.map((s) => s.screenName).join(',');
+        final lst = subLst.map((s) => s.id).join(',');
         await prefs.set(optionSubscriptionOrderCustom, lst);
       },
     );
@@ -225,18 +226,24 @@ class SubscriptionUsers extends StatelessWidget {
 /// network's mark and leads back to that network.
 Widget buildSubscriptionTile(BuildContext context, Subscription user) {
   if (user is UserSubscription) {
-    return UserTile(key: Key(user.screenName), user: user);
+    return UserTile(key: Key(user.id), user: user);
   }
 
   final destination = subscriptionDestination(user);
 
   return ListTile(
-    key: Key(user.screenName),
+    key: Key(user.id),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
     leading: subscriptionAvatar(user),
     title: Text(user.name, maxLines: 1, overflow: TextOverflow.ellipsis),
     subtitle: Text(subscriptionSubtitle(user), maxLines: 1, overflow: TextOverflow.ellipsis),
-    trailing: FollowButton(user: user),
+    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+      IconButton(icon: const Icon(Icons.group_add_outlined),
+        tooltip: L10n.of(context).add_to_group,
+        onPressed: () => editPluginAccountGroups(context,
+          subscription: user, ensureFollowed: () async {})),
+      FollowButton(user: user),
+    ]),
     onTap: () {
       if (destination != null) {
         Navigator.push(context, MaterialPageRoute(builder: (_) => destination()));

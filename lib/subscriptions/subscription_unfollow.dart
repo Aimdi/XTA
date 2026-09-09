@@ -6,6 +6,10 @@
 /// removal — it has to, or its own tab would go on listing what was removed.
 library;
 
+import 'package:provider/provider.dart';
+import 'package:xta/group/group_model.dart';
+
+
 import 'package:flutter/widgets.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/subscriptions/subscription_look.dart';
@@ -19,6 +23,8 @@ Future<bool> unfollowSubscription(BuildContext context, Subscription subscriptio
     return false;
   }
 
+  final groups = context.read<GroupsModel>();
   await source.unfollow(context, subscription);
+  await groups.reloadGroups();
   return true;
 }

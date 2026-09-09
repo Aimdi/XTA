@@ -42,9 +42,10 @@ Future<PluginFootprint> pluginFootprint({
 Future<void> erasePluginStorage({
   required List<String> tables,
   required List<String> caches,
+  String? membershipPrefix,
 }) async {
   for (final table in tables) {
-    await _clearTable(table);
+    await _clearTable(table, membershipPrefix: membershipPrefix);
   }
   for (final cache in caches) {
     await _deleteCache(cache);
@@ -61,13 +62,14 @@ Future<int> _countRows(String table) async {
   }
 }
 
-Future<void> _clearTable(String table) async {
+Future<void> _clearTable(String table, {String? membershipPrefix}) async {
   try {
     final database = await Repository.writable();
     // Membership first: once the rows are gone there is nothing left to say
     // which group entries were pointing at them.
     await database.rawDelete(
-      'DELETE FROM $tableSubscriptionGroupMember WHERE profile_id IN (SELECT id FROM $table)',
+      'DELETE FROM $tableSubscriptionGroupMember WHERE profile_id IN (SELECT ? || id FROM $table)',
+      [membershipPrefix ?? ''],
     );
     await database.delete(table);
   } catch (e) {

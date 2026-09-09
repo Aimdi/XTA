@@ -6,7 +6,6 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
-import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:logging/logging.dart';
@@ -55,15 +54,16 @@ class SubscriptionsModel extends Store<List<Subscription>> {
       final rows = await Future.wait([
         database.query(tableSubscription),
         database.query(tableSearchSubscription),
-        for (final source in sources)
-          querySourceTable(database, source.subscriptionTable),
+
       ]);
 
+      final sourceMembers = await Future.wait([
+        for (final source in sources) source.readSubscriptions(database, prefs: prefs),
+      ]);
       List<Subscription> lst = [
         ...rows[0].map(UserSubscription.fromMap),
         ...rows[1].map(SearchSubscription.fromMap),
-        for (final (index, source) in sources.indexed)
-          ...rows[index + 2].map(source.subscriptionFromMap),
+        for (final members in sourceMembers) ...members,
       ];
       if (orderCustom.isEmpty) {
         return lst.sorted((a, b) {
@@ -87,17 +87,17 @@ class SubscriptionsModel extends Store<List<Subscription>> {
         List<Subscription> newLst = [];
         for (String screenName in orderCustom.split(',')) {
           Subscription? s = lst.firstWhereOrNull(
-            (e) => e.screenName == screenName,
+            (e) => e.id == screenName || e.screenName == screenName,
           );
           if (s != null) {
-            lst.removeWhere((e) => e.screenName == screenName);
+            lst.removeWhere((e) => e.id == s.id);
             newLst.add(s);
           }
         }
         if (lst.isNotEmpty) {
           newLst.addAll(lst);
         }
-        final order = newLst.map((s) => s.screenName).join(',');
+        final order = newLst.map((s) => s.id).join(',');
         // Only when it actually changed: every pref write notifies every
         // listening widget, and this ran on every reload.
         if (prefs.get<String>(optionSubscriptionOrderCustom) != order) {

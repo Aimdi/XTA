@@ -20,6 +20,7 @@ const double kGroupNestIndent = 20;
 class GroupListItem extends StatelessWidget {
   final SubscriptionGroup group;
   final VoidCallback? onLongPress;
+  final VoidCallback? onDiscover;
 
   /// How deep this group is nested, which is how far the row is indented.
   final int depth;
@@ -35,6 +36,7 @@ class GroupListItem extends StatelessWidget {
     super.key,
     required this.group,
     this.onLongPress,
+    this.onDiscover,
     this.reorderIndex,
     this.depth = 0,
     this.unread = false,
@@ -45,6 +47,12 @@ class GroupListItem extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
+        if (onDiscover != null)
+          IconButton(
+            icon: const Icon(Icons.auto_awesome, size: 20),
+            tooltip: l10n.group_discovery_ai,
+            onPressed: onDiscover,
+          ),
         IconButton(
           icon: Icon(
             group.pinned ? Icons.push_pin : Icons.push_pin_outlined,

@@ -1,3 +1,4 @@
+import 'package:xta/database/repository.dart';
 import 'dart:convert';
 
 import 'package:flutter_triple/flutter_triple.dart';
@@ -169,6 +170,11 @@ class HnFollowsStore extends Store<List<String>> {
           ]
         : [key, ...state].take(hnFollowsCap).toList();
     await prefs.set(optionPluginHnFollows, jsonEncode(next));
+    for (final removed in state.where((item) => !next.contains(item))) {
+      final database = await Repository.writable();
+      await database.delete(tableSubscriptionGroupMember,
+        where: 'profile_id = ?', whereArgs: ['$pluginIdHackerNews:$removed']);
+    }
     update(next);
   }
 }

@@ -13,6 +13,9 @@
 library;
 
 import 'package:flutter/widgets.dart';
+import 'package:pref/pref.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 
@@ -20,8 +23,17 @@ mixin SubscriptionSource {
   /// Where this source's followed accounts are stored.
   String get subscriptionTable;
 
+  /// Follows stored in preferences are still subscription data in an export.
+  String? get subscriptionPreferenceKey => null;
+
   /// A stored row, as a subscription the rest of the app can hold.
   Subscription subscriptionFromMap(Map<String, Object?> row);
+
+  /// Reads local subscriptions. Preference-backed sources can override this.
+  Future<List<Subscription>> readSubscriptions(
+    DatabaseExecutor database, {BasePrefService? prefs}
+  ) async => (await querySourceTable(database, subscriptionTable))
+      .map(subscriptionFromMap).toList(growable: false);
 
   /// Whether [subscription] is one this source owns.
   ///

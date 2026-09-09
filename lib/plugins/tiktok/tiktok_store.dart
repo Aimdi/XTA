@@ -56,6 +56,8 @@ class TikTokFollowsStore extends Store<List<TikTokFollow>> {
       where: 'id = ?',
       whereArgs: [key],
     );
+    await database.delete(tableSubscriptionGroupMember,
+      where: 'profile_id = ?', whereArgs: ['$pluginIdTiktok:$key']);
   }
 }
 

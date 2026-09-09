@@ -66,6 +66,7 @@ class BlueskyPost {
   /// When this feed item is a repost, the person who reposted it.
   final String? repostedByName;
   final String? repostedByHandle;
+  final String? repostedByDid;
 
   /// Nested quoted post, when the embed is a record (with or without media).
   final BlueskyPost? quotedPost;
@@ -96,6 +97,7 @@ class BlueskyPost {
     this.quoteCount = 0,
     this.repostedByName,
     this.repostedByHandle,
+    this.repostedByDid,
     this.quotedPost,
     this.linkCard,
     this.replyToHandle,
@@ -103,7 +105,8 @@ class BlueskyPost {
   });
 
   bool get hasMedia => images.isNotEmpty;
-  bool get isRepost => repostedByHandle != null && repostedByHandle!.isNotEmpty;
+  String? get reposterActor => (repostedByDid?.isNotEmpty == true) ? repostedByDid : repostedByHandle;
+  bool get isRepost => reposterActor?.isNotEmpty == true;
   bool get hasQuote => quotedPost != null;
   bool get hasLinkCard => linkCard != null;
 
@@ -133,6 +136,7 @@ class BlueskyPost {
     'quoteCount': quoteCount,
     'repostedByName': repostedByName,
     'repostedByHandle': repostedByHandle,
+    'repostedByDid': repostedByDid,
     'quotedPost': quotedPost?.toJson(),
     'linkCard': linkCard?.toJson(),
     'replyToHandle': replyToHandle,
@@ -182,6 +186,7 @@ class BlueskyPost {
       quoteCount: _snapshotCount(json['quoteCount']),
       repostedByName: json['repostedByName'] as String?,
       repostedByHandle: json['repostedByHandle'] as String?,
+      repostedByDid: json['repostedByDid'] as String?,
       quotedPost: quoted == null || quoted.uri.isEmpty ? null : quoted,
       linkCard: linkCard == null || linkCard.url.isEmpty ? null : linkCard,
       replyToHandle: json['replyToHandle'] as String?,
@@ -549,6 +554,7 @@ BlueskyPost? blueskyPostFromView(
   Object? json, {
   String? repostedByName,
   String? repostedByHandle,
+  String? repostedByDid,
   String? replyToHandle,
   bool allowEmpty = false,
   bool parseQuote = true,
@@ -613,6 +619,7 @@ BlueskyPost? blueskyPostFromView(
     quoteCount: post['quoteCount'].integer ?? 0,
     repostedByName: repostedByName,
     repostedByHandle: repostedByHandle,
+    repostedByDid: repostedByDid,
     quotedPost: quoted,
     linkCard: linkCard,
     replyToHandle: (replyHandle != null && replyHandle.isNotEmpty)
@@ -631,11 +638,13 @@ BlueskyPost? blueskyPostFromFeedItem(Object? item) {
 
   String? repostName;
   String? repostHandle;
+  String? repostDid;
   final reason = root['reason'];
   final reasonType = reason['\$type'].string ?? '';
   if (reasonType.contains('reasonRepost')) {
     final by = reason['by'];
     repostHandle = by['handle'].string?.trim();
+    repostDid = by['did'].string?.trim();
     final name = by['displayName'].string?.trim();
     repostName = (name == null || name.isEmpty) ? repostHandle : name;
   }
@@ -647,6 +656,7 @@ BlueskyPost? blueskyPostFromFeedItem(Object? item) {
     post.raw,
     repostedByName: repostName,
     repostedByHandle: repostHandle,
+    repostedByDid: repostDid,
     replyToHandle: replyHandle,
   );
 }

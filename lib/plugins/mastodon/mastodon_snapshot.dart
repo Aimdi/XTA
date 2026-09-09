@@ -17,6 +17,7 @@ Map<String, Object?> mastodonPostSnapshot(MastodonPost post) => {
   'edited': post.editedAt?.toIso8601String(),
   'boosted': post.boosted,
   'boostedBy': post.boostedBy,
+  'boostedByAcct': post.boostedByAcct,
   'replyToAcct': post.replyToAcct,
   'replyToId': post.replyToId,
   'mentions': post.mentionAccts,
@@ -77,6 +78,7 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
     editedAt: DateTime.tryParse(json['edited'].string ?? ''),
     boosted: json['boosted'].boolean ?? false,
     boostedBy: json['boostedBy'].string,
+    boostedByAcct: json['boostedByAcct'].string,
     replyToAcct: json['replyToAcct'].string,
     replyToId: json['replyToId'].string,
     mentionAccts: [

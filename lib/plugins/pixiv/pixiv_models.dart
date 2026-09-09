@@ -389,3 +389,19 @@ PixivUser? _previewUser(Json item) {
   }
   return null;
 }
+
+class PixivUserPage {
+  final List<PixivUser> users;
+  final String? nextUrl;
+
+  const PixivUserPage({required this.users, this.nextUrl});
+
+  factory PixivUserPage.fromJson(Object? json) {
+    final root = Json(json);
+    return PixivUserPage(
+      users: [for (final preview in root['user_previews'].list)
+        if (PixivUser.fromUserJson(preview['user'].raw) case final user when user.id > 0) user],
+      nextUrl: root['next_url'].string,
+    );
+  }
+}

@@ -19,7 +19,7 @@ class SortUngroupedScreen extends StatefulWidget {
 
 class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
   late final GroupUngroupedModel _model;
-  var _applying = false;
+  final _applying = GroupPlanApplyingStore();
 
   @override
   void initState() {
@@ -31,24 +31,29 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
   @override
   void dispose() {
     _model.destroy();
+    _applying.destroy();
     super.dispose();
   }
 
-  Future<void> _start() async {
+  Future<void> _start({bool useAi = false}) async {
+    if (!mounted) return;
     final groups = context.read<GroupsModel>();
     final subscriptions = context.read<SubscriptionsModel>();
     final prefs = PrefService.of(context, listen: false);
+    final members = await groups.listGroupMembers();
+    if (!mounted) return;
     await _model.buildPlan(
       subscriptions: subscriptions.state,
       groups: groups.state,
-      members: await groups.listGroupMembers(),
+      members: members,
       ai: AiConfig.fromPrefs(prefs),
+      useAi: useAi,
     );
   }
 
   Future<void> _apply() async {
-    if (_applying) return;
-    setState(() => _applying = true);
+    if (_applying.state) return;
+    _applying.setApplying(true);
     final messenger = ScaffoldMessenger.of(context);
     final l10n = L10n.of(context);
     final groups = context.read<GroupsModel>();
@@ -61,7 +66,7 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
       Navigator.pop(context);
     } catch (error, stack) {
       if (!mounted) return;
-      setState(() => _applying = false);
+      _applying.setApplying(false);
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.sort_ungrouped_failed)),
       );
@@ -82,8 +87,20 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
           stackTrace: null,
           prefix: l10n.sort_ungrouped_title,
         ),
-        onState: (context, state) =>
-            _PlanBody(state: state, applying: _applying, onApply: _apply),
+        onState: (context, state) => ScopedBuilder<GroupPlanApplyingStore, bool>(
+          store: _applying,
+          onState: (_, applying) => Column(children: [
+            if (AiConfig.fromPrefs(PrefService.of(context)).isConfigured)
+              Padding(padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: FilledButton.tonalIcon(
+                  icon: const Icon(Icons.auto_awesome),
+                  label: Text(l10n.group_sort_ai),
+                  onPressed: applying ? null : () => _start(useAi: true),
+                ),
+              ),
+            Expanded(child: _PlanBody(state: state, applying: applying, onApply: _apply)),
+          ]),
+        ),
       ),
     );
   }
@@ -110,7 +127,13 @@ class _PlanBody extends StatelessWidget {
         children: [
           Text(l10n.sort_ungrouped_description),
           const SizedBox(height: 16),
-          Text(l10n.sort_ungrouped_empty),
+          if (state.aiFailed) Text(l10n.group_ai_fallback),
+          Text(plan.leftoverIds.isEmpty ? l10n.sort_ungrouped_empty : l10n.no_results),
+          if (plan.leftoverIds.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Text(l10n.sort_ungrouped_leftover),
+            Text(plan.leftoverIds.map(state.handleOf).join(', ')),
+          ],
         ],
       );
     }
@@ -126,8 +149,9 @@ class _PlanBody extends StatelessWidget {
               Text(
                 plan.usedAi
                     ? l10n.sort_ungrouped_ai_note
-                    : l10n.sort_ungrouped_heuristic_note,
+                    : l10n.group_sort_local,
               ),
+              if (state.aiFailed) Text(l10n.group_ai_fallback),
               if (plan.assign.isNotEmpty) ...[
                 const SizedBox(height: 20),
                 Text(

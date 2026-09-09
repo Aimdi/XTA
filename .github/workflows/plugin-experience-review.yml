@@ -37,6 +37,14 @@ jobs:
           dart run flutter_iconpicker:generate_packs --packs material
           mkdir -p review-artifacts
           git rev-parse HEAD > review-artifacts/commit.txt
+      - name: Validate localized source keys
+        run: |
+          python - <<'PYCODE'
+          import l10n
+          original = l10n.run
+          l10n.run = lambda command: original(command[1:] if command[0] == 'fvm' else command)
+          l10n.main()
+          PYCODE
       - name: Format added Dart files
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}

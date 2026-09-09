@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -9,9 +10,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
-import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
-import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/plugins/plugin_counts.dart';
@@ -78,16 +77,8 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
     }
   }
 
-  Future<void> _addToGroup(MastodonProfile profile) async {
-    final accounts = context.read<MastodonAccountsStore>();
-    final groupsModel = context.read<GroupsModel>();
-    if (!accounts.follows(profile.acct)) await accounts.add(profile.toAccount());
-    if (!mounted) return;
-    final user = subscriptionOf(profile.toAccount());
-    final groups = await groupsModel.listGroupsForUser(user.id);
-    if (!mounted) return;
-    await pickUserGroups(context, user: user, followed: true, groupsForUser: groups);
-  }
+  Future<void> _addToGroup(MastodonProfile profile) =>
+      addMastodonAccountToGroup(context, profile.toAccount());
 
   @override
   Widget build(BuildContext context) => ScopedBuilder<MastodonProfileStore, MastodonProfileState>(

@@ -1,3 +1,4 @@
+import 'package:xta/plugins/pixiv/pixiv_following_screen.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -261,6 +262,12 @@ class _PixivScreenState extends State<PixivScreen> {
                 _view.select(_view.state.copyWith(homeSource: 0));
                 _ensureTabLoaded(0);
               },
+            ),
+            IconButton(
+              tooltip: l10n.following,
+              icon: const Icon(Icons.people_outline),
+              onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const PixivFollowingScreen())),
             ),
             const SizedBox(width: 8),
             ChoiceChip(

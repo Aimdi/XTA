@@ -55,6 +55,7 @@ class _XScreenState extends State<XScreen> {
   TweetFeedController _feed = TweetFeedController();
 
   void _refresh() {
+    if (!mounted) return;
     final previous = _feed;
     _feed = TweetFeedController();
     _revision.select(_revision.state + 1);
@@ -73,11 +74,7 @@ class _XScreenState extends State<XScreen> {
     appBar: AppBar(
       title: Text(L10n.of(context).source_x),
       actions: [
-        IconButton(
-          tooltip: L10n.of(context).refresh,
-          icon: const Icon(Icons.refresh),
-          onPressed: _refresh,
-        ),
+        IconButton(tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel, icon: const Icon(Icons.refresh), onPressed: _refresh),
         IconButton(
           tooltip: L10n.of(context).home_feed_accounts,
           icon: const Icon(Icons.manage_accounts_outlined),

@@ -69,7 +69,6 @@ class LocalPostModel extends Store<List<LocalPost>> {
       inReplyToId: inReplyToId ?? existing?.inReplyToId,
     );
 
-    await deleteRemovedLocalPostMedia(post.id, media);
     await database.insert(
       tableLocalPost,
       post.toMap(),
@@ -83,6 +82,11 @@ class LocalPostModel extends Store<List<LocalPost>> {
               if (row.id == id) post else row,
           ];
     update(next, force: true);
+    try {
+      await deleteRemovedLocalPostMedia(post.id, media);
+    } catch (error, stackTrace) {
+      log.warning('Unable to clean removed note attachments', error, stackTrace);
+    }
     return post;
   }
 

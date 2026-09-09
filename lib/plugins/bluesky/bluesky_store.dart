@@ -128,6 +128,30 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   BlueskyFeedStore(this.client, this.accounts) : super(const []);
 
   DateTime? _fetchedAt;
+  String? _enteredFor;
+
+  String _entryIdentity() {
+    final actors = accounts.state.map((account) => account.actor).toList()..sort();
+    return '${client.baseUrl}\n${actors.join('\n')}';
+  }
+
+  /// Entering a tab is not a refresh, including a successful empty first page.
+  Future<void> ensureLoaded({bool force = false}) async {
+    final pending = _inFlight;
+    if (pending != null) {
+      await pending;
+      return ensureLoaded(force: force);
+    }
+    final identity = _entryIdentity();
+    if (!force && _enteredFor == identity) return;
+    if (!force && _enteredFor == null && state.isNotEmpty) {
+      _enteredFor = identity;
+      return;
+    }
+    await refresh(force: force);
+    _enteredFor = identity;
+  }
+
   Future<void>? _inFlight;
 
   /// When the last successful merge finished. Tests assert remounts keep it.
@@ -141,6 +165,7 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   /// Pending accounts still fill in (the budget only asks for unread handles).
   /// Pull-to-refresh passes [force].
   Future<void> refresh({bool force = false}) async {
+    final identity = _entryIdentity();
     final actors = accounts.state.map((e) => e.actor).toList(growable: false);
     if (!force &&
         state.isNotEmpty &&
@@ -159,6 +184,7 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
     _inFlight = done.future;
     try {
       await _refreshBody(actors, force: force);
+      _enteredFor = identity;
     } finally {
       _inFlight = null;
       done.complete();

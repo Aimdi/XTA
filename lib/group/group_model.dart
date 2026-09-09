@@ -7,7 +7,6 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/plugin_registry.dart';
-import 'package:xta/plugins/source_tables.dart';
 import 'package:xta/group/custom_feed_rules.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/group_mark_style.dart';
@@ -55,13 +54,14 @@ Future<Map<String, String?>> readGroupParents(DatabaseExecutor database) async {
 
 class GroupModel extends Store<SubscriptionGroupGet> {
   final String id;
+  final BasePrefService? prefs;
 
   /// Other groups being read alongside this one, for as long as the reader
   /// wants them together. Their members join this group's feed; nothing about
   /// either group is changed.
   final Set<String> alsoRead;
 
-  GroupModel(this.id, {this.alsoRead = const {}})
+  GroupModel(this.id, {this.alsoRead = const {}, this.prefs})
     : super(
         SubscriptionGroupGet(
           id: '',
@@ -143,20 +143,22 @@ class GroupModel extends Store<SubscriptionGroupGet> {
     final rows = await Future.wait([
       database.rawQuery(membership(tableSearchSubscription), ids),
       database.rawQuery(membership(tableSubscription), ids),
-      for (final source in sources)
-        querySourceTable(
-          database,
-          source.subscriptionTable,
-          sql: membership(source.subscriptionTable),
-          arguments: ids,
-        ),
+
     ]);
 
+    final memberIds = (await database.query(
+      tableSubscriptionGroupMember,
+      columns: ['profile_id'],
+      where: 'group_id IN ($placeholders)', whereArgs: ids,
+    )).map((row) => row['profile_id']).toSet();
+    final sourceMembers = await Future.wait([
+      for (final source in sources) source.readSubscriptions(database, prefs: prefs),
+    ]);
     final members = <Subscription>[
       ...rows[1].map(UserSubscription.fromMap),
       ...rows[0].map(SearchSubscription.fromMap),
-      for (final (index, source) in sources.indexed)
-        ...rows[index + 2].map(source.subscriptionFromMap),
+      for (final subscriptions in sourceMembers)
+        ...subscriptions.where((member) => memberIds.contains(member.id)),
     ];
 
     // TODO: Factory
@@ -393,21 +395,13 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
     // group of Threads, Bluesky or Fediverse accounts came up blank despite
     // every one of them storing an avatar. They come after the X accounts so a
     // mixed group still leads with faces.
+    final memberships = await database.query(tableSubscriptionGroupMember);
     for (final source in subscriptionSources) {
-      final rows = await querySourceTable(
-        database,
-        source.subscriptionTable,
-        sql:
-            'SELECT gm.group_id, s.* FROM $tableSubscriptionGroupMember gm '
-            'JOIN ${source.subscriptionTable} s ON s.id = gm.profile_id '
-            'ORDER BY gm.group_id, s.name COLLATE NOCASE',
-      );
-
-      for (final row in rows) {
-        add(
-          row['group_id'] as String,
-          source.previewOf(source.subscriptionFromMap(row)),
-        );
+      final members = await source.readSubscriptions(database, prefs: prefs);
+      final byId = {for (final member in members) member.id: member};
+      for (final row in memberships) {
+        final member = byId[row['profile_id']];
+        if (member != null) add(row['group_id'] as String, source.previewOf(member));
       }
     }
 

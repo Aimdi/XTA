@@ -7,6 +7,8 @@ import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/group/group_discovery_screen.dart';
+import 'package:xta/utils/ai_client.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/_group_list_item.dart';
@@ -22,6 +24,12 @@ export 'package:xta/subscriptions/_groups_edit.dart'
 
 /// Tiles past this index appear without the entrance stagger.
 const _staggerLimit = 12;
+
+VoidCallback? _discoveryAction(BuildContext context, SubscriptionGroup group) {
+  if (!AiConfig.fromPrefs(PrefService.of(context)).isConfigured) return null;
+  return () => openGroupDiscovery(context,
+    id: group.id, name: group.name, useAi: true);
+}
 
 /// The Groups tab: a board of member-faced tiles with search, plus a
 /// drag-to-reorder list while custom ordering is active.
@@ -133,6 +141,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
             group: group,
             animate: animate,
             unread: unreadIds.contains(group.id),
+            onDiscover: _discoveryAction(context, group),
             onTap: () => openGroupAndRefreshUnread(
               context,
               id: group.id,
@@ -217,6 +226,7 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
           key: ValueKey(group.id),
           group: group,
           unread: unreadIds.contains(group.id),
+          onDiscover: _discoveryAction(context, group),
           depth: depths[group.id] ?? 0,
           // Drag only within the same NSFW bucket so a pull cannot lift a
           // censored group above the section header.

@@ -116,6 +116,7 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid>
       errorMessage: L10n.current.possibly_sensitive_profile,
       wrapInCard: false,
       child: MediaGrid(
+        broadcastsOnly: widget.filter == MediaFilter.broadcasts,
         controller: _paging.pagingController,
         firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
         newPageErrorPrefix: L10n.of(

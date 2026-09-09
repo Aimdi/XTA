@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +22,8 @@ Future<void> openRedditPostSheet(BuildContext context, RedditPost post) {
   return showModalBottomSheet(
     context: context,
     showDragHandle: true,
-    builder: (sheetContext) => SafeArea(child: _RedditPostSheet(post: post)),
+    isScrollControlled: true,
+    builder: (sheetContext) => SafeArea(child: SingleChildScrollView(child: _RedditPostSheet(post: post))),
   );
 }
 
@@ -69,6 +71,11 @@ class _RedditPostSheet extends StatelessWidget {
         ),
         _RedditFollowAction(subreddit: post.subreddit),
         _RedditSaveAction(post: post),
+        if (context.read<SavedTweetModel?>() != null) _RedditSheetAction(
+          icon: Icons.edit_note, label: l10n.clip_note_hint,
+          onTap: () => editPluginPostNote(context, PluginPostArchive(
+            id: redditArchiveId(post.id), userId: post.subreddit, content: redditArchiveBlob(post))),
+        ),
         _RedditAddToGroupAction(subreddit: post.subreddit),
         _RedditSheetAction(
           icon: Icons.open_in_new,

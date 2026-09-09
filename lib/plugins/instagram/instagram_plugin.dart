@@ -1,3 +1,9 @@
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/plugin_account_subscription.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/plugins/instagram/instagram_group.dart';
+import 'package:xta/plugins/instagram/instagram_profile_screen.dart';
+import 'package:xta/tweet/interleaved_items.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +21,7 @@ import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/settings/backup_category.dart';
 
 /// Private Instagram plugin. Guest first; cookies optional. Follows stay here.
-class InstagramPlugin extends XtaPlugin {
+class InstagramPlugin extends XtaPlugin with SubscriptionSource {
   InstagramPlugin();
 
   @override
@@ -75,6 +81,35 @@ class InstagramPlugin extends XtaPlugin {
 
   @override
   List<String> get tables => const [tableInstagramSubscription];
+
+  @override
+  String get groupMembershipPrefix => '$id:';
+
+  @override
+  String get subscriptionTable => tableInstagramSubscription;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) =>
+      PluginAccountSubscription(id, row);
+
+  @override
+  bool owns(Subscription subscription) =>
+      subscription is PluginAccountSubscription && subscription.pluginId == id;
+
+  @override
+  Widget Function() destinationFor(Subscription subscription) =>
+      () => InstagramProfileScreen(handle: subscription.screenName);
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<InstagramFollowsStore>().load();
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) =>
+      context.read<InstagramFollowsStore>().unfollow(subscription.screenName);
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadInstagramGroupPosts(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [

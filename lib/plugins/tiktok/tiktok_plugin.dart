@@ -1,3 +1,9 @@
+import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/plugin_account_subscription.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/plugins/tiktok/tiktok_group.dart';
+import 'package:xta/plugins/tiktok/tiktok_profile_screen.dart';
+import 'package:xta/tweet/interleaved_items.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +23,7 @@ import 'package:xta/settings/backup_category.dart';
 /// Private guest TikTok plugin. No account; follows stay on this device.
 ///
 /// See docs/specs/tiktok-plugin.md.
-class TikTokPlugin extends XtaPlugin {
+class TikTokPlugin extends XtaPlugin with SubscriptionSource {
   TikTokPlugin();
 
   @override
@@ -76,6 +82,35 @@ class TikTokPlugin extends XtaPlugin {
 
   @override
   List<String> get tables => const [tableTiktokSubscription];
+
+  @override
+  String get groupMembershipPrefix => '$id:';
+
+  @override
+  String get subscriptionTable => tableTiktokSubscription;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) =>
+      PluginAccountSubscription(id, row);
+
+  @override
+  bool owns(Subscription subscription) =>
+      subscription is PluginAccountSubscription && subscription.pluginId == id;
+
+  @override
+  Widget Function() destinationFor(Subscription subscription) =>
+      () => TikTokProfileScreen(handle: subscription.screenName);
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<TikTokFollowsStore>().load();
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) =>
+      context.read<TikTokFollowsStore>().unfollow(subscription.screenName);
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadTikTokGroupPosts(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [

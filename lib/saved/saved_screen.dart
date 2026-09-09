@@ -30,11 +30,14 @@ import 'package:xta/saved/saved_content_index.dart';
 import 'package:xta/saved/saved_source_filter.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
+import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:xta/saved/local_post_compose.dart';
 import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/local_post_tile.dart';
 import 'package:xta/saved/local_note_thread.dart';
+import 'package:xta/saved/saved_note_editor.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_post_card.dart';
@@ -220,9 +223,11 @@ class _SavedScreenState extends State<SavedScreen>
   Widget _buildList({
     required int itemCount,
     required Widget Function(int) tileAt,
+    Key? listKey,
     EdgeInsetsGeometry? padding,
   }) {
     return FeedListView(
+      key: listKey,
       physics: const AlwaysScrollableScrollPhysics(),
       padding: padding ?? const EdgeInsets.only(top: 4),
       itemCount: itemCount,
@@ -549,6 +554,7 @@ class _SavedScreenState extends State<SavedScreen>
           child: roots.isEmpty
               ? _buildEmptyState()
               : _buildList(
+                  listKey: const PageStorageKey('archive-notes'),
                   itemCount: roots.length,
                   padding: const EdgeInsets.only(
                     top: 4,
@@ -557,6 +563,8 @@ class _SavedScreenState extends State<SavedScreen>
                   tileAt: (i) {
                     final post = roots[i];
                     return LocalPostTile(
+                      key: ValueKey(post.id),
+                      compact: true,
                       post: post,
                       replyCount: localPostDirectReplyCount(data, post.id),
                       onEdit: () => _composeNote(post),
@@ -808,7 +816,7 @@ class _SavedScreenState extends State<SavedScreen>
 }
 
 /// Saved post with an optional local note shown underneath.
-class SavedClipTile extends StatefulWidget {
+class SavedClipTile extends StatelessWidget {
   final SavedTweet saved;
   final TweetWithCard? tweet;
   final RedditPost? reddit;
@@ -825,108 +833,59 @@ class SavedClipTile extends StatefulWidget {
   });
 
   @override
-  State<SavedClipTile> createState() => _SavedClipTileState();
-}
-
-class _SavedClipTileState extends State<SavedClipTile> {
-  bool _editing = false;
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.saved.note ?? '');
-  }
-
-  @override
-  void didUpdateWidget(covariant SavedClipTile oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.saved.note != widget.saved.note && !_editing) {
-      _controller.text = widget.saved.note ?? '';
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _saveNote() async {
-    await widget.onNoteChanged(_controller.text);
-    if (mounted) {
-      setState(() => _editing = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final note = widget.saved.note;
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final note = saved.note;
+    final hasNote = note != null && note.isNotEmpty;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SavedTweetTile(
-          id: widget.saved.id,
-          tweet: widget.tweet,
-          reddit: widget.reddit,
-          mastodon: widget.mastodon,
+          id: saved.id,
+          content: tweet == null && reddit == null && mastodon == null ? saved.content : null,
+          tweet: tweet,
+          reddit: reddit,
+          mastodon: mastodon,
         ),
-        if (_editing)
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    minLines: 1,
-                    maxLines: 4,
-                    decoration: InputDecoration(
-                      hintText: L10n.of(context).clip_note_hint,
-                      isDense: true,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: L10n.of(context).profile_note_save,
-                  icon: const Icon(Icons.check),
-                  onPressed: _saveNote,
-                ),
-              ],
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 12),
+          child: Material(
+            color: hasNote ? theme.colorScheme.surfaceContainerLow : Colors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: theme.colorScheme.outlineVariant),
             ),
-          )
-        else if (note != null && note.isNotEmpty)
-          Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 8),
-            child: Semantics(
-              button: true,
-              child: InkWell(
-                onTap: () => setState(() => _editing = true),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minHeight: kTweetTouchTarget,
-                  ),
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      note,
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => openSavedNoteEditor(context, note: note, onSave: onNoteChanged),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Icon(hasNote ? Icons.edit_note_outlined : Icons.note_add_outlined,
+                        size: 20, color: theme.colorScheme.onSurfaceVariant),
+                    const SizedBox(width: 10),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(hasNote ? l10n.local_note_thread_title : l10n.clip_note_hint,
+                        style: theme.textTheme.labelLarge),
+                      if (hasNote) ...[
+                        const SizedBox(height: 4),
+                        Text(note, maxLines: 3, overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(height: 1.4)),
+                      ],
+                    ])),
+                    const SizedBox(width: 8),
+                    Icon(Icons.edit_outlined, size: 18,
+                      semanticLabel: l10n.local_note_edit_title,
+                      color: theme.colorScheme.onSurfaceVariant),
+                  ]),
                 ),
               ),
             ),
-          )
-        else
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              onPressed: () => setState(() => _editing = true),
-              icon: const Icon(Icons.note_add_outlined, size: 18),
-              label: Text(L10n.of(context).clip_note_hint),
-            ),
           ),
+        ),
       ],
     );
   }
@@ -955,6 +914,8 @@ class SavedTweetTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stored = parseSavedContent(content);
+    if (stored.plugin case final pluginPost?) return PluginLinkPostCard(post: pluginPost);
+    if (stored.bluesky case final blueskyPost?) return BlueskyPostCard(post: blueskyPost);
     final mastodonPost = mastodon ?? stored.mastodon;
     if (mastodonPost != null) return MastodonPostCard(post: mastodonPost);
     final redditPost = reddit ?? stored.reddit;

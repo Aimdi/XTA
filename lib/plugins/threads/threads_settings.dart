@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -257,11 +258,16 @@ class _ThreadsSettingsScreenState extends State<ThreadsSettingsScreen> {
                         accent: theme.colorScheme.primary,
                       ),
                       title: Text('@${account.handle}'),
-                      trailing: IconButton(
+                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                        IconButton(icon: const Icon(Icons.group_add_outlined),
+                          tooltip: l10n.add_to_group,
+                          onPressed: () => addThreadsAccountToGroup(context, account)),
+                        IconButton(
                         icon: const Icon(Icons.delete_outline),
                         tooltip: l10n.delete,
                         onPressed: () => _remove(account.handle),
                       ),
+                      ]),
                     ),
                 ],
               );

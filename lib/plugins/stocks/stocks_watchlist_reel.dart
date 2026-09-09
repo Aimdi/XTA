@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
+import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/ui/x_controls.dart';
 
@@ -20,13 +21,15 @@ class StocksWatchlistReel extends StatelessWidget {
   /// filters the feed to one ticker.
   final String? selected;
   final ValueChanged<String>? onSelected;
+  final ValueChanged<String>? onOpen;
+  final Map<String, CryptoAsset> assets;
 
-  const StocksWatchlistReel({super.key, required this.symbols, required this.quotes, this.selected, this.onSelected});
+  const StocksWatchlistReel({super.key, required this.symbols, required this.quotes, this.selected, this.onSelected, this.onOpen, this.assets = const {}});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 38 + MediaQuery.textScalerOf(context).scale(30),
+      height: 48 + MediaQuery.textScalerOf(context).scale(assets.isEmpty ? 30 : 46),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -35,16 +38,17 @@ class StocksWatchlistReel extends StatelessWidget {
         itemBuilder: (context, index) {
           final symbol = symbols[index];
           return _WatchlistChip(
-            symbol: symbol,
+            symbol: assets[symbol]?.label ?? '\$$symbol',
+            subtitle: assets[symbol]?.subtitle,
             quote: quotes[symbol],
             selected: selected == symbol,
             onTap: () {
               onSelected?.call(symbol);
               if (onSelected == null) {
-                openTicker(context, symbol);
+                (onOpen ?? (symbol) => openTicker(context, symbol))(symbol);
               }
             },
-            onLongPress: () => openTicker(context, symbol),
+            onLongPress: () => (onOpen ?? (symbol) => openTicker(context, symbol))(symbol),
           );
         },
       ),
@@ -57,6 +61,7 @@ class StocksWatchlistReel extends StatelessWidget {
 class _WatchlistChip extends StatelessWidget {
   final String symbol;
   final TickerQuote? quote;
+  final String? subtitle;
   final bool selected;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
@@ -64,6 +69,7 @@ class _WatchlistChip extends StatelessWidget {
   const _WatchlistChip({
     required this.symbol,
     required this.quote,
+    this.subtitle,
     required this.selected,
     required this.onTap,
     required this.onLongPress,
@@ -94,16 +100,17 @@ class _WatchlistChip extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${selected ? '✓ ' : ''}\$$symbol',
+                  '${selected ? '✓ ' : ''}$symbol',
                   maxLines: 1,
                   style: theme.textTheme.labelLarge!.copyWith(fontWeight: FontWeight.w800),
                 ),
+                if (subtitle != null) Text(subtitle!, style: theme.textTheme.labelSmall, maxLines: 1),
                 const SizedBox(height: 2),
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      price == null ? kStockPlaceholder : stockMoneyFormat.format(price),
+                      price == null ? kStockPlaceholder : stockAssetPrice(price),
                       style: theme.textTheme.bodySmall!.copyWith(
                         fontWeight: FontWeight.w600,
                         color: price == null ? theme.colorScheme.outline : theme.colorScheme.onSurface,

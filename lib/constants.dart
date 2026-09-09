@@ -368,6 +368,7 @@ const optionPluginPixivShowR18 = 'plugin.pixiv.show_r18';
 const optionPluginPixivMutedAuthors = 'plugin.pixiv.muted_authors';
 const optionPluginPixivMutedTags = 'plugin.pixiv.muted_tags';
 const optionPluginPixivMutedIllusts = 'plugin.pixiv.muted_illusts';
+const optionPluginPixivGroupSubscriptions = 'plugin.pixiv.group_subscriptions';
 const optionPluginPixivSearchHistory = 'plugin.pixiv.search_history';
 
 const pluginIdBooru = 'booru';

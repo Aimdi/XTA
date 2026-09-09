@@ -1,5 +1,6 @@
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -127,6 +128,8 @@ class ThreadsPostCard extends StatelessWidget {
             color: tweetCardColor(context),
             child: InkWell(
               onTap: openOnTap ? () => _open(context) : null,
+              onLongPress: () => showPluginLinkPostActions(context, source: 'threads', url: post.url ?? post.id,
+                author: post.handle, text: post.text, images: post.images),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Column(

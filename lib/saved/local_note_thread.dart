@@ -67,12 +67,14 @@ class _ThreadBody extends StatelessWidget {
       return Center(child: Text(l10n.local_note_empty));
     }
     return ListView.builder(
+      key: PageStorageKey('local-note-thread-$rootId'),
       padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + 16),
       itemCount: thread.length,
       itemBuilder: (context, index) {
         final (:post, :depth) = thread[index];
         return Padding(
-          padding: EdgeInsets.only(left: (depth.clamp(0, 4)) * 16.0),
+          key: ValueKey(post.id),
+          padding: EdgeInsetsDirectional.only(start: (depth.clamp(0, 2)) * 12.0),
           child: LocalPostTile(
             post: post,
             replyCount: localPostDirectReplyCount(posts, post.id),

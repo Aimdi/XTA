@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -11,9 +12,7 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
-import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
-import 'package:xta/user.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
@@ -208,24 +207,8 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     }
   }
 
-  Future<void> _addToGroup(ThreadsProfile profile) async {
-    final accounts = context.read<ThreadsAccountsStore>();
-    final groupsModel = context.read<GroupsModel>();
-    if (!accounts.state.any((a) => a.handle == profile.username)) {
-      await accounts.add(profile.toAccount());
-    }
-    if (!mounted) return;
-    final user = subscriptionOf(profile.toAccount());
-    final groups = await groupsModel.listGroupsForUser(user.id);
-    if (!mounted) return;
-    await pickUserGroups(
-      context,
-      user: user,
-      followed: true,
-      groupsForUser: groups,
-    );
-    if (mounted) setState(() {});
-  }
+  Future<void> _addToGroup(ThreadsProfile profile) =>
+      addThreadsAccountToGroup(context, profile.toAccount());
 
   @override
   Widget build(BuildContext context) {

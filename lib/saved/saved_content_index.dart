@@ -9,6 +9,9 @@ library;
 import 'dart:convert';
 
 import 'package:xta/client/client.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
+import 'package:xta/plugins/bluesky/bluesky_archive.dart';
+import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
@@ -24,10 +27,12 @@ class SavedContent {
   /// A Reddit post filed in Archiv. Null for X posts.
   final RedditPost? reddit;
   final MastodonPost? mastodon;
+  final BlueskyPost? bluesky;
+  final PluginLinkPost? plugin;
 
   final String haystack;
 
-  const SavedContent({this.tweet, this.reddit, this.mastodon, required this.haystack});
+  const SavedContent({this.tweet, this.reddit, this.mastodon, this.bluesky, this.plugin, required this.haystack});
 
   static const empty = SavedContent(haystack: '');
 
@@ -50,6 +55,12 @@ SavedContent parseSavedContent(String? blob) {
 
   try {
     final decoded = jsonDecode(blob);
+    final plugin = PluginLinkPost.fromArchive(decoded);
+    if (plugin != null) return SavedContent(plugin: plugin, haystack: plugin.haystack);
+    if (decoded is Map && decoded['xtaPlugin'] == 'link') return SavedContent.empty;
+    final bluesky = blueskyPostFromArchive(decoded);
+    if (bluesky != null) return SavedContent(bluesky: bluesky, haystack: blueskyArchiveHaystack(bluesky));
+    if (decoded is Map && decoded['xtaPlugin'] == 'bluesky') return SavedContent.empty;
     final mastodon = mastodonPostFromArchive(decoded);
     if (mastodon != null) return SavedContent(mastodon: mastodon, haystack: mastodonArchiveHaystack(mastodon));
     if (decoded is Map && decoded['xtaPlugin'] == 'mastodon') return SavedContent.empty;

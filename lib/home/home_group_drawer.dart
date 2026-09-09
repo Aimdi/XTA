@@ -45,9 +45,15 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: CustomScrollView(
+        key: const PageStorageKey('home-group-drawer-scroll'),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        slivers: [
+          SliverToBoxAdapter(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
         widget.accountHeader,
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -83,22 +89,24 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
           ),
         ),
         const Divider(height: 1),
-        Expanded(
-          child: ScopedBuilder<HomeSelectionStore<String>, String>(
+            ],
+          )),
+          ScopedBuilder<HomeSelectionStore<String>, String>(
             store: _query,
             onState: (context, query) {
               final groups = drawerGroupsForQuery(widget.groups, query);
-              if (groups.isEmpty) return Center(child: Padding(padding: const EdgeInsets.all(24), child: Text(widget.groups.isEmpty ? l10n.no_subscription_groups_yet : l10n.no_results)));
-              return ListView.builder(
+              if (groups.isEmpty) return SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(24), child: Text(widget.groups.isEmpty ? l10n.no_subscription_groups_yet : l10n.no_results)));
+              return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                itemCount: groups.length,
-                itemBuilder: (context, index) => _groupTile(context, groups[index]),
+                sliver: SliverList.builder(
+                  itemCount: groups.length,
+                  itemBuilder: (context, index) => _groupTile(context, groups[index]),
+                ),
               );
             },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -106,7 +114,10 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
     key: ValueKey('drawer-group-${group.id}'),
     minTileHeight: 76,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-    leading: GroupUnreadBadge(unread: widget.unreadIds.contains(group.id), child: GroupMark.forGroup(group, size: 44)),
+    leading: Semantics(
+      label: widget.unreadIds.contains(group.id) ? L10n.of(context).group_has_unread : null,
+      child: GroupUnreadBadge(unread: widget.unreadIds.contains(group.id), child: GroupMark.forGroup(group, size: 44)),
+    ),
     title: Text(group.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600)),
     subtitle: Text(L10n.of(context).subscription_group_member_count(group.numberOfMembers), style: tweetMetadataStyle(context)),
     trailing: group.pinned

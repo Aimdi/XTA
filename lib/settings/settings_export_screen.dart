@@ -11,7 +11,7 @@ import 'package:xta/saved/saved_tweet_folder_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/settings/_data.dart';
 import 'package:xta/subscriptions/users_model.dart';
-import 'package:xta/utils/crash_reporter.dart';
+import 'package:xta/settings/export_preferences.dart';
 import 'package:xta/settings/backup_data.dart';
 import 'package:xta/settings/backup_rows.dart';
 import 'package:xta/settings/settings_chrome.dart';
@@ -150,7 +150,11 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
     return SettingsData(
       exportedAt: DateTime.now(),
       appVersion: await appVersionLabel(),
-      settings: _exportSettings ? prefsMapWithoutSecrets(prefs.toMap()) : null,
+      settings: preferencesForExport(
+        prefs.toMap(),
+        includeSettings: _exportSettings,
+        includeSubscriptions: _exportSubscriptions,
+      ),
       searchSubscriptions: _subscriptionsOf<SearchSubscription>(subscriptions),
       userSubscriptions: _subscriptionsOf<UserSubscription>(subscriptions),
       // Every plugin's rows, not the two this screen used to name: followed

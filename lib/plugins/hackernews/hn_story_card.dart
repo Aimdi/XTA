@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -33,6 +34,8 @@ class HnStoryCard extends StatelessWidget {
         children: [
           InkWell(
             onTap: () => _openStory(context),
+            onLongPress: () => showPluginLinkPostActions(context, source: 'hackernews', url: story.hnUrl,
+              author: story.author ?? '', text: [story.title, if (story.text != null) story.text!].join('\n')),
             child: Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 16, 4),
               child: Column(

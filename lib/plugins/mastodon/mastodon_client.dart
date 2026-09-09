@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/plugins/plugin_activity.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/utils/json.dart';
 
@@ -58,7 +59,7 @@ class MastodonClient {
     );
   }
 
-  Future<Object?> _get(Uri uri, {Duration? timeout}) async {
+  Future<Object?> _get(Uri uri, {Duration? timeout, void Function(http.Response)? onResponse}) async {
     final http.Response response;
     try {
       response = await httpClient
@@ -91,7 +92,9 @@ class MastodonClient {
     }
 
     try {
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      onResponse?.call(response);
+      return decoded;
     } catch (e) {
       throw MastodonException(MastodonErrorKind.badResponse, '$uri: $e');
     }
@@ -324,6 +327,50 @@ class MastodonClient {
     return post;
   }
 
+  Future<PluginActivityPage<MastodonProfile>> getRepostedBy(
+    List<String> instances, MastodonPost seed, {String? cursor},
+  ) async {
+    final page = await _activityPage(instances, seed, 'reblogged_by', cursor: cursor);
+    return PluginActivityPage([
+      for (final raw in Json(page.data).list)
+        MastodonProfile.fromJson(raw, homeDomain: page.uri.host),
+    ].where((profile) => profile.acct.isNotEmpty).toList(), cursor: page.next);
+  }
+
+  Future<PluginActivityPage<MastodonPost>> getQuotes(
+    List<String> instances, MastodonPost seed, {String? cursor},
+  ) async {
+    final page = await _activityPage(instances, seed, 'quotes', cursor: cursor);
+    return PluginActivityPage(parseMastodonStatuses(page.data, homeDomain: page.uri.host), cursor: page.next);
+  }
+
+  Future<({Object? data, Uri uri, String? next})> _activityPage(
+    List<String> instances, MastodonPost seed, String kind, {String? cursor},
+  ) async {
+    if (cursor != null) {
+      final uri = Uri.tryParse(cursor);
+      final allowed = instances.map((instance) => _uri(instance, '/').origin).toSet();
+      if (uri == null || !allowed.contains(uri.origin) ||
+          !RegExp('^/api/v1/statuses/[^/]+/$kind' r'$').hasMatch(uri.path)) {
+        throw MastodonException(MastodonErrorKind.badResponse, 'Invalid activity page');
+      }
+      return _readActivityPage(uri);
+    }
+    return firstInstanceThat(instances, (instance) async {
+      final status = await _locateStatus(instance, seed);
+      return _readActivityPage(_uri(instance, '/api/v1/statuses/${status.id}/$kind', {'limit': '40'}));
+    });
+  }
+
+  Future<({Object? data, Uri uri, String? next})> _readActivityPage(Uri uri) async {
+    String? next;
+    final data = await _get(uri, onResponse: (response) {
+      next = mastodonActivityNextPage(response.headers['link'], uri);
+    });
+    if (data is! List) throw MastodonException(MastodonErrorKind.badResponse, 'Expected activity list');
+    return (data: data, uri: uri, next: next);
+  }
+
   /// Ancestors and replies for a status on [instance].
   Future<({List<MastodonPost> ancestors, List<MastodonPost> descendants})>
   getContext(String instance, String id) async {
@@ -400,7 +447,7 @@ class MastodonClient {
       try {
         final post = await getStatus(instance, id);
         // On a proxy, a coincidental numeric hit must still be the same post.
-        if (sameMastodonStatusUrl(post.url, seed.url) || post.id == seed.id) {
+        if (sameMastodonStatusUrl(post.url, seed.url)) {
           return post;
         }
       } on MastodonException catch (e) {
@@ -705,9 +752,26 @@ class MastodonClient {
       );
     }
     try {
-      return jsonDecode(utf8.decode(response.bodyBytes));
+      final decoded = jsonDecode(utf8.decode(response.bodyBytes));
+      onResponse?.call(response);
+      return decoded;
     } catch (e) {
       throw MastodonException(MastodonErrorKind.badResponse, '$uri: $e');
     }
   }
+}
+
+/// Follow only the next page of this exact endpoint on the answering instance.
+String? mastodonActivityNextPage(String? header, Uri current) {
+  for (final part in (header ?? '').split(',')) {
+    final match = RegExp(r'<([^>]+)>;\s*rel="?next"?').firstMatch(part.trim());
+    if (match == null) continue;
+    try {
+      final next = current.resolve(match.group(1)!);
+      if (next.origin == current.origin && next.path == current.path && next != current) return next.toString();
+    } on FormatException {
+      continue;
+    }
+  }
+  return null;
 }

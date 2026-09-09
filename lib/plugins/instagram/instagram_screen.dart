@@ -1,3 +1,4 @@
+import 'package:xta/plugins/instagram/instagram_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -554,11 +555,14 @@ class _AccountsTab extends StatelessWidget {
                     children: [
                       PopupMenuButton<String>(
                         onSelected: (value) async {
-                          if (value == 'unfollow') {
+                          if (value == 'group') {
+                            await addInstagramToGroup(context, follow);
+                          } else if (value == 'unfollow') {
                             await _unfollow(context, follow.id);
                           }
                         },
                         itemBuilder: (context) => [
+                          PopupMenuItem(value: 'group', child: Text(L10n.of(context).add_to_group)),
                           PopupMenuItem(value: 'unfollow', child: Text(L10n.of(context).plugin_instagram_unfollow)),
                         ],
                       ),

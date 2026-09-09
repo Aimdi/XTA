@@ -1,3 +1,4 @@
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
@@ -32,6 +33,20 @@ Future<List<String>?> showGroupMembershipSheet(
   );
 }
 
+typedef GroupMembershipSelection = ({Set<String> chosen, String query});
+
+class GroupMembershipStore extends Store<GroupMembershipSelection> {
+  GroupMembershipStore(List<String> selected) : super((chosen: Set.unmodifiable(selected), query: ''));
+
+  void search(String query) => update((chosen: state.chosen, query: query.trim().toLowerCase()));
+
+  void toggle(String id) {
+    final next = state.chosen.toSet();
+    if (!next.remove(id)) next.add(id);
+    update((chosen: Set.unmodifiable(next), query: state.query));
+  }
+}
+
 class _GroupMembershipSheet extends StatefulWidget {
   final List<SubscriptionGroup> groups;
   final List<String> selected;
@@ -44,7 +59,8 @@ class _GroupMembershipSheet extends StatefulWidget {
 
 class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
   final TextEditingController _search = TextEditingController();
-  late final Set<String> _chosen = widget.selected.toSet();
+  late final GroupMembershipStore _selection = GroupMembershipStore(widget.selected);
+  Set<String> get _chosen => _selection.state.chosen;
 
   /// The order the list opens in, fixed once.
   ///
@@ -58,11 +74,12 @@ class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
   @override
   void dispose() {
     _search.dispose();
+    _selection.destroy();
     super.dispose();
   }
 
   List<SubscriptionGroup> get _visible {
-    final query = _search.text.trim().toLowerCase();
+    final query = _selection.state.query;
     if (query.isEmpty) {
       return _ordered;
     }
@@ -73,9 +90,11 @@ class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    final visible = _visible;
-
-    return FractionallySizedBox(
+    return ScopedBuilder<GroupMembershipStore, GroupMembershipSelection>(
+      store: _selection,
+      onState: (context, selection) {
+      final visible = _visible;
+      return FractionallySizedBox(
       heightFactor: 0.85,
       child: Column(
         children: [
@@ -94,7 +113,7 @@ class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
             child: XSearchField(
               controller: _search,
               hintText: l10n.search,
-              onChanged: (_) => setState(() {}),
+              onChanged: _selection.search,
             ),
           ),
           Expanded(
@@ -122,11 +141,7 @@ class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
                                   color: readableGroupColor(group, theme), fontWeight: FontWeight.w600)
                               : null,
                         ),
-                        onChanged: (_) => setState(() {
-                          if (!_chosen.remove(group.id)) {
-                            _chosen.add(group.id);
-                          }
-                        }),
+                        onChanged: (_) => _selection.toggle(group.id),
                       );
                     },
                   ),
@@ -148,6 +163,8 @@ class _GroupMembershipSheetState extends State<_GroupMembershipSheet> {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

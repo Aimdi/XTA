@@ -11,6 +11,7 @@ import 'package:xta/plugins/pixiv/pixiv_illust_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_gallery_layout.dart';
@@ -103,6 +104,7 @@ class PixivIllustTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
+        onLongPress: () => showPixivPostActions(context, illust),
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PixivIllustScreen(illust: illust))),
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -6,6 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
+import 'package:xta/plugins/bluesky/bluesky_archive.dart';
+import 'package:xta/plugins/bluesky/bluesky_activity.dart';
+import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:xta/plugins/bluesky/bluesky_facets.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
@@ -70,7 +73,7 @@ class BlueskyPostCard extends StatelessWidget {
   }
 
   void _openReposter(BuildContext context) {
-    final handle = post.repostedByHandle;
+    final handle = post.reposterActor;
     if (handle == null || handle.isEmpty) {
       return;
     }
@@ -120,6 +123,7 @@ class BlueskyPostCard extends StatelessWidget {
             color: theme.cardColor,
             child: InkWell(
               onTap: openOnTap ? () => _open(context) : null,
+              onLongPress: () => showBlueskyPostActions(context, post),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Column(
@@ -198,10 +202,9 @@ class BlueskyPostCard extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 60),
-      child: GestureDetector(
+      child: InkWell(
         onTap: () => _openReposter(context),
-        behavior: HitTestBehavior.opaque,
-        child: Row(
+        child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48), child: Row(
           children: [
             Icon(Icons.repeat, size: 14, color: muted),
             const SizedBox(width: 6),
@@ -213,7 +216,7 @@ class BlueskyPostCard extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        )),
       ),
     );
   }
@@ -500,7 +503,8 @@ class _BlueskyEngagementRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(top: 2),
-      child: Row(
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
         children: [
           TextButton.icon(
             style: footerButtonStyle,
@@ -513,7 +517,8 @@ class _BlueskyEngagementRow extends StatelessWidget {
           ),
           TextButton.icon(
             style: footerButtonStyle,
-            onPressed: onOpen,
+            onPressed: () => openBlueskyReposts(context, post),
+            onLongPress: () => openBlueskyQuotes(context, post),
             icon: Icon(Icons.repeat, size: 18, color: muted),
             label: Text(
               label(post.repostCount),
@@ -540,7 +545,7 @@ class _BlueskyEngagementRow extends StatelessWidget {
               );
             },
           ),
-          const Spacer(),
+          PluginPostBookmark(post: PluginPostArchive(id: blueskyArchiveId(post), userId: post.did, content: blueskyArchiveBlob(post))),
           tweetFooterIconButton(
             context,
             Icons.open_in_new,

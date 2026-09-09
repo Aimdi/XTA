@@ -3,9 +3,13 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/saved_content_index.dart';
 
-enum SavedSource { all, x, reddit, mastodon }
+enum SavedSource { all, x, reddit, mastodon, bluesky, other }
 
-SavedSource savedSourceOf(SavedContent? content) => content?.mastodon != null
+SavedSource savedSourceOf(SavedContent? content) => content?.plugin != null
+    ? SavedSource.other
+    : content?.bluesky != null
+    ? SavedSource.bluesky
+    : content?.mastodon != null
     ? SavedSource.mastodon
     : content?.reddit != null
     ? SavedSource.reddit
@@ -15,6 +19,8 @@ bool matchesSavedSource(SavedContent? content, SavedSource source) =>
     source == SavedSource.all || savedSourceOf(content) == source;
 
 bool savedContentHasMedia(SavedContent? content) =>
+    (content?.plugin?.images.isNotEmpty ?? false) ||
+    content?.bluesky?.hasMedia == true ||
     content?.mastodon?.hasMedia == true ||
     content?.reddit?.hasVisualMedia == true ||
     (content?.tweet?.extendedEntities?.media?.isNotEmpty ?? false) ||
@@ -36,6 +42,8 @@ class SavedSourceButton extends StatelessWidget {
       SavedSource.all => l10n.home_networks_all,
       SavedSource.x => l10n.source_x,
       SavedSource.reddit => l10n.plugin_reddit_title,
+      SavedSource.other => l10n.plugin_post_other_sources,
+      SavedSource.bluesky => l10n.plugin_bluesky_title,
       SavedSource.mastodon => l10n.plugin_mastodon_title,
     };
     return PopupMenuButton<SavedSource>(

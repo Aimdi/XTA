@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_bookmarks.dart';
+import 'package:xta/saved/saved_source_filter.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -86,15 +88,13 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
     // Remounts used to poll whenever the ten-minute TTL expired, which
     // jumped the list and flashed a "N more accounts" count. Only a
     // pull-to-refresh, or the first empty paint, should hit the AppView.
-    if (blueskyHomeShouldFetch(force: force, feedEmpty: feed.state.isEmpty)) {
-      await feed.refresh(force: force);
-    }
+    await feed.ensureLoaded(force: force);
   }
 
   Future<void> _searchPeople() async {
     await showBlueskySearchSheet(context);
     if (mounted) {
-      await context.read<BlueskyFeedStore>().refresh();
+      await context.read<BlueskyFeedStore>().ensureLoaded();
     }
   }
 
@@ -171,6 +171,8 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
                 ),
               ],
               actions: [
+                IconButton(icon: const Icon(Icons.bookmark_border), tooltip: l10n.saved,
+                  onPressed: () => openPluginBookmarks(context, SavedSource.bluesky)),
                 IconButton(
                   icon: const Icon(Icons.search),
                   tooltip: l10n.plugin_bluesky_search,

@@ -1,3 +1,12 @@
+import 'package:sqflite/sqflite.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
+import 'package:xta/plugins/plugin_account_subscription.dart';
+import 'package:xta/plugins/subscription_source.dart';
+import 'package:xta/plugins/pixiv/pixiv_group.dart';
+import 'package:xta/plugins/pixiv/pixiv_group_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
+import 'package:xta/tweet/interleaved_items.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +25,7 @@ import 'package:xta/plugins/plugin_category.dart';
 ///
 /// Inspired by pixez-flutter's approach; code is original.
 /// See docs/specs/pixiv-plugin.md.
-class PixivPlugin extends XtaPlugin {
+class PixivPlugin extends XtaPlugin with SubscriptionSource {
   PixivPlugin();
 
   @override
@@ -78,6 +87,41 @@ class PixivPlugin extends XtaPlugin {
     );
   }
 
+  /// Logical storage key; Pixiv authors are carried by settings backup.
+  @override
+  String get subscriptionTable => optionPluginPixivGroupSubscriptions;
+
+  @override
+  String? get subscriptionPreferenceKey => optionPluginPixivGroupSubscriptions;
+
+  @override
+  Subscription subscriptionFromMap(Map<String, Object?> row) => PluginAccountSubscription(id, row);
+
+  @override
+  Future<List<Subscription>> readSubscriptions(DatabaseExecutor database, {BasePrefService? prefs}) async =>
+      prefs == null ? const [] : readPixivGroupSubscriptions(prefs);
+
+  @override
+  bool owns(Subscription subscription) =>
+      subscription is PluginAccountSubscription && subscription.pluginId == id;
+
+  @override
+  Widget Function() destinationFor(Subscription subscription) =>
+      () => PixivUserScreen(userId: int.parse((subscription as PluginAccountSubscription).accountId));
+
+  @override
+  Future<void> reloadFromDatabase(BuildContext context) async {}
+
+  @override
+  Future<void> unfollow(BuildContext context, Subscription subscription) async {
+    final store = PixivGroupSubscriptionsStore(PrefService.of(context, listen: false));
+    try { await store.remove(subscription.id); } finally { store.destroy(); }
+  }
+
+  @override
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadPixivGroupPosts(context, ids);
+
   @override
   Future<void> resetPreferences(BasePrefService prefs) async {
     await prefs.set(optionPluginPixivRefreshToken, '');
@@ -89,6 +133,10 @@ class PixivPlugin extends XtaPlugin {
     await prefs.set(optionPluginPixivMutedTags, '[]');
     await prefs.set(optionPluginPixivMutedIllusts, '[]');
     await prefs.set(optionPluginPixivSearchHistory, '[]');
+    final database = await Repository.writable();
+    await database.delete(tableSubscriptionGroupMember,
+      where: 'profile_id LIKE ?', whereArgs: ['$pluginIdPixiv:%']);
+    await prefs.set(optionPluginPixivGroupSubscriptions, '[]');
   }
 
   @override
