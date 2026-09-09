@@ -18,6 +18,7 @@ class GroupTile extends StatefulWidget {
   final SubscriptionGroup group;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
+  final VoidCallback? onDiscover;
 
   /// Suppresses the press animation for the reduce-animations preference.
   final bool animate;
@@ -30,6 +31,7 @@ class GroupTile extends StatefulWidget {
     required this.group,
     required this.onTap,
     this.onLongPress,
+    this.onDiscover,
     this.animate = true,
     this.unread = false,
   });
@@ -189,7 +191,7 @@ class _GroupTileState extends State<GroupTile> {
       ),
     );
 
-    return Semantics(
+    final accessibleTile = Semantics(
       // Composed from the already-translated count string rather than a new
       // compound key: "Name, 3 subscriptions" is grammatical in every locale,
       // and Semantics.button already announces the role.
@@ -224,6 +226,20 @@ class _GroupTileState extends State<GroupTile> {
           ),
         ),
       ),
+    );
+    if (widget.onDiscover == null) return accessibleTile;
+    return Stack(
+      children: [
+        Positioned.fill(child: accessibleTile),
+        Positioned(
+          top: 2, right: 2,
+          child: IconButton(
+            tooltip: l10n.group_discovery_ai,
+            onPressed: widget.onDiscover,
+            icon: const Icon(Icons.auto_awesome, size: 20),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -16,6 +16,8 @@ import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_reader_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
@@ -170,10 +172,29 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Text(
-                      l10n.plugin_pixiv_page_of(_pageIndex + 1, pages.length),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 16,
+                      children: [
+                        Text(
+                          l10n.plugin_pixiv_page_of(_pageIndex + 1, pages.length),
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        FilledButton.tonalIcon(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (_) => PixivReaderScreen(
+                                illust: _illust,
+                                initialPage: _pageIndex,
+                              ),
+                            ),
+                          ),
+                          icon: const Icon(Icons.arrow_downward),
+                          label: Text(l10n.plugin_pixiv_read_vertically),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -275,10 +296,13 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             ],
           );
 
-          final body = InteractiveViewer(
-            minScale: 1,
-            maxScale: 4,
-            child: Center(child: image),
+          final body = GestureDetector(
+            onLongPress: () => showPixivPostActions(context, _illust),
+            child: InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              child: Center(child: image),
+            ),
           );
 
           if (index == 0) {

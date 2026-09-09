@@ -98,7 +98,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Following'), findsOneWidget);
-    expect(find.text('For you'), findsOneWidget);
+    expect(find.text('X'), findsOneWidget);
+    expect(find.text('For you'), findsNothing);
     expect(find.text('Groups'), findsOneWidget);
     // The full list is a row away, not spilled into the menu.
     expect(find.text('Demographics'), findsNothing);

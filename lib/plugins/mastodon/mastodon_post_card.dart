@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/mastodon/mastodon_activity.dart';
 import 'package:xta/plugins/mastodon/mastodon_bookmark.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
@@ -97,6 +98,7 @@ class MastodonPostCard extends StatelessWidget {
             color: theme.cardColor,
             child: InkWell(
               onTap: openOnTap ? () => _open(context) : null,
+              onLongPress: () => showMastodonPostActions(context, post),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Column(
@@ -169,7 +171,11 @@ class MastodonPostCard extends StatelessWidget {
     final name = post.boostedBy ?? post.authorName;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, left: 4),
-      child: Row(
+      child: InkWell(
+        onTap: post.boostedByAcct?.isNotEmpty == true ? () => Navigator.push(context, MaterialPageRoute(
+          builder: (_) => MastodonProfileScreen(acct: post.boostedByAcct!),
+        )) : null,
+        child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48), child: Row(
         children: [
           Icon(Icons.repeat, size: 14, color: muted),
           const SizedBox(width: 6),
@@ -181,6 +187,7 @@ class MastodonPostCard extends StatelessWidget {
             ),
           ),
         ],
+      )),
       ),
     );
   }
@@ -431,7 +438,8 @@ class _MastodonEngagementRow extends StatelessWidget {
           ),
           TextButton.icon(
             style: footerButtonStyle,
-            onPressed: onOpen,
+            onPressed: () => openMastodonReposts(context, post),
+            onLongPress: () => openMastodonQuotes(context, post),
             icon: Icon(Icons.repeat, size: 18, color: muted),
             label: Text(
               label(post.reblogsCount),

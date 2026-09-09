@@ -14,6 +14,9 @@ import 'package:xta/group/group_members.dart';
 import 'package:xta/group/group_chrome.dart';
 import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/group/group_model.dart';
+import 'package:xta/group/group_discovery.dart';
+import 'package:xta/group/group_discovery_screen.dart';
+import 'package:xta/utils/ai_client.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/group/group_switcher.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
@@ -327,6 +330,13 @@ class SubscriptionGroupScreen extends StatefulWidget {
 
 class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
   bool _mediaOnly = false;
+  final _discovery = GroupDiscoveryModeStore();
+
+  @override
+  void dispose() {
+    _discovery.destroy();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -340,6 +350,7 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
   }
 
   void _toggleMediaOnly() {
+    _discovery.select(false);
     setState(() => _mediaOnly = !_mediaOnly);
     final cacheKey = widget.cacheKey;
     if (cacheKey != null) {
@@ -348,6 +359,8 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
   }
 
   Future<void> _selectOrder(GroupModel model, int order) async {
+    _discovery.select(order == 3);
+    if (order == 3) return;
     if (order == 2) {
       await model.toggleSubscriptionGroupCustom(true);
     } else {
@@ -372,12 +385,16 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
         store: model,
         onState: (_, group) => group.id.isEmpty
             ? const SizedBox(height: kGroupControlBarHeight)
-            : GroupFeedControlBar(
+            : ScopedBuilder<GroupDiscoveryModeStore, int>(
+                store: _discovery,
+                onState: (_, _) => GroupFeedControlBar(
                 group: group,
+                discovery: _discovery.selected,
                 mediaOnly: _mediaOnly,
                 onOrderSelected: (order) => _selectOrder(model, order),
                 onMediaToggle: _toggleMediaOnly,
                 onCustomSettings: () => _openCustomSettings(context, model),
+                ),
               ),
       ),
     );
@@ -400,13 +417,41 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
           onSwitch: onSwitch,
         );
       },
-      bodyBuilder: (context) => SubscriptionGroupScreenContent(
-        id: widget.id,
-        cacheKey: widget.cacheKey,
-        mediaOnly: _mediaOnly,
+      bodyBuilder: (context) => ScopedBuilder<GroupDiscoveryModeStore, int>(
+        store: _discovery,
+        onState: (_, _) => IndexedStack(
+          index: _discovery.selected ? 1 : 0,
+          children: [
+            HeroMode(enabled: !_discovery.selected, child: TickerMode(
+              enabled: !_discovery.selected,
+              child: SubscriptionGroupScreenContent(
+                id: widget.id, cacheKey: widget.cacheKey, mediaOnly: _mediaOnly,
+              ),
+            )),
+            HeroMode(enabled: _discovery.selected, child: TickerMode(
+              enabled: _discovery.selected,
+              child: _discovery.opened
+                ? ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+                    store: context.read<GroupModel>(),
+                    onState: (_, group) => group.id.isEmpty
+                      ? const SizedBox.shrink()
+                      : GroupDiscoveryPane(group: group),
+                  )
+                : const SizedBox.shrink(),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomBuilder: _controls,
       actionsBuilder: (context) => [
+        if (AiConfig.fromPrefs(PrefService.of(context)).isConfigured)
+          IconButton(
+            tooltip: L10n.of(context).group_discovery_ai,
+            icon: const Icon(Icons.auto_awesome),
+            onPressed: () => openGroupDiscovery(context,
+              id: widget.id, name: widget.name, useAi: true),
+          ),
         ...defaultGroupActions(
           context,
           model: context.read<GroupModel>(),

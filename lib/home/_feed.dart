@@ -5,7 +5,8 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/home/_for_you.dart';
+import 'package:xta/plugins/x/x_plugin.dart';
+import 'package:xta/plugins/x/x_screen.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_account_filter.dart';
@@ -46,7 +47,8 @@ class FeedTab {
   const FeedTab(this.id);
 
   static const following = FeedTab('following');
-  static const foryou = FeedTab('foryou');
+  static const x = FeedTab(pluginIdX);
+  static const foryou = x;
 
   /// Same id as [pluginIdReddit] — kept so Reddit-specific chrome still matches.
   static const reddit = FeedTab(pluginIdReddit);
@@ -54,12 +56,12 @@ class FeedTab {
   /// Prefs and settings historically stored the enum `.name`; keep that shape.
   String get name => id;
 
-  bool get isPlugin => id != following.id && id != foryou.id;
+  bool get isPlugin => id != following.id;
 
   /// Chip / store mark for this tab — [XtaPlugin.icon], or house / spark for X.
   IconData get icon {
     if (this == following) return followingTabIcon;
-    if (this == foryou) return forYouTabIcon;
+    if (this == x) return Icons.close;
     return pluginById(id)?.icon ?? Icons.extension_outlined;
   }
 
@@ -86,7 +88,7 @@ const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
   FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-  FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou, icon: Icons.auto_awesome_outlined),
+  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -97,9 +99,10 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
 List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
     FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-    FeedTabOption(FeedTab.foryou, (c) => L10n.of(c).foryou, icon: Icons.auto_awesome_outlined),
+    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
+    if (pluginId == pluginIdX) continue;
     final plugin = pluginById(pluginId);
     if (plugin == null || !plugin.isEnabled(prefs) || !plugin.supportsFeedStrip) {
       continue;
@@ -156,7 +159,7 @@ List<FeedTabOption> overflowFeedTabs({required List<FeedTabOption> available, re
 
 FeedTab feedTabFromId(String? id) {
   if (id == null || id.isEmpty) return FeedTab.following;
-  return FeedTab(id);
+  return FeedTab(id == 'foryou' ? pluginIdX : id);
 }
 
 /// Which feed the home screen is showing.
@@ -165,9 +168,9 @@ FeedTab feedTabFromId(String? id) {
 /// somewhere else — the group screen's switcher jumps straight to Following —
 /// and the tabs have to follow when it is.
 class FeedTabStore extends Store<FeedTab> {
-  FeedTabStore(super.initialState);
+  FeedTabStore(FeedTab initialState) : super(feedTabFromId(initialState.id));
 
-  void select(FeedTab tab) => update(tab);
+  void select(FeedTab tab) => update(feedTabFromId(tab.id));
 }
 
 class FeedScreen extends StatefulWidget {
@@ -518,7 +521,7 @@ class _FeedScreenState extends State<FeedScreen> {
           ];
         }
 
-        if (tab.isPlugin) {
+        if (tab.isPlugin && tab != FeedTab.x) {
           final plugin = pluginById(tab.id)!;
           return [
             HomeAppBarActions(
@@ -599,13 +602,7 @@ class _FeedScreenState extends State<FeedScreen> {
       );
     }
     if (tab == FeedTab.foryou) {
-      return ForYouTweets(
-        _forYouFeed,
-        key: ValueKey(_forYouEpoch),
-        type: 'profile',
-        includeReplies: false,
-        pref: prefs,
-      );
+      return PluginEmbedded(child: XTimelineView(feed: _forYouFeed, revision: _forYouEpoch));
     }
     return _pluginBody(tab);
   }

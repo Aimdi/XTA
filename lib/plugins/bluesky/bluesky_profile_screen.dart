@@ -1,10 +1,10 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_follows_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
@@ -18,7 +18,6 @@ import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_media.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
-import 'package:xta/user.dart';
 
 /// What a failed Bluesky read should say.
 String blueskyErrorMessage(L10n l10n, Object error) {
@@ -322,34 +321,8 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
     }
   }
 
-  Future<void> _addToGroup(BlueskyProfile profile) async {
-    final accounts = context.read<BlueskyAccountsStore>();
-    final subscriptions = context.read<SubscriptionsModel>();
-    final groupsModel = context.read<GroupsModel>();
-
-    if (!accounts.follows(profile.handle)) {
-      await accounts.add(profile.toAccount());
-      await subscriptions.reloadSubscriptions();
-    }
-    if (!mounted) {
-      return;
-    }
-
-    final user = subscriptionOf(profile.toAccount());
-    final groups = await groupsModel.listGroupsForUser(user.id);
-    if (!mounted) {
-      return;
-    }
-    await pickUserGroups(
-      context,
-      user: user,
-      followed: true,
-      groupsForUser: groups,
-    );
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  Future<void> _addToGroup(BlueskyProfile profile) =>
+      addBlueskyAccountToGroup(context, profile.toAccount());
 
   void _openMedia(String url) {
     final handle = _profile?.handle ?? widget.actor;

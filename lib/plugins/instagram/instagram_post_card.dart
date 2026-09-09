@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -38,7 +39,7 @@ class InstagramPostCard extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
 
-    return RepaintBoundary(
+    return GestureDetector(onLongPress: () => showPluginLinkPostActions(context, source: 'instagram', url: post.webUri().toString(), author: post.author.username, text: post.caption, images: post.displayUrls), child: RepaintBoundary(
       child: tweetFlatCard(
         color: tweetCardColor(context),
         child: Column(
@@ -135,7 +136,7 @@ class InstagramPostCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Future<void> _openAuthor(BuildContext context) async {

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_bookmarks.dart';
+import 'package:xta/saved/saved_source_filter.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
@@ -95,6 +97,8 @@ List<Widget> mastodonActions(
   required VoidCallback onSearch,
   required VoidCallback onSettings,
 }) => [
+  IconButton(key: const ValueKey('mastodon-bookmarks'), icon: const Icon(Icons.bookmark_border),
+    tooltip: L10n.of(context).saved, onPressed: () => openPluginBookmarks(context, SavedSource.mastodon)),
   IconButton(
     key: const ValueKey('mastodon-search'),
     icon: const Icon(Icons.search),

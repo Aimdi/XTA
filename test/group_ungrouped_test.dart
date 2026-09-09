@@ -106,6 +106,7 @@ void main() {
             '{"assign":[{"id":"2","groupId":"space"}],"suggest":[]}',
       );
       await model.buildPlan(
+        useAi: true,
         subscriptions: [
           _user('1', 'nasa', 'NASA'),
           _user('2', 'esa', 'ESA Space'),
@@ -125,6 +126,7 @@ void main() {
         chat: (config, prompt) async => 'no json',
       );
       await fallback.buildPlan(
+        useAi: true,
         subscriptions: [
           _user('1', 'flutterdev', 'Flutter'),
           _user('2', 'dart_lang', 'Dart Flutter'),
@@ -141,4 +143,24 @@ void main() {
       expect(fallback.state.plan.suggest, isNotEmpty);
     },
   );
+
+  test('opening the sorter does not send accounts to a configured AI', () async {
+    var calls = 0;
+    final model = GroupUngroupedModel(chat: (_, _) async {
+      calls++;
+      return '{"assign":[{"id":"1","groupId":"space"}]}';
+    });
+    addTearDown(model.destroy);
+    final subscriptions = [_user('1', 'nasa', 'NASA Space')];
+    final groups = [_group('space', 'Space')];
+    const ai = AiConfig(baseUrl: aiGrokBaseUrl, apiKey: 'k', model: aiGrokModel);
+    await model.buildPlan(subscriptions: subscriptions, groups: groups,
+      members: const [], ai: ai);
+    expect(calls, 0);
+    expect(model.state.plan.usedAi, isFalse);
+    await model.buildPlan(subscriptions: subscriptions, groups: groups,
+      members: const [], ai: ai, useAi: true);
+    expect(calls, 1);
+    expect(model.state.plan.usedAi, isTrue);
+  });
 }

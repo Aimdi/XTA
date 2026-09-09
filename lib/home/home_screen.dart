@@ -10,10 +10,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread_store.dart';
-import 'package:xta/subscriptions/widgets/group_unread_badge.dart';
+import 'package:xta/home/home_group_drawer.dart';
 import 'package:xta/home/_account_avatar.dart';
 import 'package:xta/home/chrome_avatar.dart';
-import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/_missing.dart';
 import 'package:xta/home/_saved.dart';
@@ -28,7 +27,6 @@ import 'package:xta/search/search.dart';
 import 'package:xta/search/search_scope.dart';
 import 'package:xta/subscriptions/subscriptions.dart';
 import 'package:xta/trends/trends_screen.dart';
-import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
@@ -328,30 +326,13 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
           store: context.read<GroupsModel>(),
           onError: (context, _) => const SizedBox.shrink(),
           onState: (context, groups) => GroupUnreadScope(
-            builder: (context, unreadIds) => ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                _drawerAccountHeader(context, l10n),
-                ListTile(
-                  leading: const Icon(Icons.search),
-                  title: Text(l10n.search),
-                  onTap: () =>
-                      _goFromDrawer(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: true)),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: Text(l10n.settings),
-                  onTap: () => _goFromDrawer(context, routeSettings),
-                ),
-                if (groups.isNotEmpty) ...[
-                  const Divider(),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 4),
-                    child: Text(l10n.groups, style: Theme.of(context).textTheme.bodySmall),
-                  ),
-                  for (final group in groups) _drawerGroupTile(context, l10n, group, unreadIds),
-                ],
-              ],
+            builder: (context, unreadIds) => HomeGroupDrawer(
+              accountHeader: _drawerAccountHeader(context, l10n),
+              groups: groups,
+              unreadIds: unreadIds,
+              onSearch: () => _goFromDrawer(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: true)),
+              onSettings: () => _goFromDrawer(context, routeSettings),
+              onGroup: (group) => _goFromDrawer(context, routeGroup, arguments: GroupScreenArguments(id: group.id, name: group.name)),
             ),
           ),
         ),
@@ -376,7 +357,13 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ChromeAvatarMark(account: account, size: 44),
+                Row(
+                  children: [
+                    ChromeAvatarMark(account: account, size: 52),
+                    const Spacer(),
+                    IconButton(tooltip: l10n.close, onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 Text(l10n.fritter, style: theme.textTheme.titleLarge),
                 if (account?.screenName != null)
@@ -389,32 +376,6 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
           ),
         );
       },
-    );
-  }
-
-  /// One group shortcut: its colour disc, its name, a muted member count, and a
-  /// pin when it is pinned (the pinned ones already float to the top).
-  Widget _drawerGroupTile(BuildContext context, L10n l10n, SubscriptionGroup group, Set<String> unreadIds) {
-    final unread = unreadIds.contains(group.id);
-    return ListTile(
-      leading: GroupUnreadBadge(unread: unread, child: GroupMark.forGroup(group, size: 36)),
-      title: Row(
-        children: [
-          Expanded(child: Text(group.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
-          if (unread) Semantics(label: l10n.group_has_unread, child: const SizedBox.shrink()),
-        ],
-      ),
-      subtitle: Text(
-        l10n.subscription_group_member_count(group.numberOfMembers),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: group.pinned ? Icon(Icons.push_pin, size: 16, color: tweetReadableAccentColor(context)) : null,
-      onTap: () => _goFromDrawer(
-        context,
-        routeGroup,
-        arguments: GroupScreenArguments(id: group.id, name: group.name),
-      ),
     );
   }
 

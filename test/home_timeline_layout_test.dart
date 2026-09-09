@@ -284,7 +284,7 @@ void main() {
         await tester.tap(find.byKey(_picker));
         await tester.pumpAndSettle();
         expect(find.byKey(const ValueKey('home-source-following')).hitTestable(), findsOneWidget);
-        expect(find.byKey(const ValueKey('home-source-foryou')).hitTestable(), findsOneWidget);
+        expect(find.byKey(const ValueKey('home-source-x')).hitTestable(), findsOneWidget);
         expect(find.byKey(const ValueKey('home-add-timeline')).hitTestable(), findsOneWidget);
         expect(tester.takeException(), isNull);
         await expectLater(

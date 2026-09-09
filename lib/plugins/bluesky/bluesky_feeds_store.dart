@@ -56,6 +56,7 @@ class BlueskyAlgoStore extends Store<BlueskyAlgoState> {
   BlueskyAlgoStore(this.client, this.prefs) : super(const BlueskyAlgoState());
 
   var _catalogLoaded = false;
+  String? _loadedFeedUri;
   var _feedFetches = 0;
 
   /// How many times [getFeed] ran — tests assert remounts do not loop.
@@ -63,7 +64,7 @@ class BlueskyAlgoStore extends Store<BlueskyAlgoState> {
 
   /// First open: catalog + Discover. Later opens reuse the cache.
   Future<void> ensureLoaded({bool force = false, String? discoverName}) async {
-    if (!force && _catalogLoaded && state.posts.isNotEmpty) {
+    if (!force && _catalogLoaded && _loadedFeedUri == state.selectedUri && _loadedFeedUri != null) {
       return;
     }
     await loadCatalog(force: force);
@@ -105,7 +106,7 @@ class BlueskyAlgoStore extends Store<BlueskyAlgoState> {
   Future<void> open(String feedUri, {bool force = false, String? name}) async {
     if (!force &&
         state.selectedUri == feedUri &&
-        state.posts.isNotEmpty &&
+        _loadedFeedUri == feedUri &&
         !isLoading) {
       return;
     }
@@ -166,6 +167,7 @@ class BlueskyAlgoStore extends Store<BlueskyAlgoState> {
     required String title,
   }) async {
     final page = await client.getFeed(feedUri);
+    _loadedFeedUri = feedUri;
     _feedFetches++;
     return state.copyWith(
       selectedUri: feedUri,
@@ -233,6 +235,7 @@ class BlueskyListsStore extends Store<BlueskyListsState> {
   BlueskyListsStore(this.client, this.prefs) : super(const BlueskyListsState());
 
   var _hydrated = false;
+  String? _loadedListUri;
   var _feedFetches = 0;
 
   int get feedFetches => _feedFetches;
@@ -267,7 +270,7 @@ class BlueskyListsStore extends Store<BlueskyListsState> {
   Future<void> open(String listUri, {bool force = false, String? name}) async {
     if (!force &&
         state.selectedUri == listUri &&
-        state.posts.isNotEmpty &&
+        _loadedListUri == listUri &&
         !isLoading) {
       return;
     }
@@ -328,6 +331,7 @@ class BlueskyListsStore extends Store<BlueskyListsState> {
     required String title,
   }) async {
     final page = await client.getListFeed(listUri);
+    _loadedListUri = listUri;
     _feedFetches++;
     return state.copyWith(
       selectedUri: listUri,

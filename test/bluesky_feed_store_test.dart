@@ -91,6 +91,41 @@ void main() {
     });
   });
 
+  group('BlueskyFeedStore tab entry', () {
+    test('an empty successful response is not fetched again on entry', () async {
+      final client = _Client();
+      final store = _store(client, [alice]);
+      await store.ensureLoaded();
+      await store.ensureLoaded();
+      expect(client.calls, 1);
+      await store.ensureLoaded(force: true);
+      expect(client.calls, 2);
+    });
+
+    test('re-entry keeps a painted feed while explicit refresh reads changes', () async {
+      final client = _Client()..feeds[alice.actor] = [_post('old')];
+      final store = _store(client, [alice]);
+      await store.ensureLoaded();
+      final first = store.state;
+      client.feeds[alice.actor] = [_post('new')];
+      await store.ensureLoaded();
+      expect(identical(first, store.state), isTrue);
+      expect(client.calls, 1);
+      await store.ensureLoaded(force: true);
+      expect(store.state.single.text, 'new');
+    });
+
+    test('following another account invalidates the entry identity', () async {
+      final client = _Client()..feeds[alice.actor] = [_post('a')];
+      final store = _store(client, [alice]);
+      await store.ensureLoaded();
+      client.feeds[bob.actor] = [_post('b')];
+      store.accounts.update([alice, bob]);
+      await store.ensureLoaded();
+      expect(store.state.map((post) => post.text), containsAll(['a', 'b']));
+    });
+  });
+
   group('BlueskyFeedStore.refresh', () {
     test(
       'a second remount poll does not replace an unchanged first page',

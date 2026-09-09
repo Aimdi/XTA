@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -78,7 +79,9 @@ class MastodonPeoplePane extends StatelessWidget {
             leading: MastodonPersonAvatar(acct: account.acct, name: account.name, url: account.avatarUrl),
             title: Text(account.name, maxLines: 2, overflow: TextOverflow.ellipsis),
             subtitle: Text('@${account.acct}', maxLines: 2, overflow: TextOverflow.ellipsis),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: IconButton(icon: const Icon(Icons.group_add_outlined),
+              tooltip: l10n.add_to_group,
+              onPressed: () => addMastodonAccountToGroup(context, account)),
             onTap: () =>
                 Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct))),
           );

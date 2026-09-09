@@ -7,11 +7,13 @@ class GroupUngroupedState {
   final GroupUngroupedPlan plan;
   final Map<String, AccountRef> accountsById;
   final Map<String, String> groupNames;
+  final bool aiFailed;
 
   const GroupUngroupedState({
     this.plan = const GroupUngroupedPlan(),
     this.accountsById = const {},
     this.groupNames = const {},
+    this.aiFailed = false,
   });
 
   String handleOf(String id) => accountsById[id]?.handle ?? id;
@@ -32,6 +34,7 @@ class GroupUngroupedModel extends Store<GroupUngroupedState> {
     required List<SubscriptionGroup> groups,
     required List<SubscriptionGroupMember> members,
     required AiConfig ai,
+    bool useAi = false,
   }) async {
     await execute(() async {
       final groupedIds = {
@@ -50,8 +53,9 @@ class GroupUngroupedModel extends Store<GroupUngroupedState> {
         accountsById: {for (final account in ungrouped) account.id: account},
         groupNames: {for (final group in refs) group.id: group.name},
       );
-      if (!ai.isConfigured || ungrouped.isEmpty) return state;
-      return state.copyWith(plan: await _askAi(ai, ungrouped, refs, heuristic));
+      if (!useAi || !ai.isConfigured || ungrouped.isEmpty) return state;
+      final plan = await _askAi(ai, ungrouped, refs, heuristic);
+      return state.copyWith(plan: plan, aiFailed: !plan.usedAi);
     });
   }
 
@@ -65,7 +69,7 @@ class GroupUngroupedModel extends Store<GroupUngroupedState> {
       final reply = await (chat ?? aiChatCompletion)(
         ai,
         groupingPrompt(ungrouped, refs),
-      );
+      ).timeout(const Duration(seconds: 30));
       final parsed = parseGroupingReply(
         reply,
         accountIds: {for (final account in ungrouped) account.id},
@@ -80,10 +84,16 @@ class GroupUngroupedModel extends Store<GroupUngroupedState> {
 }
 
 extension on GroupUngroupedState {
-  GroupUngroupedState copyWith({GroupUngroupedPlan? plan}) =>
+  GroupUngroupedState copyWith({GroupUngroupedPlan? plan, bool? aiFailed}) =>
       GroupUngroupedState(
         plan: plan ?? this.plan,
         accountsById: accountsById,
         groupNames: groupNames,
+        aiFailed: aiFailed ?? this.aiFailed,
       );
+}
+
+class GroupPlanApplyingStore extends Store<bool> {
+  GroupPlanApplyingStore() : super(false);
+  void setApplying(bool applying) => update(applying);
 }

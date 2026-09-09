@@ -68,7 +68,7 @@ class _DeckColumnState extends State<_DeckColumn> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _groupModel = GroupModel(widget.group.id)..loadGroup();
+    _groupModel = GroupModel(widget.group.id, prefs: PrefService.of(context, listen: false))..loadGroup();
   }
 
   @override

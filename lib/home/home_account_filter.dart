@@ -14,6 +14,8 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/future_pool.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/home_group_filter.dart';
+import 'package:xta/home/home_filter_sheet.dart';
+import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 
@@ -321,10 +323,7 @@ class HomeAccountFilterStore extends Store<Set<String>> {
   }
 }
 
-void showHomeAccountFilterSheet(
-  BuildContext context, {
-  VoidCallback? onChanged,
-}) {
+void showHomeAccountFilterSheet(BuildContext context, {VoidCallback? onChanged}) {
   final filter = context.read<HomeAccountFilterStore>();
   HomeGroupFilterStore? groupFilter;
   List<SubscriptionGroup> groups = const [];
@@ -334,134 +333,31 @@ void showHomeAccountFilterSheet(
   } on ProviderNotFoundException {
     groupFilter = null;
   }
-  showModalBottomSheet(
+  final accountsFuture = getAccounts();
+  showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
-    builder: (sheetContext) {
-      return SafeArea(
-        child: FutureBuilder<List<Account>>(
-          future: getAccounts(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Padding(
-                padding: EdgeInsets.all(24),
-                child: LinearProgressIndicator(),
-              );
-            }
-            final accounts = snapshot.data ?? const <Account>[];
-            return ScopedBuilder<HomeAccountFilterStore, Set<String>>(
-              store: filter,
-              onState: (_, disabled) {
-                return SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        title: Text(
-                          L10n.of(context).home_feed_accounts,
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: kTweetSpace4,
-                          end: kTweetSpace4,
-                          bottom: kTweetSpace2,
-                        ),
-                        child: Text(
-                          L10n.of(context).home_feed_accounts_description,
-                          style: tweetMetadataStyle(context),
-                        ),
-                      ),
-                      if (accounts.isEmpty)
-                        ListTile(
-                          title: Text(
-                            L10n.of(context).home_feed_accounts_empty,
-                          ),
-                          trailing: TextButton(
-                            onPressed: () {
-                              Navigator.of(sheetContext).pop();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const TwitterLoginWebview(),
-                                ),
-                              );
-                            },
-                            child: Text(L10n.of(context).add_account),
-                          ),
-                        )
-                      else
-                        ...accounts.map(
-                          (account) => HomeAccountToggleTile(
-                            account: account,
-                            disabled: disabled,
-                            accounts: accounts,
-                            onChanged: (value) async {
-                              await filter.setEnabled(
-                                account.id,
-                                value,
-                                accounts: accounts,
-                              );
-                              onChanged?.call();
-                            },
-                          ),
-                        ),
-                      if (groupFilter != null && groups.isNotEmpty)
-                        ScopedBuilder<HomeGroupFilterStore, Set<String>>(
-                          store: groupFilter,
-                          onState: (_, disabledGroups) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Divider(),
-                                ListTile(
-                                  title: Text(
-                                    L10n.of(context).home_feed_groups,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
-                                  ),
-                                  subtitle: Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: kTweetSpace1,
-                                    ),
-                                    child: Text(
-                                      L10n.of(
-                                        context,
-                                      ).home_feed_groups_description,
-                                      style: tweetMetadataStyle(context),
-                                    ),
-                                  ),
-                                ),
-                                ...groups.map(
-                                  (group) => HomeGroupToggleTile(
-                                    group: group,
-                                    disabled: disabledGroups,
-                                    onChanged: (value) async {
-                                      await groupFilter!.setEnabled(
-                                        group.id,
-                                        value,
-                                      );
-                                      onChanged?.call();
-                                    },
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                    ],
-                  ),
-                );
-              },
-            );
+    builder: (sheetContext) => FutureBuilder<List<Account>>(
+      future: accountsFuture,
+      builder: (_, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(height: 180, child: Center(child: CircularProgressIndicator()));
+        }
+        return HomeFilterSheet(
+          accounts: snapshot.data ?? const [],
+          groups: groups,
+          accountsStore: filter,
+          groupsStore: groupFilter,
+          onChanged: onChanged,
+          onAddAccount: () {
+            Navigator.pop(sheetContext);
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview()));
           },
-        ),
-      );
-    },
+        );
+      },
+    ),
   );
 }
 
@@ -486,16 +382,23 @@ class HomeAccountToggleTile extends StatelessWidget {
     final l10n = L10n.of(context);
     final enabled = isHomeAccountEnabled(account.id, disabled);
     final canDisable = canDisableHomeAccount(account.id, accounts, disabled);
-    return SwitchListTile(
-      secondary: const Icon(Icons.account_circle),
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: enabled ? Theme.of(context).colorScheme.surfaceContainerLow : Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: tweetDividerColor(context))),
+      child: SwitchListTile(
+      key: ValueKey('home-account-${account.id}'),
+      secondary: CircleAvatar(child: Icon(enabled ? Icons.person : Icons.person_outline)),
       title: Text(account.screenName ?? l10n.unknown_username),
       subtitle: Text(
         enabled && !canDisable
             ? l10n.home_feed_keep_one_account
-            : l10n.home_feed_include_in_for_you,
+            : enabled ? l10n.home_feed_include_in_for_you : l10n.disabled,
       ),
       value: enabled,
       onChanged: !enabled || canDisable ? onChanged : null,
+      ),
     );
   }
 }
@@ -516,12 +419,19 @@ class HomeGroupToggleTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final enabled = !disabled.contains(group.id);
-    return SwitchListTile(
-      secondary: Icon(group.iconData),
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: enabled ? Theme.of(context).colorScheme.surfaceContainerLow : Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: tweetDividerColor(context))),
+      child: SwitchListTile(
+      key: ValueKey('home-group-filter-${group.id}'),
+      secondary: GroupMark.forGroup(group, size: 40),
       title: Text(group.name),
-      subtitle: Text(L10n.of(context).home_feed_include_in_following),
+      subtitle: Text('${L10n.of(context).subscription_group_member_count(group.numberOfMembers)} · ${enabled ? L10n.of(context).home_feed_include_in_following : L10n.of(context).disabled}'),
       value: enabled,
       onChanged: onChanged,
+      ),
     );
   }
 }

@@ -47,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install and set up Flutter
         uses: subosito/flutter-action@v2
@@ -72,8 +74,8 @@ jobs:
       - name: Check formatting of new files
         if: github.event_name == 'pull_request'
         run: |
-          git fetch --no-tags --depth=1 origin "$BASE"
-          mapfile -t added < <(git diff --diff-filter=A --name-only "origin/$BASE"...HEAD -- '*.dart')
+          git diff --diff-filter=A --name-only "$BASE_SHA" HEAD -- '*.dart' > /tmp/xta-added-dart-files
+          mapfile -t added < /tmp/xta-added-dart-files
           if [ ${#added[@]} -eq 0 ]; then
             echo "No new Dart files."
             exit 0
@@ -81,7 +83,7 @@ jobs:
           printf '%s\n' "${added[@]}"
           dart format --output=none --set-exit-if-changed --line-length 120 "${added[@]}"
         env:
-          BASE: ${{ github.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
 
       - name: Analyze
         run: flutter analyze --no-fatal-infos

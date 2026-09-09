@@ -1,3 +1,6 @@
+import 'package:xta/plugins/tiktok/tiktok_group.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -244,6 +247,11 @@ class _Header extends StatelessWidget {
           ),
           if (!profile.privateAccount) ...[
             const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: () => addTikTokToGroup(context, TikTokFollow.fromProfile(profile)),
+              icon: const Icon(Icons.group_add_outlined),
+              label: Text(l10n.add_to_group),
+            ),
             ScopedBuilder<TikTokFollowsStore, List<TikTokFollow>>(
               store: follows,
               onState: (context, list) {
@@ -259,6 +267,10 @@ class _Header extends StatelessWidget {
                       } else {
                         await follows.follow(profile);
                       }
+                    if (!context.mounted) return;
+                    await context.read<SubscriptionsModel>().reloadSubscriptions();
+                    if (!context.mounted) return;
+                    await context.read<GroupsModel>().reloadGroups();
                       if (!context.mounted) return;
                     },
                     icon: Icon(

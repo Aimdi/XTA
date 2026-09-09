@@ -640,6 +640,14 @@ class PixivClient {
     return _illustPage(json, includeR18: includeR18 ?? showR18);
   }
 
+  Future<PixivUserPage> followedUsers({String? nextUrl, bool private = false}) async {
+    final userId = await ensureUserId();
+    final json = nextUrl == null
+        ? await _apiGet('/v1/user/following', {'user_id': '$userId', 'restrict': private ? 'private' : 'public'})
+        : await _apiGetUrl(nextUrl);
+    return PixivUserPage.fromJson(json);
+  }
+
   Future<PixivUser> userDetail(int userId) async {
     final json = await _apiGet('/v1/user/detail', {
       'user_id': '$userId',

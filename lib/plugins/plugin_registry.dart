@@ -1,4 +1,5 @@
 import 'package:pref/pref.dart';
+import 'package:xta/plugins/x/x_plugin.dart';
 import 'package:xta/plugins/bluesky/bluesky_plugin.dart';
 import 'package:xta/plugins/booru/booru_plugin.dart';
 import 'package:xta/plugins/deepmarks/deepmarks_plugin.dart';
@@ -38,7 +39,10 @@ final List<XtaPlugin> builtInPlugins = [
   ImmichPlugin(),
 ];
 
+final XtaPlugin coreXPlugin = XPlugin();
+
 XtaPlugin? pluginById(String id) {
+  if (id == pluginIdX) return coreXPlugin;
   for (final plugin in builtInPlugins) {
     if (plugin.id == id) return plugin;
   }

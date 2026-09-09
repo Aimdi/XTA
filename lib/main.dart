@@ -593,6 +593,7 @@ Future<void> main() async {
       optionPluginPixivMutedTags: '[]',
       optionPluginPixivMutedIllusts: '[]',
       optionPluginPixivSearchHistory: '[]',
+      optionPluginPixivGroupSubscriptions: '[]',
       optionPluginBooruEnabled: false,
       optionPluginBooruShowTab: true,
       optionPluginBooruEngine: 'danbooru',

@@ -33,6 +33,7 @@ class ForYouTweets extends StatefulWidget {
   final TweetFeedController feed;
   final String type;
   final bool includeReplies;
+  final bool includePluginPosts;
   final BasePrefService pref;
 
   const ForYouTweets(
@@ -40,6 +41,7 @@ class ForYouTweets extends StatefulWidget {
     super.key,
     required this.type,
     required this.includeReplies,
+    this.includePluginPosts = true,
     required this.pref,
   });
 
@@ -84,7 +86,7 @@ class _ForYouTweetsState extends State<ForYouTweets>
     super.initState();
     widget.feed.pageCapProvider = _zenPageCap;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadPluginPosts();
+      if (widget.includePluginPosts) _loadPluginPosts();
     });
   }
 
@@ -344,7 +346,7 @@ class _ForYouTweetsState extends State<ForYouTweets>
             // pull has to reach Reddit too, or the cache would keep
             // handing back the posts already on screen.
             onRefresh: () async {
-              unawaited(_loadPluginPosts());
+              if (widget.includePluginPosts) unawaited(_loadPluginPosts());
             },
             firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
             newPageErrorPrefix: L10n.of(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/plugins/plugin_activity.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/utils/json.dart';
 
@@ -84,6 +85,24 @@ class BlueskyClient {
     } catch (e) {
       throw BlueskyException(BlueskyErrorKind.badResponse, '$uri: $e');
     }
+  }
+
+  Future<PluginActivityPage<BlueskyProfile>> getRepostedBy(String uri, {String? cursor}) async {
+    final json = await _get(_uri('/xrpc/app.bsky.feed.getRepostedBy', {
+      'uri': uri, 'limit': '50', if (cursor != null) 'cursor': cursor,
+    }));
+    final people = json['repostedBy'].list.map(BlueskyProfile.fromJson)
+        .where((person) => person.did.isNotEmpty || person.handle.isNotEmpty).toList();
+    return PluginActivityPage(people, cursor: json['cursor'].string);
+  }
+
+  Future<PluginActivityPage<BlueskyPost>> getQuotes(String uri, {String? cursor}) async {
+    final json = await _get(_uri('/xrpc/app.bsky.feed.getQuotes', {
+      'uri': uri, 'limit': '50', if (cursor != null) 'cursor': cursor,
+    }));
+    return PluginActivityPage([
+      for (final item in json['posts'].list) ?blueskyPostFromView(item),
+    ], cursor: json['cursor'].string);
   }
 
   /// Confirms the AppView answers a known public profile.

@@ -62,6 +62,7 @@ class MastodonPost {
 
   /// Display name of who boosted, when [boosted] is true.
   final String? boostedBy;
+  final String? boostedByAcct;
 
   /// Handle this status is a reply to, when the payload names one.
   final String? replyToAcct;
@@ -91,6 +92,7 @@ class MastodonPost {
     this.publishedAt,
     this.boosted = false,
     this.boostedBy,
+    this.boostedByAcct,
     this.replyToAcct,
     this.replyToId,
     this.mentionAccts = const [],
@@ -652,6 +654,7 @@ MastodonPost? mastodonPostFromStatus(
     url: url,
     boosted: boosted,
     boostedBy: boosted ? _boostedByName(root, homeDomain: homeDomain) : null,
+    boostedByAcct: boosted ? MastodonProfile.fromJson(root['account'].raw, homeDomain: homeDomain).acct : null,
     replyToAcct: _replyToAcct(status),
     replyToId: status['in_reply_to_id'].string,
     mentionAccts: _mentionAccts(status),

@@ -32,6 +32,7 @@ class GroupFeedControlBar extends StatelessWidget
   final ValueChanged<int> onOrderSelected;
   final VoidCallback onMediaToggle;
   final VoidCallback onCustomSettings;
+  final bool discovery;
 
   const GroupFeedControlBar({
     super.key,
@@ -40,12 +41,13 @@ class GroupFeedControlBar extends StatelessWidget
     required this.onOrderSelected,
     required this.onMediaToggle,
     required this.onCustomSettings,
+    this.discovery = false,
   });
 
   @override
   Size get preferredSize => const Size.fromHeight(kGroupControlBarHeight);
 
-  int get _order => group.custom ? 2 : (group.popular ? 1 : 0);
+  int get _order => discovery ? 3 : (group.custom ? 2 : (group.popular ? 1 : 0));
 
   @override
   Widget build(BuildContext context) {
@@ -91,6 +93,13 @@ class GroupFeedControlBar extends StatelessWidget
               onSelected: _order == 2
                   ? onCustomSettings
                   : () => onOrderSelected(2),
+            ),
+            const SizedBox(width: kTweetSpace2),
+            _GroupChoice(
+              label: L10n.of(context).discover,
+              icon: Icons.explore_outlined,
+              selected: discovery,
+              onSelected: () => onOrderSelected(3),
             ),
             const SizedBox(width: kTweetSpace2),
             _GroupChoice(

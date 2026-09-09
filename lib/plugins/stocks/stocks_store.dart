@@ -1,15 +1,21 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/database/entities.dart';
+import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
 
 /// The tickers the reader watches, kept in the database.
 ///
-/// Symbols are stored uppercase and the row id is the lowercased symbol, so a
-/// watchlist entry can be joined against group membership like every other
-/// subscription kind.
+/// Legacy tickers retain their uppercase symbol and lowercase id. Crypto rows
+/// use network/contract ids and versioned metadata in the existing symbol
+/// column, so the standard backup format preserves exact project identities.
 class StocksWatchlistStore extends Store<List<String>> {
   StocksWatchlistStore() : super(const []);
+
+  Map<String, CryptoAsset> _assets = const {};
+  Map<String, CryptoAsset> get cryptoAssets => _assets;
+  CryptoAsset? assetFor(String id) => _assets[id];
+  String labelFor(String id) => _assets[id]?.label ?? '\$$id';
 
   Future<void> load() async {
     await execute(_read);
@@ -22,11 +28,22 @@ class StocksWatchlistStore extends Store<List<String>> {
       orderBy: 'symbol COLLATE NOCASE',
     );
 
-    return rows.map((e) => e['symbol'] as String).toList(growable: false);
+    final assets = <String, CryptoAsset>{};
+    final symbols = <String>[];
+    for (final row in rows) {
+      final stored = row['symbol'] as String;
+      final asset = CryptoAsset.decode(stored);
+      if (asset != null) assets[asset.id] = asset;
+      symbols.add(asset?.id ?? stored);
+    }
+    _assets = Map.unmodifiable(assets);
+    symbols.sort((a, b) => labelFor(a).compareTo(labelFor(b)));
+    return symbols;
   }
 
   Future<void> _write(String symbol) async {
-    final normalised = normaliseTicker(symbol);
+    final asset = CryptoAsset.decode(symbol);
+    final normalised = asset?.encode() ?? normaliseTicker(symbol);
     if (normalised == null) {
       return;
     }
@@ -35,12 +52,12 @@ class StocksWatchlistStore extends Store<List<String>> {
     await database.insert(
       tableStockSubscription,
       StockSubscription(
-        id: normalised.toLowerCase(),
+        id: asset?.id ?? normalised.toLowerCase(),
         symbol: normalised,
         createdAt: DateTime.now(),
         inFeed: true,
       ).toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
 
@@ -53,7 +70,7 @@ class StocksWatchlistStore extends Store<List<String>> {
 
   Future<void> remove(String symbol) async {
     await execute(() async {
-      final id = symbol.toLowerCase();
+      final id = CryptoAsset.contractForId(symbol) == null ? symbol.toLowerCase() : symbol;
       final database = await Repository.writable();
       await database.delete(
         tableStockSubscription,

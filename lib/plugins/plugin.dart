@@ -73,6 +73,7 @@ abstract class XtaPlugin {
   /// Declared rather than deleted by hand so that [footprint] and [uninstall]
   /// cannot disagree about what the plugin owns.
   List<String> get tables => const [];
+  String? get groupMembershipPrefix => null;
   List<String> get caches => const [];
 
   /// Which of those tables belong in a backup, and under what name.
@@ -102,7 +103,7 @@ abstract class XtaPlugin {
   Future<void> uninstall(BuildContext context) async {
     final prefs = PrefService.of(context, listen: false);
 
-    await erasePluginStorage(tables: tables, caches: caches);
+    await erasePluginStorage(tables: tables, caches: caches, membershipPrefix: groupMembershipPrefix);
     await resetPreferences(prefs);
     await setEnabled(prefs, false);
 

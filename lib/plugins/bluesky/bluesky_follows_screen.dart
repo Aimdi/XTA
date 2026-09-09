@@ -1,3 +1,6 @@
+import 'package:xta/plugins/social_account_groups.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -142,6 +145,10 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
     } else {
       await accounts.add(profile.toAccount());
     }
+    if (!mounted) return;
+    await context.read<SubscriptionsModel>().reloadSubscriptions();
+    if (!mounted) return;
+    await context.read<GroupsModel>().reloadGroups();
     if (mounted) setState(() {});
   }
 
@@ -221,14 +228,15 @@ class _BlueskyFollowsScreenState extends State<BlueskyFollowsScreen> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            trailing: TextButton(
-              onPressed: () => _toggleFollow(profile),
-              child: Text(
-                following
-                    ? l10n.plugin_bluesky_unfollow
-                    : l10n.plugin_bluesky_follow,
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+              IconButton(icon: const Icon(Icons.group_add_outlined),
+                tooltip: l10n.add_to_group,
+                onPressed: () => addBlueskyAccountToGroup(context, profile.toAccount())),
+              TextButton(
+                onPressed: () => _toggleFollow(profile),
+                child: Text(following ? l10n.plugin_bluesky_unfollow : l10n.plugin_bluesky_follow),
               ),
-            ),
+            ]),
             onTap: () => _open(profile),
           );
         },

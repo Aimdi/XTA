@@ -1,3 +1,6 @@
+import 'package:xta/plugins/hackernews/hn_group.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -96,7 +99,13 @@ class _UserLead extends StatelessWidget {
           trailing: ScopedBuilder<HnFollowsStore, List<String>>(
             store: follows,
             onState: (_, _) => TextButton(
-              onPressed: () => follows.toggle(user.id),
+              onPressed: () async {
+                await follows.toggle(user.id);
+                if (!context.mounted) return;
+                await context.read<SubscriptionsModel>().reloadSubscriptions();
+                if (!context.mounted) return;
+                await context.read<GroupsModel>().reloadGroups();
+              },
               child: Text(
                 follows.isFollowing(user.id)
                     ? l10n.plugin_hn_unfollow
@@ -105,6 +114,9 @@ class _UserLead extends StatelessWidget {
             ),
           ),
         ),
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OutlinedButton.icon(onPressed: () => addHnToGroup(context, user.id),
+            icon: const Icon(Icons.group_add_outlined), label: Text(l10n.add_to_group))),
         if ((user.about ?? '').isNotEmpty)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),

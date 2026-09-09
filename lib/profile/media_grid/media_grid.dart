@@ -6,6 +6,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/media_grid/gif_playback_gate.dart';
+import 'package:xta/profile/media_grid/broadcast_media_card.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/media_grid/media_grid_lightbox.dart';
 import 'package:xta/tweet/media_strip.dart';
@@ -84,6 +85,7 @@ class MediaGrid extends StatefulWidget {
   final String firstPageErrorPrefix;
   final String newPageErrorPrefix;
   final String emptyMessage;
+  final bool broadcastsOnly;
 
   const MediaGrid({
     super.key,
@@ -91,6 +93,7 @@ class MediaGrid extends StatefulWidget {
     required this.firstPageErrorPrefix,
     required this.newPageErrorPrefix,
     required this.emptyMessage,
+    this.broadcastsOnly = false,
   });
 
   @override
@@ -133,7 +136,16 @@ class _MediaGridState extends State<MediaGrid>
     super.build(context);
     _maybeStartFirstLoad();
 
-    final config = mediaGridConfigOf(context);
+    final config = widget.broadcastsOnly
+        ? (
+            columns: 1,
+            spacing: 16.0,
+            radius: 16.0,
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+            minAspectRatio: 16 / 9,
+            maxAspectRatio: 16 / 9,
+          )
+        : mediaGridConfigOf(context);
 
     return RefreshIndicator(
       onRefresh: () async => widget.controller.refresh(),
@@ -165,6 +177,8 @@ class _MediaGridState extends State<MediaGrid>
                 child: _MediaGridEmpty(message: widget.emptyMessage),
               ),
             );
+          } else if (widget.broadcastsOnly) {
+            child = _broadcastList(context, state, fetchNextPage);
           } else {
             child = KeyedSubtree(
               key: const ValueKey('media-grid-content'),
@@ -210,6 +224,49 @@ class _MediaGridState extends State<MediaGrid>
       ),
     );
   }
+  Widget _broadcastList(
+    BuildContext context,
+    PagingState<int, MediaGridItem> state,
+    VoidCallback fetchNextPage,
+  ) => PagedListView<int, MediaGridItem>(
+    key: const ValueKey('broadcast-media-list'),
+    state: state,
+    fetchNextPage: fetchNextPage,
+    padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
+    addAutomaticKeepAlives: false,
+    builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
+      itemBuilder: (context, item, index) {
+        final preview = _MediaGridTile(
+          key: ValueKey('broadcast-preview-${item.tweetId}'),
+          item: item,
+          gifGate: _gifGate,
+          radius: 16,
+          aspectRatio: 16 / 9,
+          position: index + 1,
+          total: state.items!.length,
+          onTap: () => openMediaGridItem(
+            context,
+            item: item,
+            index: index,
+            controller: widget.controller,
+          ),
+        );
+        return item is BroadcastGridItem
+            ? BroadcastMediaCard(
+                key: ValueKey('broadcast-card-${item.tweetId}'),
+                item: item,
+                preview: preview,
+              )
+            : preview;
+      },
+      newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+        error: pagingErrorOf(state)?.error,
+        stackTrace: pagingErrorOf(state)?.stackTrace,
+        prefix: widget.newPageErrorPrefix,
+        onRetry: fetchNextPage,
+      ),
+    ),
+  );
 }
 
 /// Media-shaped first-page placeholder shared by Profile, Search and Groups.
@@ -383,6 +440,7 @@ class _MediaGridTile extends StatefulWidget {
   final VoidCallback? onLongPress;
 
   const _MediaGridTile({
+    super.key,
     required this.item,
     required this.gifGate,
     required this.radius,

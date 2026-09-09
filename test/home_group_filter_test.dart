@@ -106,7 +106,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('Art NSFW'), findsOneWidget);
-    expect(find.text('Include in Following'), findsOneWidget);
+    expect(find.textContaining('Include in Following'), findsOneWidget);
+    expect(tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value, isTrue);
     await tester.tap(find.byType(SwitchListTile));
     await tester.pump();
     expect(enabled, isFalse);

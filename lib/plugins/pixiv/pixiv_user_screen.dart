@@ -1,3 +1,7 @@
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/plugins/pixiv/pixiv_group.dart';
+import 'package:xta/plugins/pixiv/pixiv_user_store.dart';
+import 'package:xta/plugins/pixiv/pixiv_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
@@ -24,125 +28,43 @@ class PixivUserScreen extends StatefulWidget {
 }
 
 class _PixivUserScreenState extends State<PixivUserScreen> {
-  PixivUser? _user;
-  List<PixivIllust> _illusts = const [];
-  String? _nextUrl;
-  Object? _error;
-  var _loading = true;
-  var _loadingMore = false;
-  var _followBusy = false;
+  late final PixivUserStore _profile;
+  late final PixivIllustListStore _works;
+  PixivUser? get _user => _profile.state;
 
   @override
   void initState() {
     super.initState();
+    final client = context.read<PixivClient>();
+    _profile = PixivUserStore(client, widget.userId);
+    _works = PixivIllustListStore(({nextUrl}) => client.userIllusts(widget.userId, nextUrl: nextUrl),
+      filter: context.read<PixivMuteStore>().filter);
     _load();
   }
 
-  Future<void> _load() async {
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
+  @override
+  void dispose() { _profile.destroy(); _works.destroy(); super.dispose(); }
 
-    final client = context.read<PixivClient>();
-    final mute = context.read<PixivMuteStore>();
-    try {
-      final results = await Future.wait([
-        client.userDetail(widget.userId),
-        client.userIllusts(widget.userId),
-      ]);
-      if (mounted) {
-        final user = results[0] as PixivUser;
-        final page = results[1] as PixivIllustPage;
-        setState(() {
-          _user = user;
-          _illusts = mute.filter(page.illusts);
-          _nextUrl = page.nextUrl;
-          _loading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e;
-          _loading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _loadMore() async {
-    if (_loadingMore || _nextUrl == null || _nextUrl!.isEmpty) {
-      return;
-    }
-    setState(() => _loadingMore = true);
-    final client = context.read<PixivClient>();
-    final mute = context.read<PixivMuteStore>();
-    try {
-      final page = await client.userIllusts(widget.userId, nextUrl: _nextUrl);
-      if (mounted) {
-        setState(() {
-          _illusts = [..._illusts, ...mute.filter(page.illusts)];
-          _nextUrl = page.nextUrl;
-          _loadingMore = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loadingMore = false);
-    }
-  }
+  Future<void> _load() async { await Future.wait([_profile.load(), _works.refresh()]); }
 
   Future<void> _toggleFollow() async {
-    final user = _user;
-    if (user == null || _followBusy) {
-      return;
-    }
-
-    final client = context.read<PixivClient>();
     final l10n = L10n.of(context);
-    setState(() => _followBusy = true);
-    try {
-      if (user.isFollowed) {
-        await client.unfollowUser(user.id);
-        if (mounted) {
-          setState(() {
-            _user = user.copyWith(
-              isFollowed: false,
-              followersCount: (user.followersCount - 1).clamp(0, 1 << 30),
-            );
-            _followBusy = false;
-          });
-        }
-      } else {
-        await client.followUser(user.id);
-        if (mounted) {
-          setState(() {
-            _user = user.copyWith(
-              isFollowed: true,
-              followersCount: user.followersCount + 1,
-            );
-            _followBusy = false;
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _followBusy = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(pixivErrorMessage(l10n, e))));
-      }
+    try { await _profile.toggleFollow(); }
+    catch (error) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(pixivErrorMessage(l10n, error))));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final title = _user?.name ?? '${widget.userId}';
 
-    return Scaffold(
+    return TripleBuilder<PixivUserStore, PixivUser?>(store: _profile,
+      builder: (_, profile) => TripleBuilder<PixivIllustListStore, List<PixivIllust>>(
+        store: _works, builder: (_, works) => Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(_user?.name ?? '${widget.userId}'),
         actions: [
           if (_user != null)
             IconButton(
@@ -153,18 +75,13 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
             ),
         ],
       ),
-      body: _body(context),
-    );
+      body: _body(context, profile.error ?? works.error),
+    )));
   }
 
-  Widget _body(BuildContext context) {
+  Widget _body(BuildContext context, Object? error) {
     final l10n = L10n.of(context);
 
-    if (_loading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    final error = _error;
     if (error != null) {
       return Padding(
         padding: const EdgeInsets.all(24),
@@ -177,6 +94,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
       );
     }
 
+    if (_profile.isLoading || _user == null) return const Center(child: CircularProgressIndicator());
     final user = _user!;
     final theme = Theme.of(context);
     final avatar = user.avatarUrl;
@@ -184,7 +102,7 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         if (n.metrics.pixels > n.metrics.maxScrollExtent - 400) {
-          _loadMore();
+          _works.loadMore();
         }
         return false;
       },
@@ -263,10 +181,15 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () => addPixivToGroup(context, user),
+                    icon: const Icon(Icons.group_add_outlined),
+                    label: Text(l10n.add_to_group),
+                  ),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: FilledButton.tonalIcon(
-                      onPressed: _followBusy ? null : _toggleFollow,
+                      onPressed: _profile.followBusy ? null : _toggleFollow,
                       icon: Icon(
                         user.isFollowed
                             ? Icons.person_remove_outlined
@@ -289,12 +212,12 @@ class _PixivUserScreenState extends State<PixivUserScreen> {
               crossAxisCount: 2,
               mainAxisSpacing: 4,
               crossAxisSpacing: 4,
-              childCount: _illusts.length,
+              childCount: _works.state.length,
               itemBuilder: (context, index) =>
-                  PixivIllustTile(illust: _illusts[index]),
+                  PixivIllustTile(illust: _works.state[index]),
             ),
           ),
-          if (_loadingMore)
+          if (_works.loadingMore)
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.all(16),

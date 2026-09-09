@@ -1,3 +1,6 @@
+import 'package:xta/plugins/instagram/instagram_group.dart';
+import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/group/group_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -274,6 +277,11 @@ class _Header extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: () => addInstagramToGroup(context, InstagramFollow.fromProfile(profile)),
+            icon: const Icon(Icons.group_add_outlined),
+            label: Text(l10n.add_to_group),
+          ),
           ScopedBuilder<InstagramFollowsStore, List<InstagramFollow>>(
             store: follows,
             onState: (context, list) {
@@ -289,6 +297,10 @@ class _Header extends StatelessWidget {
                     } else {
                       await follows.follow(profile);
                     }
+                    if (!context.mounted) return;
+                    await context.read<SubscriptionsModel>().reloadSubscriptions();
+                    if (!context.mounted) return;
+                    await context.read<GroupsModel>().reloadGroups();
                   },
                   icon: Icon(
                     following

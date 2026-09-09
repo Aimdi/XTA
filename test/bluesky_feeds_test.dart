@@ -93,6 +93,18 @@ void main() {
   });
 
   group('BlueskyAlgoStore', () {
+    test('successful empty discovery result survives tab re-entry', () async {
+      final client = BlueskyClient(httpClient: MockClient((request) async =>
+        http.Response(jsonEncode({'feeds': [], 'feed': []}), 200)));
+      final store = BlueskyAlgoStore(client, PrefServiceCache());
+      await store.ensureLoaded();
+      await store.ensureLoaded();
+      expect(store.state.posts, isEmpty);
+      expect(store.feedFetches, 1);
+      await store.ensureLoaded(force: true);
+      expect(store.feedFetches, 2);
+    });
+
     test('opening the same cached feed does not refetch', () async {
       var feedCalls = 0;
       var popularCalls = 0;
@@ -166,6 +178,18 @@ void main() {
   });
 
   group('BlueskyListsStore', () {
+    test('selecting the current empty list does not reload it', () async {
+      final client = BlueskyClient(httpClient: MockClient((request) async =>
+        http.Response(jsonEncode({'feed': []}), 200)));
+      final store = BlueskyListsStore(client, PrefServiceCache());
+      const uri = 'at://did:plc:a/app.bsky.graph.list/empty';
+      await store.open(uri);
+      await store.open(uri);
+      expect(store.feedFetches, 1);
+      await store.open(uri, force: true);
+      expect(store.feedFetches, 2);
+    });
+
     test('opening the same cached list does not refetch', () async {
       var listFeedCalls = 0;
       final client = BlueskyClient(

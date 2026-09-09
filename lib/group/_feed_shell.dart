@@ -1,3 +1,4 @@
+import 'package:pref/pref.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show setEquals;
@@ -92,7 +93,7 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
   @override
   void initState() {
     super.initState();
-    _groupModel = GroupModel(widget.groupId)..loadGroup();
+    _groupModel = GroupModel(widget.groupId, prefs: PrefService.of(context, listen: false))..loadGroup();
   }
 
   /// Rebuilds the feed over the groups now being read together.
@@ -113,7 +114,7 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
 
     setState(() {
       _alsoRead = next;
-      _groupModel = GroupModel(widget.groupId, alsoRead: next)..loadGroup();
+      _groupModel = GroupModel(widget.groupId, alsoRead: next, prefs: PrefService.of(context, listen: false))..loadGroup();
       _refreshCounter++;
     });
   }

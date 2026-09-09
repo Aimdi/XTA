@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
@@ -35,6 +36,8 @@ class SubstackNoteCard extends StatelessWidget {
         tweetFlatCard(
           color: theme.cardColor,
           child: InkWell(
+            onLongPress: note.url == null ? null : () => showPluginLinkPostActions(context, source: 'substack', url: note.url!,
+              author: note.authorName ?? note.authorHandle ?? '', text: note.body, images: [if (note.imageUrl != null) note.imageUrl!]),
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => SubstackNoteScreen(note: note)),

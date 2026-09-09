@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:xta/constants.dart';
@@ -33,4 +35,12 @@ void openTicker(BuildContext context, String symbol) {
     routeTicker,
     arguments: TickerScreenArguments(symbol: symbol),
   );
+}
+
+/// Preserve meaningful digits for tokens whose price is below one cent.
+String stockAssetPrice(double price) {
+  if (price == 0 || price.abs() >= 0.01) return stockMoneyFormat.format(price);
+  final digits = 2 - (math.log(price.abs()) / math.ln10).floor();
+  if (digits > 12) return price.toStringAsExponential(4);
+  return NumberFormat.decimalPatternDigits(decimalDigits: digits).format(price);
 }

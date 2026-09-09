@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -264,11 +265,16 @@ class _BlueskySettingsScreenState extends State<BlueskySettingsScreen> {
                       ),
                       title: Text(account.name),
                       subtitle: Text('@${account.handle}'),
-                      trailing: IconButton(
+                      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                        IconButton(icon: const Icon(Icons.group_add_outlined),
+                          tooltip: l10n.add_to_group,
+                          onPressed: () => addBlueskyAccountToGroup(context, account)),
+                        IconButton(
                         icon: const Icon(Icons.delete_outline),
                         tooltip: l10n.plugin_bluesky_unfollow,
                         onPressed: () => _remove(account.handle),
                       ),
+                      ]),
                     ),
                 ],
               );

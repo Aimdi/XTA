@@ -1,5 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -52,7 +53,9 @@ class SubstackPostCard extends StatelessWidget {
     final date = post.publishedAt;
     final hasCover = post.coverImage != null && post.coverImage!.isNotEmpty;
 
-    return RepaintBoundary(
+    return GestureDetector(onLongPress: () => showPluginLinkPostActions(context, source: 'substack',
+      url: post.canonicalUrl ?? '${post.publicationBaseUrl}/p/${post.slug}', author: post.authorName ?? post.publicationName,
+      text: [post.title, if (post.excerpt != null) post.excerpt!].join('\n'), images: [if (post.coverImage != null) post.coverImage!]), child: RepaintBoundary(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -119,7 +122,7 @@ class SubstackPostCard extends StatelessWidget {
           tweetHairlineDivider(context),
         ],
       ),
-    );
+    ));
   }
 
   Widget _header(BuildContext context, DateTime? date, {required bool unread}) {

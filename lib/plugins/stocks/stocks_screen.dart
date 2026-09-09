@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/client/client.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_view_store.dart';
-import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/stocks/stocks_add_sheet.dart';
 import 'package:xta/plugins/stocks/stocks_plugin.dart';
 import 'package:xta/plugins/stocks/stocks_format.dart';
 import 'package:xta/plugins/stocks/stocks_markets.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
+import 'package:xta/plugins/stocks/crypto_asset.dart';
+import 'package:xta/plugins/stocks/crypto_quote_store.dart';
+import 'package:xta/plugins/stocks/crypto_asset_screen.dart';
+import 'package:xta/plugins/stocks/stocks_posts_feed.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_query.dart';
 import 'package:xta/plugins/stocks/stocks_watchlist_reel.dart';
-import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/ticker/ticker_client.dart';
 import 'package:xta/tweet/ticker/ticker_quote.dart';
 import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
-import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
 
@@ -41,6 +41,7 @@ class StocksScreen extends StatefulWidget {
 
 class _StocksScreenState extends State<StocksScreen> {
   final TickerClient _client = TickerClient();
+  final _cryptoQuotes = CryptoQuoteStore();
 
   /// 0 watchlist, 1 trending, 2 markets.
   final _view = PluginViewStore<_StocksViewState>(
@@ -72,6 +73,8 @@ class _StocksScreenState extends State<StocksScreen> {
   @override
   void dispose() {
     _view.destroy();
+    _cryptoQuotes.destroy();
+    _client.httpClient.close();
     super.dispose();
   }
 
@@ -83,11 +86,15 @@ class _StocksScreenState extends State<StocksScreen> {
 
   Future<void> _refreshQuotes() async {
     if (!mounted) return;
-    await _cache.ensure(switch (_tab) {
+    final symbols = switch (_tab) {
       1 => _trending,
       2 => kMarketIndexSymbols,
       _ => _watchlist.state,
-    });
+    };
+    await Future.wait([
+      _cache.ensure(symbols.where((symbol) => CryptoAsset.contractForId(symbol) == null)),
+      if (_tab == 0) _cryptoQuotes.ensure(_watchlist.cryptoAssets.values),
+    ]);
   }
 
   Future<void> _loadTrending() async {
@@ -109,15 +116,18 @@ class _StocksScreenState extends State<StocksScreen> {
     final entered = await showStocksAddSheet(context, client: _client);
     if (entered == null || entered.isEmpty || !mounted) return;
 
-    final symbol = StocksWatchlistStore.normaliseTicker(entered);
-    if (symbol == null) {
-      showSnackBar(context, icon: '⚠️', message: L10n.of(context).plugin_stocks_error);
-      return;
-    }
+    await _watchlist.add(entered);
+    if (mounted) await _refreshQuotes();
+  }
 
-    await _watchlist.add(symbol);
-    if (mounted) {
-      await _cache.ensure([symbol]);
+  void _openAsset(String symbol) {
+    final asset = _watchlist.assetFor(symbol);
+    if (asset == null) {
+      openTicker(context, symbol);
+    } else {
+      Navigator.push(context, MaterialPageRoute<void>(
+        builder: (_) => CryptoAssetScreen(asset: asset),
+      ));
     }
   }
 
@@ -152,7 +162,8 @@ class _StocksScreenState extends State<StocksScreen> {
                 ),
                 for (final symbol in symbols)
                   ListTile(
-                    title: Text('\$$symbol'),
+                    title: Text(store.labelFor(symbol)),
+                    subtitle: store.assetFor(symbol) == null ? null : Text(store.assetFor(symbol)!.subtitle),
                     trailing: IconButton(
                       tooltip: L10n.of(sheetContext).unsubscribe,
                       icon: const Icon(Icons.delete_outline),
@@ -161,7 +172,7 @@ class _StocksScreenState extends State<StocksScreen> {
                     onTap: () {
                       Navigator.pop(sheetContext);
                       if (mounted) {
-                        openTicker(context, symbol);
+                        _openAsset(symbol);
                       }
                     },
                   ),
@@ -243,7 +254,12 @@ class _StocksScreenState extends State<StocksScreen> {
           onRetry: _watchlist.load,
         ),
         onLoading: (_) => const PluginFeedSkeleton(),
-        onState: (context, symbols) => _tabHome(symbols, quotes, l10n),
+        onState: (context, symbols) => ScopedBuilder<CryptoQuoteStore, Map<String, CryptoMarket>>(
+          store: _cryptoQuotes,
+          onState: (_, crypto) => _tabHome(symbols, {
+            ...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote,
+          }, l10n),
+        ),
       ),
     );
   }
@@ -272,7 +288,8 @@ class _StocksScreenState extends State<StocksScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StocksWatchlistReel(symbols: symbols, quotes: quotes, selected: _filterSymbol, onSelected: _onChipSelected),
+        StocksWatchlistReel(symbols: symbols, quotes: quotes, selected: _filterSymbol, onSelected: _onChipSelected,
+          assets: _watchlist.cryptoAssets, onOpen: _openAsset),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
           child: Wrap(
@@ -282,7 +299,7 @@ class _StocksScreenState extends State<StocksScreen> {
               Text(L10n.of(context).tweets, style: Theme.of(context).textTheme.titleMedium),
               if (_filterSymbol != null)
                 InputChip(
-                  label: Text('\$$_filterSymbol'),
+                  label: Text(_watchlist.labelFor(_filterSymbol!)),
                   deleteButtonTooltipMessage: L10n.of(context).plugin_reader_reset_filters,
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   onDeleted: () => _onChipSelected(_filterSymbol!),
@@ -292,7 +309,7 @@ class _StocksScreenState extends State<StocksScreen> {
         ),
         const Divider(height: 1),
         Expanded(
-          child: _WatchlistPostsFeed(
+          child: StocksPostsFeed(
             key: ValueKey(query),
             query: query,
             onRefreshQuotes: () async {
@@ -390,56 +407,4 @@ class _StocksViewState {
     loading: loading ?? this.loading,
     failed: failed ?? this.failed,
   );
-}
-
-/// Posts about the watchlist (or one filtered ticker), owned as its own feed
-/// so changing the query remounts a fresh [TweetFeedController].
-class _WatchlistPostsFeed extends StatefulWidget {
-  final String query;
-  final Future<void> Function() onRefreshQuotes;
-
-  const _WatchlistPostsFeed({super.key, required this.query, required this.onRefreshQuotes});
-
-  @override
-  State<_WatchlistPostsFeed> createState() => _WatchlistPostsFeedState();
-}
-
-class _WatchlistPostsFeedState extends State<_WatchlistPostsFeed> {
-  late final PluginSessionLease _session;
-  late final TweetFeedController _feed;
-
-  @override
-  void initState() {
-    super.initState();
-    _session = PluginSessionLease(context, 'stocks-posts');
-    _feed = _session.obtain(widget.query, TweetFeedController.new, dispose: (feed) => feed.dispose());
-  }
-
-  @override
-  void dispose() {
-    _session.dispose();
-    super.dispose();
-  }
-
-  Future<TweetPageResult> _loadPage(String? cursor) async {
-    final result = await Twitter.searchTweets(widget.query, true, cursor: cursor);
-    return (chains: result.chains, nextCursor: result.cursorBottom);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-
-    return TweetContextScope(
-      child: PaginatedTweetList(
-        feed: _feed,
-        loadPage: _loadPage,
-        username: null,
-        onRefresh: widget.onRefreshQuotes,
-        firstPageErrorPrefix: l10n.unable_to_load_the_tweets,
-        newPageErrorPrefix: l10n.unable_to_load_the_next_page_of_tweets,
-        emptyMessage: l10n.no_posts_match_your_search,
-      ),
-    );
-  }
 }
