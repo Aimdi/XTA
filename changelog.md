@@ -1,3 +1,12 @@
+## XTA aimdi130
+
+- Dedicated X source, clearer Home group drawer and account/group filters.
+- Crypto identity by network and contract; followed-account grouping across plugins.
+- Group discovery and optional AI discovery/sorting.
+- Shared local bookmarks/notes, Bluesky/Mastodon repost actions and stable Bluesky timelines.
+- Pixiv vertical reading, organized X livestream cards and smoother archive note editing.
+- Higher Android build number for in-place updates; signed APK integrity checks retained.
+
 ## XTA aimdi129
 
 - Release APKs are checked against the tagged source, expected package/version,
