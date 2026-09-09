@@ -71,6 +71,7 @@ jobs:
         timeout-minutes: 15
         run: |
           set -o pipefail
+          flutter test test/plugin_account_groups_test.dart test/group_switcher_test.dart test/tab_icons_test.dart test/home_group_filter_test.dart test/home_strip_startup_test.dart --reporter expanded 2>&1 | tee review-artifacts/regressions.txt
           flutter test --reporter expanded 2>&1 | tee review-artifacts/tests.txt
       - name: Upload validation evidence
         if: always()

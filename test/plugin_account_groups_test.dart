@@ -64,6 +64,8 @@ void main() {
     final restoredPrefs = PrefServiceCache(cache: saved);
     final groups = GroupsModel(restoredPrefs);
     await groups.saveGroup(null, 'Pixiv artists', defaultGroupIcon, null, {'$pluginIdPixiv:42'});
+    await groups.reloadGroups();
+    expect(groups.error, isNull);
     final group = groups.state.singleWhere((item) => item.name == 'Pixiv artists');
     final model = GroupModel(group.id, prefs: restoredPrefs);
     await model.loadGroup();

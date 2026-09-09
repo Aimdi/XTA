@@ -78,7 +78,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Following'), findsOneWidget);
-    expect(find.text('For you'), findsOneWidget);
+    expect(find.text('X'), findsOneWidget);
+    expect(find.text('For you'), findsNothing);
     expect(find.text('Reddit'), findsOneWidget);
     expect(find.text('RSS'), findsOneWidget);
     expect(find.byTooltip('Add timeline'), findsOneWidget);
