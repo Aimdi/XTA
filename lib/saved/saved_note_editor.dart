@@ -54,8 +54,7 @@ class _SavedNoteEditorState extends State<_SavedNoteEditor> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.saves_stay_on_device_notice,
-              style: Theme.of(context).textTheme.bodySmall),
+            Text(l10n.saves_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
             const SizedBox(height: 16),
             TextField(
               controller: _controller,

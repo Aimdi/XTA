@@ -30,8 +30,15 @@ class PluginActivityStore<T> extends Store<PluginActivityState<T>> {
     try {
       final page = await loader(more ? previous.cursor : null);
       if (_closed) return;
-      final items = {for (final item in [...(more ? previous.items : <T>[]), ...page.items]) idOf(item): item};
-      update(PluginActivityState(items: items.values.toList(), cursor: page.cursor?.isNotEmpty != true || (page.cursor == previous.cursor && more) ? null : page.cursor));
+      final items = {
+        for (final item in [...(more ? previous.items : <T>[]), ...page.items]) idOf(item): item,
+      };
+      update(
+        PluginActivityState(
+          items: items.values.toList(),
+          cursor: page.cursor?.isNotEmpty != true || (page.cursor == previous.cursor && more) ? null : page.cursor,
+        ),
+      );
     } catch (error) {
       if (!_closed) update(PluginActivityState(items: previous.items, cursor: previous.cursor, error: error));
     }
@@ -52,9 +59,19 @@ Future<void> openPluginActivity<T>(
   required String Function(T) idOf,
   required Widget Function(BuildContext, T) itemBuilder,
   required String Function(L10n, Object) errorLabel,
-}) => Navigator.push<void>(context, MaterialPageRoute(builder: (_) => _ActivityScreen<T>(
-  title: title, postUrl: postUrl, loader: loader, idOf: idOf, itemBuilder: itemBuilder, errorLabel: errorLabel,
-)));
+}) => Navigator.push<void>(
+  context,
+  MaterialPageRoute(
+    builder: (_) => _ActivityScreen<T>(
+      title: title,
+      postUrl: postUrl,
+      loader: loader,
+      idOf: idOf,
+      itemBuilder: itemBuilder,
+      errorLabel: errorLabel,
+    ),
+  ),
+);
 
 class _ActivityScreen<T> extends StatefulWidget {
   final String title;
@@ -63,7 +80,14 @@ class _ActivityScreen<T> extends StatefulWidget {
   final String Function(T) idOf;
   final Widget Function(BuildContext, T) itemBuilder;
   final String Function(L10n, Object) errorLabel;
-  const _ActivityScreen({required this.title, required this.postUrl, required this.loader, required this.idOf, required this.itemBuilder, required this.errorLabel});
+  const _ActivityScreen({
+    required this.title,
+    required this.postUrl,
+    required this.loader,
+    required this.idOf,
+    required this.itemBuilder,
+    required this.errorLabel,
+  });
   @override
   State<_ActivityScreen<T>> createState() => _ActivityScreenState<T>();
 }
@@ -80,9 +104,16 @@ class _ActivityScreenState<T> extends State<_ActivityScreen<T>> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title), actions: [
-        IconButton(tooltip: l10n.open_in_browser, icon: const Icon(Icons.open_in_new), onPressed: () => openUri(context, widget.postUrl)),
-      ]),
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+            tooltip: l10n.open_in_browser,
+            icon: const Icon(Icons.open_in_new),
+            onPressed: () => openUri(context, widget.postUrl),
+          ),
+        ],
+      ),
       body: ScopedBuilder<PluginActivityStore<T>, PluginActivityState<T>>(
         store: _store,
         onState: (context, state) => RefreshIndicator(
@@ -92,14 +123,28 @@ class _ActivityScreenState<T> extends State<_ActivityScreen<T>> {
             itemCount: state.items.length + 1,
             itemBuilder: (context, index) {
               if (index < state.items.length) return widget.itemBuilder(context, state.items[index]);
-              return Padding(padding: const EdgeInsets.all(24), child: Column(children: [
-                if (state.loading) const CircularProgressIndicator()
-                else if (state.error case final error?) ...[
-                  Text(widget.errorLabel(l10n, error), textAlign: TextAlign.center),
-                  TextButton(onPressed: () => _store.load(more: state.items.isNotEmpty && state.cursor != null), child: Text(l10n.retry)),
-                ] else if (state.items.isEmpty) Text(l10n.no_results)
-                else if (state.cursor != null) OutlinedButton(onPressed: () => _store.load(more: true), child: Text(l10n.plugin_reddit_load_more)),
-              ]));
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    if (state.loading)
+                      const CircularProgressIndicator()
+                    else if (state.error case final error?) ...[
+                      Text(widget.errorLabel(l10n, error), textAlign: TextAlign.center),
+                      TextButton(
+                        onPressed: () => _store.load(more: state.items.isNotEmpty && state.cursor != null),
+                        child: Text(l10n.retry),
+                      ),
+                    ] else if (state.items.isEmpty)
+                      Text(l10n.no_results)
+                    else if (state.cursor != null)
+                      OutlinedButton(
+                        onPressed: () => _store.load(more: true),
+                        child: Text(l10n.plugin_reddit_load_more),
+                      ),
+                  ],
+                ),
+              );
             },
           ),
         ),

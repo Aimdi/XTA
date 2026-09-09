@@ -8,15 +8,16 @@ import 'package:xta/plugins/plugin_account_subscription.dart';
 import 'package:xta/subscriptions/plugin_group_action.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 
-Future<void> addTikTokToGroup(BuildContext context, TikTokFollow follow) =>
-    editPluginAccountGroups(context,
-      subscription: PluginAccountSubscription(pluginIdTiktok, follow.toMap()),
-      ensureFollowed: () async {
-        final store = context.read<TikTokFollowsStore>();
-        if (store.containsHandle(follow.id)) return;
-        final profile = await context.read<TikTokClient>().profile(follow.id);
-        await store.follow(profile);
-      });
+Future<void> addTikTokToGroup(BuildContext context, TikTokFollow follow) => editPluginAccountGroups(
+  context,
+  subscription: PluginAccountSubscription(pluginIdTiktok, follow.toMap()),
+  ensureFollowed: () async {
+    final store = context.read<TikTokFollowsStore>();
+    if (store.containsHandle(follow.id)) return;
+    final profile = await context.read<TikTokClient>().profile(follow.id);
+    await store.follow(profile);
+  },
+);
 
 Future<List<InterleavedItem>> loadTikTokGroupPosts(BuildContext context, List<String> ids) async {
   final client = context.read<TikTokClient>();

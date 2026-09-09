@@ -10,9 +10,15 @@ class CryptoQuoteStore extends Store<Map<String, CryptoMarket>> {
   CryptoQuoteStore({CryptoClient? client}) : client = client ?? CryptoClient(), super(const {});
 
   Future<void> ensure(Iterable<CryptoAsset> assets, {bool force = false}) async {
-    final needed = assets.where((asset) => !_inflight.contains(asset.id) &&
-      (force || !_fetched.containsKey(asset.id) ||
-       DateTime.now().difference(_fetched[asset.id]!) >= const Duration(minutes: 2))).toList();
+    final needed = assets
+        .where(
+          (asset) =>
+              !_inflight.contains(asset.id) &&
+              (force ||
+                  !_fetched.containsKey(asset.id) ||
+                  DateTime.now().difference(_fetched[asset.id]!) >= const Duration(minutes: 2)),
+        )
+        .toList();
     for (var i = 0; i < needed.length && !_closed; i += 4) {
       await Future.wait(needed.skip(i).take(4).map(_fetch));
     }

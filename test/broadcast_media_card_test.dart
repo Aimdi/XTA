@@ -1,4 +1,4 @@
-import 'package:dart_twitter_api/twitter_api.dart';
+import 'package:dart_twitter_api/twitter_api.dart' hide Size;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -38,45 +38,51 @@ Future<void> _pumpCard(
   bool rtl = false,
   bool dark = false,
   ValueChanged<RouteSettings>? onRoute,
-}) => tester.pumpWidget(RepaintBoundary(
-  key: _reviewRender,
-  child: MaterialApp(
-  debugShowCheckedModeBanner: false,
-  theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
-  localizationsDelegates: const [
-    L10n.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
-  supportedLocales: L10n.delegate.supportedLocales,
-  onGenerateRoute: (settings) {
-    onRoute?.call(settings);
-    return MaterialPageRoute<void>(builder: (_) => const Scaffold());
-  },
-  home: Builder(builder: (context) => MediaQuery(
-    data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
-    child: Directionality(
-      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(body: SingleChildScrollView(
-        child: BroadcastMediaCard(
-          item: item,
-          preview: const AspectRatio(
-            aspectRatio: 16 / 9,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Color(0xFF233F4D),
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+}) => tester.pumpWidget(
+  RepaintBoundary(
+    key: _reviewRender,
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L10n.delegate.supportedLocales,
+      onGenerateRoute: (settings) {
+        onRoute?.call(settings);
+        return MaterialPageRoute<void>(builder: (_) => const Scaffold());
+      },
+      home: Builder(
+        builder: (context) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+          child: Directionality(
+            textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+            child: Scaffold(
+              body: SingleChildScrollView(
+                child: BroadcastMediaCard(
+                  item: item,
+                  preview: const AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Color(0xFF233F4D),
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                      ),
+                      child: Center(child: Icon(Icons.play_circle_outline, size: 52, color: Colors.white)),
+                    ),
+                  ),
+                ),
               ),
-              child: Center(child: Icon(Icons.play_circle_outline, size: 52, color: Colors.white)),
             ),
           ),
         ),
-      )),
+      ),
     ),
-  )),
   ),
-));
+);
 
 void main() {
   setUpAll(() async {

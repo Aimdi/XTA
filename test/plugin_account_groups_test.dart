@@ -17,12 +17,17 @@ import 'package:xta/plugins/plugin_storage.dart';
 import 'package:xta/subscriptions/group_membership_sheet.dart';
 import 'package:xta/subscriptions/users_model.dart';
 
-PrefServiceCache _prefs() => PrefServiceCache(cache: {
-  optionPluginPixivGroupSubscriptions: '[]', optionPluginHnFollows: '[]',
-  optionSubscriptionGroupsOrderByField: 'name', optionSubscriptionGroupsOrderByAscending: true,
-  optionSubscriptionOrderByField: 'name', optionSubscriptionOrderByAscending: true,
-  optionSubscriptionOrderCustom: '',
-});
+PrefServiceCache _prefs() => PrefServiceCache(
+  cache: {
+    optionPluginPixivGroupSubscriptions: '[]',
+    optionPluginHnFollows: '[]',
+    optionSubscriptionGroupsOrderByField: 'name',
+    optionSubscriptionGroupsOrderByAscending: true,
+    optionSubscriptionOrderByField: 'name',
+    optionSubscriptionOrderByAscending: true,
+    optionSubscriptionOrderCustom: '',
+  },
+);
 
 void main() {
   setUpAll(() async {
@@ -34,8 +39,10 @@ void main() {
   });
 
   test('same handle stays separate across all newly groupable sources', () {
-    final members = [for (final source in [pluginIdInstagram, pluginIdTiktok, pluginIdHackerNews, pluginIdPixiv])
-      PluginAccountSubscription(source, {'id': '123', 'name': 'Artist'})];
+    final members = [
+      for (final source in [pluginIdInstagram, pluginIdTiktok, pluginIdHackerNews, pluginIdPixiv])
+        PluginAccountSubscription(source, {'id': '123', 'name': 'Artist'}),
+    ];
     expect(members.map((member) => member.id).toSet(), hasLength(4));
     final split = splitGroupMembers(members);
     expect(split.xMembers, isEmpty);
@@ -68,7 +75,10 @@ void main() {
     expect(all.state.map((item) => item.id), contains('$pluginIdPixiv:42'));
     await follows.remove('$pluginIdPixiv:42');
     expect(await groups.listGroupsForUser('$pluginIdPixiv:42'), isEmpty);
-    follows.destroy(); groups.destroy(); model.destroy(); all.destroy();
+    follows.destroy();
+    groups.destroy();
+    model.destroy();
+    all.destroy();
   });
 
   test('removing plugin data preserves an equal handle in another source', () async {
@@ -77,8 +87,7 @@ void main() {
     for (final id in ['same', '$pluginIdInstagram:same']) {
       await db.insert(tableSubscriptionGroupMember, {'group_id': 'identity', 'profile_id': id});
     }
-    await erasePluginStorage(tables: [tableInstagramSubscription], caches: [],
-      membershipPrefix: '$pluginIdInstagram:');
+    await erasePluginStorage(tables: [tableInstagramSubscription], caches: [], membershipPrefix: '$pluginIdInstagram:');
     final rows = await db.query(tableSubscriptionGroupMember, where: 'group_id = ?', whereArgs: ['identity']);
     expect(rows.map((row) => row['profile_id']), ['same']);
   });
@@ -89,8 +98,12 @@ void main() {
     await prefs.set(optionPluginHnFollows, 'broken');
     expect(readPixivGroupSubscriptions(prefs), isEmpty);
     expect(readHnSubscriptions(prefs), isEmpty);
-    await prefs.set(optionPluginPixivGroupSubscriptions,
-      jsonEncode([{'id': '42', 'name': 2, 'screen_name': [], 'avatar_url': false}]));
+    await prefs.set(
+      optionPluginPixivGroupSubscriptions,
+      jsonEncode([
+        {'id': '42', 'name': 2, 'screen_name': [], 'avatar_url': false},
+      ]),
+    );
     final author = readPixivGroupSubscriptions(prefs).single;
     expect(author.id, '$pluginIdPixiv:42');
     expect(author.name, '42');
@@ -100,7 +113,9 @@ void main() {
   test('membership toggles never mutate the original selection', () {
     final initial = ['group-a'];
     final store = GroupMembershipStore(initial);
-    store.toggle('group-a'); store.toggle('group-b'); store.search(' ART ');
+    store.toggle('group-a');
+    store.toggle('group-b');
+    store.search(' ART ');
     expect(initial, ['group-a']);
     expect(store.state.chosen, {'group-b'});
     expect(store.state.query, 'art');

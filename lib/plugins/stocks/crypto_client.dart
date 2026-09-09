@@ -12,16 +12,13 @@ class CryptoClient {
   final http.Client httpClient;
   CryptoClient({http.Client? httpClient}) : httpClient = httpClient ?? http.Client();
 
-  static Uri searchUri(String query) => Uri.https(
-    'api.dexscreener.com', '/latest/dex/search', {'q': query.trim().replaceFirst(RegExp(r'^\$'), '')},
-  );
+  static Uri searchUri(String query) =>
+      Uri.https('api.dexscreener.com', '/latest/dex/search', {'q': query.trim().replaceFirst(RegExp(r'^\$'), '')});
 
-  static Uri tokenUri(CryptoAsset asset) => Uri.https(
-    'api.dexscreener.com', '/token-pairs/v1/${asset.chain}/${asset.address}',
-  );
+  static Uri tokenUri(CryptoAsset asset) =>
+      Uri.https('api.dexscreener.com', '/token-pairs/v1/${asset.chain}/${asset.address}');
 
-  Future<List<CryptoMarket>> search(String query) async =>
-      cryptoMarketsFromJson(await _get(searchUri(query)));
+  Future<List<CryptoMarket>> search(String query) async => cryptoMarketsFromJson(await _get(searchUri(query)));
 
   Future<CryptoMarket?> fetch(CryptoAsset asset) async {
     final markets = cryptoMarketsFromJson(await _get(tokenUri(asset)));

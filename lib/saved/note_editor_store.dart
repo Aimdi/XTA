@@ -54,9 +54,9 @@ class NoteEditorStore extends Store<NoteEditorState> {
       initialMedia = List.unmodifiable(media),
       super(NoteEditorState(body: body, media: List.unmodifiable(media)));
 
-  bool get dirty => state.body != initialBody ||
-      !listEquals(state.media.map((item) => item.id).toList(),
-          initialMedia.map((item) => item.id).toList());
+  bool get dirty =>
+      state.body != initialBody ||
+      !listEquals(state.media.map((item) => item.id).toList(), initialMedia.map((item) => item.id).toList());
 
   void setBody(String body) {
     if (!state.busy) update(state.copyWith(body: body));
@@ -64,9 +64,7 @@ class NoteEditorStore extends Store<NoteEditorState> {
 
   void removeMedia(String id) {
     if (state.busy) return;
-    update(state.copyWith(media: List.unmodifiable(
-      state.media.where((item) => item.id != id),
-    )));
+    update(state.copyWith(media: List.unmodifiable(state.media.where((item) => item.id != id))));
   }
 
   Future<void> attach(Future<LocalPostMedia?> Function() operation) async {
@@ -74,10 +72,12 @@ class NoteEditorStore extends Store<NoteEditorState> {
     update(state.copyWith(attaching: true, attachFailed: false));
     try {
       final media = await operation();
-      update(state.copyWith(
-        attaching: false,
-        media: media == null ? state.media : List.unmodifiable([...state.media, media]),
-      ));
+      update(
+        state.copyWith(
+          attaching: false,
+          media: media == null ? state.media : List.unmodifiable([...state.media, media]),
+        ),
+      );
     } catch (_) {
       update(state.copyWith(attaching: false, attachFailed: true));
     }

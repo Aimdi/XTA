@@ -12,8 +12,11 @@ import 'package:xta/tweet/interleaved_items.dart';
 Future<void> addPixivToGroup(BuildContext context, PixivUser user) async {
   final store = PixivGroupSubscriptionsStore(context.read<PixivClient>().prefs);
   try {
-    await editPluginAccountGroups(context,
-      subscription: pixivSubscription(user), ensureFollowed: () => store.add(user));
+    await editPluginAccountGroups(
+      context,
+      subscription: pixivSubscription(user),
+      ensureFollowed: () => store.add(user),
+    );
   } finally {
     store.destroy();
   }
@@ -30,8 +33,13 @@ Future<List<InterleavedItem>> loadPixivGroupPosts(BuildContext context, List<Str
       final page = await client.userIllusts(userId);
       for (final illust in mute.filter(page.illusts)) {
         if (illust.createdAt case final date?) {
-          items.add((date: date, build: (_) => Padding(
-            padding: const EdgeInsets.all(8), child: PixivIllustTile(illust: illust))));
+          items.add((
+            date: date,
+            build: (_) => Padding(
+              padding: const EdgeInsets.all(8),
+              child: PixivIllustTile(illust: illust),
+            ),
+          ));
         }
       }
     } catch (_) {

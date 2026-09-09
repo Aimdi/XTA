@@ -14,11 +14,7 @@ class PixivReaderScreen extends StatefulWidget {
   final PixivIllust illust;
   final int initialPage;
 
-  const PixivReaderScreen({
-    super.key,
-    required this.illust,
-    this.initialPage = 0,
-  });
+  const PixivReaderScreen({super.key, required this.illust, this.initialPage = 0});
 
   @override
   State<PixivReaderScreen> createState() => _PixivReaderScreenState();
@@ -26,15 +22,10 @@ class PixivReaderScreen extends StatefulWidget {
 
 class _PixivReaderScreenState extends State<PixivReaderScreen> {
   late final _pages = widget.illust.viewerUrls;
-  late final _store = PixivReaderStore(
-    pageCount: _pages.length,
-    initialPage: widget.initialPage,
-  );
+  late final _store = PixivReaderStore(pageCount: _pages.length, initialPage: widget.initialPage);
   final _verticalController = AutoScrollController();
   Future<void> _restoreQueue = Future.value();
-  late final _horizontalController = PageController(
-    initialPage: _store.state.pageIndex,
-  );
+  late final _horizontalController = PageController(initialPage: _store.state.pageIndex);
 
   @override
   void initState() {
@@ -67,9 +58,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
         await _verticalController.scrollToIndex(
           index,
           preferPosition: AutoScrollPosition.begin,
-          duration: xtaReduceMotion(context)
-              ? const Duration(microseconds: 1)
-              : kXtaMotionFast,
+          duration: xtaReduceMotion(context) ? const Duration(microseconds: 1) : kXtaMotionFast,
         );
       } else if (_horizontalController.hasClients) {
         _horizontalController.jumpToPage(index);
@@ -104,37 +93,25 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                child: Text(
-                  L10n.of(context).choose_pages,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                child: Text(L10n.of(context).choose_pages, style: Theme.of(context).textTheme.titleLarge),
               ),
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent:
-                        88.0 * (MediaQuery.textScalerOf(context).scale(14) / 14)
-                            .clamp(1.0, 2.0),
-                    mainAxisExtent:
-                        56.0 * (MediaQuery.textScalerOf(context).scale(14) / 14)
-                            .clamp(1.0, 2.0),
+                    maxCrossAxisExtent: 88.0 * (MediaQuery.textScalerOf(context).scale(14) / 14).clamp(1.0, 2.0),
+                    mainAxisExtent: 56.0 * (MediaQuery.textScalerOf(context).scale(14) / 14).clamp(1.0, 2.0),
                     mainAxisSpacing: 8,
                     crossAxisSpacing: 8,
                   ),
                   itemCount: _pages.length,
                   itemBuilder: (context, index) => Semantics(
-                    label: L10n.of(context).plugin_pixiv_page_of(
-                      index + 1,
-                      _pages.length,
-                    ),
+                    label: L10n.of(context).plugin_pixiv_page_of(index + 1, _pages.length),
                     selected: index == _store.state.pageIndex,
                     child: FilledButton.tonal(
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        backgroundColor: index == _store.state.pageIndex
-                            ? Theme.of(context).colorScheme.primary
-                            : null,
+                        backgroundColor: index == _store.state.pageIndex ? Theme.of(context).colorScheme.primary : null,
                         foregroundColor: index == _store.state.pageIndex
                             ? Theme.of(context).colorScheme.onPrimary
                             : null,
@@ -162,31 +139,19 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
       onState: (context, state) => Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.illust.title.isEmpty
-                ? l10n.plugin_pixiv_title
-                : widget.illust.title,
+            widget.illust.title.isEmpty ? l10n.plugin_pixiv_title : widget.illust.title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           actions: [
             IconButton(
-              tooltip: state.vertical
-                  ? l10n.plugin_pixiv_read_horizontally
-                  : l10n.plugin_pixiv_read_vertically,
+              tooltip: state.vertical ? l10n.plugin_pixiv_read_horizontally : l10n.plugin_pixiv_read_vertically,
               onPressed: _toggleDirection,
-              icon: Icon(
-                state.vertical
-                    ? Icons.swipe_outlined
-                    : Icons.arrow_downward,
-              ),
+              icon: Icon(state.vertical ? Icons.swipe_outlined : Icons.arrow_downward),
             ),
           ],
         ),
-        body: SafeArea(
-          top: false,
-          bottom: false,
-          child: state.vertical ? _verticalPages() : _horizontalPages(),
-        ),
+        body: SafeArea(top: false, bottom: false, child: state.vertical ? _verticalPages() : _horizontalPages()),
         bottomNavigationBar: SafeArea(
           top: false,
           minimum: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -196,9 +161,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: LinearProgressIndicator(
-                  value: _pages.isEmpty
-                      ? 0
-                      : (state.pageIndex + 1) / _pages.length,
+                  value: _pages.isEmpty ? 0 : (state.pageIndex + 1) / _pages.length,
                   minHeight: 3,
                 ),
               ),
@@ -208,10 +171,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
                 child: TextButton.icon(
                   onPressed: _choosePage,
                   icon: const Icon(Icons.grid_view_outlined, size: 18),
-                  label: Text(l10n.plugin_pixiv_page_of(
-                    state.pageIndex + 1,
-                    _pages.length,
-                  )),
+                  label: Text(l10n.plugin_pixiv_page_of(state.pageIndex + 1, _pages.length)),
                 ),
               ),
             ],
@@ -235,9 +195,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
         key: ValueKey('pixiv-reader-visible-$index'),
         onVisibilityChanged: (info) {
           if (!mounted) return;
-          _store.pageVisibility(index,
-            info.visibleBounds.width * info.visibleBounds.height,
-          );
+          _store.pageVisibility(index, info.visibleBounds.width * info.visibleBounds.height);
         },
         child: _pageImage(index, vertical: true),
       ),
@@ -248,11 +206,8 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
     controller: _horizontalController,
     itemCount: _pages.length,
     onPageChanged: _store.observedPage,
-    itemBuilder: (context, index) => InteractiveViewer(
-      minScale: 1,
-      maxScale: 4,
-      child: Center(child: _pageImage(index, vertical: false)),
-    ),
+    itemBuilder: (context, index) =>
+        InteractiveViewer(minScale: 1, maxScale: 4, child: Center(child: _pageImage(index, vertical: false))),
   );
 
   Widget _pageImage(int index, {required bool vertical}) => Semantics(
@@ -263,9 +218,7 @@ class _PixivReaderScreenState extends State<PixivReaderScreen> {
       child: PixivNetworkImage(
         url: _pages[index],
         fit: vertical ? BoxFit.fitWidth : BoxFit.contain,
-        cacheWidth: (MediaQuery.sizeOf(context).width *
-                MediaQuery.devicePixelRatioOf(context))
-            .ceil(),
+        cacheWidth: (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil(),
         loadStateChanged: (state) {
           if (state.extendedImageLoadState == LoadState.completed) return null;
           return AspectRatio(

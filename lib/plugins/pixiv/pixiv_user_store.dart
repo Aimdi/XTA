@@ -16,10 +16,17 @@ class PixivUserStore extends Store<PixivUser?> {
     followBusy = true;
     update(user, force: true);
     try {
-      if (user.isFollowed) { await client.unfollowUser(user.id); }
-      else { await client.followUser(user.id); }
-      update(user.copyWith(isFollowed: !user.isFollowed,
-        followersCount: (user.followersCount + (user.isFollowed ? -1 : 1)).clamp(0, 1 << 30)));
+      if (user.isFollowed) {
+        await client.unfollowUser(user.id);
+      } else {
+        await client.followUser(user.id);
+      }
+      update(
+        user.copyWith(
+          isFollowed: !user.isFollowed,
+          followersCount: (user.followersCount + (user.isFollowed ? -1 : 1)).clamp(0, 1 << 30),
+        ),
+      );
     } finally {
       followBusy = false;
       update(state, force: true);

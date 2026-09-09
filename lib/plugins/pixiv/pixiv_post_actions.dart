@@ -8,9 +8,7 @@ void showPixivPostActions(BuildContext context, PixivIllust illust) {
     source: 'pixiv',
     url: illust.url,
     author: illust.userName,
-    text: [illust.title, illust.caption]
-        .where((value) => value.trim().isNotEmpty)
-        .join('\n\n'),
+    text: [illust.title, illust.caption].where((value) => value.trim().isNotEmpty).join('\n\n'),
     images: illust.viewerUrls,
   );
 }

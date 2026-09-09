@@ -14,4 +14,10 @@ BlueskyPost? blueskyPostFromArchive(Object? value) {
   }
 }
 
-String blueskyArchiveHaystack(BlueskyPost post) => [post.text, post.authorName, post.handle, post.quotedPost?.text ?? '', post.linkCard?.title ?? ''].join('\n').toLowerCase();
+String blueskyArchiveHaystack(BlueskyPost post) => [
+  post.text,
+  post.authorName,
+  post.handle,
+  post.quotedPost?.text ?? '',
+  post.linkCard?.title ?? '',
+].join('\n').toLowerCase();

@@ -31,11 +31,13 @@ SubscriptionGroup _group(String id, String name, int members, {bool pinned = fal
 );
 
 class _HomeChromeHarness {
-  final prefs = PrefServiceCache(defaults: {
-    optionHomeFeedDisabledAccountIds: '[]',
-    optionHomeFeedDisabledGroupIds: '[]',
-    optionDisableAnimations: true,
-  });
+  final prefs = PrefServiceCache(
+    defaults: {
+      optionHomeFeedDisabledAccountIds: '[]',
+      optionHomeFeedDisabledGroupIds: '[]',
+      optionDisableAnimations: true,
+    },
+  );
   late final accountsStore = HomeAccountFilterStore(prefs);
   late final groupsStore = HomeGroupFilterStore(prefs);
   final accounts = [
@@ -70,64 +72,70 @@ class _HomeChromeHarness {
         ],
         supportedLocales: L10n.delegate.supportedLocales,
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(scale),
-            disableAnimations: true,
-          ),
-          child: Directionality(
-            textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-            child: child!,
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale), disableAnimations: true),
+          child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
+        ),
+        home: Builder(
+          builder: (context) => Scaffold(
+            appBar: AppBar(title: const Text('Home')),
+            drawer: Drawer(
+              child: SafeArea(
+                child: HomeGroupDrawer(
+                  accountHeader: const Padding(
+                    padding: EdgeInsets.fromLTRB(20, 24, 20, 20),
+                    child: Row(
+                      children: [
+                        CircleAvatar(child: Text('M')),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text('Marcel', style: TextStyle(fontWeight: FontWeight.w700)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  groups: groups,
+                  unreadIds: const {'tech'},
+                  onSearch: () => searches++,
+                  onSettings: () => settingsOpens++,
+                  onGroup: openedGroups.add,
+                ),
+              ),
+            ),
+            body: Builder(
+              builder: (scaffoldContext) => Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FilledButton(
+                      key: _openFilter,
+                      onPressed: () => showModalBottomSheet<void>(
+                        context: context,
+                        useSafeArea: true,
+                        isScrollControlled: true,
+                        showDragHandle: true,
+                        builder: (_) => HomeFilterSheet(
+                          accounts: noAccounts ? const [] : accounts,
+                          groups: groups,
+                          accountsStore: accountsStore,
+                          groupsStore: groupsStore,
+                          onChanged: () => filterChanges++,
+                          onAddAccount: () => accountAdds++,
+                        ),
+                      ),
+                      child: const Text('Open filters'),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      key: _openDrawer,
+                      onPressed: () => Scaffold.of(scaffoldContext).openDrawer(),
+                      child: const Text('Open groups'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-        home: Builder(builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('Home')),
-          drawer: Drawer(child: SafeArea(
-            child: HomeGroupDrawer(
-              accountHeader: const Padding(
-                padding: EdgeInsets.fromLTRB(20, 24, 20, 20),
-                child: Row(children: [
-                  CircleAvatar(child: Text('M')),
-                  SizedBox(width: 12),
-                  Expanded(child: Text('Marcel', style: TextStyle(fontWeight: FontWeight.w700))),
-                ]),
-              ),
-              groups: groups,
-              unreadIds: const {'tech'},
-              onSearch: () => searches++,
-              onSettings: () => settingsOpens++,
-              onGroup: openedGroups.add,
-            ),
-          )),
-          body: Builder(builder: (scaffoldContext) => Center(child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FilledButton(
-                key: _openFilter,
-                onPressed: () => showModalBottomSheet<void>(
-                  context: context,
-                  useSafeArea: true,
-                  isScrollControlled: true,
-                  showDragHandle: true,
-                  builder: (_) => HomeFilterSheet(
-                    accounts: noAccounts ? const [] : accounts,
-                    groups: groups,
-                    accountsStore: accountsStore,
-                    groupsStore: groupsStore,
-                    onChanged: () => filterChanges++,
-                    onAddAccount: () => accountAdds++,
-                  ),
-                ),
-                child: const Text('Open filters'),
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                key: _openDrawer,
-                onPressed: () => Scaffold.of(scaffoldContext).openDrawer(),
-                child: const Text('Open groups'),
-              ),
-            ],
-          ))),
-        )),
       ),
     ),
   );
@@ -152,10 +160,8 @@ void _viewport(WidgetTester tester, {double width = 390, double height = 844}) {
 Finder _account(String id) => find.byKey(ValueKey('home-account-$id'));
 Finder _groupFilter(String id) => find.byKey(ValueKey('home-group-filter-$id'));
 Finder _drawerGroup(String id) => find.byKey(ValueKey('drawer-group-$id'));
-Finder _drawerAction(String label) => find.ancestor(
-  of: find.text(label),
-  matching: find.byWidgetPredicate((widget) => widget is OutlinedButton),
-);
+Finder _drawerAction(String label) =>
+    find.ancestor(of: find.text(label), matching: find.byWidgetPredicate((widget) => widget is OutlinedButton));
 
 Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
@@ -164,10 +170,8 @@ Future<void> _tap(WidgetTester tester, Finder finder) async {
   await tester.pumpAndSettle();
 }
 
-Future<void> _golden(WidgetTester tester, String name) => expectLater(
-  find.byKey(_render),
-  matchesGoldenFile('../review-artifacts/renders/$name.png'),
-);
+Future<void> _golden(WidgetTester tester, String name) =>
+    expectLater(find.byKey(_render), matchesGoldenFile('../review-artifacts/renders/$name.png'));
 
 Future<void> _open(WidgetTester tester, Key key) async {
   await tester.tap(find.byKey(key));
@@ -298,7 +302,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Home drawer search and selected group remain reachable with large text, RTL and keyboard', (tester) async {
+  testWidgets('Home drawer search and selected group remain reachable with large text, RTL and keyboard', (
+    tester,
+  ) async {
     _viewport(tester, width: 320);
     final h = _HomeChromeHarness();
     addTearDown(() => h.close(tester));

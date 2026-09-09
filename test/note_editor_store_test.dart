@@ -43,8 +43,16 @@ void main() {
     final pending = Completer<void>();
     final saving = store.save(() => pending.future);
     var duplicateCalls = 0;
-    expect(await store.save(() async { duplicateCalls++; }), isFalse);
-    await store.attach(() async { duplicateCalls++; return photo; });
+    expect(
+      await store.save(() async {
+        duplicateCalls++;
+      }),
+      isFalse,
+    );
+    await store.attach(() async {
+      duplicateCalls++;
+      return photo;
+    });
     store.removeMedia('photo');
     expect(duplicateCalls, 0);
     expect(store.state.media, [photo]);

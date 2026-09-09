@@ -17,15 +17,20 @@ List<PluginAccountSubscription> readHnSubscriptions(BasePrefService prefs) {
   try {
     final value = jsonDecode(prefs.get<String>(optionPluginHnFollows) ?? '[]');
     return value is List ? value.whereType<String>().map(hnSubscription).toList() : const [];
-  } on FormatException { return const []; }
+  } on FormatException {
+    return const [];
+  }
 }
 
 Future<void> addHnToGroup(BuildContext context, String id) => editPluginAccountGroups(
-  context, subscription: hnSubscription(id), ensureFollowed: () async {
+  context,
+  subscription: hnSubscription(id),
+  ensureFollowed: () async {
     final follows = context.read<HnFollowsStore>();
     await follows.load();
     if (!follows.isFollowing(id)) await follows.toggle(id);
-  });
+  },
+);
 
 Future<List<InterleavedItem>> loadHnGroupPosts(BuildContext context, List<String> ids) async {
   final client = context.read<HackerNewsClient>();

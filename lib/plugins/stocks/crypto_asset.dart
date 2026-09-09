@@ -10,27 +10,16 @@ class CryptoAsset {
   final String symbol;
   final String name;
 
-  const CryptoAsset({
-    required this.chain,
-    required this.address,
-    required this.symbol,
-    required this.name,
-  });
+  const CryptoAsset({required this.chain, required this.address, required this.symbol, required this.name});
 
   String get id => 'crypto:${chain.toLowerCase()}:${canonicalAddress(address)}';
   String get label => '\$$symbol';
-  String get shortAddress => address.length > 16
-      ? '${address.substring(0, 7)}…${address.substring(address.length - 6)}'
-      : address;
+  String get shortAddress =>
+      address.length > 16 ? '${address.substring(0, 7)}…${address.substring(address.length - 6)}' : address;
   String get subtitle => '$chain · $shortAddress';
   String get searchQuery => '"${canonicalAddress(address)}"';
 
-  String encode() => 'crypto:v1:${jsonEncode({
-    'chain': chain,
-    'address': address,
-    'symbol': symbol,
-    'name': name,
-  })}';
+  String encode() => 'crypto:v1:${jsonEncode({'chain': chain, 'address': address, 'symbol': symbol, 'name': name})}';
 
   static CryptoAsset? decode(String raw) {
     if (!raw.startsWith('crypto:v1:')) return null;
@@ -44,9 +33,11 @@ class CryptoAsset {
   static CryptoAsset? fromJson(Json json) {
     final chain = json['chain'].string?.trim().toLowerCase();
     final address = json['address'].string?.trim();
-    if (chain == null || address == null ||
+    if (chain == null ||
+        address == null ||
         !RegExp(r'^[a-z0-9-]+$').hasMatch(chain) ||
-        !RegExp(r'^[a-zA-Z0-9_-]{16,128}$').hasMatch(address)) return null;
+        !RegExp(r'^[a-zA-Z0-9_-]{16,128}$').hasMatch(address))
+      return null;
     final symbol = json['symbol'].string?.trim();
     final name = json['name'].string?.trim();
     return CryptoAsset(
@@ -58,9 +49,7 @@ class CryptoAsset {
   }
 
   static String canonicalAddress(String address) =>
-      RegExp(r'^0x[0-9a-fA-F]{40}$').hasMatch(address)
-          ? address.toLowerCase()
-          : address;
+      RegExp(r'^0x[0-9a-fA-F]{40}$').hasMatch(address) ? address.toLowerCase() : address;
 
   static String? contractForId(String id) {
     final parts = id.split(':');
@@ -76,15 +65,15 @@ class CryptoMarket {
   final double? changePercent;
   final double liquidity;
 
-  const CryptoMarket({required this.asset, this.pairAddress, this.price,
-    this.changePercent, this.liquidity = 0});
+  const CryptoMarket({required this.asset, this.pairAddress, this.price, this.changePercent, this.liquidity = 0});
 
   TickerQuote get quote => TickerQuote(
     symbol: asset.id,
     currency: 'USD',
     price: price,
     previousClose: price != null && changePercent != null && changePercent! > -100
-        ? price! / (1 + changePercent! / 100) : null,
+        ? price! / (1 + changePercent! / 100)
+        : null,
     shortName: asset.name,
     points: const [],
   );
@@ -96,16 +85,21 @@ List<CryptoMarket> cryptoMarketsFromJson(Object? payload) {
   final markets = <String, CryptoMarket>{};
   for (final pair in pairs) {
     final token = pair['baseToken'];
-    final asset = CryptoAsset.fromJson(Json({
-      'chain': pair['chainId'].string, 'address': token['address'].string,
-      'symbol': token['symbol'].string, 'name': token['name'].string,
-    }));
+    final asset = CryptoAsset.fromJson(
+      Json({
+        'chain': pair['chainId'].string,
+        'address': token['address'].string,
+        'symbol': token['symbol'].string,
+        'name': token['name'].string,
+      }),
+    );
     if (asset == null) continue;
     final price = pair['priceUsd'].number;
     final change = pair['priceChange']['h24'].number;
     final liquidity = pair['liquidity']['usd'].number;
     final market = CryptoMarket(
-      asset: asset, pairAddress: pair['pairAddress'].string,
+      asset: asset,
+      pairAddress: pair['pairAddress'].string,
       price: price != null && price.isFinite && price >= 0 ? price : null,
       changePercent: change != null && change.isFinite ? change : null,
       liquidity: liquidity != null && liquidity.isFinite ? liquidity : 0,

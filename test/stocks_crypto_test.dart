@@ -15,8 +15,12 @@ const _addressA = '0x1111111111111111111111111111111111111111';
 const _addressB = '0x2222222222222222222222222222222222222222';
 const _asset = CryptoAsset(chain: 'ethereum', address: _addressA, symbol: 'SAME', name: 'First project');
 
-Map<String, Object?> _pair({String address = _addressA, String chain = 'ethereum',
-  double liquidity = 100, String price = '0.0000000123'}) => {
+Map<String, Object?> _pair({
+  String address = _addressA,
+  String chain = 'ethereum',
+  double liquidity = 100,
+  String price = '0.0000000123',
+}) => {
   'chainId': chain,
   'baseToken': {'address': address, 'symbol': 'SAME', 'name': 'Project'},
   'quoteToken': {'address': _addressB, 'symbol': 'USD'},
@@ -28,17 +32,17 @@ Map<String, Object?> _pair({String address = _addressA, String chain = 'ethereum
 
 void main() {
   test('same symbol keeps separate network and contract identities', () {
-    final assets = cryptoMarketsFromJson({'pairs': [
-      _pair(), _pair(address: _addressB), _pair(chain: 'base'),
-    ]});
+    final assets = cryptoMarketsFromJson({
+      'pairs': [_pair(), _pair(address: _addressB), _pair(chain: 'base')],
+    });
     expect(assets.map((m) => m.asset.id).toSet(), hasLength(3));
     expect(assets.map((m) => m.asset.symbol).toSet(), {'SAME'});
   });
 
   test('only identical contracts merge, retaining the more liquid base pair', () {
-    final assets = cryptoMarketsFromJson({'pairs': [
-      _pair(price: '1'), _pair(liquidity: 900, price: '2'),
-    ]});
+    final assets = cryptoMarketsFromJson({
+      'pairs': [_pair(price: '1'), _pair(liquidity: 900, price: '2')],
+    });
     expect(assets, hasLength(1));
     expect(assets.single.price, 2);
     expect(assets.single.quote.changePercent, closeTo(25, 0.000001));
@@ -63,7 +67,17 @@ void main() {
 
   test('malformed payloads cannot invent tokens or infinite prices', () {
     expect(cryptoMarketsFromJson(null), isEmpty);
-    expect(cryptoMarketsFromJson({'pairs': [null, 5, {}, {'baseToken': []}]}), isEmpty);
+    expect(
+      cryptoMarketsFromJson({
+        'pairs': [
+          null,
+          5,
+          {},
+          {'baseToken': []},
+        ],
+      }),
+      isEmpty,
+    );
     expect(cryptoMarketsFromJson([_pair(price: 'NaN')]).single.price, isNull);
     expect(cryptoMarketsFromJson([_pair(price: '-1')]).single.price, isNull);
   });
@@ -76,14 +90,19 @@ void main() {
   });
 
   test('token quote rejects a pool where the selected token is quote currency', () async {
-    final client = CryptoClient(httpClient: MockClient((request) async {
-      expect(request.url.path, '/token-pairs/v1/ethereum/$_addressA');
-      return http.Response(jsonEncode([
-        _pair(address: _addressB, liquidity: 1000, price: '9000'),
-        _pair(chain: 'base', liquidity: 900, price: '8000'),
-        _pair(price: '0.05'),
-      ]), 200);
-    }));
+    final client = CryptoClient(
+      httpClient: MockClient((request) async {
+        expect(request.url.path, '/token-pairs/v1/ethereum/$_addressA');
+        return http.Response(
+          jsonEncode([
+            _pair(address: _addressB, liquidity: 1000, price: '9000'),
+            _pair(chain: 'base', liquidity: 900, price: '8000'),
+            _pair(price: '0.05'),
+          ]),
+          200,
+        );
+      }),
+    );
     expect((await client.fetch(_asset))!.price, 0.05);
     client.close();
   });
@@ -107,7 +126,14 @@ void main() {
     final store = StocksSearchStore(tickerClient: ticker, cryptoClient: crypto);
     store.change('SAME', crypto: true, immediate: true);
     store.change('');
-    response.complete(http.Response(jsonEncode({'pairs': [_pair()]}), 200));
+    response.complete(
+      http.Response(
+        jsonEncode({
+          'pairs': [_pair()],
+        }),
+        200,
+      ),
+    );
     await Future<void>.delayed(Duration.zero);
     expect(store.state.query, isEmpty);
     expect(store.state.tokens, isEmpty);

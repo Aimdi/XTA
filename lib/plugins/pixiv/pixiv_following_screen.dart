@@ -32,26 +32,45 @@ class PixivFollowingStore extends Store<List<PixivUser>> {
   Future<void> _load({required bool reset}) async {
     if (_closed || (!reset && (_busy || !_hasMore))) return;
     final generation = reset ? ++_generation : _generation;
-    if (reset) { _nextUrl = null; _private = false; _hasMore = true; }
+    if (reset) {
+      _nextUrl = null;
+      _private = false;
+      _hasMore = true;
+    }
     _busy = true;
     _pageError = null;
-    if (reset) { setLoading(true); } else { update(state, force: true); }
+    if (reset) {
+      setLoading(true);
+    } else {
+      update(state, force: true);
+    }
     try {
       var page = await _next(generation);
       if (!_current(generation)) return;
       if (reset && page.users.isEmpty && _hasMore) page = await _next(generation);
       if (!_current(generation)) return;
-      final byId = {if (!reset) for (final user in state) user.id: user,
-        for (final user in page.users) user.id: user};
+      final byId = {
+        if (!reset)
+          for (final user in state) user.id: user,
+        for (final user in page.users) user.id: user,
+      };
       update(byId.values.toList());
     } catch (error) {
       if (_current(generation)) {
-        if (reset) { setError(error); } else { _pageError = error; }
+        if (reset) {
+          setError(error);
+        } else {
+          _pageError = error;
+        }
       }
     } finally {
       if (_current(generation)) {
         _busy = false;
-        if (reset) { setLoading(false); } else { update(state, force: true); }
+        if (reset) {
+          setLoading(false);
+        } else {
+          update(state, force: true);
+        }
       }
     }
   }
@@ -61,13 +80,21 @@ class PixivFollowingStore extends Store<List<PixivUser>> {
     if (!_current(generation)) return page;
     _nextUrl = page.nextUrl;
     if (_nextUrl == null || _nextUrl!.isEmpty) {
-      if (_private) { _hasMore = false; } else { _private = true; }
+      if (_private) {
+        _hasMore = false;
+      } else {
+        _private = true;
+      }
     }
     return page;
   }
 
   @override
-  Future<void> destroy() { _closed = true; _generation++; return super.destroy(); }
+  Future<void> destroy() {
+    _closed = true;
+    _generation++;
+    return super.destroy();
+  }
 }
 
 class PixivFollowingScreen extends StatefulWidget {
@@ -83,8 +110,12 @@ class _PixivFollowingScreenState extends State<PixivFollowingScreen> {
     super.initState();
     _store = PixivFollowingStore(context.read<PixivClient>())..refresh();
   }
+
   @override
-  void dispose() { _store.destroy(); super.dispose(); }
+  void dispose() {
+    _store.destroy();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -92,8 +123,12 @@ class _PixivFollowingScreenState extends State<PixivFollowingScreen> {
     body: ScopedBuilder<PixivFollowingStore, List<PixivUser>>(
       store: _store,
       onLoading: (_) => const Center(child: CircularProgressIndicator()),
-      onError: (context, error) => FullPageErrorWidget(error: error, stackTrace: null,
-        prefix: pixivErrorMessage(L10n.of(context), error), onRetry: _store.refresh),
+      onError: (context, error) => FullPageErrorWidget(
+        error: error,
+        stackTrace: null,
+        prefix: pixivErrorMessage(L10n.of(context), error),
+        onRetry: _store.refresh,
+      ),
       onState: (context, users) => RefreshIndicator(
         onRefresh: _store.refresh,
         child: ListView.builder(
@@ -103,14 +138,21 @@ class _PixivFollowingScreenState extends State<PixivFollowingScreen> {
             if (index == users.length) return _tail(context, users.isEmpty);
             final user = users[index];
             return ListTile(
-              leading: CircleAvatar(child: user.avatarUrl == null
-                ? const Icon(Icons.person_outline)
-                : ClipOval(child: PixivNetworkImage(url: user.avatarUrl!, fit: BoxFit.cover))),
-              title: Text(user.name), subtitle: Text('@${user.account}'),
-              onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => PixivUserScreen(userId: user.id))),
-              trailing: IconButton(tooltip: L10n.of(context).add_to_group,
-                icon: const Icon(Icons.group_add_outlined), onPressed: () => addPixivToGroup(context, user)),
+              leading: CircleAvatar(
+                child: user.avatarUrl == null
+                    ? const Icon(Icons.person_outline)
+                    : ClipOval(
+                        child: PixivNetworkImage(url: user.avatarUrl!, fit: BoxFit.cover),
+                      ),
+              ),
+              title: Text(user.name),
+              subtitle: Text('@${user.account}'),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PixivUserScreen(userId: user.id))),
+              trailing: IconButton(
+                tooltip: L10n.of(context).add_to_group,
+                icon: const Icon(Icons.group_add_outlined),
+                onPressed: () => addPixivToGroup(context, user),
+              ),
             );
           },
         ),
@@ -120,10 +162,14 @@ class _PixivFollowingScreenState extends State<PixivFollowingScreen> {
 
   Widget _tail(BuildContext context, bool empty) => Padding(
     padding: const EdgeInsets.all(20),
-    child: _store.hasMore ? OutlinedButton.icon(
-      onPressed: _store.busy ? null : _store.loadMore,
-      icon: const Icon(Icons.expand_more), label: Text(_store.pageError == null ? L10n.of(context).clickToShowMore : L10n.of(context).retry))
-      : empty ? Text(L10n.of(context).no_subscriptions_try_searching_or_importing_some,
-        textAlign: TextAlign.center) : const SizedBox.shrink(),
+    child: _store.hasMore
+        ? OutlinedButton.icon(
+            onPressed: _store.busy ? null : _store.loadMore,
+            icon: const Icon(Icons.expand_more),
+            label: Text(_store.pageError == null ? L10n.of(context).clickToShowMore : L10n.of(context).retry),
+          )
+        : empty
+        ? Text(L10n.of(context).no_subscriptions_try_searching_or_importing_some, textAlign: TextAlign.center)
+        : const SizedBox.shrink(),
   );
 }

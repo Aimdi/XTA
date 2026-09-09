@@ -7,8 +7,8 @@ import 'package:xta/saved/saved_screen.dart';
 import 'package:xta/saved/saved_source_filter.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 
-Future<void> openPluginBookmarks(BuildContext context, SavedSource source) => Navigator.push<void>(context,
-  MaterialPageRoute(builder: (_) => _PluginBookmarks(source: source)));
+Future<void> openPluginBookmarks(BuildContext context, SavedSource source) =>
+    Navigator.push<void>(context, MaterialPageRoute(builder: (_) => _PluginBookmarks(source: source)));
 
 class _PluginBookmarks extends StatelessWidget {
   final SavedSource source;
@@ -19,17 +19,33 @@ class _PluginBookmarks extends StatelessWidget {
     final l10n = L10n.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l10n.saved)),
-      body: ScopedBuilder<SavedTweetModel, List<SavedTweet>>(store: model, onState: (context, state) {
-        final rows = state.where((row) => matchesSavedSource(model.contentOf(row.id), source)).toList();
-        return ListView.builder(itemCount: rows.length + 1, itemBuilder: (context, index) {
-          if (index == 0) return Padding(padding: const EdgeInsets.all(16), child: Column(children: [
-            Text(l10n.saves_stay_on_device_notice),
-            if (rows.isEmpty) Padding(padding: const EdgeInsets.only(top: 24), child: Text(l10n.no_results)),
-          ]));
-          final row = rows[index - 1];
-          return SavedClipTile(key: ValueKey(row.id), saved: row, onNoteChanged: (note) => model.setNote(row.id, note));
-        });
-      }),
+      body: ScopedBuilder<SavedTweetModel, List<SavedTweet>>(
+        store: model,
+        onState: (context, state) {
+          final rows = state.where((row) => matchesSavedSource(model.contentOf(row.id), source)).toList();
+          return ListView.builder(
+            itemCount: rows.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0)
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text(l10n.saves_stay_on_device_notice),
+                      if (rows.isEmpty) Padding(padding: const EdgeInsets.only(top: 24), child: Text(l10n.no_results)),
+                    ],
+                  ),
+                );
+              final row = rows[index - 1];
+              return SavedClipTile(
+                key: ValueKey(row.id),
+                saved: row,
+                onNoteChanged: (note) => model.setNote(row.id, note),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

@@ -8,10 +8,8 @@ import 'package:xta/ui/x_look_theme.dart';
 
 const _reviewRender = ValueKey('saved-note-review-render');
 
-Finder _saveButton() => find.ancestor(
-  of: find.text('Save'),
-  matching: find.byWidgetPredicate((widget) => widget is FilledButton),
-);
+Finder _saveButton() =>
+    find.ancestor(of: find.text('Save'), matching: find.byWidgetPredicate((widget) => widget is FilledButton));
 
 Future<void> openEditor(
   WidgetTester tester, {
@@ -21,32 +19,38 @@ Future<void> openEditor(
   double textScale = 1,
   bool dark = false,
 }) async {
-  await tester.pumpWidget(RepaintBoundary(
-    key: _reviewRender,
-    child: MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
-    localizationsDelegates: const [
-      L10n.delegate,
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    supportedLocales: const [Locale('en')],
-    builder: (context, child) => MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        viewInsets: EdgeInsets.only(bottom: keyboard),
-        textScaler: TextScaler.linear(textScale),
-        disableAnimations: true,
+  await tester.pumpWidget(
+    RepaintBoundary(
+      key: _reviewRender,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: dark ? xLookLightsOutTheme(null) : xLookLightTheme(null),
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('en')],
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            viewInsets: EdgeInsets.only(bottom: keyboard),
+            textScaler: TextScaler.linear(textScale),
+            disableAnimations: true,
+          ),
+          child: child!,
+        ),
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => openSavedNoteEditor(context, note: note, onSave: onSave),
+              child: const Text('Open editor'),
+            ),
+          ),
+        ),
       ),
-      child: child!,
     ),
-    home: Scaffold(body: Builder(builder: (context) => TextButton(
-      onPressed: () => openSavedNoteEditor(context, note: note, onSave: onSave),
-      child: const Text('Open editor'),
-    ))),
-    ),
-  ));
+  );
   await tester.tap(find.text('Open editor'));
   await tester.pumpAndSettle();
 }
@@ -60,7 +64,12 @@ void main() {
 
   testWidgets('canceling a changed note leaves the stored note untouched', (tester) async {
     var writes = 0;
-    await openEditor(tester, onSave: (_) async { writes++; });
+    await openEditor(
+      tester,
+      onSave: (_) async {
+        writes++;
+      },
+    );
     await tester.enterText(find.byType(TextField), 'Discard this');
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Close'));
@@ -78,8 +87,19 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
     String? saved = 'Original note';
-    await openEditor(tester, keyboard: 300, textScale: 1.6, dark: true, onSave: (value) async { saved = value; });
-    await tester.enterText(find.byType(TextField), 'Ideas from this stream:\n\nCompare the new illustrations with the earlier sketches.');
+    await openEditor(
+      tester,
+      keyboard: 300,
+      textScale: 1.6,
+      dark: true,
+      onSave: (value) async {
+        saved = value;
+      },
+    );
+    await tester.enterText(
+      find.byType(TextField),
+      'Ideas from this stream:\n\nCompare the new illustrations with the earlier sketches.',
+    );
     await tester.pumpAndSettle();
     expect(tester.getBottomRight(_saveButton()).dy, lessThanOrEqualTo(844 - 300));
     expect(tester.takeException(), isNull);
@@ -100,9 +120,12 @@ void main() {
 
   testWidgets('write failure leaves editable draft and save can be retried', (tester) async {
     var attempts = 0;
-    await openEditor(tester, onSave: (_) async {
-      if (attempts++ == 0) throw StateError('disk full');
-    });
+    await openEditor(
+      tester,
+      onSave: (_) async {
+        if (attempts++ == 0) throw StateError('disk full');
+      },
+    );
     await tester.enterText(find.byType(TextField), 'Keep my changes');
     await tester.pumpAndSettle();
     await tester.tap(_saveButton());

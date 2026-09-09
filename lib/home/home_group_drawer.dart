@@ -10,7 +10,10 @@ import 'package:xta/tweet/tweet_chrome.dart';
 List<SubscriptionGroup> drawerGroupsForQuery(List<SubscriptionGroup> groups, String query) {
   final needle = query.trim().toLowerCase();
   final matches = groups.where((group) => group.name.toLowerCase().contains(needle));
-  return [matches.where((group) => group.pinned), matches.where((group) => !group.pinned)].expand((rows) => rows).toList();
+  return [
+    matches.where((group) => group.pinned),
+    matches.where((group) => !group.pinned),
+  ].expand((rows) => rows).toList();
 }
 
 class HomeGroupDrawer extends StatefulWidget {
@@ -51,51 +54,82 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
         key: const PageStorageKey('home-group-drawer-scroll'),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         slivers: [
-          SliverToBoxAdapter(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-        widget.accountHeader,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: [
-              Expanded(child: OutlinedButton.icon(onPressed: widget.onSearch, icon: const Icon(Icons.search), label: Text(l10n.search))),
-              const SizedBox(width: 8),
-              Expanded(child: OutlinedButton.icon(onPressed: widget.onSettings, icon: const Icon(Icons.settings_outlined), label: Text(l10n.settings))),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 12),
-          child: Row(
-            children: [
-              Expanded(child: Semantics(header: true, child: Text(l10n.groups, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)))),
-              Text('${widget.groups.length}', style: theme.textTheme.labelLarge?.copyWith(color: tweetSecondaryColor(context))),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: TextField(
-            key: const ValueKey('home-drawer-group-search'),
-            onChanged: _query.select,
-            decoration: InputDecoration(
-              hintText: l10n.search,
-              prefixIcon: const Icon(Icons.search, size: 20),
-              filled: true,
-              fillColor: theme.colorScheme.surfaceContainerLow,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                widget.accountHeader,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: widget.onSearch,
+                          icon: const Icon(Icons.search),
+                          label: Text(l10n.search),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: widget.onSettings,
+                          icon: const Icon(Icons.settings_outlined),
+                          label: Text(l10n.settings),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 12),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Semantics(
+                          header: true,
+                          child: Text(
+                            l10n.groups,
+                            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${widget.groups.length}',
+                        style: theme.textTheme.labelLarge?.copyWith(color: tweetSecondaryColor(context)),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: TextField(
+                    key: const ValueKey('home-drawer-group-search'),
+                    onChanged: _query.select,
+                    decoration: InputDecoration(
+                      hintText: l10n.search,
+                      prefixIcon: const Icon(Icons.search, size: 20),
+                      filled: true,
+                      fillColor: theme.colorScheme.surfaceContainerLow,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                    ),
+                  ),
+                ),
+                const Divider(height: 1),
+              ],
             ),
           ),
-        ),
-        const Divider(height: 1),
-            ],
-          )),
           ScopedBuilder<HomeSelectionStore<String>, String>(
             store: _query,
             onState: (context, query) {
               final groups = drawerGroupsForQuery(widget.groups, query);
-              if (groups.isEmpty) return SliverToBoxAdapter(child: Padding(padding: const EdgeInsets.all(24), child: Text(widget.groups.isEmpty ? l10n.no_subscription_groups_yet : l10n.no_results)));
+              if (groups.isEmpty)
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(widget.groups.isEmpty ? l10n.no_subscription_groups_yet : l10n.no_results),
+                  ),
+                );
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 sliver: SliverList.builder(
@@ -118,8 +152,16 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
       label: widget.unreadIds.contains(group.id) ? L10n.of(context).group_has_unread : null,
       child: GroupUnreadBadge(unread: widget.unreadIds.contains(group.id), child: GroupMark.forGroup(group, size: 44)),
     ),
-    title: Text(group.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w600)),
-    subtitle: Text(L10n.of(context).subscription_group_member_count(group.numberOfMembers), style: tweetMetadataStyle(context)),
+    title: Text(
+      group.name,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(fontWeight: FontWeight.w600),
+    ),
+    subtitle: Text(
+      L10n.of(context).subscription_group_member_count(group.numberOfMembers),
+      style: tweetMetadataStyle(context),
+    ),
     trailing: group.pinned
         ? Icon(Icons.push_pin_outlined, size: 18, color: tweetReadableAccentColor(context))
         : Icon(Icons.chevron_right, size: 20, color: tweetSecondaryColor(context)),

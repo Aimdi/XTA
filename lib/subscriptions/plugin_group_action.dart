@@ -19,9 +19,7 @@ Future<void> editPluginAccountGroups(
     await groups.reloadGroups(notifyReload: false);
     final selected = await groups.listGroupsForUser(subscription.id);
     if (!context.mounted) return;
-    final chosen = await showGroupMembershipSheet(
-      context, groups: groups.state, selected: selected,
-    );
+    final chosen = await showGroupMembershipSheet(context, groups: groups.state, selected: selected);
     if (chosen == null) return;
     if (chosen.isNotEmpty) {
       await ensureFollowed();
@@ -34,12 +32,18 @@ Future<void> editPluginAccountGroups(
     await subscriptions.reloadSubscriptions();
   } catch (error, stack) {
     if (context.mounted) {
-      await showDialog<void>(context: context, builder: (_) => AlertDialog(
-        content: SingleChildScrollView(child: FullPageErrorWidget(
-          error: error, stackTrace: stack,
-          prefix: L10n.of(context).oops_something_went_wrong,
-        )),
-      ));
+      await showDialog<void>(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: SingleChildScrollView(
+            child: FullPageErrorWidget(
+              error: error,
+              stackTrace: stack,
+              prefix: L10n.of(context).oops_something_went_wrong,
+            ),
+          ),
+        ),
+      );
     }
   }
 }

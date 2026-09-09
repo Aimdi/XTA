@@ -8,15 +8,16 @@ import 'package:xta/plugins/plugin_account_subscription.dart';
 import 'package:xta/subscriptions/plugin_group_action.dart';
 import 'package:xta/tweet/interleaved_items.dart';
 
-Future<void> addInstagramToGroup(BuildContext context, InstagramFollow follow) =>
-    editPluginAccountGroups(context,
-      subscription: PluginAccountSubscription(pluginIdInstagram, follow.toMap()),
-      ensureFollowed: () async {
-        final store = context.read<InstagramFollowsStore>();
-        if (store.containsHandle(follow.id)) return;
-        final profile = await context.read<InstagramClient>().profile(follow.id);
-        await store.follow(profile);
-      });
+Future<void> addInstagramToGroup(BuildContext context, InstagramFollow follow) => editPluginAccountGroups(
+  context,
+  subscription: PluginAccountSubscription(pluginIdInstagram, follow.toMap()),
+  ensureFollowed: () async {
+    final store = context.read<InstagramFollowsStore>();
+    if (store.containsHandle(follow.id)) return;
+    final profile = await context.read<InstagramClient>().profile(follow.id);
+    await store.follow(profile);
+  },
+);
 
 Future<List<InterleavedItem>> loadInstagramGroupPosts(BuildContext context, List<String> ids) async {
   final client = context.read<InstagramClient>();

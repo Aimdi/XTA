@@ -328,7 +328,7 @@ class MastodonClient {
   }
 
   Future<PluginActivityPage<MastodonProfile>> getRepostedBy(
-    List<String> instances, MastodonPost seed, {String? cursor},
+    List<String> instances, MastodonPost seed, {String? cursor}
   ) async {
     final page = await _activityPage(instances, seed, 'reblogged_by', cursor: cursor);
     return PluginActivityPage([
@@ -338,14 +338,14 @@ class MastodonClient {
   }
 
   Future<PluginActivityPage<MastodonPost>> getQuotes(
-    List<String> instances, MastodonPost seed, {String? cursor},
+    List<String> instances, MastodonPost seed, {String? cursor}
   ) async {
     final page = await _activityPage(instances, seed, 'quotes', cursor: cursor);
     return PluginActivityPage(parseMastodonStatuses(page.data, homeDomain: page.uri.host), cursor: page.next);
   }
 
   Future<({Object? data, Uri uri, String? next})> _activityPage(
-    List<String> instances, MastodonPost seed, String kind, {String? cursor},
+    List<String> instances, MastodonPost seed, String kind, {String? cursor}
   ) async {
     if (cursor != null) {
       final uri = Uri.tryParse(cursor);
@@ -753,7 +753,6 @@ class MastodonClient {
     }
     try {
       final decoded = jsonDecode(utf8.decode(response.bodyBytes));
-      onResponse?.call(response);
       return decoded;
     } catch (e) {
       throw MastodonException(MastodonErrorKind.badResponse, '$uri: $e');

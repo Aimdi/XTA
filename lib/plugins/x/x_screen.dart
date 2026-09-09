@@ -74,7 +74,11 @@ class _XScreenState extends State<XScreen> {
     appBar: AppBar(
       title: Text(L10n.of(context).source_x),
       actions: [
-        IconButton(tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel, icon: const Icon(Icons.refresh), onPressed: _refresh),
+        IconButton(
+          tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+          icon: const Icon(Icons.refresh),
+          onPressed: _refresh,
+        ),
         IconButton(
           tooltip: L10n.of(context).home_feed_accounts,
           icon: const Icon(Icons.manage_accounts_outlined),

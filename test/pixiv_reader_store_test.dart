@@ -103,5 +103,4 @@ void main() {
     store.observedPage(0);
     expect(store.state.pageIndex, 30);
   });
-
 }

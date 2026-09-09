@@ -12,22 +12,11 @@ class BroadcastMediaCard extends StatelessWidget {
   final BroadcastGridItem item;
   final Widget preview;
 
-  const BroadcastMediaCard({
-    super.key,
-    required this.item,
-    required this.preview,
-  });
+  const BroadcastMediaCard({super.key, required this.item, required this.preview});
 
   String get _excerpt {
-    for (final text in [
-      item.tweet?.noteText,
-      item.tweet?.fullText,
-      item.tweet?.text,
-    ]) {
-      final excerpt = (text ?? '')
-          .replaceAll(RegExp(r'https?://\S+'), '')
-          .replaceAll(RegExp(r'\s+'), ' ')
-          .trim();
+    for (final text in [item.tweet?.noteText, item.tweet?.fullText, item.tweet?.text]) {
+      final excerpt = (text ?? '').replaceAll(RegExp(r'https?://\S+'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
       if (excerpt.isNotEmpty) return excerpt;
     }
     return '';
@@ -72,10 +61,7 @@ class BroadcastMediaCard extends StatelessWidget {
                   title,
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    height: 1.25,
-                  ),
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700, height: 1.25),
                 ),
               ),
               Padding(
@@ -85,17 +71,14 @@ class BroadcastMediaCard extends StatelessWidget {
                   runSpacing: 4,
                   children: [
                     if (item.username.isNotEmpty)
-                      Text('@${item.username}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                      Text(
+                        '@${item.username}',
+                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                     if (date != null)
                       Text(
                         DateFormat.yMMMd().format(date.toLocal()),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                   ],
                 ),
@@ -110,9 +93,7 @@ class BroadcastMediaCard extends StatelessWidget {
                       color: theme.colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(kind,
-                      style: theme.textTheme.labelMedium,
-                    )),
+                    Expanded(child: Text(kind, style: theme.textTheme.labelMedium)),
                     TextButton.icon(
                       onPressed: () => _openPost(context),
                       icon: const Icon(Icons.article_outlined, size: 18),

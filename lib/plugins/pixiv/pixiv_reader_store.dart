@@ -17,8 +17,7 @@ class PixivReaderStore extends Store<PixivReaderState> {
   PixivReaderStore({required this.pageCount, int initialPage = 0})
     : super(PixivReaderState(pageIndex: _bounded(initialPage, pageCount)));
 
-  static int _bounded(int index, int count) =>
-      count <= 0 ? 0 : index.clamp(0, count - 1);
+  static int _bounded(int index, int count) => count <= 0 ? 0 : index.clamp(0, count - 1);
 
   void selectPage(int index) {
     if (_closed) return;
@@ -30,10 +29,7 @@ class PixivReaderStore extends Store<PixivReaderState> {
   void toggleDirection() {
     if (_closed) return;
     _visibleAreas.clear();
-    update(PixivReaderState(
-      vertical: !state.vertical,
-      pageIndex: state.pageIndex,
-    ));
+    update(PixivReaderState(vertical: !state.vertical, pageIndex: state.pageIndex));
   }
 
   void pageVisibility(int index, double area) {
@@ -44,11 +40,10 @@ class PixivReaderStore extends Store<PixivReaderState> {
       _visibleAreas[index] = area;
     }
     if (_visibleAreas.isEmpty) return;
-    final mostVisible = _visibleAreas.entries.reduce(
-      (a, b) => a.value >= b.value ? a : b,
-    );
+    final mostVisible = _visibleAreas.entries.reduce((a, b) => a.value >= b.value ? a : b);
     selectPage(mostVisible.key);
   }
+
   /// Retire old visibility measurements before a jump or direction change.
   int beginNavigation(int index) {
     if (_closed) return _navigationGeneration;
@@ -58,8 +53,7 @@ class PixivReaderStore extends Store<PixivReaderState> {
     return ++_navigationGeneration;
   }
 
-  bool isCurrentNavigation(int generation) =>
-      !_closed && generation == _navigationGeneration;
+  bool isCurrentNavigation(int generation) => !_closed && generation == _navigationGeneration;
 
   bool finishNavigation(int generation) {
     if (!isCurrentNavigation(generation)) return false;
@@ -79,5 +73,4 @@ class PixivReaderStore extends Store<PixivReaderState> {
     _visibleAreas.clear();
     return super.destroy();
   }
-
 }

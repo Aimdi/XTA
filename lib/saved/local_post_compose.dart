@@ -57,7 +57,7 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
   late final _quoted = widget.quotedTweet ??
       parseQuotedTweet(widget.existing?.quotedTweetJson);
   late final Widget? _quotedPreview = _quoted == null ? null :
-      _ComposeQuotedPreview(tweet: _quoted!);
+      _ComposeQuotedPreview(tweet: _quoted);
 
   @override
   void dispose() {
@@ -116,7 +116,7 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
         body: _store.state.body,
         media: _store.state.media,
         quotedTweetId: _quoted?.idStr ?? widget.existing?.quotedTweetId,
-        quotedTweetJson: _quoted != null ? encodeQuotedTweet(_quoted!) : widget.existing?.quotedTweetJson,
+        quotedTweetJson: _quoted != null ? encodeQuotedTweet(_quoted) : widget.existing?.quotedTweetJson,
         inReplyToId: widget.replyTo?.id ?? widget.existing?.inReplyToId,
       );
     });
@@ -177,7 +177,7 @@ class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
             ],
             if (_quotedPreview != null) ...[
               const SizedBox(height: 12),
-              _quotedPreview!,
+              _quotedPreview,
             ],
           ],
         ),

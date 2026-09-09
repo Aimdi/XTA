@@ -7,10 +7,18 @@ import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/stocks_store.dart';
 
-const _first = CryptoAsset(chain: 'solana',
-  address: 'AbCdEfGh123456789AbCdEfGh123456789', symbol: 'SAME', name: 'First');
-const _second = CryptoAsset(chain: 'solana',
-  address: 'ZbCdEfGh123456789AbCdEfGh123456789', symbol: 'SAME', name: 'Second');
+const _first = CryptoAsset(
+  chain: 'solana',
+  address: 'AbCdEfGh123456789AbCdEfGh123456789',
+  symbol: 'SAME',
+  name: 'First',
+);
+const _second = CryptoAsset(
+  chain: 'solana',
+  address: 'ZbCdEfGh123456789AbCdEfGh123456789',
+  symbol: 'SAME',
+  name: 'Second',
+);
 
 void main() {
   setUpAll(() async {

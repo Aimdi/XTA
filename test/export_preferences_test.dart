@@ -20,34 +20,21 @@ void main() {
   };
 
   test('subscription export includes preference-backed authors without other settings', () {
-    final selected = preferencesForExport(
-      preferences,
-      includeSettings: false,
-      includeSubscriptions: true,
-    );
-    expect(selected!.keys.toSet(), {
-      optionPluginPixivGroupSubscriptions,
-      optionPluginHnFollows,
-    });
+    final selected = preferencesForExport(preferences, includeSettings: false, includeSubscriptions: true);
+    expect(selected!.keys.toSet(), {optionPluginPixivGroupSubscriptions, optionPluginHnFollows});
     expect(selected.containsKey(optionPluginPixivAccessToken), isFalse);
     expect(selected.containsKey(optionThemeTrueBlack), isFalse);
   });
 
   test('group membership ids still resolve after subscription-only export round trip', () {
     final data = SettingsData(
-      settings: preferencesForExport(
-        preferences,
-        includeSettings: false,
-        includeSubscriptions: true,
-      ),
+      settings: preferencesForExport(preferences, includeSettings: false, includeSubscriptions: true),
       subscriptionGroupMembers: [
         SubscriptionGroupMember(group: 'art', profile: 'pixiv:123'),
         SubscriptionGroupMember(group: 'tech', profile: '$pluginIdHackerNews:author'),
       ],
     );
-    final restored = SettingsData.fromJson(
-      jsonDecode(jsonEncode(data.toJson())) as Map<String, dynamic>,
-    );
+    final restored = SettingsData.fromJson(jsonDecode(jsonEncode(data.toJson())) as Map<String, dynamic>);
     final prefs = PrefServiceCache(cache: restored.settings!);
     final ids = {
       ...readPixivGroupSubscriptions(prefs).map((item) => item.id),
@@ -59,20 +46,12 @@ void main() {
   });
 
   test('settings choice keeps normal preferences and still strips credentials', () {
-    final selected = preferencesForExport(
-      preferences,
-      includeSettings: true,
-      includeSubscriptions: false,
-    );
+    final selected = preferencesForExport(preferences, includeSettings: true, includeSubscriptions: false);
     expect(selected![optionThemeTrueBlack], isTrue);
     expect(selected.containsKey(optionPluginPixivAccessToken), isFalse);
   });
 
   test('excluding both settings and subscriptions exports no preferences', () {
-    expect(preferencesForExport(
-      preferences,
-      includeSettings: false,
-      includeSubscriptions: false,
-    ), isNull);
+    expect(preferencesForExport(preferences, includeSettings: false, includeSubscriptions: false), isNull);
   });
 }

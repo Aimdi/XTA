@@ -64,8 +64,17 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
                     padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 8, 12),
                     child: Row(
                       children: [
-                        Expanded(child: Text(l10n.home_feed_accounts, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700))),
-                        IconButton(tooltip: l10n.close, icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                        Expanded(
+                          child: Text(
+                            l10n.home_feed_accounts,
+                            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        IconButton(
+                          tooltip: l10n.close,
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                        ),
                       ],
                     ),
                   ),
@@ -76,8 +85,16 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: SegmentedButton<bool>(
                           segments: [
-                            ButtonSegment(value: false, icon: const Icon(Icons.account_circle_outlined), label: Text(l10n.account, maxLines: 2, overflow: TextOverflow.ellipsis)),
-                            ButtonSegment(value: true, icon: const Icon(Icons.folder_outlined), label: Text(l10n.groups, maxLines: 2, overflow: TextOverflow.ellipsis)),
+                            ButtonSegment(
+                              value: false,
+                              icon: const Icon(Icons.account_circle_outlined),
+                              label: Text(l10n.account, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            ),
+                            ButtonSegment(
+                              value: true,
+                              icon: const Icon(Icons.folder_outlined),
+                              label: Text(l10n.groups, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            ),
                           ],
                           selected: {groupSection},
                           onSelectionChanged: (selection) => _section.select(selection.first),
@@ -95,7 +112,10 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
                         prefixIcon: const Icon(Icons.search),
                         filled: true,
                         fillColor: theme.colorScheme.surfaceContainerLow,
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                   ),
@@ -123,39 +143,57 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
     );
   }
 
-  Widget _sectionList(BuildContext context, {required String description, required int active, required int total, required List<Widget> rows}) => Padding(
+  Widget _sectionList(
+    BuildContext context, {
+    required String description,
+    required int active,
+    required int total,
+    required List<Widget> rows,
+  }) => Padding(
     padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Text(description, style: tweetMetadataStyle(context)),
-      ),
-      Padding(
-        padding: const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 12),
-        child: Row(children: [
-          Icon(Icons.check_circle_outline, size: 18, color: tweetReadableAccentColor(context)),
-          const SizedBox(width: 8),
-          Expanded(child: Text('$active / $total', style: Theme.of(context).textTheme.labelLarge)),
-        ]),
-      ),
-      if (rows.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(L10n.of(context).no_results)),
-      ...rows,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Text(description, style: tweetMetadataStyle(context)),
+        ),
+        Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 12),
+          child: Row(
+            children: [
+              Icon(Icons.check_circle_outline, size: 18, color: tweetReadableAccentColor(context)),
+              const SizedBox(width: 8),
+              Expanded(child: Text('$active / $total', style: Theme.of(context).textTheme.labelLarge)),
+            ],
+          ),
+        ),
+        if (rows.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(L10n.of(context).no_results)),
+        ...rows,
       ],
     ),
   );
 
   Widget _accounts(BuildContext context, String query) {
     final l10n = L10n.of(context);
-    if (widget.accounts.isEmpty) return Center(child: Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(l10n.home_feed_accounts_empty),
-        const SizedBox(height: 12),
-        FilledButton.icon(onPressed: widget.onAddAccount, icon: const Icon(Icons.add), label: Text(l10n.add_account)),
-      ]),
-    ));
+    if (widget.accounts.isEmpty)
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l10n.home_feed_accounts_empty),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: widget.onAddAccount,
+                icon: const Icon(Icons.add),
+                label: Text(l10n.add_account),
+              ),
+            ],
+          ),
+        ),
+      );
     return ScopedBuilder<HomeAccountFilterStore, Set<String>>(
       store: widget.accountsStore,
       onState: (_, disabled) => _sectionList(
