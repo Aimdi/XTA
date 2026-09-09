@@ -4,6 +4,28 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi130
+
+This release brings the plugin, grouping and reading improvements from PR #264.
+
+- X has its own Home source with For you. Home's group drawer and active-account/group filters are clearer and searchable.
+- Crypto tracking distinguishes tokens by network and contract, with ticker or contract search and DEX Screener quotes.
+- Followed accounts can be added to groups across account plugins, including Pixiv. Discover finds unfamiliar reposted/quoted authors and related Pixiv artwork. Connected AI adds group discovery sparkle actions and an explicit sorting option for ungrouped follows.
+- Plugin posts share local bookmarks, folders and notes. Bluesky and Mastodon expose repost/quote readers and clickable repost attribution where the service supports them.
+- Bluesky retains loaded timelines when reopened. Pixiv gains continuous vertical reading, a direction toggle and page selection. X livestream and Space cards have a clearer layout.
+- Archive notes have smoother editing, keyboard-accessible save controls and protection for unsaved changes.
+
+For most Android phones, choose **`xta-aimdi130_arm64-v8a.apk`**. Universal,
+ARMv7 and x86_64 builds are also available. The base version code is 400001098,
+above all aimdi129 variants. The existing application id (`com.aimdi.xta`) and
+release signing certificate are retained for in-place updates.
+
+Validation before release: 2,312 app tests passed, five existing live tests
+skipped; formatting, analysis, focused checks and the review APK build passed.
+Physical-device and live-account testing were not performed. Mastodon quote
+availability depends on the instance/token, crypto coverage depends on DEX
+Screener, and bookmarks/notes are local to XTA.
+
 ### aimdi129
 
 This maintenance release adds the release-integrity improvements from PR #262.
