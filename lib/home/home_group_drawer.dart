@@ -61,22 +61,19 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
                 widget.accountHeader,
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: widget.onSearch,
-                          icon: const Icon(Icons.search),
-                          label: Text(l10n.search),
-                        ),
+                      OutlinedButton.icon(
+                        onPressed: widget.onSearch,
+                        icon: const Icon(Icons.search),
+                        label: Text(l10n.search),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: widget.onSettings,
-                          icon: const Icon(Icons.settings_outlined),
-                          label: Text(l10n.settings),
-                        ),
+                      OutlinedButton.icon(
+                        onPressed: widget.onSettings,
+                        icon: const Icon(Icons.settings_outlined),
+                        label: Text(l10n.settings),
                       ),
                     ],
                   ),
@@ -160,6 +157,8 @@ class _HomeGroupDrawerState extends State<HomeGroupDrawer> {
     ),
     subtitle: Text(
       L10n.of(context).subscription_group_member_count(group.numberOfMembers),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: tweetMetadataStyle(context),
     ),
     trailing: group.pinned
