@@ -478,6 +478,7 @@ class _SubscriptionGroupEditDialogState
 
   Widget _content(BuildContext context) {
     var subscriptionsModel = context.read<SubscriptionsModel>();
+    final group = _editor.state.group!;
     final l10n = L10n.of(context);
     final isPinned =
         widget.id != null &&
