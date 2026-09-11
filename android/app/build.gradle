@@ -101,9 +101,9 @@ android {
                 variant.outputs.all { output ->
                     def abiName = output.getFilter(OutputFile.ABI)
                     if (abiName == null) {
-                        outputFileName = "xta-aimdi130.apk"
+                        outputFileName = "xta-aimdi131.apk"
                     } else {
-                        outputFileName = "xta-aimdi130_${abiName}.apk"
+                        outputFileName = "xta-aimdi131_${abiName}.apk"
                     }
                 }
             }
