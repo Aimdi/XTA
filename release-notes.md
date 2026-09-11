@@ -4,6 +4,25 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi131
+
+This release fixes stuck loading and crashes when following people or editing groups.
+
+- Rapid follows and group saves now finish in order without cancelling earlier local writes.
+- Group saves publish the refreshed member list before finishing. Repeated follows preserve existing group memberships and feed settings.
+- Failed or stalled group loading and member searches stop the spinner and allow a retry. Closing a loading dialog safely ignores late results.
+- Successful retries clear previous errors, and idle group stores finish cleanup correctly.
+
+For most Android phones, choose **`xta-aimdi131_arm64-v8a.apk`**. Universal,
+ARMv7 and x86_64 builds are also available. The base version code is 400001102,
+above every aimdi130 variant. The existing application id (`com.aimdi.xta`)
+and release signing certificate are retained for in-place updates.
+
+Validation: all 2,327 app tests passed, including 15 new loading and cleanup
+regression tests; five existing opt-in live tests were skipped. Formatting,
+analysis, translation integrity and skill sync passed. Physical-device and
+live-account testing were not performed.
+
 ### aimdi130
 
 This release brings the plugin, grouping and reading improvements from PR #264.
