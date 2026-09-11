@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:pref/pref.dart';
@@ -20,6 +21,7 @@ import 'package:xta/subscriptions/widgets/group_color_picker.dart';
 import 'package:xta/subscriptions/group_mark_style.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/ui/errors.dart';
 
 Future openSubscriptionGroupDialog(
   BuildContext context,
@@ -70,11 +72,15 @@ ButtonStyle _discreetActionStyle(BuildContext context) => TextButton.styleFrom(
   visualDensity: VisualDensity.compact,
 );
 
+class _GroupEditorStore extends Store<({SubscriptionGroupEdit? group, bool saving})> {
+  _GroupEditorStore() : super((group: null, saving: false));
+}
+
 class _SubscriptionGroupEditDialogState
     extends State<SubscriptionGroupEditDialog> {
   final GlobalKey<FormState> _formKey = GlobalKey();
 
-  SubscriptionGroupEdit? _group;
+  final _editor = _GroupEditorStore();
 
   late String? id;
   late String? name;
@@ -92,6 +98,7 @@ class _SubscriptionGroupEditDialogState
   @override
   void dispose() {
     _memberSearch.dispose();
+    _editor.destroy();
     super.dispose();
   }
 
@@ -123,32 +130,51 @@ class _SubscriptionGroupEditDialogState
   void initState() {
     super.initState();
 
-    setState(() {
-      icon = widget.icon;
-    });
+    icon = widget.icon;
+    _loadGroup();
+  }
 
-    final subscriptions = context.read<SubscriptionsModel>().state;
+  Future<void> _loadGroup() async {
+    final groups = context.read<GroupsModel>();
+    final subscriptions = context.read<SubscriptionsModel>();
+    _editor.setLoading(true);
+    try {
+      final group = await groups.loadGroupEdit(widget.id).timeout(const Duration(seconds: 15));
+      if (!mounted) return;
+      id = group.id;
+      name = group.name;
+      icon = group.icon;
+      color = group.color;
+      emoji = group.emoji;
+      markStyle = group.markStyle;
+      members = group.members;
+      orderedSubscriptions = [
+        ...subscriptions.state.where((s) => members.contains(s.id)),
+        ...subscriptions.state.where((s) => !members.contains(s.id)),
+      ];
+      _editor.update((group: group, saving: false), force: true);
+    } catch (error) {
+      if (mounted) _editor.setError(error, force: true);
+    } finally {
+      if (mounted) _editor.setLoading(false, force: true);
+    }
+  }
 
-    context
-        .read<GroupsModel>()
-        .loadGroupEdit(widget.id)
-        .then(
-          (group) => setState(() {
-            _group = group;
-
-            id = group.id;
-            name = group.name;
-            icon = group.icon;
-            color = group.color;
-            emoji = group.emoji;
-            markStyle = group.markStyle;
-            members = group.members;
-            orderedSubscriptions = [
-              ...subscriptions.where((s) => group.members.contains(s.id)),
-              ...subscriptions.where((s) => !group.members.contains(s.id)),
-            ];
-          }),
-        );
+  Future<void> _saveGroup() async {
+    if (_editor.state.saving || !_formKey.currentState!.validate()) return;
+    final groups = context.read<GroupsModel>();
+    _editor.update((group: _editor.state.group, saving: true));
+    try {
+      await groups.saveGroup(id, name!, icon, color, members.toSet(), emoji: emoji, markStyle: markStyle);
+      if (groups.triple.error case final Object error) throw error;
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).oops_something_went_wrong)));
+      }
+    } finally {
+      if (mounted) _editor.update((group: _editor.state.group, saving: false));
+    }
   }
 
   /// Follows something new and ticks it, so a group can be filled from inside
@@ -435,14 +461,23 @@ class _SubscriptionGroupEditDialogState
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ScopedBuilder<_GroupEditorStore, ({SubscriptionGroupEdit? group, bool saving})>(
+    store: _editor,
+    onLoading: (_) => const Center(child: CircularProgressIndicator()),
+    onError: (context, error) => Column(
+      children: [
+        Expanded(
+          child: FullPageErrorWidget(error: error, stackTrace: null, prefix: L10n.of(context).unable_to_load_the_group),
+        ),
+        TextButton(onPressed: _loadGroup, child: Text(L10n.of(context).retry)),
+      ],
+    ),
+    onState: (context, state) =>
+        state.group == null ? const Center(child: CircularProgressIndicator()) : _content(context),
+  );
+
+  Widget _content(BuildContext context) {
     var subscriptionsModel = context.read<SubscriptionsModel>();
-
-    var group = _group;
-    if (group == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     final l10n = L10n.of(context);
     final isPinned =
         widget.id != null &&
@@ -539,28 +574,7 @@ class _SubscriptionGroupEditDialogState
         onPressed: () => Navigator.pop(context),
         child: Text(l10n.cancel),
       ),
-      Builder(
-        builder: (context) {
-          onPressed() async {
-            if (_formKey.currentState!.validate()) {
-              final navigator = Navigator.of(context);
-              await context.read<GroupsModel>().saveGroup(
-                id,
-                name!,
-                icon,
-                color,
-                members,
-                emoji: emoji,
-                markStyle: markStyle,
-              );
-
-              navigator.pop();
-            }
-          }
-
-          return TextButton(onPressed: onPressed, child: Text(l10n.ok));
-        },
-      ),
+      TextButton(onPressed: _editor.state.saving ? null : _saveGroup, child: Text(l10n.ok)),
     ];
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),

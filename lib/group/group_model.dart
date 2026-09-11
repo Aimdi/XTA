@@ -10,6 +10,7 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/group/custom_feed_rules.dart';
 import 'package:xta/group/group_tree.dart';
 import 'package:xta/subscriptions/group_mark_style.dart';
+import 'package:xta/utils/queued_store.dart';
 import 'package:xta/subscriptions/group_ungrouped.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
@@ -267,7 +268,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
   }
 }
 
-class GroupsModel extends Store<List<SubscriptionGroup>> {
+class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<SubscriptionGroup>> {
   static final log = Logger('GroupModel');
 
   final BasePrefService prefs;
@@ -290,7 +291,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
   Future<void> deleteGroup(String id) async {
     log.info('Deleting the group $id');
 
-    await execute(() async {
+    await executeQueued(() async {
       var database = await Repository.writable();
 
       await database.delete(
@@ -314,37 +315,35 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
   Future reloadGroups({bool notifyReload = true}) async {
     log.info('Listing subscriptions groups');
 
-    await execute(() async {
-      var database = await Repository.readOnly();
-
-      var orderByDirection = orderGroupsAscending
-          ? 'COLLATE NOCASE ASC'
-          : 'COLLATE NOCASE DESC';
-
-      // NSFW groups sink to the bottom; pinned still float within each block.
-      // Manual order sorts on the persisted position column.
-      var orderBy = orderGroupsBy == 'position'
-          ? 'g.position ${orderGroupsAscending ? 'ASC' : 'DESC'}'
-          : 'g.$orderGroupsBy $orderByDirection';
-
-      var query =
-          "SELECT g.id, g.name, g.icon, g.color, g.created_at, g.pinned, g.nsfw, g.emoji, g.mark_style, g.parent_id, COUNT(gm.profile_id) AS number_of_members FROM $tableSubscriptionGroup g LEFT JOIN $tableSubscriptionGroupMember gm ON gm.group_id = g.id WHERE g.id != '-1' GROUP BY g.id ORDER BY g.nsfw ASC, g.pinned DESC, $orderBy";
-
-      var groups = (await database.rawQuery(
-        query,
-      )).map((e) => SubscriptionGroup.fromMap(e)).toList(growable: false);
-      var previews = await _loadMemberPreviews(database);
-
-      return groups
-          .map((g) => g.withMemberPreviews(previews[g.id] ?? const []))
-          .toList(growable: false);
-    });
-
-    if (notifyReload) {
-      for (final callback in _onGroupsReloaded.values) {
-        callback();
-      }
+    if (await executeQueued(_readGroups) && notifyReload) {
+      _notifyReload();
     }
+  }
+
+  void _notifyReload() {
+    for (final callback in _onGroupsReloaded.values.toList()) {
+      callback();
+    }
+  }
+
+  Future<List<SubscriptionGroup>> _readGroups() async {
+    var database = await Repository.readOnly();
+
+    var orderByDirection = orderGroupsAscending ? 'COLLATE NOCASE ASC' : 'COLLATE NOCASE DESC';
+
+    // NSFW groups sink to the bottom; pinned still float within each block.
+    // Manual order sorts on the persisted position column.
+    var orderBy = orderGroupsBy == 'position'
+        ? 'g.position ${orderGroupsAscending ? 'ASC' : 'DESC'}'
+        : 'g.$orderGroupsBy $orderByDirection';
+
+    var query =
+        "SELECT g.id, g.name, g.icon, g.color, g.created_at, g.pinned, g.nsfw, g.emoji, g.mark_style, g.parent_id, COUNT(gm.profile_id) AS number_of_members FROM $tableSubscriptionGroup g LEFT JOIN $tableSubscriptionGroupMember gm ON gm.group_id = g.id WHERE g.id != '-1' GROUP BY g.id ORDER BY g.nsfw ASC, g.pinned DESC, $orderBy";
+
+    var groups = (await database.rawQuery(query)).map((e) => SubscriptionGroup.fromMap(e)).toList(growable: false);
+    var previews = await _loadMemberPreviews(database);
+
+    return groups.map((g) => g.withMemberPreviews(previews[g.id] ?? const [])).toList(growable: false);
   }
 
   /// How many members each group tile previews.
@@ -608,7 +607,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
     String? emoji,
     int markStyle = GroupMarkStyle.auto,
   }) async {
-    await execute(() async {
+    final succeeded = await executeQueued(() async {
       var database = await Repository.writable();
 
       // First insert or update the subscription group details
@@ -630,39 +629,24 @@ class GroupsModel extends Store<List<SubscriptionGroup>> {
       } else {
         await database.update(
           tableSubscriptionGroup,
-          {
-            'name': name,
-            'color': color?.toARGB32(),
-            'icon': icon,
-            'emoji': emoji,
-            'mark_style': markStyle,
-          },
+          {'name': name, 'color': color?.toARGB32(), 'icon': icon, 'emoji': emoji, 'mark_style': markStyle},
           where: 'id = ?',
           whereArgs: [id],
         );
       }
 
       // Then clear out any existing subscriptions for the group and add our new set
-      await database.delete(
-        tableSubscriptionGroupMember,
-        where: 'group_id = ?',
-        whereArgs: [id],
-      );
+      await database.delete(tableSubscriptionGroupMember, where: 'group_id = ?', whereArgs: [id]);
 
       var batch = database.batch();
       for (var subscription in subscriptions) {
-        batch.insert(tableSubscriptionGroupMember, {
-          'group_id': id,
-          'profile_id': subscription,
-        });
+        batch.insert(tableSubscriptionGroupMember, {'group_id': id, 'profile_id': subscription});
       }
 
       await batch.commit(noResult: true);
-      await reloadGroups();
-
-      // TODO: Replace the group in the state instead
-      return state;
+      return _readGroups();
     });
+    if (succeeded) _notifyReload();
   }
 
   Future<void> toggleGroupPinned(String id, bool pinned) async {

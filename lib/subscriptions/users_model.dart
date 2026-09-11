@@ -8,10 +8,12 @@ import 'package:xta/group/group_model.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/iterables.dart';
+import 'package:xta/utils/queued_store.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 
-class SubscriptionsModel extends Store<List<Subscription>> {
+class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List<Subscription>> {
   static final log = Logger('SubscriptionsModel');
 
   final BasePrefService prefs;
@@ -35,138 +37,102 @@ class SubscriptionsModel extends Store<List<Subscription>> {
   Future<void> reloadSubscriptions({bool notifyReload = true}) async {
     log.info('Listing subscriptions');
 
-    await execute(() async {
-      var database = await Repository.readOnly();
+    await _changeSubscriptions(() async {}, notifyReload: notifyReload);
+  }
 
-      String orderCustom =
-          prefs.get<String>(optionSubscriptionOrderCustom) ?? '';
-      bool orderByAscending =
-          prefs.get<bool>(optionSubscriptionOrderByAscending) ?? true;
-      String orderByField =
-          prefs.get<String>(optionSubscriptionOrderByField) ?? 'name';
-
-      // The X tables, then every plugin that says its followed accounts are
-      // subscriptions. Read from the registry rather than listed here: a
-      // followed publication, subreddit, Threads, Bluesky or Fediverse account
-      // is a subscription like any other, and naming them one at a time is what
-      // made adding a network a five-file edit.
-      final sources = subscriptionSources;
-      final rows = await Future.wait([
-        database.query(tableSubscription),
-        database.query(tableSearchSubscription),
-
-      ]);
-
-      final sourceMembers = await Future.wait([
-        for (final source in sources) source.readSubscriptions(database, prefs: prefs),
-      ]);
-      List<Subscription> lst = [
-        ...rows[0].map(UserSubscription.fromMap),
-        ...rows[1].map(SearchSubscription.fromMap),
-        for (final members in sourceMembers) ...members,
-      ];
-      if (orderCustom.isEmpty) {
-        return lst.sorted((a, b) {
-          var one = orderByAscending ? a : b;
-          var two = orderByAscending ? b : a;
-
-          switch (orderByField) {
-            case 'name':
-              return one.name.toLowerCase().compareTo(two.name.toLowerCase());
-            case 'screen_name':
-              return one.screenName.toLowerCase().compareTo(
-                two.screenName.toLowerCase(),
-              );
-            case 'created_at':
-              return one.createdAt.compareTo(two.createdAt);
-            default:
-              return one.name.toLowerCase().compareTo(two.name.toLowerCase());
-          }
-        }).toList();
-      } else {
-        List<Subscription> newLst = [];
-        for (String screenName in orderCustom.split(',')) {
-          Subscription? s = lst.firstWhereOrNull(
-            (e) => e.id == screenName || e.screenName == screenName,
-          );
-          if (s != null) {
-            lst.removeWhere((e) => e.id == s.id);
-            newLst.add(s);
-          }
-        }
-        if (lst.isNotEmpty) {
-          newLst.addAll(lst);
-        }
-        final order = newLst.map((s) => s.id).join(',');
-        // Only when it actually changed: every pref write notifies every
-        // listening widget, and this ran on every reload.
-        if (prefs.get<String>(optionSubscriptionOrderCustom) != order) {
-          await prefs.set(optionSubscriptionOrderCustom, order);
-        }
-        return newLst;
-      }
+  Future<void> _changeSubscriptions(Future<void> Function() change, {bool notifyReload = true}) async {
+    final succeeded = await executeQueued(() async {
+      await change();
+      return _readSubscriptions();
     });
-
-    if (notifyReload) {
-      for (final callback in _onSubscriptionsReloaded.values) {
+    if (succeeded && notifyReload) {
+      for (final callback in _onSubscriptionsReloaded.values.toList()) {
         callback();
       }
     }
   }
 
-  Future<void> _toggleSearchSubscribe(
-    SearchSubscription user,
-    bool currentlyFollowed,
-  ) async {
-    var database = await Repository.writable();
+  Future<List<Subscription>> _readSubscriptions() async {
+    var database = await Repository.readOnly();
 
-    await execute(() async {
+    String orderCustom = prefs.get<String>(optionSubscriptionOrderCustom) ?? '';
+    bool orderByAscending = prefs.get<bool>(optionSubscriptionOrderByAscending) ?? true;
+    String orderByField = prefs.get<String>(optionSubscriptionOrderByField) ?? 'name';
+
+    // The X tables, then every plugin that says its followed accounts are
+    // subscriptions. Read from the registry rather than listed here: a
+    // followed publication, subreddit, Threads, Bluesky or Fediverse account
+    // is a subscription like any other, and naming them one at a time is what
+    // made adding a network a five-file edit.
+    final sources = subscriptionSources;
+    final rows = await Future.wait([database.query(tableSubscription), database.query(tableSearchSubscription)]);
+
+    final sourceMembers = await Future.wait([
+      for (final source in sources) source.readSubscriptions(database, prefs: prefs),
+    ]);
+    List<Subscription> lst = [
+      ...rows[0].map(UserSubscription.fromMap),
+      ...rows[1].map(SearchSubscription.fromMap),
+      for (final members in sourceMembers) ...members,
+    ];
+    if (orderCustom.isEmpty) {
+      return lst.sorted((a, b) {
+        var one = orderByAscending ? a : b;
+        var two = orderByAscending ? b : a;
+
+        switch (orderByField) {
+          case 'name':
+            return one.name.toLowerCase().compareTo(two.name.toLowerCase());
+          case 'screen_name':
+            return one.screenName.toLowerCase().compareTo(two.screenName.toLowerCase());
+          case 'created_at':
+            return one.createdAt.compareTo(two.createdAt);
+          default:
+            return one.name.toLowerCase().compareTo(two.name.toLowerCase());
+        }
+      }).toList();
+    } else {
+      List<Subscription> newLst = [];
+      for (String screenName in orderCustom.split(',')) {
+        Subscription? s = lst.firstWhereOrNull((e) => e.id == screenName || e.screenName == screenName);
+        if (s != null) {
+          lst.removeWhere((e) => e.id == s.id);
+          newLst.add(s);
+        }
+      }
+      if (lst.isNotEmpty) {
+        newLst.addAll(lst);
+      }
+      final order = newLst.map((s) => s.id).join(',');
+      // Only when it actually changed: every pref write notifies every
+      // listening widget, and this ran on every reload.
+      if (prefs.get<String>(optionSubscriptionOrderCustom) != order) {
+        await prefs.set(optionSubscriptionOrderCustom, order);
+      }
+      return newLst;
+    }
+  }
+
+  Future<void> _toggleSearchSubscribe(SearchSubscription user, bool currentlyFollowed) async {
+    await _changeSubscriptions(() async {
+      var database = await Repository.writable();
       if (currentlyFollowed) {
-        await database.delete(
-          tableSearchSubscription,
-          where: 'id = ?',
-          whereArgs: [user.id],
-        );
-        await database.delete(
-          tableSearchSubscriptionGroupMember,
-          where: 'search_id = ?',
-          whereArgs: [user.id],
-        );
-
-        state.removeWhere((e) => e.id == user.id);
+        await database.delete(tableSearchSubscription, where: 'id = ?', whereArgs: [user.id]);
+        await database.delete(tableSearchSubscriptionGroupMember, where: 'search_id = ?', whereArgs: [user.id]);
       } else {
         // Awaited so the reload below cannot read the table first and show the
         // search unfollowed right after the reader followed it.
-        await database.insert(tableSearchSubscription, {'id': user.id});
+        await database.insert(tableSearchSubscription, {'id': user.id}, conflictAlgorithm: ConflictAlgorithm.ignore);
       }
-
-      // TODO: This is hardcore, but we need to resort the list and this is the easiest way
-      await reloadSubscriptions();
-
-      return state;
     });
   }
 
-  Future<void> _toggleUserSubscribe(
-    UserSubscription user,
-    bool currentlyFollowed,
-  ) async {
-    var database = await Repository.writable();
-
-    await execute(() async {
+  Future<void> _toggleUserSubscribe(UserSubscription user, bool currentlyFollowed) async {
+    await _changeSubscriptions(() async {
+      var database = await Repository.writable();
       if (currentlyFollowed) {
-        await database.delete(
-          tableSubscription,
-          where: 'id = ?',
-          whereArgs: [user.id],
-        );
-        await database.delete(
-          tableSubscriptionGroupMember,
-          where: 'profile_id = ?',
-          whereArgs: [user.id],
-        );
-
-        state.removeWhere((e) => e.id == user.id);
+        await database.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
+        await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
       } else {
         // Awaited for the same reason as the search variant: the reload reads
         // this table, and losing the race showed the follow undone.
@@ -176,22 +142,14 @@ class SubscriptionsModel extends Store<List<Subscription>> {
           'name': user.name,
           'profile_image_url_https': user.profileImageUrlHttps,
           'verified': user.verified ? 1 : 0,
-        });
+        }, conflictAlgorithm: ConflictAlgorithm.ignore);
       }
-
-      // TODO: This is hardcore, but we need to resort the list and this is the easiest way
-      await reloadSubscriptions();
-
-      return state;
     });
   }
 
   /// Refreshes a stored subscription whose account was renamed, using the
   /// fresh profile data. The caller reloads the list when it is done.
-  Future<void> repairSubscription(
-    UserSubscription user,
-    UserWithExtra fresh,
-  ) async {
+  Future<void> repairSubscription(UserSubscription user, UserWithExtra fresh) async {
     var database = await Repository.writable();
 
     await database.update(
@@ -208,34 +166,18 @@ class SubscriptionsModel extends Store<List<Subscription>> {
   }
 
   Future<void> removeSubscriptions(List<UserSubscription> users) async {
-    var database = await Repository.writable();
-
-    await execute(() async {
+    await _changeSubscriptions(() async {
+      var database = await Repository.writable();
       for (final user in users) {
-        await database.delete(
-          tableSubscription,
-          where: 'id = ?',
-          whereArgs: [user.id],
-        );
-        await database.delete(
-          tableSubscriptionGroupMember,
-          where: 'profile_id = ?',
-          whereArgs: [user.id],
-        );
+        await database.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
+        await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
       }
-
-      await reloadSubscriptions();
-
-      return state;
     });
 
     await groupModel.reloadGroups();
   }
 
-  Future<void> toggleSubscribe(
-    Subscription user,
-    bool currentlyFollowed,
-  ) async {
+  Future<void> toggleSubscribe(Subscription user, bool currentlyFollowed) async {
     if (user is UserSubscription) {
       await _toggleUserSubscribe(user, currentlyFollowed);
     } else if (user is SearchSubscription) {
@@ -246,41 +188,23 @@ class SubscriptionsModel extends Store<List<Subscription>> {
   }
 
   Future<void> toggleInFeed(Subscription user, bool wasInFeed) async {
-    var database = await Repository.writable();
-    await execute(() async {
-      await database.update(
-        tableSubscription,
-        {'in_feed': wasInFeed ? 0 : 1},
-        where: 'id = ?',
-        whereArgs: [user.id],
-      );
-
-      await reloadSubscriptions();
-
-      return state;
+    await _changeSubscriptions(() async {
+      var database = await Repository.writable();
+      await database.update(tableSubscription, {'in_feed': wasInFeed ? 0 : 1}, where: 'id = ?', whereArgs: [user.id]);
     });
   }
 
   Future<void> changeOrderSubscriptionsBy(String? value) async {
-    await execute(() async {
+    await _changeSubscriptions(() async {
       await prefs.set(optionSubscriptionOrderCustom, '');
       await prefs.set(optionSubscriptionOrderByField, value ?? 'name');
-      await reloadSubscriptions(notifyReload: false);
-
-      return state;
-    });
+    }, notifyReload: false);
   }
 
   Future<void> toggleOrderSubscriptionsAscending() async {
-    await execute(() async {
+    await _changeSubscriptions(() async {
       await prefs.set(optionSubscriptionOrderCustom, '');
-      await prefs.set(
-        optionSubscriptionOrderByAscending,
-        !prefs.get(optionSubscriptionOrderByAscending),
-      );
-      await reloadSubscriptions(notifyReload: false);
-
-      return state;
-    });
+      await prefs.set(optionSubscriptionOrderByAscending, !prefs.get(optionSubscriptionOrderByAscending));
+    }, notifyReload: false);
   }
 }

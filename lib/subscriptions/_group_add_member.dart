@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/client/client.dart';
@@ -7,6 +8,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/subscriptions/group_add_follow.dart';
+import 'package:xta/subscriptions/group_add_member_store.dart';
 import 'package:xta/subscriptions/group_add_sources.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/user.dart';
@@ -43,19 +45,15 @@ class _GroupAddMemberSheet extends StatefulWidget {
 
 class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
   final _controller = TextEditingController();
-  final _added = <String>{};
-
-  List<UserWithExtra>? _users;
-  Object? _error;
-  String _query = '';
-  bool _busy = false;
-  // True only between the reader asking X and X answering. Before they ask,
-  // an empty user list is not a load in progress and must not spin.
-  bool _searching = false;
+  final _store = GroupAddMemberStore();
+  Set<String> get _added => _store.state.added;
+  String get _query => _store.state.query;
+  bool get _busy => _store.state.adding;
 
   @override
   void dispose() {
     _controller.dispose();
+    _store.destroy();
     super.dispose();
   }
 
@@ -73,87 +71,51 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
   /// network is touched, so this can keep up with the keyboard.
   List<GroupAddCandidate> get _candidates => groupAddCandidates(_query, enabled: _enabledSources);
 
-  Future<void> _search(String value) async {
-    final query = value.trim();
-    if (query.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      _query = query;
-      _users = null;
-      _error = null;
-      _searching = true;
-    });
-
-    try {
-      final users = await Twitter.searchUsers(query, limit: 20);
-      if (mounted && _query == query) {
-        setState(() {
-          _users = users;
-          _searching = false;
-        });
-      }
-    } catch (e) {
-      // A failed X search must not take the other rows down with it: they are
-      // independent, and one of them is often exactly what the reader came for.
-      if (mounted && _query == query) {
-        setState(() {
-          _error = e;
-          _searching = false;
-        });
-      }
-    }
-  }
+  Future<void> _search(String value) => _store.search(value, (query) => Twitter.searchUsers(query, limit: 20));
 
   Future<void> _addUser(UserWithExtra user) async {
     final id = user.idStr;
-    if (id == null || _busy) {
-      return;
-    }
-
-    setState(() => _busy = true);
-    await context.read<SubscriptionsModel>().toggleSubscribe(UserSubscription.fromUser(user), false);
-    if (mounted) {
-      setState(() {
-        _added.add(id);
-        _busy = false;
-      });
-    }
+    if (id == null || _busy || _added.contains(id)) return;
+    final subscriptions = context.read<SubscriptionsModel>();
+    final succeeded = await _store.add('x:$id', () async {
+      if (!subscriptions.state.any((item) => item.id == id)) {
+        await subscriptions.toggleSubscribe(UserSubscription.fromUser(user), false);
+      }
+      if (!subscriptions.state.any((item) => item.id == id)) {
+        throw StateError('Subscription was not saved');
+      }
+      return id;
+    });
+    if (!succeeded && mounted) _showAddError();
   }
 
+  String _candidateKey(GroupAddCandidate candidate) => '${candidate.source.name}:${candidate.value}';
+
   Future<void> _addCandidate(GroupAddCandidate candidate) async {
-    if (_busy) {
-      return;
-    }
-
-    setState(() => _busy = true);
-    final messenger = ScaffoldMessenger.of(context);
-    final failed = L10n.of(context).group_add_member_failed;
+    if (_busy || _store.state.addedCandidates.contains(_candidateKey(candidate))) return;
     final subscriptions = context.read<SubscriptionsModel>();
-
-    String? id;
-    try {
-      id = await followGroupAddCandidate(context, candidate);
-      // The member list is drawn from the subscriptions, so it has to be re-read
-      // before the new row can be ticked.
+    final succeeded = await _store.add(_candidateKey(candidate), () async {
+      final id = await followGroupAddCandidate(context, candidate);
       await subscriptions.reloadSubscriptions();
-    } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(failed)));
-    }
+      if (!subscriptions.state.any((item) => item.id == id)) {
+        throw StateError('Subscription was not saved');
+      }
+      return id;
+    });
+    if (!succeeded && mounted) _showAddError();
+  }
 
-    if (mounted) {
-      setState(() {
-        if (id != null) {
-          _added.add(id);
-        }
-        _busy = false;
-      });
-    }
+  void _showAddError() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).group_add_member_failed)));
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ScopedBuilder<GroupAddMemberStore, GroupAddMemberState>(
+    store: _store,
+    onState: (context, state) => _content(context),
+  );
+
+  Widget _content(BuildContext context) {
     final l10n = L10n.of(context);
 
     return Padding(
@@ -171,22 +133,15 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
             ),
             // Live, so a subreddit or a handle is offered while it is typed —
             // only the X search waits for the keyboard's search key.
-            onChanged: (value) => setState(() {
-              _query = value.trim();
-              _users = null;
-              _error = null;
-              _searching = false;
-            }),
+            onChanged: _store.changeQuery,
             onSubmitted: _search,
           ),
+          if (_busy) const LinearProgressIndicator(),
           const SizedBox(height: 8),
           Expanded(child: _results(context)),
           Align(
             alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => Navigator.pop(context, _added),
-              child: Text(l10n.ok),
-            ),
+            child: TextButton(onPressed: _busy ? null : () => Navigator.pop(context, _added), child: Text(l10n.ok)),
           ),
         ],
       ),
@@ -206,20 +161,23 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
     }
 
     final candidates = _candidates;
-    final users = _users;
+    final users = _store.state.users;
 
     return ListView(
       children: [
         for (final candidate in candidates) _candidateTile(context, candidate),
-        if (_error != null)
-          ListTile(
-            leading: const Icon(Icons.error_outline),
-            title: Text(l10n.unable_to_load_the_search_results),
+        if (_store.state.searchError != null)
+          ListTile(leading: const Icon(Icons.error_outline), title: Text(l10n.unable_to_load_the_search_results))
+        else if (_store.state.searching)
+          const Padding(
+            padding: EdgeInsets.all(24),
+            child: Center(child: CircularProgressIndicator()),
           )
-        else if (_searching)
-          const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()))
         else if ((users ?? const []).isEmpty && candidates.isEmpty)
-          Padding(padding: const EdgeInsets.all(24), child: Center(child: Text(l10n.no_results)))
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Center(child: Text(l10n.no_results)),
+          )
         else
           for (final user in users ?? const <UserWithExtra>[])
             ListTile(
@@ -227,7 +185,7 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
               title: Text(user.name ?? ''),
               subtitle: Text('@${user.screenName ?? ''}'),
               trailing: _added.contains(user.idStr) ? const Icon(Icons.check) : const Icon(Icons.add),
-              onTap: () => _addUser(user),
+              onTap: _busy || _added.contains(user.idStr) ? null : () => _addUser(user),
             ),
       ],
     );
@@ -242,8 +200,12 @@ class _GroupAddMemberSheetState extends State<_GroupAddMemberSheet> {
           : pluginBrandIcon(context, plugin, size: 40),
       title: Text(candidate.label, maxLines: 1, overflow: TextOverflow.ellipsis),
       subtitle: plugin == null ? null : Text(plugin.title(context)),
-      trailing: _added.contains(candidate.value.toLowerCase()) ? const Icon(Icons.check) : const Icon(Icons.add),
-      onTap: () => _addCandidate(candidate),
+      trailing: _store.state.addedCandidates.contains(_candidateKey(candidate))
+          ? const Icon(Icons.check)
+          : const Icon(Icons.add),
+      onTap: _busy || _store.state.addedCandidates.contains(_candidateKey(candidate))
+          ? null
+          : () => _addCandidate(candidate),
     );
   }
 }
