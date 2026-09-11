@@ -4,6 +4,26 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi132
+
+This release fixes the group Discover/Entdecken crash and adds OpenRouter support to AI/KI settings.
+
+- Group Discovery cards now render correctly when opened from a group. Setup failures show a working Retry action; unavailable sources keep successful discoveries visible.
+- AI/KI settings include an OpenRouter preset alongside Grok and OpenAI. Enter your API key and a full model ID such as `openrouter/free`, or use an editable OpenAI-compatible server URL.
+- Compatible APIs accept either a base URL or a complete chat-completions endpoint. Requests time out cleanly, and malformed provider replies fall back without crashing.
+- Switching provider presets clears the previous provider key. Setup guidance is translated across all supported locales, and the README explains OpenRouter setup.
+
+For most Android phones, choose **`xta-aimdi132_arm64-v8a.apk`**. Universal,
+ARMv7 and x86_64 builds are also available. The base version code is 400001106,
+above every aimdi131 variant. The existing application id (`com.aimdi.xta`)
+and release signing certificate are retained for in-place updates.
+
+Validation: all 2,336 app tests passed, including nine new regression tests;
+five existing opt-in live tests were skipped. The Discovery crash was reproduced
+before the fix and the same test now passes. Formatting, analysis, translation
+integrity and skill sync passed. Physical-device and live-provider-key testing
+were not performed.
+
 ### aimdi131
 
 This release fixes stuck loading and crashes when following people or editing groups.
