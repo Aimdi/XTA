@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Modell",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Erstelle einen API-Schlüssel auf openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Gib die vollständige Modell-ID ein, etwa openrouter/free oder provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "KI-Anbieter",
   "@ai_provider": {},
-  "ai_provider_description": "Grok antippen, xAI-Schlüssel einfügen und speichern. Oder einen beliebigen OpenAI-kompatiblen Server angeben. Leere Felder lassen KI aus.",
+  "ai_provider_description": "Wähle einen Anbieter oder gib einen OpenAI-kompatiblen Server ein. Ergänze deinen API-Schlüssel und das Modell und speichere. Leere Felder lassen KI deaktiviert.",
   "@ai_provider_description": {},
   "ai_saved": "KI-Einstellungen gespeichert",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Feed-Länge im Zen-Modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Wie viele Seiten ein Feed im Zen-Modus lädt, bevor er pausiert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

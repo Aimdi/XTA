@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Model",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Maak een API-sleutel aan op openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Gebruik de volledige model-ID, bijvoorbeeld openrouter/free of provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AI-aanbieder",
   "@ai_provider": {},
-  "ai_provider_description": "Tik op Grok, plak je xAI-sleutel en sla op. Of wijs naar een OpenAI-compatibele server. Laat de velden leeg om AI uit te houden.",
+  "ai_provider_description": "Kies een aanbieder of voer een OpenAI-compatibele server in. Voeg je API-sleutel en model toe en sla de instellingen op. Lege velden houden AI uitgeschakeld.",
   "@ai_provider_description": {},
   "ai_saved": "AI-instellingen opgeslagen",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Feedlengte in zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hoeveel pagina's een feed in zen-modus laadt voordat deze pauzeert.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

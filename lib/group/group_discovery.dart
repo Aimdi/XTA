@@ -115,6 +115,17 @@ class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
   Set<String> _followed = {};
   GroupDiscoveryStore({this.chat = aiChatCompletion}) : super(const GroupDiscoveryState());
 
+  // Triple's error selector otherwise retains an old error after a successful retry.
+  @override
+  dynamic get error => triple.error;
+
+  void fail(Object error) {
+    if (_closed) return;
+    _generation++;
+    setError(error, force: true);
+    setLoading(false, force: true);
+  }
+
   bool _isCurrent(int generation) => !_closed && generation == _generation;
 
   List<DiscoveryAccount> _exclude(Iterable<DiscoveryAccount> accounts) => accounts
@@ -158,6 +169,8 @@ class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
           sourceFailed: result.sourceFailed,
         ),
       );
+    } catch (error) {
+      if (_isCurrent(generation)) setError(error, force: true);
     } finally {
       if (_isCurrent(generation)) setLoading(false);
     }

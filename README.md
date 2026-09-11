@@ -132,7 +132,10 @@ These checks establish build provenance; independently reproducible APKs are
 - **Network requests:** reading contacts X or the enabled service. Those
   services can see requests and any credentials supplied to them; local follows
   do not make browsing anonymous.
-- **Optional connections:** AI features use the provider and key you configure.
+- **Optional connections:** AI/KI settings include OpenRouter, Grok and OpenAI
+  presets, plus editable URLs for OpenAI-compatible servers. For OpenRouter,
+  select its preset, enter your API key and full model ID (for example
+  [`openrouter/free`](https://openrouter.ai/openrouter/free)), then save. AI features use the provider and key you configure.
   AI requests and actions such as sending a bookmark to Karakeep, Deepmarks or
   Immich transmit data to that chosen service.
 

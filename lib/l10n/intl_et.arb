@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Mudel",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Loo API-võti aadressil openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Kasuta mudeli täielikku ID-d, näiteks openrouter/free või provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Tehisintellekti teenus",
   "@ai_provider": {},
-  "ai_provider_description": "Puuduta Grokit, kleebi xAI võti ja salvesta. Või suuna mis tahes OpenAI-ühilduvale serverile. Tühjad väljad hoiavad tehisintellekti väljas.",
+  "ai_provider_description": "Vali teenusepakkuja või sisesta OpenAI-ga ühilduv server. Lisa API-võti ja mudel ning salvesta. Tühjade väljade korral jääb tehisintellekt välja lülitatuks.",
   "@ai_provider_description": {},
   "ai_saved": "Tehisintellekti seaded salvestatud",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Voo pikkus Zen-režiimis",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Mitu lehte voog Zen-režiimis enne pausi laadib.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Model",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Vytvořte klíč API na openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Zadejte úplné ID modelu, například openrouter/free nebo provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Poskytovatel AI",
   "@ai_provider": {},
-  "ai_provider_description": "Klepněte na Grok, vložte klíč xAI a uložte. Nebo zadejte libovolný server kompatibilní s OpenAI. Prázdná pole nechají AI vypnutou.",
+  "ai_provider_description": "Vyberte poskytovatele nebo zadejte server kompatibilní s OpenAI. Přidejte klíč API a model a uložte nastavení. Prázdná pole ponechají AI vypnutou.",
   "@ai_provider_description": {},
   "ai_saved": "Nastavení AI uloženo",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Délka kanálu v zen režimu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

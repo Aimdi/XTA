@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Model",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Crea una clau API a openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Utilitza l’identificador complet del model, com ara openrouter/free o provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Proveïdor d'IA",
   "@ai_provider": {},
-  "ai_provider_description": "Toca Grok, enganxa la clau d'xAI i desa. O apunta a qualsevol servidor compatible amb OpenAI. Deixa els camps buits per tenir la IA desactivada.",
+  "ai_provider_description": "Tria un proveïdor o introdueix un servidor compatible amb OpenAI. Afegeix la clau API i el model i desa els canvis. Els camps buits mantenen la IA desactivada.",
   "@ai_provider_description": {},
   "ai_saved": "S'ha desat la configuració d'IA",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Longitud del feed en mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Quantes pàgines carrega el feed en mode zen abans de fer una pausa.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

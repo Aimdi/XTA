@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Model",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "openrouter.ai/settings/keys adresinde bir API anahtarı oluşturun.",
+  "ai_openrouter_model_hint": "openrouter/free veya provider/model gibi tam model kimliğini kullanın.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Yapay zekâ sağlayıcısı",
   "@ai_provider": {},
-  "ai_provider_description": "Grok'a dokunun, xAI anahtarını yapıştırıp kaydedin. Dilerseniz OpenAI uyumlu herhangi bir sunucu da yazın. Alanları boş bırakırsanız yapay zekâ kapalı kalır.",
+  "ai_provider_description": "Bir sağlayıcı seçin veya OpenAI uyumlu bir sunucu girin. API anahtarınızı ve modeli ekleyip kaydedin. Alanlar boş bırakıldığında yapay zekâ kapalı kalır.",
   "@ai_provider_description": {},
   "ai_saved": "Yapay zekâ ayarları kaydedildi",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Zen modunda akış uzunluğu",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zen modunda akışın duraklamadan önce kaç sayfa yükleyeceği.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

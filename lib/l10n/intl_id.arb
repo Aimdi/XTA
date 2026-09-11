@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Model",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Buat kunci API di openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Gunakan ID model lengkap, seperti openrouter/free atau provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Penyedia AI",
   "@ai_provider": {},
-  "ai_provider_description": "Ketuk Grok, tempel kunci xAI, lalu simpan. Atau arahkan ke server yang kompatibel dengan OpenAI. Biarkan kosong agar fitur AI tetap mati.",
+  "ai_provider_description": "Pilih penyedia atau masukkan server yang kompatibel dengan OpenAI. Tambahkan kunci API dan model, lalu simpan. Kolom kosong membuat AI tetap nonaktif.",
   "@ai_provider_description": {},
   "ai_saved": "Pengaturan AI disimpan",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Panjang beranda di mode zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Berapa banyak halaman yang dimuat beranda di mode zen sebelum berhenti sejenak.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

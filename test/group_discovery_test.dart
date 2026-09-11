@@ -259,4 +259,43 @@ void main() {
     await loading;
     expect(aiCalls, 0);
   });
+  testWidgets('a stalled source leaves loading and retains successful discoveries', (tester) async {
+    final store = GroupDiscoveryStore();
+    final loading = store.load(
+      sources: [
+        () => Completer<List<DiscoveryAccount>>().future,
+        () async => [account('available')],
+      ],
+      followed: {},
+      groupName: 'Space',
+    );
+    await tester.pump(const Duration(seconds: 61));
+    await loading;
+    expect(store.isLoading, isFalse);
+    expect(store.state.sourceFailed, isTrue);
+    expect(store.state.accounts.single.id, 'available');
+    await store.destroy();
+  });
+
+  test('reporting a setup failure retires an older pending request', () async {
+    final response = Completer<List<DiscoveryAccount>>();
+    final store = GroupDiscoveryStore();
+    addTearDown(store.destroy);
+    final loading = store.load(sources: [() => response.future], followed: {}, groupName: 'Space');
+    store.fail(StateError('Missing source'));
+    response.complete([account('old')]);
+    await loading;
+    expect(store.error, isA<StateError>());
+    expect(store.isLoading, isFalse);
+    expect(store.state.accounts, isEmpty);
+    await store.load(
+      sources: [
+        () async => [account('new')],
+      ],
+      followed: {},
+      groupName: 'Space',
+    );
+    expect(store.error, isNull);
+    expect(store.state.accounts.single.id, 'new');
+  });
 }

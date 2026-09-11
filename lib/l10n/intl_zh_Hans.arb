@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "模型",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "在 openrouter.ai/settings/keys 创建 API 密钥。",
+  "ai_openrouter_model_hint": "请输入完整的模型 ID，例如 openrouter/free 或 provider/model。",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AI 服务",
   "@ai_provider": {},
-  "ai_provider_description": "点 Grok，粘贴 xAI 密钥并保存。也可以填写任何 OpenAI 兼容服务器。留空则关闭 AI 功能。",
+  "ai_provider_description": "选择提供商或输入兼容 OpenAI 的服务器。添加 API 密钥和模型，然后保存。字段留空时，AI 保持关闭。",
   "@ai_provider_description": {},
   "ai_saved": "已保存 AI 设置",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "禅模式信息流长度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅模式下信息流暂停前加载的页数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

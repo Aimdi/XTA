@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Eredua",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Sortu API gako bat openrouter.ai/settings/keys helbidean.",
+  "ai_openrouter_model_hint": "Erabili modeloaren ID osoa, adibidez openrouter/free edo provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AA hornitzailea",
   "@ai_provider": {},
-  "ai_provider_description": "Sakatu Grok, itsatsi xAI gakoa eta gorde. Edo OpenAI-rekin bateragarria den edozein zerbitzari adierazi. Utzi eremuak hutsik AA itzalita edukitzeko.",
+  "ai_provider_description": "Aukeratu hornitzaile bat edo sartu OpenAI-rekin bateragarria den zerbitzari bat. Gehitu API gakoa eta modeloa, eta gorde. Eremuak hutsik utziz gero, AA desgaituta egongo da.",
   "@ai_provider_description": {},
   "ai_saved": "AA ezarpenak gorde dira",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Jarioaren luzera zen moduan",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Zenbat orrialde kargatzen dituen jarioak zen moduan gelditu aurretik.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

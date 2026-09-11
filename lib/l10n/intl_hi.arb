@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "मॉडल",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "openrouter.ai/settings/keys पर API कुंजी बनाएँ।",
+  "ai_openrouter_model_hint": "मॉडल का पूरा ID दर्ज करें, जैसे openrouter/free या provider/model।",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "एआई प्रदाता",
   "@ai_provider": {},
-  "ai_provider_description": "Grok दबाएँ, अपनी xAI कुंजी चिपकाएँ और सहेजें। या किसी भी OpenAI-संगत सर्वर का पता दें। एआई बंद रखने के लिए फ़ील्ड खाली छोड़ें।",
+  "ai_provider_description": "प्रदाता चुनें या OpenAI-संगत सर्वर दर्ज करें। अपनी API कुंजी और मॉडल जोड़कर सहेजें। फ़ील्ड खाली रखने पर AI बंद रहेगा।",
   "@ai_provider_description": {},
   "ai_saved": "एआई सेटिंग्स सहेजी गईं",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "ज़ेन मोड में फ़ीड की लंबाई",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "ज़ेन मोड में रुकने से पहले फ़ीड कितने पेज लोड करेगी।",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }
