@@ -91,4 +91,15 @@ void main() {
     expect(find.text('Retry'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('idle stores can be disposed outside the widget clock', (tester) async {
+    final idleGroups = _Groups(prefs);
+    final idleSubscriptions = SubscriptionsModel(prefs, idleGroups);
+    await tester.pump();
+    await tester.runAsync(() async {
+      await idleSubscriptions.destroy().timeout(const Duration(seconds: 1));
+      await idleGroups.destroy().timeout(const Duration(seconds: 1));
+    });
+    expect(tester.takeException(), isNull);
+  });
 }
