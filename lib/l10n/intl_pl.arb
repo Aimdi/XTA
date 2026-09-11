@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Model",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Utwórz klucz API na openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Podaj pełny identyfikator modelu, np. openrouter/free lub provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Dostawca AI",
   "@ai_provider": {},
-  "ai_provider_description": "Dotknij Grok, wklej klucz xAI i zapisz. Albo wskaż dowolny serwer zgodny z OpenAI. Puste pola zostawiają AI wyłączone.",
+  "ai_provider_description": "Wybierz dostawcę lub wpisz serwer zgodny z OpenAI. Dodaj klucz API i model, a następnie zapisz. Puste pola pozostawiają AI wyłączoną.",
   "@ai_provider_description": {},
   "ai_saved": "Zapisano ustawienia AI",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Długość kanału w trybie zen",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Ile stron kanał wczytuje w trybie zen, zanim się zatrzyma.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

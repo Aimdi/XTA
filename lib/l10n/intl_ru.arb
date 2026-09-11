@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Модель",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Создайте ключ API на openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Укажите полный идентификатор модели, например openrouter/free или provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Поставщик ИИ",
   "@ai_provider": {},
-  "ai_provider_description": "Нажмите Grok, вставьте ключ xAI и сохраните. Или укажите любой сервер, совместимый с OpenAI. Пустые поля оставляют ИИ выключенным.",
+  "ai_provider_description": "Выберите провайдера или укажите сервер, совместимый с OpenAI. Добавьте ключ API и модель, затем сохраните. Пустые поля оставляют ИИ выключенным.",
   "@ai_provider_description": {},
   "ai_saved": "Настройки ИИ сохранены",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Длина ленты в дзен-режиме",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Сколько страниц загружает лента в дзен-режиме перед паузой.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

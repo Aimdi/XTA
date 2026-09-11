@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "النموذج",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "أنشئ مفتاح API على openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "استخدم معرّف النموذج الكامل، مثل openrouter/free أو provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "مزوّد الذكاء الاصطناعي",
   "@ai_provider": {},
-  "ai_provider_description": "اضغط Grok، والصق مفتاح xAI، ثم احفظ. أو وجّه إلى أي خادم متوافق مع OpenAI. اترك الحقول فارغة لتعطيل الذكاء الاصطناعي.",
+  "ai_provider_description": "اختر مزوّدًا أو أدخل خادمًا متوافقًا مع OpenAI. أضف مفتاح API والنموذج، ثم احفظ. تبقى ميزات الذكاء الاصطناعي معطّلة عند ترك الحقول فارغة.",
   "@ai_provider_description": {},
   "ai_saved": "تم حفظ إعدادات الذكاء الاصطناعي",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "طول الخلاصة في وضع الهدوء",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "عدد الصفحات التي تحمّلها الخلاصة في وضع الهدوء قبل التوقف.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

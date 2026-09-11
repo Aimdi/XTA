@@ -464,6 +464,8 @@ const aiGrokBaseUrl = 'https://api.x.ai/v1';
 const aiGrokModel = 'grok-4';
 const aiOpenAiBaseUrl = 'https://api.openai.com/v1';
 const aiOpenAiModel = 'gpt-4o-mini';
+const aiOpenRouterBaseUrl = 'https://openrouter.ai/api/v1';
+const aiOpenRouterModel = 'openrouter/free';
 
 const optionSubscriptionGroupsOrderByAscending =
     'subscription_groups.order_by.ascending';

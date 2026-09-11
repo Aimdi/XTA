@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "モデル",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "openrouter.ai/settings/keys でAPIキーを作成してください。",
+  "ai_openrouter_model_hint": "openrouter/free や provider/model など、完全なモデルIDを入力してください。",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AI プロバイダー",
   "@ai_provider": {},
-  "ai_provider_description": "Grok をタップして xAI の API キーを貼り、保存します。OpenAI 互換のサーバーも指定できます。空欄のままなら AI 機能はオフです。",
+  "ai_provider_description": "プロバイダーを選ぶか、OpenAI互換サーバーを入力してください。APIキーとモデルを追加して保存します。項目を空にするとAIは無効のままになります。",
   "@ai_provider_description": {},
   "ai_saved": "AI の設定を保存しました",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "禅モードのフィードの長さ",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禅モードでフィードが一時停止するまでに読み込むページ数。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

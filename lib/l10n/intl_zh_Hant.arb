@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "模型",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "在 openrouter.ai/settings/keys 建立 API 金鑰。",
+  "ai_openrouter_model_hint": "請輸入完整的模型 ID，例如 openrouter/free 或 provider/model。",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AI 服務",
   "@ai_provider": {},
-  "ai_provider_description": "點 Grok，貼上 xAI 金鑰並儲存。也可以填任何 OpenAI 相容伺服器。留空即關閉 AI 功能。",
+  "ai_provider_description": "選擇供應商或輸入相容 OpenAI 的伺服器。新增 API 金鑰和模型，然後儲存。欄位留空時，AI 會保持關閉。",
   "@ai_provider_description": {},
   "ai_saved": "已儲存 AI 設定",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "禪模式時間軸長度",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "禪模式下時間軸暫停前載入的頁數。",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Madel",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Stvarycie ključ API na openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Uviadzicie poŭny identyfikatar madeli, napryklad openrouter/free abo provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "Pastaŭščyk ŠI",
   "@ai_provider": {},
-  "ai_provider_description": "Nacisnicie Grok, ustaŭcie klub xAI i zachavajcie. Abo paznačcie luby server, sumiaščalny z OpenAI. Pakińcie pali pustymi, kab ŠI zastausia vykliučany.",
+  "ai_provider_description": "Vybierycie pastaŭščyka abo ŭviadzicie siervier, sumiaščalny z OpenAI. Dadajcie ključ API i madel, zatym zachavajcie. Pustyja pali pakidajuć ŠI vyklučanym.",
   "@ai_provider_description": {},
   "ai_saved": "Nalady ŠI zachavany",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Daŭžynia stužki ŭ dzen-režymie",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

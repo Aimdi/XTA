@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Modell",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Opprett en API-nøkkel på openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Bruk hele modell-ID-en, for eksempel openrouter/free eller provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "KI-leverandør",
   "@ai_provider": {},
-  "ai_provider_description": "Trykk Grok, lim inn xAI-nøkkelen og lagre. Eller pek på en OpenAI-kompatibel tjener. La feltene stå tomme for å holde KI av.",
+  "ai_provider_description": "Velg en leverandør eller angi en OpenAI-kompatibel server. Legg til API-nøkkel og modell, og lagre. Tomme felt holder KI avslått.",
   "@ai_provider_description": {},
   "ai_saved": "KI-innstillingene er lagret",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Feed-lengde i zen-modus",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Hvor mange sider en feed laster i zen-modus før den tar en pause.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

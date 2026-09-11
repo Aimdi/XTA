@@ -69,14 +69,20 @@ class _GroupDiscoveryScreenState extends State<GroupDiscoveryScreen> {
 class GroupDiscoveryPane extends StatefulWidget {
   final SubscriptionGroupGet group;
   final bool useAi;
-  const GroupDiscoveryPane({super.key, required this.group, this.useAi = false});
+  final GroupDiscoveryStore Function() createStore;
+  const GroupDiscoveryPane({
+    super.key,
+    required this.group,
+    this.useAi = false,
+    this.createStore = GroupDiscoveryStore.new,
+  });
 
   @override
   State<GroupDiscoveryPane> createState() => _GroupDiscoveryPaneState();
 }
 
 class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
-  final _model = GroupDiscoveryStore();
+  late final _model = widget.createStore();
 
   @override
   void initState() {
@@ -92,12 +98,18 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
     super.dispose();
   }
 
-  Future<void> _load({bool useAi = false}) => _model.load(
-    sources: groupDiscoverySources(context, widget.group.subscriptions),
-    followed: currentDiscoveryFollowedIds(context, widget.group.subscriptions),
-    groupName: widget.group.name,
-    ai: useAi ? AiConfig.fromPrefs(PrefService.of(context, listen: false)) : null,
-  );
+  Future<void> _load({bool useAi = false}) async {
+    try {
+      await _model.load(
+        sources: groupDiscoverySources(context, widget.group.subscriptions),
+        followed: currentDiscoveryFollowedIds(context, widget.group.subscriptions),
+        groupName: widget.group.name,
+        ai: useAi ? AiConfig.fromPrefs(PrefService.of(context, listen: false)) : null,
+      );
+    } catch (error) {
+      if (mounted) _model.fail(error);
+    }
+  }
 
   void _afterProfile() {
     if (!mounted) return;
@@ -108,46 +120,54 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
     final configured = AiConfig.fromPrefs(PrefService.of(context)).isConfigured;
-    return ScopedBuilder<GroupDiscoveryStore, GroupDiscoveryState>(
-      store: _model,
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
-      onError: (_, _) => Center(
-        child: FilledButton.tonal(onPressed: () => _load(), child: Text(l10n.retry)),
-      ),
-      onState: (_, state) => RefreshIndicator(
-        onRefresh: () => _load(),
-        child: TweetContextScope(
-          child: ListView.builder(
-            key: PageStorageKey('discovery-${widget.group.id}'),
-            primary: false,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 24),
-            itemCount: state.accounts.length + 1,
-            itemBuilder: (context, index) => index == 0
-                ? Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.group_discovery_description),
-                        if (configured)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: FilledButton.tonalIcon(
-                              onPressed: () => _load(useAi: true),
-                              icon: const Icon(Icons.auto_awesome),
-                              label: Text(l10n.group_discovery_ai),
+    // GroupFeedShell embeds this pane without a Scaffold on pushed routes.
+    // ListTile and post-card ink reactions require their own Material ancestor.
+    return Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: ScopedBuilder<GroupDiscoveryStore, GroupDiscoveryState>(
+        store: _model,
+        onLoading: (_) => const Center(child: CircularProgressIndicator()),
+        onError: (_, _) => Center(
+          child: FilledButton.tonal(onPressed: () => _load(), child: Text(l10n.retry)),
+        ),
+        onState: (_, state) => RefreshIndicator(
+          onRefresh: () => _load(),
+          child: TweetContextScope(
+            child: ListView.builder(
+              key: PageStorageKey('discovery-${widget.group.id}'),
+              primary: false,
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 24),
+              itemCount: state.accounts.length + 1,
+              itemBuilder: (context, index) => index == 0
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.group_discovery_description),
+                          if (configured)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: FilledButton.tonalIcon(
+                                onPressed: () => _load(useAi: true),
+                                icon: const Icon(Icons.auto_awesome),
+                                label: Text(l10n.group_discovery_ai),
+                              ),
                             ),
-                          ),
-                        if (state.usedAi) Text(l10n.sort_ungrouped_ai_note),
-                        if (state.aiFailed) Text(l10n.group_ai_fallback),
-                        if (state.sourceFailed) Text(l10n.group_discovery_partial),
-                        if (state.accounts.isEmpty)
-                          Padding(padding: const EdgeInsets.only(top: 24), child: Text(l10n.group_discovery_empty)),
-                      ],
-                    ),
-                  )
-                : _DiscoveryCard(account: state.accounts[index - 1], onReturn: _afterProfile),
+                          if (state.usedAi) Text(l10n.sort_ungrouped_ai_note),
+                          if (state.aiFailed) Text(l10n.group_ai_fallback),
+                          if (state.sourceFailed) ...[
+                            Text(l10n.group_discovery_partial),
+                            TextButton(onPressed: () => _load(), child: Text(l10n.retry)),
+                          ],
+                          if (state.accounts.isEmpty)
+                            Padding(padding: const EdgeInsets.only(top: 24), child: Text(l10n.group_discovery_empty)),
+                        ],
+                      ),
+                    )
+                  : _DiscoveryCard(account: state.accounts[index - 1], onReturn: _afterProfile),
+            ),
           ),
         ),
       ),

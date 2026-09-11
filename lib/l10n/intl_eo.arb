@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "Modelo",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "Kreu API-ŝlosilon ĉe openrouter.ai/settings/keys.",
+  "ai_openrouter_model_hint": "Uzu la plenan modelidentigilon, ekzemple openrouter/free aŭ provider/model.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AI-provizanto",
   "@ai_provider": {},
-  "ai_provider_description": "Tuŝu Grok, algluu vian xAI-ŝlosilon kaj konservu. Aŭ indiku iun OpenAI-kongruan servilon. Lasu la kampojn malplenaj por teni AI malŝaltita.",
+  "ai_provider_description": "Elektu provizanton aŭ enigu servilon kongruan kun OpenAI. Aldonu vian API-ŝlosilon kaj modelon, poste konservu. Malplenaj kampoj lasas AI malŝaltita.",
   "@ai_provider_description": {},
   "ai_saved": "AI-agordoj konservitaj",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "Longo de la fluo en zena reĝimo",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }

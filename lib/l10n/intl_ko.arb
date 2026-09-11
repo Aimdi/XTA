@@ -37,13 +37,16 @@
   "@ai_grok_key_hint": {},
   "ai_model": "모델",
   "@ai_model": {},
+  "ai_openrouter_key_hint": "openrouter.ai/settings/keys에서 API 키를 만드세요.",
+  "ai_openrouter_model_hint": "openrouter/free 또는 provider/model과 같은 전체 모델 ID를 입력하세요.",
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
+  "ai_preset_openrouter": "OpenRouter",
   "ai_provider": "AI 제공자",
   "@ai_provider": {},
-  "ai_provider_description": "Grok을 누른 뒤 xAI API 키를 붙여넣고 저장하세요. OpenAI 호환 서버도 지정할 수 있습니다. 비워 두면 AI 기능은 꺼진 상태입니다.",
+  "ai_provider_description": "제공업체를 선택하거나 OpenAI 호환 서버를 입력하세요. API 키와 모델을 추가한 후 저장하세요. 필드를 비워 두면 AI가 꺼진 상태로 유지됩니다.",
   "@ai_provider_description": {},
   "ai_saved": "AI 설정을 저장했습니다",
   "@ai_saved": {},
@@ -3247,5 +3250,8 @@
   "zen_mode_page_cap": "젠 모드 피드 길이",
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "젠 모드에서 피드가 일시 중지되기 전에 불러올 페이지 수입니다.",
-  "@zen_mode_page_cap_description": {}
+  "@zen_mode_page_cap_description": {},
+  "@ai_openrouter_key_hint": {},
+  "@ai_openrouter_model_hint": {},
+  "@ai_preset_openrouter": {}
 }
