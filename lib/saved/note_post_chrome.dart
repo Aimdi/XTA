@@ -27,6 +27,7 @@ class NoteLocalIdentity extends StatelessWidget {
         Text(l10n.local_note_author, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
         Text(
           '@${l10n.local_note_handle}',
+          textDirection: TextDirection.ltr,
           style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
         ),
       ],
@@ -71,9 +72,17 @@ class _NoteComposeFieldState extends State<NoteComposeField> {
 
   void _onStatus(AnimationStatus status) {
     if (status != AnimationStatus.completed || _requestedFocus) return;
-    _requestedFocus = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _focus.requestFocus();
+      if (!mounted || _requestedFocus) return;
+      // Navigator briefly reports a completed animation while measuring an
+      // offstage route for Hero flights. Wait for the visible entrance instead.
+      if (ModalRoute.of(context)?.offstage == true) {
+        _onStatus(AnimationStatus.completed);
+        return;
+      }
+      if (_routeAnimation != null && !_routeAnimation!.isCompleted) return;
+      _requestedFocus = true;
+      _focus.requestFocus();
     });
   }
 
