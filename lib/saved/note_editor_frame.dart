@@ -174,8 +174,8 @@ class NoteEditorFrame extends StatelessWidget {
                               value: state.body.characters.length / localPostMaxLength,
                               strokeWidth: 2,
                               backgroundColor: theme.colorScheme.outlineVariant,
-                              semanticsLabel: l10n.local_note_compose_title,
-                              semanticsValue: '${state.body.characters.length} / $localPostMaxLength',
+                              semanticsLabel:
+                                  '${l10n.local_note_compose_title}: ${state.body.characters.length} / $localPostMaxLength',
                             ),
                           ),
                         ],

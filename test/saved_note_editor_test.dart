@@ -145,6 +145,7 @@ void main() {
   testWidgets('Write slides a full-screen composer upward before focusing', (tester) async {
     await openEditor(tester, note: null, onSave: (_) async {}, reduceMotion: false, settle: false);
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
     final field = tester.widget<TextField>(find.byType(TextField));
     expect(field.focusNode!.hasFocus, isFalse);
     await tester.pump(const Duration(milliseconds: 100));

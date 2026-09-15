@@ -17,6 +17,7 @@ class SharedTextChannel(messenger: BinaryMessenger) : EventChannel.StreamHandler
 
     fun receive(intent: Intent?) {
         if (intent?.action != Intent.ACTION_SEND || intent.type != "text/plain") return
+        if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return
         val text = try {
             val extra = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)
             val clip = intent.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)
