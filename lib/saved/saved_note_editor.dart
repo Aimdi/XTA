@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/saved/note_editor_frame.dart';
 import 'package:xta/saved/note_editor_store.dart';
+import 'package:xta/saved/note_post_chrome.dart';
 
 Future<void> openSavedNoteEditor(
   BuildContext context, {
@@ -51,27 +51,11 @@ class _SavedNoteEditorState extends State<_SavedNoteEditor> {
         saveLabel: l10n.save,
         canSave: _store.dirty,
         onSave: _save,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.saves_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              readOnly: state.busy,
-              minLines: 6,
-              maxLines: null,
-              maxLength: localPostMaxLength,
-              textCapitalization: TextCapitalization.sentences,
-              onChanged: _store.setBody,
-              decoration: InputDecoration(
-                hintText: l10n.clip_note_hint,
-                border: const OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-            ),
-          ],
+        body: NoteComposeField(
+          controller: _controller,
+          readOnly: state.busy,
+          onChanged: _store.setBody,
+          hint: l10n.clip_note_hint,
         ),
       ),
     );

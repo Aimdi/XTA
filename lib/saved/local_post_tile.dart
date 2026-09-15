@@ -8,6 +8,7 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/local_post_files.dart';
 import 'package:xta/saved/local_post_logic.dart';
+import 'package:xta/saved/note_post_chrome.dart';
 import 'package:xta/tweet/tweet.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/dates.dart';
@@ -43,103 +44,115 @@ class LocalPostTile extends StatelessWidget {
     return tweetFlatCard(
       color: theme.cardTheme.color ?? theme.colorScheme.surface,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(16, 6, 4, 4),
-            child: Row(children: [
-              Icon(Icons.edit_note_outlined, size: 20,
-                  color: theme.colorScheme.onSurfaceVariant),
-              const SizedBox(width: 8),
-              Expanded(child: Text(l10n.local_note_thread_title,
-                style: theme.textTheme.labelLarge)),
-              Flexible(flex: 2, child: DefaultTextStyle(
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelMedium!.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant),
-                child: Timestamp(key: ValueKey(post.updatedAt), timestamp: post.updatedAt,
-                  absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp), compact: true),
-              )),
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'reply') onReply?.call();
-                  if (value == 'edit') onEdit();
-                  if (value == 'delete') onDelete();
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(value: 'edit', child: Text(l10n.local_note_edit_title)),
-                  if (onReply != null)
-                    PopupMenuItem(value: 'reply', child: Text(l10n.local_note_reply_action)),
-                  PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
-                ],
-              ),
-            ]),
-          ),
-          if (post.body.isNotEmpty)
-            InkWell(
-              onTap: open,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: Text(post.body,
-                  maxLines: compact ? 7 : null,
-                  overflow: compact ? TextOverflow.ellipsis : TextOverflow.visible,
-                  style: theme.textTheme.bodyLarge?.copyWith(height: 1.5)),
-              ),
-            ),
-          if (post.media.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: LocalPostMediaBlock(postId: post.id, media: post.media),
-            ),
-          if (quoted != null && !compact)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-              child: Container(
-                decoration: quoteCardDecoration(context),
-                clipBehavior: Clip.antiAlias,
-                child: TweetTile(
-                  clickable: true,
-                  tweet: quoted,
-                  addSeparator: false,
-                  isQuotedTweet: true,
+            padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 12, 4),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const NoteAvatar(),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const NoteLocalIdentity(),
+                                DefaultTextStyle(
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                                  child: Timestamp(
+                                    key: ValueKey(post.updatedAt),
+                                    timestamp: post.updatedAt,
+                                    absoluteTimestamp: prefs.get(optionUseAbsoluteTimestamp),
+                                    compact: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            icon: const Icon(Icons.more_horiz),
+                            onSelected: (value) {
+                              if (value == 'reply') onReply?.call();
+                              if (value == 'edit') onEdit();
+                              if (value == 'delete') onDelete();
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(value: 'edit', child: Text(l10n.local_note_edit_title)),
+                              if (onReply != null)
+                                PopupMenuItem(value: 'reply', child: Text(l10n.local_note_reply_action)),
+                              PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                            ],
+                          ),
+                        ],
+                      ),
+                      if (post.body.isNotEmpty)
+                        InkWell(
+                          onTap: open,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 4, bottom: 8),
+                            child: Text(
+                              post.body,
+                              maxLines: compact ? 7 : null,
+                              overflow: compact ? TextOverflow.ellipsis : TextOverflow.visible,
+                              style: theme.textTheme.bodyLarge?.copyWith(height: 1.4),
+                            ),
+                          ),
+                        ),
+                      if (post.media.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: LocalPostMediaBlock(postId: post.id, media: post.media),
+                        ),
+                      if (quoted != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Container(
+                            decoration: quoteCardDecoration(context),
+                            clipBehavior: Clip.antiAlias,
+                            child: compact
+                                ? InkWell(
+                                    onTap: open,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Text(
+                                        quoted.fullText ?? l10n.clickToShowMore,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  )
+                                : TweetTile(clickable: true, tweet: quoted, addSeparator: false, isQuotedTweet: true),
+                          ),
+                        )
+                      else if (post.quotedTweetId != null)
+                        Text(
+                          l10n.local_note_quoted_unavailable,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: theme.hintColor,
+                          ),
+                        ),
+                      _NoteFooter(
+                        replyCount: replyCount,
+                        onReply: onReply,
+                        onOpen: compact ? onOpen : null,
+                        onEdit: onEdit,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          else if (quoted != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: InkWell(
-                onTap: open,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: quoteCardDecoration(context),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    const Icon(Icons.format_quote, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(quoted.fullText ?? l10n.clickToShowMore,
-                      maxLines: 2, overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium)),
-                  ]),
-                ),
-              ),
-            )
-          else if (post.quotedTweetId != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                l10n.local_note_quoted_unavailable,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontStyle: FontStyle.italic,
-                  color: theme.hintColor,
-                ),
-              ),
+              ],
             ),
-          _NoteFooter(
-            replyCount: replyCount,
-            onReply: onReply,
-            onOpen: compact ? onOpen : null,
-            onEdit: onEdit,
           ),
           tweetHairlineDivider(context),
         ],
@@ -154,36 +167,33 @@ class _NoteFooter extends StatelessWidget {
   final VoidCallback? onOpen;
   final VoidCallback onEdit;
 
-  const _NoteFooter({required this.replyCount, required this.onReply,
-    required this.onOpen, required this.onEdit});
+  const _NoteFooter({required this.replyCount, required this.onReply, required this.onOpen, required this.onEdit});
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(8, 0, 8, 6),
-      child: Row(children: [
-        if (onOpen != null)
-          Flexible(child: TextButton.icon(
-            onPressed: onOpen,
-            icon: const Icon(Icons.notes_outlined, size: 18),
-            label: Text(l10n.clickToShowMore),
-          )),
-        const Spacer(),
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
+      children: [
         if (onReply != null)
-          Tooltip(message: l10n.local_note_reply_action,
+          Tooltip(
+            message: l10n.local_note_reply_action,
             child: TextButton.icon(
               onPressed: replyCount > 0 ? onOpen ?? onReply : onReply,
               icon: const Icon(Icons.chat_bubble_outline, size: 18),
               label: Text(replyCount > 0 ? '$replyCount' : l10n.local_note_reply_action),
             ),
           ),
+        if (onOpen != null)
+          IconButton(tooltip: l10n.clickToShowMore, onPressed: onOpen, icon: const Icon(Icons.open_in_full, size: 18)),
         IconButton(
           tooltip: l10n.local_note_edit_title,
           onPressed: onEdit,
           icon: const Icon(Icons.edit_outlined, size: 20),
         ),
-      ]),
+      ],
     );
   }
 }
@@ -192,11 +202,7 @@ class LocalPostMediaBlock extends StatelessWidget {
   final String postId;
   final List<LocalPostMedia> media;
 
-  const LocalPostMediaBlock({
-    super.key,
-    required this.postId,
-    required this.media,
-  });
+  const LocalPostMediaBlock({super.key, required this.postId, required this.media});
 
   @override
   Widget build(BuildContext context) {
@@ -238,8 +244,7 @@ class _ImageGrid extends StatelessWidget {
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
       ),
-      itemBuilder: (context, index) =>
-          _NoteImage(postId: postId, media: images[index], height: 140),
+      itemBuilder: (context, index) => _NoteImage(postId: postId, media: images[index], height: 140),
     );
   }
 }
@@ -249,11 +254,7 @@ class _NoteImage extends StatelessWidget {
   final LocalPostMedia media;
   final double height;
 
-  const _NoteImage({
-    required this.postId,
-    required this.media,
-    required this.height,
-  });
+  const _NoteImage({required this.postId, required this.media, required this.height});
 
   @override
   Widget build(BuildContext context) {
@@ -315,9 +316,7 @@ class _FileRow extends StatelessWidget {
         if (!await file.exists()) {
           return;
         }
-        await Share.shareXFiles([
-          XFile(file.path, mimeType: media.mime, name: media.name),
-        ]);
+        await Share.shareXFiles([XFile(file.path, mimeType: media.mime, name: media.name)]);
       },
     );
   }
