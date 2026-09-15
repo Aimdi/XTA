@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:html/dom.dart' as html_dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:xta/client/http_client.dart';
+import 'package:xta/utils/request_budget.dart';
 
 import 'constants.dart';
 import 'cubic_curve.dart';
@@ -43,8 +44,10 @@ class ClientTransaction {
     String randomKeyword = defaultKeyword,
     int randomNumber = additionalRandomNumber,
   }) async {
-    final homePageResponse = await xHttpClient.get(
+    final budget = RequestBudget(const Duration(seconds: 12));
+    final homePageResponse = await getXResponse(
       Uri.https('x.com', '/home'),
+      timeout: budget.remaining,
       headers: {
         'Accept-Language': 'en-US,en;q=0.9',
         'Cache-Control': 'no-cache',
@@ -59,7 +62,7 @@ class ClientTransaction {
     final homePageDoc = html_parser.parse(homePageHtml);
 
     final ondemandUrl = _getOndemandFileUrl(homePageHtml);
-    final ondemandResponse = await xHttpClient.get(Uri.parse(ondemandUrl));
+    final ondemandResponse = await getXResponse(Uri.parse(ondemandUrl), timeout: budget.remaining);
     final ondemandFileText = ondemandResponse.body;
 
     final (rowIndex, keyBytesIndices) = _getIndices(ondemandFileText);

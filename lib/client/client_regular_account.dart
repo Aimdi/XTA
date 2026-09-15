@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/http_client.dart';
+import 'package:xta/utils/request_budget.dart';
 import 'dart:async';
 import 'package:webview_cookie_manager_plus/webview_cookie_manager_plus.dart';
 import 'package:xta/database/repository.dart';
@@ -17,14 +18,13 @@ class XRegularAccount extends ChangeNotifier {
     Map<String, String>? headers,
     required Logger log,
     required Map<dynamic, dynamic> authHeader,
+    Duration timeout = xRequestTimeout,
   }) async {
     log.info('Fetching $uri');
 
-    final baseHeaders = await TwitterHeaders.getHeaders(uri, authHeader);
-
-    var response = await xHttpClient.get(uri, headers: {...?headers, ...baseHeaders});
-
-    return response;
+    final budget = RequestBudget(timeout);
+    final baseHeaders = await budget.run(() => TwitterHeaders.getHeaders(uri, authHeader));
+    return getXResponse(uri, headers: {...?headers, ...baseHeaders}, timeout: budget.remaining);
   }
 
   /// Forgets an account: its row, and the X session behind it.
