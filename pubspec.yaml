@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 4.12.0+400001110
+version: 4.12.0+400001114
 
 environment:
   sdk: ">=3.12.2 <4.0.0"
@@ -174,5 +174,5 @@ flutter_launcher_icons:
   android: true
   adaptive_icon_background: "assets/icon-background.png"
   adaptive_icon_foreground: "assets/icon-foreground-432x432.png"
-  adaptive_icon_foreground_inset: 16
+  adaptive_icon_foreground_inset: 0
   adaptive_icon_monochrome: "assets/icon-monochrome-432x432.png"

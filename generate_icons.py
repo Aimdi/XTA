@@ -5,13 +5,13 @@ it here rather than checked in, so the icon in a release is always the icon in
 this repository — the release workflow runs this script before building, and a
 PNG dropped into assets/ by hand would be regenerated over.
 
-The source is a JPEG of a design with exactly two tones, so its edges carry
-compression noise that a launcher would show as grey fringing. Deciding each
-pixel is one tone or the other removes that noise rather than blurring it, and
-costs nothing on a design that was never anti-aliased to begin with.
+The uploaded JPEG has large empty margins. Detect the mark before scaling so
+those margins cannot make the launcher icon tiny or stretch a non-square source.
+Keep antialiased edges while removing the JPEG's near-black/near-white noise.
 """
 
 import os
+import math
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -38,16 +38,34 @@ FULL_SIZE = 2000
 README_RADIUS = 0.25
 
 
-def glyph_mask(size):
-    """The mark as an alpha channel, at [size], with its edges decided."""
-    grey = Image.open(SOURCE).convert("L").resize((size, size), Image.LANCZOS)
-    return grey.point(lambda v: 255 if v >= THRESHOLD else 0, mode="L")
+def glyph_mask(size, adaptive=False):
+    """Fit the source mark without distortion or duplicate adaptive padding."""
+    with Image.open(SOURCE) as source:
+        grey = source.convert("L")
+    bounds = grey.point(lambda v: 255 if v >= THRESHOLD else 0).getbbox()
+    if bounds is None:
+        raise ValueError("The icon source contains no visible mark")
+    mark = grey.crop(bounds).point(lambda v: max(0, min(255, round((v - 8) * 255 / 239))))
+    scale = size * 0.84 / max(mark.size)
+    if adaptive:
+        # Android reserves an inner 66 dp safe circle in its 108 dp layer.
+        cx, cy = mark.width / 2, mark.height / 2
+        radius = max(
+            math.hypot(x + 0.5 - cx, y + 0.5 - cy)
+            for y in range(mark.height) for x in range(mark.width)
+            if mark.getpixel((x, y)) > 0
+        )
+        scale = size * 32 / 108 / radius
+    mark = mark.resize((round(mark.width * scale), round(mark.height * scale)), Image.LANCZOS)
+    mask = Image.new("L", (size, size), 0)
+    mask.paste(mark, ((size - mark.width) // 2, (size - mark.height) // 2))
+    return mask
 
 
-def glyph(size):
+def glyph(size, adaptive=False):
     """The mark in its own colour, on transparency."""
     layer = Image.new("RGBA", (size, size), (*GLYPH_COLOR, 0))
-    layer.putalpha(glyph_mask(size))
+    layer.putalpha(glyph_mask(size, adaptive))
     return layer
 
 
@@ -84,12 +102,14 @@ def main():
 
     # Adaptive layers are separate so the launcher can move them against each
     # other; the foreground therefore carries the mark alone.
-    save(glyph(ADAPTIVE_SIZE), ASSETS / "icon-foreground-432x432.png")
-    save(glyph(ADAPTIVE_SIZE), ASSETS / "icon-monochrome-432x432.png")
+    save(glyph(ADAPTIVE_SIZE, adaptive=True), ASSETS / "icon-foreground-432x432.png")
+    save(glyph(ADAPTIVE_SIZE, adaptive=True), ASSETS / "icon-monochrome-432x432.png")
     save(
         Image.new("RGBA", (ADAPTIVE_SIZE, ADAPTIVE_SIZE), (*BACKGROUND_COLOR, 255)),
         ASSETS / "icon-background.png",
     )
+    for metadata in ("fastlane/metadata/android/en-US", "android/fastlane/metadata/android/en-GB"):
+        save(full_icon(512), ASSETS.parent / metadata / "images/icon.png")
 
 
 if __name__ == "__main__":

@@ -4,6 +4,36 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi134
+
+New white orbital logo on black, enlarged for the launcher, with adaptive and
+themed icons. This release includes the completed reader recovery and safety
+improvements from PR #275.
+
+- Profiles and abandoned reads no longer hold up later timeline, subscription,
+  or group actions. Group batches appear progressively and retry only failures.
+- Recover visible failed reads after connectivity returns, and undo local
+  subscription or group membership changes.
+- Search text, authors, and links in the current Home/group feed's loaded posts,
+  including offline.
+- Subscription cleanup preserves accounts when lookups fail. Rate-limited
+  features show known reset countdowns and disable premature retries.
+- Release unused video players when Android reports memory pressure.
+- Cloud backups check for changes from another device before overwriting and
+  retain up to 20 previous versions. Article annotations are included in backups.
+- Interrupted downloads resume where supported, with validated byte ranges and
+  safe restarts when a file changes. Cancellation removes partial downloads.
+- Service monitoring distinguishes X, Instagram, TikTok, and Substack failures.
+
+For most Android phones, including GrapheneOS phones, choose
+**`xta-aimdi134_arm64-v8a.apk`**. The universal, ARMv7, and x86_64 variants are
+also available. The existing application id and release signing certificate
+are retained, and the version code exceeds every aimdi133 variant.
+
+Safe backup overwrites require server ETags and conditional-write support.
+Download resumption depends on server support. Physical-device, live WebDAV,
+and authenticated-network checks remain unverified in this build environment.
+
 ### aimdi133
 
 This release improves loading recovery, sharing into XTA, local notes, search, and offline reading.
