@@ -3,6 +3,11 @@ on:
   pull_request:
     paths:
       - 'android/**'
+      - 'lib/home/**'
+      - 'lib/profile/**'
+      - 'lib/tweet/**'
+      - 'lib/utils/read_*.dart'
+      - 'lib/utils/local_json_store.dart'
       - '.github/workflows/reader-android-check.yml'
   workflow_dispatch:
 permissions:

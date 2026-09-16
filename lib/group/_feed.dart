@@ -1099,6 +1099,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                       ),
                     if (widget.chunks.isNotEmpty)
                       ReadRecovery(
+                        isLoading: () => _batches.state.loading || _retryingBatches,
                         recoverableFailure: () => batches.loading
                             ? null
                             : batches.results.values

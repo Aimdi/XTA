@@ -288,6 +288,11 @@ class HomeAccountFilterStore extends Store<Set<String>> {
     AccountFetchGate.disabledIds = Set<String>.from(disabled);
   }
 
+  void publishDisabled(Set<String> disabled) {
+    _publish(disabled);
+    update(Set.unmodifiable(disabled));
+  }
+
   Future<void> reload() async {
     await execute(() async {
       final next = homeFeedDisabledIdsFromPrefs(

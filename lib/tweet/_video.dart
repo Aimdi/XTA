@@ -146,6 +146,9 @@ class _TweetVideoState extends State<TweetVideo> {
   PooledVideo? _pooled;
   Future<PooledVideo>? _acquireFuture;
   bool _ownsControllers = false;
+  bool _ownsPool = false;
+  Future<PooledVideo>? _poolAcquisition;
+  Timer? _firstFrameTimer;
   bool _holdsPoolRef = false;
 
   bool _autoPlay = false;
@@ -158,6 +161,7 @@ class _TweetVideoState extends State<TweetVideo> {
   bool _prefLoop = false;
   bool _mixWithOthers = false;
   int _autoRetries = 0;
+  int _poolWaitAttempts = 0;
   final Key _visibilityKey = UniqueKey();
   final Key _creationGateKey = UniqueKey();
   bool _hasBeenVisible = false;
@@ -171,8 +175,9 @@ class _TweetVideoState extends State<TweetVideo> {
   StreamSubscription<String>? _errorSub;
   StreamSubscription<bool>? _playingSub;
 
-  String? get _cacheKey =>
-      widget.tweetId == null ? null : '${widget.tweetId}:${widget.mediaIndex}';
+  String? get _cacheKey => widget.tweetId == null
+      ? 'local:${identityHashCode(this)}'
+      : '${widget.tweetId}:${widget.mediaIndex}';
 
   @override
   void initState() {
@@ -180,7 +185,8 @@ class _TweetVideoState extends State<TweetVideo> {
     try {
       _pool = context.read<VideoControllerPool>();
     } on ProviderNotFoundException {
-      _pool = null;
+      _pool = VideoControllerPool(maxSize: 1);
+      _ownsPool = true;
     }
   }
 
@@ -207,68 +213,15 @@ class _TweetVideoState extends State<TweetVideo> {
     int prefetchSeconds,
     bool directHwdec,
   ) async {
-    var urls = await widget.metadata.streamUrlsBuilder();
+    var urls = await widget.metadata.streamUrlsBuilder().timeout(
+      const Duration(seconds: 8),
+    );
     var streamUrl = _defaultQualityUrl(urls, quality);
 
     var player = mk.Player();
     var videoController = VideoController(player);
 
-    var platform = player.platform;
-    if (platform is mk.NativePlayer) {
-      // AAudio sounds better than the default opensles and avoids the
-      // audiotrack JNI crash; falls back to opensles below Android 8.
-      await platform.setProperty('ao', 'aaudio,opensles');
-      // System MediaCodec decoders, with libmpv's software decoders as fallback.
-      //
-      // `mediacodec-copy` copies every decoded frame back into system memory
-      // before it is uploaded to a texture; `mediacodec` hands the decoder's own
-      // surface over and copies nothing. The direct path is much cheaper and is
-      // what makes a feed scroll while a video plays, but it renders black on
-      // some devices — hence a setting rather than a default.
-      await platform.setProperty(
-        'hwdec',
-        directHwdec ? 'mediacodec' : 'mediacodec-copy',
-      );
-
-      // How far ahead a feed video reads.
-      //
-      // libmpv is built for a player you sit down in front of, so it reads far
-      // ahead and keeps a long way back — sensible for one film, wasteful for a
-      // timeline where most videos are watched for seconds and many are never
-      // watched at all. cache-secs only bounded that when the reader had set a
-      // prefetch, and it is zero by default, so out of the box nothing capped
-      // it at all.
-      //
-      // The demuxer bounds are what actually govern this: cache-secs limits
-      // time, these limit the bytes behind it. Both are set, and the reader's
-      // own prefetch still overrides the time.
-      await platform.setProperty(
-        'cache-secs',
-        '${prefetchSeconds > 0 ? prefetchSeconds : kVideoReadaheadSeconds}',
-      );
-      await platform.setProperty(
-        'demuxer-readahead-secs',
-        '$kVideoReadaheadSeconds',
-      );
-      await platform.setProperty('demuxer-max-bytes', '$kVideoDemuxerMaxBytes');
-      // What is kept of what has already played, for scrubbing back. Small: a
-      // feed is not somewhere anyone rewinds far.
-      await platform.setProperty(
-        'demuxer-max-back-bytes',
-        '$kVideoDemuxerMaxBackBytes',
-      );
-    }
-
-    await player.setPlaylistMode(
-      (widget.loop || prefLoop) ? mk.PlaylistMode.single : mk.PlaylistMode.none,
-    );
-    await player.setVolume(startMuted ? 0.0 : 100.0);
-    await player.open(
-      mk.Media(streamUrl, httpHeaders: urls.httpHeaders),
-      play: widget.alwaysPlay || _userRequestedPlay || _autoPlay,
-    );
-
-    return PooledVideo(
+    final pooled = PooledVideo(
       player: player,
       videoController: videoController,
       downloadUrl: urls.downloadUrl,
@@ -277,6 +230,71 @@ class _TweetVideoState extends State<TweetVideo> {
       pausableByPolicy: !widget.disableControls,
       httpHeaders: urls.httpHeaders,
     );
+    try {
+      var platform = player.platform;
+      if (platform is mk.NativePlayer) {
+        // AAudio sounds better than the default opensles and avoids the
+        // audiotrack JNI crash; falls back to opensles below Android 8.
+        await platform.setProperty('ao', 'aaudio,opensles');
+        // System MediaCodec decoders, with libmpv's software decoders as fallback.
+        //
+        // `mediacodec-copy` copies every decoded frame back into system memory
+        // before it is uploaded to a texture; `mediacodec` hands the decoder's own
+        // surface over and copies nothing. The direct path is much cheaper and is
+        // what makes a feed scroll while a video plays, but it renders black on
+        // some devices — hence a setting rather than a default.
+        await platform.setProperty(
+          'hwdec',
+          directHwdec ? 'mediacodec' : 'mediacodec-copy',
+        );
+
+        // How far ahead a feed video reads.
+        //
+        // libmpv is built for a player you sit down in front of, so it reads far
+        // ahead and keeps a long way back — sensible for one film, wasteful for a
+        // timeline where most videos are watched for seconds and many are never
+        // watched at all. cache-secs only bounded that when the reader had set a
+        // prefetch, and it is zero by default, so out of the box nothing capped
+        // it at all.
+        //
+        // The demuxer bounds are what actually govern this: cache-secs limits
+        // time, these limit the bytes behind it. Both are set, and the reader's
+        // own prefetch still overrides the time.
+        await platform.setProperty(
+          'cache-secs',
+          '${prefetchSeconds > 0 ? prefetchSeconds : kVideoReadaheadSeconds}',
+        );
+        await platform.setProperty(
+          'demuxer-readahead-secs',
+          '$kVideoReadaheadSeconds',
+        );
+        await platform.setProperty(
+          'demuxer-max-bytes',
+          '$kVideoDemuxerMaxBytes',
+        );
+        // What is kept of what has already played, for scrubbing back. Small: a
+        // feed is not somewhere anyone rewinds far.
+        await platform.setProperty(
+          'demuxer-max-back-bytes',
+          '$kVideoDemuxerMaxBackBytes',
+        );
+      }
+
+      await player.setPlaylistMode(
+        (widget.loop || prefLoop)
+            ? mk.PlaylistMode.single
+            : mk.PlaylistMode.none,
+      );
+      await player.setVolume(startMuted ? 0.0 : 100.0);
+      await player.open(
+        mk.Media(streamUrl, httpHeaders: urls.httpHeaders),
+        play: widget.alwaysPlay || _userRequestedPlay || _autoPlay,
+      );
+      return pooled;
+    } catch (_) {
+      await pooled.dispose();
+      rethrow;
+    }
   }
 
   Future<PooledVideo> _acquire(bool prefLoop) async {
@@ -310,22 +328,28 @@ class _TweetVideoState extends State<TweetVideo> {
       // holds this function's future; overwriting it with the inner one made
       // `identical(_acquireFuture, future)` fail on every first paint, so the
       // tile released the player, skipped listeners, and the poster never lifted.
-      final future = pool.acquire(key, create);
+      final future = _poolAcquisition = pool.acquire(key, create);
       try {
-        pooled = await future;
+        pooled = await future.timeout(const Duration(seconds: 12));
       } on VideoPoolFullException {
         if (epoch == _acquireEpoch) {
           _acquireFuture = null;
         }
         rethrow;
+      } catch (_) {
+        pool.release(key, acquisition: future);
+        pool.discardIfUnused(key, future);
+        rethrow;
       }
       if (!mounted || epoch != _acquireEpoch) {
-        pool.release(key);
+        pool.release(key, acquisition: future);
+        if (_ownsPool) pool.releaseUnused();
         return pooled;
       }
       _holdsPoolRef = true;
     }
 
+    _poolWaitAttempts = 0;
     _pooled = pooled;
     _attachListeners(pooled);
     return pooled;
@@ -342,7 +366,6 @@ class _TweetVideoState extends State<TweetVideo> {
       if (!mounted) return;
       if (widget.disableControls) return;
       if (playing) {
-        _autoRetries = 0;
         if (_playbackError) setState(() => _playbackError = false);
         _pool?.pauseOthers(pooled);
         VideoAudioFocus.instance.onStartedPlaying(
@@ -371,14 +394,30 @@ class _TweetVideoState extends State<TweetVideo> {
       }
     });
 
+    final epoch = _acquireEpoch;
+    _firstFrameTimer?.cancel();
+    _firstFrameTimer = Timer(const Duration(seconds: 12), () {
+      if (!mounted || epoch != _acquireEpoch || _firstFrameRendered) return;
+      setState(() => _playbackError = true);
+      widget.onPlaybackError?.call();
+    });
     pooled.videoController.waitUntilFirstFrameRendered
         .then((_) {
-          if (mounted) setState(() => _firstFrameRendered = true);
+          if (mounted && epoch == _acquireEpoch && identical(_pooled, pooled)) {
+            _firstFrameTimer?.cancel();
+            _autoRetries = 0;
+            setState(() {
+              _firstFrameRendered = true;
+              _playbackError = false;
+            });
+          }
         })
         .catchError((_) {});
   }
 
   void _detachListeners() {
+    _firstFrameTimer?.cancel();
+    _firstFrameTimer = null;
     _muteSub?.cancel();
     _muteSub = null;
     _errorSub?.cancel();
@@ -457,6 +496,7 @@ class _TweetVideoState extends State<TweetVideo> {
 
     _detachListeners();
     final hadRef = _holdsPoolRef;
+    final acquisition = _poolAcquisition;
     _holdsPoolRef = false;
     final pool = _pool;
     _acquireEpoch++;
@@ -473,7 +513,7 @@ class _TweetVideoState extends State<TweetVideo> {
     // first let eviction stop libmpv while the compositor still sampled it.
     if (hadRef) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        pool?.release(key!);
+        pool?.release(key!, acquisition: acquisition);
       });
     }
   }
@@ -508,25 +548,31 @@ class _TweetVideoState extends State<TweetVideo> {
   }
 
   Future<void> _restartVideo(bool prefLoop) async {
+    if (!mounted) return;
     _detachListeners();
-    _acquireEpoch++;
+    final epoch = ++_acquireEpoch;
     final key = _cacheKey;
-    if (key != null && _pool != null) {
-      if (_holdsPoolRef) {
-        _pool!.release(key);
-        _holdsPoolRef = false;
-      }
-      _pool!.invalidate(key);
-    } else {
-      await _pooled?.player.pause();
-      await _pooled?.dispose();
-    }
-
+    final acquisition = _poolAcquisition;
+    final pooled = _pooled;
+    final held = _holdsPoolRef;
+    _holdsPoolRef = false;
     setState(() {
+      _playbackError = true;
+      _firstFrameRendered = false;
       _pooled = null;
+    });
+    // Remove the native texture from the tree before retiring its player.
+    await WidgetsBinding.instance.endOfFrame;
+    if (key != null && acquisition != null && _pool != null) {
+      if (held) _pool!.release(key, acquisition: acquisition);
+      _pool!.discardIfUnused(key, acquisition);
+    } else if (_ownsControllers) {
+      await pooled?.dispose();
+    }
+    if (!mounted || epoch != _acquireEpoch) return;
+    setState(() {
       _acquireFuture = null;
       _playbackError = false;
-      _firstFrameRendered = false;
       _posterGone = false;
     });
   }
@@ -653,7 +699,8 @@ class _TweetVideoState extends State<TweetVideo> {
   }
 
   void _schedulePoolRetry() {
-    if (_poolRetryTimer != null) return;
+    if (_poolRetryTimer != null || _poolWaitAttempts >= 25) return;
+    _poolWaitAttempts++;
     _poolRetryTimer = Timer(const Duration(milliseconds: 400), () {
       _poolRetryTimer = null;
       if (!mounted) return;
@@ -674,6 +721,7 @@ class _TweetVideoState extends State<TweetVideo> {
       child: GestureDetector(
         onTap: () => setState(() {
           _userRequestedPlay = true;
+          _poolWaitAttempts = 0;
           _acquireFuture = null;
         }),
         child: _poster(
@@ -756,7 +804,8 @@ class _TweetVideoState extends State<TweetVideo> {
     }
     _acquireFuture ??= _acquire(prefLoop);
 
-    return FutureBuilder(
+    return FutureBuilder<PooledVideo>(
+      key: ValueKey(_acquireEpoch),
       future: _acquireFuture,
       builder: (context, snapshot) {
         final hasError = snapshot.hasError || _playbackError;
@@ -855,7 +904,8 @@ class _TweetVideoState extends State<TweetVideo> {
         _holdsPoolRef = false;
         final pool = _pool;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          pool?.release(key);
+          pool?.release(key, acquisition: _poolAcquisition);
+          if (_ownsPool) pool?.releaseUnused();
         });
       }
     }

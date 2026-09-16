@@ -110,6 +110,46 @@ void main() {
     },
   );
 
+  testWidgets(
+    'long-press Home invokes the picker action without changing tabs',
+    (tester) async {
+      int? selected;
+      int? held;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: HomeNavigationBar(
+              selectedIndex: 1,
+              showLabels: true,
+              disableAnimations: true,
+              items: const [
+                HomeNavigationItem(
+                  label: 'Home',
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                ),
+                HomeNavigationItem(
+                  label: 'Search',
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                ),
+              ],
+              onSelected: (value) => selected = value,
+              onLongPress: (value) => held = value,
+            ),
+          ),
+        ),
+      );
+      await tester.longPress(find.text('Home'));
+      await tester.pumpAndSettle();
+      expect(held, 0);
+      expect(selected, isNull);
+      await tester.tap(find.text('Home'));
+      await tester.pumpAndSettle();
+      expect(selected, 0);
+    },
+  );
+
   testWidgets('selected navigation remains legible with a yellow accent', (
     tester,
   ) async {
@@ -143,9 +183,9 @@ void main() {
 
     final context = tester.element(find.byType(NavigationBar));
     final navigationTheme = NavigationBarTheme.of(context);
-    final selectedColor = navigationTheme.iconTheme!
-        .resolve(<WidgetState>{WidgetState.selected})!
-        .color!;
+    final selectedColor = navigationTheme.iconTheme!.resolve(<WidgetState>{
+      WidgetState.selected,
+    })!.color!;
     expect(
       contrastRatio(selectedColor, tokens.background),
       greaterThanOrEqualTo(4.5),
@@ -211,78 +251,81 @@ void main() {
     );
   });
 
-  testWidgets('home source dock keeps contained selection and a fixed add action', (
-    tester,
-  ) async {
-    var added = false;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: xLookLightTheme(null),
-        home: MediaQuery(
-          data: const MediaQueryData(
-            size: Size(320, 640),
-            textScaler: TextScaler.linear(2),
-          ),
-          child: Scaffold(
-            body: Align(
-              alignment: Alignment.topCenter,
-              child: SizedBox(
-                width: 320,
-                child: DefaultTabController(
-                  length: 4,
-                  child: HomeFeedStrip(
-                    tabs: const [
-                      Tab(text: 'Following'),
-                      Tab(text: 'For you'),
-                      Tab(text: 'Reddit'),
-                      Tab(text: 'Blue'),
-                    ],
-                    addTooltip: 'Add timeline',
-                    onAdd: () => added = true,
+  testWidgets(
+    'home source dock keeps contained selection and a fixed add action',
+    (tester) async {
+      var added = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: xLookLightTheme(null),
+          home: MediaQuery(
+            data: const MediaQueryData(
+              size: Size(320, 640),
+              textScaler: TextScaler.linear(2),
+            ),
+            child: Scaffold(
+              body: Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: 320,
+                  child: DefaultTabController(
+                    length: 4,
+                    child: HomeFeedStrip(
+                      tabs: const [
+                        Tab(text: 'Following'),
+                        Tab(text: 'For you'),
+                        Tab(text: 'Reddit'),
+                        Tab(text: 'Blue'),
+                      ],
+                      addTooltip: 'Add timeline',
+                      onAdd: () => added = true,
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(tester.takeException(), isNull);
-    expect(
-      tester.getSize(find.byType(HomeFeedStrip)),
-      const Size(320, kHomeFeedStripHeight),
-    );
-    expect(
-      tester.getSize(find.byTooltip('Add timeline')),
-      const Size.square(kTweetTouchTarget),
-    );
+      expect(tester.takeException(), isNull);
+      expect(
+        tester.getSize(find.byType(HomeFeedStrip)),
+        const Size(320, kHomeFeedStripHeight),
+      );
+      expect(
+        tester.getSize(find.byTooltip('Add timeline')),
+        const Size.square(kTweetTouchTarget),
+      );
 
-    final tabBar = tester.widget<TabBar>(find.byType(TabBar));
-    expect(tabBar.dividerHeight, 0);
-    expect(tabBar.isScrollable, isTrue);
-    expect(tabBar.tabAlignment, TabAlignment.start);
-    expect(
-      tabBar.labelPadding,
-      const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
-    );
-    expect(tabBar.indicator, isA<BoxDecoration>());
-    expect((tabBar.indicator! as BoxDecoration).border, isNotNull);
+      final tabBar = tester.widget<TabBar>(find.byType(TabBar));
+      expect(tabBar.dividerHeight, 0);
+      expect(tabBar.isScrollable, isTrue);
+      expect(tabBar.tabAlignment, TabAlignment.start);
+      expect(
+        tabBar.labelPadding,
+        const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
+      );
+      expect(tabBar.indicator, isA<BoxDecoration>());
+      expect((tabBar.indicator! as BoxDecoration).border, isNotNull);
 
-    final addBoundary = tester
-        .widgetList<DecoratedBox>(find.byType(DecoratedBox))
-        .map((widget) => widget.decoration)
-        .whereType<BoxDecoration>()
-        .map((decoration) => decoration.border)
-        .whereType<BorderDirectional>()
-        .singleWhere((border) => border.start.width == kTweetDividerThickness);
-    expect(addBoundary.start.color, isNot(Colors.transparent));
+      final addBoundary = tester
+          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+          .map((widget) => widget.decoration)
+          .whereType<BoxDecoration>()
+          .map((decoration) => decoration.border)
+          .whereType<BorderDirectional>()
+          .singleWhere(
+            (border) => border.start.width == kTweetDividerThickness,
+          );
+      expect(addBoundary.start.color, isNot(Colors.transparent));
 
-    final tabRect = tester.getRect(find.byType(TabBar));
-    final addRect = tester.getRect(find.byTooltip('Add timeline'));
-    expect(tabRect.right, lessThanOrEqualTo(addRect.left));
+      final tabRect = tester.getRect(find.byType(TabBar));
+      final addRect = tester.getRect(find.byTooltip('Add timeline'));
+      expect(tabRect.right, lessThanOrEqualTo(addRect.left));
 
-    await tester.tap(find.byTooltip('Add timeline'));
-    expect(added, isTrue);
-  });
+      await tester.tap(find.byTooltip('Add timeline'));
+      expect(added, isTrue);
+    },
+  );
 }

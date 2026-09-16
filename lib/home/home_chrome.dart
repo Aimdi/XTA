@@ -54,7 +54,13 @@ class HomeFeedStrip extends StatelessWidget {
   final String addTooltip;
   final VoidCallback onAdd;
 
-  const HomeFeedStrip({super.key, required this.tabs, this.onTap, required this.addTooltip, required this.onAdd});
+  const HomeFeedStrip({
+    super.key,
+    required this.tabs,
+    this.onTap,
+    required this.addTooltip,
+    required this.onAdd,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,10 @@ class HomeFeedStrip extends StatelessWidget {
         decoration: BoxDecoration(
           color: tokens?.background ?? theme.colorScheme.surface,
           border: Border(
-            top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
+            top: BorderSide(
+              color: tweetDividerColor(context),
+              width: kTweetDividerThickness,
+            ),
           ),
         ),
         child: Padding(
@@ -80,20 +89,28 @@ class HomeFeedStrip extends StatelessWidget {
                   dividerHeight: 0,
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
-                  labelPadding: const EdgeInsets.symmetric(horizontal: kHomeFeedTabHorizontalPadding),
+                  labelPadding: const EdgeInsets.symmetric(
+                    horizontal: kHomeFeedTabHorizontalPadding,
+                  ),
                   indicatorColor: tweetReadableAccentColor(context),
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicatorWeight: kHomeFeedIndicatorThickness,
                   indicator: BoxDecoration(
                     color: tweetAccentColor(context).withValues(alpha: 0.12),
-                    border: Border.all(color: tweetReadableAccentColor(context).withValues(alpha: 0.5)),
+                    border: Border.all(
+                      color: tweetReadableAccentColor(
+                        context,
+                      ).withValues(alpha: 0.5),
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   indicatorPadding: const EdgeInsets.symmetric(horizontal: 4),
                   labelColor: tweetReadableAccentColor(context),
                   unselectedLabelColor: tweetSecondaryColor(context),
                   labelStyle: tweetLabelStyle(context),
-                  unselectedLabelStyle: tweetLabelStyle(context).copyWith(fontWeight: FontWeight.w500),
+                  unselectedLabelStyle: tweetLabelStyle(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w500),
                   tabs: tabs,
                   onTap: onTap,
                 ),
@@ -101,12 +118,19 @@ class HomeFeedStrip extends StatelessWidget {
               DecoratedBox(
                 decoration: BoxDecoration(
                   border: BorderDirectional(
-                    start: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
+                    start: BorderSide(
+                      color: tweetDividerColor(context),
+                      width: kTweetDividerThickness,
+                    ),
                   ),
                 ),
                 child: SizedBox.square(
                   dimension: kTweetTouchTarget,
-                  child: IconButton(tooltip: addTooltip, icon: const Icon(Icons.add), onPressed: onAdd),
+                  child: IconButton(
+                    tooltip: addTooltip,
+                    icon: const Icon(Icons.add),
+                    onPressed: onAdd,
+                  ),
                 ),
               ),
             ],
@@ -136,6 +160,7 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
     required this.selected,
     required this.options,
     required this.onSelected,
+    this.onLongPress,
   });
 
   @override
@@ -248,6 +273,7 @@ class HomeNavigationBar extends StatelessWidget {
   final bool showLabels;
   final bool disableAnimations;
   final ValueChanged<int> onSelected;
+  final ValueChanged<int>? onLongPress;
 
   const HomeNavigationBar({
     super.key,
@@ -256,6 +282,7 @@ class HomeNavigationBar extends StatelessWidget {
     required this.showLabels,
     required this.disableAnimations,
     required this.onSelected,
+    this.onLongPress,
   });
 
   @override
@@ -316,11 +343,17 @@ class HomeNavigationBar extends StatelessWidget {
                 .asMap()
                 .entries
                 .map(
-                  (entry) => _destination(
-                    context,
-                    entry.value,
-                    entry.key == selectedIndex,
-                    reduceMotion,
+                  (entry) => GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onLongPress: onLongPress == null
+                        ? null
+                        : () => onLongPress!(entry.key),
+                    child: _destination(
+                      context,
+                      entry.value,
+                      entry.key == selectedIndex,
+                      reduceMotion,
+                    ),
                   ),
                 )
                 .toList(growable: false),

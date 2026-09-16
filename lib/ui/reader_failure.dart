@@ -29,10 +29,13 @@ ReadFailureKind readFailureKind(Object? error) {
   return ReadFailureKind.unknown;
 }
 
-Object? recoverableReadFailure(Object? error) => switch (readFailureKind(error)) {
-  ReadFailureKind.connection || ReadFailureKind.timedOut => error,
-  _ => null,
-};
+Object? recoverableReadFailure(Object? error) {
+  if (error is HttpException && const [500, 502, 503, 504].contains(error.statusCode)) return error;
+  return switch (readFailureKind(error)) {
+    ReadFailureKind.connection || ReadFailureKind.timedOut => error,
+    _ => null,
+  };
+}
 
 String readFailureMessage(L10n l10n, Object? error) => switch (readFailureKind(error)) {
   ReadFailureKind.connection => l10n.reader_connection_failed,
@@ -57,7 +60,8 @@ class ReaderFailureNotice extends StatelessWidget {
     required this.error,
     required this.onRetry,
     this.compact = false,
-    this.recoverAutomatically = true,
+    // Automatic recovery belongs to the stable screen, not its transient error row.
+    this.recoverAutomatically = false,
     this.contextMessage,
     this.onDismiss,
   });

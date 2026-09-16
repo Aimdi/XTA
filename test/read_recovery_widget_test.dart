@@ -15,18 +15,31 @@ void main() {
     VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500);
     ReadRecovery.online = false;
   });
-  testWidgets('visible failure retries once per connection event, not once per rebuild', (tester) async {
+  testWidgets('automatic recovery has a finite budget across rebuilds and failed attempts', (tester) async {
     final signals = StreamController<bool>.broadcast();
+    final changes = ValueNotifier(0);
     addTearDown(signals.close);
+    addTearDown(changes.dispose);
     var retries = 0;
-    Object failure = const SocketException('offline');
+    var loading = false;
+    Object? failure = const SocketException('offline');
     Widget screen() => MaterialApp(
       home: Scaffold(
         body: ReadRecovery(
           networkEvents: signals.stream,
+          changes: changes,
+          isLoading: () => loading,
           recoverableFailure: () => failure,
           retry: () {
             retries++;
+            loading = true;
+            failure = null;
+            changes.value++;
+            scheduleMicrotask(() {
+              failure = TimeoutException('still unavailable');
+              loading = false;
+              changes.value++;
+            });
           },
           child: const SizedBox.expand(child: Text('Posts')),
         ),
@@ -34,17 +47,50 @@ void main() {
     );
     await tester.pumpWidget(screen());
     await tester.pump();
-    signals.add(false);
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-    expect(retries, 0);
     signals.add(true);
     await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
-    expect(retries, 1);
-    failure = TimeoutException('retry also failed');
+    for (final delay in [2, 5, 15]) {
+      await tester.pump(Duration(seconds: delay));
+      await tester.pump();
+    }
+    expect(retries, 3);
+    signals.add(true);
     await tester.pumpWidget(screen());
-    await tester.pump(const Duration(seconds: 20));
+    await tester.pump(const Duration(minutes: 1));
+    expect(retries, 3);
+    signals.add(false);
+    await tester.pump();
+    signals.add(true);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    expect(retries, 4);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('background recovery waits for resume without resetting its budget', (tester) async {
+    ReadRecovery.online = true;
+    var retries = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ReadRecovery(
+            recoverableFailure: () => const SocketException('offline'),
+            retry: () => retries++,
+            child: const SizedBox.expand(),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 30));
+    expect(retries, 0);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    expect(retries, 1);
+    await tester.pump(const Duration(minutes: 1));
     expect(retries, 1);
     await tester.pumpWidget(const SizedBox.shrink());
   });
@@ -56,6 +102,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         navigatorKey: navigator,
+        navigatorObservers: [readRouteObserver],
         home: Scaffold(
           body: ReadRecovery(
             networkEvents: signals.stream,
@@ -75,10 +122,14 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
     expect(retries, 0);
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 2));
+    expect(retries, 1);
     await tester.pumpWidget(const SizedBox.shrink());
     signals.add(true);
     await tester.pump(const Duration(seconds: 1));
-    expect(retries, 0);
+    expect(retries, 1);
     expect(tester.takeException(), isNull);
   });
   testWidgets('kept-alive group visibility pauses covered routes and resumes after back', (tester) async {

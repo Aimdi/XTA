@@ -119,6 +119,85 @@ void main() {
     expect(followersTapped, isTrue);
   });
 
+  testWidgets(
+    'avatar bottom, actions and wrapped counts have separate targets at 320px',
+    (tester) async {
+      tester.view.physicalSize = const Size(320, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final tapped = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(2)),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: ProfileIdentityHeader(
+                banner: const SizedBox(height: 120, width: double.infinity),
+                avatar: GestureDetector(
+                  key: const ValueKey('avatar'),
+                  onTap: () => tapped.add('avatar'),
+                  child: const SizedBox.square(
+                    dimension: kProfileAvatarSize,
+                    child: ColoredBox(color: Colors.blue),
+                  ),
+                ),
+                actions: ProfileActionCluster(
+                  children: [
+                    IconButton(
+                      onPressed: () => tapped.add('settings'),
+                      icon: const Icon(Icons.tune),
+                    ),
+                    IconButton(
+                      onPressed: () => tapped.add('follow'),
+                      icon: const Icon(Icons.person_add),
+                    ),
+                  ],
+                ),
+                name: 'Reader',
+                handle: '@reader',
+                verified: false,
+                protected: false,
+                protectedLabel: 'Protected',
+                counts: [
+                  ProfileCountButton(
+                    count: '234',
+                    label: 'Following',
+                    onTap: () => tapped.add('following'),
+                  ),
+                  ProfileCountButton(
+                    count: '13.9K',
+                    label: 'Followers',
+                    onTap: () => tapped.add('followers'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+      final avatar = tester.getRect(find.byKey(const ValueKey('avatar')));
+      await tester.tapAt(Offset(avatar.center.dx, avatar.bottom - 5));
+      await tester.tap(find.byIcon(Icons.tune));
+      await tester.tap(find.byIcon(Icons.person_add));
+      await tester.tap(find.textContaining('234'));
+      await tester.tap(find.textContaining('13.9K'));
+      expect(tapped, [
+        'avatar',
+        'settings',
+        'follow',
+        'following',
+        'followers',
+      ]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('profile actions stay in one compact row and remain tappable', (
     tester,
   ) async {

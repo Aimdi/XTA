@@ -31,6 +31,7 @@ class PooledVideo {
   final Map<String, String>? httpHeaders;
 
   bool _disposed = false;
+  Future<void>? _disposal;
   VideoSourceStore? _sourceStore;
 
   PooledVideo({
@@ -60,7 +61,9 @@ class PooledVideo {
     return result;
   }
 
-  Future<void> dispose() async {
+  Future<void> dispose() => _disposal ??= _dispose();
+
+  Future<void> _dispose() async {
     // Two disposal paths can race on the same pair — an explicit restart and the
     // widget's own teardown — and disposing a [Player] twice trips libmpv's
     // "[Player] has been disposed" assertion. Guard so only the first wins.
@@ -72,8 +75,7 @@ class PooledVideo {
     if (source != null && source.nativeCommandPending) {
       // A native Future cannot be cancelled; freeing its player underneath a
       // late command is unsafe. Release only after it and its pause settle.
-      unawaited(source.whenNativeIdle.then((_) => _disposePlayer()).catchError((Object _) {}));
-      return;
+      await source.whenNativeIdle;
     }
     await _disposePlayer();
   }
@@ -105,9 +107,7 @@ class _Entry {
     }();
   }
 
-  void disposeWhenReady() {
-    future.then((p) => p.dispose()).catchError((_) {});
-  }
+  Future<void> disposeWhenReady() => future.then((p) => p.dispose()).catchError((_) {});
 }
 
 /// An LRU cache of video players, keyed by `tweetId:mediaIndex`.
@@ -127,6 +127,7 @@ class _Entry {
 class VideoControllerPool {
   final int maxSize;
   final Map<String, _Entry> _entries = {};
+  final Set<_Entry> _retiring = {};
   final Map<String, Set<Object>> _visibleTokens = {};
   VideoControllerPool({this.maxSize = kVideoPoolSize});
   bool contains(String key) => _entries.containsKey(key);
@@ -152,7 +153,7 @@ class VideoControllerPool {
   void releaseUnused() {
     final idle = _entries.keys.where((key) => _entries[key]!.refCount == 0 && !anyVisible(key)).toList();
     for (final key in idle) {
-      _entries.remove(key)?.disposeWhenReady();
+      _retire(_entries.remove(key));
       _visibleTokens.remove(key);
     }
   }
@@ -174,7 +175,7 @@ class VideoControllerPool {
 
   bool canAcquire(String key) => videoPoolCanCreate(
     alreadyCached: _entries.containsKey(key),
-    entryCount: _entries.length,
+    entryCount: _entries.length + _retiring.length,
     maxSize: maxSize,
     hasEvictable: _entries.values.any((e) => e.refCount == 0),
   );
@@ -190,31 +191,44 @@ class VideoControllerPool {
     // [makeRoom] a pool sitting at [maxSize] with idle entries never
     // shrinks, [canAcquire] says yes, and every later video fails.
     _evict(makeRoom: true);
-    if (_entries.length >= maxSize) {
+    if (_entries.length + _retiring.length >= maxSize) {
       return Future.error(const VideoPoolFullException());
     }
-    entry = _Entry(create());
+    entry = _Entry(Future<PooledVideo>.sync(create));
     _entries[key] = entry;
     entry.refCount++;
     return entry.future;
   }
 
+  void _retire(_Entry? entry) {
+    if (entry == null || !_retiring.add(entry)) return;
+    // An abandoned native open still owns a decoder until it settles and is
+    // disposed. Count it against capacity so retries cannot exhaust the phone.
+    unawaited(entry.disposeWhenReady().whenComplete(() => _retiring.remove(entry)));
+  }
+
+  void discardIfUnused(String key, Future<PooledVideo> acquisition) {
+    final entry = _entries[key];
+    if (entry != null && identical(entry.future, acquisition) && entry.refCount == 0) invalidate(key);
+  }
+
   void invalidate(String key) {
-    _entries.remove(key)?.disposeWhenReady();
+    _retire(_entries.remove(key));
     _visibleTokens.remove(key);
   }
 
-  void release(String key) {
+  void release(String key, {Future<PooledVideo>? acquisition}) {
     final entry = _entries[key];
-    if (entry == null) return;
+    if (entry == null || (acquisition != null && !identical(entry.future, acquisition))) return;
     if (entry.refCount > 0) entry.refCount--;
     if (entry.refCount == 0) entry.value?.suppressQualityResume();
     _evict();
   }
 
   void _evict({bool makeRoom = false}) {
+    if (_retiring.isNotEmpty) return;
     final ceiling = videoPoolEvictionCeiling(maxSize: maxSize, makeRoom: makeRoom);
-    while (_entries.length > ceiling) {
+    while (_entries.length + _retiring.length > ceiling) {
       String? victimKey;
       for (final e in _entries.entries) {
         if (e.value.refCount == 0) {
@@ -223,8 +237,9 @@ class VideoControllerPool {
         }
       }
       if (victimKey == null) break;
-      _entries.remove(victimKey)!.disposeWhenReady();
+      _retire(_entries.remove(victimKey));
       _visibleTokens.remove(victimKey);
+      break;
     }
   }
 }

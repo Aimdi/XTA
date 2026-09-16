@@ -43,12 +43,7 @@ class FeedSnapshotCache {
     ];
     try {
       await storage.write(key, {'at': DateTime.now().toIso8601String(), 'posts': posts});
-      final snapshots = await storage.readPrefix('feed:');
-      if (snapshots.length > 40) {
-        final oldest = snapshots.keys.toList()
-          ..sort((a, b) => '${(snapshots[a] as Map?)?['at']}'.compareTo('${(snapshots[b] as Map?)?['at']}'));
-        for (final stale in oldest.take(snapshots.length - 40)) await storage.remove(stale);
-      }
+      await pruneJsonCache(storage, 'feed:', 40);
     } catch (_) {
       /* A cache write must not turn a successful read into an error. */
     }

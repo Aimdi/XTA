@@ -12,6 +12,7 @@ import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
 import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/generated/l10n.dart';
@@ -152,61 +153,75 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
       sensitive: widget.user.possiblySensitive ?? false,
       errorMessage: L10n.current.possibly_sensitive_profile,
       wrapInCard: false,
-      child: RefreshIndicator(
-        onRefresh: () async {
-          _bypassCache = true;
-          _pagingController.refresh();
-          _pagingController.fetchNextPage();
-        },
-        child: PagingListener<int, TweetChain>(
-          controller: _pagingController,
-          builder: (context, state, fetchNextPage) {
-            // NestedScrollView + TabBarView freeze when PagedListView's first-page
-            // slot (SliverFillRemaining) is the inner scrollable. Show skeleton /
-            // error / empty outside it, and only mount the list once posts exist.
-            if (pagingAwaitingFirstPage(state)) {
-              return const TweetFeedSkeleton();
-            }
-            if (state.items == null) {
-              return ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  ReaderFailureNotice(error: pagingErrorOf(state)?.error ?? state.error, onRetry: fetchNextPage),
-                ],
-              );
-            }
-            if (state.items!.isEmpty) {
-              return pagingFill(
-                child: ProfileEmptyState(
-                  icon: Icons.article_outlined,
-                  message: L10n.of(context).could_not_find_any_tweets_by_this_user,
+      child: ReadRecovery(
+        changes: _pagingController,
+        isLoading: () => _pagingController.value.isLoading,
+        recoverableFailure: () =>
+            recoverableReadFailure(pagingErrorOf(_pagingController.value)?.error ?? _pagingController.value.error),
+        retry: _pagingController.fetchNextPage,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _bypassCache = true;
+            _pagingController.refresh();
+            _pagingController.fetchNextPage();
+          },
+          child: PagingListener<int, TweetChain>(
+            controller: _pagingController,
+            builder: (context, state, fetchNextPage) {
+              // NestedScrollView + TabBarView freeze when PagedListView's first-page
+              // slot (SliverFillRemaining) is the inner scrollable. Show skeleton /
+              // error / empty outside it, and only mount the list once posts exist.
+              if (pagingAwaitingFirstPage(state)) {
+                return const TweetFeedSkeleton();
+              }
+              if (state.items == null) {
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    ReaderFailureNotice(
+                      recoverAutomatically: false,
+                      error: pagingErrorOf(state)?.error ?? state.error,
+                      onRetry: fetchNextPage,
+                    ),
+                  ],
+                );
+              }
+              if (state.items!.isEmpty) {
+                return pagingFill(
+                  child: ProfileEmptyState(
+                    icon: Icons.article_outlined,
+                    message: L10n.of(context).could_not_find_any_tweets_by_this_user,
+                  ),
+                );
+              }
+              return PagedListView<int, TweetChain>(
+                padding: EdgeInsets.zero,
+                state: state,
+                fetchNextPage: fetchNextPage,
+                addAutomaticKeepAlives: false,
+                builderDelegate: PagedChildBuilderDelegate(
+                  itemBuilder: (context, chain, index) {
+                    // Keyed by chain id so a refreshed page gives each changed
+                    // conversation a fresh state instead of recycling the one that
+                    // happened to sit at the same index.
+                    return TweetConversation(
+                      key: ValueKey(chain.id),
+                      id: chain.id,
+                      tweets: chain.tweets,
+                      username: widget.user.screenName!,
+                      isPinned: chain.isPinned,
+                    );
+                  },
+                  newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
+                  newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+                    recoverAutomatically: false,
+                    error: pagingErrorOf(state)?.error ?? state.error,
+                    onRetry: fetchNextPage,
+                  ),
                 ),
               );
-            }
-            return PagedListView<int, TweetChain>(
-              padding: EdgeInsets.zero,
-              state: state,
-              fetchNextPage: fetchNextPage,
-              addAutomaticKeepAlives: false,
-              builderDelegate: PagedChildBuilderDelegate(
-                itemBuilder: (context, chain, index) {
-                  // Keyed by chain id so a refreshed page gives each changed
-                  // conversation a fresh state instead of recycling the one that
-                  // happened to sit at the same index.
-                  return TweetConversation(
-                    key: ValueKey(chain.id),
-                    id: chain.id,
-                    tweets: chain.tweets,
-                    username: widget.user.screenName!,
-                    isPinned: chain.isPinned,
-                  );
-                },
-                newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
-                newPageErrorIndicatorBuilder: (context) =>
-                    ReaderFailureNotice(error: pagingErrorOf(state)?.error ?? state.error, onRetry: fetchNextPage),
-              ),
-            );
-          },
+            },
+          ),
         ),
       ),
     );

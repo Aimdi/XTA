@@ -13,6 +13,7 @@ import 'package:xta/tweet/media_strip.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
 import 'package:xta/ui/reader_failure.dart';
+import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -147,84 +148,94 @@ class _MediaGridState extends State<MediaGrid>
           )
         : mediaGridConfigOf(context);
 
-    return RefreshIndicator(
-      onRefresh: () async => widget.controller.refresh(),
-      child: PagingListener<int, MediaGridItem>(
-        controller: widget.controller,
-        builder: (context, state, fetchNextPage) {
-          late final Widget child;
-          if (pagingAwaitingFirstPage(state)) {
-            child = KeyedSubtree(
-              key: const ValueKey('media-grid-loading'),
-              child: pagingFill(
-                child: MediaGridSkeleton(config: config),
-              ),
-            );
-          } else if (state.items == null) {
-            child = KeyedSubtree(
-              key: const ValueKey('media-grid-error'),
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  ReaderFailureNotice(
-                    error: pagingErrorOf(state)?.error ?? state.error,
-                    onRetry: fetchNextPage,
-                  ),
-                ],
-              ),
-            );
-          } else if (state.items!.isEmpty) {
-            child = KeyedSubtree(
-              key: const ValueKey('media-grid-empty'),
-              child: pagingFill(
-                child: _MediaGridEmpty(message: widget.emptyMessage),
-              ),
-            );
-          } else if (widget.broadcastsOnly) {
-            child = _broadcastList(context, state, fetchNextPage);
-          } else {
-            child = KeyedSubtree(
-              key: const ValueKey('media-grid-content'),
-              child: PagedMasonryGridView<int, MediaGridItem>.count(
-                state: state,
-                fetchNextPage: fetchNextPage,
-                padding: config.padding,
-                crossAxisCount: config.columns,
-                mainAxisSpacing: config.spacing,
-                crossAxisSpacing: config.spacing,
-                addAutomaticKeepAlives: false,
-                builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
-                  itemBuilder: (context, item, index) => _MediaGridTile(
-                    item: item,
-                    gifGate: _gifGate,
-                    radius: config.radius,
-                    aspectRatio: mediaGridAspectRatio(
-                      item.aspectRatio,
-                      config,
+    return ReadRecovery(
+      changes: widget.controller,
+      isLoading: () => widget.controller.value.isLoading,
+      recoverableFailure: () => recoverableReadFailure(
+        pagingErrorOf(widget.controller.value)?.error ??
+            widget.controller.value.error,
+      ),
+      retry: widget.controller.fetchNextPage,
+      child: RefreshIndicator(
+        onRefresh: () async => widget.controller.refresh(),
+        child: PagingListener<int, MediaGridItem>(
+          controller: widget.controller,
+          builder: (context, state, fetchNextPage) {
+            late final Widget child;
+            if (pagingAwaitingFirstPage(state)) {
+              child = KeyedSubtree(
+                key: const ValueKey('media-grid-loading'),
+                child: pagingFill(child: MediaGridSkeleton(config: config)),
+              );
+            } else if (state.items == null) {
+              child = KeyedSubtree(
+                key: const ValueKey('media-grid-error'),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    ReaderFailureNotice(
+                      recoverAutomatically: false,
+                      error: pagingErrorOf(state)?.error ?? state.error,
+                      onRetry: fetchNextPage,
                     ),
-                    position: index + 1,
-                    total: state.items!.length,
-                    onTap: () => openMediaGridItem(
-                      context,
-                      item: item,
-                      index: index,
-                      controller: widget.controller,
-                    ),
-                  ),
-                  newPageErrorIndicatorBuilder: (context) =>
-                      ReaderFailureNotice(
-                        error: pagingErrorOf(state)?.error ?? state.error,
-                        onRetry: fetchNextPage,
-                      ),
+                  ],
                 ),
-              ),
-            );
-          }
-          return XtaAnimatedSwitcher(child: child);
-        },
+              );
+            } else if (state.items!.isEmpty) {
+              child = KeyedSubtree(
+                key: const ValueKey('media-grid-empty'),
+                child: pagingFill(
+                  child: _MediaGridEmpty(message: widget.emptyMessage),
+                ),
+              );
+            } else if (widget.broadcastsOnly) {
+              child = _broadcastList(context, state, fetchNextPage);
+            } else {
+              child = KeyedSubtree(
+                key: const ValueKey('media-grid-content'),
+                child: PagedMasonryGridView<int, MediaGridItem>.count(
+                  state: state,
+                  fetchNextPage: fetchNextPage,
+                  padding: config.padding,
+                  crossAxisCount: config.columns,
+                  mainAxisSpacing: config.spacing,
+                  crossAxisSpacing: config.spacing,
+                  addAutomaticKeepAlives: false,
+                  builderDelegate: PagedChildBuilderDelegate<MediaGridItem>(
+                    itemBuilder: (context, item, index) => _MediaGridTile(
+                      item: item,
+                      gifGate: _gifGate,
+                      radius: config.radius,
+                      aspectRatio: mediaGridAspectRatio(
+                        item.aspectRatio,
+                        config,
+                      ),
+                      position: index + 1,
+                      total: state.items!.length,
+                      onTap: () => openMediaGridItem(
+                        context,
+                        item: item,
+                        index: index,
+                        controller: widget.controller,
+                      ),
+                    ),
+                    newPageErrorIndicatorBuilder: (context) =>
+                        ReaderFailureNotice(
+                          recoverAutomatically: false,
+                          error: pagingErrorOf(state)?.error ?? state.error,
+                          onRetry: fetchNextPage,
+                        ),
+                  ),
+                ),
+              );
+            }
+            return XtaAnimatedSwitcher(child: child);
+          },
+        ),
       ),
     );
   }
+
   Widget _broadcastList(
     BuildContext context,
     PagingState<int, MediaGridItem> state,
@@ -261,6 +272,7 @@ class _MediaGridState extends State<MediaGrid>
             : preview;
       },
       newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+        recoverAutomatically: false,
         error: pagingErrorOf(state)?.error ?? state.error,
         onRetry: fetchNextPage,
       ),
