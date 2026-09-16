@@ -306,6 +306,10 @@ void main() {
     await _golden(tester, 'home-filter-keyboard-large');
     expect(tester.getRect(find.byKey(_filterSearch)).bottom, lessThanOrEqualTo(844 - 280));
     expect(_account('art'), findsNothing);
+    await tester.scrollUntilVisible(
+      _account('main'), 160,
+      scrollable: find.descendant(of: find.byType(HomeFilterSheet), matching: find.byType(Scrollable)).first,
+    );
     await _tap(tester, _account('main'));
     expect(h.accountsStore.state, isEmpty);
     final apply = find.byKey(const ValueKey('home-filter-apply'));

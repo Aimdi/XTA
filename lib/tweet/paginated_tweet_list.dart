@@ -31,6 +31,8 @@ import 'package:xta/ui/stale_feed_banner.dart';
 typedef TweetPageResult = ({List<TweetChain> chains, String? nextCursor});
 typedef TweetPageLoader = Future<TweetPageResult> Function(String? cursor);
 
+enum _FailedRead { refresh, repair }
+
 /// Why pagination stopped short of the end of the feed. Both stops are the
 /// same mechanism: hold the cursor back, show a card, resume on request.
 enum FeedPause {
@@ -55,6 +57,7 @@ class TweetFeedController {
   int _loadGeneration = 0;
   bool _disposed = false;
   Future<void>? _refreshing;
+  _FailedRead? _failedRead;
 
   /// When set, pagination pauses after this many pages per session instead of
   /// scrolling forever (`null` result → no cap). Feeds bind this to the
@@ -154,6 +157,7 @@ class TweetFeedController {
   }
 
   Future<CursorPage<String, TweetChain>> _fetch(String? cursor) async {
+    _failedRead = null;
     final generation = ++_loadGeneration;
     final pagingGeneration = _paging.generation;
     final result = await _paging.waitForRead(_loader!(cursor));
@@ -187,6 +191,7 @@ class TweetFeedController {
   Future<void> softRefresh() => _refreshing ??= _softRefresh().whenComplete(() => _refreshing = null);
 
   Future<void> _softRefresh() async {
+    _failedRead = null;
     final generation = ++_loadGeneration;
     _paging.beginReplacement();
     final pagingGeneration = _paging.generation;
@@ -201,11 +206,15 @@ class TweetFeedController {
       final page = _applyStops(result.chains, isLast ? null : next);
       _paging.replaceFirstPage(page.items, page.nextCursor);
     } catch (e, stackTrace) {
-      if (current()) _paging.setError(e, stackTrace);
+      if (current()) {
+        _failedRead = _FailedRead.refresh;
+        _paging.setError(e, stackTrace);
+      }
     }
   }
 
   Future<void> repairFirstPage() async {
+    _failedRead = null;
     final generation = ++_loadGeneration;
     _paging.beginReplacement();
     final pagingGeneration = _paging.generation;
@@ -229,7 +238,21 @@ class TweetFeedController {
       }
       _paging.appendMissing(visible, _pausedBy == null ? result.nextCursor : null);
     } catch (error, stack) {
-      if (current()) _paging.setError(error, stack);
+      if (current()) {
+        _failedRead = _FailedRead.repair;
+        _paging.setError(error, stack);
+      }
+    }
+  }
+
+  Future<void> retryFailedRead() async {
+    switch (_failedRead) {
+      case _FailedRead.refresh:
+        await softRefresh();
+      case _FailedRead.repair:
+        await repairFirstPage();
+      case null:
+        controller.fetchNextPage();
     }
   }
 
@@ -523,7 +546,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   void _retryFirstPage() {
     _staleBannerDismissed = false;
     _view.update(_view.state + 1);
-    _controller.fetchNextPage();
+    widget.feed.retryFailedRead();
   }
 
   /// The card that closes a feed which stopped on purpose, or null when
@@ -653,7 +676,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       isLoading: () => _controller.value.isLoading,
       recoverableFailure: () =>
           recoverableReadFailure(pagingErrorOf(_controller.value)?.error ?? _controller.value.error),
-      retry: () => _controller.fetchNextPage(),
+      retry: widget.feed.retryFailedRead,
       child: child,
     );
     if (widget.onRefresh == null) return child;
@@ -699,7 +722,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             context,
             items: buckets.last.isNotEmpty ? buckets.last : widget.interleaved,
             error: pagingErrorOf(state)?.error ?? state.error,
-            onRetry: fetchNextPage,
+            onRetry: widget.feed.retryFailedRead,
           );
         }
         // NestedScrollView allows exactly one inner PrimaryScrollController
@@ -718,7 +741,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             children: [
               ReaderFailureNotice(
                 error: pagingErrorOf(state)?.error ?? state.error,
-                onRetry: fetchNextPage,
+                onRetry: widget.feed.retryFailedRead,
                 recoverAutomatically: false,
               ),
             ],
@@ -766,12 +789,12 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
             firstPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
               error: pagingErrorOf(state)?.error ?? state.error,
-              onRetry: fetchNextPage,
+              onRetry: widget.feed.retryFailedRead,
               recoverAutomatically: false,
             ),
             newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
               error: pagingErrorOf(state)?.error ?? state.error,
-              onRetry: fetchNextPage,
+              onRetry: widget.feed.retryFailedRead,
               recoverAutomatically: false,
             ),
             noItemsFoundIndicatorBuilder: (context) => _buildEmpty(context, endCard),

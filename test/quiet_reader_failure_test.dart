@@ -45,7 +45,10 @@ void main() {
     var retries = 0;
     await _pump(
       tester,
-      Column(
+      ReadRecovery(
+        recoverableFailure: () => const SocketException('offline'),
+        retry: () => retries++,
+        child: Column(
         children: [
           ReaderFailureNotice(
             error: const SocketException('offline'),
@@ -54,6 +57,7 @@ void main() {
           ),
           const Text('Loaded posts'),
         ],
+        ),
       ),
     );
     expect(find.textContaining(L10n.current.reader_connection_failed), findsNothing);
@@ -152,7 +156,6 @@ void main() {
       tester,
       ReaderFailureNotice(
         error: const SocketException('offline'),
-        recoverAutomatically: false,
         onRetry: () => retries++,
         onDismiss: () => dismissals++,
       ),

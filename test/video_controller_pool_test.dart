@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_video.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 
 class _Video extends Fake implements PooledVideo {
@@ -67,6 +68,9 @@ Widget _startupApp(VideoControllerPool pool, Future<TweetVideoUrls> Function() u
 );
 
 void main() {
+  setUp(() => VisibilityDetectorController.instance.updateInterval = Duration.zero);
+  tearDown(() => VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500));
+
   testWidgets('stalled URL resolution ends the spinner and offers manual restart', (tester) async {
     final pool = VideoControllerPool(maxSize: 1);
     var calls = 0;
@@ -75,6 +79,8 @@ void main() {
       return Completer<TweetVideoUrls>().future;
     }));
     await tester.tap(find.byType(TweetVideo));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
     await tester.pump();
     expect(calls, 1);
     await tester.pump(const Duration(seconds: 9));
@@ -97,6 +103,9 @@ void main() {
     final startup = pool.acquire('post:0', () => pending.future);
     pool.release('post:0');
     await tester.pumpWidget(_startupApp(pool, () async => throw StateError('must share startup')));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
     await tester.pump(const Duration(seconds: 13));
     await tester.pump();
     expect(find.text(L10n.current.restart_video_player), findsOneWidget);

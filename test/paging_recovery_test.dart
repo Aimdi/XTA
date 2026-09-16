@@ -127,6 +127,35 @@ void main() {
     expect(feed.controller.value.isLoading, isFalse);
   });
 
+  testWidgets('retry repeats the failed refresh before using the pagination cursor', (tester) async {
+    final feed = TweetFeedController();
+    addTearDown(feed.dispose);
+    feed.loader = (_) async => (chains: [_chain('visible')], nextCursor: 'old-cursor');
+    feed.controller.fetchNextPage();
+    await tester.pump();
+    feed.loader = (_) async => throw TimeoutException('refresh failed');
+    await feed.softRefresh();
+    final cursors = <String?>[];
+    feed.loader = (cursor) async {
+      cursors.add(cursor);
+      return (chains: [_chain('fresh')], nextCursor: 'new-cursor');
+    };
+    await feed.retryFailedRead();
+    expect(cursors, [null]);
+    expect(feed.items!.single.id, 'fresh');
+    feed.loader = (_) async => throw TimeoutException('next page failed');
+    feed.controller.fetchNextPage();
+    await tester.pump();
+    feed.loader = (cursor) async {
+      cursors.add(cursor);
+      return (chains: [_chain('older')], nextCursor: null);
+    };
+    await feed.retryFailedRead();
+    await tester.pump();
+    expect(cursors, [null, 'new-cursor']);
+    expect(feed.items!.map((item) => item.id), ['fresh', 'older']);
+  });
+
   testWidgets('soft refresh cancels an older in-flight page', (tester) async {
     final old = Completer<TweetPageResult>();
     final feed = TweetFeedController();
