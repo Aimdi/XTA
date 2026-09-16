@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Nie udało się cofnąć. Dane mogły się zmienić.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Ostatnie operacje odczytu",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Przeszukaj wczytane wpisy",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Szukaj tekstu, linków lub autorów we wczytanych wpisach.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Spróbuj ponownie za {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Kopia na serwerze się zmieniła. Przywróć ją i sprawdź przed wysłaniem kolejnej.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Ten serwer nie potrafi bezpiecznie chronić kopii przed jednoczesnymi zmianami.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Poprzednie kopie",
+  "@sync_history": {}
 }

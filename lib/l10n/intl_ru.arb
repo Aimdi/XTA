@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Не удалось отменить. Возможно, данные изменились.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Последние операции чтения",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Поиск в загруженных записях",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Ищите текст, ссылки или авторов в уже загруженных записях.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Повторить через {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Резервная копия на сервере изменилась. Перед отправкой восстановите и проверьте её.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Этот сервер не может безопасно защитить резервные копии от одновременных изменений.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Предыдущие резервные копии",
+  "@sync_history": {}
 }

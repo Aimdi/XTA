@@ -1,3 +1,4 @@
+import 'package:xta/tweet/video_memory_observer.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
 import 'dart:async';
@@ -934,6 +935,11 @@ Future<void> main() async {
                 Provider(
                   create: (context) =>
                       VideoControllerPool(maxSize: kVideoPoolSize),
+                ),
+                Provider<VideoMemoryObserver>(
+                  lazy: false,
+                  create: (context) => VideoMemoryObserver(context.read<VideoControllerPool>()),
+                  dispose: (_, observer) => observer.dispose(),
                 ),
                 Provider(create: (context) => homeModel),
                 ChangeNotifierProvider(create: (context) => importDataModel),

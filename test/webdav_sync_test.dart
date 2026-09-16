@@ -1,3 +1,4 @@
+import 'support/memory_json_store.dart';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -37,91 +38,151 @@ void main() {
     });
   });
 
-  group('upload', () {
-    test('PUTs the body to the configured document', () async {
+  group('conditional upload', () {
+    test('first upload uses If-None-Match and records the returned validator', () async {
+      final storage = MemoryJsonStore();
       late http.Request seen;
       final sync = WebDavSync(
+        storage: storage,
         client: MockClient((request) async {
+          if (request.method == 'GET') return http.Response('', 404);
           seen = request;
-          return http.Response('', 201);
+          return http.Response('', 201, headers: {'etag': '"new"'});
         }),
       );
-
-      final result = await sync.upload(_config, '{"hello":"world"}');
-
-      expect(result.isSuccess, isTrue);
-      expect(seen.method, 'PUT');
-      expect(seen.url.toString(), _config.url);
-      expect(seen.body, '{"hello":"world"}');
-      expect(seen.headers['authorization'], isNotNull);
+      expect((await sync.upload(_config, '{"hello":"world"}')).isSuccess, isTrue);
+      expect(seen.headers['if-none-match'], '*');
+      expect(jsonDecode(seen.body)['hello'], 'world');
+      expect(storage.values.values, contains('"new"'));
     });
-
-    // The normal state of a first sync, not a failure worth showing.
-    test('creates the parent collection when it is missing, then retries', () async {
-      final calls = <String>[];
-      final sync = WebDavSync(
-        client: MockClient((request) async {
-          calls.add('${request.method} ${request.url.path}');
-          if (request.method == 'MKCOL') {
-            return http.Response('', 201);
-          }
-          return http.Response('', calls.where((c) => c.startsWith('PUT')).length == 1 ? 409 : 201);
-        }),
-      );
-
-      final result = await sync.upload(_config, '{}');
-
-      expect(result.isSuccess, isTrue);
-      expect(calls, ['PUT /dav/xta/backup.json', 'MKCOL /dav/xta', 'PUT /dav/xta/backup.json']);
-    });
-
-    test('a collection that already exists is not an error', () async {
+    test('missing parent collection retains the conditional header on retry', () async {
       var puts = 0;
       final sync = WebDavSync(
+        storage: MemoryJsonStore(),
         client: MockClient((request) async {
-          if (request.method == 'MKCOL') {
-            return http.Response('', 405);
-          }
-          return http.Response('', ++puts == 1 ? 404 : 201);
+          if (request.method == 'GET') return http.Response('', 404);
+          if (request.method == 'MKCOL') return http.Response('', 201);
+          expect(request.headers['if-none-match'], '*');
+          return ++puts == 1 ? http.Response('', 409) : http.Response('', 201, headers: {'etag': '"new"'});
         }),
       );
-
       expect((await sync.upload(_config, '{}')).isSuccess, isTrue);
+      expect(puts, 2);
     });
-
-    test('bad credentials are reported as such, not as a generic failure', () async {
-      final sync = WebDavSync(client: MockClient((_) async => http.Response('', 401)));
-
-      expect((await sync.upload(_config, '{}')).outcome, WebDavOutcome.unauthorized);
-    });
-
-    test('an unreachable server is a network error, not a server error', () async {
-      final sync = WebDavSync(client: MockClient((_) async => throw const SocketExceptionStub()));
-
-      final result = await sync.upload(_config, '{}');
-
-      expect(result.outcome, WebDavOutcome.networkError);
-      expect(result.detail, isNotNull);
-    });
-
-    test('nothing is sent when the target is not configured or not https', () async {
-      var called = false;
+    test('an unseen remote version is never overwritten', () async {
+      final calls = <String>[];
       final sync = WebDavSync(
-        client: MockClient((_) async {
-          called = true;
-          return http.Response('', 200);
+        storage: MemoryJsonStore(),
+        client: MockClient((request) async {
+          calls.add(request.method);
+          return http.Response('{}', 200, headers: {'etag': '"other-device"'});
         }),
       );
-
+      expect((await sync.upload(_config, '{}')).outcome, WebDavOutcome.conflict);
+      expect(calls, ['GET']);
+    });
+    test('another device changing the file during upload causes 412 after archiving', () async {
+      final store = MemoryJsonStore();
+      final calls = <http.Request>[];
+      final sync = WebDavSync(
+        storage: store,
+        client: MockClient((request) async {
+          calls.add(request);
+          if (request.method == 'GET') return http.Response('{"old":true}', 200, headers: {'etag': '"old"'});
+          if (request.url.path.contains('.versions/')) {
+            expect(request.body, '{"old":true}');
+            expect(request.headers['if-none-match'], '*');
+            return http.Response('', 201, headers: {'etag': '"archive"'});
+          }
+          expect(request.headers['if-match'], '"old"');
+          return http.Response('', 412);
+        }),
+      );
+      await sync.acknowledge(_config, await sync.download(_config));
+      expect((await sync.upload(_config, '{"new":true}')).outcome, WebDavOutcome.conflict);
+      expect(store.values.values, contains('"old"'));
+      expect(calls.where((r) => r.method == 'PUT'), hasLength(2));
+    });
+    test('successful replacement preserves a version that can be restored', () async {
+      final store = MemoryJsonStore();
+      final objects = <String, String>{'/dav/xta/backup.json': '{"old":true}'};
+      var etag = '"old"';
+      final sync = WebDavSync(
+        storage: store,
+        client: MockClient((request) async {
+          if (request.method == 'GET') return http.Response(objects[request.url.path]!, 200, headers: {'etag': etag});
+          objects[request.url.path] = request.body;
+          if (!request.url.path.contains('.versions/')) etag = '"new"';
+          return http.Response('', 201, headers: {'etag': etag});
+        }),
+      );
+      await sync.acknowledge(_config, await sync.download(_config));
+      expect((await sync.upload(_config, '{"new":true}')).isSuccess, isTrue);
+      final current = await sync.download(_config);
+      final versions = webDavVersions(current.body);
+      expect(versions, hasLength(1));
+      expect((await sync.downloadVersion(_config, versions.single)).body, '{"old":true}');
+      expect(store.values.values, contains('"new"'));
+    });
+    test('weak or missing validators refuse to overwrite remote backups', () async {
+      for (final headers in [
+        <String, String>{},
+        {'etag': 'W/"weak"'},
+      ]) {
+        final sync = WebDavSync(
+          storage: MemoryJsonStore(),
+          client: MockClient((_) async => http.Response('{}', 200, headers: headers)),
+        );
+        expect((await sync.upload(_config, '{}')).outcome, WebDavOutcome.unsafeServer);
+      }
+    });
+    test('archive failure prevents replacing the current backup', () async {
+      final sync = WebDavSync(
+        storage: MemoryJsonStore(),
+        client: MockClient((request) async {
+          if (request.method == 'GET') return http.Response('{}', 200, headers: {'etag': '"old"'});
+          expect(request.url.path, contains('.versions/'));
+          return http.Response('', 507);
+        }),
+      );
+      await sync.acknowledge(_config, await sync.download(_config));
+      expect((await sync.upload(_config, '{}')).outcome, WebDavOutcome.serverError);
+    });
+    test('bad credentials and network failures remain distinct', () async {
+      expect(
+        (await WebDavSync(client: MockClient((_) async => http.Response('', 401))).upload(_config, '{}')).outcome,
+        WebDavOutcome.unauthorized,
+      );
+      expect(
+        (await WebDavSync(
+          client: MockClient((_) async => throw const SocketExceptionStub()),
+        ).upload(_config, '{}')).outcome,
+        WebDavOutcome.networkError,
+      );
+    });
+    test('no request is made for missing settings or insecure URLs', () async {
+      final sync = WebDavSync(client: MockClient((_) async => throw StateError('must not contact')));
       expect(
         (await sync.upload(const WebDavConfig(url: '', username: '', password: ''), '{}')).outcome,
         WebDavOutcome.notConfigured,
       );
       expect(
-        (await sync.upload(const WebDavConfig(url: 'http://cloud/x.json', username: 'a', password: 'b'), '{}')).outcome,
+        (await sync.upload(const WebDavConfig(url: 'http://cloud/x', username: 'a', password: 'b'), '{}')).outcome,
         WebDavOutcome.insecureUrl,
       );
-      expect(called, isFalse);
+    });
+    test('history cannot redirect authenticated reads to another server or path', () {
+      expect(
+        webDavVersions(
+          jsonEncode({
+            '_xtaWebDavHistory': [
+              {'file': '../other.json', 'at': '2026-01-01'},
+              {'file': 'https://evil/x', 'at': '2026-01-01'},
+            ],
+          }),
+        ),
+        isEmpty,
+      );
     });
   });
 

@@ -1,4 +1,5 @@
 import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/search/loaded_feed_search.dart';
 import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/ui/reader_failure.dart';
@@ -341,8 +342,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     }
     if (!identical(controller, _refreshController)) {
       _refreshController?.unregister(_showRefresh);
+      _refreshController?.unregisterSearch(_searchLoaded);
       _refreshController = controller;
       _refreshController?.register(_showRefresh);
+      _refreshController?.registerSearch(_searchLoaded);
     }
   }
 
@@ -362,6 +365,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   void dispose() {
     _controller.removeListener(_onControllerChanged);
     _refreshController?.unregister(_showRefresh);
+    _refreshController?.unregisterSearch(_searchLoaded);
     _view.destroy();
     super.dispose();
   }
@@ -379,6 +383,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   Future<void> _showRefresh() async {
     await _refreshKey.currentState?.show();
   }
+
+  Future<void> _searchLoaded() => showLoadedFeedSearch(
+    context,
+    loadedFeedEntries(widget.feed.items ?? widget.firstPagePreview ?? const [], widget.interleaved, widget.username),
+  );
 
   // Keyed by chain id so a prepending refresh shifts elements instead of
   // re-associating every visible tile with a different chain by index.

@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Не вдалося скасувати. Можливо, дані змінилися.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Останні операції читання",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Пошук у завантажених дописах",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Шукайте текст, посилання або авторів у вже завантажених дописах.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Повторити через {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Резервна копія на сервері змінилася. Перед надсиланням відновіть і перевірте її.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Цей сервер не може безпечно захистити резервні копії від одночасних змін.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Попередні резервні копії",
+  "@sync_history": {}
 }

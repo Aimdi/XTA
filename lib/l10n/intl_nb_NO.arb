@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Kunne ikke angre. Dataene kan ha blitt endret.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Nylige leseoperasjoner",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Søk i innlastede innlegg",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Søk etter tekst, lenker eller forfattere i innlegg som allerede er lastet inn.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Prøv igjen om {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Sikkerhetskopien på serveren er endret. Gjenopprett og kontroller den før opplasting.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Denne serveren kan ikke beskytte sikkerhetskopier mot samtidige endringer.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Tidligere sikkerhetskopier",
+  "@sync_history": {}
 }

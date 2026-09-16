@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Tidak dapat mengurungkan. Data mungkin telah berubah.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Operasi pembacaan terbaru",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Cari di postingan yang dimuat",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Cari teks, tautan, atau penulis dalam postingan yang sudah dimuat.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Coba lagi dalam {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Cadangan di server telah berubah. Pulihkan dan periksa sebelum mengunggah.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Server ini tidak dapat melindungi cadangan dari perubahan bersamaan dengan aman.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Cadangan sebelumnya",
+  "@sync_history": {}
 }

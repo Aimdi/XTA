@@ -1,3 +1,4 @@
+import 'package:xta/catcher/exceptions.dart';
 import 'dart:async';
 import 'package:xta/utils/read_activity.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -35,9 +36,12 @@ class ProfileModel extends Store<Profile> {
   @override
   dynamic get error => triple.error;
 
-  Future<void> loadProfileById(String id) => _load('id:$id', () => byId(id));
-  Future<void> loadProfileByScreenName(String name) =>
-      _load('name:${name.replaceFirst('@', '').toLowerCase()}', () => byName(name));
+  Future<void> loadProfileById(String id) =>
+      _load('id:$id', () => withRateLimitOperations(['UserByRestId'], () => byId(id)));
+  Future<void> loadProfileByScreenName(String name) => _load(
+    'name:${name.replaceFirst('@', '').toLowerCase()}',
+    () => withRateLimitOperations(['UserByScreenName'], () => byName(name)),
+  );
 
   Future<void> _load(String key, Future<Profile> Function() fetch) async {
     final generation = ++_generation;

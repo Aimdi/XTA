@@ -1,4 +1,5 @@
 import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/ui/rate_limit_retry.dart';
 import 'dart:async';
 import 'dart:io' show SocketException;
 import 'package:flutter/material.dart';
@@ -76,7 +77,10 @@ class ReaderFailureNotice extends StatelessWidget {
               Wrap(
                 spacing: 8,
                 children: [
-                  TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+                  if (kind == ReadFailureKind.rateLimited)
+                    RateLimitRetryButton(error: error, onRetry: onRetry)
+                  else
+                    TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
                   if (kind == ReadFailureKind.session && source == 'x')
                     TextButton.icon(
                       onPressed: () =>

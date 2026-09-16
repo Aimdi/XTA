@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Ezin izan da desegin. Baliteke datuak aldatu izana.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Azken irakurketa-eragiketak",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Bilatu kargatutako argitalpenetan",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Bilatu testua, estekak edo egileak dagoeneko kargatutako argitalpenetan.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Saiatu berriro {time} barru",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Zerbitzariko babeskopia aldatu da. Leheneratu eta berrikusi beste bat igo aurretik.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Zerbitzari honek ezin ditu babeskopiak aldi bereko aldaketetatik modu seguruan babestu.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Aurreko babeskopiak",
+  "@sync_history": {}
 }

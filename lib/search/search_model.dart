@@ -1,3 +1,4 @@
+import 'package:xta/catcher/exceptions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -13,38 +14,28 @@ class SearchViewState {
   final String query;
   final AdvancedSearchState advanced;
 
-  const SearchViewState({
-    this.query = '',
-    this.advanced = const AdvancedSearchState(),
-  });
+  const SearchViewState({this.query = '', this.advanced = const AdvancedSearchState()});
 
   bool get hasQuery => query.isNotEmpty;
 
   SearchViewState copyWith({String? query, AdvancedSearchState? advanced}) {
-    return SearchViewState(
-      query: query ?? this.query,
-      advanced: advanced ?? this.advanced,
-    );
+    return SearchViewState(query: query ?? this.query, advanced: advanced ?? this.advanced);
   }
 }
 
 /// Committed result query plus the optional structured filters that produced
 /// it. The text controller remains a draft until debounce or IME submission.
 class SearchViewStore extends Store<SearchViewState> {
-  SearchViewStore({String initialQuery = ''})
-      : super(SearchViewState(query: initialQuery.trim()));
+  SearchViewStore({String initialQuery = ''}) : super(SearchViewState(query: initialQuery.trim()));
 
   void commitQuery(String query) {
     final trimmed = query.trim();
-    final advanced = state.advanced.query == trimmed
-        ? state.advanced
-        : const AdvancedSearchState();
+    final advanced = state.advanced.query == trimmed ? state.advanced : const AdvancedSearchState();
     update(SearchViewState(query: trimmed, advanced: advanced));
   }
 
   void invalidateAdvancedForDraft(String query) {
-    if (state.advanced.activeFilters.isEmpty ||
-        state.advanced.query == query.trim()) {
+    if (state.advanced.activeFilters.isEmpty || state.advanced.query == query.trim()) {
       return;
     }
     update(state.copyWith(advanced: const AdvancedSearchState()));
@@ -71,19 +62,15 @@ class SearchTweetsPagination {
   final String product;
   String _query;
 
-  SearchTweetsPagination({required this.product, String initialQuery = ''})
-      : _query = initialQuery;
+  SearchTweetsPagination({required this.product, String initialQuery = ''}) : _query = initialQuery;
 
   Future<TweetPageResult> loadPage(String? cursor) async {
     if (_query.isEmpty) {
       return (chains: <TweetChain>[], nextCursor: null);
     }
-    final result = await Twitter.searchTweets(
-      _query,
-      true,
-      product: product,
-      cursor: cursor,
-    );
+    final result = await withRateLimitOperations([
+      'SearchTimeline',
+    ], () => Twitter.searchTweets(_query, true, product: product, cursor: cursor));
     return (chains: result.chains, nextCursor: result.cursorBottom);
   }
 
@@ -99,25 +86,20 @@ class SearchTweetsPagination {
 }
 
 class SearchMediaPagination {
-  late final CursorPagingController<String, MediaGridItem> _paging =
-      CursorPagingController(_loadPage);
+  late final CursorPagingController<String, MediaGridItem> _paging = CursorPagingController(_loadPage);
   String _query;
 
   SearchMediaPagination({String initialQuery = ''}) : _query = initialQuery;
 
-  PagingController<int, MediaGridItem> get pagingController =>
-      _paging.pagingController;
+  PagingController<int, MediaGridItem> get pagingController => _paging.pagingController;
 
   Future<CursorPage<String, MediaGridItem>> _loadPage(String? cursor) async {
     if (_query.isEmpty) {
       return (items: const <MediaGridItem>[], nextCursor: null);
     }
-    final result = await Twitter.searchTweets(
-      _query,
-      true,
-      product: 'Media',
-      cursor: cursor,
-    );
+    final result = await withRateLimitOperations([
+      'SearchTimeline',
+    ], () => Twitter.searchTweets(_query, true, product: 'Media', cursor: cursor));
     return mediaPageFromStatus(result, cursor);
   }
 

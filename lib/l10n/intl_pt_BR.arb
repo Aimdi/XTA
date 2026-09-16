@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Não foi possível desfazer. Os dados podem ter sido alterados.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Operações de leitura recentes",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Pesquisar nas publicações carregadas",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Pesquise texto, links ou autores nas publicações já carregadas.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Tentar novamente em {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "O backup no servidor mudou. Restaure e confira antes de enviar outro.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Este servidor não consegue proteger os backups contra alterações simultâneas.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Backups anteriores",
+  "@sync_history": {}
 }

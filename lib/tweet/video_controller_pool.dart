@@ -148,6 +148,15 @@ class VideoControllerPool {
 
   bool anyVisible(String key) => _visibleTokens[key]?.isNotEmpty ?? false;
 
+  /// Low-memory cleanup must never invalidate a player held by a widget.
+  void releaseUnused() {
+    final idle = _entries.keys.where((key) => _entries[key]!.refCount == 0 && !anyVisible(key)).toList();
+    for (final key in idle) {
+      _entries.remove(key)?.disposeWhenReady();
+      _visibleTokens.remove(key);
+    }
+  }
+
   /// Pause every other policy-pausable player so only [active] is audible.
   void pauseOthers(PooledVideo active) {
     for (final entry in _entries.values) {
@@ -170,10 +179,7 @@ class VideoControllerPool {
     hasEvictable: _entries.values.any((e) => e.refCount == 0),
   );
 
-  Future<PooledVideo> acquire(
-    String key,
-    Future<PooledVideo> Function() create,
-  ) {
+  Future<PooledVideo> acquire(String key, Future<PooledVideo> Function() create) {
     var entry = _entries.remove(key);
     if (entry != null) {
       _entries[key] = entry;
@@ -207,10 +213,7 @@ class VideoControllerPool {
   }
 
   void _evict({bool makeRoom = false}) {
-    final ceiling = videoPoolEvictionCeiling(
-      maxSize: maxSize,
-      makeRoom: makeRoom,
-    );
+    final ceiling = videoPoolEvictionCeiling(maxSize: maxSize, makeRoom: makeRoom);
     while (_entries.length > ceiling) {
       String? victimKey;
       for (final e in _entries.entries) {

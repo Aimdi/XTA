@@ -1,3 +1,4 @@
+import 'package:xta/catcher/exceptions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:xta/client/client.dart';
@@ -94,15 +95,18 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
     return loadTweetsCounter;
   }
 
-  Future<TweetStatus> _load(String? cursor) => Twitter.getTweets(
-    widget.user.idStr!,
-    widget.type,
-    widget.pinnedTweets,
-    cursor: cursor,
-    count: pageSize,
-    includeReplies: widget.includeReplies,
-    getTweetsCounter: getLoadTweetsCounter,
-    incrementTweetsCounter: incrementLoadTweetsCounter,
+  Future<TweetStatus> _load(String? cursor) => withRateLimitOperations(
+    [widget.includeReplies ? 'UserTweetsAndReplies' : 'UserTweets'],
+    () => Twitter.getTweets(
+      widget.user.idStr!,
+      widget.type,
+      widget.pinnedTweets,
+      cursor: cursor,
+      count: pageSize,
+      includeReplies: widget.includeReplies,
+      getTweetsCounter: getLoadTweetsCounter,
+      incrementTweetsCounter: incrementLoadTweetsCounter,
+    ),
   );
 
   /// The first page of a profile, from cache when it is fresh enough, and from

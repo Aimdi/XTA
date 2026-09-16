@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "No se pudo deshacer. Puede que los datos hayan cambiado.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Operaciones de lectura recientes",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Buscar en publicaciones cargadas",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Busca texto, enlaces o autores en las publicaciones ya cargadas.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Reintentar en {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "La copia del servidor ha cambiado. Restáurala y revísala antes de subir otra.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Este servidor no puede proteger las copias de seguridad frente a cambios simultáneos.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Copias anteriores",
+  "@sync_history": {}
 }

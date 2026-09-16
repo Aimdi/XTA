@@ -475,6 +475,33 @@ void main() {
   }, skip: _before);
 
   testWidgets(
+    'Home searches its loaded snapshot and returns to the same feed',
+    (tester) async {
+      final h = _HomeHarness();
+      addTearDown(() => h.close(tester));
+      await tester.runAsync(h.seed);
+      await tester.pumpWidget(h.app(xLookLightTheme(null)));
+      await _waitForFollowing(tester);
+      final cached = h.cache.getOrCreateController('home--1');
+      final items = List.of(cached.items!);
+      await tester.tap(find.byIcon(Icons.manage_search));
+      await tester.pumpAndSettle();
+      expect(find.text(L10n.current.reader_search_loaded_hint), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'spare parts');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('spare parts', findRichText: true), findsWidgets);
+      expect(find.textContaining('Took the long way home', findRichText: true), findsNothing);
+      Navigator.pop(tester.element(find.byType(TextField)));
+      await tester.pumpAndSettle();
+      expect(cached.items, orderedEquals(items));
+      expect(find.textContaining('Took the long way home', findRichText: true), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+    skip: _before,
+    timeout: const Timeout(Duration(seconds: 90)),
+  );
+
+  testWidgets(
     'Home order updates the actual Following group and keeps filters reachable',
     (tester) async {
       final h = _HomeHarness();

@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Nie ŭdałosia admianić. Mahčyma, danyja źmianilisia.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Apošnija aperacyi čytańnia",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Pošuk u zahružanych dopisach",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Šukajcie tekst, spasylki ci aŭtaraŭ va ŭžo zahružanych dopisach.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Paŭtaryć praz {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Rezervovaja kopija na servery źmianilasia. Pierad adpraŭkaj adnavićie i praviercie jaje.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Hety server nie moža biaśpiečna abaranić rezervovyja kopii ad adnačasovych źmien.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Papiarednija rezervovyja kopii",
+  "@sync_history": {}
 }

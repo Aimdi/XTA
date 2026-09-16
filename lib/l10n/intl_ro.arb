@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Nu s-a putut anula. Este posibil ca datele să se fi schimbat.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Operațiuni de citire recente",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Caută în postările încărcate",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Caută text, linkuri sau autori în postările deja încărcate.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Încearcă din nou peste {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Copia de pe server s-a modificat. Restaureaz-o și verific-o înainte de încărcare.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Acest server nu poate proteja copiile de siguranță împotriva modificărilor simultane.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Copii anterioare",
+  "@sync_history": {}
 }

@@ -1,70 +1,75 @@
 name: api-canary
-
-# X can rotate a GraphQL query id at any time, and the app only finds out when
-# a feature starts returning 404. This probes every endpoint daily so breakage
-# is discovered here rather than in a bug report.
 on:
   workflow_dispatch:
   schedule:
-    # 05:20 UTC — off the hour, where scheduled-run contention is lowest.
     - cron: '20 5 * * *'
-
 permissions:
   contents: read
   issues: write
-
+concurrency:
+  group: api-canary-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   probe:
+    name: Live checks - ${{ matrix.service }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - service: X
+            key: x
+            tests: test/live/guest_api_smoke_test.dart test/live/endpoint_canary_test.dart
+          - service: Instagram
+            key: instagram
+            tests: test/live/instagram_search_smoke_test.dart
+          - service: TikTok
+            key: tiktok
+            tests: test/live/tiktok_search_smoke_test.dart
+          - service: Substack
+            key: substack
+            tests: test/live/substack_custom_domain_smoke_test.dart
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install and set up Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version-file: .fvmrc
           cache: true
-
       - name: Install dependencies
         run: flutter pub get
-
       - name: Generate sources
         run: |
-          dart run dart_pubspec_licenses:generate
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
-
       - name: Probe live endpoints
         id: probe
+        env:
+          TEST_FILES: ${{ matrix.tests }}
         run: |
-          set -o pipefail
-          flutter test test/live --dart-define=RUN_LIVE=true --reporter expanded 2>&1 | tee canary.log
-
-      - name: Summarise
+          read -ra files <<< "$TEST_FILES"
+          flutter test "${files[@]}" --dart-define=RUN_LIVE=true --reporter json > canary.jsonl 2>&1
+      - name: Summarise this service
         if: always()
+        env:
+          SERVICE: ${{ matrix.service }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PROBE_OUTCOME: ${{ steps.probe.outcome }}
         run: |
-          {
-            echo '### Endpoint canary'
-            echo '```'
-            grep -E 'ROTATED|alive|ok|rate limited' canary.log || echo 'no endpoint table in output'
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # One open issue per breakage, not one per day: an existing report gets a
-      # comment instead so the thread stays the single record of the outage.
-      - name: Report breakage
-        if: failure()
+          python3 scripts/report_canary.py "$SERVICE" "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md
+          cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Report service failure
+        if: failure() && steps.probe.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SERVICE: ${{ matrix.service }}
+          SERVICE_KEY: ${{ matrix.key }}
         run: |
-          body=$(printf 'The daily endpoint canary failed.\n\n%s\n\n```\n%s\n```\n' \
-            "$RUN_URL" "$(grep -E 'ROTATED|alive|ok|rate limited' canary.log | head -40)")
-
-          existing=$(gh issue list --label api-breakage --state open --limit 1 --json number --jq '.[0].number')
+          label="canary-$SERVICE_KEY"
+          gh label create "$label" --color B60205 --description "Live checks for $SERVICE" --force
+          existing=$(gh issue list --label "$label" --state open --limit 1 --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" --body "$body"
+            gh issue comment "$existing" --body-file canary-report.md
           else
-            gh label create api-breakage --color B60205 --description "X changed its API" 2>/dev/null || true
-            gh issue create --title "X API canary failed" --label api-breakage --body "$body"
+            gh issue create --title "Live checks failed: $SERVICE" --label "$label" --body-file canary-report.md
           fi

@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Impossible d’annuler. Les données ont peut-être changé.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Opérations de lecture récentes",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Rechercher dans les publications chargées",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Recherchez du texte, des liens ou des auteurs dans les publications déjà chargées.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Réessayer dans {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "La sauvegarde sur le serveur a changé. Restaurez-la et vérifiez-la avant tout envoi.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Ce serveur ne peut pas protéger les sauvegardes contre les modifications simultanées.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Sauvegardes précédentes",
+  "@sync_history": {}
 }

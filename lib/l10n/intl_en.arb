@@ -3606,5 +3606,23 @@
   "reader_undo_unavailable": "Could not undo. The data may have changed.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Recent read operations",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Search loaded posts",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Search text, links or authors in posts already loaded.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Retry in {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "The server backup changed. Restore and review it before uploading.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "This server cannot safely protect backups from simultaneous changes.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Previous backups",
+  "@sync_history": {}
 }

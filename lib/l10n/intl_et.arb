@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Tagasivõtmine ebaõnnestus. Andmed võivad olla muutunud.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Hiljutised lugemistoimingud",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Otsi laaditud postitustest",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Otsi teksti, linke või autoreid juba laaditud postitustest.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Proovi uuesti {time} pärast",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Serveri varukoopia on muutunud. Enne üleslaadimist taasta see ja vaata üle.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "See server ei saa varukoopiaid samaaegsete muudatuste eest turvaliselt kaitsta.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Varasemad varukoopiad",
+  "@sync_history": {}
 }

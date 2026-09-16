@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "無法復原。資料可能已變更。",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "最近的讀取操作",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "搜尋已載入的貼文",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "在已載入的貼文中搜尋文字、連結或作者。",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "{time} 後重試",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "伺服器上的備份已變更。請先還原並檢查，再上傳。",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "此伺服器無法安全地保護備份免受同時變更的影響。",
+  "@sync_unsafe_server": {},
+  "sync_history": "先前的備份",
+  "@sync_history": {}
 }

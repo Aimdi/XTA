@@ -3464,5 +3464,23 @@
   "reader_undo_unavailable": "Không thể hoàn tác. Dữ liệu có thể đã thay đổi.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Các thao tác đọc gần đây",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Tìm trong bài viết đã tải",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Tìm văn bản, liên kết hoặc tác giả trong các bài viết đã tải.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Thử lại sau {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Bản sao lưu trên máy chủ đã thay đổi. Hãy khôi phục và kiểm tra trước khi tải lên.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Máy chủ này không thể bảo vệ bản sao lưu an toàn trước các thay đổi đồng thời.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Các bản sao lưu trước",
+  "@sync_history": {}
 }

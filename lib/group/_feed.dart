@@ -1,3 +1,4 @@
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_failure.dart';
@@ -782,7 +783,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         ReadWork.checkpoint();
         final network = await fetchChunkWithFallback(
           search: () => _networkReads.start(
-            () => Twitter.searchTweets(query, widget.includeReplies, cursor: searchCursor),
+            () => withRateLimitOperations([
+              'SearchTimeline',
+            ], () => Twitter.searchTweets(query, widget.includeReplies, cursor: searchCursor)),
             timeout: const Duration(seconds: 20),
             operation: ReadOperation.groupSearch,
           ),
@@ -834,7 +837,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
               ReadWork.checkpoint();
               final bottom = page.cursorBottom;
               page = await _networkReads.start(
-                () => Twitter.searchTweets(query, widget.includeReplies, cursor: bottom),
+                () => withRateLimitOperations([
+                  'SearchTimeline',
+                ], () => Twitter.searchTweets(query, widget.includeReplies, cursor: bottom)),
                 timeout: const Duration(seconds: 15),
                 operation: ReadOperation.groupGap,
               );

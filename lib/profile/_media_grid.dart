@@ -1,3 +1,4 @@
+import 'package:xta/catcher/exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/client/client.dart';
@@ -13,19 +14,13 @@ class ProfileMediaGrid extends StatefulWidget {
   final BasePrefService pref;
   final MediaFilter filter;
 
-  const ProfileMediaGrid({
-    super.key,
-    required this.user,
-    required this.pref,
-    this.filter = MediaFilter.all,
-  });
+  const ProfileMediaGrid({super.key, required this.user, required this.pref, this.filter = MediaFilter.all});
 
   @override
   State<ProfileMediaGrid> createState() => _ProfileMediaGridState();
 }
 
-class _ProfileMediaGridState extends State<ProfileMediaGrid>
-    with AutomaticKeepAliveClientMixin<ProfileMediaGrid> {
+class _ProfileMediaGridState extends State<ProfileMediaGrid> with AutomaticKeepAliveClientMixin<ProfileMediaGrid> {
   late CursorPagingController<String, MediaGridItem> _paging;
 
   @override
@@ -76,24 +71,22 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid>
       _seen.clear();
     }
 
-    return mediaPageWithLookahead(
-      cursor,
-      _chainsAfter,
-      _unseenItems,
-      maxLookahead: mediaLookaheadFor(widget.filter),
-    );
+    return mediaPageWithLookahead(cursor, _chainsAfter, _unseenItems, maxLookahead: mediaLookaheadFor(widget.filter));
   }
 
   Future<ChainPage> _chainsAfter(String? cursor) async {
-    var result = await Twitter.getTweets(
-      widget.user.idStr!,
-      mediaTimelineTypeFor(widget.filter),
-      const [],
-      cursor: cursor,
-      count: pageSize,
-      includeReplies: false,
-      getTweetsCounter: getLoadTweetsCounter,
-      incrementTweetsCounter: incrementLoadTweetsCounter,
+    var result = await withRateLimitOperations(
+      [mediaTimelineTypeFor(widget.filter) == 'media' ? 'UserMedia' : 'UserTweets'],
+      () => Twitter.getTweets(
+        widget.user.idStr!,
+        mediaTimelineTypeFor(widget.filter),
+        const [],
+        cursor: cursor,
+        count: pageSize,
+        includeReplies: false,
+        getTweetsCounter: getLoadTweetsCounter,
+        incrementTweetsCounter: incrementLoadTweetsCounter,
+      ),
     );
 
     final page = mediaPageFromStatus(result, cursor);
@@ -102,10 +95,7 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid>
 
   List<MediaGridItem> _unseenItems(List<TweetChain> chains) {
     final raw = mediaItemsFromChains(chains);
-    return raw
-        .where(widget.filter.accepts)
-        .where((m) => _seen.add('${m.tweetId}/${m.mediaIndex}'))
-        .toList();
+    return raw.where(widget.filter.accepts).where((m) => _seen.add('${m.tweetId}/${m.mediaIndex}')).toList();
   }
 
   @override
@@ -119,9 +109,7 @@ class _ProfileMediaGridState extends State<ProfileMediaGrid>
         broadcastsOnly: widget.filter == MediaFilter.broadcasts,
         controller: _paging.pagingController,
         firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets,
-        newPageErrorPrefix: L10n.of(
-          context,
-        ).unable_to_load_the_next_page_of_tweets,
+        newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
         emptyMessage: L10n.of(context).could_not_find_any_tweets_by_this_user,
       ),
     );

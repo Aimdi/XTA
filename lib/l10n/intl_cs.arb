@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "Akci nelze vrátit zpět. Data se mohla změnit.",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "Nedávné operace čtení",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Prohledat načtené příspěvky",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Hledejte text, odkazy nebo autory v již načtených příspěvcích.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Zkusit znovu za {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Záloha na serveru se změnila. Před nahráním ji obnovte a zkontrolujte.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Tento server nedokáže bezpečně chránit zálohy před souběžnými změnami.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Předchozí zálohy",
+  "@sync_history": {}
 }

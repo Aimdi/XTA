@@ -3467,5 +3467,23 @@
   "reader_undo_unavailable": "元に戻せませんでした。データが変更された可能性があります。",
   "@reader_undo_unavailable": {},
   "reader_recent_reads": "最近の読み込み処理",
-  "@reader_recent_reads": {}
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "読み込み済みの投稿を検索",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "読み込み済みの投稿から本文、リンク、投稿者を検索します。",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "{time} 後に再試行",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "サーバーのバックアップが変更されています。アップロードする前に復元して内容を確認してください。",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "このサーバーでは、同時に行われる変更からバックアップを安全に保護できません。",
+  "@sync_unsafe_server": {},
+  "sync_history": "以前のバックアップ",
+  "@sync_history": {}
 }
