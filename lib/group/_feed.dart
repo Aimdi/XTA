@@ -882,6 +882,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       ];
     }
 
+    if (!mounted) throw const ReadCancelled();
     if (shouldShowUnrelatedPostsInFeedWarning &&
         !PrefService.of(context, listen: false).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
       await showUnrelatedPostsInFeedWarning();

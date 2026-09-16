@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
 
 class PendingUndo {
   final Future<bool> Function() _restore;

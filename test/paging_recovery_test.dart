@@ -113,4 +113,34 @@ void main() {
     expect(feed.nextCursor, 'fresh');
     expect(feed.controller.value.isLoading, isFalse);
   });
+  testWidgets('repairing missing first-page batches preserves older pages and cursor', (tester) async {
+    final feed = TweetFeedController();
+    addTearDown(feed.dispose);
+    feed.loader = (cursor) async => cursor == null
+        ? (chains: [_chain('first')], nextCursor: 'older')
+        : (chains: [_chain('second')], nextCursor: 'oldest');
+    feed.controller.fetchNextPage();
+    await tester.pump();
+    feed.controller.fetchNextPage();
+    await tester.pump();
+    feed.loader = (_) async =>
+        (chains: [_chain('missing'), _chain('first'), _chain('second')], nextCursor: 'first-cursor');
+    await feed.repairFirstPage();
+    expect(feed.items!.map((e) => e.id), ['first', 'missing', 'second']);
+    expect(feed.nextCursor, 'oldest');
+    expect(feed.controller.value.pages, hasLength(2));
+  });
+
+  testWidgets('failed first-page repair retains visible items', (tester) async {
+    final feed = TweetFeedController();
+    addTearDown(feed.dispose);
+    feed.loader = (_) async => (chains: [_chain('visible')], nextCursor: 'next');
+    feed.controller.fetchNextPage();
+    await tester.pump();
+    feed.loader = (_) async => throw TimeoutException('offline');
+    await feed.repairFirstPage();
+    expect(feed.items!.single.id, 'visible');
+    expect(feed.nextCursor, 'next');
+    expect(pagingErrorOf(feed.controller.value)?.error, isA<TimeoutException>());
+  });
 }

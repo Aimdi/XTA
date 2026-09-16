@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
 import 'package:xta/utils/local_undo.dart';
 
 void main() {
