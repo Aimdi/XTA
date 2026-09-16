@@ -54,6 +54,7 @@ class TweetFeedController {
   final Duration requestTimeout;
   int _loadGeneration = 0;
   bool _disposed = false;
+  Future<void>? _refreshing;
 
   /// When set, pagination pauses after this many pages per session instead of
   /// scrolling forever (`null` result → no cap). Feeds bind this to the
@@ -183,9 +184,11 @@ class TweetFeedController {
   /// Reloads the first page and replaces the items in place, *without* resetting
   /// to the first-page spinner the way [PagingController.refresh] does. Used by
   /// pull-to-refresh so the existing tweets stay visible under the indicator.
-  Future<void> softRefresh() async {
+  Future<void> softRefresh() => _refreshing ??= _softRefresh().whenComplete(() => _refreshing = null);
+
+  Future<void> _softRefresh() async {
     final generation = ++_loadGeneration;
-    _paging.cancel();
+    _paging.beginReplacement();
     final pagingGeneration = _paging.generation;
     bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
     try {
@@ -204,7 +207,7 @@ class TweetFeedController {
 
   Future<void> repairFirstPage() async {
     final generation = ++_loadGeneration;
-    _paging.cancel();
+    _paging.beginReplacement();
     final pagingGeneration = _paging.generation;
     bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
     try {

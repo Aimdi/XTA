@@ -102,6 +102,9 @@ class CursorPagingController<C, T> {
 
   void cancel() => pagingController.cancel();
 
+  /// Keep pagination from starting against the old cursor during a refresh.
+  void beginReplacement() => _controller.beginReplacement();
+
   Future<V> waitForRead<V>(Future<V> source) => _controller.reads.run(source, timeout: requestTimeout);
 
   Future<V> startRead<V>(Future<V> Function() source) => _controller.reads.start(source, timeout: requestTimeout);
@@ -163,7 +166,8 @@ class CursorPagingController<C, T> {
 
   /// Surfaces an error while keeping any already-loaded items visible.
   void setError(Object error, StackTrace stackTrace) {
-    pagingController.value = pagingController.value.copyWith(error: PagingError(error, stackTrace));
+    _controller.finishReplacement();
+    pagingController.value = pagingController.value.copyWith(error: PagingError(error, stackTrace), isLoading: false);
   }
 
   /// Re-opens pagination after it ended, seeding [cursor] for the next page,
@@ -197,11 +201,26 @@ class CursorPagingController<C, T> {
 class _CursorPageController<T> extends PagingController<int, T> {
   int generation = 0;
   final reads = ReadRequestScope();
+  bool _replacing = false;
 
   _CursorPageController({required super.getNextPageKey, required super.fetchPage});
 
+  void beginReplacement() {
+    cancel();
+    _replacing = true;
+    operation = Object();
+    value = value.copyWith(isLoading: true, error: null);
+  }
+
+  void finishReplacement() {
+    if (!_replacing) return;
+    _replacing = false;
+    operation = null;
+  }
+
   @override
   void refresh() {
+    _replacing = false;
     generation++;
     reads.cancel();
     super.refresh();
@@ -209,6 +228,7 @@ class _CursorPageController<T> extends PagingController<int, T> {
 
   @override
   void cancel() {
+    _replacing = false;
     generation++;
     reads.cancel();
     super.cancel();

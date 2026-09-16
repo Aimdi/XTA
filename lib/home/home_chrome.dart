@@ -160,7 +160,6 @@ class HomeFeedSwitcher<T> extends StatelessWidget {
     required this.selected,
     required this.options,
     required this.onSelected,
-    this.onLongPress,
   });
 
   @override

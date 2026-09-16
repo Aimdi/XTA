@@ -30,7 +30,6 @@ import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/utils/read_recovery.dart';
-import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';

@@ -18,6 +18,7 @@ class HomeFilterDraft {
 }
 
 class HomeFilterDraftStore extends Store<HomeFilterDraft> {
+  bool _closed = false;
   HomeFilterDraftStore(Set<String> accounts, Set<String> groups) : super(HomeFilterDraft(accounts, groups));
 
   void account(String id, bool enabled, List<Account> accounts) {
@@ -39,26 +40,32 @@ class HomeFilterDraftStore extends Store<HomeFilterDraft> {
   }
 
   Future<bool> apply(HomeAccountFilterStore accounts, HomeGroupFilterStore? groups) async {
-    if (isLoading) return false;
+    if (_closed || isLoading) return false;
+    final draft = state;
     setLoading(true);
     final previous = homeFeedDisabledIdsToPrefs(accounts.state);
     try {
-      await accounts.prefs.set(optionHomeFeedDisabledAccountIds, homeFeedDisabledIdsToPrefs(state.accounts));
+      await accounts.prefs.set(optionHomeFeedDisabledAccountIds, homeFeedDisabledIdsToPrefs(draft.accounts));
       try {
-        await groups?.prefs.set(optionHomeFeedDisabledGroupIds, homeFeedDisabledIdsToPrefs(state.groups));
+        await groups?.prefs.set(optionHomeFeedDisabledGroupIds, homeFeedDisabledIdsToPrefs(draft.groups));
       } catch (_) {
         await accounts.prefs.set(optionHomeFeedDisabledAccountIds, previous);
         rethrow;
       }
-      accounts.publishDisabled(state.accounts);
-      groups?.update(state.groups);
+      accounts.publishDisabled(draft.accounts);
+      groups?.update(draft.groups);
       return true;
     } catch (error) {
-      setError(error, force: true);
+      if (!_closed) setError(error, force: true);
       return false;
     } finally {
-      setLoading(false);
+      if (!_closed) setLoading(false);
     }
+  }
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    return super.destroy();
   }
 }
 

@@ -1,5 +1,12 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
+import 'package:xta/generated/l10n.dart';
+import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/video_controller_pool.dart';
 
 class _Video extends Fake implements PooledVideo {
@@ -19,7 +26,91 @@ class _Video extends Fake implements PooledVideo {
 
 Future<void> _settle() => Future<void>.delayed(Duration.zero);
 
+
+Widget _startupApp(VideoControllerPool pool, Future<TweetVideoUrls> Function() urls) => PrefService(
+  service: PrefServiceCache(defaults: {
+    optionMediaDefaultLoop: false,
+    optionMediaDefaultAutoPlay: false,
+    optionMediaBackgroundPlayback: false,
+    optionMediaAllowBackgroundPlayOtherApps: false,
+    optionMediaVideoQuality: 'large',
+    optionDisableAnimations: true,
+  }),
+  child: MultiProvider(
+    providers: [
+      Provider<VideoControllerPool>.value(value: pool),
+      ChangeNotifierProvider(create: (_) => VideoContextState(true)),
+    ],
+    child: MaterialApp(
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L10n.delegate.supportedLocales,
+      home: Scaffold(
+        body: Center(
+          child: SizedBox(
+            width: 320,
+            child: TweetVideo(
+              username: 'reader',
+              loop: false,
+              tweetId: 'post',
+              metadata: TweetVideoMetadata(1, null, urls),
+            ),
+          ),
+        ),
+      ),
+    ),
+  ),
+);
+
 void main() {
+  testWidgets('stalled URL resolution ends the spinner and offers manual restart', (tester) async {
+    final pool = VideoControllerPool(maxSize: 1);
+    var calls = 0;
+    await tester.pumpWidget(_startupApp(pool, () {
+      calls++;
+      return Completer<TweetVideoUrls>().future;
+    }));
+    await tester.tap(find.byType(TweetVideo));
+    await tester.pump();
+    expect(calls, 1);
+    await tester.pump(const Duration(seconds: 9));
+    await tester.pump();
+    expect(find.text(L10n.current.restart_video_player), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(pool.canAcquire('another'), isTrue);
+    await tester.tap(find.text(L10n.current.restart_video_player));
+    await tester.pump();
+    await tester.pump();
+    expect(calls, 2);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump(const Duration(seconds: 13));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('stalled native startup exposes retry and retains capacity until disposal', (tester) async {
+    final pending = Completer<PooledVideo>();
+    final pool = VideoControllerPool(maxSize: 1);
+    final startup = pool.acquire('post:0', () => pending.future);
+    pool.release('post:0');
+    await tester.pumpWidget(_startupApp(pool, () async => throw StateError('must share startup')));
+    await tester.pump(const Duration(seconds: 13));
+    await tester.pump();
+    expect(find.text(L10n.current.restart_video_player), findsOneWidget);
+    expect(pool.canAcquire('another'), isFalse);
+    await tester.pumpWidget(const SizedBox.shrink());
+    final late = _Video();
+    pending.complete(late);
+    await startup;
+    await tester.pump();
+    expect(late.disposals, 1);
+    expect(pool.canAcquire('another'), isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
   test('eviction retains capacity until the native player is actually disposed', () async {
     final stopped = Completer<void>();
     final first = _Video(stopping: stopped);
