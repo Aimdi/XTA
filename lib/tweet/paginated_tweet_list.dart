@@ -1,3 +1,4 @@
+import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:flutter/foundation.dart' show listEquals;
@@ -265,7 +266,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   // Local to the view: dismissing the stale banner hides the explanation, never
   // the cached posts under it.
   bool _staleBannerDismissed = false;
-  final _view = Store<int>(0);
+  final _view = ReaderValueStore<int>(0);
   bool _hadPreview = false;
 
   PagingController<int, TweetChain> get _controller => widget.feed.controller;

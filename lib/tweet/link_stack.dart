@@ -1,3 +1,4 @@
+import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
@@ -10,7 +11,7 @@ class LinkStack extends StatefulWidget {
 }
 
 class _LinkStackState extends State<LinkStack> {
-  final _expanded = Store<bool>(false);
+  final _expanded = ReaderValueStore<bool>(false);
   @override
   void dispose() {
     _expanded.destroy();

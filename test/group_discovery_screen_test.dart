@@ -18,6 +18,7 @@ class _Discovery extends GroupDiscoveryStore {
     required List<DiscoveryLoad> sources,
     required Set<String> followed,
     required String groupName,
+    String? groupId,
     AiConfig? ai,
   }) {
     if (failLoad) throw StateError('Unavailable');
@@ -36,6 +37,7 @@ class _Discovery extends GroupDiscoveryStore {
       ],
       followed: followed,
       groupName: groupName,
+      groupId: groupId,
     );
   }
 }

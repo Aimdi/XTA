@@ -11,9 +11,10 @@ class FeedSnapshotCache {
       'feed:$source:${sha256.convert(utf8.encode(jsonEncode(ids.toList()..sort())))}';
   Future<({List<InterleavedItem> items, DateTime? at})> read(String key) async {
     final raw = await storage.read(key);
-    if (raw is! Map || raw['posts'] is! List) return (items: const [], at: null);
+    if (raw is! Map || raw['posts'] is! List) return (items: const <InterleavedItem>[], at: null);
     final at = DateTime.tryParse('${raw['at']}');
-    if (at == null || DateTime.now().difference(at) > const Duration(days: 7)) return (items: const [], at: null);
+    if (at == null || DateTime.now().difference(at) > const Duration(days: 7))
+      return (items: const <InterleavedItem>[], at: null);
     final items = <InterleavedItem>[];
     for (final row in (raw['posts'] as List).take(100)) {
       if (row is! Map) continue;

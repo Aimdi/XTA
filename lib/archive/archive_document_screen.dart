@@ -1,3 +1,4 @@
+import 'package:xta/utils/reader_value_store.dart';
 import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,7 @@ class ArchiveDocumentScreen extends StatefulWidget {
 
 class _ArchiveDocumentScreenState extends State<ArchiveDocumentScreen> {
   late final _notes = ArchiveNotesStore(widget.id);
-  final _busy = Store<bool>(false);
+  final _busy = ReaderValueStore<bool>(false);
   @override
   void initState() {
     super.initState();

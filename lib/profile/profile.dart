@@ -115,9 +115,10 @@ class _ProfileScreen extends StatelessWidget {
                 error: error,
                 onRetry: () {
                   if (id != null) {
-                    return context.read<ProfileModel>().loadProfileById(id!);
+                    context.read<ProfileModel>().loadProfileById(id!);
+                    return;
                   }
-                  return context.read<ProfileModel>().loadProfileByScreenName(screenName!);
+                  context.read<ProfileModel>().loadProfileByScreenName(screenName!);
                 },
               ),
             ),

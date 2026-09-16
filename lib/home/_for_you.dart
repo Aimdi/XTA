@@ -1,3 +1,4 @@
+import 'package:xta/profile/profile.dart';
 import 'package:xta/tweet/progressive_feed_store.dart';
 import 'package:xta/tweet/progressive_feed_view.dart';
 import 'package:xta/plugins/plugin.dart';
