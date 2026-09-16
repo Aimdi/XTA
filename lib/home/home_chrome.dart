@@ -273,6 +273,7 @@ class HomeNavigationBar extends StatelessWidget {
   final bool disableAnimations;
   final ValueChanged<int> onSelected;
   final ValueChanged<int>? onLongPress;
+  final int longPressIndex;
 
   const HomeNavigationBar({
     super.key,
@@ -282,6 +283,7 @@ class HomeNavigationBar extends StatelessWidget {
     required this.disableAnimations,
     required this.onSelected,
     this.onLongPress,
+    this.longPressIndex = 0,
   });
 
   @override
@@ -344,7 +346,7 @@ class HomeNavigationBar extends StatelessWidget {
                 .map(
                   (entry) => GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onLongPress: onLongPress == null
+                    onLongPress: onLongPress == null || entry.key != longPressIndex
                         ? null
                         : () => onLongPress!(entry.key),
                     child: _destination(
@@ -352,6 +354,7 @@ class HomeNavigationBar extends StatelessWidget {
                       entry.value,
                       entry.key == selectedIndex,
                       reduceMotion,
+                      customLongPress: onLongPress != null && entry.key == longPressIndex,
                     ),
                   ),
                 )
@@ -367,8 +370,9 @@ class HomeNavigationBar extends StatelessWidget {
     BuildContext context,
     HomeNavigationItem item,
     bool selected,
-    bool reduceMotion,
-  ) {
+    bool reduceMotion, {
+    bool customLongPress = false,
+  }) {
     final duration = reduceMotion
         ? Duration.zero
         : xtaMotionDuration(context, kXtaMotionStandard);
@@ -376,6 +380,7 @@ class HomeNavigationBar extends StatelessWidget {
     final icon = selected ? item.selectedIcon : item.icon;
 
     return NavigationDestination(
+      tooltip: customLongPress ? '' : null,
       icon: AnimatedScale(
         scale: scale,
         duration: duration,

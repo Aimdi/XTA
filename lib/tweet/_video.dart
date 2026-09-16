@@ -382,7 +382,12 @@ class _TweetVideoState extends State<TweetVideo> {
       if (widget.disableControls) {
         if (_autoRetries < 3) {
           _autoRetries++;
-          _restartVideo(_prefLoop);
+          _restartVideo(_prefLoop, automatic: true);
+        } else {
+          setState(() {
+            _playbackError = true;
+            _firstFrameRendered = false;
+          });
         }
         return;
       }
@@ -405,7 +410,6 @@ class _TweetVideoState extends State<TweetVideo> {
         .then((_) {
           if (mounted && epoch == _acquireEpoch && identical(_pooled, pooled)) {
             _firstFrameTimer?.cancel();
-            _autoRetries = 0;
             setState(() {
               _firstFrameRendered = true;
               _playbackError = false;
@@ -547,10 +551,11 @@ class _TweetVideoState extends State<TweetVideo> {
     }
   }
 
-  Future<void> _restartVideo(bool prefLoop) async {
+  Future<void> _restartVideo(bool prefLoop, {bool automatic = false}) async {
     if (!mounted) return;
     _detachListeners();
     final epoch = ++_acquireEpoch;
+    if (!automatic) _autoRetries = 0;
     final key = _cacheKey;
     final acquisition = _poolAcquisition;
     final pooled = _pooled;
@@ -823,10 +828,9 @@ class _TweetVideoState extends State<TweetVideo> {
             if (_lastVisibleFraction >= 0.5) _schedulePoolRetry();
             return _waitingForSlotPoster();
           }
-          return AspectRatio(
-            aspectRatio: widget.metadata.aspectRatio,
+          return _poster(
             child: ColoredBox(
-              color: Colors.black,
+              color: Colors.black54,
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(kTweetSpace4),

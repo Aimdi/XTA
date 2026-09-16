@@ -437,6 +437,8 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                     showLabels: showLabels,
                     disableAnimations: disableAnimations,
                     onSelected: (index) => _onBarDestination(context, slots, index, currentPage),
+                    longPressIndex: slots.indexWhere((slot) =>
+                        slot.pageIndex != null && _barPages[slot.pageIndex!].id == 'feed'),
                     onLongPress: (index) {
                       final page = slots[index].pageIndex;
                       if (page != null && _barPages[page].id == 'feed') _openHomePicker(context, page);

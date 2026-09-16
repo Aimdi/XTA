@@ -558,8 +558,8 @@ class _FeedScreenState extends State<FeedScreen> {
           onRefresh: () => context.read<FeedRefreshController>().refresh(),
           showSettings: false,
           extra: [
-            TextButton.icon(
-              label: Text(L10n.of(context).filters),
+            IconButton(
+              tooltip: L10n.of(context).home_feed_accounts,
               icon: Badge.count(
                 count: disabledCount,
                 isLabelVisible: disabledCount > 0,
