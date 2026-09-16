@@ -11,6 +11,9 @@ import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/home_group_drawer.dart';
+import 'package:xta/home/home_timeline_picker.dart';
+import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/home/_account_avatar.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/_feed.dart';
@@ -330,9 +333,14 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
               accountHeader: _drawerAccountHeader(context, l10n),
               groups: groups,
               unreadIds: unreadIds,
-              onSearch: () => _goFromDrawer(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: true)),
+              onSearch: () =>
+                  _goFromDrawer(context, routeSearch, arguments: SearchArguments(0, focusInputOnOpen: true)),
               onSettings: () => _goFromDrawer(context, routeSettings),
-              onGroup: (group) => _goFromDrawer(context, routeGroup, arguments: GroupScreenArguments(id: group.id, name: group.name)),
+              onGroup: (group) => _goFromDrawer(
+                context,
+                routeGroup,
+                arguments: GroupScreenArguments(id: group.id, name: group.name),
+              ),
             ),
           ),
         ),
@@ -361,7 +369,11 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                   children: [
                     ChromeAvatarMark(account: account, size: 52),
                     const Spacer(),
-                    IconButton(tooltip: l10n.close, onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
+                    IconButton(
+                      tooltip: l10n.close,
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -425,6 +437,12 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                     showLabels: showLabels,
                     disableAnimations: disableAnimations,
                     onSelected: (index) => _onBarDestination(context, slots, index, currentPage),
+                    longPressIndex: slots.indexWhere((slot) =>
+                        slot.pageIndex != null && _barPages[slot.pageIndex!].id == 'feed'),
+                    onLongPress: (index) {
+                      final page = slots[index].pageIndex;
+                      if (page != null && _barPages[page].id == 'feed') _openHomePicker(context, page);
+                    },
                   );
                 },
               ),
@@ -493,6 +511,56 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     }
     unfocusPages();
     _pageController.jumpToPage(pageIndex);
+  }
+
+  Future<void> _openHomePicker(BuildContext context, int page) async {
+    final tabs = context.read<FeedTabStore>();
+    final prefs = PrefService.of(context, listen: false);
+    final sources = availableFeedTabsFromIds(context.read<FeedStripStore>().state, prefs);
+    final groups = drawerGroupsForQuery(context.read<GroupsModel>().state, '');
+    final picked = await showModalBottomSheet<HomeTimelineSelection>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (_) => HomeTimelinePicker(
+        selected: tabs.state.id,
+        showAdd: false,
+        options: [
+          for (final source in sources)
+            HomeTimelineOption(
+              id: source.id.id,
+              label: source.titleBuilder(context),
+              mark: source.mark ?? Icon(source.icon),
+              plugin: source.id.isPlugin,
+              unread: false,
+            ),
+        ],
+        groups: [
+          for (final group in groups)
+            HomeTimelineOption(
+              id: group.id,
+              label: group.name,
+              mark: GroupMark.forGroup(group, size: 32),
+              plugin: false,
+              unread: false,
+            ),
+        ],
+      ),
+    );
+    if (!mounted || !context.mounted || picked == null) return;
+    if (picked.groupId != null) {
+      final group = groups.where((g) => g.id == picked.groupId).firstOrNull;
+      if (group != null)
+        Navigator.pushNamed(
+          context,
+          routeGroup,
+          arguments: GroupScreenArguments(id: group.id, name: group.name),
+        );
+    } else if (picked.id != null) {
+      tabs.select(FeedTab(picked.id!));
+      _goToPage(page, animate: false);
+    }
   }
 
   Future<void> _openBarNetworks(BuildContext context) async {

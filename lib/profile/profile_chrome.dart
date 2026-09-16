@@ -287,27 +287,24 @@ class ProfileIdentityHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Stack(
-            clipBehavior: Clip.none,
             children: [
-              banner,
+              Column(
+                children: [
+                  banner,
+                  const SizedBox(height: kProfileAvatarSize / 2 + kTweetSpace1),
+                ],
+              ),
               PositionedDirectional(
                 start: kTweetHorizontalPadding,
-                bottom: -(kProfileAvatarSize / 2),
+                bottom: kTweetSpace1,
                 child: avatar,
               ),
-            ],
-          ),
-          SizedBox(
-            height: kProfileAvatarSize / 2 + kTweetSpace1,
-            child: Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.only(
-                  end: kTweetHorizontalPadding,
-                ),
+              PositionedDirectional(
+                end: kTweetHorizontalPadding,
+                bottom: 0,
                 child: actions,
               ),
-            ),
+            ],
           ),
           Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(
@@ -367,14 +364,7 @@ class ProfileIdentityHeader extends StatelessWidget {
                   const SizedBox(height: kTweetSpace3),
                   Wrap(children: metadata),
                 ],
-                if (counts.isNotEmpty)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: counts,
-                    ),
-                  ),
+                if (counts.isNotEmpty) Wrap(children: counts),
                 if (note != null) note!,
               ],
             ),

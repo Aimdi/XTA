@@ -455,7 +455,7 @@ void main() {
     final original = tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed;
     await tester.tap(find.byIcon(Icons.refresh));
     await tester.pump();
-    expect(tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed, isNot(same(original)));
+    expect(tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed, same(original));
     h.selected.select(FeedTab.following);
     await tester.pumpAndSettle();
     expect(

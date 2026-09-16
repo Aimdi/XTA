@@ -47,7 +47,11 @@ class ProfileModel extends Store<Profile> {
     final generation = ++_generation;
     _reads.cancel();
     bool current() => !_closed && generation == _generation;
-    if (state.user.idStr == null) setLoading(true);
+    if (state.user.idStr == null) {
+      setLoading(true);
+    } else {
+      update(state.status(refreshing: true, cachedAt: state.cachedAt), force: true);
+    }
     try {
       // A pending sidecar write must not prevent the network deadline starting.
       final cached = await _reads
@@ -100,12 +104,7 @@ class ProfileModel extends Store<Profile> {
       };
       if (user.idStr != null) await storage.write('profile:id:${user.idStr}', data);
       if (user.screenName != null) await storage.write('profile:name:${user.screenName!.toLowerCase()}', data);
-      final all = await storage.readPrefix('profile:');
-      final keys = all.keys.toList()
-        ..sort((a, b) => '${(all[a] as Map?)?['at']}'.compareTo('${(all[b] as Map?)?['at']}'));
-      for (final key in keys.take((keys.length - 100).clamp(0, keys.length))) {
-        await storage.remove(key);
-      }
+      await pruneJsonCache(storage, 'profile:', 100);
     } catch (_) {
       /* Caching must not turn a successful request into a failure. */
     }

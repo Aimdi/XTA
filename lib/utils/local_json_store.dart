@@ -15,6 +15,68 @@ class LocalJsonStore implements JsonStore {
   static final shared = LocalJsonStore();
   final Future<Directory> Function() directory;
   final _writes = <String, Future<void>>{};
+  final _keys = <String>{};
+  final _changedDuringIndex = <String>{};
+  final _maintenance = <String, Future<void>>{};
+  final _maintenanceDirty = <String>{};
+  Future<void>? _index;
+  bool _indexed = false;
+
+  Future<void> _ensureIndex() => _index ??= _scanKeys();
+
+  Future<void> _scanKeys() async {
+    try {
+      final dir = await directory();
+      if (!await dir.exists()) {
+        _indexed = true;
+        return;
+      }
+      await for (final file in dir.list()) {
+        if (file is! File || !file.path.endsWith('.json')) continue;
+        try {
+          final row = jsonDecode(await file.readAsString());
+          if (row is Map && row['key'] is String && !_changedDuringIndex.contains(row['key'])) {
+            _keys.add(row['key'] as String);
+          }
+        } catch (_) {
+          /* A damaged sidecar does not hide other records. */
+        }
+      }
+      _indexed = true;
+    } catch (_) {
+      _index = null;
+    } finally {
+      _changedDuringIndex.clear();
+    }
+  }
+
+  Future<void> trimCache(String prefix, int limit) {
+    final running = _maintenance[prefix];
+    if (running != null) {
+      _maintenanceDirty.add(prefix);
+      return running;
+    }
+    late final Future<void> task;
+    task = _trimUntilClean(prefix, limit).whenComplete(() {
+      if (identical(_maintenance[prefix], task)) _maintenance.remove(prefix);
+    });
+    _maintenance[prefix] = task;
+    return task;
+  }
+
+  Future<void> _trimUntilClean(String prefix, int limit) async {
+    do {
+      _maintenanceDirty.remove(prefix);
+      await _trimCache(prefix, limit);
+    } while (_maintenanceDirty.remove(prefix));
+  }
+
+  Future<void> _trimCache(String prefix, int limit) async {
+    await _ensureIndex();
+    if (_keys.where((key) => key.startsWith(prefix)).length <= limit) return;
+    await _pruneJsonCache(this, prefix, limit);
+  }
+
   LocalJsonStore({Future<Directory> Function()? directory}) : directory = directory ?? _directory;
   static Future<Directory> _directory() async =>
       Directory('${(await getApplicationSupportDirectory()).path}/reader-state');
@@ -46,38 +108,45 @@ class LocalJsonStore implements JsonStore {
   }
 
   @override
-  Future<void> write(String key, Object? value) => _enqueue(key, () async {
-    final file = await _file(key);
-    final pending = File('${file.path}.tmp');
-    await pending.writeAsString(jsonEncode({'key': key, 'value': value}), flush: true);
-    await pending.rename(file.path);
-  });
+  Future<void> write(String key, Object? value) {
+    if (!_indexed) _changedDuringIndex.add(key);
+    _keys.add(key);
+    return _enqueue(key, () async {
+      final file = await _file(key);
+      final pending = File('${file.path}.tmp');
+      await pending.writeAsString(jsonEncode({'key': key, 'value': value}), flush: true);
+      await pending.rename(file.path);
+    });
+  }
+
   @override
-  Future<void> remove(String key) => _enqueue(key, () async {
-    final file = await _file(key);
-    if (await file.exists()) await file.delete();
-  });
+  Future<void> remove(String key) {
+    if (!_indexed) _changedDuringIndex.add(key);
+    _keys.remove(key);
+    return _enqueue(key, () async {
+      final file = await _file(key);
+      if (await file.exists()) await file.delete();
+    });
+  }
+
   @override
   Future<Map<String, Object?>> readPrefix(String prefix) async {
-    final result = <String, Object?>{};
-    try {
-      await Future.wait(_writes.values.toList());
-      final dir = await directory();
-      if (!await dir.exists()) return result;
-      await for (final file in dir.list()) {
-        if (file is! File || !file.path.endsWith('.json')) continue;
-        try {
-          final row = jsonDecode(await file.readAsString());
-          if (row is Map && row['key'] is String && (row['key'] as String).startsWith(prefix)) {
-            result[row['key'] as String] = row['value'];
-          }
-        } catch (_) {
-          /* One damaged sidecar does not hide the others. */
-        }
-      }
-    } catch (_) {
-      /* Empty on first launch or unavailable storage. */
-    }
-    return result;
+    await _ensureIndex();
+    final keys = _keys.where((key) => key.startsWith(prefix)).toList();
+    final values = await Future.wait(keys.map(read));
+    return {for (var index = 0; index < keys.length; index++) keys[index]: values[index]};
+  }
+}
+
+Future<void> pruneJsonCache(JsonStore storage, String prefix, int limit) =>
+    storage is LocalJsonStore ? storage.trimCache(prefix, limit) : _pruneJsonCache(storage, prefix, limit);
+
+Future<void> _pruneJsonCache(JsonStore storage, String prefix, int limit) async {
+  final records = await storage.readPrefix(prefix);
+  if (records.length <= limit) return;
+  final keys = records.keys.toList()
+    ..sort((a, b) => '${(records[a] as Map?)?['at']}'.compareTo('${(records[b] as Map?)?['at']}'));
+  for (final key in keys.take(records.length - limit)) {
+    await storage.remove(key);
   }
 }

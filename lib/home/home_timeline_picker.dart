@@ -20,17 +20,27 @@ class HomeTimelineOption {
 
 class HomeTimelineSelection {
   final String? id;
+  final String? groupId;
 
-  const HomeTimelineSelection.source(this.id);
-  const HomeTimelineSelection.add() : id = null;
+  const HomeTimelineSelection.source(this.id) : groupId = null;
+  const HomeTimelineSelection.add() : id = null, groupId = null;
+  const HomeTimelineSelection.group(this.groupId) : id = null;
 }
 
 /// Sources have room for full names without taking a second navigation row.
 class HomeTimelinePicker extends StatelessWidget {
   final List<HomeTimelineOption> options;
   final String selected;
+  final List<HomeTimelineOption> groups;
+  final bool showAdd;
 
-  const HomeTimelinePicker({super.key, required this.options, required this.selected});
+  const HomeTimelinePicker({
+    super.key,
+    required this.options,
+    required this.selected,
+    this.groups = const [],
+    this.showAdd = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,42 +73,40 @@ class HomeTimelinePicker extends StatelessWidget {
               ),
             ),
             Flexible(
-              child: ListView(
+              child: ListView.builder(
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                children: [
-                  for (final option in options.where((option) => !option.plugin)) _row(context, option),
-                  if (options.any((option) => option.plugin)) ...[
-                    Padding(
+                itemCount: options.length + (groups.isEmpty ? 0 : groups.length + 1),
+                itemBuilder: (context, index) {
+                  if (index < options.length) return _row(context, options[index]);
+                  if (index == options.length)
+                    return Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(12, 20, 12, 8),
-                      child: Text(
-                        l10n.feed_strip_add_title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(color: tweetSecondaryColor(context)),
-                      ),
-                    ),
-                    for (final option in options.where((option) => option.plugin)) _row(context, option),
-                  ],
-                ],
+                      child: Text(l10n.groups, style: Theme.of(context).textTheme.titleSmall),
+                    );
+                  return _row(context, groups[index - options.length - 1], group: true);
+                },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-              child: OutlinedButton.icon(
-                key: const ValueKey('home-add-timeline'),
-                style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
-                onPressed: () => Navigator.pop(context, const HomeTimelineSelection.add()),
-                icon: const Icon(Icons.add),
-                label: Text(l10n.feed_strip_add),
+            if (showAdd)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: OutlinedButton.icon(
+                  key: const ValueKey('home-add-timeline'),
+                  style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
+                  onPressed: () => Navigator.pop(context, const HomeTimelineSelection.add()),
+                  icon: const Icon(Icons.add),
+                  label: Text(l10n.feed_strip_add),
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _row(BuildContext context, HomeTimelineOption option) {
-    final isSelected = option.id == selected;
+  Widget _row(BuildContext context, HomeTimelineOption option, {bool group = false}) {
+    final isSelected = !group && option.id == selected;
     final accent = tweetReadableAccentColor(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -108,7 +116,7 @@ class HomeTimelinePicker extends StatelessWidget {
           color: isSelected ? tweetAccentColor(context).withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           child: ListTile(
-            key: ValueKey('home-source-${option.id}'),
+            key: ValueKey('home-${group ? 'group' : 'source'}-${option.id}'),
             minTileHeight: 64,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             leading: Container(
@@ -137,7 +145,10 @@ class HomeTimelinePicker extends StatelessWidget {
                 if (isSelected) ...[const SizedBox(width: 12), Icon(Icons.check, color: accent)],
               ],
             ),
-            onTap: () => Navigator.pop(context, HomeTimelineSelection.source(option.id)),
+            onTap: () => Navigator.pop(
+              context,
+              group ? HomeTimelineSelection.group(option.id) : HomeTimelineSelection.source(option.id),
+            ),
           ),
         ),
       ),

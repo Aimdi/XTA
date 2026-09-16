@@ -1,12 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_group_drawer.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/home_selection_store.dart';
-import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/reader_failure.dart';
+
+class HomeFilterDraft {
+  final Set<String> accounts;
+  final Set<String> groups;
+  HomeFilterDraft(Set<String> accounts, Set<String> groups)
+    : accounts = Set.unmodifiable(accounts),
+      groups = Set.unmodifiable(groups);
+}
+
+class HomeFilterDraftStore extends Store<HomeFilterDraft> {
+  bool _closed = false;
+  HomeFilterDraftStore(Set<String> accounts, Set<String> groups) : super(HomeFilterDraft(accounts, groups));
+
+  void account(String id, bool enabled, List<Account> accounts) {
+    if (isLoading || (!enabled && !canDisableHomeAccount(id, accounts, state.accounts))) return;
+    final next = {...state.accounts};
+    enabled ? next.remove(id) : next.add(id);
+    update(HomeFilterDraft(next, state.groups));
+  }
+
+  void group(String id, bool enabled) {
+    if (isLoading) return;
+    final next = {...state.groups};
+    enabled ? next.remove(id) : next.add(id);
+    update(HomeFilterDraft(state.accounts, next));
+  }
+
+  void reset() {
+    if (!isLoading) update(HomeFilterDraft({}, {}));
+  }
+
+  Future<bool> apply(HomeAccountFilterStore accounts, HomeGroupFilterStore? groups) async {
+    if (_closed || isLoading) return false;
+    final draft = state;
+    setLoading(true);
+    final previous = homeFeedDisabledIdsToPrefs(accounts.state);
+    try {
+      await accounts.prefs.set(optionHomeFeedDisabledAccountIds, homeFeedDisabledIdsToPrefs(draft.accounts));
+      try {
+        await groups?.prefs.set(optionHomeFeedDisabledGroupIds, homeFeedDisabledIdsToPrefs(draft.groups));
+      } catch (_) {
+        await accounts.prefs.set(optionHomeFeedDisabledAccountIds, previous);
+        rethrow;
+      }
+      accounts.publishDisabled(draft.accounts);
+      groups?.update(draft.groups);
+      return true;
+    } catch (error) {
+      if (!_closed) setError(error, force: true);
+      return false;
+    } finally {
+      if (!_closed) setLoading(false);
+    }
+  }
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    return super.destroy();
+  }
+}
 
 class HomeFilterSheet extends StatefulWidget {
   final List<Account> accounts;
@@ -32,210 +93,215 @@ class _HomeFilterSheetState extends State<HomeFilterSheet> {
   final _section = HomeSelectionStore(false);
   final _query = HomeSelectionStore('');
   final _searchController = TextEditingController();
+  late final _draft = HomeFilterDraftStore(widget.accountsStore.state, widget.groupsStore?.state ?? {});
 
   @override
   void dispose() {
     _section.destroy();
     _query.destroy();
+    _draft.destroy();
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _apply() async {
+    final applied = await _draft.apply(widget.accountsStore, widget.groupsStore);
+    if (!mounted || !applied) return;
+    widget.onChanged?.call();
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final theme = Theme.of(context);
-    return SafeArea(
-      top: false,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final keyboard = MediaQuery.viewInsetsOf(context).bottom;
-          final available = (constraints.maxHeight - keyboard).clamp(0.0, double.infinity).toDouble();
-          return Padding(
-            padding: EdgeInsets.only(bottom: keyboard),
-            child: SizedBox(
-              height: available * .9,
-              child: ListView(
-                key: const PageStorageKey('home-filter-scroll'),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.zero,
-                children: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 8, 12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            l10n.home_feed_accounts,
-                            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+    return TripleBuilder<HomeFilterDraftStore, HomeFilterDraft>(
+      store: _draft,
+      builder: (context, triple) => PopScope(
+        canPop: !triple.isLoading,
+        child: SafeArea(
+          top: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+              final available = (constraints.maxHeight - keyboard).clamp(0.0, double.infinity).toDouble();
+              return Padding(
+                padding: EdgeInsets.only(bottom: keyboard),
+                child: SizedBox(
+                  height: available * .9,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: IgnorePointer(
+                          ignoring: triple.isLoading,
+                          child: ScopedBuilder<HomeSelectionStore<bool>, bool>(
+                            store: _section,
+                            onState: (_, groups) => ScopedBuilder<HomeSelectionStore<String>, String>(
+                              store: _query,
+                              onState: (_, query) => _list(context, groups, query, triple.state),
+                            ),
                           ),
                         ),
-                        IconButton(
-                          tooltip: l10n.close,
-                          icon: const Icon(Icons.close),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (widget.groupsStore != null)
-                    ScopedBuilder<HomeSelectionStore<bool>, bool>(
-                      store: _section,
-                      onState: (_, groupSection) => Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: SegmentedButton<bool>(
-                          segments: [
-                            ButtonSegment(
-                              value: false,
-                              icon: const Icon(Icons.account_circle_outlined),
-                              label: Text(l10n.account, maxLines: 2, overflow: TextOverflow.ellipsis),
+                      ),
+                      if (triple.error != null)
+                        ReaderFailureNotice(error: triple.error, onRetry: _apply, recoverAutomatically: false),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextButton(
+                                key: const ValueKey('home-filter-reset'),
+                                onPressed: triple.isLoading ? null : _draft.reset,
+                                child: Text(l10n.plugin_reader_reset_filters, textAlign: TextAlign.center),
+                              ),
                             ),
-                            ButtonSegment(
-                              value: true,
-                              icon: const Icon(Icons.folder_outlined),
-                              label: Text(l10n.groups, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                key: const ValueKey('home-filter-apply'),
+                                style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
+                                onPressed: triple.isLoading ? null : _apply,
+                                child: triple.isLoading
+                                    ? const SizedBox.square(
+                                        dimension: 20,
+                                        child: CircularProgressIndicator(strokeWidth: 2),
+                                      )
+                                    : Text(l10n.sort_ungrouped_apply),
+                              ),
                             ),
                           ],
-                          selected: {groupSection},
-                          onSelectionChanged: (selection) => _section.select(selection.first),
                         ),
                       ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                    child: TextField(
-                      key: const ValueKey('home-filter-search'),
-                      controller: _searchController,
-                      onChanged: _query.select,
-                      decoration: InputDecoration(
-                        hintText: l10n.search,
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: theme.colorScheme.surfaceContainerLow,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
-                  ScopedBuilder<HomeSelectionStore<bool>, bool>(
-                    store: _section,
-                    onState: (_, groupSection) => ScopedBuilder<HomeSelectionStore<String>, String>(
-                      store: _query,
-                      onState: (_, query) => groupSection ? _groups(context, query) : _accounts(context, query),
-                    ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _list(BuildContext context, bool groupSection, String query, HomeFilterDraft draft) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final accounts = widget.accounts
+        .where((a) => (a.screenName ?? '').toLowerCase().contains(query.trim().toLowerCase()))
+        .toList();
+    final groups = drawerGroupsForQuery(widget.groups, query);
+    final count = groupSection ? groups.length : accounts.length;
+    final active = groupSection
+        ? widget.groups.where((g) => !draft.groups.contains(g.id)).length
+        : widget.accounts.where((a) => !draft.accounts.contains(a.id)).length;
+    final total = groupSection ? widget.groups.length : widget.accounts.length;
+    return CustomScrollView(
+      key: const PageStorageKey('home-filter-scroll'),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 8, 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.home_feed_accounts,
+                    style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-                    child: FilledButton(
-                      style: FilledButton.styleFrom(minimumSize: const Size(48, 48)),
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(l10n.close),
-                    ),
+                ),
+                IconButton(tooltip: l10n.close, icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+              ],
+            ),
+          ),
+        ),
+        if (widget.groupsStore != null)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SegmentedButton<bool>(
+                segments: [
+                  ButtonSegment(
+                    value: false,
+                    icon: const Icon(Icons.account_circle_outlined),
+                    label: Text(l10n.account, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  ),
+                  ButtonSegment(
+                    value: true,
+                    icon: const Icon(Icons.folder_outlined),
+                    label: Text(l10n.groups, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+                selected: {groupSection},
+                onSelectionChanged: (selection) => _section.select(selection.first),
+              ),
+            ),
+          ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+            child: TextField(
+              key: const ValueKey('home-filter-search'),
+              controller: _searchController,
+              onChanged: _query.select,
+              decoration: InputDecoration(
+                hintText: l10n.search,
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: theme.colorScheme.surfaceContainerLow,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+            child: Text(
+              '${groupSection ? l10n.home_feed_groups_description : l10n.home_feed_accounts_description}\n$active / $total',
+            ),
+          ),
+        ),
+        if (!groupSection && widget.accounts.isEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Text(l10n.home_feed_accounts_empty),
+                  const SizedBox(height: 12),
+                  FilledButton.icon(
+                    onPressed: widget.onAddAccount,
+                    icon: const Icon(Icons.add),
+                    label: Text(l10n.add_account),
                   ),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        if (count == 0 && (groupSection || widget.accounts.isNotEmpty))
+          SliverToBoxAdapter(
+            child: Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
+          ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          sliver: SliverList.builder(
+            itemCount: count,
+            itemBuilder: (_, index) => groupSection
+                ? HomeGroupToggleTile(
+                    group: groups[index],
+                    disabled: draft.groups,
+                    onChanged: (enabled) async => _draft.group(groups[index].id, enabled),
+                  )
+                : HomeAccountToggleTile(
+                    account: accounts[index],
+                    disabled: draft.accounts,
+                    accounts: widget.accounts,
+                    onChanged: (enabled) async => _draft.account(accounts[index].id, enabled, widget.accounts),
+                  ),
+          ),
+        ),
+      ],
     );
   }
-
-  Widget _sectionList(
-    BuildContext context, {
-    required String description,
-    required int active,
-    required int total,
-    required List<Widget> rows,
-  }) => Padding(
-    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Text(description, style: tweetMetadataStyle(context)),
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(8, 4, 8, 12),
-          child: Row(
-            children: [
-              Icon(Icons.check_circle_outline, size: 18, color: tweetReadableAccentColor(context)),
-              const SizedBox(width: 8),
-              Expanded(child: Text('$active / $total', style: Theme.of(context).textTheme.labelLarge)),
-            ],
-          ),
-        ),
-        if (rows.isEmpty) Padding(padding: const EdgeInsets.all(24), child: Text(L10n.of(context).no_results)),
-        ...rows,
-      ],
-    ),
-  );
-
-  Widget _accounts(BuildContext context, String query) {
-    final l10n = L10n.of(context);
-    if (widget.accounts.isEmpty)
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l10n.home_feed_accounts_empty),
-              const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: widget.onAddAccount,
-                icon: const Icon(Icons.add),
-                label: Text(l10n.add_account),
-              ),
-            ],
-          ),
-        ),
-      );
-    return ScopedBuilder<HomeAccountFilterStore, Set<String>>(
-      store: widget.accountsStore,
-      onState: (_, disabled) => _sectionList(
-        context,
-        description: l10n.home_feed_accounts_description,
-        active: widget.accounts.where((account) => !disabled.contains(account.id)).length,
-        total: widget.accounts.length,
-        rows: [
-          for (final account in widget.accounts)
-            if ((account.screenName ?? '').toLowerCase().contains(query.trim().toLowerCase()))
-              HomeAccountToggleTile(
-                account: account,
-                disabled: disabled,
-                accounts: widget.accounts,
-                onChanged: (enabled) async {
-                  await widget.accountsStore.setEnabled(account.id, enabled, accounts: widget.accounts);
-                  widget.onChanged?.call();
-                },
-              ),
-        ],
-      ),
-    );
-  }
-
-  Widget _groups(BuildContext context, String query) => ScopedBuilder<HomeGroupFilterStore, Set<String>>(
-    store: widget.groupsStore!,
-    onState: (_, disabled) => _sectionList(
-      context,
-      description: L10n.of(context).home_feed_groups_description,
-      active: widget.groups.where((group) => !disabled.contains(group.id)).length,
-      total: widget.groups.length,
-      rows: [
-        for (final group in drawerGroupsForQuery(widget.groups, query))
-          HomeGroupToggleTile(
-            group: group,
-            disabled: disabled,
-            onChanged: (enabled) async {
-              await widget.groupsStore!.setEnabled(group.id, enabled);
-              widget.onChanged?.call();
-            },
-          ),
-      ],
-    ),
-  );
 }

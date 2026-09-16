@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
+import 'package:provider/provider.dart';
+import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/_for_you.dart';
 import 'package:xta/home/home_account_filter.dart';
@@ -52,6 +54,7 @@ class XScreen extends StatefulWidget {
 
 class _XScreenState extends State<XScreen> {
   final _revision = HomeSelectionStore(0);
+  final _refreshController = FeedRefreshController();
   TweetFeedController _feed = TweetFeedController();
 
   void _refresh() {
@@ -70,28 +73,31 @@ class _XScreenState extends State<XScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text(L10n.of(context).source_x),
-      actions: [
-        IconButton(
-          tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
-          icon: const Icon(Icons.refresh),
-          onPressed: _refresh,
-        ),
-        IconButton(
-          tooltip: L10n.of(context).home_feed_accounts,
-          icon: const Icon(Icons.manage_accounts_outlined),
-          onPressed: () => showHomeAccountFilterSheet(context, onChanged: _refresh),
-        ),
-      ],
-    ),
-    body: PrimaryScrollController(
-      controller: widget.scrollController,
-      child: PluginEmbedded(
-        child: ScopedBuilder<HomeSelectionStore<int>, int>(
-          store: _revision,
-          onState: (_, revision) => XTimelineView(feed: _feed, revision: revision),
+  Widget build(BuildContext context) => Provider<FeedRefreshController>.value(
+    value: _refreshController,
+    child: Scaffold(
+      appBar: AppBar(
+        title: Text(L10n.of(context).source_x),
+        actions: [
+          IconButton(
+            tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshController.refresh,
+          ),
+          IconButton(
+            tooltip: L10n.of(context).home_feed_accounts,
+            icon: const Icon(Icons.manage_accounts_outlined),
+            onPressed: () => showHomeAccountFilterSheet(context, onChanged: _refresh),
+          ),
+        ],
+      ),
+      body: PrimaryScrollController(
+        controller: widget.scrollController,
+        child: PluginEmbedded(
+          child: ScopedBuilder<HomeSelectionStore<int>, int>(
+            store: _revision,
+            onState: (_, revision) => XTimelineView(feed: _feed, revision: revision),
+          ),
         ),
       ),
     ),

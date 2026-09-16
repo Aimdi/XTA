@@ -21,6 +21,7 @@ import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/_feed_shell.dart';
+import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
@@ -341,7 +342,15 @@ class _FeedScreenState extends State<FeedScreen> {
   /// Following's refresh controller lives *inside* [GroupFeedShell], so
   /// this State's context cannot see it. Evict the cached pages and remount
   /// instead — otherwise the toggle looks like it did nothing.
+  Timer? _filterReload;
+
   void _reloadHomeFeeds() {
+    _filterReload?.cancel();
+    _filterReload = Timer(Duration.zero, _applyHomeFeedFilters);
+  }
+
+  void _applyHomeFeedFilters() {
+    if (!mounted) return;
     try {
       final cache = context.read<FeedSessionCache>();
       final key = homeFollowingCacheKey(widget.id);
@@ -354,13 +363,14 @@ class _FeedScreenState extends State<FeedScreen> {
       return;
     }
     _view.refreshFollowing();
-    _remountForYou(scrollToTopFirst: _tab == FeedTab.foryou);
+    _remountForYou(scrollToTopFirst: false);
   }
 
   @override
   void dispose() {
     widget.scrollController.removeListener(_queueControlsUpdate);
     _unreadReloadDebounce?.cancel();
+    _filterReload?.cancel();
     _forYouFeed.dispose();
     _view.destroy();
     super.dispose();
@@ -537,9 +547,7 @@ class _FeedScreenState extends State<FeedScreen> {
           ];
         }
 
-        // Only the feed filters. Refresh is the pull gesture and settings
-        // live in the drawer — except on For you, whose pull gesture cannot
-        // rebuild the timeline, so it keeps the explicit refresh (#168).
+        // Toolbar and pull-to-refresh share the registered feed operation.
         final model = context.read<GroupModel>();
         final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
         final actions = defaultGroupActions(
@@ -547,17 +555,16 @@ class _FeedScreenState extends State<FeedScreen> {
           model: model,
           showMore: false,
           showRefresh: tab == FeedTab.foryou,
-          onRefresh: () => _remountForYou(scrollToTopFirst: true),
+          onRefresh: () => context.read<FeedRefreshController>().refresh(),
           showSettings: false,
           extra: [
             IconButton(
-              icon: Badge(
+              tooltip: L10n.of(context).home_feed_accounts,
+              icon: Badge.count(
+                count: disabledCount,
                 isLabelVisible: disabledCount > 0,
-                smallSize: 8,
                 child: Icon(disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
               ),
-              tooltip: L10n.of(context).home_feed_accounts,
-              // Store observer remounts For you; sheet only needs to open.
               onPressed: () => showHomeAccountFilterSheet(context),
             ),
           ],
@@ -602,7 +609,9 @@ class _FeedScreenState extends State<FeedScreen> {
       );
     }
     if (tab == FeedTab.foryou) {
-      return PluginEmbedded(child: XTimelineView(feed: _forYouFeed, revision: _forYouEpoch));
+      return PluginEmbedded(
+        child: XTimelineView(feed: _forYouFeed, revision: _forYouEpoch),
+      );
     }
     return _pluginBody(tab);
   }

@@ -9,6 +9,10 @@ import 'package:xta/group/group_model.dart';
 import 'package:xta/home/edge_swipe.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_screen.dart';
+import 'package:xta/home/_feed.dart';
+import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/group/group_screen.dart';
 
 NavigationPage _page(String id, IconData icon) =>
     NavigationPage(id, (_) => id, Icon(icon), Icon(icon));
@@ -62,6 +66,66 @@ Future<void> _swipeBar(WidgetTester tester, Offset offset) async {
 }
 
 void main() {
+  testWidgets('long-press Home switches sources and opens groups from another tab', (tester) async {
+    final prefs = PrefServiceCache(cache: {
+      optionShowNavigationLabels: true,
+      optionDisableAnimations: true,
+      optionHomeFeedStripPlugins: <String>[],
+    });
+    final tabs = FeedTabStore(FeedTab.following);
+    final strip = FeedStripStore(prefs);
+    final groups = GroupsModel(prefs);
+    groups.update([
+      SubscriptionGroup(id: 'quick', name: 'Quick group', icon: 'rss_feed', color: null,
+        numberOfMembers: 1, createdAt: DateTime(2026), pinned: true),
+    ]);
+    addTearDown(tabs.destroy);
+    addTearDown(strip.destroy);
+    addTearDown(groups.destroy);
+    String? openedGroup;
+    await tester.pumpWidget(PrefService(service: prefs, child: MaterialApp(
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L10n.delegate.supportedLocales,
+      routes: {
+        routeGroup: (context) {
+          openedGroup = (ModalRoute.of(context)!.settings.arguments as GroupScreenArguments).id;
+          return const Scaffold(body: Text('Opened group'));
+        },
+      },
+      home: MultiProvider(providers: [
+        Provider<GroupsModel>.value(value: groups),
+        Provider<FeedTabStore>.value(value: tabs),
+        Provider<FeedStripStore>.value(value: strip),
+      ], child: ScaffoldWithBottomNavigation(
+        pages: [_page('feed', Icons.home), _page('saved', Icons.bookmark)],
+        prefs: prefs, initialPage: 1,
+        builder: (index, _, _) => Center(child: Text('page body $index')),
+      )),
+    )));
+    await tester.pumpAndSettle();
+    await tester.longPress(find.byIcon(Icons.home).hitTestable().first);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('home-source-sheet')), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('home-source-x')));
+    await tester.pumpAndSettle();
+    expect(tabs.state, FeedTab.x);
+    expect(find.text('page body 0').hitTestable(), findsOneWidget);
+    await tester.longPress(find.byIcon(Icons.home).hitTestable().first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-group-quick')));
+    await tester.pumpAndSettle();
+    expect(openedGroup, 'quick');
+    expect(find.text('Opened group'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+
   group('pageAfterNavigationSwipe', () {
     test('a leftward swipe advances, a rightward one goes back', () {
       expect(

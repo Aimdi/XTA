@@ -185,7 +185,7 @@ void main() {
     await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
 
-  testWidgets('Home filter persists account toggles and protects the last active account', (tester) async {
+  testWidgets('Home filter stages changes, protects the last account, and applies once', (tester) async {
     _viewport(tester);
     final h = _HomeChromeHarness();
     addTearDown(() => h.close(tester));
@@ -193,9 +193,9 @@ void main() {
     await _open(tester, _openFilter);
     expect(tester.widget<SwitchListTile>(_account('main')).value, isTrue);
     await _tap(tester, _account('main'));
-    expect(h.accountsStore.state, {'main'});
-    expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledAccountIds)), ['main']);
-    expect(h.filterChanges, 1);
+    expect(h.accountsStore.state, isEmpty);
+    expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledAccountIds)), isEmpty);
+    expect(h.filterChanges, 0);
     final remaining = tester.widget<SwitchListTile>(_account('art'));
     expect(remaining.value, isTrue);
     expect(remaining.onChanged, isNull);
@@ -203,12 +203,18 @@ void main() {
     await _golden(tester, 'home-filter-accounts');
 
     await _tap(tester, _account('art'));
+    expect(h.accountsStore.state, isEmpty);
+    expect(h.filterChanges, 0);
+    await _tap(tester, find.byKey(const ValueKey('home-filter-apply')));
+    expect(h.accountsStore.state, {'main'});
+    expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledAccountIds)), ['main']);
+    expect(h.filterChanges, 1);
+    await _open(tester, _openFilter);
+    await _tap(tester, _account('main'));
+    expect(tester.widget<SwitchListTile>(_account('art')).onChanged, isNotNull);
+    await _tap(tester, find.byTooltip(L10n.current.close));
     expect(h.accountsStore.state, {'main'});
     expect(h.filterChanges, 1);
-    await _tap(tester, _account('main'));
-    expect(h.accountsStore.state, isEmpty);
-    expect(tester.widget<SwitchListTile>(_account('art')).onChanged, isNotNull);
-    expect(h.filterChanges, 2);
     expect(tester.takeException(), isNull);
   });
 
@@ -226,11 +232,17 @@ void main() {
     await tester.pumpAndSettle();
     await _tap(tester, find.text(L10n.current.groups));
     await _tap(tester, _groupFilter('tech'));
-    expect(h.groupsStore.state, {'tech'});
-    expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledGroupIds)), ['tech']);
-    expect(h.accountsStore.state, isEmpty);
+    expect(h.groupsStore.state, isEmpty);
+    expect(homeFeedDisabledIdsFromPrefs(h.prefs.get(optionHomeFeedDisabledGroupIds)), isEmpty);
     await _golden(tester, 'home-filter-groups');
-    await _tap(tester, _groupFilter('tech'));
+    await _tap(tester, find.byKey(const ValueKey('home-filter-apply')));
+    expect(h.groupsStore.state, {'tech'});
+    expect(h.accountsStore.state, isEmpty);
+    expect(h.filterChanges, 1);
+    await _open(tester, _openFilter);
+    await _tap(tester, find.byKey(const ValueKey('home-filter-reset')));
+    expect(h.groupsStore.state, {'tech'});
+    await _tap(tester, find.byKey(const ValueKey('home-filter-apply')));
     expect(h.groupsStore.state, isEmpty);
     expect(h.filterChanges, 2);
     expect(tester.takeException(), isNull);
@@ -294,10 +306,17 @@ void main() {
     await _golden(tester, 'home-filter-keyboard-large');
     expect(tester.getRect(find.byKey(_filterSearch)).bottom, lessThanOrEqualTo(844 - 280));
     expect(_account('art'), findsNothing);
+    await tester.scrollUntilVisible(
+      _account('main'), 160,
+      scrollable: find.descendant(of: find.byType(HomeFilterSheet), matching: find.byType(Scrollable)).first,
+    );
     await _tap(tester, _account('main'));
+    expect(h.accountsStore.state, isEmpty);
+    final apply = find.byKey(const ValueKey('home-filter-apply'));
+    expect(apply.hitTestable(), findsOneWidget);
+    expect(tester.getRect(apply).bottom, lessThanOrEqualTo(844 - 280));
+    await _tap(tester, apply);
     expect(h.accountsStore.state, {'main'});
-    final close = find.widgetWithText(FilledButton, L10n.current.close);
-    await _tap(tester, close);
     expect(find.byType(HomeFilterSheet), findsNothing);
     expect(tester.takeException(), isNull);
   });

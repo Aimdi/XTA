@@ -29,7 +29,7 @@ import 'package:xta/tweet/sensitive_media_gate.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/ui/reader_failure.dart';
-import 'package:xta/ui/motion.dart';
+import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
@@ -102,54 +102,54 @@ class _ProfileScreen extends StatelessWidget {
 
   const _ProfileScreen({required this.id, required this.screenName, required this.tabIndex});
 
+  void _retry(BuildContext context) {
+    final model = context.read<ProfileModel>();
+    if (id != null) {
+      model.loadProfileById(id!);
+    } else {
+      model.loadProfileByScreenName(screenName!);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final model = context.read<ProfileModel>();
     return XtaSystemBars(
       child: Scaffold(
-        body: ScopedBuilder<ProfileModel, Profile>(
-          store: context.read<ProfileModel>(),
-          onError: (_, error) => XtaFadeIn(
-            key: const ValueKey('profile-error'),
-            child: SafeArea(
-              child: ReaderFailureNotice(
-                error: error,
-                onRetry: () {
-                  if (id != null) {
-                    context.read<ProfileModel>().loadProfileById(id!);
-                    return;
-                  }
-                  context.read<ProfileModel>().loadProfileByScreenName(screenName!);
-                },
-              ),
-            ),
-          ),
-          onLoading: (_) => const ProfileLoadingSkeleton(),
-          onState: (_, state) => XtaFadeIn(
-            key: const ValueKey('profile-content'),
-            child: Column(
-              children: [
-                if (state.refreshing) const LinearProgressIndicator(),
-                if (state.refreshError != null)
-                  SafeArea(
-                    bottom: false,
+        body: TripleBuilder<ProfileModel, Profile>(
+          store: model,
+          builder: (context, triple) => ReadRecovery(
+            isLoading: () => model.isLoading || model.state.refreshing,
+            recoverableFailure: () => recoverableReadFailure(model.error ?? model.state.refreshError),
+            retry: () => _retry(context),
+            child: triple.isLoading
+                ? const ProfileLoadingSkeleton()
+                : triple.error != null
+                ? SafeArea(
                     child: ReaderFailureNotice(
-                      compact: true,
-                      error: state.refreshError,
-                      onRetry: () {
-                        final model = context.read<ProfileModel>();
-                        if (id != null) {
-                          model.loadProfileById(id!);
-                        } else {
-                          model.loadProfileByScreenName(screenName!);
-                        }
-                      },
+                      error: triple.error,
+                      recoverAutomatically: false,
+                      onRetry: () => _retry(context),
                     ),
+                  )
+                : Column(
+                    children: [
+                      if (triple.state.refreshing) const LinearProgressIndicator(),
+                      if (triple.state.refreshError != null)
+                        SafeArea(
+                          bottom: false,
+                          child: ReaderFailureNotice(
+                            compact: true,
+                            recoverAutomatically: false,
+                            error: triple.state.refreshError,
+                            onRetry: () => _retry(context),
+                          ),
+                        ),
+                      Expanded(
+                        child: ProfileScreenBody(profile: triple.state, defaultTabIndex: tabIndex),
+                      ),
+                    ],
                   ),
-                Expanded(
-                  child: ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
-                ),
-              ],
-            ),
           ),
         ),
       ),

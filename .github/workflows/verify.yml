@@ -97,6 +97,13 @@ jobs:
           test/paging_recovery_test.dart
           test/local_undo_test.dart
           test/annotation_backup_test.dart
+          test/reader_recovery_controls_test.dart
+          test/video_controller_pool_test.dart
+          test/home_filter_drawer_review_test.dart
+          test/home_chrome_test.dart
+          test/navigation_swipe_test.dart
+          test/profile_design_primitives_test.dart
+          test/quiet_reader_failure_test.dart
 
       - name: Reader safety regressions
         run: >-

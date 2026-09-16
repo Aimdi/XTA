@@ -66,7 +66,13 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _foreground = state == AppLifecycleState.resumed;
-    _notify();
+    // A paused app may never render the post-frame callback used by _notify.
+    if (!_foreground && _visible != false) {
+      _visible = false;
+      widget.onHidden();
+    } else {
+      _notify();
+    }
   }
 
   @override
