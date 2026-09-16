@@ -35,29 +35,31 @@ class ProgressiveFeedView extends StatelessWidget {
                             ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
                             : Icon(entry.value.error != null ? Icons.error_outline : Icons.history, size: 16),
                         label: Text(pluginById(entry.key)?.title(context) ?? entry.key),
-                        onPressed: () => showModalBottomSheet<void>(
-                          context: context,
-                          showDragHandle: true,
-                          builder: (sheetContext) => SafeArea(
-                            child: entry.value.error != null
-                                ? ReaderFailureNotice(
-                                    source: entry.key,
-                                    error: entry.value.error,
-                                    onRetry: () {
-                                      Navigator.pop(sheetContext);
-                                      store.retry(entry.key);
-                                    },
-                                  )
-                                : Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Text(
-                                      entry.value.loading
-                                          ? L10n.of(context).reader_source_loading
-                                          : L10n.of(context).reader_cached_content,
-                                    ),
-                                  ),
-                          ),
-                        ),
+                        onPressed: () {
+                          if (entry.value.error != null) {
+                            showReaderFailureDetails(
+                              context,
+                              source: entry.key,
+                              error: entry.value.error,
+                              onRetry: () => store.retry(entry.key),
+                            );
+                            return;
+                          }
+                          showModalBottomSheet<void>(
+                            context: context,
+                            showDragHandle: true,
+                            builder: (sheetContext) => SafeArea(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Text(
+                                  entry.value.loading
+                                      ? L10n.of(context).reader_source_loading
+                                      : L10n.of(context).reader_cached_content,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
               ],

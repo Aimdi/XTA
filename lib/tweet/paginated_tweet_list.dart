@@ -2,7 +2,6 @@ import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/search/loaded_feed_search.dart';
 import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:xta/ui/reader_failure.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -21,7 +20,7 @@ import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/tweet/feed_link_grouping.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/caught_up_divider.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/ui/feed_list.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/tweet/catch_up_split.dart';
@@ -488,12 +487,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     return preview != null && preview.isNotEmpty && state.items == null && state.error == null;
   }
 
-  /// The cached posts under an explanation, when the first page failed and
-  /// there is something cached to fall back on.
-  ///
-  /// The error is not swallowed: a reader whose accounts are all rate-limited
-  /// has to know why nothing new arrived, and that these posts are old. It is
-  /// moved out of the way of a feed that could perfectly well be read.
+  /// Keep cached posts readable; failure and cache age are available on tap.
   Widget? _buildStaleView() {
     final state = _controller.value;
     final preview = widget.firstPagePreview;
@@ -508,9 +502,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
     return Column(
       children: [
-        StaleFeedBanner(
-          reason: staleFeedReasonOf(pagingErrorOf(state)?.error ?? state.error),
-          cachedAt: widget.firstPagePreviewCachedAt,
+        ReaderFailureNotice(
+          error: pagingErrorOf(state)?.error ?? state.error,
+          recoverAutomatically: false,
+          contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
           onRetry: _retryFirstPage,
           onDismiss: () {
             _staleBannerDismissed = true;
@@ -600,9 +595,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     return Column(
       children: [
         if (!_staleBannerDismissed)
-          StaleFeedBanner(
-            reason: staleFeedReasonOf(error),
-            cachedAt: widget.firstPagePreviewCachedAt,
+          ReaderFailureNotice(
+            error: error,
+            recoverAutomatically: false,
+            contextMessage: StaleFeedBanner.ageLineOf(context, widget.firstPagePreviewCachedAt),
             onRetry: onRetry,
             onDismiss: () {
               _staleBannerDismissed = true;
@@ -714,7 +710,13 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         }
         if (state.items == null) {
           return ListView(
-            children: [ReaderFailureNotice(error: pagingErrorOf(state)?.error ?? state.error, onRetry: fetchNextPage)],
+            children: [
+              ReaderFailureNotice(
+                error: pagingErrorOf(state)?.error ?? state.error,
+                onRetry: fetchNextPage,
+                recoverAutomatically: false,
+              ),
+            ],
           );
         }
         if (loaded.isEmpty) {
@@ -757,17 +759,15 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             },
             firstPageProgressIndicatorBuilder: (context) => const TweetFeedSkeleton(primary: false),
             newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
-            firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-              error: pagingErrorOf(state)?.error,
-              stackTrace: pagingErrorOf(state)?.stackTrace,
-              prefix: widget.firstPageErrorPrefix,
+            firstPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+              error: pagingErrorOf(state)?.error ?? state.error,
               onRetry: fetchNextPage,
+              recoverAutomatically: false,
             ),
-            newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-              error: pagingErrorOf(state)?.error,
-              stackTrace: pagingErrorOf(state)?.stackTrace,
-              prefix: widget.newPageErrorPrefix,
+            newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+              error: pagingErrorOf(state)?.error ?? state.error,
               onRetry: fetchNextPage,
+              recoverAutomatically: false,
             ),
             noItemsFoundIndicatorBuilder: (context) => _buildEmpty(context, endCard),
             noMoreItemsIndicatorBuilder: (context) => endCard ?? const SizedBox.shrink(),
