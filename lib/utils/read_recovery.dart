@@ -107,6 +107,7 @@ class _ReadRecoveryState extends State<ReadRecovery> with WidgetsBindingObserver
 
   @override
   void dispose() {
+    VisibilityDetectorController.instance.forget(_visibilityKey);
     _network?.cancel();
     _debounce?.cancel();
     WidgetsBinding.instance.removeObserver(this);

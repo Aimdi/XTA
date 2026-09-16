@@ -71,6 +71,7 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
 
   @override
   void dispose() {
+    VisibilityDetectorController.instance.forget(_key);
     readRouteObserver.unsubscribe(this);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
