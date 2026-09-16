@@ -17,7 +17,6 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:xta/utils/cached_page.dart';
 import 'package:pref/pref.dart';
-import 'package:logging/logging.dart';
 
 class ProfileTweets extends StatefulWidget {
   final UserWithExtra user;
@@ -42,8 +41,6 @@ class ProfileTweets extends StatefulWidget {
 }
 
 class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveClientMixin<ProfileTweets> {
-  static final log = Logger('ProfileTweets');
-
   late CursorPagingController<String, TweetChain> _paging;
   PagingController<int, TweetChain> get _pagingController => _paging.pagingController;
 
