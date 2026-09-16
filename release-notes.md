@@ -4,6 +4,23 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi133
+
+This release improves loading recovery, sharing into XTA, local notes, search, and offline reading.
+
+- Share a Twitter/X link to XTA from Android's share menu. Cold starts and an already-open app both handle the incoming link.
+- Notes use post-style cards and a smoother composer. Text and attachment drafts recover when you reopen their composer.
+- Timeline requests have bounded waits and recovery. Mixed sources load independently, cached profiles remain readable during refresh failures, and source-local retry controls explain common failures.
+- Search Saved, notes, followed accounts, groups, and retained article text from one library search screen. Choose a network explicitly when you want a remote search.
+- Repeated article links form expandable stacks that preserve every original post's commentary.
+- Group discovery explains suggestions and remembers dismiss/more/less preferences, with undo.
+- Retained articles support highlighted passages, attached notes, and suggested tags. Optional screenshot text extraction asks before using your configured AI endpoint.
+- Integrated reading controls, offline copies, downloads management, Bluesky media/thread improvements, and playback continuity.
+
+For most Android phones, including GrapheneOS phones, choose **`xta-aimdi133_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 variants are also available. The version code advances beyond every aimdi132 variant and retains the existing app identity and release signing certificate for in-place updates.
+
+Live authenticated-network and physical-device behavior were not exercised in this build environment. Screenshot extraction requires an image-capable configured model and may contain transcription errors.
+
 ### aimdi132
 
 This release fixes the group Discover/Entdecken crash and adds OpenRouter support to AI/KI settings.

@@ -4,7 +4,7 @@ Branch: `feat/reader-improvements`, targeting `claude/main` in `Aimdi/XTA`.
 
 This branch combines the existing reading/offline work (#261), Android sharing and post-style notes (#271), and bounded timeline/profile request fixes (#272), then implements the seven approved improvements from `docs/specs/reader-improvements.md`.
 
-## Implemented locally
+## Implemented
 
 - Mixed feeds load plugin sources independently, keep bounded disk snapshots, show source status/retry controls, and hold arriving plugin posts behind a New posts action when reading away from the top. Profile identity snapshots survive restart and remain readable after refresh failure. Existing X timeline caches and reading-position handling remain in use.
 - Common error classification distinguishes connection, timeout, session, rate-limit and unavailable-endpoint failures. Existing readable content stays visible.
@@ -23,10 +23,13 @@ This branch combines the existing reading/offline work (#261), Android sharing a
 - Skill-tree synchronization and `git diff --check` passed.
 - Added tests for source races, partial loading, stale snapshots, held updates, draft recovery/discard, archive annotation persistence, discovery feedback, profile stale refresh, local search and expanded-link layouts at light/dark and large text sizes.
 
-## Still required before release
+## GitHub validation and release gates
 
-Flutter analyzer, the complete Flutter test suite, screen rendering, and the Android debug APK build have NOT run on this combined branch. The prepared `reader-improvements-review.yml` workflow covers analyzer, focused tests, existing note renders and a debug APK; the repository's verify workflow covers the full test suite. Live authenticated-network and physical-device checks remain separate.
+PR #273 integrates the approved work. The user explicitly authorized merging and publishing the signed APK.
 
-Automatic approval review rejected publishing the source/workflow tree to `Aimdi/XTA`, stating that the combined payload and destination need explicit user approval. No remote branch or PR was created by this attempt, and no merge or release was performed. Local Flutter execution is also unavailable following an earlier automatic review rejection; it was not retried.
+- The Flutter analyzer passes after integration fixes.
+- All 55 focused reader/composer tests pass; light/dark note renders were inspected.
+- The Android debug APK built successfully in review run 35085350199.
+- The complete regression suite is required before merge. The signed release workflow reruns analyzer and the full suite against the exact tagged source before publishing.
 
-Requested next action: upload this branch's source and workflow changes to `Aimdi/XTA`, open a draft PR against `claude/main`, run the checks, fix any failures, and produce the debug APK. This does not request merging or releasing the app.
+Live authenticated-network and physical-device behavior have not been exercised in this environment.
