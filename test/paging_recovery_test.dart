@@ -126,7 +126,7 @@ void main() {
     feed.loader = (_) async =>
         (chains: [_chain('missing'), _chain('first'), _chain('second')], nextCursor: 'first-cursor');
     await feed.repairFirstPage();
-    expect(feed.items!.map((e) => e.id), ['first', 'missing', 'second']);
+    expect(feed.items!.map((e) => e.id), ['first', 'second', 'missing']);
     expect(feed.nextCursor, 'oldest');
     expect(feed.controller.value.pages, hasLength(2));
   });

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/utils/read_visibility.dart';
 
 void main() {
   setUp(() {
@@ -79,5 +80,31 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(retries, 0);
     expect(tester.takeException(), isNull);
+  });
+  testWidgets('kept-alive group visibility pauses covered routes and resumes after back', (tester) async {
+    final navigator = GlobalKey<NavigatorState>();
+    final events = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        navigatorObservers: [readRouteObserver],
+        home: Scaffold(
+          body: ReadVisibility(
+            onHidden: () => events.add('hidden'),
+            onVisible: () => events.add('visible'),
+            child: const SizedBox.expand(child: Text('Group')),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(events.last, 'visible');
+    navigator.currentState!.push(MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Profile'))));
+    await tester.pumpAndSettle();
+    expect(events.last, 'hidden');
+    navigator.currentState!.pop();
+    await tester.pumpAndSettle();
+    expect(events.last, 'visible');
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 }

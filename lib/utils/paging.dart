@@ -141,15 +141,24 @@ class CursorPagingController<C, T> {
     );
   }
 
-  /// Repair a partially loaded first page without dropping older pages or their cursor.
-  void mergeFirstPage(List<T> items, C? nextCursor) {
+  /// Append late batches after the visible items so older pages never shift.
+  /// A deliberate refresh restores global chronological order.
+  void appendMissing(List<T> items, C? firstPageCursor) {
     cancel();
     final state = pagingController.value;
-    if ((state.pages?.length ?? 0) <= 1) {
-      replaceFirstPage(items, nextCursor);
+    final pages = state.pages;
+    if (pages == null || pages.length <= 1) {
+      replaceFirstPage([...?pages?.firstOrNull, ...items], firstPageCursor);
       return;
     }
-    pagingController.value = state.copyWith(pages: [items, ...state.pages!.skip(1)], error: null, isLoading: false);
+    pagingController.value = state.copyWith(
+      pages: [
+        ...pages.take(pages.length - 1),
+        [...pages.last, ...items],
+      ],
+      error: null,
+      isLoading: false,
+    );
   }
 
   /// Surfaces an error while keeping any already-loaded items visible.

@@ -1,3 +1,4 @@
+import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -1268,6 +1269,7 @@ class _FritterAppState extends State<FritterApp> {
               isSecure: _isSecure,
               builder: (BuildContext context, a, b) => MaterialApp(
                 navigatorKey: _navigatorKey,
+                navigatorObservers: [readRouteObserver],
                 localizationsDelegates: xtaLocalizationsDelegates,
                 supportedLocales: L10n.delegate.supportedLocales,
                 locale: _locale,

@@ -210,10 +210,21 @@ class TweetFeedController {
     try {
       final result = await _paging.startRead(() => _loader!(null));
       if (!current()) return;
-      final existing = controller.value.pages?.firstOrNull ?? const <TweetChain>[];
-      final seen = (items ?? const <TweetChain>[]).map((e) => e.id).toSet();
-      final merged = [...existing, ...result.chains.where((e) => seen.add(e.id))];
-      _paging.mergeFirstPage(merged, _pausedBy == null ? result.nextCursor : null);
+      if (items == null) {
+        _pagesFetched = 1;
+        final page = _applyStops(result.chains, result.nextCursor);
+        _paging.replaceFirstPage(page.items, page.nextCursor);
+        return;
+      }
+      final seen = items!.map((e) => e.id).toSet();
+      final additions = result.chains.where((e) => seen.add(e.id)).toList();
+      final isSeen = _catchUpPassed ? null : catchUpPredicateProvider?.call();
+      final visible = isSeen == null ? additions : additions.where((e) => !isSeen(e)).toList();
+      if (isSeen != null) {
+        final heldIds = _heldBack.map((e) => e.id).toSet();
+        _heldBack = [..._heldBack, ...additions.where((e) => isSeen(e) && heldIds.add(e.id))];
+      }
+      _paging.appendMissing(visible, _pausedBy == null ? result.nextCursor : null);
     } catch (error, stack) {
       if (current()) _paging.setError(error, stack);
     }

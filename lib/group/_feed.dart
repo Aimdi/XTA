@@ -1,3 +1,4 @@
+import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -144,6 +145,31 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   bool _retryFailedBatches = false;
   bool _retryingBatches = false;
   String? _batchCursor;
+  bool _resumeWhenVisible = false;
+  bool _screenVisible = true;
+
+  void _suspendReads() {
+    _screenVisible = false;
+    _resumeWhenVisible |=
+        !_feedController.hasItems ||
+        _batches.state.loading ||
+        _feedController.controller.value.isLoading ||
+        (_mediaPaging?.pagingController.value.isLoading ?? false);
+    _cancelBatches();
+    _feedController.controller.cancel();
+    _mediaPaging?.cancel();
+  }
+
+  void _resumeReads() {
+    _screenVisible = true;
+    if (!_resumeWhenVisible) return;
+    _resumeWhenVisible = false;
+    if (widget.mediaOnly) {
+      _mediaController.pagingController.fetchNextPage();
+    } else {
+      unawaited(_retryBatches());
+    }
+  }
 
   Future<void> _retryBatches() async {
     if (_batches.state.loading || _retryingBatches) return;
@@ -530,6 +556,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   void _applyChunkRefresh() {
     _cancelBatches();
+    _batches.reset();
+    _batchCursor = null;
+    if (!_screenVisible) _resumeWhenVisible = true;
     _progressivePreview = [];
     _feedController.controller.refresh();
     _mediaPaging?.pagingController.refresh();
@@ -676,6 +705,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Where a chunk's page starts: the stored chains to show under it (first
   /// page only) and the cursor the fresh search continues from.
   Future<TweetPageResult> _listTweets(String? cursorKey) async {
+    if (!_screenVisible) throw const ReadCancelled();
     var repository = await Repository.writable();
     final retry = cursorKey == null && _retryFailedBatches;
     _retryFailedBatches = false;
@@ -849,7 +879,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       onError: (error) => (chains: <TweetChain>[], gapCapped: true, error: error),
       failed: (result) => result.error != null,
       onProgress: (results) {
-        if (!mounted || cursorKey != null || _feedController.hasItems) return;
+        if (!mounted || cursorKey != null || _feedController.hasItems || _catchUpEnabled) return;
         final next = prepare(results);
         if (_userHasScrolled && _progressivePreview.isNotEmpty) {
           final known = _progressivePreview.map((e) => e.id).toSet();
@@ -873,7 +903,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     var threads = prepare(chunkResults);
-    if (cursorKey == null && _userHasScrolled && _progressivePreview.isNotEmpty) {
+    if (cursorKey == null && !_catchUpEnabled && _userHasScrolled && _progressivePreview.isNotEmpty) {
       final byId = {for (final chain in threads) chain.id: chain};
       threads = [
         for (final chain in _progressivePreview)
@@ -887,6 +917,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         !PrefService.of(context, listen: false).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
       await showUnrelatedPostsInFeedWarning();
     }
+    ReadWork.checkpoint();
+    if (!mounted) throw const ReadCancelled();
 
     if (cursorKey == null) {
       _gapCapped = chunkResults.any((e) => e.gapCapped || e.error != null);
@@ -1035,93 +1067,97 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     if (widget.mediaOnly) {
-      return _buildMediaGrid(context);
+      return ReadVisibility(onHidden: _suspendReads, onVisible: _resumeReads, child: _buildMediaGrid(context));
     }
 
     return Scaffold(
-      body: TweetContextScope(
-        child: NotificationListener<ScrollNotification>(
-          onNotification: _onScrollNotification,
-          child: ProgressiveFeedView(
-            store: _pluginFeed,
-            builder: (items) => ScopedBuilder<BatchReadStore<GroupBatchResult>, BatchReadState<GroupBatchResult>>(
-              store: _batches,
-              onState: (_, batches) => Column(
-                children: [
-                  if (widget.chunks.isNotEmpty)
-                    SizedBox(
-                      height: 4,
-                      child: batches.loading
-                          ? LinearProgressIndicator(
-                              value: batches.total == 0 ? null : batches.results.length / batches.total,
-                            )
-                          : null,
-                    ),
-                  if (widget.chunks.isNotEmpty)
-                    ReadRecovery(
-                      recoverableFailure: () => batches.loading
-                          ? null
-                          : batches.results.values
-                                .map((result) => recoverableReadFailure(result.error))
-                                .whereType<Object>()
-                                .firstOrNull,
-                      retry: _retryBatches,
-                      child: SizedBox(
-                        height: 48,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Text(
-                                  L10n.of(context).reader_batch_progress(batches.results.length, batches.total),
+      body: ReadVisibility(
+        onHidden: _suspendReads,
+        onVisible: _resumeReads,
+        child: TweetContextScope(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: _onScrollNotification,
+            child: ProgressiveFeedView(
+              store: _pluginFeed,
+              builder: (items) => ScopedBuilder<BatchReadStore<GroupBatchResult>, BatchReadState<GroupBatchResult>>(
+                store: _batches,
+                onState: (_, batches) => Column(
+                  children: [
+                    if (widget.chunks.isNotEmpty)
+                      SizedBox(
+                        height: 4,
+                        child: batches.loading
+                            ? LinearProgressIndicator(
+                                value: batches.total == 0 ? null : batches.results.length / batches.total,
+                              )
+                            : null,
+                      ),
+                    if (widget.chunks.isNotEmpty)
+                      ReadRecovery(
+                        recoverableFailure: () => batches.loading
+                            ? null
+                            : batches.results.values
+                                  .map((result) => recoverableReadFailure(result.error))
+                                  .whereType<Object>()
+                                  .firstOrNull,
+                        retry: _retryBatches,
+                        child: SizedBox(
+                          height: 48,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    L10n.of(context).reader_batch_progress(batches.results.length, batches.total),
+                                  ),
                                 ),
                               ),
-                            ),
-                            if (!batches.loading && batches.failed.isNotEmpty)
-                              TextButton(onPressed: _retryBatches, child: Text(L10n.of(context).retry)),
-                          ],
+                              if (!batches.loading && batches.failed.isNotEmpty)
+                                TextButton(onPressed: _retryBatches, child: Text(L10n.of(context).retry)),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  Expanded(
-                    child: PaginatedTweetList(
-                      feed: _feedController,
-                      loadPage: _listTweetsShared,
-                      username: null,
-                      firstPagePreview: _progressivePreview.isNotEmpty ? _progressivePreview : _cachedPreview,
-                      firstPagePreviewCachedAt: _cachedPreviewAt,
-                      foldReasons: _foldReasons,
-                      onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
-                      catchUpMayBeIncomplete: () => _gapCapped,
-                      onRefresh: () async {
-                        // Not awaited: the reader is waiting on X's first page, and
-                        // the plugins are beside it rather than in front of it.
-                        unawaited(_loadPluginPosts());
-                        // Only this group's rows. The wipe used to take the whole table
-                        // with it, so pulling to refresh one feed made every other feed
-                        // refetch its first page from the network next time it opened.
-                        final hashes = widget.chunks.map((e) => e.hash).toList();
-                        if (hashes.isEmpty) {
-                          return;
-                        }
+                    Expanded(
+                      child: PaginatedTweetList(
+                        feed: _feedController,
+                        loadPage: _listTweetsShared,
+                        username: null,
+                        firstPagePreview: _progressivePreview.isNotEmpty ? _progressivePreview : _cachedPreview,
+                        firstPagePreviewCachedAt: _cachedPreviewAt,
+                        foldReasons: _foldReasons,
+                        onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
+                        catchUpMayBeIncomplete: () => _gapCapped,
+                        onRefresh: () async {
+                          // Not awaited: the reader is waiting on X's first page, and
+                          // the plugins are beside it rather than in front of it.
+                          unawaited(_loadPluginPosts());
+                          // Only this group's rows. The wipe used to take the whole table
+                          // with it, so pulling to refresh one feed made every other feed
+                          // refetch its first page from the network next time it opened.
+                          final hashes = widget.chunks.map((e) => e.hash).toList();
+                          if (hashes.isEmpty) {
+                            return;
+                          }
 
-                        var repository = await Repository.writable();
-                        await repository.delete(
-                          tableFeedGroupChunk,
-                          where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
-                          whereArgs: hashes,
-                        );
-                      },
-                      firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
-                      newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-                      emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
-                      isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
-                      caughtUpDividerKey: _caughtUpKey,
-                      interleaved: items,
+                          var repository = await Repository.writable();
+                          await repository.delete(
+                            tableFeedGroupChunk,
+                            where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
+                            whereArgs: hashes,
+                          );
+                        },
+                        firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+                        newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+                        emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
+                        isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
+                        caughtUpDividerKey: _caughtUpKey,
+                        interleaved: items,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

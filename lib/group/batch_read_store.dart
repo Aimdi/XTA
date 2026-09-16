@@ -26,6 +26,11 @@ class BatchReadStore<T> extends Store<BatchReadState<T>> {
       update(BatchReadState(results: state.results, failed: state.failed, total: state.total), force: true);
   }
 
+  void reset() {
+    cancel();
+    if (!_closed) update(BatchReadState<T>(), force: true);
+  }
+
   Future<List<T>> load(
     Iterable<String> keys,
     Future<T> Function(String) fetch, {
