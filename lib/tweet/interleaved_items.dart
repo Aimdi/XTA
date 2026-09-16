@@ -10,7 +10,19 @@ library;
 import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 
-typedef InterleavedItem = ({DateTime date, WidgetBuilder build});
+class InterleavedItem {
+  final DateTime date;
+  final WidgetBuilder build;
+  final String? id;
+  final String? source;
+  final String? linkUrl;
+  final Map<String, dynamic>? snapshot;
+
+  const InterleavedItem({required this.date, required this.build, this.id, this.source, this.linkUrl, this.snapshot});
+
+  InterleavedItem withBuilder(WidgetBuilder builder) =>
+      InterleavedItem(date: date, build: builder, id: id, source: source, linkUrl: linkUrl, snapshot: snapshot);
+}
 
 /// The newest post in a chain, which is where the chain sits in a timeline.
 DateTime? newestDateOf(TweetChain chain) {
@@ -33,15 +45,8 @@ DateTime? newestDateOf(TweetChain chain) {
 /// Items older than the oldest loaded chain deliberately land in the trailing
 /// bucket rather than being dropped — the feed has simply not paged down to
 /// them yet, and they move up as it does.
-List<List<InterleavedItem>> placeInterleaved(
-  List<TweetChain> chains,
-  List<InterleavedItem> items,
-) {
-  final buckets = List.generate(
-    chains.length + 1,
-    (_) => <InterleavedItem>[],
-    growable: false,
-  );
+List<List<InterleavedItem>> placeInterleaved(List<TweetChain> chains, List<InterleavedItem> items) {
+  final buckets = List.generate(chains.length + 1, (_) => <InterleavedItem>[], growable: false);
   if (items.isEmpty) {
     return buckets;
   }
@@ -77,34 +82,33 @@ List<List<InterleavedItem>> placeInterleaved(
 ///
 /// [chains] is null while the first page is still loading, which is neither
 /// case.
-bool onlyInterleavedToShow({
-  required List<TweetChain>? chains,
-  required List<InterleavedItem> items,
-}) => chains != null && chains.isEmpty && items.isNotEmpty;
+bool onlyInterleavedToShow({required List<TweetChain>? chains, required List<InterleavedItem> items}) =>
+    chains != null && chains.isEmpty && items.isNotEmpty;
 
 /// Whether plugin posts should fill the list when X has no usable page.
 ///
 /// A first-page error used to replace the whole list, so a mixed group whose
 /// X search was rate-limited looked like it had no Reddit or Substack posts
 /// at all. The plugin cards are already in hand; they stay on screen.
-bool showInterleavedOnXFailure({
-  required List<TweetChain>? chains,
-  required List<InterleavedItem> items,
-}) => items.isNotEmpty && (chains == null || chains.isEmpty);
+bool showInterleavedOnXFailure({required List<TweetChain>? chains, required List<InterleavedItem> items}) =>
+    items.isNotEmpty && (chains == null || chains.isEmpty);
 
 /// Writes [items] into [slots] when the visible mix would change.
 ///
 /// An empty answer still replaces a filled slot — a member taken out of the
 /// group has to take its posts with it — but an empty-for-empty write is not a
 /// change, so a feed with no plugin members does not rebuild once per source.
-bool replacePluginSlot<S>(
-  Map<S, List<InterleavedItem>> slots,
-  S source,
-  List<InterleavedItem> items,
-) {
+bool replacePluginSlot<S>(Map<S, List<InterleavedItem>> slots, S source, List<InterleavedItem> items) {
   if (items.isEmpty && !(slots[source]?.isNotEmpty ?? false)) {
     return false;
   }
   slots[source] = items;
   return true;
+}
+
+/// Completed posts remain readable when another account in the same source fails.
+class PartialFeedFailure implements Exception {
+  final List<InterleavedItem> items;
+  final Object cause;
+  const PartialFeedFailure(this.items, this.cause);
 }

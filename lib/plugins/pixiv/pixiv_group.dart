@@ -33,7 +33,7 @@ Future<List<InterleavedItem>> loadPixivGroupPosts(BuildContext context, List<Str
       final page = await client.userIllusts(userId);
       for (final illust in mute.filter(page.illusts)) {
         if (illust.createdAt case final date?) {
-          items.add((
+          items.add(InterleavedItem(
             date: date,
             build: (_) => Padding(
               padding: const EdgeInsets.all(8),

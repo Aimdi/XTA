@@ -44,8 +44,7 @@ mixin SubscriptionSource {
   /// One page of posts for [ids], as dated items a timeline can slot between
   /// its chains.
   ///
-  /// Returns nothing rather than throwing when the network is unreachable: one
-  /// source being down must not empty a feed of everything else in it.
+  /// May throw on failure; the progressive feed store keeps other sources readable.
   Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids);
 
   /// What one of this source's subscriptions is, under its name. A subreddit

@@ -45,23 +45,33 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
     final posts = await store.postsFor(actors);
     return blueskyInterleavedItems(posts, limit: limit);
   } catch (_) {
-    return const [];
+    rethrow;
   }
 }
 
 /// Posts as dated items. Each card keeps the Bluesky butterfly badge so a mixed
 /// group feed is unmistakable next to X — unlike Threads, which relies only on
 /// the provenance strip.
-List<InterleavedItem> blueskyInterleavedItems(
-  Iterable<BlueskyPost> posts, {
-  int limit = kBlueskyInterleavedPageSize,
-}) =>
+List<InterleavedItem> blueskyInterleavedItems(Iterable<BlueskyPost> posts, {int limit = kBlueskyInterleavedPageSize}) =>
     [
       for (final post in posts.take(limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
             date: date,
             pluginId: pluginIdBluesky,
+            id: '$pluginIdBluesky:${post.uri}',
+            linkUrl: post.linkCard?.url,
+            snapshot: post.sensitive
+                ? null
+                : {
+                    'xtaPlugin': 'link',
+                'archiveId': 'bluesky:${post.uri}', 'archiveUserId': post.did,
+                    'source': pluginIdBluesky,
+                    'url': post.url,
+                    'author': post.authorName,
+                    'text': post.text,
+                    'images': <String>[],
+                  },
             build: (_) => BlueskyPostCard(post: post, showSourceBadge: true),
           ),
     ];

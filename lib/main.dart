@@ -105,6 +105,7 @@ import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/utils/urls.dart';
+import 'package:xta/utils/shared_links.dart';
 import 'package:secure_content/secure_content.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -761,7 +762,7 @@ Future<void> main() async {
     final stocksWatchlist = StocksWatchlistStore();
     final tickerQuotes = TickerQuoteCache();
     final speech = SpeechStore();
-    final podcast = PodcastStore();
+    final podcast = PodcastStore(prefs: prefService);
     final substackClient = SubstackClient();
     final substackPublications = SubstackPublicationsStore(prefService);
     final substackRead = SubstackReadStore(prefService);
@@ -1354,8 +1355,26 @@ class _DefaultPageState extends State<DefaultPage> {
   Object? _migrationError;
   StackTrace? _migrationStackTrace;
   StreamSubscription<Uri>? _sub;
+  StreamSubscription<dynamic>? _shareSub;
 
-  void handleInitialLink(Uri link) async {
+  Future<void> _handleSharedText(String text) async {
+    try {
+      final link = await resolveSharedXLink(text);
+      if (!mounted) return;
+      if (link == null) {
+        showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
+        return;
+      }
+      await handleInitialLink(link);
+    } catch (error, stackTrace) {
+      log.warning('Unable to open shared X link', error, stackTrace);
+      if (mounted) {
+        showSnackBar(context, icon: '🔗', message: L10n.of(context).unable_to_open_link);
+      }
+    }
+  }
+
+  Future<void> handleInitialLink(Uri link) async {
     if (await openWithPlugins(context, link.toString())) {
       return;
     }
@@ -1458,6 +1477,12 @@ class _DefaultPageState extends State<DefaultPage> {
 
       unawaited(context.read<SavedTweetModel>().listSavedTweets());
       unawaited(context.read<LikedTweetModel>().listLikedTweets());
+      _shareSub = sharedTextChannel.receiveBroadcastStream().listen(
+        (text) => _handleSharedText(text is String ? text : ''),
+        onError: (Object error, StackTrace stackTrace) {
+          log.warning('Unable to receive shared text', error, stackTrace);
+        },
+      );
     });
 
     final appLinks = AppLinks();
@@ -1530,6 +1555,7 @@ class _DefaultPageState extends State<DefaultPage> {
   @override
   void dispose() {
     _sub?.cancel();
+    _shareSub?.cancel();
     super.dispose();
   }
 }

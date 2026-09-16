@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
@@ -28,11 +29,7 @@ import 'package:xta/plugins/plugin_counts.dart';
 /// Avatar size matching X / Reddit / Mastodon cards.
 const double kThreadsAvatarSize = 48;
 
-Widget _threadsMediaImage(
-  BuildContext context,
-  PluginMediaItem item,
-  BoxFit fit,
-) {
+Widget _threadsMediaImage(BuildContext context, PluginMediaItem item, BoxFit fit) {
   return ThreadsNetworkImage(item.url, fit: fit);
 }
 
@@ -75,10 +72,7 @@ class ThreadsPostCard extends StatelessWidget {
       onOpen!();
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsThreadScreen(post: post)));
   }
 
   void _openAuthor(BuildContext context) {
@@ -86,12 +80,7 @@ class ThreadsPostCard extends StatelessWidget {
       onAuthorTap!();
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ThreadsProfileScreen(username: post.handle),
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: post.handle)));
   }
 
   void _openBrowser(BuildContext context) {
@@ -110,10 +99,7 @@ class ThreadsPostCard extends StatelessWidget {
     if (handle == null || handle.isEmpty) {
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: handle)));
   }
 
   @override
@@ -128,24 +114,30 @@ class ThreadsPostCard extends StatelessWidget {
             color: tweetCardColor(context),
             child: InkWell(
               onTap: openOnTap ? () => _open(context) : null,
-              onLongPress: () => showPluginLinkPostActions(context, source: 'threads', url: post.url ?? post.id,
-                author: post.handle, text: post.text, images: post.images),
+              onLongPress: () => showPluginLinkPostActions(
+                context,
+                source: 'threads',
+                onGroup: () => addThreadsAccountToGroup(
+                  context,
+                  ThreadsAccount(handle: post.handle, name: post.authorName, avatarUrl: post.avatarUrl),
+                ),
+                url: post.url ?? post.id,
+                author: post.handle,
+                text: post.text,
+                images: post.images,
+              ),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (post.isRepost) _repostLine(context),
-                    if (post.replyToHandle != null &&
-                        post.replyToHandle!.isNotEmpty)
+                    if (post.replyToHandle != null && post.replyToHandle!.isNotEmpty)
                       PluginReplyingTo(name: post.replyToHandle!),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () => _openAuthor(context),
-                          child: _avatar(context),
-                        ),
+                        GestureDetector(onTap: () => _openAuthor(context), child: _avatar(context)),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -160,17 +152,12 @@ class ThreadsPostCard extends StatelessWidget {
                                 const SizedBox(height: 6),
                                 ThreadsCaption(
                                   text: post.text,
-                                  style: theme.textTheme.bodyLarge!.copyWith(
-                                    height: 1.35,
-                                  ),
+                                  style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
                                 ),
                               ],
                               if (post.hasMedia) ...[
                                 const SizedBox(height: 10),
-                                PluginPostMedia(
-                                  items: post.mediaItems,
-                                  imageBuilder: _threadsMediaImage,
-                                ),
+                                PluginPostMedia(items: post.mediaItems, imageBuilder: _threadsMediaImage),
                               ],
                               if (post.linkCard != null) ...[
                                 const SizedBox(height: 10),
@@ -212,9 +199,7 @@ class ThreadsPostCard extends StatelessWidget {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                L10n.of(
-                  context,
-                ).plugin_threads_reposted(post.reposterDisplayName),
+                L10n.of(context).plugin_threads_reposted(post.reposterDisplayName),
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelMedium!.copyWith(color: muted),
               ),
@@ -243,8 +228,7 @@ class ThreadsPostCard extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context))
-                  .ceil(),
+              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
             ),
     );
   }
@@ -252,9 +236,7 @@ class ThreadsPostCard extends StatelessWidget {
   Widget _header(BuildContext context) {
     final theme = Theme.of(context);
     final date = post.publishedAt;
-    final metaStyle = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
+    final metaStyle = theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,9 +249,7 @@ class ThreadsPostCard extends StatelessWidget {
                   post.authorName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall!.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
                 ),
                 meta: [if (date != null) createCompactDate(date)],
                 metaStyle: metaStyle,
@@ -286,16 +266,8 @@ class ThreadsPostCard extends StatelessWidget {
         // Mastodon cards — the name line already carries the follow button, and
         // in German the two together were wider than a 320dp phone.
         PluginHandleBadgeRow(
-          handle: Text(
-            '@${post.handle}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: metaStyle,
-          ),
-          badges: [
-            if (showSourceBadge)
-              PluginCardBadge(label: L10n.of(context).plugin_threads_title),
-          ],
+          handle: Text('@${post.handle}', maxLines: 1, overflow: TextOverflow.ellipsis, style: metaStyle),
+          badges: [if (showSourceBadge) PluginCardBadge(label: L10n.of(context).plugin_threads_title)],
         ),
       ],
     );
@@ -311,13 +283,8 @@ class ThreadsPostCard extends StatelessWidget {
           return const SizedBox.shrink();
         }
         return TextButton(
-          onPressed: () => accounts.add(
-            ThreadsAccount(
-              handle: post.handle,
-              name: post.authorName,
-              avatarUrl: post.avatarUrl,
-            ),
-          ),
+          onPressed: () =>
+              accounts.add(ThreadsAccount(handle: post.handle, name: post.authorName, avatarUrl: post.avatarUrl)),
           child: Text(L10n.of(context).plugin_threads_follow),
         );
       },
@@ -356,11 +323,7 @@ class _ThreadsLinkPreview extends StatelessWidget {
               if (card.hasImage)
                 AspectRatio(
                   aspectRatio: clampPluginMediaAspect(null),
-                  child: ThreadsNetworkImage(
-                    card.imageUrl!,
-                    fit: BoxFit.cover,
-                    cacheWidth: (width * scale).ceil(),
-                  ),
+                  child: ThreadsNetworkImage(card.imageUrl!, fit: BoxFit.cover, cacheWidth: (width * scale).ceil()),
                 ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
@@ -371,9 +334,7 @@ class _ThreadsLinkPreview extends StatelessWidget {
                       host,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                     if (card.title != null) ...[
                       const SizedBox(height: 4),
@@ -381,10 +342,7 @@ class _ThreadsLinkPreview extends StatelessWidget {
                         card.title!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(
-                          fontWeight: FontWeight.w700,
-                          height: 1.25,
-                        ),
+                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
                       ),
                     ],
                     if (card.description != null) ...[
@@ -393,9 +351,7 @@ class _ThreadsLinkPreview extends StatelessWidget {
                         card.description!,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                     ],
                   ],
@@ -415,19 +371,14 @@ class _ThreadsEngagementRow extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onOpenBrowser;
 
-  const _ThreadsEngagementRow({
-    required this.post,
-    required this.onOpen,
-    required this.onOpenBrowser,
-  });
+  const _ThreadsEngagementRow({required this.post, required this.onOpen, required this.onOpenBrowser});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final prefs = PrefService.of(context, listen: false);
-    final hideCounts =
-        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final likes = context.read<ThreadsLikesStore>();
 
     String metaLabel(int? count) {
@@ -445,31 +396,21 @@ class _ThreadsEngagementRow extends StatelessWidget {
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(
-              metaLabel(post.replyCount),
-              style: theme.textTheme.bodySmall!.copyWith(color: muted),
-            ),
+            label: Text(metaLabel(post.replyCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
           ),
           TextButton.icon(
             style: footerButtonStyle,
             onPressed: onOpen,
             icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(
-              metaLabel(post.repostCount),
-              style: theme.textTheme.bodySmall!.copyWith(color: muted),
-            ),
+            label: Text(metaLabel(post.repostCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
           ),
           ScopedBuilder<ThreadsLikesStore, List<ThreadsPost>>(
             store: likes,
             distinct: (_) => likes.isLiked(post.id),
             onState: (context, state) {
               final isLiked = likes.isLiked(post.id);
-              final shown = post.likeCount == null
-                  ? null
-                  : post.likeCount! + (isLiked ? 1 : 0);
-              final likeLabel = hideCounts || shown == null
-                  ? ''
-                  : compactCount(shown);
+              final shown = post.likeCount == null ? null : post.likeCount! + (isLiked ? 1 : 0);
+              final likeLabel = hideCounts || shown == null ? '' : compactCount(shown);
               return LikeButton(
                 isLiked: isLiked,
                 label: likeLabel,

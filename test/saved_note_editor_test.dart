@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/saved_note_editor.dart';
+import 'package:xta/saved/note_editor_frame.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const _reviewRender = ValueKey('saved-note-review-render');
@@ -18,6 +19,9 @@ Future<void> openEditor(
   double keyboard = 0,
   double textScale = 1,
   bool dark = false,
+  bool reduceMotion = true,
+  bool settle = true,
+  bool rtl = false,
 }) async {
   await tester.pumpWidget(
     RepaintBoundary(
@@ -36,9 +40,9 @@ Future<void> openEditor(
           data: MediaQuery.of(context).copyWith(
             viewInsets: EdgeInsets.only(bottom: keyboard),
             textScaler: TextScaler.linear(textScale),
-            disableAnimations: true,
+            disableAnimations: reduceMotion,
           ),
-          child: child!,
+          child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
         ),
         home: Scaffold(
           body: Builder(
@@ -52,7 +56,7 @@ Future<void> openEditor(
     ),
   );
   await tester.tap(find.text('Open editor'));
-  await tester.pumpAndSettle();
+  if (settle) await tester.pumpAndSettle();
 }
 
 void main() {
@@ -136,5 +140,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(attempts, 2);
     expect(find.byType(TextField), findsNothing);
+  });
+
+  testWidgets('Write slides a full-screen composer upward before focusing', (tester) async {
+    await openEditor(tester, note: null, onSave: (_) async {}, reduceMotion: false, settle: false);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 16));
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.focusNode!.hasFocus, isFalse);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(tester.getTopLeft(find.byType(NoteEditorFrame)).dy, greaterThan(0));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.byType(NoteEditorFrame)).dy, 0);
+    expect(field.focusNode!.hasFocus, isTrue);
+    expect(field.decoration!.border, InputBorder.none);
+    expect(find.byType(BottomSheet), findsNothing);
+    expect(tester.getTopLeft(_saveButton()).dy, lessThan(90));
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(NoteEditorFrame), findsNothing);
+  });
+
+  testWidgets('reduced motion opens immediately and RTL large-text layout fits', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(360, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    await openEditor(tester, onSave: (_) async {}, rtl: true, textScale: 1.8, keyboard: 300);
+    final route = ModalRoute.of(tester.element(find.byType(TextField)))!;
+    expect(route.animation!.isCompleted, isTrue);
+    expect(tester.getTopLeft(find.byType(NoteEditorFrame)).dy, 0);
+    expect(tester.takeException(), isNull);
+    await expectLater(
+      find.byKey(_reviewRender),
+      matchesGoldenFile('../review-artifacts/renders/note-composer-rtl-large.png'),
+    );
   });
 }

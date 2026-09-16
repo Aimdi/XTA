@@ -30,6 +30,7 @@ class TwitterHeaders {
   /// Seams for tests: deriving the key needs two live requests to x.com.
   static Future<ClientTransaction> Function() initializer = ClientTransaction.initialize;
   static DateTime Function() clock = DateTime.now;
+  static const initializationTimeout = Duration(seconds: 12);
 
   static Future<ClientTransaction>? _initFuture;
   static DateTime? _derivedAt;
@@ -48,7 +49,9 @@ class TwitterHeaders {
   static Future<ClientTransaction> _transaction() {
     final now = clock();
     final cached = _initFuture;
-    if (cached != null && transactionKeyUsable(derivedAt: _derivedAt, now: now, lifetime: transactionKeyLifetime)) {
+    if (cached != null &&
+        (_derivedAt == null ||
+            transactionKeyUsable(derivedAt: _derivedAt, now: now, lifetime: transactionKeyLifetime))) {
       return cached;
     }
 
@@ -62,9 +65,9 @@ class TwitterHeaders {
       return Future.error(failure);
     }
 
-    final started = initializer();
+    final started = Future.sync(initializer).timeout(initializationTimeout);
     _initFuture = started;
-    _derivedAt = now;
+    _derivedAt = null;
 
     // Deriving the key does two network requests and parses X's HTML, so it can
     // fail for entirely transient reasons. Leaving a rejected future cached
@@ -78,14 +81,15 @@ class TwitterHeaders {
     unawaited(
       started.then(
         (_) {
+          if (!identical(_initFuture, started)) return;
+          _derivedAt = clock();
           _lastFailure = null;
           _failedAt = null;
         },
         onError: (Object error) {
-          if (identical(_initFuture, started)) {
-            _initFuture = null;
-            _derivedAt = null;
-          }
+          if (!identical(_initFuture, started)) return;
+          _initFuture = null;
+          _derivedAt = null;
           _lastFailure = error;
           _failedAt = clock();
         },

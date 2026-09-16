@@ -1,3 +1,4 @@
+import 'package:xta/search/reader_search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -121,6 +122,8 @@ class _TrendsScreenState extends State<TrendsScreen>
                   tooltip: L10n.of(context).search,
                   onPressed: () => _submit(context, _queryController.text),
                 ),
+                trailing: [IconButton(icon: const Icon(Icons.manage_search), tooltip: L10n.of(context).reader_search_all,
+                  onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => ReaderSearchScreen(initialQuery: _queryController.text))))],
                 onChanged: (value) {
                   context.read<DiscoverQueryStore>().type(value);
                 },

@@ -18,10 +18,10 @@ import 'package:xta/client/accounts.dart';
 import 'package:xta/client/client_regular_account.dart';
 import 'package:xta/client/client_unauthenticated.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
+import 'package:xta/client/http_client.dart';
+import 'package:xta/utils/request_budget.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
-
-const Duration _defaultTimeout = Duration(seconds: 30);
 
 class QuackerTwitterClient extends TwitterClient {
   static final log = Logger('QuackerTwitterClient');
@@ -30,7 +30,7 @@ class QuackerTwitterClient extends TwitterClient {
 
   @override
   Future<http.Response> get(Uri uri, {Map<String, String>? headers, Duration? timeout}) {
-    return fetch(uri, headers: headers).timeout(timeout ?? _defaultTimeout).then((response) {
+    return fetch(uri, headers: headers, timeout: timeout ?? xRequestTimeout).then((response) {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return response;
       } else {
@@ -44,13 +44,26 @@ class QuackerTwitterClient extends TwitterClient {
   /// Used when For you intentionally loads HomeTimeline for a chosen login
   /// account (or merges several). Other requests keep using [fetch] so accounts
   /// turned off for home feeds still raise rate limits elsewhere.
-  static Future<http.Response> fetchAs(Account account, Uri uri, {Map<String, String>? headers}) async {
+  static Future<http.Response> fetchAs(
+    Account account,
+    Uri uri, {
+    Map<String, String>? headers,
+    Duration timeout = xRequestTimeout,
+  }) => RequestBudget(timeout).run(() => _fetchAs(account, uri, headers: headers, timeout: timeout));
+
+  static Future<http.Response> _fetchAs(
+    Account account,
+    Uri uri, {
+    Map<String, String>? headers,
+    required Duration timeout,
+  }) async {
     final endpoint = uri.path;
     final response = await XRegularAccount().fetch(
       uri,
       headers: headers,
       log: log,
       authHeader: json.decode(account.authHeader),
+      timeout: timeout,
     );
     final code = response.statusCode;
     if (code >= 200 && code < 300) {
@@ -84,14 +97,19 @@ class QuackerTwitterClient extends TwitterClient {
   /// rate-limited on the endpoint, [NoWorkingAccountException] when they all
   /// returned 404, and [NoAccountAvailableException] only when there is no account
   /// and the guest request also failed.
-  static Future<http.Response> fetch(Uri uri, {Map<String, String>? headers}) async {
+  static Future<http.Response> fetch(Uri uri, {Map<String, String>? headers, Duration timeout = xRequestTimeout}) {
+    final budget = RequestBudget(timeout);
+    return budget.run(() => _fetch(uri, headers: headers, budget: budget));
+  }
+
+  static Future<http.Response> _fetch(Uri uri, {Map<String, String>? headers, required RequestBudget budget}) async {
     final endpoint = uri.path;
     final now = DateTime.now();
     // Prefer accounts still on for home feeds. TweetDetail / quotes share this
     // path: if every account is toggled off we fall back to the full pool so
     // those screens keep a credential. Following search chunks skip spare
     // accounts the reader turned off.
-    var accounts = await getAccounts();
+    var accounts = await budget.run(getAccounts);
     final disabled = AccountFetchGate.disabledIds;
     if (disabled.isNotEmpty) {
       final preferred = accounts.where((a) => !disabled.contains(a.id)).toList(growable: false);
@@ -123,6 +141,7 @@ class QuackerTwitterClient extends TwitterClient {
         headers: headers,
         log: log,
         authHeader: json.decode(account.authHeader),
+        timeout: budget.remaining,
       );
       final code = response.statusCode;
 
@@ -156,7 +175,7 @@ class QuackerTwitterClient extends TwitterClient {
     if (tried.isEmpty) {
       // No account at all: still attempt an unauthenticated (guest) request so we
       // never error before sending one. Only invite to add an account if it fails.
-      final guest = await fetchUnauthenticated(uri, headers: headers, log: log);
+      final guest = await budget.run(() => fetchUnauthenticated(uri, headers: headers, log: log));
       if (guest.statusCode >= 200 && guest.statusCode < 300) {
         return guest;
       }
@@ -183,9 +202,9 @@ class QuackerTwitterClient extends TwitterClient {
   }
 
   static DateTime _resetFromHeaders(http.Response response) {
-    final reset = response.headers['x-rate-limit-reset']; // epoch seconds
-    if (reset != null) {
-      return DateTime.fromMillisecondsSinceEpoch(int.parse(reset) * 1000);
+    final reset = int.tryParse(response.headers['x-rate-limit-reset'] ?? '');
+    if (reset != null && reset > 0 && reset <= 8640000000000) {
+      return DateTime.fromMillisecondsSinceEpoch(reset * 1000);
     }
     return DateTime.now().add(rateLimitFallback);
   }

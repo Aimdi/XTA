@@ -5,6 +5,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:path/path.dart' as path;
 import 'package:pref/pref.dart';
+import 'package:xta/media/video_source_store.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -175,7 +176,7 @@ class _XtaControlsState extends State<XtaControls> {
   Widget _controls() {
     return Stack(
       children: [
-        const Center(child: _PlayPauseButton()),
+        Center(child: _PlayPauseButton(pooled: widget.pooled)),
         Positioned(
           left: 0,
           right: 0,
@@ -300,7 +301,8 @@ class _BottomBar extends StatelessWidget {
 }
 
 class _PlayPauseButton extends StatefulWidget {
-  const _PlayPauseButton();
+  final PooledVideo pooled;
+  const _PlayPauseButton({required this.pooled});
 
   @override
   State<_PlayPauseButton> createState() => _PlayPauseButtonState();
@@ -341,6 +343,7 @@ class _PlayPauseButtonState extends State<_PlayPauseButton> {
   void _onTap() {
     final player = _playerOf(context);
     final wasCompleted = _completed;
+    widget.pooled.suppressQualityResume();
     // Flip the icon immediately so the button feels instant; the streams
     // confirm/correct it after libmpv's play/pause latency.
     setState(() {
@@ -876,24 +879,14 @@ Future<void> _openQualitySheet(BuildContext context, PooledVideo pooled) async {
       selectedUrl: pooled.currentStreamUrl,
     ),
   );
-  if (chosen == null || chosen.url == pooled.currentStreamUrl) {
+  if (!context.mounted || chosen == null || pooled.isDisposed) {
     return;
   }
-
-  final player = pooled.player;
-  final wasPlaying = player.state.playing;
-  final volume = player.state.volume;
-  final rate = player.state.rate;
-
-  // The new variant restarts from 0: preserving position across the source swap
-  // proved unreliable on libmpv's Android network playback.
-  pooled.currentStreamUrl = chosen.url;
-  await player.open(
-    Media(chosen.url, httpHeaders: pooled.httpHeaders),
-    play: wasPlaying,
+  final result = await pooled.changeQuality(chosen.url);
+  if (!context.mounted || result != VideoSwitchResult.failed) return;
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(L10n.of(context).failed_to_load_video)),
   );
-  await player.setVolume(volume);
-  await player.setRate(rate);
 }
 
 Future<void> downloadTweetVideo(

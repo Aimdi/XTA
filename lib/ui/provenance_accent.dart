@@ -28,9 +28,13 @@ InterleavedItem provenanceInterleavedItem({
   required DateTime date,
   required String pluginId,
   required WidgetBuilder build,
+  String? id,
+  String? linkUrl,
+  Map<String, dynamic>? snapshot,
 }) {
-  return (
+  return InterleavedItem(
     date: date,
+    id: id, source: pluginId, linkUrl: linkUrl, snapshot: snapshot,
     build: (context) =>
         provenanceAccent(context: context, color: provenanceAccentColor(context, pluginId), child: build(context)),
   );

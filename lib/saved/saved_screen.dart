@@ -1,4 +1,8 @@
+import 'package:xta/search/reader_search_screen.dart';
 import 'dart:async';
+import 'package:xta/downloads/downloads_screen.dart';
+import 'package:xta/offline/offline_library_screen.dart';
+import 'package:xta/offline/offline_saved_action.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -275,6 +279,7 @@ class _SavedScreenState extends State<SavedScreen>
       builder: (context) => AlertDialog(
         title: Text(L10n.of(context).are_you_sure),
         actions: [
+
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(L10n.of(context).cancel),
@@ -471,6 +476,12 @@ class _SavedScreenState extends State<SavedScreen>
       case SavedOverflowAction.manageFolders:
         await Navigator.pushNamed(context, routeSavedFolders);
         if (mounted) setState(() {});
+        return;
+      case SavedOverflowAction.downloads:
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => const DownloadsScreen()));
+        return;
+      case SavedOverflowAction.offline:
+        await Navigator.push(context, MaterialPageRoute(builder: (_) => const OfflineLibraryScreen()));
         return;
       case SavedOverflowAction.cleanup:
         if (!mounted) return;
@@ -766,6 +777,8 @@ class _SavedScreenState extends State<SavedScreen>
                   titleSpacing: kTweetHorizontalPadding,
                   title: Text(L10n.current.saved),
                   actions: [
+              IconButton(icon: const Icon(Icons.manage_search), tooltip: L10n.of(context).reader_search_all,
+                onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const ReaderSearchScreen()))),
                     IconButton(
                       isSelected: _searching,
                       icon: const Icon(Icons.search),
@@ -838,6 +851,9 @@ class SavedClipTile extends StatelessWidget {
     final theme = Theme.of(context);
     final note = saved.note;
     final hasNote = note != null && note.isNotEmpty;
+    final offlineContent = tweet == null && reddit == null && mastodon == null
+        ? parseSavedContent(saved.content)
+        : SavedContent(tweet: tweet, reddit: reddit, mastodon: mastodon, haystack: '');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -858,7 +874,7 @@ class SavedClipTile extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
-              onTap: () => openSavedNoteEditor(context, note: note, onSave: onNoteChanged),
+              onTap: () => openSavedNoteEditor(context, draftKey: 'saved:${saved.id}', note: note, onSave: onNoteChanged),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(minHeight: 48),
                 child: Padding(
@@ -886,6 +902,13 @@ class SavedClipTile extends StatelessWidget {
             ),
           ),
         ),
+        if (hasOfflineMedia(offlineContent))
+          Align(alignment: AlignmentDirectional.centerEnd, child: IconButton(
+            icon: const Icon(Icons.offline_pin_outlined),
+            tooltip: l10n.offline_library_title,
+            onPressed: () => showModalBottomSheet<void>(context: context, useRootNavigator: true,
+              builder: (_) => SafeArea(child: OfflineSavedAction(id: saved.id, content: offlineContent))),
+          )),
       ],
     );
   }

@@ -30,25 +30,39 @@ Future<List<InterleavedItem>> loadSubstackInterleaved(
   }
 
   final client = context.read<SubstackClient>();
+  Object? failure;
   final fetched = await Future.wait(
     publications.map((publication) async {
       try {
         return (publication, await client.fetchPosts(publicationOf(publication), limit: substackFeedPageSize));
       } catch (e) {
+        failure ??= e;
         _log.warning('Unable to load Substack posts for ${publication.id}: $e');
         return null;
       }
     }),
   );
 
-  return [
+  final result = <InterleavedItem>[
     for (final (publication, posts) in fetched.nonNulls)
       for (final post in posts)
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
             date: date,
             pluginId: pluginIdSubstack,
+            id: '$pluginIdSubstack:${post.publication.id}:${post.id}',
+            linkUrl: post.canonicalUrl,
+            snapshot: {
+                    'xtaPlugin': 'link',
+                    'source': pluginIdSubstack,
+                    'url': post.canonicalUrl ?? '',
+                    'author': post.authorName ?? post.publicationName,
+                    'text': '${post.title}\n${post.description ?? ''}',
+                    'images': <String>[],
+                  },
             build: (_) => SubstackPostCard(post: post, logoUrl: publication.logoUrl),
           ),
   ];
+  if (failure != null) throw PartialFeedFailure(result, failure!);
+  return result;
 }

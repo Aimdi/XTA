@@ -40,7 +40,7 @@ Future<List<InterleavedItem>> loadHnGroupPosts(BuildContext context, List<String
       final page = await client.submissions(id.substring('$pluginIdHackerNews:'.length));
       for (final story in page.stories) {
         if (story.createdAt case final date?) {
-          items.add((date: date, build: (_) => HnStoryCard(story: story)));
+          items.add(InterleavedItem(date: date, build: (_) => HnStoryCard(story: story)));
         }
       }
     } catch (_) {

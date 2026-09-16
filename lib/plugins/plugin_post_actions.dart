@@ -1,3 +1,4 @@
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
@@ -17,7 +18,7 @@ class PluginPostArchive {
   const PluginPostArchive({required this.id, required this.userId, required this.content});
 }
 
-enum _PostAction { bookmark, folder, note, reposts, quotes, browser }
+enum _PostAction { bookmark, folder, note, group, share, reposts, quotes, browser }
 
 Future<void> savePluginPost(BuildContext context, PluginPostArchive post) => fileSavedTweet(
   context,
@@ -35,6 +36,7 @@ Future<void> editPluginPostNote(BuildContext context, PluginPostArchive post) as
   await openSavedNoteEditor(
     context,
     note: note,
+    draftKey: 'saved:${post.id}',
     onSave: (value) async {
       if (!model.isSaved(post.id)) {
         await model.saveTweet(post.id, post.userId, post.content, folderId: folderId);
@@ -49,6 +51,7 @@ Future<void> showPluginPostActions(
   BuildContext context, {
   required PluginPostArchive post,
   required String url,
+  VoidCallback? onGroup,
   VoidCallback? onReposts,
   VoidCallback? onQuotes,
 }) async {
@@ -71,16 +74,28 @@ Future<void> showPluginPostActions(
                 onTap: () => Navigator.pop(context, _PostAction.bookmark),
               ),
               ListTile(
-                leading: const Icon(Icons.folder_outlined),
-                title: Text(l10n.save_to_folder),
-                onTap: () => Navigator.pop(context, _PostAction.folder),
-              ),
-              ListTile(
                 leading: const Icon(Icons.edit_note),
                 title: Text(l10n.clip_note_hint),
                 onTap: () => Navigator.pop(context, _PostAction.note),
               ),
             ],
+            if (onGroup != null)
+              ListTile(
+                leading: const Icon(Icons.group_add_outlined),
+                title: Text(l10n.add_to_group),
+                onTap: () => Navigator.pop(context, _PostAction.group),
+              ),
+            ListTile(
+              leading: const Icon(Icons.share_outlined),
+              title: Text(l10n.share_link),
+              onTap: () => Navigator.pop(context, _PostAction.share),
+            ),
+            if (model != null)
+              ListTile(
+                leading: const Icon(Icons.folder_outlined),
+                title: Text(l10n.save_to_folder),
+                onTap: () => Navigator.pop(context, _PostAction.folder),
+              ),
             if (onReposts != null)
               ListTile(
                 leading: const Icon(Icons.repeat),
@@ -115,6 +130,10 @@ Future<void> showPluginPostActions(
       await showSaveToFolderSheet(context, tweetId: post.id, userId: post.userId, content: post.content);
     case _PostAction.note:
       await editPluginPostNote(context, post);
+    case _PostAction.group:
+      onGroup?.call();
+    case _PostAction.share:
+      await Share.share(url);
     case _PostAction.reposts:
       onReposts?.call();
     case _PostAction.quotes:

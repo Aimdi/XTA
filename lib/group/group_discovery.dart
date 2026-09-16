@@ -1,3 +1,4 @@
+import 'package:xta/utils/local_json_store.dart';
 import 'dart:convert';
 
 import 'package:flutter_triple/flutter_triple.dart';
@@ -110,10 +111,19 @@ typedef DiscoveryChat = Future<String> Function(AiConfig config, String prompt);
 
 class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
   final DiscoveryChat chat;
+  final JsonStore storage;
+  String _feedbackKey = '';
+  Map<String, dynamic> _feedback = {};
+  Map<String, dynamic>? _undo;
+  List<DiscoveryAccount> _candidates = [];
+  bool get canUndo => _undo != null;
+  bool get hasFeedback => _feedback.isNotEmpty;
   int _generation = 0;
   bool _closed = false;
   Set<String> _followed = {};
-  GroupDiscoveryStore({this.chat = aiChatCompletion}) : super(const GroupDiscoveryState());
+  GroupDiscoveryStore({this.chat = aiChatCompletion, JsonStore? storage})
+    : storage = storage ?? LocalJsonStore.shared,
+      super(const GroupDiscoveryState());
 
   // Triple's error selector otherwise retains an old error after a successful retry.
   @override
@@ -131,7 +141,9 @@ class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
   List<DiscoveryAccount> _exclude(Iterable<DiscoveryAccount> accounts) => accounts
       .where(
         (account) =>
-            !_followed.contains(account.key) && !_followed.contains(discoveryIdentity(account.source, account.handle)),
+            _feedback[account.key]?['action'] != 0 &&
+            !_followed.contains(account.key) &&
+            !_followed.contains(discoveryIdentity(account.source, account.handle)),
       )
       .toList();
 
@@ -152,6 +164,7 @@ class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
     required List<DiscoveryLoad> sources,
     required Set<String> followed,
     required String groupName,
+    String? groupId,
     AiConfig? ai,
   }) async {
     if (_closed) return;
@@ -159,11 +172,16 @@ class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
     _followed = Set.of(followed);
     setLoading(true);
     try {
+      _feedbackKey = 'discovery:${groupId ?? groupName}';
+      final preferences = await storage.read(_feedbackKey);
+      if (!_isCurrent(generation)) return;
+      _feedback = {if (preferences is Map) for (final e in preferences.entries) if (e.key is String && e.value is Map && (e.value as Map)['action'] is int && (e.value as Map)['terms'] is List) e.key as String: e.value};
       final result = await _load(sources, groupName, ai, generation);
       if (!_isCurrent(generation) || result == null) return;
+      _candidates = result.accounts;
       update(
         GroupDiscoveryState(
-          accounts: _exclude(result.accounts),
+          accounts: _applyFeedback(_candidates),
           usedAi: result.usedAi,
           aiFailed: result.aiFailed,
           sourceFailed: result.sourceFailed,
@@ -211,6 +229,60 @@ class GroupDiscoveryStore extends Store<GroupDiscoveryState> {
       return GroupDiscoveryState(accounts: ranked, aiFailed: true, sourceFailed: failed);
     }
   }
+
+  List<DiscoveryAccount> _applyFeedback(List<DiscoveryAccount> candidates) {
+    final result = _exclude(candidates);
+    final positions = {for (var i = 0; i < candidates.length; i++) candidates[i].key: i};
+    int score(DiscoveryAccount account) {
+      final terms = nameTokens('${account.name} ${account.text}');
+      var score = 0;
+      for (final entry in _feedback.entries) {
+        final value = entry.value;
+        if (value is! Map || value['action'] is! int || value['action'] == 0) continue;
+        final weight = value['action'] as int;
+        final overlap = terms.intersection((value['terms'] as List? ?? []).whereType<String>().toSet()).length;
+        score += weight * (entry.key == account.key ? 8 : overlap.clamp(0, 4).toInt());
+      }
+      return score;
+    }
+
+    result.sort((a, b) {
+      final ranked = score(b).compareTo(score(a));
+      return ranked != 0 ? ranked : positions[a.key]!.compareTo(positions[b.key]!);
+    });
+    return result;
+  }
+
+  Future<void> feedback(DiscoveryAccount account, int action) async {
+    final before = Map<String, dynamic>.of(_feedback);
+    final next = {
+      ..._feedback,
+      account.key: {'action': action, 'terms': nameTokens(account.text).take(20).toList()},
+    };
+    await storage.write(_feedbackKey, next);
+    if (_closed) return;
+    _undo = before;
+    _feedback = next;
+    _refreshFeedback();
+  }
+
+  Future<void> resetFeedback({bool undo = false}) async {
+    final next = undo ? _undo ?? <String, dynamic>{} : <String, dynamic>{};
+    await storage.write(_feedbackKey, next);
+    if (_closed) return;
+    _feedback = next;
+    _undo = null;
+    _refreshFeedback();
+  }
+
+  void _refreshFeedback() => update(
+    GroupDiscoveryState(
+      accounts: _applyFeedback(_candidates),
+      usedAi: state.usedAi,
+      aiFailed: state.aiFailed,
+      sourceFailed: state.sourceFailed,
+    ),
+  );
 
   @override
   Future<void> destroy() {

@@ -38,12 +38,15 @@
   "ai_model": "Modelo",
   "@ai_model": {},
   "ai_openrouter_key_hint": "Kreu API-ŝlosilon ĉe openrouter.ai/settings/keys.",
+  "@ai_openrouter_key_hint": {},
   "ai_openrouter_model_hint": "Uzu la plenan modelidentigilon, ekzemple openrouter/free aŭ provider/model.",
+  "@ai_openrouter_model_hint": {},
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
   "ai_preset_openrouter": "OpenRouter",
+  "@ai_preset_openrouter": {},
   "ai_provider": "AI-provizanto",
   "@ai_provider": {},
   "ai_provider_description": "Elektu provizanton aŭ enigu servilon kongruan kun OpenAI. Aldonu vian API-ŝlosilon kaj modelon, poste konservu. Malplenaj kampoj lasas AI malŝaltita.",
@@ -100,6 +103,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artikolo ĉe X",
   "@article_on_x": {},
+  "article_reader_appearance": "Lega aspekto",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Marki kiel finlegitan",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Finlegita",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Interlinia distanco",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Malfermita",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Daŭrigita",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Reiri al la komenco",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Tekstoskaligo",
+  "@article_reader_text_size": {},
   "auto_download_images": "Aŭtomate elŝuti bildojn",
   "@auto_download_images": {},
   "auto_download_images_description": "Konservi la bildojn de ĉiu afiŝo metita en ĉi tiun dosierujon en vian elŝut-dosierujon.",
@@ -402,6 +421,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Elŝutas plurmedion...",
   "@downloading_media": {},
+  "downloads_batch_result": "Konservitaj dosieroj: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Nuligita",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Elekti konservejon",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Viŝi la historion de finitaj elŝutoj",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Konservita",
+  "@downloads_completed": {},
+  "downloads_empty": "Viaj elŝutoj aperos ĉi tie. Por komenci, konservu aŭdvidaĵon el afiŝo.",
+  "@downloads_empty": {},
+  "downloads_failed": "Elŝuto malsukcesis",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Ne eblis konservi la elŝuthistorion. Kontrolu la liberan stokspacon kaj reprovu.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Interrompita · Reprovu por daŭrigi",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Ne eblis malfermi ĉi tiun dosieron. Eble ĝi estis movita aŭ forigita.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Malfermi dosieron",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Atendanta",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Kontrolu vian konekton kaj la elŝutdosierujon, poste reprovu.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Konservante dosieron…",
+  "@downloads_saving": {},
+  "downloads_title": "Elŝutoj",
+  "@downloads_title": {},
   "edit_folder": "Redakti dosierujon",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Finiĝis {timeagoFormat}",
@@ -858,6 +927,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Ne voĉoj} one{Unu voĉo} two{Du voĉoj} few{{numFormatted} voĉoj} many{{numFormatted} voĉoj} other{{numFormatted} voĉoj}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Artikola teksto konservita · Bildoj: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "La artikola teksto estas konservita. Enigitaj sonaĵoj kaj filmetoj ankoraŭ bezonas konekton.",
+  "@offline_article_text_only": {},
+  "offline_available": "Disponebla senkonekte",
+  "@offline_available": {},
+  "offline_clear": "Malplenigi la senkonektan kolekton",
+  "@offline_clear": {},
+  "offline_clear_description": "Ĉi tio forigas konservitajn artikolojn kaj aŭdvidaĵojn de ĉi tiu aparato. Konservitaj afiŝoj kaj dosierujoj restas en via biblioteko.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Ĉu forigi ĉiujn senkonektajn kopiojn?",
+  "@offline_clear_question": {},
+  "offline_empty": "Konservu artikolojn aŭ aŭdvidaĵojn de konservitaj afiŝoj senkonekte por trovi ilin ĉi tie.",
+  "@offline_empty": {},
+  "offline_failed": "Ne eblis konservi ĉion senkonekte. Kontrolu vian konekton kaj la liberan stokspacon, poste reprovu.",
+  "@offline_failed": {},
+  "offline_keep": "Konservi senkonekte",
+  "@offline_keep": {},
+  "offline_library_title": "Senkonekta kolekto",
+  "@offline_library_title": {},
+  "offline_media_count": "Konservitaj aŭdvidaj dosieroj: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Aŭdvidaĵo {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Parte disponebla senkonekte",
+  "@offline_partial": {},
+  "offline_remove": "Forigi senkonektan kopion",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Ĉi tiuj dosieroj povas enhavi senteman enhavon. Ili estos konservitaj sur ĉi tiu aparato kaj restos kaŝitaj ĝis vi elektos malfermi ilin.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Malfermi sentemajn aŭdvidaĵojn",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Ĉu konservi sentemajn aŭdvidaĵojn senkonekte?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Ne eblis legi aŭ ĝisdatigi la senkonektan konservejon. Kontrolu la liberan stokspacon kaj reprovu.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Senkonekta stokspaco estas limigita al {limit}. Grandaj dosieroj aŭ nesubtenataj fluoj eble restos nedisponeblaj.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} uzataj el {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Senkonekta kopio ne disponeblas",
+  "@offline_unavailable": {},
+  "offline_video_only": "Kopioj de Reddit-filmetoj eble ne enhavas sonon.",
+  "@offline_video_only": {},
   "ok": "Bone",
   "@ok": {},
   "only_show_posts_with_media": "Montri nur pepojn kun plurmedioj",
@@ -3251,7 +3403,50 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kiom da paĝoj la fluo ŝargas en zena reĝimo antaŭ ol paŭzi.",
   "@zen_mode_page_cap_description": {},
-  "@ai_openrouter_key_hint": {},
-  "@ai_openrouter_model_hint": {},
-  "@ai_preset_openrouter": {}
+  "reader_link_posts": "Pliaj afiŝoj kun ĉi tiu ligilo: {count}",
+  "reader_connection_failed": "Konekto malsukcesis",
+  "reader_sign_in_needed": "Ensalutu denove por daŭrigi",
+  "reader_rate_limit_hint": "Ĉi tiu fonto limigas petojn. Provu denove poste.",
+  "reader_new_posts": "Novaj afiŝoj",
+  "reader_source_loading": "Ĉi tiu fonto ankoraŭ ŝargiĝas. Aliaj afiŝoj jam estas legeblaj.",
+  "reader_cached_content": "Konservita kopio estas montrata dum la fonto ĝisdatiĝas.",
+  "reader_draft_restored": "Malneto restarigita",
+  "reader_search_all": "Serĉi en via biblioteko",
+  "reader_highlight": "Emfazi kaj aldoni noton",
+  "reader_extract": "Eltiri tekston el ekrankopio",
+  "reader_extract_notice": "La elektita PNG aŭ JPEG estos sendita al {host} per via agordita AI-modelo. La eltirita teksto povas enhavi erarojn.",
+  "reader_more_like": "Pli da similaj",
+  "reader_less_like": "Malpli da similaj",
+  "reader_discovery_reason": "Proponita laŭ komunigitaj aŭ rilataj afiŝoj de kontoj en ĉi tiu grupo.",
+  "reader_undo": "Malfari",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@reader_connection_failed": {},
+  "@reader_sign_in_needed": {},
+  "@reader_rate_limit_hint": {},
+  "@reader_new_posts": {},
+  "@reader_source_loading": {},
+  "@reader_cached_content": {},
+  "@reader_draft_restored": {},
+  "@reader_search_all": {},
+  "@reader_highlight": {},
+  "@reader_extract": {},
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "@reader_more_like": {},
+  "@reader_less_like": {},
+  "@reader_discovery_reason": {},
+  "@reader_undo": {}
 }

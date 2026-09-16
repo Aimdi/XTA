@@ -1,3 +1,5 @@
+import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -13,6 +15,7 @@ import 'package:xta/tweet/cached_tweet_list.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/folded_chain.dart';
 import 'package:xta/tweet/interleaved_items.dart';
+import 'package:xta/tweet/feed_link_grouping.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/ui/caught_up_divider.dart';
 import 'package:xta/ui/errors.dart';
@@ -90,8 +93,7 @@ class TweetFeedController {
 
   /// Whether there is anything left to show past the pause. A feed that stopped
   /// on the last page of results has nothing, and must not offer more.
-  bool get canContinuePastPause =>
-      _pausedCursor != null || _heldBack.isNotEmpty;
+  bool get canContinuePastPause => _pausedCursor != null || _heldBack.isNotEmpty;
 
   /// Resumes pagination past whichever stop paused it: the held-back chains go
   /// on screen first, then paging continues from the stashed cursor.
@@ -116,10 +118,7 @@ class TweetFeedController {
 
   /// Applies the stops that make a feed finite, in order of authority: the
   /// reader's own position first, then the zen-mode page cap.
-  CursorPage<String, TweetChain> _applyStops(
-    List<TweetChain> items,
-    String? next,
-  ) {
+  CursorPage<String, TweetChain> _applyStops(List<TweetChain> items, String? next) {
     _pausedBy = null;
     _pausedCursor = null;
     _heldBack = const [];
@@ -155,9 +154,7 @@ class TweetFeedController {
     // boundaries), so drop chains that are already displayed. Last-page
     // detection stays on the unfiltered page: an all-duplicates page still
     // carries a cursor worth following.
-    final seen = cursor == null
-        ? <String>{}
-        : (_paging.items ?? const <TweetChain>[]).map((e) => e.id).toSet();
+    final seen = cursor == null ? <String>{} : (_paging.items ?? const <TweetChain>[]).map((e) => e.id).toSet();
     final items = result.chains.where((c) => seen.add(c.id)).toList();
     if (cursor == null) {
       _pagesFetched = 0;
@@ -261,14 +258,15 @@ class PaginatedTweetList extends StatefulWidget {
 }
 
 class _PaginatedTweetListState extends State<PaginatedTweetList> {
-  final GlobalKey<RefreshIndicatorState> _refreshKey =
-      GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
   FeedRefreshController? _refreshController;
   bool _firstLoadStarted = false;
   bool _pendingInitialLoad = false;
   // Local to the view: dismissing the stale banner hides the explanation, never
   // the cached posts under it.
   bool _staleBannerDismissed = false;
+  final _view = Store<int>(0);
+  bool _hadPreview = false;
 
   PagingController<int, TweetChain> get _controller => widget.feed.controller;
 
@@ -317,17 +315,16 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   void dispose() {
     _controller.removeListener(_onControllerChanged);
     _refreshController?.unregister(_showRefresh);
+    _view.destroy();
     super.dispose();
   }
 
   void _onControllerChanged() {
-    // PagingListener already rebuilds the list on controller changes; this
-    // extra rebuild only exists to swap the cached preview out once the first
-    // page arrives. Gating it on the preview *currently showing* — not merely
-    // existing — matters: the group feed keeps its preview around forever, and
-    // gating on existence left this firing on every paging event for the life
-    // of the screen, rebuilding the whole list a second time per page.
-    if (mounted && _showingPreview) setState(() {});
+    if (!mounted) return;
+    if (_hadPreview || _showingPreview) {
+      _hadPreview = _showingPreview;
+      _view.update(_view.state + 1);
+    }
   }
 
   // Drives the same RefreshIndicator the user pulls down, so the app-bar refresh
@@ -341,12 +338,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   Widget _buildChain(BuildContext context, TweetChain chain) {
     final reason = widget.foldReasons[chain.id];
     if (reason != null) {
-      return FoldedChain(
-        key: ValueKey('fold-${chain.id}'),
-        chain: chain,
-        reason: reason,
-        username: widget.username,
-      );
+      return FoldedChain(key: ValueKey('fold-${chain.id}'), chain: chain, reason: reason, username: widget.username);
     }
     return TweetConversation(
       key: ValueKey(chain.id),
@@ -357,27 +349,21 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     );
   }
 
-  Widget _buildChainAt(
-    BuildContext context,
-    List<TweetChain> loaded,
-    int index, {
-    required bool collapseBoosts,
-  }) {
+  Widget _buildChainAt(BuildContext context, List<TweetChain> loaded, int index, {required bool collapseBoosts}) {
     // A reader who wants their reposts as posts should not have to expand every
     // run of them, one at a time, for the rest of the feed. The preference is
     // read once per list build pass and passed in — not once per tile, which is
     // what this cost on every frame of a fling, and not cached on the State,
     // which is how a settings flip stopped landing until an app restart.
-    if (!collapseBoosts) {
+    final linked = _linkGrouping?.chains[loaded[index].id];
+    if (linked != null) return linked(context);
+    if (!collapseBoosts || _linkBoostExclusions.contains(loaded[index].id)) {
       return _buildChain(context, loaded[index]);
     }
 
     final runLength = _boostRunLengthAt(loaded, index);
     if (runLength > 0) {
-      return BoostRunCarousel(
-        chains: loaded.sublist(index, index + runLength),
-        username: widget.username,
-      );
+      return BoostRunCarousel(chains: loaded.sublist(index, index + runLength), username: widget.username);
     }
     if (isContinuationOfBoostRun(loaded, index)) {
       return const SizedBox.shrink();
@@ -391,6 +377,8 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   List<TweetChain>? _placementItems;
   List<InterleavedItem>? _placementInterleaved;
   (int?, List<List<InterleavedItem>>) _placement = (null, const []);
+  FeedLinkGrouping? _linkGrouping;
+  Set<String> _linkBoostExclusions = {};
   List<TweetChain>? _boostItems;
   List<int>? _boostRunLengths;
 
@@ -401,24 +389,27 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   int _boostRunLengthAt(List<TweetChain> loaded, int index) {
     if (!identical(_boostItems, loaded)) {
       _boostItems = loaded;
-      _boostRunLengths = [
-        for (var i = 0; i < loaded.length; i++) boostRunLengthAt(loaded, i),
-      ];
+      _boostRunLengths = [for (var i = 0; i < loaded.length; i++) boostRunLengthAt(loaded, i)];
     }
     return _boostRunLengths![index];
   }
 
   (int?, List<List<InterleavedItem>>) _placementFor(List<TweetChain> loaded) {
-    if (identical(_placementItems, loaded) &&
-        listEquals(_placementInterleaved, widget.interleaved)) {
+    if (identical(_placementItems, loaded) && listEquals(_placementInterleaved, widget.interleaved)) {
       return _placement;
     }
+    _linkGrouping = FeedLinkGrouping.build(loaded, widget.interleaved, _buildChain);
+    _linkBoostExclusions = {
+      for (final run in collapseBoostRuns(loaded).whereType<BoostRun>())
+        if (run.chains.any((chain) => _linkGrouping!.chains.containsKey(chain.id)))
+          for (final chain in run.chains) chain.id,
+    };
     final seen = widget.isSeen;
     _placementItems = loaded;
     _placementInterleaved = widget.interleaved;
     _placement = (
       seen == null ? null : _caughtUpBoundaryOf(loaded, seen),
-      placeInterleaved(loaded, widget.interleaved),
+      placeInterleaved(loaded, _linkGrouping!.plugins),
     );
     return _placement;
   }
@@ -438,10 +429,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   bool get _showingPreview {
     final preview = widget.firstPagePreview;
     final state = _controller.value;
-    return preview != null &&
-        preview.isNotEmpty &&
-        state.items == null &&
-        state.error == null;
+    return preview != null && preview.isNotEmpty && state.items == null && state.error == null;
   }
 
   /// The cached posts under an explanation, when the first page failed and
@@ -453,19 +441,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   Widget? _buildStaleView() {
     final state = _controller.value;
     final preview = widget.firstPagePreview;
-    if (!shouldShowStalePreview(
-      error: state.error,
-      items: state.items,
-      preview: preview,
-    )) {
+    if (!shouldShowStalePreview(error: state.error, items: state.items, preview: preview)) {
       return null;
     }
 
-    final list = CachedTweetList(
-      preview!,
-      username: widget.username,
-      interleaved: widget.interleaved,
-    );
+    final list = CachedTweetList(preview!, username: widget.username, interleaved: widget.interleaved);
     if (_staleBannerDismissed) {
       return list;
     }
@@ -476,7 +456,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           reason: staleFeedReasonOf(pagingErrorOf(state)?.error ?? state.error),
           cachedAt: widget.firstPagePreviewCachedAt,
           onRetry: _retryFirstPage,
-          onDismiss: () => setState(() => _staleBannerDismissed = true),
+          onDismiss: () {
+            _staleBannerDismissed = true;
+            _view.update(_view.state + 1);
+          },
         ),
         Expanded(child: list),
       ],
@@ -484,7 +467,8 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   }
 
   void _retryFirstPage() {
-    setState(() => _staleBannerDismissed = false);
+    _staleBannerDismissed = false;
+    _view.update(_view.state + 1);
     _controller.fetchNextPage();
   }
 
@@ -496,9 +480,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
       return CaughtUpEndCard(
         mayBeIncomplete: widget.catchUpMayBeIncomplete?.call() ?? false,
         nothingNew: loaded.isEmpty,
-        onShowOlder: widget.feed.canContinuePastPause
-            ? widget.feed.continuePastPause
-            : null,
+        onShowOlder: widget.feed.canContinuePastPause ? widget.feed.continuePastPause : null,
         onReached: widget.onCaughtUp,
       );
     }
@@ -522,9 +504,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
             SizedBox(
-              height: constraints.hasBoundedHeight
-                  ? constraints.maxHeight
-                  : 200,
+              height: constraints.hasBoundedHeight ? constraints.maxHeight : 200,
               child: Center(child: Text(widget.emptyMessage)),
             ),
           ],
@@ -539,22 +519,14 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   /// first post or two and then a wall of empty space, with the rest of the
   /// timeline laid out past the bottom edge and unreachable. An ordinary list
   /// scrolls, and being the outermost scrollable keeps pull-to-refresh working.
-  Widget _interleavedOnlyList(
-    BuildContext context,
-    List<InterleavedItem> items,
-    Widget? endCard,
-  ) {
+  Widget _interleavedOnlyList(BuildContext context, List<InterleavedItem> items, Widget? endCard) {
     return FeedListView(
-      padding: EdgeInsets.only(
-        top: 4,
-        bottom: MediaQuery.paddingOf(context).bottom,
-      ),
+      padding: EdgeInsets.only(top: 4, bottom: MediaQuery.paddingOf(context).bottom),
       // A single post is shorter than the screen, and pull-to-refresh has to
       // reach it anyway.
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: items.length + (endCard == null ? 0 : 1),
-      itemBuilder: (context, index) =>
-          index < items.length ? items[index].build(context) : endCard!,
+      itemBuilder: (context, index) => index < items.length ? items[index].build(context) : endCard!,
     );
   }
 
@@ -576,7 +548,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
             reason: staleFeedReasonOf(error),
             cachedAt: widget.firstPagePreviewCachedAt,
             onRetry: onRetry,
-            onDismiss: () => setState(() => _staleBannerDismissed = true),
+            onDismiss: () {
+              _staleBannerDismissed = true;
+              _view.update(_view.state + 1);
+            },
           ),
         Expanded(child: _interleavedOnlyList(context, items, null)),
       ],
@@ -619,23 +594,19 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   Widget _wrapWithRefresh(Widget child) {
     if (widget.onRefresh == null) return child;
-    return RefreshIndicator(
-      key: _refreshKey,
-      onRefresh: _onRefreshTriggered,
-      child: child,
-    );
+    return RefreshIndicator(key: _refreshKey, onRefresh: _onRefreshTriggered, child: child);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ScopedBuilder<Store<int>, int>(store: _view, onState: (context, _) => _buildList(context));
+
+  Widget _buildList(BuildContext context) {
+    _hadPreview = _showingPreview;
     if (_showingPreview) {
       _maybeStartFirstLoad();
       return _wrapWithRefresh(
-        CachedTweetList(
-          widget.firstPagePreview!,
-          username: widget.username,
-          interleaved: widget.interleaved,
-        ),
+        CachedTweetList(widget.firstPagePreview!, username: widget.username, interleaved: widget.interleaved),
       );
     }
 
@@ -650,27 +621,16 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         // Recomputed per build from the loaded items, so the boundary shows
         // up even when the first seen chain only arrives on a later page.
         final loaded = state.items ?? const <TweetChain>[];
-        final collapseBoosts =
-            PrefService.of(
-              context,
-              listen: false,
-            ).get<bool>(optionFeedCollapseBoosts) !=
-            false;
+        final collapseBoosts = PrefService.of(context, listen: false).get<bool>(optionFeedCollapseBoosts) != false;
         final (boundary, buckets) = _placementFor(loaded);
         final endCard = _buildEndCard(loaded);
-        if (onlyInterleavedToShow(
-          chains: state.items,
-          items: widget.interleaved,
-        )) {
+        if (onlyInterleavedToShow(chains: state.items, items: widget.interleaved)) {
           return _interleavedOnlyList(context, buckets.last, endCard);
         }
         // X's first page failed and there is no cached tweet list to fall
         // back on. The plugin cards are still worth showing — a rate-limited
         // search must not hide the subreddit that is actually in this group.
-        if (showInterleavedOnXFailure(
-              chains: state.items,
-              items: widget.interleaved,
-            ) &&
+        if (showInterleavedOnXFailure(chains: state.items, items: widget.interleaved) &&
             (pagingErrorOf(state)?.error ?? state.error) != null) {
           return _pluginPostsWithXError(
             context,
@@ -685,14 +645,14 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         // "XTA has stopped" on For you (HomeTimeline) and cold Following.
         if (state.items == null && state.error == null) {
           _maybeStartFirstLoad();
+          if (widget.interleaved.isNotEmpty) {
+            return _interleavedOnlyList(context, _linkGrouping!.plugins, const LinearProgressIndicator());
+          }
           return const TweetFeedSkeleton();
         }
         if (state.items == null) {
-          return FullPageErrorWidget(
-            error: pagingErrorOf(state)?.error,
-            stackTrace: pagingErrorOf(state)?.stackTrace,
-            prefix: widget.firstPageErrorPrefix,
-            onRetry: fetchNextPage,
+          return ListView(
+            children: [ReaderFailureNotice(error: pagingErrorOf(state)?.error ?? state.error, onRetry: fetchNextPage)],
           );
         }
         if (loaded.isEmpty) {
@@ -701,10 +661,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
         return PagedListView<int, TweetChain>(
           // paddingOf, not of(): the whole-list builder must not take a
           // dependency on every MediaQuery change (keyboard, text scale).
-          padding: EdgeInsets.only(
-            top: 4,
-            bottom: MediaQuery.paddingOf(context).bottom,
-          ),
+          padding: EdgeInsets.only(top: 4, bottom: MediaQuery.paddingOf(context).bottom),
           state: state,
           fetchNextPage: fetchNextPage,
           addAutomaticKeepAlives: false,
@@ -714,21 +671,12 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
           cacheExtent: kFeedListCacheExtent,
           builderDelegate: PagedChildBuilderDelegate(
             itemBuilder: (context, chain, index) {
-              final conversation = _buildChainAt(
-                context,
-                loaded,
-                index,
-                collapseBoosts: collapseBoosts,
-              );
-              final above = index < buckets.length
-                  ? buckets[index]
-                  : const <InterleavedItem>[];
+              final conversation = _buildChainAt(context, loaded, index, collapseBoosts: collapseBoosts);
+              final above = index < buckets.length ? buckets[index] : const <InterleavedItem>[];
               // Anything older than every chain loaded so far rides along with
               // the last one, so it is on screen rather than waiting for a page
               // that may never be asked for.
-              final below = index == loaded.length - 1
-                  ? buckets.last
-                  : const <InterleavedItem>[];
+              final below = index == loaded.length - 1 ? buckets.last : const <InterleavedItem>[];
               final showsDivider = boundary != null && index == boundary;
 
               if (above.isEmpty && below.isEmpty && !showsDivider) {
@@ -738,18 +686,15 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (showsDivider)
-                    CaughtUpDivider(key: widget.caughtUpDividerKey),
+                  if (showsDivider) CaughtUpDivider(key: widget.caughtUpDividerKey),
                   for (final item in above) item.build(context),
                   conversation,
                   for (final item in below) item.build(context),
                 ],
               );
             },
-            firstPageProgressIndicatorBuilder: (context) =>
-                const TweetFeedSkeleton(primary: false),
-            newPageProgressIndicatorBuilder: (context) =>
-                const TweetSkeletonTile(),
+            firstPageProgressIndicatorBuilder: (context) => const TweetFeedSkeleton(primary: false),
+            newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
             firstPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
               error: pagingErrorOf(state)?.error,
               stackTrace: pagingErrorOf(state)?.stackTrace,
@@ -762,10 +707,8 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
               prefix: widget.newPageErrorPrefix,
               onRetry: fetchNextPage,
             ),
-            noItemsFoundIndicatorBuilder: (context) =>
-                _buildEmpty(context, endCard),
-            noMoreItemsIndicatorBuilder: (context) =>
-                endCard ?? const SizedBox.shrink(),
+            noItemsFoundIndicatorBuilder: (context) => _buildEmpty(context, endCard),
+            noMoreItemsIndicatorBuilder: (context) => endCard ?? const SizedBox.shrink(),
           ),
         );
       },
@@ -777,10 +720,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   // Index of the first already-seen chain, when at least one new chain sits
   // above it. Index 0 means nothing is new; no boundary yet means the seen
   // chains haven't been loaded — both draw no divider.
-  static int? _caughtUpBoundaryOf(
-    List<TweetChain> chains,
-    bool Function(TweetChain) isSeen,
-  ) {
+  static int? _caughtUpBoundaryOf(List<TweetChain> chains, bool Function(TweetChain) isSeen) {
     final index = chains.indexWhere(isSeen);
     return index <= 0 ? null : index;
   }
@@ -805,15 +745,10 @@ class _ZenFeedEndCard extends StatelessWidget {
           Text(
             L10n.of(context).zen_mode_feed_end,
             textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: hintColor),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: hintColor),
           ),
           const SizedBox(height: 4),
-          TextButton(
-            onPressed: onLoadMore,
-            child: Text(L10n.of(context).zen_mode_load_more),
-          ),
+          TextButton(onPressed: onLoadMore, child: Text(L10n.of(context).zen_mode_load_more)),
         ],
       ),
     );

@@ -263,7 +263,7 @@ class SavedSearchField extends StatelessWidget {
   }
 }
 
-enum SavedOverflowAction { createFolder, manageFolders, cleanup, settings }
+enum SavedOverflowAction { createFolder, manageFolders, downloads, offline, cleanup, settings }
 
 class SavedOverflowButton extends StatelessWidget {
   final ValueChanged<SavedOverflowAction> onSelected;
@@ -288,6 +288,8 @@ class SavedOverflowButton extends StatelessWidget {
           Icons.folder_copy_outlined,
           l10n.manage_folders,
         ),
+        _item(SavedOverflowAction.downloads, Icons.download_outlined, l10n.downloads_title),
+        _item(SavedOverflowAction.offline, Icons.offline_pin_outlined, l10n.offline_library_title),
         _item(
           SavedOverflowAction.cleanup,
           Icons.cleaning_services_outlined,

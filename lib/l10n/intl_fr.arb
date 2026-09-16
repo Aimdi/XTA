@@ -38,12 +38,15 @@
   "ai_model": "Modèle",
   "@ai_model": {},
   "ai_openrouter_key_hint": "Créez une clé API sur openrouter.ai/settings/keys.",
+  "@ai_openrouter_key_hint": {},
   "ai_openrouter_model_hint": "Utilisez l’identifiant complet du modèle, par exemple openrouter/free ou provider/model.",
+  "@ai_openrouter_model_hint": {},
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
   "ai_preset_openrouter": "OpenRouter",
+  "@ai_preset_openrouter": {},
   "ai_provider": "Fournisseur d'IA",
   "@ai_provider": {},
   "ai_provider_description": "Choisissez un fournisseur ou saisissez un serveur compatible avec OpenAI. Ajoutez votre clé API et le modèle, puis enregistrez. Laissez les champs vides pour garder l’IA désactivée.",
@@ -100,6 +103,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Article sur X",
   "@article_on_x": {},
+  "article_reader_appearance": "Apparence de lecture",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Marquer comme terminé",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Terminé",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Interligne",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Ouvert",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Repris",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Revenir au début",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Taille du texte",
+  "@article_reader_text_size": {},
   "auto_download_images": "Télécharger les images automatiquement",
   "@auto_download_images": {},
   "auto_download_images_description": "Enregistre les images de toute publication classée dans ce dossier dans votre dossier de téléchargement.",
@@ -402,6 +421,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Téléchargement du média…",
   "@downloading_media": {},
+  "downloads_batch_result": "Fichiers enregistrés : {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Annulé",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Choisir où enregistrer",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Effacer l’historique des téléchargements terminés",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Enregistré",
+  "@downloads_completed": {},
+  "downloads_empty": "Vos téléchargements apparaîtront ici. Enregistrez un média depuis une publication pour commencer.",
+  "@downloads_empty": {},
+  "downloads_failed": "Échec du téléchargement",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Impossible d’enregistrer l’historique des téléchargements. Vérifiez l’espace de stockage disponible et réessayez.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Interrompu · Réessayez pour continuer",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Impossible d’ouvrir ce fichier. Il a peut-être été déplacé ou supprimé.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Ouvrir le fichier",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "En attente",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Vérifiez votre connexion et le dossier de téléchargement, puis réessayez.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Enregistrement du fichier…",
+  "@downloads_saving": {},
+  "downloads_title": "Téléchargements",
+  "@downloads_title": {},
   "edit_folder": "Modifier le dossier",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Terminé {timeagoFormat}",
@@ -858,6 +927,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Aucun vote} one{Un vote} two{Deux votes} few{{numFormatted} votes} many{{numFormatted} votes} other{{numFormatted} votes}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Texte de l’article conservé · Images : {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Le texte de l’article est conservé. Les contenus audio et vidéo intégrés nécessitent toujours une connexion.",
+  "@offline_article_text_only": {},
+  "offline_available": "Disponible hors ligne",
+  "@offline_available": {},
+  "offline_clear": "Vider la collection hors ligne",
+  "@offline_clear": {},
+  "offline_clear_description": "Les articles et médias conservés seront supprimés de cet appareil. Les publications enregistrées et les dossiers resteront dans votre bibliothèque.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Supprimer toutes les copies hors ligne ?",
+  "@offline_clear_question": {},
+  "offline_empty": "Conservez des articles ou les médias de publications enregistrées hors ligne pour les retrouver ici.",
+  "@offline_empty": {},
+  "offline_failed": "Impossible de tout conserver hors ligne. Vérifiez votre connexion et l’espace de stockage disponible, puis réessayez.",
+  "@offline_failed": {},
+  "offline_keep": "Conserver hors ligne",
+  "@offline_keep": {},
+  "offline_library_title": "Collection hors ligne",
+  "@offline_library_title": {},
+  "offline_media_count": "Fichiers multimédias conservés : {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Média {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Partiellement disponible hors ligne",
+  "@offline_partial": {},
+  "offline_remove": "Supprimer la copie hors ligne",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Ces fichiers peuvent contenir du contenu sensible. Ils seront stockés sur cet appareil et resteront masqués jusqu’à ce que vous choisissiez de les ouvrir.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Ouvrir les médias sensibles",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Conserver des médias sensibles hors ligne ?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Impossible de lire ou de mettre à jour le stockage hors ligne. Vérifiez l’espace disponible et réessayez.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Le stockage hors ligne est limité à {limit}. Les fichiers volumineux ou les flux non pris en charge peuvent rester indisponibles.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "{used} utilisés sur {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Copie hors ligne indisponible",
+  "@offline_unavailable": {},
+  "offline_video_only": "Les copies de vidéos Reddit peuvent ne pas contenir de son.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "N'afficher que les tweets avec médias",
@@ -3251,7 +3403,50 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Nombre de pages chargées par le fil en mode zen avant de faire une pause.",
   "@zen_mode_page_cap_description": {},
-  "@ai_openrouter_key_hint": {},
-  "@ai_openrouter_model_hint": {},
-  "@ai_preset_openrouter": {}
+  "reader_link_posts": "Autres publications avec ce lien : {count}",
+  "reader_connection_failed": "Échec de la connexion",
+  "reader_sign_in_needed": "Reconnectez-vous pour continuer",
+  "reader_rate_limit_hint": "Cette source limite les requêtes. Réessayez plus tard.",
+  "reader_new_posts": "Nouvelles publications",
+  "reader_source_loading": "Cette source charge encore. Les autres publications sont disponibles.",
+  "reader_cached_content": "Une copie enregistrée est affichée pendant la mise à jour.",
+  "reader_draft_restored": "Brouillon restauré",
+  "reader_search_all": "Rechercher dans votre bibliothèque",
+  "reader_highlight": "Surligner et annoter",
+  "reader_extract": "Extraire le texte d’une capture",
+  "reader_extract_notice": "L’image PNG ou JPEG choisie sera envoyée à {host} avec votre modèle IA configuré. Le texte extrait peut contenir des erreurs.",
+  "reader_more_like": "Plus de contenus similaires",
+  "reader_less_like": "Moins de contenus similaires",
+  "reader_discovery_reason": "Suggestion issue de publications partagées ou liées aux comptes de ce groupe.",
+  "reader_undo": "Annuler",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@reader_connection_failed": {},
+  "@reader_sign_in_needed": {},
+  "@reader_rate_limit_hint": {},
+  "@reader_new_posts": {},
+  "@reader_source_loading": {},
+  "@reader_cached_content": {},
+  "@reader_draft_restored": {},
+  "@reader_search_all": {},
+  "@reader_highlight": {},
+  "@reader_extract": {},
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "@reader_more_like": {},
+  "@reader_less_like": {},
+  "@reader_discovery_reason": {},
+  "@reader_undo": {}
 }

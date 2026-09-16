@@ -91,6 +91,36 @@ void main() {
     });
   });
 
+  group('staged files', () {
+    test('copies a path without channel bytes and carries its cancellable operation id', () async {
+      handler = (_) => 'content://provider/document/stream';
+      final saved = await DownloadDirectory.saveFile(treeUri: 'content://provider/tree/x',
+        fileName: 'movie.mp4', sourcePath: '/cache/xta-download-staging/job.part', operationId: 'job');
+      expect(saved, 'content://provider/document/stream');
+      expect(calls.single.method, 'saveFileToDownloadDirectory');
+      final args = calls.single.arguments as Map;
+      expect(args['sourcePath'], '/cache/xta-download-staging/job.part');
+      expect(args['operationId'], 'job');
+      expect(args['mimeType'], 'video/mp4');
+      expect(args.containsKey('bytes'), isFalse);
+    });
+
+    test('cancel and cleanup identify only the in-flight operation and its new document', () async {
+      await DownloadDirectory.cancelSave('job');
+      await DownloadDirectory.deleteDocument('content://provider/document/partial');
+      expect(calls[0].method, 'cancelDownloadSave');
+      expect((calls[0].arguments as Map)['operationId'], 'job');
+      expect(calls[1].method, 'deleteDownloadedDocument');
+      expect((calls[1].arguments as Map)['documentUri'], 'content://provider/document/partial');
+    });
+
+    test('open includes saved document and media type', () async {
+      await DownloadDirectory.openDocument('content://provider/document/movie', 'movie.mp4');
+      expect(calls.single.method, 'openDownloadedDocument');
+      expect((calls.single.arguments as Map)['mimeType'], 'video/mp4');
+    });
+  });
+
   group('hasAccess', () {
     test('is false without asking the platform when nothing is stored', () async {
       expect(await DownloadDirectory.hasAccess(null), isFalse);

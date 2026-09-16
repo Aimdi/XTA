@@ -11,6 +11,7 @@ import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/future_pool.dart';
+import 'package:xta/utils/request_budget.dart';
 
 /// Max in-flight UserTweets requests while recovering a rate-limited search.
 /// Lower than chunk search concurrency: two in-flight chunks of 16 users
@@ -125,14 +126,16 @@ Future<List<TweetChain>> fetchUserTimelines({
   required Iterable<Subscription> users,
   required Future<List<TweetChain>> Function(UserSubscription user) getTweets,
   int concurrency = feedUserTimelineFallbackConcurrency,
+  Duration timeout = const Duration(seconds: 12),
 }) async {
   final targets = userSubscriptionsForFallback(users);
   if (targets.isEmpty) {
     return const [];
   }
+  final budget = RequestBudget(timeout);
   final pages = await mapWithConcurrency(targets, concurrency, (user) async {
     try {
-      return await getTweets(user);
+      return await budget.run(() => getTweets(user));
     } catch (_) {
       return const <TweetChain>[];
     }

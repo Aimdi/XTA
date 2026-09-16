@@ -28,7 +28,7 @@ import 'package:xta/tweet/_media.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
@@ -46,26 +46,14 @@ class NavigationTab {
 }
 
 final List<NavigationTab> profileTabs = [
-  NavigationTab(
-    ProfileTabs.posts,
-    (context) => L10n.of(context).tweets,
-    Icons.article_outlined,
-  ),
+  NavigationTab(ProfileTabs.posts, (context) => L10n.of(context).tweets, Icons.article_outlined),
   NavigationTab(
     ProfileTabs.postsAndReplies,
     (context) => L10n.of(context).tweets_and_replies,
     Icons.mode_comment_outlined,
   ),
-  NavigationTab(
-    ProfileTabs.media,
-    (context) => L10n.of(context).media,
-    Icons.perm_media_outlined,
-  ),
-  NavigationTab(
-    ProfileTabs.saved,
-    (context) => L10n.of(context).saved,
-    Icons.bookmark_border,
-  ),
+  NavigationTab(ProfileTabs.media, (context) => L10n.of(context).media, Icons.perm_media_outlined),
+  NavigationTab(ProfileTabs.saved, (context) => L10n.of(context).saved, Icons.bookmark_border),
 ];
 
 class ProfileScreenArguments {
@@ -79,10 +67,7 @@ class ProfileScreenArguments {
     return ProfileScreenArguments(id, null, tabIndex);
   }
 
-  factory ProfileScreenArguments.fromScreenName(
-    String screenName,
-    int? tabIndex,
-  ) {
+  factory ProfileScreenArguments.fromScreenName(String screenName, int? tabIndex) {
     return ProfileScreenArguments(null, screenName, tabIndex);
   }
 }
@@ -92,8 +77,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as ProfileScreenArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as ProfileScreenArguments;
 
     return Provider(
       create: (context) {
@@ -105,11 +89,8 @@ class ProfileScreen extends StatelessWidget {
         }
         return model;
       },
-      child: _ProfileScreen(
-        id: args.id,
-        screenName: args.screenName,
-        tabIndex: args.tabIndex,
-      ),
+      dispose: (_, model) => model.destroy(),
+      child: _ProfileScreen(id: args.id, screenName: args.screenName, tabIndex: args.tabIndex),
     );
   }
 }
@@ -119,11 +100,7 @@ class _ProfileScreen extends StatelessWidget {
   final String? screenName;
   final int? tabIndex;
 
-  const _ProfileScreen({
-    required this.id,
-    required this.screenName,
-    required this.tabIndex,
-  });
+  const _ProfileScreen({required this.id, required this.screenName, required this.tabIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -133,26 +110,44 @@ class _ProfileScreen extends StatelessWidget {
           store: context.read<ProfileModel>(),
           onError: (_, error) => XtaFadeIn(
             key: const ValueKey('profile-error'),
-            child: FullPageErrorWidget(
-              error: error,
-              stackTrace: null,
-              prefix: L10n.of(context).unable_to_load_the_profile,
-              onRetry: () {
-                if (id != null) {
-                  return context.read<ProfileModel>().loadProfileById(id!);
-                }
-                return context.read<ProfileModel>().loadProfileByScreenName(
-                  screenName!,
-                );
-              },
+            child: SafeArea(
+              child: ReaderFailureNotice(
+                error: error,
+                onRetry: () {
+                  if (id != null) {
+                    return context.read<ProfileModel>().loadProfileById(id!);
+                  }
+                  return context.read<ProfileModel>().loadProfileByScreenName(screenName!);
+                },
+              ),
             ),
           ),
           onLoading: (_) => const ProfileLoadingSkeleton(),
           onState: (_, state) => XtaFadeIn(
             key: const ValueKey('profile-content'),
-            child: ProfileScreenBody(
-              profile: state,
-              defaultTabIndex: tabIndex,
+            child: Column(
+              children: [
+                if (state.refreshing) const LinearProgressIndicator(),
+                if (state.refreshError != null)
+                  SafeArea(
+                    bottom: false,
+                    child: ReaderFailureNotice(
+                      compact: true,
+                      error: state.refreshError,
+                      onRetry: () {
+                        final model = context.read<ProfileModel>();
+                        if (id != null) {
+                          model.loadProfileById(id!);
+                        } else {
+                          model.loadProfileByScreenName(screenName!);
+                        }
+                      },
+                    ),
+                  ),
+                Expanded(
+                  child: ProfileScreenBody(profile: state, defaultTabIndex: tabIndex),
+                ),
+              ],
             ),
           ),
         ),
@@ -165,18 +160,13 @@ class ProfileScreenBody extends StatefulWidget {
   final Profile profile;
   final int? defaultTabIndex;
 
-  const ProfileScreenBody({
-    super.key,
-    required this.profile,
-    required this.defaultTabIndex,
-  });
+  const ProfileScreenBody({super.key, required this.profile, required this.defaultTabIndex});
 
   @override
   State<ProfileScreenBody> createState() => _ProfileScreenBodyState();
 }
 
-class _ProfileScreenBodyState extends State<ProfileScreenBody>
-    with TickerProviderStateMixin {
+class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProviderStateMixin {
   final GlobalKey<NestedScrollViewState> _nestedScrollViewKey = GlobalKey();
   final ProfileViewStore _viewStore = ProfileViewStore();
   final ProfileScrollStore _scrollStore = ProfileScrollStore();
@@ -193,9 +183,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nestedScrollViewKey.currentState?.innerController.addListener(
-        _listenToScroll,
-      );
+      _nestedScrollViewKey.currentState?.innerController.addListener(_listenToScroll);
     });
   }
 
@@ -215,21 +203,13 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
   void _initializeTabController() {
     if (_tabControllerInitialized) return;
 
-    final storedName = PrefService.of(
-      context,
-    ).get<String>(optionDefaultProfileTab);
-    final storedTab = ProfileTabs.values
-        .where((tab) => tab.name == storedName)
-        .firstOrNull;
+    final storedName = PrefService.of(context).get<String>(optionDefaultProfileTab);
+    final storedTab = ProfileTabs.values.where((tab) => tab.name == storedName).firstOrNull;
     final storedIndex = profileTabs.indexWhere((tab) => tab.id == storedTab);
     final requested = widget.defaultTabIndex ?? storedIndex;
     final initialIndex = requested.clamp(0, profileTabs.length - 1).toInt();
 
-    _tabController = TabController(
-      length: profileTabs.length,
-      vsync: this,
-      initialIndex: initialIndex,
-    );
+    _tabController = TabController(length: profileTabs.length, vsync: this, initialIndex: initialIndex);
     _tabControllerInitialized = true;
   }
 
@@ -254,9 +234,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
 
   @override
   void dispose() {
-    _nestedScrollViewKey.currentState?.innerController.removeListener(
-      _listenToScroll,
-    );
+    _nestedScrollViewKey.currentState?.innerController.removeListener(_listenToScroll);
     disposeRichTextParts(_descriptionParts);
     if (_tabControllerInitialized) _tabController.dispose();
     _viewStore.destroy();
@@ -267,9 +245,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
   void _listenToScroll() {
     final inner = _nestedScrollViewKey.currentState?.innerController;
     if (inner == null || !inner.hasClients) return;
-    _scrollStore.showBackToTop(
-      inner.positions.any((position) => position.pixels >= 400),
-    );
+    _scrollStore.showBackToTop(inner.positions.any((position) => position.pixels >= 400));
   }
 
   void _scrollToTop() {
@@ -280,12 +256,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
     if (url == null || url.isEmpty) return;
     pushTweetMediaViewer<void>(
       context,
-      TweetMediaView(
-        initialIndex: 0,
-        media: [createMediaFromUrl(url, null)],
-        username: username,
-        tweetMedia: false,
-      ),
+      TweetMediaView(initialIndex: 0, media: [createMediaFromUrl(url, null)], username: username, tweetMedia: false),
     );
   }
 
@@ -300,16 +271,10 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
     );
   }
 
-  Widget _buildProfile(
-    BuildContext context,
-    UserWithExtra user,
-    ProfileViewState view,
-  ) {
+  Widget _buildProfile(BuildContext context, UserWithExtra user, ProfileViewState view) {
     final prefs = PrefService.of(context, listen: false);
     final width = MediaQuery.sizeOf(context).width;
-    final bannerHeight = (width / 3)
-        .clamp(120.0, kProfileBannerHeight)
-        .toDouble();
+    final bannerHeight = (width / 3).clamp(120.0, kProfileBannerHeight).toDouble();
     final username = user.screenName ?? L10n.of(context).unknown;
 
     return Scaffold(
@@ -318,14 +283,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
         onlyOneScrollInBody: true,
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           _buildAppBar(context, user, view, innerBoxIsScrolled),
-          SliverToBoxAdapter(
-            child: _buildIdentityHeader(
-              context,
-              user,
-              username,
-              bannerHeight,
-            ),
-          ),
+          SliverToBoxAdapter(child: _buildIdentityHeader(context, user, username, bannerHeight)),
           SliverPersistentHeader(
             pinned: true,
             delegate: ProfileTabsDelegate(
@@ -334,10 +292,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
                 tabs: [
                   for (final tab in profileTabs)
                     Tab(
-                      child: _ProfileTabLabel(
-                        icon: tab.icon,
-                        label: tab.titleBuilder(context),
-                      ),
+                      child: _ProfileTabLabel(icon: tab.icon, label: tab.titleBuilder(context)),
                     ),
                 ],
               ),
@@ -365,11 +320,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
                   pinnedTweets: widget.profile.pinnedTweets,
                   pref: prefs,
                 ),
-                ProfileMediaGrid(
-                  user: user,
-                  pref: prefs,
-                  filter: view.mediaFilter,
-                ),
+                ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
                 ProfileSaved(user: user, filter: view.archiveFilter),
               ],
             ),
@@ -379,21 +330,13 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
       floatingActionButton: ScopedBuilder<ProfileScrollStore, bool>(
         store: _scrollStore,
         onState: (_, visible) => visible
-            ? FloatingActionButton(
-                onPressed: _scrollToTop,
-                child: const Icon(Icons.arrow_upward),
-              )
+            ? FloatingActionButton(onPressed: _scrollToTop, child: const Icon(Icons.arrow_upward))
             : const SizedBox.shrink(),
       ),
     );
   }
 
-  SliverAppBar _buildAppBar(
-    BuildContext context,
-    UserWithExtra user,
-    ProfileViewState view,
-    bool innerBoxIsScrolled,
-  ) {
+  SliverAppBar _buildAppBar(BuildContext context, UserWithExtra user, ProfileViewState view, bool innerBoxIsScrolled) {
     final username = user.screenName ?? L10n.of(context).unknown;
     return SliverAppBar(
       pinned: true,
@@ -426,8 +369,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
       actions: [
         AnimatedBuilder(
           animation: _tabController,
-          builder: (context, _) =>
-              _filterForCurrentTab(context, view) ?? const SizedBox.shrink(),
+          builder: (context, _) => _filterForCurrentTab(context, view) ?? const SizedBox.shrink(),
         ),
         IconButton(
           icon: const Icon(Icons.search),
@@ -435,11 +377,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
           onPressed: () => Navigator.pushNamed(
             context,
             routeSearch,
-            arguments: SearchArguments(
-              1,
-              focusInputOnOpen: true,
-              query: 'from:@$username ',
-            ),
+            arguments: SearchArguments(1, focusInputOnOpen: true, query: 'from:@$username '),
           ),
         ),
         IconButton(
@@ -451,44 +389,26 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
     );
   }
 
-  Widget _buildIdentityHeader(
-    BuildContext context,
-    UserWithExtra user,
-    String username,
-    double bannerHeight,
-  ) {
+  Widget _buildIdentityHeader(BuildContext context, UserWithExtra user, String username, double bannerHeight) {
     final bannerUrl = user.profileBannerUrl;
-    final avatarUrl = user.profileImageUrlHttps?.replaceAll(
-      '_normal',
-      '_400x400',
-    );
+    final avatarUrl = user.profileImageUrlHttps?.replaceAll('_normal', '_400x400');
 
     return ProfileIdentityHeader(
       banner: ProfileBanner(
         uri: bannerUrl,
         height: bannerHeight,
         semanticLabel: user.name,
-        onTap: bannerUrl == null
-            ? null
-            : () => _openProfileMedia(bannerUrl, username),
+        onTap: bannerUrl == null ? null : () => _openProfileMedia(bannerUrl, username),
       ),
       avatar: ProfileAvatar(
         uri: user.profileImageUrlHttps,
         semanticLabel: user.name,
-        onTap: avatarUrl == null
-            ? null
-            : () => _openProfileMedia(avatarUrl, username),
+        onTap: avatarUrl == null ? null : () => _openProfileMedia(avatarUrl, username),
       ),
       actions: ProfileActionCluster(
         children: [
-          ProfileFeedSettingsButton(
-            user: user,
-            color: tweetReadableAccentColor(context),
-          ),
-          FollowButton(
-            user: UserSubscription.fromUser(user),
-            color: tweetReadableAccentColor(context),
-          ),
+          ProfileFeedSettingsButton(user: user, color: tweetReadableAccentColor(context)),
+          FollowButton(user: UserSubscription.fromUser(user), color: tweetReadableAccentColor(context)),
         ],
       ),
       name: user.name ?? username,
@@ -514,12 +434,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
     final result = <Widget>[];
     final location = user.location;
     if (location != null && location.isNotEmpty) {
-      result.add(
-        ProfileMetadataItem(
-          icon: Icons.location_on_outlined,
-          child: Text(location),
-        ),
-      );
+      result.add(ProfileMetadataItem(icon: Icons.location_on_outlined, child: Text(location)));
     }
 
     final link = _profileLink(user);
@@ -542,11 +457,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
       result.add(
         ProfileMetadataItem(
           icon: Icons.calendar_today_outlined,
-          child: Text(
-            L10n.of(context).joined(
-              DateFormat('MMMM yyyy').format(user.createdAt!),
-            ),
-          ),
+          child: Text(L10n.of(context).joined(DateFormat('MMMM yyyy').format(user.createdAt!))),
         ),
       );
     }
@@ -601,38 +512,20 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
   }
 
   String _shareBaseUrl(BuildContext context) {
-    final value = PrefService.of(
-      context,
-      listen: false,
-    ).get<String>(optionShareBaseUrl);
+    final value = PrefService.of(context, listen: false).get<String>(optionShareBaseUrl);
     return value == null || value.isEmpty ? 'https://x.com' : value;
   }
 
-  Widget? _filterForCurrentTab(
-    BuildContext context,
-    ProfileViewState view,
-  ) {
+  Widget? _filterForCurrentTab(BuildContext context, ProfileViewState view) {
     final tab = profileTabs[_tabController.index].id;
     return switch (tab) {
       ProfileTabs.posts => ProfileFilterMenu<PostsFilter>(
         selected: view.postsFilter,
         defaultValue: PostsFilter.all,
         options: [
-          ProfileFilterOption(
-            value: PostsFilter.all,
-            label: L10n.of(context).all,
-            icon: Icons.article_outlined,
-          ),
-          ProfileFilterOption(
-            value: PostsFilter.posts,
-            label: L10n.of(context).tweets,
-            icon: Icons.notes_outlined,
-          ),
-          ProfileFilterOption(
-            value: PostsFilter.retweets,
-            label: L10n.of(context).retweets,
-            icon: Icons.repeat,
-          ),
+          ProfileFilterOption(value: PostsFilter.all, label: L10n.of(context).all, icon: Icons.article_outlined),
+          ProfileFilterOption(value: PostsFilter.posts, label: L10n.of(context).tweets, icon: Icons.notes_outlined),
+          ProfileFilterOption(value: PostsFilter.retweets, label: L10n.of(context).retweets, icon: Icons.repeat),
         ],
         onSelected: _viewStore.selectPostsFilter,
       ),
@@ -640,11 +533,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
         selected: view.mediaFilter,
         defaultValue: MediaFilter.all,
         options: [
-          ProfileFilterOption(
-            value: MediaFilter.all,
-            label: L10n.of(context).all,
-            icon: Icons.perm_media_outlined,
-          ),
+          ProfileFilterOption(value: MediaFilter.all, label: L10n.of(context).all, icon: Icons.perm_media_outlined),
           ProfileFilterOption(
             value: MediaFilter.photos,
             label: L10n.of(context).photos,
@@ -667,11 +556,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody>
         selected: view.archiveFilter,
         defaultValue: ArchiveFilter.all,
         options: [
-          ProfileFilterOption(
-            value: ArchiveFilter.all,
-            label: L10n.of(context).all,
-            icon: Icons.inventory_2_outlined,
-          ),
+          ProfileFilterOption(value: ArchiveFilter.all, label: L10n.of(context).all, icon: Icons.inventory_2_outlined),
           ProfileFilterOption(
             value: ArchiveFilter.likes,
             label: L10n.of(context).favorites,
@@ -714,8 +599,7 @@ class TweetContextState extends ChangeNotifier {
 
   TweetContextState(this.hideSensitive);
 
-  factory TweetContextState.fromPrefs(BasePrefService prefs) =>
-      TweetContextState(initialHideSensitive(prefs));
+  factory TweetContextState.fromPrefs(BasePrefService prefs) => TweetContextState(initialHideSensitive(prefs));
 
   void setHideSensitive(bool value) {
     hideSensitive = value;

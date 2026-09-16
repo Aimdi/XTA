@@ -10,8 +10,7 @@ import 'package:xta/tweet/interleaved_items.dart';
 const int kBooruInterleavedPageSize = 8;
 
 bool booruInHomeFeed(BasePrefService prefs) =>
-    prefs.get<bool>(optionPluginBooruEnabled) == true &&
-    prefs.get<bool>(optionPluginBooruInHomeFeed) == true;
+    prefs.get<bool>(optionPluginBooruEnabled) == true && prefs.get<bool>(optionPluginBooruInHomeFeed) == true;
 
 List<String> booruHomeTags(BuildContext context) {
   final prefs = PrefService.of(context, listen: false);
@@ -31,6 +30,6 @@ Future<List<InterleavedItem>> loadBooruInterleaved(
     final posts = await client.postsForTags(tags, limitPerTag: limitPerTag);
     return booruInterleavedItems(posts);
   } catch (_) {
-    return const [];
+    rethrow;
   }
 }

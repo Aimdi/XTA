@@ -42,6 +42,7 @@ Future<String> aiChatCompletion(
   AiConfig config,
   String prompt, {
   http.Client? client,
+  String? imageDataUrl,
   Duration timeout = const Duration(seconds: 30),
 }) async {
   if (!config.isConfigured) throw const AiException('not configured');
@@ -56,7 +57,18 @@ Future<String> aiChatCompletion(
           body: jsonEncode({
             'model': config.model.trim(),
             'messages': [
-              {'role': 'user', 'content': prompt},
+              {
+                'role': 'user',
+                'content': imageDataUrl == null
+                    ? prompt
+                    : [
+                        {'type': 'text', 'text': prompt},
+                        {
+                          'type': 'image_url',
+                          'image_url': {'url': imageDataUrl},
+                        },
+                      ],
+              },
             ],
           }),
         )
