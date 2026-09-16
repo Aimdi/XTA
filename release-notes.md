@@ -4,6 +4,24 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi135
+
+Timeline and profile read failures now show small Retry and information controls.
+Error messages and account/diagnostics actions appear only when you open details.
+This also covers failed pagination, profile media, and cached-feed refreshes.
+
+- Keep existing posts readable without a large error panel or repeated message.
+- Preserve automatic reconnect recovery and known rate-limit countdowns.
+- Keep details and Retry accessible on narrow screens and with larger text.
+- Retain the orbital logo and all reader/safety improvements from aimdi134.
+
+For most Android phones, choose **`xta-aimdi135_arm64-v8a.apk`**. Universal,
+ARMv7, and x86_64 variants are also available. The application id and signing
+certificate are unchanged; version codes exceed every aimdi134 variant.
+
+Automated widget, recovery, analyzer, and release-integrity checks cover this
+patch. Physical-device and authenticated-network checks remain unverified here.
+
 ### aimdi134
 
 New white orbital logo on black, enlarged for the launcher, with adaptive and

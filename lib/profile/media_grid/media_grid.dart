@@ -12,7 +12,7 @@ import 'package:xta/profile/media_grid/media_grid_lightbox.dart';
 import 'package:xta/tweet/media_strip.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/paging.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -163,11 +163,14 @@ class _MediaGridState extends State<MediaGrid>
           } else if (state.items == null) {
             child = KeyedSubtree(
               key: const ValueKey('media-grid-error'),
-              child: FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: widget.firstPageErrorPrefix,
-                onRetry: fetchNextPage,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  ReaderFailureNotice(
+                    error: pagingErrorOf(state)?.error ?? state.error,
+                    onRetry: fetchNextPage,
+                  ),
+                ],
               ),
             );
           } else if (state.items!.isEmpty) {
@@ -209,10 +212,8 @@ class _MediaGridState extends State<MediaGrid>
                     ),
                   ),
                   newPageErrorIndicatorBuilder: (context) =>
-                      FullPageErrorWidget(
-                        error: pagingErrorOf(state)?.error,
-                        stackTrace: pagingErrorOf(state)?.stackTrace,
-                        prefix: widget.newPageErrorPrefix,
+                      ReaderFailureNotice(
+                        error: pagingErrorOf(state)?.error ?? state.error,
                         onRetry: fetchNextPage,
                       ),
                 ),
@@ -259,10 +260,8 @@ class _MediaGridState extends State<MediaGrid>
               )
             : preview;
       },
-      newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-        error: pagingErrorOf(state)?.error,
-        stackTrace: pagingErrorOf(state)?.stackTrace,
-        prefix: widget.newPageErrorPrefix,
+      newPageErrorIndicatorBuilder: (context) => ReaderFailureNotice(
+        error: pagingErrorOf(state)?.error ?? state.error,
         onRetry: fetchNextPage,
       ),
     ),

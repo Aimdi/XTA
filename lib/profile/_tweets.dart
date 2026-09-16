@@ -11,7 +11,7 @@ import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
 import 'package:xta/tweet/sensitive_media_gate.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/reader_failure.dart';
 import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/generated/l10n.dart';
@@ -168,11 +168,11 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
               return const TweetFeedSkeleton();
             }
             if (state.items == null) {
-              return FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: L10n.of(context).unable_to_load_the_tweets,
-                onRetry: fetchNextPage,
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  ReaderFailureNotice(error: pagingErrorOf(state)?.error ?? state.error, onRetry: fetchNextPage),
+                ],
               );
             }
             if (state.items!.isEmpty) {
@@ -202,12 +202,8 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
                   );
                 },
                 newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
-                newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
-                  error: pagingErrorOf(state)?.error,
-                  stackTrace: pagingErrorOf(state)?.stackTrace,
-                  prefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
-                  onRetry: fetchNextPage,
-                ),
+                newPageErrorIndicatorBuilder: (context) =>
+                    ReaderFailureNotice(error: pagingErrorOf(state)?.error ?? state.error, onRetry: fetchNextPage),
               ),
             );
           },
