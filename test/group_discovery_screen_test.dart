@@ -10,8 +10,10 @@ import 'package:xta/group/group_discovery_screen.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/utils/ai_client.dart';
+import 'support/memory_json_store.dart';
 
 class _Discovery extends GroupDiscoveryStore {
+  _Discovery() : super(storage: MemoryJsonStore());
   bool failLoad = false;
   @override
   Future<void> load({

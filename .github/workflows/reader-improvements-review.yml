@@ -38,7 +38,7 @@ jobs:
       - name: Analyze integrated changes
         run: flutter analyze --no-fatal-infos
       - name: Reader and composer checks with renders
-        run: flutter test test/reader_feed_test.dart test/reader_state_test.dart test/reader_link_stack_layout_test.dart test/note_draft_recovery_test.dart test/shared_links_test.dart test/note_editor_store_test.dart test/local_post_logic_test.dart test/saved_note_editor_test.dart test/note_post_layout_test.dart --reporter expanded
+        run: flutter test test/group_discovery_test.dart test/group_discovery_screen_test.dart test/reader_feed_test.dart test/reader_state_test.dart test/reader_link_stack_layout_test.dart test/note_draft_recovery_test.dart test/shared_links_test.dart test/note_editor_store_test.dart test/local_post_logic_test.dart test/saved_note_editor_test.dart test/note_post_layout_test.dart --reporter expanded
       - name: Upload screen evidence
         if: always()
         uses: actions/upload-artifact@v4
