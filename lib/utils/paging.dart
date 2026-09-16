@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:xta/utils/read_request_scope.dart';
 
 /// Carries an error together with its stack trace through
 /// infinite_scroll_pagination v5.
@@ -103,6 +102,8 @@ class CursorPagingController<C, T> {
 
   void cancel() => pagingController.cancel();
 
+  Future<V> waitForRead<V>(Future<V> source) => _controller.reads.run(source, timeout: requestTimeout);
+
   Future<List<T>> _fetchPage(int pageKey) async {
     final generation = this.generation;
     if (pageKey == 0) {
@@ -111,7 +112,7 @@ class CursorPagingController<C, T> {
     }
     try {
       final cursor = pageKey == 0 ? null : _nextCursor;
-      final page = await _fetch(cursor).timeout(requestTimeout);
+      final page = await waitForRead(_fetch(cursor));
       if (generation == this.generation) _setNextCursor(page.nextCursor);
       return page.items;
     } catch (e, stackTrace) {
@@ -173,24 +174,28 @@ class CursorPagingController<C, T> {
 /// Invalidate cursors as well as items when the package cancels a request.
 class _CursorPageController<T> extends PagingController<int, T> {
   int generation = 0;
+  final reads = ReadRequestScope();
 
   _CursorPageController({required super.getNextPageKey, required super.fetchPage});
 
   @override
   void refresh() {
     generation++;
+    reads.cancel();
     super.refresh();
   }
 
   @override
   void cancel() {
     generation++;
+    reads.cancel();
     super.cancel();
   }
 
   @override
   void dispose() {
     generation++;
+    reads.cancel();
     super.dispose();
   }
 }

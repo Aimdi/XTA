@@ -9,6 +9,16 @@ import 'package:xta/utils/paging.dart';
 TweetChain _chain(String id) => TweetChain(id: id, tweets: [], isPinned: false);
 
 void main() {
+  testWidgets('leaving a stalled feed cancels its wait and deadline', (tester) async {
+    final feed = TweetFeedController();
+    feed.loader = (_) => Completer<TweetPageResult>().future;
+    feed.controller.fetchNextPage();
+    await tester.pump();
+    feed.dispose();
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('stalled page unlocks retry and a late result cannot change its cursor', (tester) async {
     final old = Completer<CursorPage<String, String>>();
     var calls = 0;

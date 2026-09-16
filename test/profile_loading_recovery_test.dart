@@ -60,10 +60,11 @@ void main() {
     final loading = first.loadProfileById('old');
     await tester.pump();
     await first.destroy();
+    await loading;
     final second = ProfileModel(storage: _Storage(), byId: (id) async => _profile(id));
     await second.loadProfileById('new');
     old.completeError(StateError('late failure'));
-    await loading;
+    await tester.pump();
     expect(second.state.user.idStr, 'new');
     expect(second.isLoading, isFalse);
     expect(tester.takeException(), isNull);

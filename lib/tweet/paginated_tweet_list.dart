@@ -154,9 +154,9 @@ class TweetFeedController {
   Future<CursorPage<String, TweetChain>> _fetch(String? cursor) async {
     final generation = ++_loadGeneration;
     final pagingGeneration = _paging.generation;
-    final result = await _loader!(cursor).timeout(requestTimeout);
+    final result = await _paging.waitForRead(_loader!(cursor));
     if (_disposed || generation != _loadGeneration || pagingGeneration != _paging.generation) {
-      return (items: const [], nextCursor: null);
+      return (items: const <TweetChain>[], nextCursor: null);
     }
     final next = result.nextCursor;
     // Later pages can overlap earlier ones (search cursors aren't exact
@@ -188,7 +188,7 @@ class TweetFeedController {
     final pagingGeneration = _paging.generation;
     bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
     try {
-      final result = await _loader!(null).timeout(requestTimeout);
+      final result = await _paging.waitForRead(_loader!(null));
       if (!current()) return;
       final next = result.nextCursor;
       final isLast = _isLastPage(result.chains, next, null);

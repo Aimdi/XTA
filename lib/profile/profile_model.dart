@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/local_json_store.dart';
+import 'package:xta/utils/read_request_scope.dart';
 
 class Profile {
   final UserWithExtra user;
@@ -23,6 +24,7 @@ class ProfileModel extends Store<Profile> {
   final Future<Profile> Function(String) byName;
   int _generation = 0;
   bool _closed = false;
+  final _reads = ReadRequestScope();
   ProfileModel({JsonStore? storage, Future<Profile> Function(String)? byId, Future<Profile> Function(String)? byName})
     : storage = storage ?? LocalJsonStore.shared,
       byId = byId ?? Twitter.getProfileById,
@@ -38,17 +40,18 @@ class ProfileModel extends Store<Profile> {
 
   Future<void> _load(String key, Future<Profile> Function() fetch) async {
     final generation = ++_generation;
+    _reads.cancel();
     bool current() => !_closed && generation == _generation;
     if (state.user.idStr == null) setLoading(true);
     try {
       // A pending sidecar write must not prevent the network deadline starting.
-      final cached = await _read(key).timeout(const Duration(seconds: 1), onTimeout: () => null);
+      final cached = await _reads.run(_read(key), timeout: const Duration(seconds: 1)).catchError((Object _) => null);
       if (!current()) return;
       if (cached != null) {
         update(cached.status(refreshing: true, cachedAt: cached.cachedAt), force: true);
         setLoading(false);
       }
-      final profile = await fetch().timeout(const Duration(seconds: 30));
+      final profile = await _reads.run(fetch(), timeout: const Duration(seconds: 30));
       if (!current()) return;
       update(profile, force: true);
       unawaited(_remember(profile));
@@ -105,6 +108,7 @@ class ProfileModel extends Store<Profile> {
   Future<void> destroy() {
     _closed = true;
     _generation++;
+    _reads.cancel();
     return super.destroy();
   }
 }
