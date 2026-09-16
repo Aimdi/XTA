@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Kontrol edilen gruplar: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Makale vurguları, etiketleri ve notları",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Değişiklikler kaydedildi",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Geri alınamadı. Veriler değişmiş olabilir.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Son okuma işlemleri",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Yüklenen gönderilerde ara",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Önceden yüklenmiş gönderilerde metin, bağlantı veya yazar ara.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "{time} sonra yeniden dene",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Sunucudaki yedek değişti. Yüklemeden önce geri yükleyip inceleyin.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Bu sunucu, yedekleri eşzamanlı değişikliklere karşı güvenle koruyamıyor.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Önceki yedekler",
+  "@sync_history": {}
 }

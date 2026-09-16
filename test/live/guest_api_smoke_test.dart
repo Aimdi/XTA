@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:xta/client/endpoints.dart';
+import 'package:xta/client/endpoint_overrides.dart';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +19,9 @@ void main() {
       final token = await getToken(log);
       expect(token, isNotEmpty);
 
-      final uri = Uri.https('x.com', '/i/api/graphql/IGgvgiOx4QZndDHuD3x9TQ/UserByScreenName', {
+      final registry = File('endpoints.json');
+      if (registry.existsSync()) XEndpoints.applyOverrides(parseEndpointRegistry(registry.readAsStringSync()));
+      final uri = XEndpoints.uri(XEndpoints.userByScreenName, {
         'variables': jsonEncode({'screen_name': 'X', 'withSafetyModeUserFields': true}),
         'features': jsonEncode({
           'hidden_profile_subscriptions_enabled': true,
@@ -36,7 +41,8 @@ void main() {
       final response = await fetchUnauthenticated(uri, log: log);
       expect(response.statusCode, 200, reason: response.body.substring(0, response.body.length.clamp(0, 400)));
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-      final screenName = decoded['data']?['user']?['result']?['legacy']?['screen_name'] as String? ??
+      final screenName =
+          decoded['data']?['user']?['result']?['legacy']?['screen_name'] as String? ??
           decoded['data']?['user']?['result']?['core']?['screen_name'] as String?;
       expect(screenName, isNotNull);
     },

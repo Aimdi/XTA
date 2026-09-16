@@ -1,3 +1,4 @@
+import 'package:xta/utils/read_activity.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
@@ -25,6 +26,7 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
         registryEnabled: prefs.get<bool>(optionEndpointRegistryEnabled) != false,
         registryFetchedAt: DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? ''),
         generatedAt: now,
+        operations: ReadActivityLog.shared.snapshot(),
       );
     });
   }

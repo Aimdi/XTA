@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "已检查批次：{done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "文章高亮、标签和笔记",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "更改已保存",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "无法撤销。数据可能已更改。",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "最近的读取操作",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "搜索已加载的帖子",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "在已加载的帖子中搜索文字、链接或作者。",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "{time} 后重试",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "服务器上的备份已更改。请先恢复并检查，再上传。",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "此服务器无法安全地保护备份免受同时更改的影响。",
+  "@sync_unsafe_server": {},
+  "sync_history": "以前的备份",
+  "@sync_history": {}
 }

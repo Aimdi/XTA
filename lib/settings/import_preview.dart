@@ -129,6 +129,7 @@ String? _origin(BuildContext context, SettingsData data) {
 
 String _label(BuildContext context, BackupCategory category) =>
     switch (category) {
+      BackupCategory.archiveAnnotations => L10n.of(context).reader_backup_annotations,
       BackupCategory.settings => L10n.of(context).settings,
       BackupCategory.subscriptions => L10n.of(context).subscriptions,
       BackupCategory.substack => L10n.of(context).plugin_substack_title,

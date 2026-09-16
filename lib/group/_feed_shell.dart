@@ -114,7 +114,8 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
 
     setState(() {
       _alsoRead = next;
-      _groupModel = GroupModel(widget.groupId, alsoRead: next, prefs: PrefService.of(context, listen: false))..loadGroup();
+      _groupModel = GroupModel(widget.groupId, alsoRead: next, prefs: PrefService.of(context, listen: false))
+        ..loadGroup();
       _refreshCounter++;
     });
   }
@@ -329,6 +330,11 @@ List<Widget> defaultGroupActions(
   List<Widget> extra = const [],
 }) {
   return [
+    IconButton(
+      tooltip: L10n.of(context).reader_search_loaded,
+      icon: const Icon(Icons.manage_search),
+      onPressed: () => context.read<FeedRefreshController>().searchLoaded(),
+    ),
     if (showMore)
       IconButton(
         tooltip: L10n.of(context).filters,

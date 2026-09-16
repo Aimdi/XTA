@@ -1,3 +1,4 @@
+import 'package:xta/settings/annotation_backup.dart';
 import 'package:xta/downloads/downloads_screen.dart';
 import 'package:xta/offline/offline_library_screen.dart';
 import 'dart:convert';
@@ -35,27 +36,29 @@ Future<void> _importFromFile(BuildContext context, File file) async {
 /// Applies an exported backup document, once the reader has seen what is in it.
 /// Shared by the file import and the WebDAV restore so a restore can never
 /// diverge from what a file does.
-Future<void> importSettingsJson(BuildContext context, String json) async {
+Future<bool> importSettingsJson(BuildContext context, String json) async {
   var data = _parseBackup(json);
   if (data == null) {
     _notify(context, L10n.of(context).unable_to_import);
-    return;
+    return false;
   }
 
   if (!isSupportedBackupVersion(data.formatVersion)) {
     _notify(context, L10n.of(context).import_unsupported_version);
-    return;
+    return false;
   }
 
   if (backupCounts(data).isEmpty) {
     _notify(context, L10n.of(context).unable_to_import);
-    return;
+    return false;
   }
 
   var choice = await showImportPreview(context, data);
   if (choice != null && context.mounted) {
     await _applyBackup(context, data, choice);
+    return true;
   }
+  return false;
 }
 
 /// Null for anything that is not a backup document. Nothing is applied from a
@@ -88,6 +91,7 @@ Future<void> _applyBackup(BuildContext context, SettingsData data, ImportChoice 
   for (final post in data.localPosts ?? const <LocalPost>[]) {
     await materializeLocalPostMedia(post);
   }
+  await restoreAnnotations(data.archiveAnnotations);
   await groupModel.reloadGroups();
 
   if (context.mounted) {
@@ -141,6 +145,7 @@ Future<SettingsData> collectBackup(BuildContext context, {required bool includeA
   var subscriptions = subscriptionsModel.state;
 
   return SettingsData(
+    archiveAnnotations: await collectAnnotations(),
     exportedAt: DateTime.now(),
     appVersion: await appVersionLabel(),
     settings: prefsMapWithoutSecrets(prefs.toMap()),
@@ -203,29 +208,37 @@ class SettingsDataFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      PrefLabel(leading: const Icon(Icons.download_outlined), title: Text(L10n.of(context).downloads_title),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DownloadsScreen()))),
-      PrefLabel(leading: const Icon(Icons.offline_pin_outlined), title: Text(L10n.of(context).offline_library_title),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OfflineLibraryScreen()))),
-      PrefLabel(
-        leading: const Icon(Icons.import_export),
-        title: Text(L10n.of(context).import),
-        subtitle: Text(L10n.of(context).import_data_from_another_device),
-        onTap: () => importBackup(context),
-      ),
-      PrefLabel(
-        leading: const Icon(Icons.save),
-        title: Text(L10n.of(context).export),
-        subtitle: Text(L10n.of(context).export_your_data),
-        onTap: () => Navigator.pushNamed(context, routeSettingsExport),
-      ),
-      PrefLabel(
-        leading: const Icon(Icons.cloud_sync_outlined),
-        title: Text(L10n.of(context).sync),
-        subtitle: Text(L10n.of(context).sync_description),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SyncScreen())),
-      ),
-    ]);
+    return Column(
+      children: [
+        PrefLabel(
+          leading: const Icon(Icons.download_outlined),
+          title: Text(L10n.of(context).downloads_title),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DownloadsScreen())),
+        ),
+        PrefLabel(
+          leading: const Icon(Icons.offline_pin_outlined),
+          title: Text(L10n.of(context).offline_library_title),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OfflineLibraryScreen())),
+        ),
+        PrefLabel(
+          leading: const Icon(Icons.import_export),
+          title: Text(L10n.of(context).import),
+          subtitle: Text(L10n.of(context).import_data_from_another_device),
+          onTap: () => importBackup(context),
+        ),
+        PrefLabel(
+          leading: const Icon(Icons.save),
+          title: Text(L10n.of(context).export),
+          subtitle: Text(L10n.of(context).export_your_data),
+          onTap: () => Navigator.pushNamed(context, routeSettingsExport),
+        ),
+        PrefLabel(
+          leading: const Icon(Icons.cloud_sync_outlined),
+          title: Text(L10n.of(context).sync),
+          subtitle: Text(L10n.of(context).sync_description),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SyncScreen())),
+        ),
+      ],
+    );
   }
 }

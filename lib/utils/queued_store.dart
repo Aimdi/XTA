@@ -1,8 +1,17 @@
+import 'package:xta/utils/read_request_scope.dart';
+import 'package:xta/utils/read_activity.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 
 /// Local writes must finish in order; Store.execute cancels earlier work.
 mixin QueuedStore<State> on Store<State> {
   Future<void>? _pending;
+
+  Duration get snapshotTimeout => const Duration(seconds: 15);
+
+  /// Bound the read after a write, not the write itself. Letting a timed-out
+  /// mutation continue behind a newer mutation would break their ordering.
+  Future<State> readSnapshot(Future<State> Function() read) =>
+      ReadRequestScope().start(read, timeout: snapshotTimeout, operation: ReadOperation.snapshot);
 
   // flutter_triple's error selector retains the old error after update().
   @override

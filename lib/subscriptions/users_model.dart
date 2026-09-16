@@ -1,3 +1,4 @@
+import 'package:xta/utils/local_undo.dart';
 import 'dart:ui';
 
 import 'package:flutter_triple/flutter_triple.dart';
@@ -43,7 +44,7 @@ class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List
   Future<void> _changeSubscriptions(Future<void> Function() change, {bool notifyReload = true}) async {
     final succeeded = await executeQueued(() async {
       await change();
-      return _readSubscriptions();
+      return readSnapshot(_readSubscriptions);
     });
     if (succeeded && notifyReload) {
       for (final callback in _onSubscriptionsReloaded.values.toList()) {
@@ -117,8 +118,19 @@ class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List
     await _changeSubscriptions(() async {
       var database = await Repository.writable();
       if (currentlyFollowed) {
-        await database.delete(tableSearchSubscription, where: 'id = ?', whereArgs: [user.id]);
-        await database.delete(tableSearchSubscriptionGroupMember, where: 'search_id = ?', whereArgs: [user.id]);
+        UndoStore.shared.offer(
+          await changeWithUndo(
+            database,
+            [
+              UndoSlice(tableSearchSubscription, 'id = ?', [user.id]),
+              UndoSlice(tableSearchSubscriptionGroupMember, 'search_id = ?', [user.id]),
+            ],
+            (txn) async {
+              await txn.delete(tableSearchSubscription, where: 'id = ?', whereArgs: [user.id]);
+              await txn.delete(tableSearchSubscriptionGroupMember, where: 'search_id = ?', whereArgs: [user.id]);
+            },
+          ),
+        );
       } else {
         // Awaited so the reload below cannot read the table first and show the
         // search unfollowed right after the reader followed it.
@@ -131,8 +143,19 @@ class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List
     await _changeSubscriptions(() async {
       var database = await Repository.writable();
       if (currentlyFollowed) {
-        await database.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
-        await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
+        UndoStore.shared.offer(
+          await changeWithUndo(
+            database,
+            [
+              UndoSlice(tableSubscription, 'id = ?', [user.id]),
+              UndoSlice(tableSubscriptionGroupMember, 'profile_id = ?', [user.id]),
+            ],
+            (txn) async {
+              await txn.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
+              await txn.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
+            },
+          ),
+        );
       } else {
         // Awaited for the same reason as the search variant: the reload reads
         // this table, and losing the race showed the follow undone.
@@ -168,10 +191,22 @@ class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List
   Future<void> removeSubscriptions(List<UserSubscription> users) async {
     await _changeSubscriptions(() async {
       var database = await Repository.writable();
-      for (final user in users) {
-        await database.delete(tableSubscription, where: 'id = ?', whereArgs: [user.id]);
-        await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user.id]);
-      }
+      if (users.isEmpty) return;
+      final ids = users.map((user) => user.id).toList();
+      final placeholders = List.filled(ids.length, '?').join(',');
+      UndoStore.shared.offer(
+        await changeWithUndo(
+          database,
+          [
+            UndoSlice(tableSubscription, 'id IN ($placeholders)', ids),
+            UndoSlice(tableSubscriptionGroupMember, 'profile_id IN ($placeholders)', ids),
+          ],
+          (txn) async {
+            await txn.delete(tableSubscription, where: 'id IN ($placeholders)', whereArgs: ids);
+            await txn.delete(tableSubscriptionGroupMember, where: 'profile_id IN ($placeholders)', whereArgs: ids);
+          },
+        ),
+      );
     });
 
     await groupModel.reloadGroups();

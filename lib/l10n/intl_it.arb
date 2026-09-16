@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Lotti controllati: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Evidenziazioni, tag e note degli articoli",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Modifiche salvate",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Impossibile annullare. I dati potrebbero essere cambiati.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Operazioni di lettura recenti",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Cerca nei post caricati",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Cerca testo, link o autori nei post già caricati.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Riprova tra {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Il backup sul server è cambiato. Ripristinalo e controllalo prima di caricarne un altro.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Questo server non può proteggere i backup da modifiche simultanee.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Backup precedenti",
+  "@sync_history": {}
 }

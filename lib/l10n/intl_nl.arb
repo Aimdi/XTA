@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Gecontroleerde batches: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Markeringen, tags en notities bij artikelen",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Wijzigingen opgeslagen",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Ongedaan maken mislukt. De gegevens zijn mogelijk gewijzigd.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Recente leesbewerkingen",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Geladen berichten doorzoeken",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Zoek tekst, links of auteurs in al geladen berichten.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Opnieuw proberen over {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "De back-up op de server is gewijzigd. Herstel en controleer deze voordat je uploadt.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Deze server kan back-ups niet veilig beschermen tegen gelijktijdige wijzigingen.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Eerdere back-ups",
+  "@sync_history": {}
 }

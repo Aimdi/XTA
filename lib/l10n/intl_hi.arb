@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "जाँचे गए बैच: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "लेखों के हाइलाइट, टैग और नोट्स",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "बदलाव सहेजे गए",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "पूर्ववत नहीं किया जा सका। डेटा बदल गया हो सकता है।",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "हाल के पढ़ने के कार्य",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "लोड की गई पोस्ट में खोजें",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "पहले से लोड की गई पोस्ट में पाठ, लिंक या लेखक खोजें।",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "{time} बाद फिर प्रयास करें",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "सर्वर पर बैकअप बदल गया है। अपलोड करने से पहले उसे बहाल करके जाँचें।",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "यह सर्वर बैकअप को एक साथ होने वाले बदलावों से सुरक्षित नहीं रख सकता।",
+  "@sync_unsafe_server": {},
+  "sync_history": "पिछले बैकअप",
+  "@sync_history": {}
 }

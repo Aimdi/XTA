@@ -1,3 +1,5 @@
+import 'package:xta/utils/read_request_scope.dart';
+
 /// Runs [mapper] over [items] with at most [concurrency] in-flight at once.
 ///
 /// Order of results matches [items]. Used by the group feed so a large
@@ -15,6 +17,7 @@ Future<List<T>> mapWithConcurrency<E, T>(Iterable<E> items, int concurrency, Fut
 
   Future<void> worker() async {
     while (true) {
+      ReadWork.checkpoint();
       final index = next;
       next++;
       if (index >= list.length) {

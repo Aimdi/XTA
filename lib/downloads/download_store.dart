@@ -18,6 +18,7 @@ class DownloadStore extends Store<DownloadCenterState> {
   final DownloadHistory history;
   final DownloadRunner runner;
   final Future<void> Function()? cleanup;
+  final Future<void> Function(DownloadEntry)? discard;
   Future<void>? _initializing;
   bool _loading = false;
   bool _historyLoaded = false;
@@ -25,15 +26,21 @@ class DownloadStore extends Store<DownloadCenterState> {
   Future<void> _writes = Future.value();
   final _completion = <String, Completer<DownloadEntry>>{};
   final _cancellation = <String, DownloadCancellation>{};
+  final _discarding = <String, Future<void>>{};
   bool _running = false;
   bool _closed = false;
   DateTime _lastProgress = DateTime.fromMillisecondsSinceEpoch(0);
 
-  DownloadStore({DownloadHistory? history, DownloadRunner? runner, Future<void> Function()? cleanup})
-    : history = history ?? FileDownloadHistory(),
-      runner = runner ?? DownloadTransfer().call,
-      cleanup = cleanup ?? (runner == null ? DownloadTransfer.clearInterruptedFiles : null),
-      super(const DownloadCenterState());
+  DownloadStore({
+    DownloadHistory? history,
+    DownloadRunner? runner,
+    Future<void> Function()? cleanup,
+    Future<void> Function(DownloadEntry)? discard,
+  }) : history = history ?? FileDownloadHistory(),
+       runner = runner ?? DownloadTransfer().call,
+       cleanup = cleanup ?? (runner == null ? DownloadTransfer.clearInterruptedFiles : null),
+       discard = discard ?? (runner == null ? DownloadTransfer.discardEntry : null),
+       super(const DownloadCenterState());
 
   Future<void> initialize() => _initializing ??= _load();
 
@@ -111,10 +118,11 @@ class DownloadStore extends Store<DownloadCenterState> {
 
   Future<void> retry(String id) async {
     await initialize();
+    await _discarding[id];
     final entry = _find(id);
     if (_closed || entry == null || !entry.canRetry) return;
     _attempts[id] = (_attempts[id] ?? 0) + 1;
-    _replace(entry.copyWith(status: DownloadStatus.queued, reset: true));
+    _replace(entry.copyWith(status: DownloadStatus.queued));
     try {
       await _persist();
       unawaited(_pump());
@@ -126,8 +134,13 @@ class DownloadStore extends Store<DownloadCenterState> {
   Future<void> cancel(String id) async {
     final entry = _find(id);
     if (_closed || entry == null || !entry.canCancel) return;
-    _cancellation[id]?.cancel();
+    final active = _cancellation[id];
+    active?.cancel();
+    final cleanup = active == null ? Future<void>.sync(() => discard?.call(entry)).catchError((Object _) {}) : null;
+    if (cleanup != null) _discarding[id] = cleanup;
     _finish(entry.copyWith(status: DownloadStatus.cancelled));
+    await cleanup;
+    if (identical(_discarding[id], cleanup)) _discarding.remove(id);
     await _persistQuietly();
   }
 

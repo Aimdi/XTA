@@ -7,6 +7,8 @@
 /// subscriptions have no user id, so they cannot use this path.
 library;
 
+import 'package:xta/utils/read_request_scope.dart';
+
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
@@ -21,10 +23,7 @@ const int feedUserTimelineFallbackConcurrency = 2;
 bool shouldFallbackToUserTimelines(Object error) =>
     error is RateLimitedException || error is EndpointRefusedException;
 
-bool shouldSkipGapFill({
-  required bool usedFallback,
-  required bool searchFailed,
-}) => usedFallback || searchFailed;
+bool shouldSkipGapFill({required bool usedFallback, required bool searchFailed}) => usedFallback || searchFailed;
 
 /// Stored search cursors are SearchTimeline tokens. A missing or empty value
 /// must not be cast to [String] — fallback rows store null cursors on purpose
@@ -32,15 +31,11 @@ bool shouldSkipGapFill({
 String? searchCursorFromStored(Object? value) =>
     value is String && value.isNotEmpty ? value : null;
 
-List<UserSubscription> userSubscriptionsForFallback(
-  Iterable<Subscription> users,
-) => users.whereType<UserSubscription>().toList(growable: false);
+List<UserSubscription> userSubscriptionsForFallback(Iterable<Subscription> users) =>
+    users.whereType<UserSubscription>().toList(growable: false);
 
 /// UserTweets does not honour the search query's `-filter:retweets`.
-List<TweetChain> dropRetweetsIfNeeded(
-  List<TweetChain> chains,
-  bool includeRetweets,
-) {
+List<TweetChain> dropRetweetsIfNeeded(List<TweetChain> chains, bool includeRetweets) {
   if (includeRetweets) {
     return chains;
   }
@@ -83,12 +78,7 @@ class ChunkNetworkResult {
   final bool usedFallback;
   final Object? error;
 
-  const ChunkNetworkResult({
-    this.search,
-    this.fallbackChains = const [],
-    this.usedFallback = false,
-    this.error,
-  });
+  const ChunkNetworkResult({this.search, this.fallbackChains = const [], this.usedFallback = false, this.error});
 
   bool get searchFailed => search == null;
 
@@ -104,18 +94,17 @@ Future<ChunkNetworkResult> fetchChunkWithFallback({
   required Future<List<TweetChain>> Function() userTimelines,
 }) async {
   try {
+    ReadWork.checkpoint();
     return ChunkNetworkResult(search: await search());
   } catch (error) {
+    ReadWork.checkpoint();
     if (!shouldFallbackToUserTimelines(error)) {
       return ChunkNetworkResult(error: error);
     }
     try {
+      ReadWork.checkpoint();
       final chains = await userTimelines();
-      return ChunkNetworkResult(
-        fallbackChains: chains,
-        usedFallback: true,
-        error: chains.isEmpty ? error : null,
-      );
+      return ChunkNetworkResult(fallbackChains: chains, usedFallback: true, error: chains.isEmpty ? error : null);
     } catch (_) {
       return ChunkNetworkResult(usedFallback: true, error: error);
     }

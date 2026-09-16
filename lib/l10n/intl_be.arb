@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Праверана пакетаў: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Вылучэнні, тэгі і нататкі да артыкулаў",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Змены захаваны",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Не ўдалося адмяніць. Магчыма, даныя змяніліся.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Апошнія аперацыі чытання",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Пошук у загружаных допісах",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Шукайце тэкст, спасылкі ці аўтараў ва ўжо загружаных допісах.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Паўтарыць праз {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "Рэзервовая копія на серверы змянілася. Перад адпраўкай аднавіце і праверце яе.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Гэты сервер не можа бяспечна абараніць рэзервовыя копіі ад адначасовых змен.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Папярэднія рэзервовыя копіі",
+  "@sync_history": {}
 }

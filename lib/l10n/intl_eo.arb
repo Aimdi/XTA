@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Kontrolitaj aroj: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Emfazoj, etikedoj kaj notoj de artikoloj",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Ŝanĝoj konservitaj",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Ne eblis malfari. La datumoj eble ŝanĝiĝis.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Lastatempaj legoperacioj",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Serĉi en ŝargitaj afiŝoj",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Serĉu tekston, ligilojn aŭ aŭtorojn en jam ŝargitaj afiŝoj.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Reprovi post {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "La servila sekurkopio ŝanĝiĝis. Restarigu kaj kontrolu ĝin antaŭ alŝuto.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Ĉi tiu servilo ne povas sekure protekti sekurkopiojn kontraŭ samtempaj ŝanĝoj.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Antaŭaj sekurkopioj",
+  "@sync_history": {}
 }

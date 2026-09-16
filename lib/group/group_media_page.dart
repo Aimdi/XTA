@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'package:xta/utils/read_request_scope.dart';
+
 import 'package:xta/client/client.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/utils/paging.dart';
@@ -16,11 +19,32 @@ const String groupMediaPreviewContinueCursor = 'preview-continue';
 /// once — enough to 429 the media endpoint on a 37-subscription group.
 class SharedAsyncLoad<T> {
   Future<T>? _inFlight;
+  final Duration timeout;
+  final _reads = ReadRequestScope();
+  void cancel() {
+    _reads.cancel();
+    _inFlight = null;
+  }
+
+  SharedAsyncLoad({this.timeout = const Duration(minutes: 2)});
 
   Future<T> load(Future<T> Function() fetch) {
-    return _inFlight ??= fetch().whenComplete(() {
-      _inFlight = null;
-    });
+    final current = _inFlight;
+    if (current != null) return current;
+    final request = _reads.start(fetch, timeout: timeout);
+    _inFlight = request;
+    // Only the bounded future owns the slot; a late source cannot clear a retry.
+    unawaited(
+      request.then(
+        (_) {
+          if (identical(_inFlight, request)) _inFlight = null;
+        },
+        onError: (Object _) {
+          if (identical(_inFlight, request)) _inFlight = null;
+        },
+      ),
+    );
+    return request;
   }
 
   bool get isLoading => _inFlight != null;
@@ -85,8 +109,7 @@ Future<CursorPage<String, MediaGridItem>> groupMediaPage({
     feedNextCursor: feedNextCursor,
     itemsOf: itemsOf,
   );
-  if (reused != null &&
-      (reused.items.isNotEmpty || reused.nextCursor == null)) {
+  if (reused != null && (reused.items.isNotEmpty || reused.nextCursor == null)) {
     return reused;
   }
 

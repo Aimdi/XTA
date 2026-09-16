@@ -1,3 +1,4 @@
+import 'package:xta/ui/rate_limit_retry.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -296,8 +297,9 @@ class NoAccountErrorWidget extends FritterErrorWidget {
 
 class RateLimitErrorWidget extends FritterErrorWidget {
   final Function? onRetry;
+  final Object? error;
 
-  const RateLimitErrorWidget({super.key, this.onRetry});
+  const RateLimitErrorWidget({super.key, this.onRetry, this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +309,7 @@ class RateLimitErrorWidget extends FritterErrorWidget {
       details: L10n.of(context).rate_limited_message,
       actions: [
         addAccountButton(context),
-        if (onRetry != null) TextButton(child: Text(L10n.of(context).retry), onPressed: () => onRetry!()),
+        if (onRetry != null) RateLimitRetryButton(error: error, onRetry: () => onRetry!()),
       ],
     );
   }
@@ -460,7 +462,7 @@ class FullPageErrorWidget extends FritterErrorWidget {
     }
 
     if (error is RateLimitedException) {
-      return RateLimitErrorWidget(onRetry: onRetry);
+      return RateLimitErrorWidget(onRetry: onRetry, error: error);
     }
 
     if (error is NoWorkingAccountException) {

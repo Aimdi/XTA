@@ -1,0 +1,36 @@
+name: reader Android check
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - '.github/workflows/reader-android-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: reader-android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Generate sources and icons
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+          python3 -m pip install -r requirements.txt
+          python3 generate_icons.py
+          dart run flutter_launcher_icons
+      - name: Compile Android including network-state channel
+        run: flutter build apk --debug

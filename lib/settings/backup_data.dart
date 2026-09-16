@@ -1,3 +1,4 @@
+import 'package:xta/settings/annotation_backup.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/plugins/plugin_backup.dart';
@@ -24,14 +25,12 @@ import 'package:xta/settings/backup_rows.dart';
 ///
 /// Read rather than listed: the backup used to name each plugin's tables again
 /// by hand, which is how rows that exist nowhere else went unsaved.
-List<PluginBackupSection> pluginBackupSections() => [
-  for (final plugin in builtInPlugins) ...plugin.backupSections,
-];
+List<PluginBackupSection> pluginBackupSections() => [for (final plugin in builtInPlugins) ...plugin.backupSections];
 
 /// Raised whenever an older build could misread a newer file. A reader that
 /// meets a higher number refuses the file instead of applying the part of it
 /// it happens to understand.
-const int backupFormatVersion = 1;
+const int backupFormatVersion = 2;
 
 /// A file written before the header existed. Every backup already on a reader's
 /// phone is one of these, and it still imports exactly as it used to.
@@ -40,6 +39,7 @@ const int legacyBackupFormatVersion = 0;
 bool isSupportedBackupVersion(int version) => version <= backupFormatVersion;
 
 class SettingsData {
+  final Map<String, Object?>? archiveAnnotations;
   final int formatVersion;
   final DateTime? exportedAt;
   final String? appVersion;
@@ -68,6 +68,7 @@ class SettingsData {
   final List<LocalPost>? localPosts;
 
   SettingsData({
+    this.archiveAnnotations,
     this.formatVersion = backupFormatVersion,
     this.exportedAt,
     this.appVersion,
@@ -92,8 +93,10 @@ class SettingsData {
 
   factory SettingsData.fromJson(Map<String, dynamic> json) {
     return SettingsData(
-      formatVersion:
-          (json['formatVersion'] as int?) ?? legacyBackupFormatVersion,
+      archiveAnnotations: json.containsKey('archiveAnnotations')
+          ? parseAnnotationBackup(json['archiveAnnotations'])
+          : null,
+      formatVersion: (json['formatVersion'] as int?) ?? legacyBackupFormatVersion,
       exportedAt: DateTime.tryParse((json['exportedAt'] as String?) ?? ''),
       appVersion: json['appVersion'] as String?,
       settings: json['settings'] as Map<String, dynamic>?,
@@ -102,35 +105,17 @@ class SettingsData {
           if (_rows(json[section.jsonKey], section.fromMap) case final rows?)
             section.jsonKey: rows,
       },
-      searchSubscriptions: _rows(
-        json['searchSubscriptions'],
-        SearchSubscription.fromMap,
-      ),
+      searchSubscriptions: _rows(json['searchSubscriptions'], SearchSubscription.fromMap),
       userSubscriptions: _rows(json['subscriptions'], UserSubscription.fromMap),
-      subscriptionGroups: _rows(
-        json['subscriptionGroups'],
-        SubscriptionGroup.fromMap,
-      ),
-      subscriptionGroupMembers: _rows(
-        json['subscriptionGroupMembers'],
-        SubscriptionGroupMember.fromMap,
-      ),
-      searchGroupMembers: _rows(
-        json['searchGroupMembers'],
-        SearchGroupMember.fromMap,
-      ),
+      subscriptionGroups: _rows(json['subscriptionGroups'], SubscriptionGroup.fromMap),
+      subscriptionGroupMembers: _rows(json['subscriptionGroupMembers'], SubscriptionGroupMember.fromMap),
+      searchGroupMembers: _rows(json['searchGroupMembers'], SearchGroupMember.fromMap),
       tweets: _rows(json['tweets'], SavedTweet.fromMap),
-      savedTweetFolders: _rows(
-        json['savedTweetFolders'],
-        SavedTweetFolder.fromMap,
-      ),
+      savedTweetFolders: _rows(json['savedTweetFolders'], SavedTweetFolder.fromMap),
       likedTweets: _rows(json['likedTweets'], LikedTweet.fromMap),
       retweetFilters: _rows(json['retweetFilters'], UserFeedFilter.fromMap),
       replyFilters: _rows(json['replyFilters'], UserFeedFilter.fromMap),
-      feedReadPositions: _rows(
-        json['feedReadPositions'],
-        FeedReadPositionRow.fromMap,
-      ),
+      feedReadPositions: _rows(json['feedReadPositions'], FeedReadPositionRow.fromMap),
       accounts: _rows(json['accounts'], Account.fromMap),
       profileNotes: _rows(json['profileNotes'], ProfileNote.fromMap),
       antennas: _rows(json['antennas'], Antenna.fromMap),
@@ -140,6 +125,7 @@ class SettingsData {
 
   Map<String, dynamic> toJson() {
     return {
+      'archiveAnnotations': archiveAnnotations,
       'formatVersion': formatVersion,
       'exportedAt': exportedAt?.toIso8601String(),
       'appVersion': appVersion,
@@ -186,16 +172,11 @@ List<Map<String, dynamic>>? _maps(List<ToMappable>? rows) =>
 /// an empty result means there is nothing worth importing.
 Map<BackupCategory, int> backupCounts(SettingsData data) {
   final counts = <BackupCategory, int?>{
+    BackupCategory.archiveAnnotations: data.archiveAnnotations?.length,
     BackupCategory.settings: data.settings?.length,
-    BackupCategory.subscriptions: _total([
-      data.userSubscriptions,
-      data.searchSubscriptions,
-    ]),
+    BackupCategory.subscriptions: _total([data.userSubscriptions, data.searchSubscriptions]),
     BackupCategory.groups: data.subscriptionGroups?.length,
-    BackupCategory.groupMembers: _total([
-      data.subscriptionGroupMembers,
-      data.searchGroupMembers,
-    ]),
+    BackupCategory.groupMembers: _total([data.subscriptionGroupMembers, data.searchGroupMembers]),
     BackupCategory.savedPosts: data.tweets?.length,
     BackupCategory.folders: data.savedTweetFolders?.length,
     BackupCategory.likedPosts: data.likedTweets?.length,
@@ -229,10 +210,7 @@ int? _total(List<List<Object>?> sections) {
 /// Reading positions are separate because restoring them is not obviously
 /// harmless: a position from another device marks posts as already seen that
 /// this reader never saw.
-Map<String, List<ToMappable>> backupTables(
-  SettingsData data, {
-  required bool includeReadPositions,
-}) {
+Map<String, List<ToMappable>> backupTables(SettingsData data, {required bool includeReadPositions}) {
   final sections = <String, List<ToMappable>?>{
     tableSearchSubscription: data.searchSubscriptions,
     tableSubscription: data.userSubscriptions,

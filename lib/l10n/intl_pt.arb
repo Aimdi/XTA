@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Lotes verificados: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Destaques, etiquetas e notas de artigos",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Alterações guardadas",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Não foi possível anular. Os dados podem ter sido alterados.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Operações de leitura recentes",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Pesquisar nas publicações carregadas",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Pesquise texto, ligações ou autores nas publicações já carregadas.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Tentar novamente em {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "A cópia no servidor foi alterada. Restaure-a e reveja-a antes de enviar outra.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Este servidor não consegue proteger as cópias de segurança contra alterações simultâneas.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Cópias anteriores",
+  "@sync_history": {}
 }

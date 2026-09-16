@@ -1,3 +1,5 @@
+import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/ui/rate_limit_retry.dart';
 import 'dart:async';
 import 'dart:io' show SocketException;
 import 'package:flutter/material.dart';
@@ -27,6 +29,11 @@ ReadFailureKind readFailureKind(Object? error) {
   return ReadFailureKind.unknown;
 }
 
+Object? recoverableReadFailure(Object? error) => switch (readFailureKind(error)) {
+  ReadFailureKind.connection || ReadFailureKind.timedOut => error,
+  _ => null,
+};
+
 String readFailureMessage(L10n l10n, Object? error) => switch (readFailureKind(error)) {
   ReadFailureKind.connection => l10n.reader_connection_failed,
   ReadFailureKind.timedOut => l10n.timed_out,
@@ -54,39 +61,46 @@ class ReaderFailureNotice extends StatelessWidget {
     final plugin = pluginById(source);
     final name = plugin?.title(context) ?? 'X';
     final kind = readFailureKind(error);
-    return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      child: Padding(
-        padding: EdgeInsets.all(compact ? 8 : 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('$name · ${readFailureMessage(l10n, error)}', style: Theme.of(context).textTheme.labelLarge),
-            if (kind == ReadFailureKind.rateLimited) Text(l10n.reader_rate_limit_hint),
-            Wrap(
-              spacing: 8,
-              children: [
-                TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
-                if (kind == ReadFailureKind.session && source == 'x')
-                  TextButton.icon(
-                    onPressed: () =>
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview())),
-                    icon: const Icon(Icons.login),
-                    label: Text(l10n.add_account),
-                  ),
-                if (source == 'x' || plugin?.settingsScreen(context) != null)
-                  TextButton.icon(
-                    onPressed: () {
-                      final screen = plugin?.settingsScreen(context) ?? const DiagnosticsScreen();
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
-                    },
-                    icon: const Icon(Icons.info_outline),
-                    label: Text(source == 'x' ? l10n.diagnostics : l10n.settings),
-                  ),
-              ],
-            ),
-          ],
+    return ReadRecovery(
+      recoverableFailure: () => recoverableReadFailure(error),
+      retry: onRetry,
+      child: Material(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        child: Padding(
+          padding: EdgeInsets.all(compact ? 8 : 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('$name · ${readFailureMessage(l10n, error)}', style: Theme.of(context).textTheme.labelLarge),
+              if (kind == ReadFailureKind.rateLimited) Text(l10n.reader_rate_limit_hint),
+              Wrap(
+                spacing: 8,
+                children: [
+                  if (kind == ReadFailureKind.rateLimited)
+                    RateLimitRetryButton(error: error, onRetry: onRetry)
+                  else
+                    TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+                  if (kind == ReadFailureKind.session && source == 'x')
+                    TextButton.icon(
+                      onPressed: () =>
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const TwitterLoginWebview())),
+                      icon: const Icon(Icons.login),
+                      label: Text(l10n.add_account),
+                    ),
+                  if (source == 'x' || plugin?.settingsScreen(context) != null)
+                    TextButton.icon(
+                      onPressed: () {
+                        final screen = plugin?.settingsScreen(context) ?? const DiagnosticsScreen();
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+                      },
+                      icon: const Icon(Icons.info_outline),
+                      label: Text(source == 'x' ? l10n.diagnostics : l10n.settings),
+                    ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'package:xta/utils/read_recovery.dart';
+import 'package:xta/search/loaded_feed_search.dart';
 import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/ui/reader_failure.dart';
@@ -50,6 +52,9 @@ enum FeedPause {
 class TweetFeedController {
   late final CursorPagingController<String, TweetChain> _paging;
   TweetPageLoader? _loader;
+  final Duration requestTimeout;
+  int _loadGeneration = 0;
+  bool _disposed = false;
 
   /// When set, pagination pauses after this many pages per session instead of
   /// scrolling forever (`null` result → no cap). Feeds bind this to the
@@ -73,8 +78,8 @@ class TweetFeedController {
   // catch-up stop applies once per first page rather than on every page.
   bool _catchUpPassed = false;
 
-  TweetFeedController() {
-    _paging = CursorPagingController<String, TweetChain>(_fetch);
+  TweetFeedController({this.requestTimeout = const Duration(minutes: 2)}) {
+    _paging = CursorPagingController<String, TweetChain>(_fetch, requestTimeout: requestTimeout);
   }
 
   PagingController<int, TweetChain> get controller => _paging.pagingController;
@@ -149,7 +154,12 @@ class TweetFeedController {
   }
 
   Future<CursorPage<String, TweetChain>> _fetch(String? cursor) async {
-    final result = await _loader!(cursor);
+    final generation = ++_loadGeneration;
+    final pagingGeneration = _paging.generation;
+    final result = await _paging.waitForRead(_loader!(cursor));
+    if (_disposed || generation != _loadGeneration || pagingGeneration != _paging.generation) {
+      return (items: const <TweetChain>[], nextCursor: null);
+    }
     final next = result.nextCursor;
     // Later pages can overlap earlier ones (search cursors aren't exact
     // boundaries), so drop chains that are already displayed. Last-page
@@ -175,8 +185,13 @@ class TweetFeedController {
   /// to the first-page spinner the way [PagingController.refresh] does. Used by
   /// pull-to-refresh so the existing tweets stay visible under the indicator.
   Future<void> softRefresh() async {
+    final generation = ++_loadGeneration;
+    _paging.cancel();
+    final pagingGeneration = _paging.generation;
+    bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
     try {
-      final result = await _loader!(null);
+      final result = await _paging.startRead(() => _loader!(null));
+      if (!current()) return;
       final next = result.nextCursor;
       final isLast = _isLastPage(result.chains, next, null);
       _pagesFetched = 1;
@@ -184,11 +199,43 @@ class TweetFeedController {
       final page = _applyStops(result.chains, isLast ? null : next);
       _paging.replaceFirstPage(page.items, page.nextCursor);
     } catch (e, stackTrace) {
-      _paging.setError(e, stackTrace);
+      if (current()) _paging.setError(e, stackTrace);
     }
   }
 
-  void dispose() => _paging.dispose();
+  Future<void> repairFirstPage() async {
+    final generation = ++_loadGeneration;
+    _paging.cancel();
+    final pagingGeneration = _paging.generation;
+    bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
+    try {
+      final result = await _paging.startRead(() => _loader!(null));
+      if (!current()) return;
+      if (items == null) {
+        _pagesFetched = 1;
+        final page = _applyStops(result.chains, result.nextCursor);
+        _paging.replaceFirstPage(page.items, page.nextCursor);
+        return;
+      }
+      final seen = items!.map((e) => e.id).toSet();
+      final additions = result.chains.where((e) => seen.add(e.id)).toList();
+      final isSeen = _catchUpPassed ? null : catchUpPredicateProvider?.call();
+      final visible = isSeen == null ? additions : additions.where((e) => !isSeen(e)).toList();
+      if (isSeen != null) {
+        final heldIds = _heldBack.map((e) => e.id).toSet();
+        _heldBack = [..._heldBack, ...additions.where((e) => isSeen(e) && heldIds.add(e.id))];
+      }
+      _paging.appendMissing(visible, _pausedBy == null ? result.nextCursor : null);
+    } catch (error, stack) {
+      if (current()) _paging.setError(error, stack);
+    }
+  }
+
+  void dispose() {
+    _disposed = true;
+    _loadGeneration++;
+    _paging.dispose();
+  }
 }
 
 /// Shared paginated tweet list used by the For-you feed, the group feed and
@@ -295,8 +342,10 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
     }
     if (!identical(controller, _refreshController)) {
       _refreshController?.unregister(_showRefresh);
+      _refreshController?.unregisterSearch(_searchLoaded);
       _refreshController = controller;
       _refreshController?.register(_showRefresh);
+      _refreshController?.registerSearch(_searchLoaded);
     }
   }
 
@@ -316,6 +365,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   void dispose() {
     _controller.removeListener(_onControllerChanged);
     _refreshController?.unregister(_showRefresh);
+    _refreshController?.unregisterSearch(_searchLoaded);
     _view.destroy();
     super.dispose();
   }
@@ -333,6 +383,11 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   Future<void> _showRefresh() async {
     await _refreshKey.currentState?.show();
   }
+
+  Future<void> _searchLoaded() => showLoadedFeedSearch(
+    context,
+    loadedFeedEntries(widget.feed.items ?? widget.firstPagePreview ?? const [], widget.interleaved, widget.username),
+  );
 
   // Keyed by chain id so a prepending refresh shifts elements instead of
   // re-associating every visible tile with a different chain by index.
@@ -594,6 +649,12 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   }
 
   Widget _wrapWithRefresh(Widget child) {
+    child = ReadRecovery(
+      recoverableFailure: () =>
+          recoverableReadFailure(pagingErrorOf(_controller.value)?.error ?? _controller.value.error),
+      retry: () => _controller.fetchNextPage(),
+      child: child,
+    );
     if (widget.onRefresh == null) return child;
     return RefreshIndicator(key: _refreshKey, onRefresh: _onRefreshTriggered, child: child);
   }

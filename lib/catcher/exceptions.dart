@@ -1,4 +1,9 @@
 import 'package:http/http.dart';
+import 'dart:async';
+
+final _rateOperations = Object();
+Future<T> withRateLimitOperations<T>(List<String> operations, Future<T> Function() read) =>
+    runZoned(read, zoneValues: {_rateOperations: operations});
 
 class HttpException {
   final Response response;
@@ -28,6 +33,9 @@ class NoAccountAvailableException with SyntheticException implements Exception {
 /// endpoint. Surfaced to the user with a dedicated, actionable error widget
 /// rather than reported to the crash catcher.
 class RateLimitedException with SyntheticException implements Exception {
+  final List<String> operations;
+  RateLimitedException({List<String>? operations})
+    : operations = List.unmodifiable(operations ?? Zone.current[_rateOperations] as List<String>? ?? const []);
   @override
   String toString() => 'Rate limited';
 }

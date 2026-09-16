@@ -254,6 +254,46 @@ void main() {
     await store.destroy();
   });
 
+  test('queued cancellation blocks the pump and retry while partial-file cleanup is pending', () async {
+    final started = Completer<void>();
+    final release = Completer<String?>();
+    final cleanup = Completer<void>();
+    final calls = <String>[];
+    final store = DownloadStore(
+      history: MemoryHistory(),
+      discard: (_) => cleanup.future,
+      runner: (entry, token, progress, phase) {
+        calls.add(entry.fileName);
+        if (entry.fileName == 'first') {
+          started.complete();
+          return release.future;
+        }
+        return Future.value('content://provider/second');
+      },
+    );
+    final first = store.enqueue(uri: Uri.parse('https://media.example/first'), fileName: 'first');
+    await started.future;
+    final second = store.enqueue(uri: Uri.parse('https://media.example/second'), fileName: 'second');
+    await Future<void>.delayed(Duration.zero);
+    final id = store.state.entries.firstWhere((entry) => entry.fileName == 'second').id;
+    final cancelling = store.cancel(id);
+    expect(store.state.entries.firstWhere((entry) => entry.id == id).status, DownloadStatus.cancelled);
+    release.complete('content://provider/first');
+    await first;
+    await Future<void>.delayed(Duration.zero);
+    expect(calls, ['first']);
+    expect((await second).status, DownloadStatus.cancelled);
+    final retrying = store.retry(id);
+    await Future<void>.delayed(Duration.zero);
+    expect(calls, ['first']);
+    cleanup.complete();
+    await cancelling;
+    await retrying;
+    await Future<void>.delayed(Duration.zero);
+    expect(calls, ['first', 'second']);
+    await store.destroy();
+  });
+
   test('retry uses the same history entry and batch results count only saved destinations', () async {
     var attempts = 0;
     final store = DownloadStore(

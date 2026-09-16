@@ -88,5 +88,29 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
+      - name: Reader recovery regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          test/home_timeline_layout_test.dart
+          test/read_recovery_widget_test.dart
+          test/reader_reliability_test.dart
+          test/paging_recovery_test.dart
+          test/local_undo_test.dart
+          test/annotation_backup_test.dart
+
+      - name: Reader safety regressions
+        run: >-
+          flutter test --reporter expanded
+          test/subscription_health_test.dart
+          test/loaded_feed_search_test.dart
+          test/video_memory_pressure_test.dart
+          test/webdav_sync_test.dart
+          test/resumable_download_test.dart
+          test/download_center_test.dart
+          test/rate_limit_retry_test.dart
+
+      - name: Canary report regressions
+        run: python3 scripts/test_report_canary.py
+
       - name: Test
         run: flutter test --reporter expanded

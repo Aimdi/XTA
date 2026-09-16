@@ -3448,5 +3448,42 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Lots comprovats: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Fragments ressaltats, etiquetes i notes dels articles",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Canvis desats",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "No s’ha pogut desfer. Pot ser que les dades hagin canviat.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Operacions de lectura recents",
+  "@reader_recent_reads": {},
+  "reader_search_loaded": "Cerca a les publicacions carregades",
+  "@reader_search_loaded": {},
+  "reader_search_loaded_hint": "Cerca text, enllaços o autors a les publicacions ja carregades.",
+  "@reader_search_loaded_hint": {},
+  "reader_retry_in": "Torna-ho a provar d’aquí a {time}",
+  "@reader_retry_in": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "sync_conflict": "La còpia del servidor ha canviat. Restaura-la i revisa-la abans de pujar-ne una altra.",
+  "@sync_conflict": {},
+  "sync_unsafe_server": "Aquest servidor no pot protegir les còpies de seguretat de canvis simultanis.",
+  "@sync_unsafe_server": {},
+  "sync_history": "Còpies anteriors",
+  "@sync_history": {}
 }

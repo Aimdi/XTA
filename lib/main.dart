@@ -1,3 +1,6 @@
+import 'package:xta/tweet/video_memory_observer.dart';
+import 'package:xta/utils/read_visibility.dart';
+import 'package:xta/ui/undo_host.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -933,6 +936,11 @@ Future<void> main() async {
                   create: (context) =>
                       VideoControllerPool(maxSize: kVideoPoolSize),
                 ),
+                Provider<VideoMemoryObserver>(
+                  lazy: false,
+                  create: (context) => VideoMemoryObserver(context.read<VideoControllerPool>()),
+                  dispose: (_, observer) => observer.dispose(),
+                ),
                 Provider(create: (context) => homeModel),
                 ChangeNotifierProvider(create: (context) => importDataModel),
                 Provider(create: (context) => subscriptionsModel),
@@ -1267,6 +1275,7 @@ class _FritterAppState extends State<FritterApp> {
               isSecure: _isSecure,
               builder: (BuildContext context, a, b) => MaterialApp(
                 navigatorKey: _navigatorKey,
+                navigatorObservers: [readRouteObserver],
                 localizationsDelegates: xtaLocalizationsDelegates,
                 supportedLocales: L10n.delegate.supportedLocales,
                 locale: _locale,
@@ -1331,7 +1340,7 @@ class _FritterAppState extends State<FritterApp> {
                   // Reading aloud outlives the article it started in, so the
                   // way to stop it has to be reachable from wherever the reader
                   // has gone. Nothing is added while nothing is being read.
-                  return SpeechBarScaffold(child: child ?? Container());
+                  return UndoHost(child: SpeechBarScaffold(child: child ?? Container()));
                 },
               ),
             ),
