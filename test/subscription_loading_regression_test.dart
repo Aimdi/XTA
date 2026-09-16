@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,52 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
+import 'package:xta/profile/profile_model.dart';
+import 'package:xta/user.dart';
+import 'package:xta/utils/local_json_store.dart';
+
+class _StallingSubscriptions extends SubscriptionsModel {
+  final stalled = Completer<List<Subscription>>();
+  bool stallNextRead = true;
+  _StallingSubscriptions(super.prefs, super.groupModel);
+
+  @override
+  Duration get snapshotTimeout => const Duration(milliseconds: 100);
+
+  @override
+  Future<List<Subscription>> readSnapshot(Future<List<Subscription>> Function() read) {
+    if (!stallNextRead) return super.readSnapshot(read);
+    stallNextRead = false;
+    return super.readSnapshot(() => stalled.future);
+  }
+}
+
+class _StallingGroups extends GroupsModel {
+  final stalled = Completer<List<SubscriptionGroup>>();
+  bool stallNextRead = true;
+  _StallingGroups(super.prefs);
+
+  @override
+  Duration get snapshotTimeout => const Duration(milliseconds: 100);
+
+  @override
+  Future<List<SubscriptionGroup>> readSnapshot(Future<List<SubscriptionGroup>> Function() read) {
+    if (!stallNextRead) return super.readSnapshot(read);
+    stallNextRead = false;
+    return super.readSnapshot(() => stalled.future);
+  }
+}
+
+class _EmptyCache implements JsonStore {
+  @override
+  Future<Object?> read(String key) async => null;
+  @override
+  Future<void> write(String key, Object? value) async {}
+  @override
+  Future<void> remove(String key) async {}
+  @override
+  Future<Map<String, Object?>> readPrefix(String prefix) async => {};
+}
 
 UserSubscription person(String id) => UserSubscription(
   id: id,
@@ -20,6 +67,7 @@ UserSubscription person(String id) => UserSubscription(
 );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late GroupsModel groups;
   late SubscriptionsModel subscriptions;
 
@@ -58,6 +106,51 @@ void main() {
     expect(subscriptions.isLoading, isFalse);
     expect(groups.isLoading, isFalse);
     expect(subscriptions.error, isNull);
+  });
+
+  test('a stalled subscription reload releases queued follows and ignores its late snapshot', () async {
+    final model = _StallingSubscriptions(subscriptions.prefs, groups);
+    addTearDown(model.destroy);
+    final reload = model.reloadSubscriptions();
+    final follow = model.toggleSubscribe(person('after-stalled-reload'), false);
+    await Future.wait([reload, follow]).timeout(const Duration(seconds: 5));
+    expect(model.state.map((e) => e.id), contains('after-stalled-reload'));
+    expect(model.isLoading, isFalse);
+    expect(model.error, isNull);
+    model.stalled.complete([]);
+    await Future<void>.delayed(Duration.zero);
+    expect(model.state.map((e) => e.id), contains('after-stalled-reload'));
+  });
+
+  test('a stalled group reload releases queued saves and membership changes', () async {
+    final model = _StallingGroups(groups.prefs);
+    addTearDown(model.destroy);
+    final reload = model.reloadGroups();
+    final save = model.saveGroup(null, 'After stalled reload', defaultGroupIcon, null, {'follow-once'});
+    await Future.wait([reload, save]).timeout(const Duration(seconds: 5));
+    final saved = model.state.singleWhere((e) => e.name == 'After stalled reload');
+    expect((await model.loadGroupEdit(saved.id)).members, {'follow-once'});
+    expect(model.isLoading, isFalse);
+    expect(model.error, isNull);
+    model.stalled.complete([]);
+    await Future<void>.delayed(Duration.zero);
+    expect(model.state.map((e) => e.id), contains(saved.id));
+  });
+
+  test('leaving a pending profile does not block local follows or groups', () async {
+    final request = Completer<Profile>();
+    final profile = ProfileModel(storage: _EmptyCache(), byId: (_) => request.future);
+    final loading = profile.loadProfileById('stalled-profile');
+    await Future<void>.delayed(Duration.zero);
+    await profile.destroy();
+    await subscriptions.toggleSubscribe(person('while-profile-stalled'), false).timeout(const Duration(seconds: 5));
+    await groups.saveGroup(null, 'While profile stalled', defaultGroupIcon, null, {'while-profile-stalled'});
+    expect(subscriptions.state.map((e) => e.id), contains('while-profile-stalled'));
+    expect(groups.state.map((e) => e.name), contains('While profile stalled'));
+    expect(subscriptions.isLoading, isFalse);
+    expect(groups.isLoading, isFalse);
+    request.complete(Profile(UserWithExtra.fromArguments(idStr: 'stalled-profile'), []));
+    await loading;
   });
 
   test('rapid follows and a reload do not cancel a local write', () async {

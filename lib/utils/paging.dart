@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
@@ -23,8 +25,7 @@ PagingError? pagingErrorOf(PagingState state) {
 }
 
 /// True while the first page has not arrived and has not failed.
-bool pagingAwaitingFirstPage(PagingState state) =>
-    state.items == null && state.error == null;
+bool pagingAwaitingFirstPage(PagingState state) => state.items == null && state.error == null;
 
 /// PagedListView fetches page 0 when it mounts. Kick that ourselves when the
 /// list is not mounted yet — a skeleton, or a TabBarView first-page slot.
@@ -51,12 +52,7 @@ Widget pagingFill({required Widget child}) {
   return LayoutBuilder(
     builder: (context, constraints) => ListView(
       physics: const AlwaysScrollableScrollPhysics(),
-      children: [
-        SizedBox(
-          height: constraints.hasBoundedHeight ? constraints.maxHeight : 200,
-          child: child,
-        ),
-      ],
+      children: [SizedBox(height: constraints.hasBoundedHeight ? constraints.maxHeight : 200, child: child)],
     ),
   );
 }
@@ -78,13 +74,15 @@ typedef CursorPageFetcher<C, T> = Future<CursorPage<C, T>> Function(C? cursor);
 /// items plus the next cursor (`null` ends pagination); errors are wrapped in
 /// [PagingError] so the stack trace survives to the error widgets.
 class CursorPagingController<C, T> {
-  late final PagingController<int, T> pagingController;
+  late final _CursorPageController<T> _controller;
+  PagingController<int, T> get pagingController => _controller;
   final CursorPageFetcher<C, T> _fetch;
+  final Duration requestTimeout;
   C? _nextCursor;
   bool _reachedEnd = false;
 
-  CursorPagingController(this._fetch) {
-    pagingController = PagingController<int, T>(
+  CursorPagingController(this._fetch, {this.requestTimeout = const Duration(seconds: 45)}) {
+    _controller = _CursorPageController<T>(
       getNextPageKey: (state) {
         final keys = state.keys;
         if (keys == null || keys.isEmpty) return 0;
@@ -101,15 +99,20 @@ class CursorPagingController<C, T> {
   /// page has set one / once pagination has ended.
   C? get nextCursor => _nextCursor;
 
+  int get generation => _controller.generation;
+
+  void cancel() => pagingController.cancel();
+
   Future<List<T>> _fetchPage(int pageKey) async {
+    final generation = this.generation;
     if (pageKey == 0) {
       _reachedEnd = false;
       _nextCursor = null;
     }
     try {
       final cursor = pageKey == 0 ? null : _nextCursor;
-      final page = await _fetch(cursor);
-      _setNextCursor(page.nextCursor);
+      final page = await _fetch(cursor).timeout(requestTimeout);
+      if (generation == this.generation) _setNextCursor(page.nextCursor);
       return page.items;
     } catch (e, stackTrace) {
       throw PagingError(e, stackTrace);
@@ -125,6 +128,7 @@ class CursorPagingController<C, T> {
   /// resetting to the first-page spinner the way [PagingController.refresh]
   /// does — used by pull-to-refresh so existing items stay visible.
   void replaceFirstPage(List<T> items, C? nextCursor) {
+    cancel();
     _setNextCursor(nextCursor);
     pagingController.value = PagingState<int, T>(
       pages: [items],
@@ -136,9 +140,7 @@ class CursorPagingController<C, T> {
 
   /// Surfaces an error while keeping any already-loaded items visible.
   void setError(Object error, StackTrace stackTrace) {
-    pagingController.value = pagingController.value.copyWith(
-      error: PagingError(error, stackTrace),
-    );
+    pagingController.value = pagingController.value.copyWith(error: PagingError(error, stackTrace));
   }
 
   /// Re-opens pagination after it ended, seeding [cursor] for the next page,
@@ -166,4 +168,29 @@ class CursorPagingController<C, T> {
   }
 
   void dispose() => pagingController.dispose();
+}
+
+/// Invalidate cursors as well as items when the package cancels a request.
+class _CursorPageController<T> extends PagingController<int, T> {
+  int generation = 0;
+
+  _CursorPageController({required super.getNextPageKey, required super.fetchPage});
+
+  @override
+  void refresh() {
+    generation++;
+    super.refresh();
+  }
+
+  @override
+  void cancel() {
+    generation++;
+    super.cancel();
+  }
+
+  @override
+  void dispose() {
+    generation++;
+    super.dispose();
+  }
 }

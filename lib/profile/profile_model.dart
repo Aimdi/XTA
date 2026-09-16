@@ -40,13 +40,14 @@ class ProfileModel extends Store<Profile> {
     final generation = ++_generation;
     bool current() => !_closed && generation == _generation;
     if (state.user.idStr == null) setLoading(true);
-    final cached = await _read(key);
-    if (!current()) return;
-    if (cached != null) {
-      update(cached.status(refreshing: true, cachedAt: cached.cachedAt), force: true);
-      setLoading(false);
-    }
     try {
+      // A pending sidecar write must not prevent the network deadline starting.
+      final cached = await _read(key).timeout(const Duration(seconds: 1), onTimeout: () => null);
+      if (!current()) return;
+      if (cached != null) {
+        update(cached.status(refreshing: true, cachedAt: cached.cachedAt), force: true);
+        setLoading(false);
+      }
       final profile = await fetch().timeout(const Duration(seconds: 30));
       if (!current()) return;
       update(profile, force: true);

@@ -315,7 +315,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
   Future reloadGroups({bool notifyReload = true}) async {
     log.info('Listing subscriptions groups');
 
-    if (await executeQueued(_readGroups) && notifyReload) {
+    if (await executeQueued(() => readSnapshot(_readGroups)) && notifyReload) {
       _notifyReload();
     }
   }
@@ -644,7 +644,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
       }
 
       await batch.commit(noResult: true);
-      return _readGroups();
+      return readSnapshot(_readGroups);
     });
     if (succeeded) _notifyReload();
   }

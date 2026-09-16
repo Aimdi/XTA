@@ -43,7 +43,7 @@ class SubscriptionsModel extends Store<List<Subscription>> with QueuedStore<List
   Future<void> _changeSubscriptions(Future<void> Function() change, {bool notifyReload = true}) async {
     final succeeded = await executeQueued(() async {
       await change();
-      return _readSubscriptions();
+      return readSnapshot(_readSubscriptions);
     });
     if (succeeded && notifyReload) {
       for (final callback in _onSubscriptionsReloaded.values.toList()) {

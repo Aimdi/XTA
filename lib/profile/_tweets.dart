@@ -15,6 +15,7 @@ import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/cached_page.dart';
 import 'package:pref/pref.dart';
 import 'package:logging/logging.dart';
 
@@ -40,13 +41,11 @@ class ProfileTweets extends StatefulWidget {
   State<ProfileTweets> createState() => _ProfileTweetsState();
 }
 
-class _ProfileTweetsState extends State<ProfileTweets>
-    with AutomaticKeepAliveClientMixin<ProfileTweets> {
+class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveClientMixin<ProfileTweets> {
   static final log = Logger('ProfileTweets');
 
   late CursorPagingController<String, TweetChain> _paging;
-  PagingController<int, TweetChain> get _pagingController =>
-      _paging.pagingController;
+  PagingController<int, TweetChain> get _pagingController => _paging.pagingController;
 
   static const int pageSize = 20;
   int loadTweetsCounter = 0;
@@ -116,58 +115,31 @@ class _ProfileTweetsState extends State<ProfileTweets>
   ///
   /// Only the first page is cached — see [TimelineCache].
   Future<TweetStatus> _loadFirstPage() async {
-    final key = TimelineCache.profileKey(
-      widget.user.idStr!,
-      widget.type,
-      includeReplies: widget.includeReplies,
-    );
-    final cache = TimelineCache(await Repository.writable());
-
-    // A pull-to-refresh must reach X; serving the cache would make the gesture
-    // do nothing for the length of the window.
-    if (!_bypassCache) {
-      final cached = await cache.read(key, maxAge: profileCacheMaxAge);
-      if (cached != null) {
-        return cached;
-      }
-    }
+    final key = TimelineCache.profileKey(widget.user.idStr!, widget.type, includeReplies: widget.includeReplies);
+    final bypassCache = _bypassCache;
     _bypassCache = false;
-
-    try {
-      final result = await _load(null);
-      await cache.write(key, result);
-      return result;
-    } catch (e) {
-      final stale = await cache.readStale(key);
-      if (stale == null) {
-        rethrow;
-      }
-      log.info(
-        'Showing the cached profile timeline for '
-        '${widget.user.idStr} after $e',
-      );
-      return stale;
-    }
+    Future<TimelineCache> cache() async => TimelineCache(await Repository.writable());
+    return loadCachedPage(
+      bypassCache: bypassCache,
+      readFresh: () async => (await cache()).read(key, maxAge: profileCacheMaxAge),
+      readStale: () async => (await cache()).readStale(key),
+      fetch: () => _load(null),
+      write: (page) async => (await cache()).write(key, page),
+    );
   }
 
   Future<CursorPage<String, TweetChain>> _fetchPage(String? cursor) async {
     if (widget.filter == PostsFilter.all) {
-      final result = cursor == null
-          ? await _loadFirstPage()
-          : await _load(cursor);
+      final result = cursor == null ? await _loadFirstPage() : await _load(cursor);
       final next = result.cursorBottom;
       return (items: result.chains, nextCursor: next == cursor ? null : next);
     }
 
-    return mediaPageWithLookahead<TweetChain>(
-      cursor,
-      (c) async {
-        final result = c == null ? await _loadFirstPage() : await _load(c);
-        final next = result.cursorBottom;
-        return (chains: result.chains, nextCursor: next == c ? null : next);
-      },
-      (chains) => chains.where(widget.filter.accepts).toList(),
-    );
+    return mediaPageWithLookahead<TweetChain>(cursor, (c) async {
+      final result = c == null ? await _loadFirstPage() : await _load(c);
+      final next = result.cursorBottom;
+      return (chains: result.chains, nextCursor: next == c ? null : next);
+    }, (chains) => chains.where(widget.filter.accepts).toList());
   }
 
   @override
@@ -183,6 +155,7 @@ class _ProfileTweetsState extends State<ProfileTweets>
         onRefresh: () async {
           _bypassCache = true;
           _pagingController.refresh();
+          _pagingController.fetchNextPage();
         },
         child: PagingListener<int, TweetChain>(
           controller: _pagingController,
@@ -205,9 +178,7 @@ class _ProfileTweetsState extends State<ProfileTweets>
               return pagingFill(
                 child: ProfileEmptyState(
                   icon: Icons.article_outlined,
-                  message: L10n.of(
-                    context,
-                  ).could_not_find_any_tweets_by_this_user,
+                  message: L10n.of(context).could_not_find_any_tweets_by_this_user,
                 ),
               );
             }
@@ -229,8 +200,7 @@ class _ProfileTweetsState extends State<ProfileTweets>
                     isPinned: chain.isPinned,
                   );
                 },
-                newPageProgressIndicatorBuilder: (context) =>
-                    const TweetSkeletonTile(),
+                newPageProgressIndicatorBuilder: (context) => const TweetSkeletonTile(),
                 newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
                   error: pagingErrorOf(state)?.error,
                   stackTrace: pagingErrorOf(state)?.stackTrace,

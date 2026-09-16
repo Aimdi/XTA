@@ -50,6 +50,9 @@ enum FeedPause {
 class TweetFeedController {
   late final CursorPagingController<String, TweetChain> _paging;
   TweetPageLoader? _loader;
+  final Duration requestTimeout;
+  int _loadGeneration = 0;
+  bool _disposed = false;
 
   /// When set, pagination pauses after this many pages per session instead of
   /// scrolling forever (`null` result → no cap). Feeds bind this to the
@@ -73,8 +76,8 @@ class TweetFeedController {
   // catch-up stop applies once per first page rather than on every page.
   bool _catchUpPassed = false;
 
-  TweetFeedController() {
-    _paging = CursorPagingController<String, TweetChain>(_fetch);
+  TweetFeedController({this.requestTimeout = const Duration(minutes: 2)}) {
+    _paging = CursorPagingController<String, TweetChain>(_fetch, requestTimeout: requestTimeout);
   }
 
   PagingController<int, TweetChain> get controller => _paging.pagingController;
@@ -149,7 +152,12 @@ class TweetFeedController {
   }
 
   Future<CursorPage<String, TweetChain>> _fetch(String? cursor) async {
-    final result = await _loader!(cursor);
+    final generation = ++_loadGeneration;
+    final pagingGeneration = _paging.generation;
+    final result = await _loader!(cursor).timeout(requestTimeout);
+    if (_disposed || generation != _loadGeneration || pagingGeneration != _paging.generation) {
+      return (items: const [], nextCursor: null);
+    }
     final next = result.nextCursor;
     // Later pages can overlap earlier ones (search cursors aren't exact
     // boundaries), so drop chains that are already displayed. Last-page
@@ -175,8 +183,13 @@ class TweetFeedController {
   /// to the first-page spinner the way [PagingController.refresh] does. Used by
   /// pull-to-refresh so the existing tweets stay visible under the indicator.
   Future<void> softRefresh() async {
+    final generation = ++_loadGeneration;
+    _paging.cancel();
+    final pagingGeneration = _paging.generation;
+    bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
     try {
-      final result = await _loader!(null);
+      final result = await _loader!(null).timeout(requestTimeout);
+      if (!current()) return;
       final next = result.nextCursor;
       final isLast = _isLastPage(result.chains, next, null);
       _pagesFetched = 1;
@@ -184,11 +197,15 @@ class TweetFeedController {
       final page = _applyStops(result.chains, isLast ? null : next);
       _paging.replaceFirstPage(page.items, page.nextCursor);
     } catch (e, stackTrace) {
-      _paging.setError(e, stackTrace);
+      if (current()) _paging.setError(e, stackTrace);
     }
   }
 
-  void dispose() => _paging.dispose();
+  void dispose() {
+    _disposed = true;
+    _loadGeneration++;
+    _paging.dispose();
+  }
 }
 
 /// Shared paginated tweet list used by the For-you feed, the group feed and
