@@ -88,6 +88,44 @@ void main() {
     expect(store.state.results['late'], -1);
   });
 
+  test('overall deadline retains successes and retries only unfinished batches', () async {
+    final store = BatchReadStore<int>(loadTimeout: const Duration(milliseconds: 30));
+    addTearDown(store.destroy);
+    final late = Completer<int>();
+    final calls = <String>[];
+    Future<int> fetch(String key) {
+      calls.add(key);
+      return key == 'slow' ? late.future : Future.value(1);
+    }
+
+    await store.load(
+      ['good', 'slow', 'queued'],
+      fetch,
+      concurrency: 1,
+      onError: (_) => -1,
+      failed: (value) => value < 0,
+    );
+    expect(calls, ['good', 'slow']);
+    expect(store.state.results, {'good': 1, 'slow': -1, 'queued': -1});
+    expect(store.state.failed, {'slow', 'queued'});
+    expect(store.state.loading, isFalse);
+    late.complete(2);
+    await Future<void>.delayed(Duration.zero);
+    expect(calls, ['good', 'slow']);
+    expect(store.state.results['slow'], -1);
+    await store.load(
+      ['good', 'slow', 'queued'],
+      fetch,
+      concurrency: 1,
+      onError: (_) => -1,
+      failed: (value) => value < 0,
+      retryFailed: true,
+    );
+    expect(calls, ['good', 'slow', 'slow', 'queued']);
+    expect(store.state.failed, isEmpty);
+    expect(store.state.results, {'good': 1, 'slow': 2, 'queued': 1});
+  });
+
   test('read cancellation prevents subsequent fanout after late completion', () async {
     final reads = ReadRequestScope();
     final pending = Completer<int>();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/group/future_pool.dart';
 import 'package:xta/utils/read_activity.dart';
@@ -15,9 +16,11 @@ class BatchReadState<T> {
 class BatchReadStore<T> extends Store<BatchReadState<T>> {
   final _reads = ReadRequestScope();
   final Duration batchTimeout;
+  final Duration loadTimeout;
   int _generation = 0;
   bool _closed = false;
-  BatchReadStore({this.batchTimeout = const Duration(seconds: 35)}) : super(BatchReadState<T>());
+  BatchReadStore({this.batchTimeout = const Duration(seconds: 35), this.loadTimeout = const Duration(seconds: 90)})
+    : super(BatchReadState<T>());
 
   void cancel() {
     _generation++;
@@ -48,6 +51,7 @@ class BatchReadStore<T> extends Store<BatchReadState<T>> {
         : <String, T>{};
     final errors = retryFailed ? state.failed.intersection(all) : <String>{};
     final pending = all.where((key) => !results.containsKey(key) || errors.contains(key)).toList();
+    final remaining = pending.toSet();
     bool current() => !_closed && generation == _generation;
     void publish(bool loading) {
       if (!current()) return;
@@ -77,16 +81,27 @@ class BatchReadStore<T> extends Store<BatchReadState<T>> {
           ReadWork.checkpoint();
           if (!current()) throw const ReadCancelled();
           results[key] = value;
+          remaining.remove(key);
           failed(value) ? errors.add(key) : errors.remove(key);
           onProgress?.call(results.values.toList());
           publish(true);
         }),
-        timeout: const Duration(minutes: 2),
+        timeout: loadTimeout,
       );
-      return results.values.toList();
+    } on TimeoutException catch (error) {
+      if (!current()) rethrow;
+      // Finish inside the outer page deadline. Successful batches stay
+      // readable; unfinished and queued batches become selectively retryable.
+      _reads.cancel();
+      for (final key in remaining) {
+        results[key] = onError(error);
+        errors.add(key);
+      }
+      onProgress?.call(results.values.toList());
     } finally {
       publish(false);
     }
+    return results.values.toList();
   }
 
   @override
