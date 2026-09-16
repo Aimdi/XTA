@@ -26,6 +26,7 @@ class DownloadStore extends Store<DownloadCenterState> {
   Future<void> _writes = Future.value();
   final _completion = <String, Completer<DownloadEntry>>{};
   final _cancellation = <String, DownloadCancellation>{};
+  final _discarding = <String, Future<void>>{};
   bool _running = false;
   bool _closed = false;
   DateTime _lastProgress = DateTime.fromMillisecondsSinceEpoch(0);
@@ -117,6 +118,7 @@ class DownloadStore extends Store<DownloadCenterState> {
 
   Future<void> retry(String id) async {
     await initialize();
+    await _discarding[id];
     final entry = _find(id);
     if (_closed || entry == null || !entry.canRetry) return;
     _attempts[id] = (_attempts[id] ?? 0) + 1;
@@ -134,8 +136,11 @@ class DownloadStore extends Store<DownloadCenterState> {
     if (_closed || entry == null || !entry.canCancel) return;
     final active = _cancellation[id];
     active?.cancel();
-    if (active == null) await discard?.call(entry);
+    final cleanup = active == null ? Future<void>.sync(() => discard?.call(entry)).catchError((Object _) {}) : null;
+    if (cleanup != null) _discarding[id] = cleanup;
     _finish(entry.copyWith(status: DownloadStatus.cancelled));
+    await cleanup;
+    if (identical(_discarding[id], cleanup)) _discarding.remove(id);
     await _persistQuietly();
   }
 

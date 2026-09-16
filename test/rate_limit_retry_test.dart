@@ -21,15 +21,13 @@ void main() {
     expect(knownRateLimitReset(RateLimitedException(), accounts, now), isNull);
   });
   test('read context reaches parameterless rate-limit exceptions through async work', () async {
-    try {
-      await withRateLimitOperations(['UserTweets'], () async {
+    await expectLater(
+      withRateLimitOperations(['UserTweets'], () async {
         await Future<void>.value();
         throw RateLimitedException();
-      });
-      fail('expected rate limit');
-    } on RateLimitedException catch (error) {
-      expect(error.operations, ['UserTweets']);
-    }
+      }),
+      throwsA(isA<RateLimitedException>().having((error) => error.operations, 'operations', ['UserTweets'])),
+    );
   });
   test('HTTP retry headers expose their actual reset', () {
     final now = DateTime.utc(2026);
