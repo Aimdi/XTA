@@ -6,6 +6,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:path/path.dart' as p;
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:xta/utils/local_json_store.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
@@ -35,8 +36,9 @@ class LocalPostComposeSheet extends StatefulWidget {
   final LocalPost? existing;
   final TweetWithCard? quotedTweet;
   final LocalPost? replyTo;
+  final JsonStore? draftStorage;
 
-  const LocalPostComposeSheet({super.key, this.existing, this.quotedTweet, this.replyTo});
+  const LocalPostComposeSheet({super.key, this.existing, this.quotedTweet, this.replyTo, this.draftStorage});
 
   @override
   State<LocalPostComposeSheet> createState() => _LocalPostComposeSheetState();
@@ -45,6 +47,7 @@ class LocalPostComposeSheet extends StatefulWidget {
 class _LocalPostComposeSheetState extends State<LocalPostComposeSheet> {
   String get _id => _store.postId!;
   late final _store = NoteEditorStore(
+    storage: widget.draftStorage,
     body: widget.existing?.body ?? '',
     media: widget.existing?.media ?? const [],
     postId: widget.existing?.id ?? const Uuid().v4(),

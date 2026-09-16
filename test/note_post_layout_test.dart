@@ -9,6 +9,28 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/local_post_compose.dart';
 import 'package:xta/saved/local_post_tile.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/utils/local_json_store.dart';
+
+class _DraftStorage implements JsonStore {
+  final values = <String, Object?>{};
+  @override
+  Future<Object?> read(String key) async => values[key];
+  @override
+  Future<void> write(String key, Object? value) async {
+    values[key] = value;
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    values.remove(key);
+  }
+
+  @override
+  Future<Map<String, Object?>> readPrefix(String prefix) async => {
+    for (final entry in values.entries)
+      if (entry.key.startsWith(prefix)) entry.key: entry.value,
+  };
+}
 
 void main() {
   setUpAll(() async {
@@ -58,7 +80,7 @@ void main() {
                 ),
               ),
               home: composing
-                  ? LocalPostComposeSheet(existing: post)
+                  ? LocalPostComposeSheet(existing: post, draftStorage: _DraftStorage())
                   : Scaffold(
                       appBar: AppBar(title: const Text('Notes')),
                       body: ListView(
