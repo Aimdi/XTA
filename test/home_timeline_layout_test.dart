@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
@@ -32,6 +33,7 @@ import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/ui/x_look_theme.dart';
+import 'package:xta/utils/read_visibility.dart';
 
 const _before = bool.fromEnvironment('HOME_LAYOUT_BEFORE');
 const _media = ValueKey('home-media-toggle');
@@ -143,6 +145,7 @@ class _HomeHarness {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        navigatorObservers: [readRouteObserver],
         theme: theme,
         localizationsDelegates: const [
           L10n.delegate,
@@ -212,6 +215,7 @@ Future<void> _waitForNativeWork(WidgetTester tester, bool Function() ready) asyn
     await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
     await tester.pump(const Duration(milliseconds: 100));
   }
+  expect(ready(), isTrue, reason: 'Native work did not finish while the widget clock was being pumped');
   await tester.pumpAndSettle();
 }
 
@@ -232,6 +236,12 @@ bool _hasAccessibleLabel(WidgetTester tester, String label) {
 }
 
 void main() {
+  setUp(() {
+    VisibilityDetectorController.instance.updateInterval = Duration.zero;
+  });
+  tearDown(() {
+    VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500);
+  });
   setUpAll(() async {
     autoUpdateGoldenFiles = true;
     await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
@@ -464,40 +474,54 @@ void main() {
     expect(tester.takeException(), isNull);
   }, skip: _before);
 
-  testWidgets('Home order updates the actual Following group and keeps filters reachable', (tester) async {
-    final h = _HomeHarness();
-    addTearDown(() => h.close(tester));
-    await tester.runAsync(h.seed);
-    await tester.pumpWidget(h.app(xLookLightTheme(null)));
-    await _waitForFollowing(tester);
-    await tester.tap(find.byKey(_order));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(L10n.current.filters));
-    await tester.pumpAndSettle();
-    expect(find.text(L10n.current.include_replies), findsOneWidget);
-    Navigator.pop(tester.element(find.text(L10n.current.include_replies)));
-    await tester.pumpAndSettle();
-    final model = tester.element(find.byType(SubscriptionGroupScreenContent)).read<GroupModel>();
-    final labels = [L10n.current.recent, L10n.current.popular, L10n.current.custom];
-    for (final order in [1, 0, 2]) {
+  testWidgets(
+    'Home order updates the actual Following group and keeps filters reachable',
+    (tester) async {
+      final h = _HomeHarness();
+      addTearDown(() => h.close(tester));
+      await tester.runAsync(h.seed);
+      await tester.pumpWidget(h.app(xLookLightTheme(null)));
+      await _waitForFollowing(tester);
       await tester.tap(find.byKey(_order));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(labels[order]));
-      await _waitForNativeWork(tester, () => model.state.popular == (order == 1) && model.state.custom == (order == 2));
-      expect(model.state.popular, order == 1);
-      expect(model.state.custom, order == 2);
-      final rows = await tester.runAsync(() async {
-        final db = await Repository.readOnly();
-        return db.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
-      });
-      expect(rows!.single['popular'], order == 1 ? 1 : 0);
-      expect(rows.single['custom'], order == 2 ? 1 : 0);
-      if (order == 2) {
-        expect(find.byType(GroupCustomSettingsScreen), findsOneWidget);
-        Navigator.pop(tester.element(find.byType(GroupCustomSettingsScreen)));
+      await tester.tap(find.text(L10n.current.filters));
+      await tester.pumpAndSettle();
+      expect(find.text(L10n.current.include_replies), findsOneWidget);
+      Navigator.pop(tester.element(find.text(L10n.current.include_replies)));
+      await tester.pumpAndSettle();
+      final model = tester.element(find.byType(SubscriptionGroupScreenContent)).read<GroupModel>();
+      final labels = [L10n.current.recent, L10n.current.popular, L10n.current.custom];
+      for (final order in [1, 0, 2]) {
+        await tester.tap(find.byKey(_order));
         await tester.pumpAndSettle();
+        await tester.tap(find.text(labels[order]));
+        await _waitForNativeWork(
+          tester,
+          () => model.state.popular == (order == 1) && model.state.custom == (order == 2),
+        );
+        expect(model.state.popular, order == 1);
+        expect(model.state.custom, order == 2);
+        // A feed refresh can already own SQLite's queue in the widget zone.
+        // Waiting inside runAsync freezes that zone and deadlocks the queued
+        // assertion. Keep pumping both clocks until the query has finished.
+        List<Map<String, Object?>>? rows;
+        final query = () async {
+          final db = await Repository.readOnly();
+          rows = await db.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: ['-1']);
+        }();
+        await _waitForNativeWork(tester, () => rows != null);
+        await query;
+        expect(rows!.single['popular'], order == 1 ? 1 : 0);
+        expect(rows!.single['custom'], order == 2 ? 1 : 0);
+        if (order == 2) {
+          expect(find.byType(GroupCustomSettingsScreen), findsOneWidget);
+          Navigator.pop(tester.element(find.byType(GroupCustomSettingsScreen)));
+          await tester.pumpAndSettle();
+        }
       }
-    }
-    expect(tester.takeException(), isNull);
-  }, skip: _before);
+      expect(tester.takeException(), isNull);
+    },
+    skip: _before,
+    timeout: const Timeout(Duration(seconds: 90)),
+  );
 }
