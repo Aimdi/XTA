@@ -15,7 +15,7 @@ TweetChain _chainAt(String id, List<DateTime?> dates) {
 }
 
 InterleavedItem _item(DateTime date) =>
-    (date: date, build: (_) => const SizedBox.shrink());
+    InterleavedItem(date: date, build: (_) => const SizedBox.shrink());
 
 DateTime _at(int day) => DateTime.utc(2026, 1, day);
 

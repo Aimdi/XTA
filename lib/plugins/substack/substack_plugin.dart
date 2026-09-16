@@ -1,3 +1,4 @@
+import 'package:xta/plugins/substack/podcast_store.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -128,6 +129,7 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   Future<void> resetPreferences(BasePrefService prefs) async {
     await prefs.set(optionPluginSubstackPublications, '[]');
     await prefs.set(optionPluginSubstackReadIds, '[]');
+    await prefs.set('plugin.substack.podcast.v1', '');
     await prefs.set(optionPluginSubstackLikedPosts, '[]');
     await prefs.set(optionPluginSubstackSavedPosts, '[]');
     await prefs.set(optionPluginSubstackPinnedPublications, '');
@@ -135,6 +137,8 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
 
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
+    await context.read<PodcastStore>().stop();
+    if (!context.mounted) return;
     await context.read<SubstackPublicationsStore>().load();
     if (context.mounted) {
       await context.read<SubstackReadStore>().load();

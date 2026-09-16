@@ -60,7 +60,7 @@ Future<List<InterleavedItem>> loadRedditInterleaved(
 
     return redditInterleavedItems(posts);
   } catch (_) {
-    return const [];
+    rethrow;
   }
 }
 
@@ -73,6 +73,19 @@ List<InterleavedItem> redditInterleavedItems(Iterable<RedditPost> posts) => [
       provenanceInterleavedItem(
         date: date,
         pluginId: pluginIdReddit,
+        id: '$pluginIdReddit:${post.id}',
+        linkUrl: post.url,
+        snapshot: post.over18 || post.spoiler
+            ? null
+            : {
+                'xtaPlugin': 'link',
+                'archiveId': 'reddit:${post.id}', 'archiveUserId': post.subreddit,
+                'source': pluginIdReddit,
+                'url': 'https://www.reddit.com${post.permalink}',
+                'author': post.author ?? post.subreddit,
+                'text': post.title,
+                'images': <String>[],
+              },
         build: (_) => RedditPostCard(post: post),
       ),
 ];

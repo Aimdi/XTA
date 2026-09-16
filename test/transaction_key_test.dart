@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
@@ -54,6 +56,41 @@ void main() {
   });
 
   group('key caching', () {
+    testWidgets('a stalled setup expires and retry recovers without restarting', (tester) async {
+      final stalled = Completer<ClientTransaction>();
+      var attempts = 0;
+      var now = DateTime.utc(2026, 9, 15);
+      TwitterHeaders.clock = () => now;
+      TwitterHeaders.initializer = () {
+        attempts++;
+        return attempts == 1 ? stalled.future : Future.value(fakeTransaction());
+      };
+      final first = expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TimeoutException>()));
+      final second = expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TimeoutException>()));
+      await tester.pump(TwitterHeaders.initializationTimeout + const Duration(seconds: 1));
+      await Future.wait([first, second]);
+      expect(attempts, 1);
+      now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
+      expect((await TwitterHeaders.getXClientTransactionIdHeader(uri))?['x-client-transaction-id'], isNotEmpty);
+      expect(attempts, 2);
+      stalled.completeError(Exception('obsolete setup finally failed'));
+      await tester.pump();
+      await TwitterHeaders.getXClientTransactionIdHeader(uri);
+      expect(attempts, 2);
+    });
+
+    test('synchronous setup failures also respect the retry cooldown', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () {
+        attempts++;
+        throw StateError('bad initialization');
+      };
+      for (var i = 0; i < 2; i++) {
+        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsStateError);
+      }
+      expect(attempts, 1);
+    });
+
     test('a successful derivation is reused rather than repeated per request', () async {
       var derivations = 0;
       TwitterHeaders.initializer = () async {

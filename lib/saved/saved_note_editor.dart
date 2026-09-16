@@ -1,31 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/saved/local_post_logic.dart';
 import 'package:xta/saved/note_editor_frame.dart';
 import 'package:xta/saved/note_editor_store.dart';
+import 'package:xta/saved/note_post_chrome.dart';
 
 Future<void> openSavedNoteEditor(
   BuildContext context, {
   required String? note,
+  String? draftKey,
+  bool allowUnchanged = false,
   required Future<void> Function(String?) onSave,
 }) async {
-  await showNoteEditor<void>(context, _SavedNoteEditor(note: note, onSave: onSave));
+  await showNoteEditor<void>(context, _SavedNoteEditor(note: note, onSave: onSave, draftKey: draftKey, allowUnchanged: allowUnchanged));
 }
 
 class _SavedNoteEditor extends StatefulWidget {
   final String? note;
+  final String? draftKey;
+  final bool allowUnchanged;
   final Future<void> Function(String?) onSave;
 
-  const _SavedNoteEditor({required this.note, required this.onSave});
+  const _SavedNoteEditor({required this.note, required this.onSave, this.draftKey, this.allowUnchanged = false});
 
   @override
   State<_SavedNoteEditor> createState() => _SavedNoteEditorState();
 }
 
 class _SavedNoteEditorState extends State<_SavedNoteEditor> {
-  late final _store = NoteEditorStore(body: widget.note ?? '');
+  late final _store = NoteEditorStore(body: widget.note ?? '', draftKey: widget.draftKey);
   late final _controller = TextEditingController(text: widget.note ?? '');
+
+  @override
+  void initState() {
+    super.initState();
+    _store.restoreDraft().then((_) {
+      if (mounted) _controller.text = _store.state.body;
+    });
+  }
 
   @override
   void dispose() {
@@ -49,29 +61,13 @@ class _SavedNoteEditorState extends State<_SavedNoteEditor> {
         store: _store,
         title: widget.note?.isNotEmpty == true ? l10n.local_note_edit_title : l10n.local_note_compose_title,
         saveLabel: l10n.save,
-        canSave: _store.dirty,
+        canSave: _store.dirty || widget.allowUnchanged,
         onSave: _save,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(l10n.saves_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              autofocus: true,
-              readOnly: state.busy,
-              minLines: 6,
-              maxLines: null,
-              maxLength: localPostMaxLength,
-              textCapitalization: TextCapitalization.sentences,
-              onChanged: _store.setBody,
-              decoration: InputDecoration(
-                hintText: l10n.clip_note_hint,
-                border: const OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-            ),
-          ],
+        body: NoteComposeField(
+          controller: _controller,
+          readOnly: state.busy,
+          onChanged: _store.setBody,
+          hint: l10n.clip_note_hint,
         ),
       ),
     );

@@ -1,0 +1,56 @@
+name: Share and notes review
+
+on:
+  pull_request:
+    branches: [claude/main]
+    paths: ['android/**', 'lib/**', 'test/**', '.github/workflows/share-notes-review.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: share-notes-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.head_ref == 'feat/share-x-notes'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '21.0.10'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Generate sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: Share and composer checks with renders
+        run: flutter test test/shared_links_test.dart test/note_editor_store_test.dart test/local_post_logic_test.dart test/saved_note_editor_test.dart test/note_post_layout_test.dart --reporter expanded
+      - name: Upload screen evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: share-notes-screens
+          path: review-artifacts/renders
+          retention-days: 7
+      - name: Build Android debug APK
+        run: |
+          python -m pip install -r requirements.txt
+          python generate_icons.py
+          dart run flutter_launcher_icons
+          flutter build apk --debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: share-notes-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7

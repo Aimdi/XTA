@@ -15,55 +15,58 @@ final _log = Logger('RssInterleaved');
 const int kRssInterleavedPageSize = 8;
 
 bool rssInHomeFeed(BasePrefService prefs) =>
-    prefs.get<bool>(optionPluginRssEnabled) == true &&
-    prefs.get<bool>(optionPluginRssInHomeFeed) == true;
+    prefs.get<bool>(optionPluginRssEnabled) == true && prefs.get<bool>(optionPluginRssInHomeFeed) == true;
 
 List<String> rssHomeIds(BuildContext context) {
   if (!rssInHomeFeed(PrefService.of(context, listen: false))) {
     return const [];
   }
-  return context
-      .read<RssFeedsStore>()
-      .state
-      .map((e) => e.id)
-      .toList(growable: false);
+  return context.read<RssFeedsStore>().state.map((e) => e.id).toList(growable: false);
 }
 
 /// Items for [feeds], as dated cards a timeline can slot between its chains.
 ///
 /// One unreachable feed must not empty the rest of the timeline.
-Future<List<InterleavedItem>> loadRssInterleaved(
-  BuildContext context,
-  List<RssSubscription> feeds,
-) async {
+Future<List<InterleavedItem>> loadRssInterleaved(BuildContext context, List<RssSubscription> feeds) async {
   if (feeds.isEmpty) {
     return const [];
   }
 
   final client = context.read<RssClient>();
+  Object? failure;
   final fetched = await Future.wait(
     feeds.map((feed) async {
       try {
         final items = await client.fetchItems(feedOf(feed));
-        return (
-          feed,
-          items.take(kRssInterleavedPageSize).toList(growable: false),
-        );
+        return (feed, items.take(kRssInterleavedPageSize).toList(growable: false));
       } catch (e) {
+        failure ??= e;
         _log.warning('Unable to load RSS items for ${feed.id}: $e');
         return null;
       }
     }),
   );
 
-  return [
+  final result = <InterleavedItem>[
     for (final pair in fetched.nonNulls)
       for (final item in pair.$2)
         if (item.publishedAt case final date?)
           provenanceInterleavedItem(
             date: date,
             pluginId: pluginIdRss,
+            id: '$pluginIdRss:${item.feedId}:${item.id}',
+            linkUrl: item.link,
+            snapshot: {
+                    'xtaPlugin': 'link',
+                    'source': pluginIdRss,
+                    'url': item.link ?? '',
+                    'author': item.author ?? item.feedTitle,
+                    'text': '${item.title}\n${item.excerpt ?? ''}',
+                    'images': <String>[],
+                  },
             build: (_) => RssItemCard(item: item, showSourceBadge: true),
           ),
   ];
+  if (failure != null) throw PartialFeedFailure(result, failure!);
+  return result;
 }

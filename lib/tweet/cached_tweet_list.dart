@@ -1,3 +1,4 @@
+import 'package:xta/tweet/feed_link_grouping.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/tweet/conversation.dart';
@@ -17,12 +18,7 @@ class CachedTweetList extends StatelessWidget {
   final String? username;
   final List<InterleavedItem> interleaved;
 
-  const CachedTweetList(
-    this.chains, {
-    super.key,
-    this.username,
-    this.interleaved = const [],
-  });
+  const CachedTweetList(this.chains, {super.key, this.username, this.interleaved = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -35,22 +31,25 @@ class CachedTweetList extends StatelessWidget {
       );
     }
 
+    final grouped = FeedLinkGrouping.build(chains, interleaved, (_, chain) => _conversation(chain));
+    Widget conversation(BuildContext context, TweetChain chain) =>
+        grouped.chains[chain.id]?.call(context) ?? _conversation(chain);
     if (interleaved.isEmpty) {
       return FeedListView(
         padding: const EdgeInsets.only(top: 4),
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: chains.length,
-        itemBuilder: (context, index) => _conversation(chains[index]),
+        itemBuilder: (context, index) => conversation(context, chains[index]),
       );
     }
 
-    final buckets = placeInterleaved(chains, interleaved);
+    final buckets = placeInterleaved(chains, grouped.plugins);
     if (chains.isEmpty) {
       return FeedListView(
         padding: const EdgeInsets.only(top: 4),
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: interleaved.length,
-        itemBuilder: (context, index) => interleaved[index].build(context),
+        itemBuilder: (context, index) => grouped.plugins[index].build(context),
       );
     }
 
@@ -59,19 +58,17 @@ class CachedTweetList extends StatelessWidget {
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: chains.length,
       itemBuilder: (context, index) {
-        final conversation = _conversation(chains[index]);
+        final post = conversation(context, chains[index]);
         final above = buckets[index];
-        final below = index == chains.length - 1
-            ? buckets.last
-            : const <InterleavedItem>[];
+        final below = index == chains.length - 1 ? buckets.last : const <InterleavedItem>[];
         if (above.isEmpty && below.isEmpty) {
-          return conversation;
+          return post;
         }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (final item in above) item.build(context),
-            conversation,
+            post,
             for (final item in below) item.build(context),
           ],
         );

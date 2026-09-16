@@ -1,3 +1,5 @@
+import 'package:xta/downloads/downloads_screen.dart';
+import 'package:xta/offline/offline_library_screen.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -202,6 +204,10 @@ class SettingsDataFragment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
+      PrefLabel(leading: const Icon(Icons.download_outlined), title: Text(L10n.of(context).downloads_title),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DownloadsScreen()))),
+      PrefLabel(leading: const Icon(Icons.offline_pin_outlined), title: Text(L10n.of(context).offline_library_title),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OfflineLibraryScreen()))),
       PrefLabel(
         leading: const Icon(Icons.import_export),
         title: Text(L10n.of(context).import),

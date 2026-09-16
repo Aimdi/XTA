@@ -26,7 +26,7 @@ Future<List<InterleavedItem>> loadInstagramGroupPosts(BuildContext context, List
     try {
       final page = await client.profileMedia(id.substring('$pluginIdInstagram:'.length));
       for (final post in page.posts) {
-        items.add((date: post.createdAt, build: (_) => InstagramPostCard(post: post)));
+        items.add(InterleavedItem(date: post.createdAt, build: (_) => InstagramPostCard(post: post)));
       }
     } catch (_) {
       // Preserve other accounts when one private/deleted profile cannot be read.

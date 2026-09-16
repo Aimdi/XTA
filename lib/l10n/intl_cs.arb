@@ -38,12 +38,15 @@
   "ai_model": "Model",
   "@ai_model": {},
   "ai_openrouter_key_hint": "Vytvořte klíč API na openrouter.ai/settings/keys.",
+  "@ai_openrouter_key_hint": {},
   "ai_openrouter_model_hint": "Zadejte úplné ID modelu, například openrouter/free nebo provider/model.",
+  "@ai_openrouter_model_hint": {},
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
   "ai_preset_openrouter": "OpenRouter",
+  "@ai_preset_openrouter": {},
   "ai_provider": "Poskytovatel AI",
   "@ai_provider": {},
   "ai_provider_description": "Vyberte poskytovatele nebo zadejte server kompatibilní s OpenAI. Přidejte klíč API a model a uložte nastavení. Prázdná pole ponechají AI vypnutou.",
@@ -100,6 +103,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Článek na X",
   "@article_on_x": {},
+  "article_reader_appearance": "Vzhled čtení",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Označit jako dočtené",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Dočteno",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Řádkování",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Otevřeno",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Obnoveno",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Zpět na začátek",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Faktor měřítka textu",
+  "@article_reader_text_size": {},
   "auto_download_images": "Automaticky stahovat obrázky",
   "@auto_download_images": {},
   "auto_download_images_description": "Uložit obrázky každého příspěvku zařazeného do této složky do složky stahování.",
@@ -402,6 +421,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Stahování médií...",
   "@downloading_media": {},
+  "downloads_batch_result": "Uložené soubory: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Zrušeno",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Vybrat místo uložení",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Vymazat historii dokončených stahování",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Uloženo",
+  "@downloads_completed": {},
+  "downloads_empty": "Zde se zobrazí vaše stažené soubory. Začněte uložením médií z příspěvku.",
+  "@downloads_empty": {},
+  "downloads_failed": "Stažení se nezdařilo",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Historii stahování se nepodařilo uložit. Zkontrolujte volné místo a zkuste to znovu.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Přerušeno · Pokračujte opakováním",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Tento soubor se nepodařilo otevřít. Mohl být přesunut nebo smazán.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Otevřít soubor",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "Čeká",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Zkontrolujte připojení a složku pro stahování a zkuste to znovu.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Ukládání souboru…",
+  "@downloads_saving": {},
+  "downloads_title": "Stahování",
+  "@downloads_title": {},
   "edit_folder": "Upravit složku",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Ukončeno {timeagoFormat}",
@@ -858,6 +927,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Žádné hlasy} one{Jeden hlas} two{Dva hlasy} few{{numFormatted} hlasy} many{{numFormatted} hlasů} other{{numFormatted} hlasů}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Text článku ponechán · Obrázky: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Text článku je ponechán. Vložený zvuk a video stále vyžadují připojení.",
+  "@offline_article_text_only": {},
+  "offline_available": "Dostupné offline",
+  "@offline_available": {},
+  "offline_clear": "Vyprázdnit offline sbírku",
+  "@offline_clear": {},
+  "offline_clear_description": "Z tohoto zařízení se odstraní ponechané články a média. Uložené příspěvky a složky zůstanou ve vaší knihovně.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Odstranit všechny offline kopie?",
+  "@offline_clear_question": {},
+  "offline_empty": "Ponechte články nebo média z uložených příspěvků offline a najdete je zde.",
+  "@offline_empty": {},
+  "offline_failed": "Nepodařilo se ponechat vše offline. Zkontrolujte připojení a volné místo a zkuste to znovu.",
+  "@offline_failed": {},
+  "offline_keep": "Ponechat offline",
+  "@offline_keep": {},
+  "offline_library_title": "Offline sbírka",
+  "@offline_library_title": {},
+  "offline_media_count": "Ponechané mediální soubory: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Médium {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Částečně dostupné offline",
+  "@offline_partial": {},
+  "offline_remove": "Odstranit offline kopii",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Tyto soubory mohou obsahovat citlivý obsah. Uloží se do tohoto zařízení a zůstanou skryté, dokud je neotevřete.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Otevřít citlivá média",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Ponechat citlivá média offline?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Offline úložiště se nepodařilo přečíst nebo aktualizovat. Zkontrolujte volné místo a zkuste to znovu.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Offline úložiště je omezeno na {limit}. Velké soubory nebo nepodporované streamy mohou zůstat nedostupné.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "Využito {used} z {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Offline kopie není dostupná",
+  "@offline_unavailable": {},
+  "offline_video_only": "Kopie videí z Redditu nemusí obsahovat zvuk.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Zobrazit pouze tweety s médii",
@@ -3251,7 +3403,50 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolik stránek kanál v zen režimu načte, než se pozastaví.",
   "@zen_mode_page_cap_description": {},
-  "@ai_openrouter_key_hint": {},
-  "@ai_openrouter_model_hint": {},
-  "@ai_preset_openrouter": {}
+  "reader_link_posts": "Další příspěvky s tímto odkazem: {count}",
+  "reader_connection_failed": "Připojení selhalo",
+  "reader_sign_in_needed": "Pro pokračování se znovu přihlaste",
+  "reader_rate_limit_hint": "Tento zdroj omezuje požadavky. Zkuste to později.",
+  "reader_new_posts": "Nové příspěvky",
+  "reader_source_loading": "Tento zdroj se stále načítá. Ostatní příspěvky jsou k dispozici.",
+  "reader_cached_content": "Během aktualizace zdroje se zobrazuje uložená kopie.",
+  "reader_draft_restored": "Koncept obnoven",
+  "reader_search_all": "Prohledat knihovnu",
+  "reader_highlight": "Zvýraznit a přidat poznámku",
+  "reader_extract": "Získat text ze snímku obrazovky",
+  "reader_extract_notice": "Vybraný obrázek PNG nebo JPEG bude odeslán na {host} pomocí nastaveného modelu AI. Rozpoznaný text může obsahovat chyby.",
+  "reader_more_like": "Více podobného",
+  "reader_less_like": "Méně podobného",
+  "reader_discovery_reason": "Doporučení ze sdílených nebo souvisejících příspěvků účtů v této skupině.",
+  "reader_undo": "Zpět",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@reader_connection_failed": {},
+  "@reader_sign_in_needed": {},
+  "@reader_rate_limit_hint": {},
+  "@reader_new_posts": {},
+  "@reader_source_loading": {},
+  "@reader_cached_content": {},
+  "@reader_draft_restored": {},
+  "@reader_search_all": {},
+  "@reader_highlight": {},
+  "@reader_extract": {},
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "@reader_more_like": {},
+  "@reader_less_like": {},
+  "@reader_discovery_reason": {},
+  "@reader_undo": {}
 }

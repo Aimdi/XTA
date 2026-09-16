@@ -44,6 +44,25 @@ class DownloadDirectory {
     });
   }
 
+  /// Copies a staged file without sending its contents through the platform channel.
+  static Future<String?> saveFile({required String treeUri, required String fileName,
+      required String sourcePath, required String operationId}) =>
+    _channel.invokeMethod<String>('saveFileToDownloadDirectory', {
+      'treeUri': treeUri, 'fileName': fileName, 'mimeType': mimeTypeFor(fileName),
+      'sourcePath': sourcePath, 'operationId': operationId,
+    });
+
+  static Future<void> cancelSave(String operationId) =>
+    _channel.invokeMethod<void>('cancelDownloadSave', {'operationId': operationId});
+
+  static Future<void> deleteDocument(String documentUri) =>
+    _channel.invokeMethod<void>('deleteDownloadedDocument', {'documentUri': documentUri});
+
+  static Future<void> openDocument(String documentUri, String fileName) =>
+    _channel.invokeMethod<void>('openDownloadedDocument', {
+      'documentUri': documentUri, 'mimeType': mimeTypeFor(fileName),
+    });
+
   /// A readable folder name for the settings row: a tree URI ends in a document
   /// id like `primary:Pictures/XTA`, which is the part worth showing.
   static String displayName(String treeUri) {

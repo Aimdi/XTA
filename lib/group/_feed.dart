@@ -1,3 +1,6 @@
+import 'package:xta/tweet/progressive_feed_store.dart';
+import 'package:xta/tweet/progressive_feed_view.dart';
+import 'package:xta/plugins/plugin.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -21,7 +24,6 @@ import 'package:xta/profile/media_grid/media_grid.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
 import 'package:xta/profile/profile_feed_settings.dart';
 import 'package:xta/plugins/subscription_source.dart';
-import 'package:xta/tweet/interleaved_items.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/utils/iterables.dart';
@@ -136,91 +138,30 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// A source pages on its own terms — Substack by offset, X by cursor — so
   /// these cannot share one paginator with the X side. They are fetched once per
   /// mount and slotted among the chains by date.
-  final Map<SubscriptionSource, List<InterleavedItem>> _pluginItems = {};
-
-  /// The sources merged, rebuilt only when one of them arrives. Built in
-  /// `build` it was a fresh list every frame, so nothing downstream could tell
-  /// by identity that the interleave had not changed.
-  List<InterleavedItem> _interleaved = const [];
-
-  void _mergeInterleaved() =>
-      _interleaved = [for (final items in _pluginItems.values) ...items];
-
-  /// Asks every plugin in this group for its posts, at once.
-  ///
-  /// One loader rather than one per network: they differed only in which store
-  /// they read and which ids they passed, and keeping five copies in step is
-  /// what made adding a source an eight-line edit in this file alone — and what
-  /// left the Fediverse out of two of those five places.
-  /// Every registered source, not only the ones this group has members for: a
-  /// source whose last member was just removed still has to be asked, or its
-  /// posts stay in the feed after the account that brought them is gone.
-  ///
-  /// Sources finish on their own clocks; painting each one used to rebuild the
-  /// whole X list. Collect first, then one [setState].
+  final _pluginFeed = ProgressiveFeedStore();
   Future<void> _loadPluginPosts() async {
-    try {
-      final prefs = PrefService.of(context, listen: false);
-      var dirty = false;
-      await Future.wait(
-        enabledSubscriptionSources(prefs).map((source) async {
-          if (await _collectPostsFrom(source)) {
-            dirty = true;
-          }
-        }),
-      );
-      if (mounted && dirty) {
-        setState(_mergeInterleaved);
-      }
-    } catch (_) {
-      // One plugin failing must not take Following down with it.
-    }
-  }
-
-  Future<bool> _collectPostsFrom(SubscriptionSource source) async {
-    try {
-      // Still fetched on the image tab: that toggle used to skip this and
-      // never ask again when the reader switched back, so a group opened on
-      // images stayed X-only for the rest of the visit.
-
-      final isCombined = widget.group.id == legacyFeedKeyFollowing;
-      final inHomeFeed = isCombined && source.inHomeFeed(context);
+    if (!mounted) return;
+    final loaders = <String, SourceLoader>{};
+    final keys = <String, String>{};
+    final prefs = PrefService.of(context, listen: false);
+    for (final source in enabledSubscriptionSources(prefs)) {
+      final id = (source as XtaPlugin).id;
+      final combined = widget.group.id == legacyFeedKeyFollowing;
+      final includeHome = combined && source.inHomeFeed(context);
       final ids = sourceIdsFor(
-        memberIds:
-            widget.pluginMembers[source]
-                ?.map((e) => e.id)
-                .toList(growable: false) ??
-            const [],
-        isCombinedFeed: isCombined,
-        inHomeFeed: inHomeFeed,
-        homeFeedIds: inHomeFeed ? source.homeFeedIds(context) : const [],
+        memberIds: widget.pluginMembers[source]?.map((entry) => entry.id).toList() ?? const [],
+        isCombinedFeed: combined,
+        inHomeFeed: includeHome,
+        homeFeedIds: includeHome ? source.homeFeedIds(context) : const [],
       );
-
-      if (!mounted) {
-        return false;
-      }
-      final items = await source.interleavedPosts(context, ids);
-      return mounted && replacePluginSlot(_pluginItems, source, items);
-    } catch (_) {
-      return false;
+      if (ids.isEmpty) continue;
+      keys[id] = _pluginFeed.cache.key(id, ids);
+      loaders[id] = () => source.interleavedPosts(context, ids);
     }
+    await _pluginFeed.load(loaders, keys);
   }
 
-  Future<void> _reloadPluginSources(
-    Iterable<SubscriptionSource> sources,
-  ) async {
-    var dirty = false;
-    await Future.wait(
-      sources.map((source) async {
-        if (await _collectPostsFrom(source)) {
-          dirty = true;
-        }
-      }),
-    );
-    if (mounted && dirty) {
-      setState(_mergeInterleaved);
-    }
-  }
+  Future<void> _reloadPluginSources(Iterable<SubscriptionSource> sources) => _loadPluginPosts();
 
   // Chronological feeds only: in popular order a "seen up to" boundary is
   // meaningless, and the media grid shares this loader but shows no divider.
@@ -229,21 +170,13 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Catch-up mode: this feed shows only what is new since the reader's last
   /// position and stops there. Per feed, off unless turned on for this one.
   bool get _catchUpEnabled =>
-      _supportsReadPosition &&
-      PrefService.of(
-            context,
-            listen: false,
-          ).get(feedCatchUpModeKey(widget.group.id)) ==
-          true;
+      _supportsReadPosition && PrefService.of(context, listen: false).get(feedCatchUpModeKey(widget.group.id)) == true;
 
   bool get _tracksReadPosition =>
       _supportsReadPosition &&
-      (PrefService.of(context, listen: false).get(optionFeedReadingPosition) ==
-              true ||
-          _catchUpEnabled);
+      (PrefService.of(context, listen: false).get(optionFeedReadingPosition) == true || _catchUpEnabled);
 
-  bool _isSeen(TweetChain chain) =>
-      _lastSeen != null && isChainSeen(chain, _lastSeen!);
+  bool _isSeen(TweetChain chain) => _lastSeen != null && isChainSeen(chain, _lastSeen!);
 
   /// The stop pagination applies in catch-up mode, or null when the mode is off
   /// or there is no recorded position yet — in which case the feed pages as it
@@ -300,14 +233,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   Future<void> _loadPreview() async {
     try {
       var repository = await Repository.readOnly();
-      var stored = await readCachedChainsForHashes(
-        repository,
-        widget.chunks.map((e) => e.hash),
-      );
-      var cached = filterHiddenRetweets(
-        stored.chains,
-        await hiddenRetweetScreenNames(),
-      );
+      var stored = await readCachedChainsForHashes(repository, widget.chunks.map((e) => e.hash));
+      var cached = filterHiddenRetweets(stored.chains, await hiddenRetweetScreenNames());
       cached = filterHiddenReplies(cached, await hiddenReplyScreenNames());
       if (!mounted) return;
       setState(() {
@@ -355,10 +282,12 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   }
 
   bool _onScrollNotification(ScrollNotification notification) {
+    if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
+      _pluginFeed.setReadingAway(notification.metrics.pixels > feedReadPositionTopThresholdPx);
+    }
     // Any user-driven scroll cancels an in-flight caught-up restore, so it
     // never yanks the list out from under the reader.
-    if (notification is UserScrollNotification &&
-        notification.direction != ScrollDirection.idle) {
+    if (notification is UserScrollNotification && notification.direction != ScrollDirection.idle) {
       _userHasScrolled = true;
     }
     if (notification is! ScrollEndNotification) {
@@ -372,9 +301,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // Catch-up mode does not take that bet — being at the top says nothing
     // about what was read, and there the position is written only on reaching
     // the end of the new posts.
-    if (metrics.hasPixels &&
-        metrics.pixels <= feedReadPositionTopThresholdPx &&
-        _heldRefresh.returnedToTop()) {
+    if (metrics.hasPixels && metrics.pixels <= feedReadPositionTopThresholdPx && _heldRefresh.returnedToTop()) {
       _applyChunkRefresh();
     }
     if (_tracksReadPosition &&
@@ -406,10 +333,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   bool get _atTop {
     final position = _scrollPosition;
-    final atTop = feedRefreshAtTop(
-      pixels: position?.pixels,
-      lastKnownAtTop: _lastKnownAtTop,
-    );
+    final atTop = feedRefreshAtTop(pixels: position?.pixels, lastKnownAtTop: _lastKnownAtTop);
     if (position != null) {
       _lastKnownAtTop = atTop;
     }
@@ -431,10 +355,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     _lastRecordedChainId = newest.id;
     // Fire-and-forget: a failed position save must never surface as an
     // unhandled async error.
-    writeFeedReadPosition(
-      feedReadPositionKey(widget.group.id),
-      newest,
-    ).catchError((_) {});
+    writeFeedReadPosition(feedReadPositionKey(widget.group.id), newest).catchError((_) {});
   }
 
   // Called with each finalized first page. The first one decides between
@@ -469,16 +390,12 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   void _scheduleCaughtUpRestore(int index, int itemCount, [int attempts = 0]) {
     if (_userHasScrolled) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted ||
-          _userHasScrolled ||
-          attempts >= maxCaughtUpRestoreFrames) {
+      if (!mounted || _userHasScrolled || attempts >= maxCaughtUpRestoreFrames) {
         return;
       }
       final position = _scrollPosition;
       // Wait until the real list (not the preview) is mounted and laid out.
-      if (position == null ||
-          !position.haveDimensions ||
-          !_feedController.hasItems) {
+      if (position == null || !position.haveDimensions || !_feedController.hasItems) {
         _scheduleCaughtUpRestore(index, itemCount, attempts + 1);
         return;
       }
@@ -493,10 +410,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         _scheduleCaughtUpRestore(index, itemCount, attempts + 1);
         return;
       }
-      final estimated = (position.maxScrollExtent * index / itemCount).clamp(
-        0.0,
-        position.maxScrollExtent,
-      );
+      final estimated = (position.maxScrollExtent * index / itemCount).clamp(0.0, position.maxScrollExtent);
       position.jumpTo(estimated);
     });
   }
@@ -519,11 +433,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       final position = _scrollPosition;
       final ready = position != null && position.haveDimensions;
       if (!ready) {
-        if (shouldRetryScrollRestore(
-          mounted: mounted,
-          positionReady: ready,
-          attempts: attempts,
-        )) {
+        if (shouldRetryScrollRestore(mounted: mounted, positionReady: ready, attempts: attempts)) {
           _scheduleRestore(offset, attempts + 1);
         }
         return;
@@ -534,6 +444,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   @override
   void dispose() {
+    _pluginFeed.destroy();
     _chunkRefreshDebounce?.cancel();
     _mediaPaging?.dispose();
     if (!_usesCache) {
@@ -553,21 +464,13 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // again afterwards. Fetching them only in initState therefore asked for the
     // posts of an empty list and never asked again — which is why a group with
     // a subreddit in it stayed empty of Reddit posts however long you waited.
-    unawaited(
-      _reloadPluginSources(
-        sourcesNeedingReload(
-          before: oldWidget.pluginMembers,
-          after: widget.pluginMembers,
-        ),
-      ),
-    );
+    unawaited(_reloadPluginSources(sourcesNeedingReload(before: oldWidget.pluginMembers, after: widget.pluginMembers)));
 
     if (oldWidget.includeReplies != widget.includeReplies ||
         oldWidget.includeRetweets != widget.includeRetweets ||
         oldWidget.group.popular != widget.group.popular ||
         oldWidget.group.custom != widget.group.custom ||
-        feedRulesOf(oldWidget.group).cacheKey !=
-            feedRulesOf(widget.group).cacheKey ||
+        feedRulesOf(oldWidget.group).cacheKey != feedRulesOf(widget.group).cacheKey ||
         !_chunksMatch(oldWidget.chunks, widget.chunks)) {
       // Subscribe/unsubscribe (and filter toggles) rebuild chunks and used to
       // refresh immediately — with large sets that re-fired every search at
@@ -607,10 +510,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   final _heldRefresh = HeldRefresh();
 
-  bool _chunksMatch(
-    List<SubscriptionGroupFeedChunk> a,
-    List<SubscriptionGroupFeedChunk> b,
-  ) {
+  bool _chunksMatch(List<SubscriptionGroupFeedChunk> a, List<SubscriptionGroupFeedChunk> b) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
       if (a[i].hash != b[i].hash) return false;
@@ -619,23 +519,13 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   }
 
   Future<String> createCursor(Database repository) async {
-    return (await repository.insert(
-      tableFeedGroupCursor,
-      {},
-      nullColumnHack: 'id',
-    )).toString();
+    return (await repository.insert(tableFeedGroupCursor, {}, nullColumnHack: 'id')).toString();
   }
 
-  bool feedContainsUnrelatedTweets(
-    TweetStatus tweets,
-    List<Subscription> users,
-  ) {
+  bool feedContainsUnrelatedTweets(TweetStatus tweets, List<Subscription> users) {
     final screenNames = users.map((e) => e.screenName).toSet();
     return tweets.chains.any(
-      (chain) => chain.tweets.any(
-        (tweet) =>
-            tweet.user != null && !screenNames.contains(tweet.user!.screenName),
-      ),
+      (chain) => chain.tweets.any((tweet) => tweet.user != null && !screenNames.contains(tweet.user!.screenName)),
     );
   }
 
@@ -646,10 +536,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         return AlertDialog(
           title: Row(
             children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Theme.of(context).colorScheme.error,
-              ),
+              Icon(Icons.warning_amber_rounded, color: Theme.of(context).colorScheme.error),
               const SizedBox(width: 12),
               Expanded(child: Text(L10n.of(context).feed_issue_detected)),
             ],
@@ -659,14 +546,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(L10n.of(context).feed_contains_unrelated_tweets),
-              SizedBox(
-                height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 2,
-              ),
+              SizedBox(height: Theme.of(context).textTheme.bodyMedium!.fontSize! * 2),
               PrefCheckbox(
-                title: Text(
-                  L10n.of(context).never_show_again,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                title: Text(L10n.of(context).never_show_again, style: Theme.of(context).textTheme.bodyMedium),
                 pref: optionDisableWarningsForUnrelatedPostsInFeed,
               ),
             ],
@@ -675,10 +557,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             TextButton(
               child: Text(L10n.of(context).more_info),
               onPressed: () async {
-                await openUri(
-                  context,
-                  "https://github.com/Teskann/XTA/issues/26",
-                );
+                await openUri(context, "https://github.com/Teskann/XTA/issues/26");
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }
@@ -766,9 +645,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
     // Cap in-flight chunk searches — unbounded Future.wait was the #165 failure
     // mode for 1000+ subscriptions (60+ concurrent searches → 404 cascade).
-    final chunkResults = await mapWithConcurrency(widget.chunks, feedChunkFetchConcurrency, (
-      chunk,
-    ) async {
+    final chunkResults = await mapWithConcurrency(widget.chunks, feedChunkFetchConcurrency, (chunk) async {
       var hash = chunk.hash;
       var tweets = <TweetChain>[];
 
@@ -805,9 +682,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           whereArgs: [int.parse(cursorKey), hash],
         );
         if (storedChunks.isNotEmpty) {
-          searchCursor = searchCursorFromStored(
-            storedChunks.first['cursor_bottom'],
-          );
+          searchCursor = searchCursorFromStored(storedChunks.first['cursor_bottom']);
         } else {
           searchCursor = null;
         }
@@ -818,20 +693,13 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       // the hourglass, even when profiles still loaded.
       var query = _buildSearchQuery(chunk.users);
       final network = await fetchChunkWithFallback(
-        search: () => Twitter.searchTweets(
-          query,
-          widget.includeReplies,
-          cursor: searchCursor,
-        ),
+        search: () => Twitter.searchTweets(query, widget.includeReplies, cursor: searchCursor),
         userTimelines: () => _fallbackUserTimelines(chunk.users),
       );
 
       var searchPage = network.search;
       if (searchPage != null) {
-        shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(
-          searchPage,
-          chunk.users,
-        );
+        shouldShowUnrelatedPostsInFeedWarning |= feedContainsUnrelatedTweets(searchPage, chunk.users);
       }
 
       final fresh = searchPage?.chains ?? network.fallbackChains;
@@ -845,9 +713,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
           'hash': hash,
           'cursor_top': searchPage?.cursorTop,
           'cursor_bottom': searchPage?.cursorBottom,
-          'response': await encodeChunkBlob(
-            fresh.map((e) => e.toJson()).toList(),
-          ),
+          'response': await encodeChunkBlob(fresh.map((e) => e.toJson()).toList()),
         });
       }
 
@@ -858,10 +724,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       // those cursors belong to a different endpoint.
       var gapFills = 0;
       if (searchPage != null &&
-          !shouldSkipGapFill(
-            usedFallback: network.usedFallback,
-            searchFailed: network.searchFailed,
-          )) {
+          !shouldSkipGapFill(usedFallback: network.usedFallback, searchFailed: network.searchFailed)) {
         var page = searchPage;
         try {
           while (shouldContinueGapFill(
@@ -871,11 +734,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             hasCursor: page.cursorBottom != null,
             gapFillsSoFar: gapFills,
           )) {
-            page = await Twitter.searchTweets(
-              query,
-              widget.includeReplies,
-              cursor: page.cursorBottom,
-            );
+            page = await Twitter.searchTweets(query, widget.includeReplies, cursor: page.cursorBottom);
             gapFills++;
 
             if (page.chains.isNotEmpty) {
@@ -885,9 +744,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                 'hash': hash,
                 'cursor_top': page.cursorTop,
                 'cursor_bottom': page.cursorBottom,
-                'response': await encodeChunkBlob(
-                  page.chains.map((e) => e.toJson()).toList(),
-                ),
+                'response': await encodeChunkBlob(page.chains.map((e) => e.toJson()).toList()),
               });
             }
           }
@@ -925,20 +782,14 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
     // The stored chunks and the fresh fetch overlap at their window boundaries,
     // so drop repeated chains before display.
-    var threads = _sortChains(
-      dedupeChainsById(chunkResults.expand((e) => e.chains).toList()),
-    );
+    var threads = _sortChains(dedupeChainsById(chunkResults.expand((e) => e.chains).toList()));
     threads = filterHiddenRetweets(threads, await hiddenRetweetScreenNames());
     threads = filterHiddenReplies(threads, await hiddenReplyScreenNames());
-    final rulesOutcome = applyCustomFeedRules(
-      threads,
-      feedRulesOf(widget.group),
-    );
+    final rulesOutcome = applyCustomFeedRules(threads, feedRulesOf(widget.group));
     threads = rulesOutcome.chains;
 
     final caps = <String, int>{};
-    for (final sub
-        in widget.group.subscriptions.whereType<UserSubscription>()) {
+    for (final sub in widget.group.subscriptions.whereType<UserSubscription>()) {
       final max = sub.maxPostsPerLoad;
       if (max != null && max > 0) {
         caps[sub.id] = max;
@@ -955,12 +806,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     final prefs = PrefService.of(context, listen: false);
     final languageOutcome = applyLanguageFilter(
       threads,
-      allowedLanguages: parseFeedLanguages(
-        prefs.get(optionFeedLanguages) as String?,
-      ),
-      action: parseLanguageFilterAction(
-        prefs.get(optionFeedLanguageAction) as String?,
-      ),
+      allowedLanguages: parseFeedLanguages(prefs.get(optionFeedLanguages) as String?),
+      action: parseLanguageFilterAction(prefs.get(optionFeedLanguageAction) as String?),
       priorFolds: rulesOutcome.foldReasons,
     );
     threads = languageOutcome.chains;
@@ -973,10 +820,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     }
 
     if (shouldShowUnrelatedPostsInFeedWarning &&
-        !PrefService.of(
-          context,
-          listen: false,
-        ).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
+        !PrefService.of(context, listen: false).get(optionDisableWarningsForUnrelatedPostsInFeed)) {
       await showUnrelatedPostsInFeedWarning();
     }
 
@@ -996,8 +840,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     return (chains: threads, nextCursor: nextCursor);
   }
 
-  static int _likesOf(TweetChain chain) =>
-      chain.tweets.firstOrNull?.favoriteCount ?? 0;
+  static int _likesOf(TweetChain chain) => chain.tweets.firstOrNull?.favoriteCount ?? 0;
 
   /// Popular groups order the same recent window by likes; recent ones (the
   /// default) by date.
@@ -1046,9 +889,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
 
   /// Loads a page for the media grid: tweets already on the list first, then
   /// the same pages as the tweet list, mapped to their media entries.
-  Future<CursorPage<String, MediaGridItem>> _loadMediaPage(
-    String? cursor,
-  ) async {
+  Future<CursorPage<String, MediaGridItem>> _loadMediaPage(String? cursor) async {
     if (cursor == null) {
       _seenMediaKeys.clear();
     }
@@ -1066,9 +907,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   // Successive search windows overlap at their boundaries, so keep only media
   // entries not shown on an earlier page.
   List<MediaGridItem> _unseenMediaItems(List<TweetChain> chains) {
-    return mediaItemsFromChains(
-      chains,
-    ).where((m) => _seenMediaKeys.add('${m.tweetId}/${m.mediaIndex}')).toList();
+    return mediaItemsFromChains(chains).where((m) => _seenMediaKeys.add('${m.tweetId}/${m.mediaIndex}')).toList();
   }
 
   Widget _buildMediaGrid(BuildContext context) {
@@ -1076,12 +915,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       body: TweetContextScope(
         child: MediaGrid(
           controller: _mediaController.pagingController,
-          firstPageErrorPrefix: L10n.of(
-            context,
-          ).unable_to_load_the_tweets_for_the_feed,
-          newPageErrorPrefix: L10n.of(
-            context,
-          ).unable_to_load_the_next_page_of_tweets,
+          firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+          newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
           emptyMessage: L10n.of(context).could_not_find_any_posts_with_media,
         ),
       ),
@@ -1098,14 +933,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          SizedBox(
-            height: 240,
-            child: Center(
-              child: Text(
-                L10n.of(context).this_group_contains_no_subscriptions,
-              ),
-            ),
-          ),
+          SizedBox(height: 240, child: Center(child: Text(L10n.of(context).this_group_contains_no_subscriptions))),
         ],
       );
     }
@@ -1118,47 +946,43 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       body: TweetContextScope(
         child: NotificationListener<ScrollNotification>(
           onNotification: _onScrollNotification,
-          child: PaginatedTweetList(
-            feed: _feedController,
-            loadPage: _listTweetsShared,
-            username: null,
-            firstPagePreview: _cachedPreview,
-            firstPagePreviewCachedAt: _cachedPreviewAt,
-            foldReasons: _foldReasons,
-            onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
-            catchUpMayBeIncomplete: () => _gapCapped,
-            onRefresh: () async {
-              // Not awaited: the reader is waiting on X's first page, and
-              // the plugins are beside it rather than in front of it.
-              unawaited(_loadPluginPosts());
-              // Only this group's rows. The wipe used to take the whole table
-              // with it, so pulling to refresh one feed made every other feed
-              // refetch its first page from the network next time it opened.
-              final hashes = widget.chunks.map((e) => e.hash).toList();
-              if (hashes.isEmpty) {
-                return;
-              }
+          child: ProgressiveFeedView(
+            store: _pluginFeed,
+            builder: (items) => PaginatedTweetList(
+              feed: _feedController,
+              loadPage: _listTweetsShared,
+              username: null,
+              firstPagePreview: _cachedPreview,
+              firstPagePreviewCachedAt: _cachedPreviewAt,
+              foldReasons: _foldReasons,
+              onCaughtUp: _catchUpEnabled ? _recordCaughtUp : null,
+              catchUpMayBeIncomplete: () => _gapCapped,
+              onRefresh: () async {
+                // Not awaited: the reader is waiting on X's first page, and
+                // the plugins are beside it rather than in front of it.
+                unawaited(_loadPluginPosts());
+                // Only this group's rows. The wipe used to take the whole table
+                // with it, so pulling to refresh one feed made every other feed
+                // refetch its first page from the network next time it opened.
+                final hashes = widget.chunks.map((e) => e.hash).toList();
+                if (hashes.isEmpty) {
+                  return;
+                }
 
-              var repository = await Repository.writable();
-              await repository.delete(
-                tableFeedGroupChunk,
-                where:
-                    'hash IN (${List.filled(hashes.length, '?').join(', ')})',
-                whereArgs: hashes,
-              );
-            },
-            firstPageErrorPrefix: L10n.of(
-              context,
-            ).unable_to_load_the_tweets_for_the_feed,
-            newPageErrorPrefix: L10n.of(
-              context,
-            ).unable_to_load_the_next_page_of_tweets,
-            emptyMessage: L10n.of(
-              context,
-            ).could_not_find_any_tweets_from_the_last_7_days,
-            isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
-            caughtUpDividerKey: _caughtUpKey,
-            interleaved: _interleaved,
+                var repository = await Repository.writable();
+                await repository.delete(
+                  tableFeedGroupChunk,
+                  where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
+                  whereArgs: hashes,
+                );
+              },
+              firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
+              newPageErrorPrefix: L10n.of(context).unable_to_load_the_next_page_of_tweets,
+              emptyMessage: L10n.of(context).could_not_find_any_tweets_from_the_last_7_days,
+              isSeen: _tracksReadPosition && _lastSeen != null ? _isSeen : null,
+              caughtUpDividerKey: _caughtUpKey,
+              interleaved: items,
+            ),
           ),
         ),
       ),

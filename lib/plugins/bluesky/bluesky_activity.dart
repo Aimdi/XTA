@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -14,6 +15,10 @@ Future<void> showBlueskyPostActions(BuildContext context, BlueskyPost post) => s
   context,
   post: PluginPostArchive(id: blueskyArchiveId(post), userId: post.did, content: blueskyArchiveBlob(post)),
   url: post.url,
+  onGroup: () => addBlueskyAccountToGroup(
+    context,
+    BlueskyAccount(handle: post.handle, did: post.did, name: post.authorName, avatarUrl: post.avatarUrl),
+  ),
   onReposts: () => openBlueskyReposts(context, post),
   onQuotes: () => openBlueskyQuotes(context, post),
 );

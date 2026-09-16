@@ -38,12 +38,15 @@
   "ai_model": "Madel",
   "@ai_model": {},
   "ai_openrouter_key_hint": "Stvarycie ključ API na openrouter.ai/settings/keys.",
+  "@ai_openrouter_key_hint": {},
   "ai_openrouter_model_hint": "Uviadzicie poŭny identyfikatar madeli, napryklad openrouter/free abo provider/model.",
+  "@ai_openrouter_model_hint": {},
   "ai_preset_grok": "Grok",
   "@ai_preset_grok": {},
   "ai_preset_openai": "OpenAI",
   "@ai_preset_openai": {},
   "ai_preset_openrouter": "OpenRouter",
+  "@ai_preset_openrouter": {},
   "ai_provider": "Pastaŭščyk ŠI",
   "@ai_provider": {},
   "ai_provider_description": "Vybierycie pastaŭščyka abo ŭviadzicie siervier, sumiaščalny z OpenAI. Dadajcie ključ API i madel, zatym zachavajcie. Pustyja pali pakidajuć ŠI vyklučanym.",
@@ -100,6 +103,22 @@
   "@are_you_sure_you_want_to_delete_the_subscription_group_name_of_group": {},
   "article_on_x": "Artykuł na X",
   "@article_on_x": {},
+  "article_reader_appearance": "Vyhliad dlia čytańnia",
+  "@article_reader_appearance": {},
+  "article_reader_finish": "Paznačyć jak pračytanaje",
+  "@article_reader_finish": {},
+  "article_reader_finished": "Pračytana",
+  "@article_reader_finished": {},
+  "article_reader_line_spacing": "Mižradkovy interval",
+  "@article_reader_line_spacing": {},
+  "article_reader_opened": "Adkryta",
+  "@article_reader_opened": {},
+  "article_reader_resumed": "Praciahnuta",
+  "@article_reader_resumed": {},
+  "article_reader_start_over": "Da pačatku",
+  "@article_reader_start_over": {},
+  "article_reader_text_size": "Kaeficyjent maštabavańnia tekstu",
+  "@article_reader_text_size": {},
   "auto_download_images": "Aŭtaspampoŭka vyjaŭ",
   "@auto_download_images": {},
   "auto_download_images_description": "Zachoŭvać vyjavy kožnaha dopisu, dadadzienaha ŭ hetuju tečku, u tečku spampovak.",
@@ -402,6 +421,56 @@
   "@download_path_needs_reselect": {},
   "downloading_media": "Zachoŭvańnie medyja...",
   "@downloading_media": {},
+  "downloads_batch_result": "Zachavanyja fajły: {saved} / {total}",
+  "@downloads_batch_result": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "downloads_cancelled": "Skasavana",
+  "@downloads_cancelled": {},
+  "downloads_choose_location": "Vybrać miesca zachavańnia",
+  "@downloads_choose_location": {},
+  "downloads_clear_finished": "Ačyścić historyju zavieršanych spampovak",
+  "@downloads_clear_finished": {},
+  "downloads_completed": "Zachavana",
+  "@downloads_completed": {},
+  "downloads_empty": "Tut buduć vašy spampoŭki. Dlia pačatku zachavajcie miedyja z publikacyi.",
+  "@downloads_empty": {},
+  "downloads_failed": "Nie ŭdałosia spampavać",
+  "@downloads_failed": {},
+  "downloads_history_unavailable": "Nie ŭdałosia zachavać historyju spampovak. Praviercie volnaje miesca i paŭtarycie sprobu.",
+  "@downloads_history_unavailable": {},
+  "downloads_interrupted": "Pierapyniena · Paŭtarycie sprobu, kab praciahnuć",
+  "@downloads_interrupted": {},
+  "downloads_open_failed": "Nie ŭdałosia adkryć hety fajł. Mahčyma, jon byŭ pieramieščany abo vydaleny.",
+  "@downloads_open_failed": {},
+  "downloads_open_file": "Adkryć fajł",
+  "@downloads_open_file": {},
+  "downloads_progress": "{received} / {total}",
+  "@downloads_progress": {
+    "placeholders": {
+      "received": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "downloads_queued": "U čakańni",
+  "@downloads_queued": {},
+  "downloads_retry_hint": "Praviercie złučeńnie i papku spampovak, zatym paŭtarycie sprobu.",
+  "@downloads_retry_hint": {},
+  "downloads_saving": "Zachavańnie fajła…",
+  "@downloads_saving": {},
+  "downloads_title": "Spampoŭki",
+  "@downloads_title": {},
   "edit_folder": "Redahavać tečku",
   "@edit_folder": {},
   "ended_timeago_format_endsAt_allowFromNow_true": "Zakonczyłasia {timeagoFormat}",
@@ -858,6 +927,89 @@
   "@note_due_to_a_twitter_limitation_not_all_tweets_may_be_included": {},
   "numberFormat_format_total_votes": "{num, plural, zero{Niama hałasou} one{Adzin hałas} few{{numFormatted} hałasy} many{{numFormatted} hałasou} other{{numFormatted} hałasou}}",
   "@numberFormat_format_total_votes": {},
+  "offline_article_detail": "Tekst artykuła zachavany · Vidarysy: {saved} / {total}",
+  "@offline_article_detail": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_article_text_only": "Tekst artykuła zachavany. Dlia ŭbudavanych aŭdyja i videa pa-raniejšamu patrebnaje złučeńnie.",
+  "@offline_article_text_only": {},
+  "offline_available": "Dastupna pazasietkava",
+  "@offline_available": {},
+  "offline_clear": "Ačyścić pazasietkavy zbor",
+  "@offline_clear": {},
+  "offline_clear_description": "Z hetaj pryłady buduć vydalenyja pazasietkavyja artykuły i miedyja. Zachavanyja publikacyi i papki zastanucca ŭ vašaj biblijatecy.",
+  "@offline_clear_description": {},
+  "offline_clear_question": "Vydalić usie pazasietkavyja kopii?",
+  "@offline_clear_question": {},
+  "offline_empty": "Zachoŭvajcie artykuły abo miedyja z zachavanych publikacyj pazasietkava, kab znachodzić ich tut.",
+  "@offline_empty": {},
+  "offline_failed": "Nie ŭdałosia zachavać usio pazasietkava. Praviercie złučeńnie i volnaje miesca, zatym paŭtarycie sprobu.",
+  "@offline_failed": {},
+  "offline_keep": "Zachavać pazasietkava",
+  "@offline_keep": {},
+  "offline_library_title": "Pazasietkavy zbor",
+  "@offline_library_title": {},
+  "offline_media_count": "Zachavanyja miedyjafajły: {saved} / {total}",
+  "@offline_media_count": {
+    "placeholders": {
+      "saved": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_media_label": "Miedyjafajł {number}",
+  "@offline_media_label": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "offline_partial": "Častkova dastupna pazasietkava",
+  "@offline_partial": {},
+  "offline_remove": "Vydalić pazasietkavuju kopiju",
+  "@offline_remove": {},
+  "offline_sensitive_description": "Hetyja fajły mohuć źmiaščać adčuvalny źmiest. Jany buduć zachoŭvacca na hetaj pryładzie i zastanucca schavanymi, pakul vy nie adkryjecie ich.",
+  "@offline_sensitive_description": {},
+  "offline_sensitive_open": "Adkryć adčuvalnyja miedyja",
+  "@offline_sensitive_open": {},
+  "offline_sensitive_question": "Zachavać adčuvalnyja miedyja pazasietkava?",
+  "@offline_sensitive_question": {},
+  "offline_storage_error": "Nie ŭdałosia pračytać abo abnavić pazasietkavaje schovišča. Praviercie volnaje miesca i paŭtarycie sprobu.",
+  "@offline_storage_error": {},
+  "offline_storage_limit": "Pazasietkavaje schovišča abmiežavana da {limit}. Vialikija fajły abo patoki, jakija nie padtrymlivajucca, mohuć zastacca niedastupnymi.",
+  "@offline_storage_limit": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_storage_used": "Vykarystana {used} z {limit}",
+  "@offline_storage_used": {
+    "placeholders": {
+      "used": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "String"
+      }
+    }
+  },
+  "offline_unavailable": "Pazasietkavaja kopija niedastupnaja",
+  "@offline_unavailable": {},
+  "offline_video_only": "Kopii videa z Reddit mohuć nie źmiaščać huku.",
+  "@offline_video_only": {},
   "ok": "OK",
   "@ok": {},
   "only_show_posts_with_media": "Pakazvać toĺki tvity z miedyja",
@@ -3251,7 +3403,50 @@
   "@zen_mode_page_cap": {},
   "zen_mode_page_cap_description": "Kolki staronak zahružaje stužka ŭ dzen-režymie pierad paŭzaj.",
   "@zen_mode_page_cap_description": {},
-  "@ai_openrouter_key_hint": {},
-  "@ai_openrouter_model_hint": {},
-  "@ai_preset_openrouter": {}
+  "reader_link_posts": "Inšyja dopisy z hetaj spasylkaj: {count}",
+  "reader_connection_failed": "Pamylka złučennia",
+  "reader_sign_in_needed": "Uvajdzicie znoŭ, kab praciahnuć",
+  "reader_rate_limit_hint": "Hetaja krynica abmiažoŭvaje zapyty. Pasprabujcie paźniej.",
+  "reader_new_posts": "Novyja dopisy",
+  "reader_source_loading": "Hetaja krynica jašče zahružajecca. Inšyja dopisy ŭžo dastupnyja.",
+  "reader_cached_content": "Pakuĺ krynica abnaŭlajecca, pakazvajecca zachavanaja kopija.",
+  "reader_draft_restored": "Čarnavik adnoŭleny",
+  "reader_search_all": "Pošuk u biblijatecy",
+  "reader_highlight": "Vyłučyć i dadać natatku",
+  "reader_extract": "Raspaznać tekst sa zdymka ekrana",
+  "reader_extract_notice": "Vybranaja vyjava PNG abo JPEG budzie adpraŭlena na {host} z naładžanaj madellu ŠI. Raspaznany tekst moža źmiaščać pamyłki.",
+  "reader_more_like": "Boĺš padobnaha",
+  "reader_less_like": "Mienš padobnaha",
+  "reader_discovery_reason": "Prapanavana na padstavie pašyranych abo źviazanych dopisaŭ akaŭntaŭ hetaj hrupy.",
+  "reader_undo": "Admianić",
+  "@reader_link_posts": {
+    "description": "Expandable link stack: count of additional posts sharing the same article, excluding the visible anchor.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@reader_connection_failed": {},
+  "@reader_sign_in_needed": {},
+  "@reader_rate_limit_hint": {},
+  "@reader_new_posts": {},
+  "@reader_source_loading": {},
+  "@reader_cached_content": {},
+  "@reader_draft_restored": {},
+  "@reader_search_all": {},
+  "@reader_highlight": {},
+  "@reader_extract": {},
+  "@reader_extract_notice": {
+    "description": "Consent before sending a selected screenshot to the user-configured AI endpoint.",
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "@reader_more_like": {},
+  "@reader_less_like": {},
+  "@reader_discovery_reason": {},
+  "@reader_undo": {}
 }

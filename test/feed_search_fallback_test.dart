@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client.dart';
@@ -192,6 +194,24 @@ void main() {
   });
 
   group('fetchUserTimelines', () {
+    test('returns completed posts and stops starting requests when its budget expires', () async {
+      final stalled = Completer<List<TweetChain>>();
+      final started = <String>[];
+      final chains = await fetchUserTimelines(
+        users: [_user('ready'), _user('stalled'), _user('pending')],
+        concurrency: 1,
+        timeout: const Duration(milliseconds: 30),
+        getTweets: (user) async {
+          started.add(user.id);
+          return user.id == 'ready' ? [_chain('ready')] : stalled.future;
+        },
+      );
+      expect(chains.map((c) => c.id), ['ready']);
+      expect(started, ['ready', 'stalled']);
+      stalled.complete([_chain('too-late')]);
+      await Future<void>.delayed(Duration.zero);
+      expect(chains.map((c) => c.id), ['ready']);
+    });
     test('skips search subscriptions and surviving users still contribute', () async {
       final chains = await fetchUserTimelines(
         users: [_user('a'), _search('query'), _user('b')],

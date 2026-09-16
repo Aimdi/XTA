@@ -6,6 +6,7 @@ import 'package:xta/group/group_discovery_sources.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/utils/ai_client.dart';
+import 'support/memory_json_store.dart';
 
 DiscoveryAccount account(
   String id, {
@@ -92,6 +93,7 @@ void main() {
   test('source failure preserves candidates and normal discovery never uses AI', () async {
     var aiCalls = 0;
     final store = GroupDiscoveryStore(
+      storage: MemoryJsonStore(),
       chat: (_, _) async {
         aiCalls++;
         return '{"ids":["x:1"]}';
@@ -112,7 +114,7 @@ void main() {
   });
 
   test('unusable AI response keeps verified local candidates and reports fallback', () async {
-    final store = GroupDiscoveryStore(chat: (_, _) async => '{"ids":["fictional"]}');
+    final store = GroupDiscoveryStore(storage: MemoryJsonStore(), chat: (_, _) async => '{"ids":["fictional"]}');
     addTearDown(store.destroy);
     await store.load(
       sources: [
@@ -130,6 +132,7 @@ void main() {
   test('all-followed candidates never trigger the configured AI', () async {
     var calls = 0;
     final store = GroupDiscoveryStore(
+      storage: MemoryJsonStore(),
       chat: (_, _) async {
         calls++;
         return '';
@@ -150,7 +153,7 @@ void main() {
 
   test('following from a profile removes its cached discovery card without refetch', () async {
     var loads = 0;
-    final store = GroupDiscoveryStore();
+    final store = GroupDiscoveryStore(storage: MemoryJsonStore());
     addTearDown(store.destroy);
     await store.load(
       sources: [
@@ -183,6 +186,7 @@ void main() {
     final newer = Completer<List<DiscoveryAccount>>();
     var aiCalls = 0;
     final store = GroupDiscoveryStore(
+      storage: MemoryJsonStore(),
       chat: (_, _) async {
         aiCalls++;
         return '{"ids":["x:old"]}';
@@ -205,6 +209,7 @@ void main() {
     final reply = Completer<String>();
     final started = Completer<void>();
     final store = GroupDiscoveryStore(
+      storage: MemoryJsonStore(),
       chat: (_, _) {
         started.complete();
         return reply.future;
@@ -235,7 +240,7 @@ void main() {
 
   test('following during a source request excludes its eventual result', () async {
     final response = Completer<List<DiscoveryAccount>>();
-    final store = GroupDiscoveryStore();
+    final store = GroupDiscoveryStore(storage: MemoryJsonStore());
     addTearDown(store.destroy);
     final loading = store.load(sources: [() => response.future], followed: {}, groupName: 'Space');
     store.excludeFollowed({'x:followed'});
@@ -248,6 +253,7 @@ void main() {
     final response = Completer<List<DiscoveryAccount>>();
     var aiCalls = 0;
     final store = GroupDiscoveryStore(
+      storage: MemoryJsonStore(),
       chat: (_, _) async {
         aiCalls++;
         return '{"ids":["x:1"]}';
@@ -260,7 +266,7 @@ void main() {
     expect(aiCalls, 0);
   });
   testWidgets('a stalled source leaves loading and retains successful discoveries', (tester) async {
-    final store = GroupDiscoveryStore();
+    final store = GroupDiscoveryStore(storage: MemoryJsonStore());
     final loading = store.load(
       sources: [
         () => Completer<List<DiscoveryAccount>>().future,
@@ -269,6 +275,8 @@ void main() {
       followed: {},
       groupName: 'Space',
     );
+    // Let preference restoration finish before advancing source deadlines.
+    await tester.pump();
     await tester.pump(const Duration(seconds: 61));
     await loading;
     expect(store.isLoading, isFalse);
@@ -279,7 +287,7 @@ void main() {
 
   test('reporting a setup failure retires an older pending request', () async {
     final response = Completer<List<DiscoveryAccount>>();
-    final store = GroupDiscoveryStore();
+    final store = GroupDiscoveryStore(storage: MemoryJsonStore());
     addTearDown(store.destroy);
     final loading = store.load(sources: [() => response.future], followed: {}, groupName: 'Space');
     store.fail(StateError('Missing source'));

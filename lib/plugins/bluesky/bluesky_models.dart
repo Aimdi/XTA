@@ -76,6 +76,8 @@ class BlueskyPost {
   /// Handle of the parent author when this feed item is a reply.
   final String? replyToHandle;
   final bool isReply;
+  final String? replyToUri;
+  final List<String> labels;
 
   const BlueskyPost({
     required this.uri,
@@ -102,11 +104,17 @@ class BlueskyPost {
     this.linkCard,
     this.replyToHandle,
     this.isReply = false,
+    this.replyToUri,
+    this.labels = const [],
   });
 
   bool get hasMedia => images.isNotEmpty;
   String? get reposterActor => (repostedByDid?.isNotEmpty == true) ? repostedByDid : repostedByHandle;
   bool get isRepost => reposterActor?.isNotEmpty == true;
+  bool get sensitive => labels.any(const {
+    'porn', 'sexual', 'sexual-cartoon', 'nudity', 'graphic-media',
+    'sensitive', 'self-harm', 'gore', '!warn', '!hide',
+  }.contains);
   bool get hasQuote => quotedPost != null;
   bool get hasLinkCard => linkCard != null;
 
@@ -141,6 +149,8 @@ class BlueskyPost {
     'linkCard': linkCard?.toJson(),
     'replyToHandle': replyToHandle,
     'isReply': isReply,
+    'replyToUri': replyToUri,
+    'labels': labels,
   };
 
   factory BlueskyPost.fromSnapshot(Object? raw) {
@@ -190,6 +200,9 @@ class BlueskyPost {
       quotedPost: quoted == null || quoted.uri.isEmpty ? null : quoted,
       linkCard: linkCard == null || linkCard.url.isEmpty ? null : linkCard,
       replyToHandle: json['replyToHandle'] as String?,
+      replyToUri: Json(json)['replyToUri'].string,
+      labels: [for (final label in Json(json)['labels'].list)
+        if (label.string != null) label.string!],
       isReply:
           json['isReply'] as bool? ??
           ((json['replyToHandle'] as String?)?.isNotEmpty ?? false),
@@ -556,6 +569,7 @@ BlueskyPost? blueskyPostFromView(
   String? repostedByHandle,
   String? repostedByDid,
   String? replyToHandle,
+  String? replyToUri,
   bool allowEmpty = false,
   bool parseQuote = true,
 }) {
@@ -625,11 +639,21 @@ BlueskyPost? blueskyPostFromView(
     replyToHandle: (replyHandle != null && replyHandle.isNotEmpty)
         ? replyHandle
         : null,
+    replyToUri: replyFromRecord ?? replyToUri,
+    labels: blueskyLabelsOf(post, record),
     isReply:
         (replyHandle != null && replyHandle.isNotEmpty) ||
-        (replyFromRecord != null && replyFromRecord.isNotEmpty),
+        (replyFromRecord != null && replyFromRecord.isNotEmpty) ||
+        (replyToUri != null && replyToUri.isNotEmpty),
   );
 }
+
+/// AppView labels are already hydrated; ignore explicit negations.
+List<String> blueskyLabelsOf(Json post, Json record) => {
+  for (final label in [...post['labels'].list, ...post['author']['labels'].list, ...record['labels']['values'].list])
+    if (label['neg'].boolean != true && label['val'].string != null)
+      label['val'].string!,
+}.toList(growable: false);
 
 /// Turns one feed item's `post` (+ optional repost reason) into a [BlueskyPost].
 BlueskyPost? blueskyPostFromFeedItem(Object? item) {
@@ -696,12 +720,12 @@ BlueskyThread? parseBlueskyThread(Object? json) {
   }
 
   final replies = <BlueskyPost>[];
-  _collectReplies(thread['replies'], replies, depth: 0);
+  _collectReplies(thread['replies'], replies, depth: 0, parentUri: focal.uri);
 
   return BlueskyThread(post: focal, ancestors: ancestors, replies: replies);
 }
 
-BlueskyPost? _threadViewPost(Json node) {
+BlueskyPost? _threadViewPost(Json node, {String? parentUri}) {
   final type = node['\$type'].string ?? '';
   if (type.contains('notFoundPost') || type.contains('blockedPost')) {
     return null;
@@ -709,23 +733,24 @@ BlueskyPost? _threadViewPost(Json node) {
   if (!node['post'].exists) {
     return null;
   }
-  return blueskyPostFromView(node['post'].raw);
+  return blueskyPostFromView(node['post'].raw, replyToUri: parentUri);
 }
 
 void _collectReplies(
   Json replies,
   List<BlueskyPost> out, {
   required int depth,
+  required String parentUri,
 }) {
   if (depth > 12) {
     return;
   }
   for (final reply in replies.list) {
-    final post = _threadViewPost(reply);
+    final post = _threadViewPost(reply, parentUri: parentUri);
     if (post != null) {
       out.add(post);
     }
-    _collectReplies(reply['replies'], out, depth: depth + 1);
+    _collectReplies(reply['replies'], out, depth: depth + 1, parentUri: post?.uri ?? parentUri);
   }
 }
 

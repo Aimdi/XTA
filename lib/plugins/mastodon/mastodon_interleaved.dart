@@ -15,8 +15,7 @@ const int kMastodonInterleavedPageSize = 10;
 /// asked for: a reader who turned the plugin on wanted its tab, not a different
 /// Following feed.
 bool fediverseInHomeFeed(BasePrefService prefs) =>
-    prefs.get<bool>(optionPluginMastodonEnabled) == true &&
-    prefs.get<bool>(optionPluginMastodonInHomeFeed) == true;
+    prefs.get<bool>(optionPluginMastodonEnabled) == true && prefs.get<bool>(optionPluginMastodonInHomeFeed) == true;
 
 /// The accounts the home timeline should mix in — none unless the option is on.
 List<String> fediverseHomeIds(BuildContext context) {
@@ -24,18 +23,13 @@ List<String> fediverseHomeIds(BuildContext context) {
     return const [];
   }
 
-  return context
-      .read<MastodonAccountsStore>()
-      .state
-      .map((e) => e.acct)
-      .toList(growable: false);
+  return context.read<MastodonAccountsStore>().state.map((e) => e.acct).toList(growable: false);
 }
 
 /// One page of each account, as dated items a tweet list can slot between its
 /// chains.
 ///
-/// A failure returns nothing rather than throwing: one instance being down must
-/// not empty a timeline of everything else in it.
+/// Failures are handled per source by the progressive feed store.
 Future<List<InterleavedItem>> loadMastodonInterleaved(
   BuildContext context,
   List<String> accts, {
@@ -50,7 +44,7 @@ Future<List<InterleavedItem>> loadMastodonInterleaved(
     final posts = await store.postsFor(accts);
     return mastodonInterleavedItems(posts, limit: limit);
   } catch (_) {
-    return const [];
+    rethrow;
   }
 }
 
@@ -65,6 +59,19 @@ List<InterleavedItem> mastodonInterleavedItems(
       provenanceInterleavedItem(
         date: date,
         pluginId: pluginIdMastodon,
+        id: '$pluginIdMastodon:${post.url}',
+        linkUrl: post.linkCard?.url,
+        snapshot: post.sensitive || post.hasSpoiler
+            ? null
+            : {
+                'xtaPlugin': 'link',
+                'archiveId': 'mastodon:${post.url}', 'archiveUserId': post.acct,
+                'source': pluginIdMastodon,
+                'url': post.url,
+                'author': post.authorName,
+                'text': post.text,
+                'images': <String>[],
+              },
         build: (_) => MastodonPostCard(post: post, showSourceBadge: true),
       ),
 ];

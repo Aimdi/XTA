@@ -51,7 +51,7 @@ Future<List<InterleavedItem>> loadThreadsInterleaved(
     final posts = await store.postsFor(handles);
     return threadsInterleavedItems(posts, limit: limit);
   } catch (_) {
-    return const [];
+    rethrow;
   }
 }
 
@@ -65,6 +65,16 @@ List<InterleavedItem> threadsInterleavedItems(Iterable<ThreadsPost> posts, {int 
           provenanceInterleavedItem(
             date: date,
             pluginId: pluginIdThreads,
+            id: '$pluginIdThreads:${post.id}',
+            linkUrl: post.linkCard?.url,
+            snapshot: {
+                    'xtaPlugin': 'link',
+                    'source': pluginIdThreads,
+                    'url': post.url ?? '',
+                    'author': post.authorName,
+                    'text': post.text,
+                    'images': <String>[],
+                  },
             build: (_) => ThreadsPostCard(post: post, showSourceBadge: false),
           ),
     ];

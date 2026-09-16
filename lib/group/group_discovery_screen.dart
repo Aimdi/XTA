@@ -104,10 +104,20 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
         sources: groupDiscoverySources(context, widget.group.subscriptions),
         followed: currentDiscoveryFollowedIds(context, widget.group.subscriptions),
         groupName: widget.group.name,
+        groupId: widget.group.id,
         ai: useAi ? AiConfig.fromPrefs(PrefService.of(context, listen: false)) : null,
       );
     } catch (error) {
       if (mounted) _model.fail(error);
+    }
+  }
+
+  Future<void> _feedbackAction(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(L10n.of(context).oops_something_went_wrong)));
     }
   }
 
@@ -146,6 +156,22 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(l10n.group_discovery_description),
+                          if (_model.hasFeedback || _model.canUndo)
+                            Wrap(
+                              children: [
+                                if (_model.canUndo)
+                                  TextButton.icon(
+                                    icon: const Icon(Icons.undo),
+                                    label: Text(l10n.reader_undo),
+                                    onPressed: () => _feedbackAction(() => _model.resetFeedback(undo: true)),
+                                  ),
+                                TextButton.icon(
+                                  icon: const Icon(Icons.restart_alt),
+                                  label: Text(l10n.group_combine_clear),
+                                  onPressed: () => _feedbackAction(() => _model.resetFeedback()),
+                                ),
+                              ],
+                            ),
                           if (configured)
                             Padding(
                               padding: const EdgeInsets.only(top: 12),
@@ -166,7 +192,11 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
                         ],
                       ),
                     )
-                  : _DiscoveryCard(account: state.accounts[index - 1], onReturn: _afterProfile),
+                  : _DiscoveryCard(
+                      account: state.accounts[index - 1],
+                      onReturn: _afterProfile,
+                      onFeedback: (action) => _feedbackAction(() => _model.feedback(state.accounts[index - 1], action)),
+                    ),
             ),
           ),
         ),
@@ -178,7 +208,8 @@ class _GroupDiscoveryPaneState extends State<GroupDiscoveryPane> {
 class _DiscoveryCard extends StatelessWidget {
   final DiscoveryAccount account;
   final VoidCallback onReturn;
-  const _DiscoveryCard({required this.account, required this.onReturn});
+  final ValueChanged<int> onFeedback;
+  const _DiscoveryCard({required this.account, required this.onReturn, required this.onFeedback});
 
   Future<void> _open(BuildContext context) async {
     switch (account.source) {
@@ -218,6 +249,26 @@ class _DiscoveryCard extends StatelessWidget {
           subtitle: Text('$source · @${account.handle}', maxLines: 1, overflow: TextOverflow.ellipsis),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => _open(context),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(l10n.reader_discovery_reason, style: Theme.of(context).textTheme.bodySmall),
+        ),
+        Wrap(
+          spacing: 4,
+          children: [
+            TextButton.icon(
+              onPressed: () => onFeedback(1),
+              icon: const Icon(Icons.thumb_up_outlined),
+              label: Text(l10n.reader_more_like),
+            ),
+            TextButton.icon(
+              onPressed: () => onFeedback(-1),
+              icon: const Icon(Icons.thumb_down_outlined),
+              label: Text(l10n.reader_less_like),
+            ),
+            TextButton.icon(onPressed: () => onFeedback(0), icon: const Icon(Icons.close), label: Text(l10n.dismiss)),
+          ],
         ),
         switch (account.supportingPost) {
           TweetWithCard post => TweetTile(clickable: true, tweet: post),

@@ -11,6 +11,7 @@ L10N_DIR = Path("lib/l10n")
 DART_DIR = Path("lib")
 GENERATED_DIR = Path("lib/generated")
 REFERENCE = "intl_en.arb"
+DART_COMMAND = ["fvm", "dart"]
 
 
 def run(cmd):
@@ -28,8 +29,8 @@ def get_arb_files():
 def sort_and_fix(files):
     for f in files:
         print(f"  {f.name}")
-        run(["fvm", "dart", "run", "arb_utils", "sort", str(f)])
-        run(["fvm", "dart", "run", "arb_utils", "generate-meta", str(f)])
+        run([*DART_COMMAND, "run", "arb_utils", "sort", str(f)])
+        run([*DART_COMMAND, "run", "arb_utils", "generate-meta", str(f)])
 
 
 def content_keys(arb_path):
@@ -108,7 +109,12 @@ def clean_locales(files, ref_file):
 def main():
     parser = argparse.ArgumentParser(description="Manage ARB localization files.")
     parser.add_argument("--clean", action="store_true", help="Remove unused keys from the reference locale and extra keys from other locales.")
+    parser.add_argument("--dart", help="Dart executable when FVM is not installed")
+    parser.add_argument("--check-only", action="store_true", help="Report translation coverage without the Dart toolchain")
     args = parser.parse_args()
+    if args.dart:
+        global DART_COMMAND
+        DART_COMMAND = [args.dart]
 
     files = get_arb_files()
     ref = L10N_DIR / REFERENCE
@@ -121,7 +127,8 @@ def main():
         print()
 
     print("==> Sorting and fixing metadata...")
-    sort_and_fix(files)
+    if not args.check_only:
+        sort_and_fix(files)
 
     print("\n==> Missing keys report...")
     report_missing(files)

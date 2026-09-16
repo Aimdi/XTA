@@ -30,19 +30,18 @@ const _urlAttributes = {
 /// this is not hypothetical — and the reader screen renders the result in a
 /// real web view.
 ///
-/// The article itself is loaded with JavaScript switched off, which is the
-/// actual defence; this is the second lock on the same door, and it also keeps
-/// the text clean for anything else that reads it.
+/// The reader injects its own progress and speech helpers after sanitizing;
+/// executable article markup must never survive into that document.
 void _stripExecutable(Element element) {
   // Keyed by `Object`, because a namespaced attribute is an `AttributeName`
   // rather than a string — so the key has to be carried through to the removal
   // instead of the name it prints as.
   for (final key in element.attributes.keys.toList()) {
-    final name = '$key'.toLowerCase();
+    final name = '$key'.toLowerCase().split(':').last;
 
-    if (name.startsWith('on') ||
+    if (name.startsWith('on') || name == 'srcdoc' ||
         (_urlAttributes.contains(name) &&
-            _executableUrl.hasMatch(element.attributes[key] ?? ''))) {
+            _executableUrl.hasMatch((element.attributes[key] ?? '').replaceAll(RegExp(r'[\u0000-\u0020]'), '')))) {
       element.attributes.remove(key);
     }
   }
@@ -56,6 +55,12 @@ String sanitizeSubstackBodyHtml(String raw) {
     [
       'script',
       'style',
+      'meta',
+      'link',
+      'base',
+      'object',
+      'embed',
+      'math',
       'button',
       'svg',
       'noscript',

@@ -1,3 +1,4 @@
+import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,10 @@ Future<void> showMastodonPostActions(BuildContext context, MastodonPost post) =>
   context,
   post: PluginPostArchive(id: mastodonArchiveId(post), userId: post.acct, content: mastodonArchiveBlob(post)),
   url: post.url,
+  onGroup: () => addMastodonAccountToGroup(
+    context,
+    MastodonAccount(acct: post.acct, name: post.authorName, avatarUrl: post.avatarUrl),
+  ),
   onReposts: () => openMastodonReposts(context, post),
   onQuotes: () => openMastodonQuotes(context, post),
 );

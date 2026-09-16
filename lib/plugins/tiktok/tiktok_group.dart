@@ -29,7 +29,7 @@ Future<List<InterleavedItem>> loadTikTokGroupPosts(BuildContext context, List<St
     try {
       final page = await client.creatorItems(secUid: follow.secUid);
       for (final post in page.posts) {
-        items.add((date: post.createdAt, build: (_) => TikTokPostCard(post: post)));
+        items.add(InterleavedItem(date: post.createdAt, build: (_) => TikTokPostCard(post: post)));
       }
     } catch (_) {
       // Preserve other accounts when one private/deleted profile cannot be read.

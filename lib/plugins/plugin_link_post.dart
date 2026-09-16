@@ -9,12 +9,16 @@ import 'package:xta/utils/urls.dart';
 /// A small local reading snapshot for sources without a native archive model.
 class PluginLinkPost {
   final String source;
+  final String? archiveId;
+  final String? archiveUserId;
   final String url;
   final String author;
   final String text;
   final List<String> images;
   const PluginLinkPost({
     required this.source,
+    this.archiveId,
+    this.archiveUserId,
     required this.url,
     required this.author,
     required this.text,
@@ -22,9 +26,9 @@ class PluginLinkPost {
   });
 
   PluginPostArchive get archive => PluginPostArchive(
-    id: '$source:$url',
-    userId: author,
-    content: {'xtaPlugin': 'link', 'source': source, 'url': url, 'author': author, 'text': text, 'images': images},
+    id: archiveId ?? '$source:$url',
+    userId: archiveUserId ?? author,
+    content: {'archiveId': archiveId, 'archiveUserId': archiveUserId, 'xtaPlugin': 'link', 'source': source, 'url': url, 'author': author, 'text': text, 'images': images},
   );
 
   String get haystack => '$source\n$author\n$text\n$url'.toLowerCase();
@@ -40,6 +44,8 @@ class PluginLinkPost {
       return null;
     return PluginLinkPost(
       source: json['source'].string ?? '',
+      archiveId: json['archiveId'].string,
+      archiveUserId: json['archiveUserId'].string,
       url: url,
       author: json['author'].string ?? '',
       text: json['text'].string ?? '',
@@ -58,10 +64,12 @@ Future<void> showPluginLinkPostActions(
   required String author,
   required String text,
   List<String> images = const [],
+  VoidCallback? onGroup,
 }) => showPluginPostActions(
   context,
   post: PluginLinkPost(source: source, url: url, author: author, text: text, images: images).archive,
   url: url,
+  onGroup: onGroup,
 );
 
 class PluginLinkPostCard extends StatelessWidget {
