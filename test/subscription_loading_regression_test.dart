@@ -19,7 +19,7 @@ class _StallingSubscriptions extends SubscriptionsModel {
   _StallingSubscriptions(super.prefs, super.groupModel);
 
   @override
-  Duration get snapshotTimeout => const Duration(milliseconds: 100);
+  Duration get snapshotTimeout => const Duration(seconds: 1);
 
   @override
   Future<List<Subscription>> readSnapshot(Future<List<Subscription>> Function() read) {
@@ -35,7 +35,7 @@ class _StallingGroups extends GroupsModel {
   _StallingGroups(super.prefs);
 
   @override
-  Duration get snapshotTimeout => const Duration(milliseconds: 100);
+  Duration get snapshotTimeout => const Duration(seconds: 1);
 
   @override
   Future<List<SubscriptionGroup>> readSnapshot(Future<List<SubscriptionGroup>> Function() read) {
