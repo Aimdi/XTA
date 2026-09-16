@@ -104,6 +104,8 @@ class CursorPagingController<C, T> {
 
   Future<V> waitForRead<V>(Future<V> source) => _controller.reads.run(source, timeout: requestTimeout);
 
+  Future<V> startRead<V>(Future<V> Function() source) => _controller.reads.start(source, timeout: requestTimeout);
+
   Future<List<T>> _fetchPage(int pageKey) async {
     final generation = this.generation;
     if (pageKey == 0) {
@@ -112,7 +114,7 @@ class CursorPagingController<C, T> {
     }
     try {
       final cursor = pageKey == 0 ? null : _nextCursor;
-      final page = await waitForRead(_fetch(cursor));
+      final page = await startRead(() => _fetch(cursor));
       if (generation == this.generation) _setNextCursor(page.nextCursor);
       return page.items;
     } catch (e, stackTrace) {
@@ -137,6 +139,17 @@ class CursorPagingController<C, T> {
       hasNextPage: nextCursor != null,
       error: null,
     );
+  }
+
+  /// Repair a partially loaded first page without dropping older pages or their cursor.
+  void mergeFirstPage(List<T> items, C? nextCursor) {
+    cancel();
+    final state = pagingController.value;
+    if ((state.pages?.length ?? 0) <= 1) {
+      replaceFirstPage(items, nextCursor);
+      return;
+    }
+    pagingController.value = state.copyWith(pages: [items, ...state.pages!.skip(1)], error: null, isLoading: false);
   }
 
   /// Surfaces an error while keeping any already-loaded items visible.

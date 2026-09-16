@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Batch diperiksa: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Sorotan, tag, dan catatan artikel",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Perubahan disimpan",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Tidak dapat mengurungkan. Data mungkin telah berubah.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Operasi pembacaan terbaru",
+  "@reader_recent_reads": {}
 }

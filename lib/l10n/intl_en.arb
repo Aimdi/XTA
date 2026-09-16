@@ -3587,5 +3587,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Batches checked: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Article highlights, tags and notes",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Changes saved",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Could not undo. The data may have changed.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Recent read operations",
+  "@reader_recent_reads": {}
 }

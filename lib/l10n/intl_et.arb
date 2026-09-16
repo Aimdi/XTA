@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Kontrollitud pakette: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Artiklite esiletõsted, sildid ja märkmed",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Muudatused salvestatud",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Tagasivõtmine ebaõnnestus. Andmed võivad olla muutunud.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Hiljutised lugemistoimingud",
+  "@reader_recent_reads": {}
 }

@@ -7,6 +7,7 @@ import 'package:xta/settings/backup_data.dart';
 /// while these names stay put, so a rename has to be a deliberate edit to this
 /// list and not a side effect of moving code around.
 const _keys = {
+  'archiveAnnotations',
   'formatVersion',
   'exportedAt',
   'appVersion',
@@ -46,10 +47,7 @@ const _keys = {
 void main() {
   group('the backup file format', () {
     test('writes exactly the keys older builds read', () {
-      final json = SettingsData(
-        exportedAt: DateTime.utc(2026),
-        appVersion: 'test',
-      ).toJson();
+      final json = SettingsData(exportedAt: DateTime.utc(2026), appVersion: 'test').toJson();
 
       expect(json.keys.toSet(), _keys);
     });
@@ -62,10 +60,7 @@ void main() {
     });
 
     test('a header-less file is read as the legacy version', () {
-      expect(
-        SettingsData.fromJson({}).formatVersion,
-        legacyBackupFormatVersion,
-      );
+      expect(SettingsData.fromJson({}).formatVersion, legacyBackupFormatVersion);
     });
 
     test('an empty section is not the same as a missing one', () {

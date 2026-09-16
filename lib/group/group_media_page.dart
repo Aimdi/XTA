@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:xta/utils/read_request_scope.dart';
 
 import 'package:xta/client/client.dart';
 import 'package:xta/profile/media_grid/media_grid_items/media_grid_item.dart';
@@ -19,13 +20,18 @@ const String groupMediaPreviewContinueCursor = 'preview-continue';
 class SharedAsyncLoad<T> {
   Future<T>? _inFlight;
   final Duration timeout;
+  final _reads = ReadRequestScope();
+  void cancel() {
+    _reads.cancel();
+    _inFlight = null;
+  }
 
   SharedAsyncLoad({this.timeout = const Duration(minutes: 2)});
 
   Future<T> load(Future<T> Function() fetch) {
     final current = _inFlight;
     if (current != null) return current;
-    final request = Future.sync(fetch).timeout(timeout);
+    final request = _reads.start(fetch, timeout: timeout);
     _inFlight = request;
     // Only the bounded future owns the slot; a late source cannot clear a retry.
     unawaited(

@@ -25,10 +25,12 @@ class MainActivity : AudioServiceActivity() {
     // Set while the document-tree picker is open, so its result can be handed
     // back to the Dart call that opened it.
     private var pendingDirectoryResult: MethodChannel.Result? = null
+    private var networkStateChannel: NetworkStateChannel? = null
     private var sharedTextChannel: SharedTextChannel? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        networkStateChannel = NetworkStateChannel(this, flutterEngine.dartExecutor.binaryMessenger)
         sharedTextChannel = SharedTextChannel(flutterEngine.dartExecutor.binaryMessenger)
             .also { it.receive(intent) }
 
@@ -58,6 +60,8 @@ class MainActivity : AudioServiceActivity() {
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        networkStateChannel?.dispose()
+        networkStateChannel = null
         sharedTextChannel?.dispose()
         sharedTextChannel = null
         super.cleanUpFlutterEngine(flutterEngine)

@@ -3445,5 +3445,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Lô đã kiểm tra: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Đoạn đánh dấu, thẻ và ghi chú của bài viết",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Đã lưu thay đổi",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Không thể hoàn tác. Dữ liệu có thể đã thay đổi.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Các thao tác đọc gần đây",
+  "@reader_recent_reads": {}
 }

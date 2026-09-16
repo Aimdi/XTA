@@ -1,3 +1,4 @@
+import 'package:xta/utils/local_undo.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -37,14 +38,9 @@ IconData deserializeIconData(String iconData) {
 /// `group_tree.dart`. A group that stands on its own maps to null.
 Future<Map<String, String?>> readGroupParents(DatabaseExecutor database) async {
   try {
-    final rows = await database.query(
-      tableSubscriptionGroup,
-      columns: ['id', 'parent_id'],
-    );
+    final rows = await database.query(tableSubscriptionGroup, columns: ['id', 'parent_id']);
 
-    return {
-      for (final row in rows) row['id'] as String: row['parent_id'] as String?,
-    };
+    return {for (final row in rows) row['id'] as String: row['parent_id'] as String?};
   } catch (e) {
     // The column is added by a migration that is allowed to fail on a damaged
     // database. Without it nothing nests, which is the old behaviour — far
@@ -91,11 +87,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
   Future<SubscriptionGroupGet> _readGroup() async {
     var database = await Repository.readOnly();
 
-    var group = (await database.query(
-      tableSubscriptionGroup,
-      where: 'id = ?',
-      whereArgs: [id],
-    )).first;
+    var group = (await database.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: [id])).first;
 
     if (id == '-1') {
       var subscriptions = (await database.query(
@@ -115,9 +107,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
             group['content_filter'] as String? ?? contentFilterDefault,
         minLikes: (group['min_likes'] as int?) ?? 0,
         minRetweets: (group['min_retweets'] as int?) ?? 0,
-        mutedKeywords: parseMutedKeywordsStored(
-          group['muted_keywords'] as String?,
-        ),
+        mutedKeywords: parseMutedKeywordsStored(group['muted_keywords'] as String?),
       );
     }
 
@@ -144,7 +134,6 @@ class GroupModel extends Store<SubscriptionGroupGet> {
     final rows = await Future.wait([
       database.rawQuery(membership(tableSearchSubscription), ids),
       database.rawQuery(membership(tableSubscription), ids),
-
     ]);
 
     final memberIds = (await database.query(
@@ -175,9 +164,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
       contentFilter: group['content_filter'] as String? ?? contentFilterDefault,
       minLikes: (group['min_likes'] as int?) ?? 0,
       minRetweets: (group['min_retweets'] as int?) ?? 0,
-      mutedKeywords: parseMutedKeywordsStored(
-        group['muted_keywords'] as String?,
-      ),
+      mutedKeywords: parseMutedKeywordsStored(group['muted_keywords'] as String?),
     );
   }
 
@@ -188,20 +175,20 @@ class GroupModel extends Store<SubscriptionGroupGet> {
 
   Future<void> toggleSubscriptionGroupIncludeReplies(bool? value) async {
     await execute(() async {
-      (await Repository.writable()).rawUpdate(
-        'UPDATE $tableSubscriptionGroup SET include_replies = ? WHERE id = ?',
-        [value, state.id],
-      );
+      (await Repository.writable()).rawUpdate('UPDATE $tableSubscriptionGroup SET include_replies = ? WHERE id = ?', [
+        value,
+        state.id,
+      ]);
       return state.copyWith(includeReplies: value);
     });
   }
 
   Future<void> toggleSubscriptionGroupIncludeRetweets(bool? value) async {
     await execute(() async {
-      (await Repository.writable()).rawUpdate(
-        'UPDATE $tableSubscriptionGroup SET include_retweets = ? WHERE id = ?',
-        [value, state.id],
-      );
+      (await Repository.writable()).rawUpdate('UPDATE $tableSubscriptionGroup SET include_retweets = ? WHERE id = ?', [
+        value,
+        state.id,
+      ]);
       return state.copyWith(includeRetweets: value);
     });
   }
@@ -237,32 +224,22 @@ class GroupModel extends Store<SubscriptionGroupGet> {
     update(state.copyWith(minRetweets: value < 0 ? 0 : value));
   }
 
-  Future<void> setSubscriptionGroupMutedKeywords(
-    List<MutedKeyword> keywords,
-  ) async {
-    await _updateCustomRule(
-      'muted_keywords',
-      keywords.isEmpty ? null : encodeMutedKeywordsStored(keywords),
-    );
+  Future<void> setSubscriptionGroupMutedKeywords(List<MutedKeyword> keywords) async {
+    await _updateCustomRule('muted_keywords', keywords.isEmpty ? null : encodeMutedKeywordsStored(keywords));
     update(state.copyWith(mutedKeywords: keywords));
   }
 
   Future<void> _updateCustomRule(String column, Object? value) async {
     final database = await Repository.writable();
-    await database.update(
-      tableSubscriptionGroup,
-      {column: value},
-      where: 'id = ?',
-      whereArgs: [state.id],
-    );
+    await database.update(tableSubscriptionGroup, {column: value}, where: 'id = ?', whereArgs: [state.id]);
   }
 
   Future<void> setSubscriptionGroupContentFilter(String value) async {
     await execute(() async {
-      (await Repository.writable()).rawUpdate(
-        'UPDATE $tableSubscriptionGroup SET content_filter = ? WHERE id = ?',
-        [value, state.id],
-      );
+      (await Repository.writable()).rawUpdate('UPDATE $tableSubscriptionGroup SET content_filter = ? WHERE id = ?', [
+        value,
+        state.id,
+      ]);
       return state.copyWith(contentFilter: value);
     });
   }
@@ -294,16 +271,8 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     await executeQueued(() async {
       var database = await Repository.writable();
 
-      await database.delete(
-        tableSubscriptionGroupMember,
-        where: 'group_id = ?',
-        whereArgs: [id],
-      );
-      await database.delete(
-        tableSubscriptionGroup,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      await database.delete(tableSubscriptionGroupMember, where: 'group_id = ?', whereArgs: [id]);
+      await database.delete(tableSubscriptionGroup, where: 'id = ?', whereArgs: [id]);
 
       return state.where((e) => e.id != id).toList();
     });
@@ -359,9 +328,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
   /// window functions need SQLite >= 3.25, and this app's minSdk 24 reaches
   /// Android 7 devices whose bundled SQLite predates that. The per-group cut is
   /// therefore taken in Dart.
-  Future<Map<String, List<GroupMemberPreview>>> _loadMemberPreviews(
-    DatabaseExecutor database,
-  ) async {
+  Future<Map<String, List<GroupMemberPreview>>> _loadMemberPreviews(DatabaseExecutor database) async {
     final previews = <String, List<GroupMemberPreview>>{};
 
     void add(String groupId, GroupMemberPreview preview) {
@@ -417,9 +384,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     final database = await Repository.writable();
     final column = replies ? 'include_replies' : 'include_retweets';
 
-    await database.rawUpdate(
-      'UPDATE $tableSubscriptionGroup SET $column = NULL',
-    );
+    await database.rawUpdate('UPDATE $tableSubscriptionGroup SET $column = NULL');
     await reloadGroups();
   }
 
@@ -437,22 +402,14 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     );
 
     final row = rows.isEmpty ? const <String, Object?>{} : rows.first;
-    return (
-      replies: (row['replies'] as int?) ?? 0,
-      retweets: (row['retweets'] as int?) ?? 0,
-    );
+    return (replies: (row['replies'] as int?) ?? 0, retweets: (row['retweets'] as int?) ?? 0);
   }
 
   Future<List<SubscriptionGroupMember>> listGroupMembers() async {
     var database = await Repository.readOnly();
 
     return (await database.query(tableSubscriptionGroupMember))
-        .map(
-          (e) => SubscriptionGroupMember(
-            group: e['group_id'] as String,
-            profile: e['profile_id'] as String,
-          ),
-        )
+        .map((e) => SubscriptionGroupMember(group: e['group_id'] as String, profile: e['profile_id'] as String))
         .toList(growable: false);
   }
 
@@ -478,10 +435,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     return placed;
   }
 
-  Future<int> _insertSuggestedGroups(
-    Database database,
-    List<SuggestedGroup> groups,
-  ) async {
+  Future<int> _insertSuggestedGroups(Database database, List<SuggestedGroup> groups) async {
     var placed = 0;
     for (final group in groups) {
       if (group.accountIds.length < 2) continue;
@@ -496,10 +450,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
       });
       final batch = database.batch();
       for (final profile in group.accountIds) {
-        batch.insert(tableSubscriptionGroupMember, {
-          'group_id': id,
-          'profile_id': profile,
-        });
+        batch.insert(tableSubscriptionGroupMember, {'group_id': id, 'profile_id': profile});
         placed++;
       }
       await batch.commit(noResult: true);
@@ -507,17 +458,11 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     return placed;
   }
 
-  Future<int> _insertAssignments(
-    Database database,
-    List<GroupAssignment> assign,
-  ) async {
+  Future<int> _insertAssignments(Database database, List<GroupAssignment> assign) async {
     if (assign.isEmpty) return 0;
     final batch = database.batch();
     for (final row in assign) {
-      batch.insert(tableSubscriptionGroupMember, {
-        'group_id': row.groupId,
-        'profile_id': row.accountId,
-      });
+      batch.insert(tableSubscriptionGroupMember, {'group_id': row.groupId, 'profile_id': row.accountId});
     }
     await batch.commit(noResult: true);
     return assign.length;
@@ -526,24 +471,20 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
   Future saveUserGroupMembership(String user, List<String> memberships) async {
     var database = await Repository.writable();
 
-    var batch = database.batch();
-
-    // First, clear all the memberships for the user
-    batch.delete(
-      tableSubscriptionGroupMember,
-      where: 'profile_id = ?',
-      whereArgs: [user],
+    UndoStore.shared.offer(
+      await changeWithUndo(
+        database,
+        [
+          UndoSlice(tableSubscriptionGroupMember, 'profile_id = ?', [user]),
+        ],
+        (txn) async {
+          await txn.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [user]);
+          for (final group in memberships.toSet()) {
+            await txn.insert(tableSubscriptionGroupMember, {'group_id': group, 'profile_id': user});
+          }
+        },
+      ),
     );
-
-    // Then add all the new memberships
-    for (var group in memberships) {
-      batch.insert(tableSubscriptionGroupMember, {
-        'group_id': group,
-        'profile_id': user,
-      });
-    }
-
-    await batch.commit();
     await reloadGroups();
   }
 
@@ -562,11 +503,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
       );
     }
 
-    var group = await database.query(
-      tableSubscriptionGroup,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    var group = await database.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: [id]);
     if (group.isEmpty) {
       return SubscriptionGroupEdit(
         id: null,
@@ -635,15 +572,20 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
         );
       }
 
-      // Then clear out any existing subscriptions for the group and add our new set
-      await database.delete(tableSubscriptionGroupMember, where: 'group_id = ?', whereArgs: [id]);
-
-      var batch = database.batch();
-      for (var subscription in subscriptions) {
-        batch.insert(tableSubscriptionGroupMember, {'group_id': id, 'profile_id': subscription});
-      }
-
-      await batch.commit(noResult: true);
+      UndoStore.shared.offer(
+        await changeWithUndo(
+          database,
+          [
+            UndoSlice(tableSubscriptionGroupMember, 'group_id = ?', [id]),
+          ],
+          (txn) async {
+            await txn.delete(tableSubscriptionGroupMember, where: 'group_id = ?', whereArgs: [id]);
+            for (final subscription in subscriptions) {
+              await txn.insert(tableSubscriptionGroupMember, {'group_id': id, 'profile_id': subscription});
+            }
+          },
+        ),
+      );
       return readSnapshot(_readGroups);
     });
     if (succeeded) _notifyReload();
@@ -651,23 +593,13 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
 
   Future<void> toggleGroupPinned(String id, bool pinned) async {
     var database = await Repository.writable();
-    await database.update(
-      tableSubscriptionGroup,
-      {'pinned': pinned ? 1 : 0},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await database.update(tableSubscriptionGroup, {'pinned': pinned ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
     await reloadGroups(notifyReload: false);
   }
 
   Future<void> toggleGroupNsfw(String id, bool nsfw) async {
     var database = await Repository.writable();
-    await database.update(
-      tableSubscriptionGroup,
-      {'nsfw': nsfw ? 1 : 0},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await database.update(tableSubscriptionGroup, {'nsfw': nsfw ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
     await reloadGroups(notifyReload: false);
   }
 
@@ -686,12 +618,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
       }
     }
 
-    await database.update(
-      tableSubscriptionGroup,
-      {'parent_id': parentId},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await database.update(tableSubscriptionGroup, {'parent_id': parentId}, where: 'id = ?', whereArgs: [id]);
     await reloadGroups();
     return true;
   }
@@ -701,12 +628,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
     var database = await Repository.writable();
     var batch = database.batch();
     for (var (i, id) in ids.indexed) {
-      batch.update(
-        tableSubscriptionGroup,
-        {'position': i},
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      batch.update(tableSubscriptionGroup, {'position': i}, where: 'id = ?', whereArgs: [id]);
     }
     await batch.commit(noResult: true);
     await reloadGroups(notifyReload: false);
@@ -721,16 +643,8 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
       'SELECT ?, profile_id FROM $tableSubscriptionGroupMember WHERE group_id = ?',
       [targetId, sourceId],
     );
-    await database.delete(
-      tableSubscriptionGroupMember,
-      where: 'group_id = ?',
-      whereArgs: [sourceId],
-    );
-    await database.delete(
-      tableSubscriptionGroup,
-      where: 'id = ?',
-      whereArgs: [sourceId],
-    );
+    await database.delete(tableSubscriptionGroupMember, where: 'group_id = ?', whereArgs: [sourceId]);
+    await database.delete(tableSubscriptionGroup, where: 'id = ?', whereArgs: [sourceId]);
     await reloadGroups();
   }
 
@@ -740,10 +654,7 @@ class GroupsModel extends Store<List<SubscriptionGroup>> with QueuedStore<List<S
   }
 
   void toggleOrderSubscriptionGroupsAscending() async {
-    await prefs.set(
-      optionSubscriptionGroupsOrderByAscending,
-      !orderGroupsAscending,
-    );
+    await prefs.set(optionSubscriptionGroupsOrderByAscending, !orderGroupsAscending);
     await reloadGroups(notifyReload: false);
   }
 }

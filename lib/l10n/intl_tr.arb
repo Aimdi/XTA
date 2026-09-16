@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Kontrol edilen gruplar: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Makale vurguları, etiketleri ve notları",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Değişiklikler kaydedildi",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Geri alınamadı. Veriler değişmiş olabilir.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Son okuma işlemleri",
+  "@reader_recent_reads": {}
 }

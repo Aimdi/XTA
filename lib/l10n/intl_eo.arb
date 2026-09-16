@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Kontrolitaj aroj: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Emfazoj, etikedoj kaj notoj de artikoloj",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Ŝanĝoj konservitaj",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Ne eblis malfari. La datumoj eble ŝanĝiĝis.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Lastatempaj legoperacioj",
+  "@reader_recent_reads": {}
 }

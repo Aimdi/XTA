@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Lots comprovats: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Fragments ressaltats, etiquetes i notes dels articles",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Canvis desats",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "No s’ha pogut desfer. Pot ser que les dades hagin canviat.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Operacions de lectura recents",
+  "@reader_recent_reads": {}
 }

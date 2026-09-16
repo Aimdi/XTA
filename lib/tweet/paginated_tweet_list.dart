@@ -1,3 +1,4 @@
+import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/utils/reader_value_store.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/ui/reader_failure.dart';
@@ -188,7 +189,7 @@ class TweetFeedController {
     final pagingGeneration = _paging.generation;
     bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
     try {
-      final result = await _paging.waitForRead(_loader!(null));
+      final result = await _paging.startRead(() => _loader!(null));
       if (!current()) return;
       final next = result.nextCursor;
       final isLast = _isLastPage(result.chains, next, null);
@@ -198,6 +199,23 @@ class TweetFeedController {
       _paging.replaceFirstPage(page.items, page.nextCursor);
     } catch (e, stackTrace) {
       if (current()) _paging.setError(e, stackTrace);
+    }
+  }
+
+  Future<void> repairFirstPage() async {
+    final generation = ++_loadGeneration;
+    _paging.cancel();
+    final pagingGeneration = _paging.generation;
+    bool current() => !_disposed && generation == _loadGeneration && pagingGeneration == _paging.generation;
+    try {
+      final result = await _paging.startRead(() => _loader!(null));
+      if (!current()) return;
+      final existing = controller.value.pages?.firstOrNull ?? const <TweetChain>[];
+      final seen = (items ?? const <TweetChain>[]).map((e) => e.id).toSet();
+      final merged = [...existing, ...result.chains.where((e) => seen.add(e.id))];
+      _paging.mergeFirstPage(merged, _pausedBy == null ? result.nextCursor : null);
+    } catch (error, stack) {
+      if (current()) _paging.setError(error, stack);
     }
   }
 
@@ -611,6 +629,12 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   }
 
   Widget _wrapWithRefresh(Widget child) {
+    child = ReadRecovery(
+      recoverableFailure: () =>
+          recoverableReadFailure(pagingErrorOf(_controller.value)?.error ?? _controller.value.error),
+      retry: () => _controller.fetchNextPage(),
+      child: child,
+    );
     if (widget.onRefresh == null) return child;
     return RefreshIndicator(key: _refreshKey, onRefresh: _onRefreshTriggered, child: child);
   }

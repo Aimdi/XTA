@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Zkontrolované dávky: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Zvýraznění, štítky a poznámky k článkům",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Změny uloženy",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Akci nelze vrátit zpět. Data se mohla změnit.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Nedávné operace čtení",
+  "@reader_recent_reads": {}
 }

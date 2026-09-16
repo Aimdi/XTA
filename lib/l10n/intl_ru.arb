@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Проверено пакетов: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Выделения, теги и заметки к статьям",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Изменения сохранены",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Не удалось отменить. Возможно, данные изменились.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Последние операции чтения",
+  "@reader_recent_reads": {}
 }

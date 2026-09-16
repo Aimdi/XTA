@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:xta/utils/read_activity.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/user.dart';
@@ -45,13 +46,15 @@ class ProfileModel extends Store<Profile> {
     if (state.user.idStr == null) setLoading(true);
     try {
       // A pending sidecar write must not prevent the network deadline starting.
-      final cached = await _reads.run(_read(key), timeout: const Duration(seconds: 1)).catchError((Object _) => null);
+      final cached = await _reads
+          .start(() => _read(key), timeout: const Duration(seconds: 1), operation: ReadOperation.cache)
+          .catchError((Object _) => null);
       if (!current()) return;
       if (cached != null) {
         update(cached.status(refreshing: true, cachedAt: cached.cachedAt), force: true);
         setLoading(false);
       }
-      final profile = await _reads.run(fetch(), timeout: const Duration(seconds: 30));
+      final profile = await _reads.start(fetch, timeout: const Duration(seconds: 30), operation: ReadOperation.profile);
       if (!current()) return;
       update(profile, force: true);
       unawaited(_remember(profile));

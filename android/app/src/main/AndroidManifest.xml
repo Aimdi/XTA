@@ -30,6 +30,7 @@
          FlutterApplication and put your custom class here. -->
     <!-- Backups are disabled so the database holding X session tokens can
          never leave the device via adb or cloud backups -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:name="com.aimdi.xta.XtaApplication"
         android:icon="@mipmap/ic_launcher"

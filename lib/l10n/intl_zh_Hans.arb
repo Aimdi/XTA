@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "已检查批次：{done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "文章高亮、标签和笔记",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "更改已保存",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "无法撤销。数据可能已更改。",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "最近的读取操作",
+  "@reader_recent_reads": {}
 }

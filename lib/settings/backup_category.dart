@@ -6,6 +6,7 @@
 library;
 
 enum BackupCategory {
+  archiveAnnotations,
   settings,
   subscriptions,
   substack,

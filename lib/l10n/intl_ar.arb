@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "الدفعات المفحوصة: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "تمييزات المقالات ووسومها وملاحظاتها",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "تم حفظ التغييرات",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "تعذّر التراجع. ربما تغيّرت البيانات.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "عمليات القراءة الأخيرة",
+  "@reader_recent_reads": {}
 }

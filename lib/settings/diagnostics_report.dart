@@ -57,6 +57,7 @@ class DiagnosticsReport {
   final bool registryEnabled;
   final DateTime? registryFetchedAt;
   final DateTime generatedAt;
+  final List<String> operations;
 
   const DiagnosticsReport({
     required this.appVersion,
@@ -65,6 +66,7 @@ class DiagnosticsReport {
     required this.registryEnabled,
     required this.registryFetchedAt,
     required this.generatedAt,
+    this.operations = const [],
   });
 
   static final empty = DiagnosticsReport(
@@ -118,6 +120,7 @@ class DiagnosticsReport {
       );
     }
 
+    lines.addAll(['', 'recent reads (local timing, no request content):', ...operations]);
     return lines.join('\n');
   }
 }

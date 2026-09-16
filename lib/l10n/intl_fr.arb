@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "Lots vérifiés : {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "Surlignages, étiquettes et notes des articles",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "Modifications enregistrées",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "Impossible d’annuler. Les données ont peut-être changé.",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "Opérations de lecture récentes",
+  "@reader_recent_reads": {}
 }

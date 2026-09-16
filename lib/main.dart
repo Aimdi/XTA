@@ -1,3 +1,4 @@
+import 'package:xta/ui/undo_host.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -1331,7 +1332,7 @@ class _FritterAppState extends State<FritterApp> {
                   // Reading aloud outlives the article it started in, so the
                   // way to stop it has to be reachable from wherever the reader
                   // has gone. Nothing is added while nothing is being read.
-                  return SpeechBarScaffold(child: child ?? Container());
+                  return UndoHost(child: SpeechBarScaffold(child: child ?? Container()));
                 },
               ),
             ),

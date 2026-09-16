@@ -1,3 +1,4 @@
+import 'package:xta/settings/annotation_backup.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -148,6 +149,7 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
     var subscriptions = subscriptionsModel.state;
 
     return SettingsData(
+      archiveAnnotations: _exportTweets ? await collectAnnotations() : null,
       exportedAt: DateTime.now(),
       appVersion: await appVersionLabel(),
       settings: preferencesForExport(
@@ -193,18 +195,13 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
     var fileName = 'xta-${dateFormat.format(DateTime.now())}.json';
 
     var path = await FlutterFileDialog.saveFile(
-      params: SaveFileDialogParams(
-        fileName: fileName,
-        data: Uint8List.fromList(utf8.encode(exportData)),
-      ),
+      params: SaveFileDialogParams(fileName: fileName, data: Uint8List.fromList(utf8.encode(exportData))),
     );
 
     if (path != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(L10n.of(context).data_exported_to_fileName(fileName)),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(L10n.of(context).data_exported_to_fileName(fileName))));
     }
   }
 
@@ -214,10 +211,7 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
       title: L10n.of(context).export,
       floatingActionButton: noExportOptionSelected()
           ? null
-          : FloatingActionButton(
-              onPressed: _export,
-              child: const Icon(Icons.save),
-            ),
+          : FloatingActionButton(onPressed: _export, child: const Icon(Icons.save)),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -242,15 +236,14 @@ class _SettingsExportScreenState extends State<SettingsExportScreen> {
                   ),
                   CheckboxListTile(
                     value: _exportSubscriptionGroupMembers,
-                    title: Text(
-                      L10n.of(context).export_subscription_group_members,
-                    ),
+                    title: Text(L10n.of(context).export_subscription_group_members),
                     onChanged: _exportSubscriptions && _exportSubscriptionGroups
                         ? (v) => toggleExportSubscriptionGroupMembers()
                         : null,
                   ),
                   CheckboxListTile(
                     value: _exportTweets,
+                    subtitle: Text(L10n.of(context).reader_backup_annotations),
                     title: Text(L10n.of(context).export_tweets),
                     onChanged: (v) => toggleExportTweets(),
                   ),

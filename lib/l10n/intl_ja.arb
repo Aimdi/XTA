@@ -3448,5 +3448,24 @@
   "@reader_more_like": {},
   "@reader_less_like": {},
   "@reader_discovery_reason": {},
-  "@reader_undo": {}
+  "@reader_undo": {},
+  "reader_batch_progress": "確認済みのバッチ: {done}/{total}",
+  "@reader_batch_progress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_backup_annotations": "記事のハイライト、タグ、メモ",
+  "@reader_backup_annotations": {},
+  "reader_changes_saved": "変更を保存しました",
+  "@reader_changes_saved": {},
+  "reader_undo_unavailable": "元に戻せませんでした。データが変更された可能性があります。",
+  "@reader_undo_unavailable": {},
+  "reader_recent_reads": "最近の読み込み処理",
+  "@reader_recent_reads": {}
 }
