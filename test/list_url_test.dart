@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/utils/urls.dart';
 
 void main() {
@@ -9,6 +10,14 @@ void main() {
     expect(extractListId('https://x.com/SomeUser/lists'), isNull);
     expect(extractListId('https://x.com/i/lists/not-a-number'), isNull);
     expect(extractListId('hello'), isNull);
+  });
+
+  test('rich-card reader accepts only normal web URLs', () {
+    expect(canOpenInArticleScreen('https://example.com/story'), isTrue);
+    expect(canOpenInArticleScreen('http://example.com/story'), isTrue);
+    expect(canOpenInArticleScreen('mailto:reader@example.com'), isFalse);
+    expect(canOpenInArticleScreen('javascript:alert(1)'), isFalse);
+    expect(canOpenInArticleScreen('not a url'), isFalse);
   });
 
   test('parseUri routes list links, profiles and posts correctly', () async {
