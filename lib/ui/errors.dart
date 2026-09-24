@@ -1,8 +1,10 @@
 import 'package:xta/ui/rate_limit_retry.dart';
+import 'package:xta/ui/read_failure_kind.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:async_button_builder/async_button_builder.dart';
+import 'package:http/http.dart' as http;
 import 'package:dynamic_color/dynamic_color.dart';
 
 import 'package:flutter/material.dart';
@@ -484,6 +486,67 @@ class FullPageErrorWidget extends FritterErrorWidget {
         errorMessage: L10n.of(context).this_took_too_long_to_load_please_check_your_network_connection,
         onRetry: onRetry,
       );
+    }
+
+    if (error is http.ClientException) {
+      return EmojiErrorWidget(
+        emoji: '🔌',
+        message: L10n.of(context).could_not_contact_twitter,
+        errorMessage: L10n.of(context).reader_connection_failed,
+        onRetry: onRetry,
+      );
+    }
+
+    if (error is HttpException) {
+      final kind = readFailureKind(error);
+      switch (kind) {
+        case ReadFailureKind.rateLimited:
+          return RateLimitErrorWidget(onRetry: onRetry, error: error);
+        case ReadFailureKind.session:
+          return NoWorkingAccountErrorWidget(onRetry: onRetry);
+        case ReadFailureKind.serviceUnavailable:
+          return ActionableErrorWidget(
+            emoji: '🛠️',
+            title: L10n.of(context).reader_service_unavailable,
+            details: L10n.of(context).reader_service_unavailable_hint,
+            actions: [
+              if (onRetry != null)
+                TextButton(
+                  onPressed: () => onRetry(),
+                  child: Text(L10n.of(context).retry),
+                ),
+            ],
+          );
+        case ReadFailureKind.unavailable:
+          return ActionableErrorWidget(
+            emoji: '🚫',
+            title: L10n.of(context).reader_request_unavailable,
+            details: L10n.of(context).reader_request_unavailable_hint,
+            actions: [
+              if (onRetry != null)
+                TextButton(
+                  onPressed: () => onRetry(),
+                  child: Text(L10n.of(context).retry),
+                ),
+            ],
+          );
+        case ReadFailureKind.connection:
+        case ReadFailureKind.timedOut:
+        case ReadFailureKind.endpointRefused:
+        case ReadFailureKind.unknown:
+          return ActionableErrorWidget(
+            emoji: '🌐',
+            title: L10n.of(context).oops_something_went_wrong,
+            details: L10n.of(context).reader_http_error(error.statusCode),
+            actions: [
+              if (onRetry != null)
+                TextButton(
+                  onPressed: () => onRetry(),
+                  child: Text(L10n.of(context).retry),
+                ),
+            ],
+          );
+      }
     }
 
     // The branch every plugin exception lands in: their errors are plain
