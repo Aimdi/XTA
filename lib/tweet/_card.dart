@@ -112,6 +112,7 @@ class _TweetCardState extends State<TweetCard> {
                   builder: (_) => ArticleScreen(
                     url: url,
                     title: readerTitle,
+                    openNative: openNativeLink,
                   ),
                 ),
               );
