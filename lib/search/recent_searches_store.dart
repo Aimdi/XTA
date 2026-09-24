@@ -44,6 +44,8 @@ class RecentSearchesStore extends Store<Map<String, List<String>>> {
   Future<void> remove(String scope, String query) =>
       _change(scope, (previous) => previous.where((old) => old != query).toList());
 
+  Future<void> clear(String scope) => _change(scope, (_) => const <String>[]);
+
   Future<void> _change(String scope, List<String> Function(List<String>) apply) {
     _writes = _writes
         .then((_) async {

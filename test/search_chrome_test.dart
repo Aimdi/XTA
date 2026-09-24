@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/search/recent_searches_bar.dart';
+import 'package:xta/search/recent_searches_store.dart';
 import 'package:xta/search/search_chrome.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -114,6 +117,63 @@ void main() {
       tester.getSize(find.byType(XtaSearchField)).height,
       kSearchLargeTextFieldHeight,
     );
+  });
+
+  testWidgets('search start state makes the X scope explicit', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.delegate.supportedLocales,
+        home: const Scaffold(body: SearchStartState()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Search X'), findsOneWidget);
+  });
+
+  testWidgets('recent search history exposes a clear control for its network', (
+    tester,
+  ) async {
+    final prefs = PrefServiceCache(
+      cache: {
+        recentSearchesPreference:
+            '{"x":["flutter"],"reddit":["dart"]}',
+      },
+    );
+    final store = RecentSearchesStore(prefs);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: L10n.delegate.supportedLocales,
+        home: Scaffold(
+          body: RecentSearchesBar(
+            store: store,
+            scope: 'x',
+            onSelected: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('flutter'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('recent-searches-clear-x')),
+      findsOneWidget,
+    );
+    expect(store.state['reddit'], ['dart']);
   });
 
   testWidgets('advanced query action stays reachable above system insets', (

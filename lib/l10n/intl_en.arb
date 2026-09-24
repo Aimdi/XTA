@@ -3672,5 +3672,9 @@
   "reader_transaction_unavailable": "X request signing is unavailable",
   "@reader_transaction_unavailable": {},
   "reader_transaction_unavailable_hint": "XTA could not derive the transaction token X currently requires. Your accounts may still be fine; retry shortly or check Diagnostics.",
-  "@reader_transaction_unavailable_hint": {}
+  "@reader_transaction_unavailable_hint": {},
+  "recent_searches": "Recent searches",
+  "@recent_searches": {},
+  "clear_recent_searches": "Clear recent searches",
+  "@clear_recent_searches": {}
 }

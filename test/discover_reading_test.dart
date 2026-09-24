@@ -41,9 +41,12 @@ void main() {
     expect(store.state['mastodon']!.first, 'QUERY-11');
     expect(store.state['reddit'], ['gardening']);
     await store.remove('mastodon', 'QUERY-11');
+    await store.clear('mastodon');
+    expect(store.state['mastodon'], isEmpty);
+    expect(store.state['reddit'], ['gardening']);
     await store.destroy();
     final reopened = RecentSearchesStore(prefs);
-    expect(reopened.state['mastodon'], isNot(contains('QUERY-11')));
+    expect(reopened.state['mastodon'], isEmpty);
     expect(reopened.state['reddit'], ['gardening']);
     await reopened.destroy();
   });

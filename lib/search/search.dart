@@ -2,15 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/profile_chrome.dart';
 import 'package:xta/search/advanced_search.dart';
 import 'package:xta/search/advanced_search_model.dart';
+import 'package:xta/search/reader_search_screen.dart';
+import 'package:xta/search/recent_searches_bar.dart';
+import 'package:xta/search/recent_searches_store.dart';
 import 'package:xta/search/search_chrome.dart';
 import 'package:xta/search/search_media_grid.dart';
 import 'package:xta/search/search_model.dart';
+import 'package:xta/search/search_scope.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
@@ -68,6 +73,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
   late final SearchTweetsPagination _latestTweets;
   late final SearchMediaPagination _mediaResults;
   late final SearchUsersModel _searchUsersModel;
+  late final RecentSearchesStore _history;
 
   Timer? _debounce;
   String _lastDispatchedQuery = '';
@@ -88,6 +94,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
     _latestTweets = SearchTweetsPagination(product: 'Latest');
     _mediaResults = SearchMediaPagination();
     _searchUsersModel = SearchUsersModel();
+    _history = RecentSearchesStore(PrefService.of(context, listen: false));
 
     _queryController.text = initialQuery;
     _lastDispatchedQuery = initialQuery;
@@ -119,6 +126,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
     _mediaResults.dispose();
     _searchUsersModel.destroy();
     _viewStore.destroy();
+    unawaited(_history.destroy());
     super.dispose();
   }
 
@@ -139,7 +147,12 @@ class _ResultsScreenState extends State<_ResultsScreen>
     _pendingQuery = query;
     _appliedTo.clear();
     _applyPendingQuery();
-    if (submitted != null) _focusNode.unfocus();
+    if (submitted != null) {
+      if (query.isNotEmpty) {
+        unawaited(_history.remember(searchScopeX, query));
+      }
+      _focusNode.unfocus();
+    }
   }
 
   void _applyPendingQuery() {
@@ -172,6 +185,11 @@ class _ResultsScreenState extends State<_ResultsScreen>
     _setQueryText('');
     _dispatchQuery('');
     _focusNode.requestFocus();
+  }
+
+  void _recent(String query) {
+    _setQueryText(query);
+    _dispatchQuery(query);
   }
 
   Future<void> _openAdvancedSearch(AdvancedSearchState current) async {
@@ -214,6 +232,16 @@ class _ResultsScreenState extends State<_ResultsScreen>
   List<Widget> _queryActions(SearchViewState state) {
     return [
       IconButton(
+        icon: const Icon(Icons.manage_search),
+        tooltip: L10n.of(context).reader_search_all,
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (_) => ReaderSearchScreen(initialQuery: state.query),
+          ),
+        ),
+      ),
+      IconButton(
         icon: const Icon(Icons.sensors),
         tooltip: L10n.of(context).antenna_title,
         onPressed: () => Navigator.pushNamed(context, routeAntennas),
@@ -238,7 +266,18 @@ class _ResultsScreenState extends State<_ResultsScreen>
   }
 
   Widget _results(SearchViewState state) {
-    if (!state.hasQuery) return const SearchStartState();
+    if (!state.hasQuery) {
+      return Column(
+        children: [
+          RecentSearchesBar(
+            store: _history,
+            scope: searchScopeX,
+            onSelected: _recent,
+          ),
+          const Expanded(child: SearchStartState()),
+        ],
+      );
+    }
     return Column(
       children: [
         XtaAnimatedSwitcher(

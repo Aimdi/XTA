@@ -56,6 +56,12 @@ class _TrendsScreenState extends State<TrendsScreen>
     context.read<DiscoverQueryStore>().commit(query);
   }
 
+  void _clearQuery() {
+    _queryController.clear();
+    _commitQuery('');
+    widget.focusNode.requestFocus();
+  }
+
   /// One meaning for the magnifier and the keyboard's search key. An empty
   /// query focuses the field instead of opening a search for nothing.
   void _submit(BuildContext context, String query) {
@@ -122,8 +128,31 @@ class _TrendsScreenState extends State<TrendsScreen>
                   tooltip: L10n.of(context).search,
                   onPressed: () => _submit(context, _queryController.text),
                 ),
-                trailing: [IconButton(icon: const Icon(Icons.manage_search), tooltip: L10n.of(context).reader_search_all,
-                  onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => ReaderSearchScreen(initialQuery: _queryController.text))))],
+                trailing: [
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: _queryController,
+                    builder: (context, value, _) => value.text.isEmpty
+                        ? const SizedBox.shrink()
+                        : IconButton(
+                            key: const ValueKey('discover-search-clear'),
+                            tooltip: L10n.of(context).group_combine_clear,
+                            onPressed: _clearQuery,
+                            icon: const Icon(Icons.close),
+                          ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.manage_search),
+                    tooltip: L10n.of(context).reader_search_all,
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (_) => ReaderSearchScreen(
+                          initialQuery: _queryController.text,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
                 onChanged: (value) {
                   context.read<DiscoverQueryStore>().type(value);
                 },

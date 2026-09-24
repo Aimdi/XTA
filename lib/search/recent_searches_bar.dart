@@ -7,33 +7,54 @@ class RecentSearchesBar extends StatelessWidget {
   final RecentSearchesStore store;
   final String scope;
   final ValueChanged<String> onSelected;
-  const RecentSearchesBar({super.key, required this.store, required this.scope, required this.onSelected});
+
+  const RecentSearchesBar({
+    super.key,
+    required this.store,
+    required this.scope,
+    required this.onSelected,
+  });
+
   @override
-  Widget build(BuildContext context) => ScopedBuilder<RecentSearchesStore, Map<String, List<String>>>(
-    store: store,
-    onState: (context, history) {
-      final queries = history[scope] ?? const [];
-      if (queries.isEmpty) return const SizedBox.shrink();
-      final l10n = L10n.of(context);
-      return SizedBox(
-        height: MediaQuery.textScalerOf(context).scale(14) + 40,
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          itemCount: queries.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 8),
-          itemBuilder: (context, index) => Center(
-            child: InputChip(
-              avatar: const Icon(Icons.history, size: 18),
-              label: Text(queries[index], maxLines: 1),
-              tooltip: l10n.plugin_bluesky_recent_searches,
-              onPressed: () => onSelected(queries[index]),
-              onDeleted: () => store.remove(scope, queries[index]),
-              deleteButtonTooltipMessage: l10n.delete,
+  Widget build(BuildContext context) =>
+      ScopedBuilder<RecentSearchesStore, Map<String, List<String>>>(
+        store: store,
+        onState: (context, history) {
+          final queries = history[scope] ?? const [];
+          if (queries.isEmpty) return const SizedBox.shrink();
+          final l10n = L10n.of(context);
+          return SizedBox(
+            height: MediaQuery.textScalerOf(context).scale(14) + 44,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 4, 4),
+                    itemCount: queries.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) => Center(
+                      child: InputChip(
+                        avatar: const Icon(Icons.history, size: 18),
+                        label: Text(queries[index], maxLines: 1),
+                        tooltip: l10n.recent_searches,
+                        onPressed: () => onSelected(queries[index]),
+                        onDeleted: () => store.remove(scope, queries[index]),
+                        deleteButtonTooltipMessage: l10n.delete,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  key: ValueKey('recent-searches-clear-$scope'),
+                  tooltip: l10n.clear_recent_searches,
+                  onPressed: () => store.clear(scope),
+                  icon: const Icon(Icons.delete_sweep_outlined),
+                ),
+                const SizedBox(width: 4),
+              ],
             ),
-          ),
-        ),
+          );
+        },
       );
-    },
-  );
 }
