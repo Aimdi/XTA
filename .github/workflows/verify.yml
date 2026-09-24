@@ -125,6 +125,7 @@ jobs:
           flutter test --reporter expanded
           test/search_scope_test.dart
           test/search_chrome_test.dart
+          test/search_results_entry_test.dart
           test/discover_ia_test.dart
           test/discover_plugin_search_test.dart
           test/discover_reading_test.dart
