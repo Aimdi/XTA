@@ -149,6 +149,10 @@ void main() {
                 'type': 'image',
                 'preview_url': 'https://example.org/thumb.jpg',
                 'url': 'https://example.org/full.jpg',
+                'description': 'A cat sitting by a window',
+                'meta': {
+                  'original': {'width': 1600, 'height': 1200},
+                },
               },
               {'type': 'video', 'preview_url': 'https://example.org/v.jpg'},
             ],
@@ -194,6 +198,9 @@ void main() {
         expect(posts.first.text, 'Hello \nthere');
         expect(posts.first.acct, 'alice@mastodon.social');
         expect(posts.first.images, ['https://example.org/thumb.jpg']);
+        expect(posts.first.imageAlts, ['A cat sitting by a window']);
+        expect(posts.first.imageAspects.single, closeTo(4 / 3, 0.001));
+        expect(posts.first.mediaItems.single.downloadUrl, 'https://example.org/full.jpg');
         expect(posts.first.boosted, isFalse);
         expect(posts.first.repliesCount, 3);
         expect(posts.first.reblogsCount, 12);
