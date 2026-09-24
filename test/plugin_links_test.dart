@@ -75,7 +75,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('native profile'), findsOneWidget);
-    await tester.pageBack();
+    Navigator.of(tester.element(find.text('native profile'))).pop();
     await tester.pumpAndSettle();
     expect(handled, isTrue);
   });
