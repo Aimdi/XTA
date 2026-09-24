@@ -120,6 +120,29 @@ void main() {
       expect(find.textContaining('StackTrace'), findsNothing);
     });
 
+    testWidgets('transaction signing failures get their own actionable state', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        FullPageErrorWidget(
+          error: TransactionIdUnavailableException(
+            Exception('Could not find ondemand file index'),
+          ),
+          stackTrace: StackTrace.current,
+          prefix: 'Unable to load the feed',
+          onRetry: () {},
+        ),
+      );
+
+      expect(
+        find.text(L10n.current.reader_transaction_unavailable),
+        findsOneWidget,
+      );
+      expect(find.text(L10n.current.diagnostics), findsOneWidget);
+      expect(find.textContaining('ondemand file index'), findsNothing);
+    });
+
     testWidgets('raw 404 stays generic instead of claiming endpoint rotation', (
       tester,
     ) async {
