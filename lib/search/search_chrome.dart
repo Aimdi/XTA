@@ -214,7 +214,7 @@ class SearchStartState extends StatelessWidget {
             Icon(Icons.search, size: 48, color: tweetSecondaryColor(context)),
             const SizedBox(height: kTweetSpace4),
             Text(
-              L10n.of(context).search,
+              L10n.of(context).search_in_plugin(L10n.of(context).source_x),
               textAlign: TextAlign.center,
               style: tweetBodyStyle(
                 context,
