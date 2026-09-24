@@ -3624,5 +3624,33 @@
   "sync_unsafe_server": "This server cannot safely protect backups from simultaneous changes.",
   "@sync_unsafe_server": {},
   "sync_history": "Previous backups",
-  "@sync_history": {}
+  "@sync_history": {},
+  "library_sort_newest": "Newest saved first",
+  "@library_sort_newest": {},
+  "library_sort_oldest": "Oldest saved first",
+  "@library_sort_oldest": {},
+  "library_selected_count": "{count, plural, =0{No posts selected} one{1 post selected} other{{count} posts selected}}",
+  "@library_selected_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "library_select_all": "Select all visible posts",
+  "@library_select_all": {},
+  "library_clear_selection": "Clear selection",
+  "@library_clear_selection": {},
+  "library_move_selected": "Move selected posts",
+  "@library_move_selected": {},
+  "library_delete_selected_title": "Remove selected posts?",
+  "@library_delete_selected_title": {},
+  "library_delete_selected_description": "{count, plural, one{This removes 1 saved post from this device.} other{This removes {count} saved posts from this device.}}",
+  "@library_delete_selected_description": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
