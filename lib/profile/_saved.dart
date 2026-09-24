@@ -27,11 +27,15 @@ class ProfileSaved extends StatefulWidget {
   State<ProfileSaved> createState() => _ProfileSavedState();
 }
 
-class _ProfileSavedState extends State<ProfileSaved> {
+class _ProfileSavedState extends State<ProfileSaved>
+    with AutomaticKeepAliveClientMixin<ProfileSaved> {
   late CursorPagingController<int, ArchiveItem> _paging;
   PagingController<int, ArchiveItem> get _pagingController =>
       _paging.pagingController;
   bool _firstLoadStarted = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -99,6 +103,7 @@ class _ProfileSavedState extends State<ProfileSaved> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     _maybeStartFirstLoad();
     return SensitiveMediaGate(
       sensitive: widget.user.possiblySensitive ?? false,

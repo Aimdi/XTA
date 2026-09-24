@@ -8,6 +8,7 @@ import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/poll.dart';
@@ -19,6 +20,7 @@ import 'package:pref/pref.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/utils/json.dart';
 
 /// Poll totals are grouped in the reader's locale. Building the pattern parses
 /// it, so one is kept per locale rather than one per build of every poll.
@@ -59,10 +61,8 @@ class _TweetCardState extends State<TweetCard> {
   }
 
   static Map<String, dynamic>? _decodeUnifiedCard(Map<String, dynamic>? card) {
-    final raw = card?['binding_values']?['unified_card']?['string_value'];
-    if (raw is! String) {
-      return null;
-    }
+    final raw = Json(card)['binding_values']['unified_card']['string_value'].string;
+    if (raw == null) return null;
 
     try {
       return jsonDecode(raw) as Map<String, dynamic>;
@@ -82,44 +82,81 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  Widget _createCard(String? url, Widget child, BuildContext context) {
+  Widget _createCard(
+    String? url,
+    Widget child,
+    BuildContext context, {
+    String? title,
+  }) {
     return _createBaseCard(
       child,
       onTap: url == null
           ? null
           : () async {
-              await openLink(context, url);
+              if (await openNativeLink(context, url) || !context.mounted) {
+                return;
+              }
+              if (!canOpenInArticleScreen(url)) {
+                await openLink(context, url);
+                return;
+              }
+              final readerTitle =
+                  title?.trim().isNotEmpty == true
+                  ? title!.trim()
+                  : Uri.tryParse(url)?.host;
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ArticleScreen(
+                    url: url,
+                    title: readerTitle,
+                    openNative: openNativeLink,
+                  ),
+                ),
+              );
             },
     );
   }
 
-  Widget _createImage(String size, Map<String, dynamic>? image, BoxFit fit, {double? aspectRatio}) {
-    if (image == null) {
-      return Container();
-    }
+  Widget _createImage(
+    String size,
+    Map<String, dynamic>? image,
+    BoxFit fit, {
+    double? aspectRatio,
+  }) {
+    if (image == null) return Container();
 
-    Widget child;
+    final data = Json(image);
+    final width = data['width'].number;
+    final height = data['height'].number;
+    final ratio = aspectRatio ??
+        (width != null && height != null && width > 0 && height > 0
+            ? width / height
+            : 16 / 9);
 
     if (size == 'disabled') {
-      child = Container();
-    } else {
-      child = LayoutBuilder(builder: (context, constraints) {
-        final maxW = constraints.maxWidth;
-        final cacheWidth = maxW.isFinite && maxW > 0
-            ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
-            : null;
-        return ExtendedImage.network(
-          image['url'],
-          cache: true,
-          fit: fit,
-          cacheWidth: cacheWidth,
-        );
-      });
+      return AspectRatio(aspectRatio: ratio, child: Container());
     }
 
+    final url = data['url'].string;
+    if (url == null || url.isEmpty) return Container();
+
     return AspectRatio(
-      aspectRatio: aspectRatio ?? image['width'] / image['height'],
-      child: child,
+      aspectRatio: ratio,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxW = constraints.maxWidth;
+          final cacheWidth = maxW.isFinite && maxW > 0
+              ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+              : null;
+          return ExtendedImage.network(
+            url,
+            cache: true,
+            fit: fit,
+            cacheWidth: cacheWidth,
+          );
+        },
+      ),
     );
   }
 
@@ -241,7 +278,13 @@ class _TweetCardState extends State<TweetCard> {
   }
 
   dynamic _createWebsiteCard(
-      BuildContext context, Map<String, dynamic> unifiedCard, String uri, String imageSize, Widget media) {
+      BuildContext context,
+      Map<String, dynamic> unifiedCard,
+      String? uri,
+      String imageSize,
+      Widget media,
+  ) {
+    final title = Json(unifiedCard)['component_objects']['details_1']['data']['title']['content'].string;
     return _createCard(
         uri,
         Column(
@@ -251,13 +294,14 @@ class _TweetCardState extends State<TweetCard> {
             media,
             _createListTile(
               context,
-              unifiedCard['component_objects']['details_1']['data']['title']['content'],
-              unifiedCard['component_objects']['details_1']['data']['subtitle']['content'],
+              title ?? '',
+              Json(unifiedCard)['component_objects']['details_1']['data']['subtitle']['content'].string,
               null,
             ),
           ],
         ),
-        context);
+        context,
+        title: title);
   }
 
   dynamic _createUnifiedCard(BuildContext context, String imageSize) {
@@ -269,25 +313,34 @@ class _TweetCardState extends State<TweetCard> {
 
     switch (unifiedCard['type']) {
       case 'image_website':
-        var media = unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
-        var uri = unifiedCard['destination_objects']['browser_1']['data']['url_data']['url'];
+        final json = Json(unifiedCard);
+        final mediaId = json['component_objects']['media_1']['data']['id'].string;
+        final media = mediaId == null ? const Json(null) : json['media_entities'][mediaId];
+        final uri = json['destination_objects']['browser_1']['data']['url_data']['url'].string;
 
         var child = _createImage(
             imageSize,
             {
-              'url': media['media_url_https'],
-              'width': media['original_info']['width'],
-              'height': media['original_info']['height'],
+              'url': media['media_url_https'].string,
+              'width': media['original_info']['width'].number ?? 1,
+              'height': media['original_info']['height'].number ?? 1,
             },
             BoxFit.cover);
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       case 'video_website':
         // https://twitter.com/yenisafak/status/1560244349451096064
-        var media = unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
-        var uri = unifiedCard['destination_objects']['browser_with_docked_media_1']['data']['url_data']['url'];
-
-        var child =
-            TweetMedia(media: [Media.fromJson(media)], username: widget.tweet.user!.screenName!, sensitive: false);
+        final json = Json(unifiedCard);
+        final mediaId = json['component_objects']['media_1']['data']['id'].string;
+        final rawMedia = mediaId == null ? null : json['media_entities'][mediaId].raw;
+        final uri = json['destination_objects']['browser_with_docked_media_1']['data']['url_data']['url'].string;
+        if (rawMedia is! Map<String, dynamic>) {
+          return Container();
+        }
+        var child = TweetMedia(
+          media: [Media.fromJson(rawMedia)],
+          username: widget.tweet.user?.screenName ?? '',
+          sensitive: false,
+        );
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       default:
         return Container();
@@ -333,13 +386,17 @@ class _TweetCardState extends State<TweetCard> {
   }
 
   String? _findCardUrl(Map<String, dynamic> card) {
-    var link = card['url'];
+    final link = Json(card)['url'].string;
+    if (link == null || link.isEmpty) return null;
     var urls = widget.tweet.entities?.urls ?? [];
 
-    // Match up the card's URL with the link in the tweet entities, otherwise just use the card's URL
-    var url = urls.firstWhere((element) => element.url == link, orElse: () => Url.fromJson({'expanded_url': link}));
+    // Match up the card's URL with the link in the tweet entities, otherwise just use the card's URL.
+    var url = urls.firstWhere(
+      (element) => element.url == link,
+      orElse: () => Url.fromJson({'expanded_url': link}),
+    );
 
-    return url.expandedUrl;
+    return url.expandedUrl ?? link;
   }
 
   @override
@@ -360,60 +417,99 @@ class _TweetCardState extends State<TweetCard> {
 
     switch (card['name']) {
       case 'summary':
-        var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
-
+        final values = Json(card)['binding_values'];
+        final image = values['thumbnail_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final description = values['description']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
         return _createCard(
-            _findCardUrl(card),
-            Row(
-              children: [
-                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover)),
-                Expanded(
-                    flex: 4,
-                    child: _createListTile(
-                        context,
-                        card['binding_values']['title']['string_value'],
-                        card['binding_values']?['description']?['string_value'],
-                        card['binding_values']?['vanity_url']?['string_value']))
-              ],
-            ),
-            context);
-      case 'summary_large_image':
-        var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
-
-        return _createCard(
-            _findCardUrl(card),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _createImage(imageSize, image, BoxFit.cover),
-                _createListTile(
-                  context,
-                  card['binding_values']['title']['string_value'],
-                  card['binding_values']?['description']?['string_value'],
-                  card['binding_values']?['vanity_url']?['string_value'],
+          _findCardUrl(card),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
                 ),
-              ],
-            ),
-            context);
+              ),
+              Expanded(
+                flex: 4,
+                child: _createListTile(
+                  context,
+                  title ?? '',
+                  description,
+                  vanityUrl,
+                ),
+              ),
+            ],
+          ),
+          context,
+          title: title,
+        );
+      case 'summary_large_image':
+        final values = Json(card)['binding_values'];
+        final image = values['thumbnail_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final description = values['description']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
+        return _createCard(
+          _findCardUrl(card),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _createImage(
+                imageSize,
+                image is Map<String, dynamic> ? image : null,
+                BoxFit.cover,
+              ),
+              _createListTile(
+                context,
+                title ?? '',
+                description,
+                vanityUrl,
+              ),
+            ],
+          ),
+          context,
+          title: title,
+        );
       case 'player':
-        var image = card['binding_values']['player_image$imageKey']?['image_value'];
+        final values = Json(card)['binding_values'];
+        final image = values['player_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final description = values['description']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
 
         return _createCard(
-            _findCardUrl(card),
-            Row(
-              children: [
-                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover, aspectRatio: 1)),
-                Expanded(
-                    flex: 4,
-                    child: _createListTile(
-                        context,
-                        card['binding_values']['title']['string_value'],
-                        card['binding_values']?['description']?['string_value'],
-                        card['binding_values']?['vanity_url']?['string_value']))
-              ],
-            ),
-            context);
+          _findCardUrl(card),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                  aspectRatio: 1,
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: _createListTile(
+                  context,
+                  title ?? '',
+                  description,
+                  vanityUrl,
+                ),
+              ),
+            ],
+          ),
+          context,
+          title: title,
+        );
       // The image variants carry the same choice bindings; only the artwork
       // differs, and it was never shown. They used to fall through to the
       // default and render nothing at all.
@@ -428,10 +524,11 @@ class _TweetCardState extends State<TweetCard> {
         return _createVoteCard(context, card, 4);
       case 'promo_website':
         // https://twitter.com/CMEGroup/status/1573288572647612416
-        var url = card['binding_values']['website_url']['string_value'];
-        var image = card['binding_values']['promo_image$imageKey']?['image_value'];
-        var title = card['binding_values']['title']['string_value'];
-        var vanityUrl = card['binding_values']['vanity_url']['string_value'];
+        final values = Json(card)['binding_values'];
+        final url = values['website_url']['string_value'].string;
+        final image = values['promo_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
 
         return _createCard(
             url,
@@ -439,11 +536,16 @@ class _TweetCardState extends State<TweetCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.cover),
-                _createListTile(context, title, null, vanityUrl),
+                _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                ),
+                _createListTile(context, title ?? '', null, vanityUrl),
               ],
             ),
-            context);
+            context,
+            title: title);
       case 'unified_card':
         try {
           return _createUnifiedCard(context, imageSize);
@@ -453,26 +555,31 @@ class _TweetCardState extends State<TweetCard> {
         }
       case '745291183405076480:live_event':
         // https://twitter.com/Erdoanz11/status/1573765738032152577
-        var url = card['binding_values']['card_url']['string_value'];
-        var image = card['binding_values']['event_thumbnail$imageKey']?['image_value'];
-
-        // TODO: This opens the URL externally. Create a screen for it in XTA
+        final values = Json(card)['binding_values'];
+        final url = values['card_url']['string_value'].string;
+        final image = values['event_thumbnail$imageKey']['image_value'].raw;
+        final title = values['event_title']['string_value'].string;
         return _createCard(
             url,
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.cover),
+                _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                ),
                 _createListTile(
                   context,
-                  card['binding_values']['event_title']['string_value'],
-                  card['binding_values']['event_subtitle']?['string_value'],
+                  title ?? '',
+                  values['event_subtitle']['string_value'].string,
                   null,
                 ),
               ],
             ),
-            context);
+            context,
+            title: title);
       case '745291183405076480:broadcast':
         // https://twitter.com/KwasiKwarteng/status/1573229010779516929
         final values = card['binding_values'] as Map<String, dynamic>?;
