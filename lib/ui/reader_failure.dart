@@ -14,6 +14,7 @@ String readFailureMessage(L10n l10n, Object? error) => switch (readFailureKind(e
   ReadFailureKind.session => l10n.reader_sign_in_needed,
   ReadFailureKind.rateLimited => l10n.rate_limited_title,
   ReadFailureKind.endpointRefused => l10n.endpoint_refused_title,
+  ReadFailureKind.transactionUnavailable => l10n.reader_transaction_unavailable,
   ReadFailureKind.unavailable => l10n.reader_request_unavailable,
   ReadFailureKind.serviceUnavailable => l10n.reader_service_unavailable,
   ReadFailureKind.unknown => l10n.oops_something_went_wrong,
@@ -145,6 +146,8 @@ class _ReaderFailureDetails extends StatelessWidget {
             Text(l10n.reader_rate_limit_hint),
           if (kind == ReadFailureKind.endpointRefused)
             Text(l10n.endpoint_refused_message),
+          if (kind == ReadFailureKind.transactionUnavailable)
+            Text(l10n.reader_transaction_unavailable_hint),
           if (kind == ReadFailureKind.unavailable)
             Text(l10n.reader_request_unavailable_hint),
           if (kind == ReadFailureKind.serviceUnavailable)
