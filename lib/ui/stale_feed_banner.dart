@@ -37,6 +37,8 @@ class StaleFeedBanner extends StatelessWidget {
         return '🔑';
       case StaleFeedReason.endpointRefused:
         return '🚧';
+      case StaleFeedReason.transactionUnavailable:
+        return '🧾';
       case StaleFeedReason.unavailable:
         return '🚫';
       case StaleFeedReason.serviceUnavailable:
@@ -62,6 +64,8 @@ class StaleFeedBanner extends StatelessWidget {
         return L10n.of(context).no_account_available_title;
       case StaleFeedReason.endpointRefused:
         return L10n.of(context).endpoint_refused_title;
+      case StaleFeedReason.transactionUnavailable:
+        return L10n.of(context).reader_transaction_unavailable;
       case StaleFeedReason.unavailable:
         return L10n.of(context).reader_request_unavailable;
       case StaleFeedReason.serviceUnavailable:
@@ -80,6 +84,8 @@ class StaleFeedBanner extends StatelessWidget {
       StaleFeedReason.noWorkingAccount => l10n.no_working_account_message,
       StaleFeedReason.noAccount => l10n.no_account_available_message,
       StaleFeedReason.endpointRefused => l10n.endpoint_refused_message,
+      StaleFeedReason.transactionUnavailable =>
+        l10n.reader_transaction_unavailable_hint,
       StaleFeedReason.unavailable => l10n.reader_request_unavailable_hint,
       StaleFeedReason.serviceUnavailable =>
         l10n.reader_service_unavailable_hint,
