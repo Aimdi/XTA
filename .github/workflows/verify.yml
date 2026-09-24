@@ -120,12 +120,16 @@ jobs:
           test/download_center_test.dart
           test/rate_limit_retry_test.dart
 
-      - name: Search and Discover regressions
+      - name: Search regressions
         run: >-
-          flutter test --reporter expanded
+          flutter test --reporter expanded --timeout 90s
           test/search_scope_test.dart
           test/search_chrome_test.dart
           test/search_results_entry_test.dart
+
+      - name: Discover regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
           test/discover_ia_test.dart
           test/discover_plugin_search_test.dart
           test/discover_reading_test.dart
