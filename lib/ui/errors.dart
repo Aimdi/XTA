@@ -1,7 +1,7 @@
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:xta/ui/read_failure_kind.dart';
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Platform, SocketException;
 
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:http/http.dart' as http;
