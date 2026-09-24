@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
 import 'package:xta/constants.dart';
@@ -86,7 +87,7 @@ void main() {
         throw StateError('bad initialization');
       };
       for (var i = 0; i < 2; i++) {
-        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsStateError);
+        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
       }
       expect(attempts, 1);
     });
@@ -120,7 +121,7 @@ void main() {
         return fakeTransaction();
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
       now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
 
       final header = await TwitterHeaders.getXClientTransactionIdHeader(uri);
@@ -143,7 +144,7 @@ void main() {
       };
 
       for (var i = 0; i < 5; i++) {
-        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
       }
 
       expect(attempts, 1, reason: 'the cooldown should have suppressed the retries');
@@ -154,10 +155,10 @@ void main() {
       TwitterHeaders.clock = () => now;
       TwitterHeaders.initializer = () async => throw Exception('X reshaped its HTML');
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
 
       // Suppressed, but still an error rather than a silently missing header.
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
     });
 
     test('a retry happens once the cooldown has elapsed', () async {
@@ -172,7 +173,7 @@ void main() {
         return fakeTransaction();
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
       now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
 
       expect((await TwitterHeaders.getXClientTransactionIdHeader(uri))?['x-client-transaction-id'], isNotNull);
@@ -191,7 +192,7 @@ void main() {
         return fakeTransaction();
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
       now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
       await TwitterHeaders.getXClientTransactionIdHeader(uri);
 
@@ -204,7 +205,7 @@ void main() {
         throw Exception('down again');
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<Exception>()));
+      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
       expect(attempts, 3);
     });
 
