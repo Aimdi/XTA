@@ -184,7 +184,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nestedScrollViewKey.currentState?.innerController.addListener(_listenToScroll);
+      final state = _nestedScrollViewKey.currentState;
+      state?.innerController.addListener(_listenToScroll);
+      state?.outerController.addListener(_listenToScroll);
     });
   }
 
@@ -240,7 +242,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   @override
   void dispose() {
-    _nestedScrollViewKey.currentState?.innerController.removeListener(_listenToScroll);
+    final scrollState = _nestedScrollViewKey.currentState;
+    scrollState?.innerController.removeListener(_listenToScroll);
+    scrollState?.outerController.removeListener(_listenToScroll);
     disposeRichTextParts(_descriptionParts);
     if (_tabControllerInitialized) {
       _tabController.removeListener(_handleTabChanged);
