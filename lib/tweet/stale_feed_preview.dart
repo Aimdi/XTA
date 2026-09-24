@@ -1,8 +1,5 @@
-import 'dart:async' show TimeoutException;
-import 'dart:io' show SocketException;
-
-import 'package:http/http.dart' show ClientException;
 import 'package:xta/catcher/exceptions.dart';
+import 'package:xta/ui/read_failure_kind.dart';
 
 /// Why a feed's first page failed, in the same terms `ui/errors.dart` already
 /// uses. A reader looking at cached posts still has to be told which of these
@@ -17,30 +14,30 @@ enum StaleFeedReason {
   noWorkingAccount,
   noAccount,
   endpointRefused,
+  unavailable,
+  serviceUnavailable,
+  session,
   unknown,
 }
 
 /// Classifies the error a first page failed with.
 StaleFeedReason staleFeedReasonOf(Object? error) {
-  if (error is SocketException || error is ClientException) {
-    return StaleFeedReason.offline;
-  }
-  if (error is TimeoutException) {
-    return StaleFeedReason.timedOut;
-  }
-  if (error is RateLimitedException) {
-    return StaleFeedReason.rateLimited;
-  }
   if (error is NoWorkingAccountException) {
     return StaleFeedReason.noWorkingAccount;
   }
   if (error is NoAccountAvailableException) {
     return StaleFeedReason.noAccount;
   }
-  if (error is EndpointRefusedException) {
-    return StaleFeedReason.endpointRefused;
-  }
-  return StaleFeedReason.unknown;
+  return switch (readFailureKind(error)) {
+    ReadFailureKind.connection => StaleFeedReason.offline,
+    ReadFailureKind.timedOut => StaleFeedReason.timedOut,
+    ReadFailureKind.rateLimited => StaleFeedReason.rateLimited,
+    ReadFailureKind.endpointRefused => StaleFeedReason.endpointRefused,
+    ReadFailureKind.unavailable => StaleFeedReason.unavailable,
+    ReadFailureKind.serviceUnavailable => StaleFeedReason.serviceUnavailable,
+    ReadFailureKind.session => StaleFeedReason.session,
+    ReadFailureKind.unknown => StaleFeedReason.unknown,
+  };
 }
 
 /// Whether a failed feed should show its cached posts instead of an error page.
