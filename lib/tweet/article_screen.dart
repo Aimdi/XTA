@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/utils/browsers.dart';
 import 'package:xta/utils/urls.dart';
@@ -22,11 +21,22 @@ bool canOpenInArticleScreen(String url) {
       uri.host.isNotEmpty;
 }
 
+typedef ArticleNativeLinkHandler = Future<bool> Function(
+  BuildContext context,
+  String url,
+);
+
 class ArticleScreen extends StatefulWidget {
   final String url;
   final String? title;
+  final ArticleNativeLinkHandler? openNative;
 
-  const ArticleScreen({super.key, required this.url, this.title});
+  const ArticleScreen({
+    super.key,
+    required this.url,
+    this.title,
+    this.openNative,
+  });
 
   @override
   State<ArticleScreen> createState() => _ArticleScreenState();
@@ -67,7 +77,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
             final uri = Uri.tryParse(request.url);
             if (uri == null) return NavigationDecision.prevent;
             if (uri.scheme == 'http' || uri.scheme == 'https') {
-              if (await openNativeLink(context, request.url)) {
+              final openNative = widget.openNative;
+              if (openNative != null &&
+                  await openNative(context, request.url)) {
                 return NavigationDecision.prevent;
               }
               return NavigationDecision.navigate;
