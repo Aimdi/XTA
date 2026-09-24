@@ -144,12 +144,14 @@ class PluginPostMedia extends StatelessWidget {
         items: items,
         imageBuilder: imageBuilder,
         sourceName: sourceName,
+        onOpenPost: onOpenPost,
       );
     }
     return _PluginMediaPager(
       items: items,
       imageBuilder: imageBuilder,
       sourceName: sourceName,
+      onOpenPost: onOpenPost,
     );
   }
 }
@@ -159,11 +161,13 @@ class _PluginMediaPager extends StatefulWidget {
     required this.items,
     required this.sourceName,
     this.imageBuilder,
+    this.onOpenPost,
   });
 
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
   final String sourceName;
+  final VoidCallback? onOpenPost;
 
   @override
   State<_PluginMediaPager> createState() => _PluginMediaPagerState();
@@ -192,6 +196,7 @@ class _PluginMediaPagerState extends State<_PluginMediaPager> {
               items: items,
               imageBuilder: widget.imageBuilder,
               sourceName: widget.sourceName,
+              onOpenPost: widget.onOpenPost,
               fill: true,
             ),
           ),
@@ -224,6 +229,7 @@ class _PluginMediaTile extends StatelessWidget {
     required this.items,
     required this.sourceName,
     this.imageBuilder,
+    this.onOpenPost,
     this.fill = false,
   });
 
@@ -232,6 +238,7 @@ class _PluginMediaTile extends StatelessWidget {
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
   final String sourceName;
+  final VoidCallback? onOpenPost;
   final bool fill;
 
   @override
@@ -319,6 +326,7 @@ class _PluginMediaTile extends StatelessWidget {
           initialIndex: index,
           imageBuilder: imageBuilder,
           sourceName: sourceName,
+          onOpenPost: onOpenPost,
         ),
         onLongPress: () {
           if (_usableAlt(item.alt)) {
@@ -472,12 +480,14 @@ class PluginImageViewer extends StatefulWidget {
     this.initialIndex = 0,
     this.imageBuilder,
     this.sourceName = 'xta',
+    this.onOpenPost,
   });
 
   final List<PluginMediaItem> items;
   final int initialIndex;
   final PluginMediaImageBuilder? imageBuilder;
   final String sourceName;
+  final VoidCallback? onOpenPost;
 
   @override
   State<PluginImageViewer> createState() => _PluginImageViewerState();
