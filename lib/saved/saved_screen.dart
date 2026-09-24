@@ -32,6 +32,7 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/saved/library_on_device.dart';
 import 'package:xta/saved/saved_content_index.dart';
 import 'package:xta/saved/saved_source_filter.dart';
+import 'package:xta/saved/saved_view_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
@@ -67,6 +68,8 @@ class _SavedScreenState extends State<SavedScreen>
   // Selected folder filter: savedTabAll, savedTabUnfiled, or a folder id.
   String _filter = savedTabAll;
   final _source = SavedSourceStore();
+  final _view = SavedViewStore();
+  List<String> _visibleSavedIds = const [];
   bool _mediaOnly = false;
   bool _searching = false;
 
@@ -121,6 +124,7 @@ class _SavedScreenState extends State<SavedScreen>
   void dispose() {
     _searchDebounce?.cancel();
     _source.destroy();
+    _view.destroy();
     _searchFocusNode.dispose();
     super.dispose();
   }
@@ -465,6 +469,89 @@ class _SavedScreenState extends State<SavedScreen>
     );
   }
 
+  void _handleLibraryAction(SavedLibraryAction action) {
+    switch (action) {
+      case SavedLibraryAction.sortNewest:
+        _view.setSort(SavedSort.newest);
+        return;
+      case SavedLibraryAction.sortOldest:
+        _view.setSort(SavedSort.oldest);
+        return;
+      case SavedLibraryAction.select:
+        if (_mediaOnly) setState(() => _mediaOnly = false);
+        _view.beginSelection();
+        return;
+    }
+  }
+
+  Future<void> _moveSelected() async {
+    final ids = _view.state.selectedIds;
+    if (ids.isEmpty) return;
+
+    final folderModel = context.read<SavedTweetFolderModel>();
+    await folderModel.listFolders();
+    if (!mounted) return;
+
+    final destination = await showModalBottomSheet<String?>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.folder_off_outlined),
+              title: Text(L10n.of(sheetContext).unfiled),
+              onTap: () => Navigator.pop(sheetContext, ''),
+            ),
+            for (final folder in folderModel.state)
+              ListTile(
+                leading: const Icon(Icons.folder_outlined),
+                title: Text(folder.name),
+                onTap: () => Navigator.pop(sheetContext, folder.id),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (destination == null || !mounted) return;
+
+    await context.read<SavedTweetModel>().setFolders(
+      ids,
+      destination.isEmpty ? null : destination,
+    );
+    _view.finishSelection();
+  }
+
+  Future<void> _deleteSelected() async {
+    final ids = _view.state.selectedIds;
+    if (ids.isEmpty) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(L10n.of(dialogContext).library_delete_selected_title),
+        content: Text(
+          L10n.of(dialogContext).library_delete_selected_description(ids.length),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(L10n.of(dialogContext).cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(L10n.of(dialogContext).delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    await context.read<SavedTweetModel>().removeSavedTweets(ids.toList());
+    _view.finishSelection();
+  }
+
   Future<void> _handleOverflow(SavedOverflowAction action) async {
     switch (action) {
       case SavedOverflowAction.createFolder:
@@ -606,6 +693,8 @@ class _SavedScreenState extends State<SavedScreen>
       onState: (_, data) {
         var filtered = _applySavedSearch(_applyFilter(data), model.contentOf)
           .where((entry) => matchesSavedSource(model.contentOf(entry.id), _source.state)).toList();
+        filtered = applySavedSort(filtered, _view.state.sort);
+        _visibleSavedIds = filtered.map((entry) => entry.id).toList(growable: false);
         final onlyX = filtered.every((entry) => model.contentOf(entry.id)?.tweet != null);
         if (_mediaOnly && !onlyX) filtered = filtered.where((entry) => savedContentHasMedia(model.contentOf(entry.id))).toList();
 
@@ -622,14 +711,29 @@ class _SavedScreenState extends State<SavedScreen>
               ? _buildEmptyState()
               : _buildList(
                   itemCount: filtered.length,
-                  tileAt: (i) => SavedClipTile(
-                    saved: filtered[i],
-                    tweet: model.contentOf(filtered[i].id)?.tweet,
-                    reddit: model.contentOf(filtered[i].id)?.reddit,
-                    mastodon: model.contentOf(filtered[i].id)?.mastodon,
-                    onNoteChanged: (note) =>
-                        model.setNote(filtered[i].id, note),
-                  ),
+                  tileAt: (i) {
+                    final saved = filtered[i];
+                    final tile = SavedClipTile(
+                      saved: saved,
+                      tweet: model.contentOf(saved.id)?.tweet,
+                      reddit: model.contentOf(saved.id)?.reddit,
+                      mastodon: model.contentOf(saved.id)?.mastodon,
+                      onNoteChanged: (note) => model.setNote(saved.id, note),
+                    );
+                    if (_view.state.selecting) {
+                      return SavedSelectableTile(
+                        id: saved.id,
+                        selected: _view.state.selectedIds.contains(saved.id),
+                        onToggle: () => _view.toggleSelected(saved.id),
+                        child: tile,
+                      );
+                    }
+                    return GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onLongPress: () => _view.beginSelection(saved.id),
+                      child: tile,
+                    );
+                  },
                 ),
         );
       },
@@ -752,8 +856,11 @@ class _SavedScreenState extends State<SavedScreen>
 
     var prefs = PrefService.of(context, listen: false);
 
-    return ScopedBuilder<SavedSourceStore, SavedSource>(store: _source,
-      onState: (context, source) => XtaSystemBars(
+    return ScopedBuilder<SavedSourceStore, SavedSource>(
+      store: _source,
+      onState: (context, source) => ScopedBuilder<SavedViewStore, SavedViewState>(
+        store: _view,
+        onState: (context, view) => XtaSystemBars(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         floatingActionButton: Padding(
@@ -775,29 +882,98 @@ class _SavedScreenState extends State<SavedScreen>
                   surfaceTintColor: Colors.transparent,
                   scrolledUnderElevation: 0,
                   titleSpacing: kTweetHorizontalPadding,
-                  title: Text(L10n.current.saved),
-                  actions: [
-              IconButton(icon: const Icon(Icons.manage_search), tooltip: L10n.of(context).reader_search_all,
-                onPressed: () => Navigator.push(context, MaterialPageRoute<void>(builder: (_) => const ReaderSearchScreen()))),
-                    IconButton(
-                      isSelected: _searching,
-                      icon: const Icon(Icons.search),
-                      tooltip: L10n.current.search_saved_posts,
-                      onPressed: () => setState(() {
-                        _searching = !_searching;
-                        if (_searching) {
-                          WidgetsBinding.instance.addPostFrameCallback(
-                            (_) => _searchFocusNode.requestFocus(),
-                          );
-                        } else {
-                          _searchDebounce?.cancel();
-                          _query = '';
-                          _searchFocusNode.unfocus();
-                        }
-                      }),
-                    ),
-                    SavedOverflowButton(onSelected: _handleOverflow),
-                  ],
+                  leading: view.selecting
+                      ? IconButton(
+                          tooltip: L10n.of(context).close,
+                          onPressed: _view.finishSelection,
+                          icon: const Icon(Icons.close),
+                        )
+                      : null,
+                  title: Text(
+                    view.selecting
+                        ? L10n.of(context).library_selected_count(
+                            view.selectedIds.length,
+                          )
+                        : L10n.current.saved,
+                  ),
+                  actions: view.selecting
+                      ? [
+                          IconButton(
+                            key: const ValueKey('saved-select-all'),
+                            tooltip:
+                                view.selectedIds.length == _visibleSavedIds.length &&
+                                    _visibleSavedIds.isNotEmpty
+                                ? L10n.of(context).library_clear_selection
+                                : L10n.of(context).library_select_all,
+                            onPressed: () {
+                              if (view.selectedIds.length ==
+                                      _visibleSavedIds.length &&
+                                  _visibleSavedIds.isNotEmpty) {
+                                _view.selectAll(const <String>[]);
+                              } else {
+                                _view.selectAll(_visibleSavedIds);
+                              }
+                            },
+                            icon: Icon(
+                              view.selectedIds.length == _visibleSavedIds.length &&
+                                      _visibleSavedIds.isNotEmpty
+                                  ? Icons.deselect
+                                  : Icons.select_all,
+                            ),
+                          ),
+                          IconButton(
+                            key: const ValueKey('saved-move-selected'),
+                            tooltip: L10n.of(context).library_move_selected,
+                            onPressed: view.selectedIds.isEmpty
+                                ? null
+                                : _moveSelected,
+                            icon: const Icon(Icons.drive_file_move_outline),
+                          ),
+                          IconButton(
+                            key: const ValueKey('saved-delete-selected'),
+                            tooltip: L10n.of(context).delete,
+                            onPressed: view.selectedIds.isEmpty
+                                ? null
+                                : _deleteSelected,
+                            icon: const Icon(Icons.delete_outline),
+                          ),
+                        ]
+                      : [
+                          IconButton(
+                            icon: const Icon(Icons.manage_search),
+                            tooltip: L10n.of(context).reader_search_all,
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (_) => const ReaderSearchScreen(),
+                              ),
+                            ),
+                          ),
+                          if (_filter != savedTabFavorites &&
+                              _filter != savedTabNotes)
+                            SavedLibraryActionButton(
+                              sort: view.sort,
+                              onSelected: _handleLibraryAction,
+                            ),
+                          IconButton(
+                            isSelected: _searching,
+                            icon: const Icon(Icons.search),
+                            tooltip: L10n.current.search_saved_posts,
+                            onPressed: () => setState(() {
+                              _searching = !_searching;
+                              if (_searching) {
+                                WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) => _searchFocusNode.requestFocus(),
+                                );
+                              } else {
+                                _searchDebounce?.cancel();
+                                _query = '';
+                                _searchFocusNode.unfocus();
+                              }
+                            }),
+                          ),
+                          SavedOverflowButton(onSelected: _handleOverflow),
+                        ],
                 ),
             ];
           },
@@ -825,6 +1001,8 @@ class _SavedScreenState extends State<SavedScreen>
         ),
       ),
     ));
+      },
+    );
   }
 }
 
