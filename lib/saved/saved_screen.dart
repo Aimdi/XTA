@@ -913,9 +913,9 @@ class _SavedScreenState extends State<SavedScreen>
                               if (view.selectedIds.length ==
                                       _visibleSavedIds.length &&
                                   _visibleSavedIds.isNotEmpty) {
-                                _view.selectAll(const <String>[]);
+                                _view.selectVisible(const <String>[]);
                               } else {
-                                _view.selectAll(_visibleSavedIds);
+                                _view.selectVisible(_visibleSavedIds);
                               }
                             },
                             icon: Icon(
