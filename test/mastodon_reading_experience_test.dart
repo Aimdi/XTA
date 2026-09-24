@@ -114,6 +114,8 @@ void main() {
       images: const ['https://one.example/media.png'],
       imageAspects: const [4 / 3],
       imageAlts: const ['A saved landscape'],
+      imageDownloadUrls: const ['https://one.example/original.png'],
+      imageIsVideo: const [false],
       editedAt: DateTime.utc(2026),
       quote: const MastodonQuotedPost(
         id: 'q',
@@ -124,6 +126,8 @@ void main() {
         images: ['https://two.example/q.png'],
         imageAspects: [1.0],
         imageAlts: ['Quoted image'],
+        imageDownloadUrls: ['https://two.example/q-original.png'],
+        imageIsVideo: [false],
       ),
       poll: const MastodonPoll(options: [MastodonPollOption(title: 'Yes', votes: 7)], votesCount: 7),
     );
@@ -134,8 +138,14 @@ void main() {
     expect(restored.poll!.options.single.votes, 7);
     expect(restored.imageAlts.single, 'A saved landscape');
     expect(restored.imageAspects.single, 4 / 3);
+    expect(restored.imageDownloadUrls.single, 'https://one.example/original.png');
+    expect(restored.imageIsVideo.single, isFalse);
     expect(restored.quote!.images.single, 'https://two.example/q.png');
     expect(restored.quote!.imageAlts.single, 'Quoted image');
+    expect(
+      restored.quote!.imageDownloadUrls.single,
+      'https://two.example/q-original.png',
+    );
     expect(restored.editedAt, DateTime.utc(2026));
     expect(mastodonPostFromSnapshot({'version': 99}), isNull);
   });
