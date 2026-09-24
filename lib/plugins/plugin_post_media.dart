@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/utils/downloads.dart';
 
