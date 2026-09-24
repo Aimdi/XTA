@@ -74,8 +74,10 @@ void main() {
     await tester.tap(find.text('open native'));
     await tester.pumpAndSettle();
 
-    expect(handled, isTrue);
     expect(find.text('native profile'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(handled, isTrue);
   });
 
   testWidgets('openNativeLink leaves ordinary web links for the caller', (
