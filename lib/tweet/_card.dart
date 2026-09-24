@@ -8,6 +8,7 @@ import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_media.dart';
+import 'package:xta/tweet/article_screen.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/broadcasts.dart';
 import 'package:xta/tweet/poll.dart';
@@ -82,13 +83,34 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  Widget _createCard(String? url, Widget child, BuildContext context) {
+  Widget _createCard(
+    String? url,
+    Widget child,
+    BuildContext context, {
+    String? title,
+  }) {
     return _createBaseCard(
       child,
       onTap: url == null
           ? null
           : () async {
-              await openLink(context, url);
+              if (!canOpenInArticleScreen(url)) {
+                await openLink(context, url);
+                return;
+              }
+              final readerTitle =
+                  title?.trim().isNotEmpty == true
+                  ? title!.trim()
+                  : Uri.tryParse(url)?.host;
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ArticleScreen(
+                    url: url,
+                    title: readerTitle,
+                  ),
+                ),
+              );
             },
     );
   }
@@ -242,6 +264,9 @@ class _TweetCardState extends State<TweetCard> {
 
   dynamic _createWebsiteCard(
       BuildContext context, Map<String, dynamic> unifiedCard, String uri, String imageSize, Widget media) {
+    final title =
+        unifiedCard['component_objects']['details_1']['data']['title']['content']
+            as String?;
     return _createCard(
         uri,
         Column(
@@ -251,13 +276,14 @@ class _TweetCardState extends State<TweetCard> {
             media,
             _createListTile(
               context,
-              unifiedCard['component_objects']['details_1']['data']['title']['content'],
+              title ?? '',
               unifiedCard['component_objects']['details_1']['data']['subtitle']['content'],
               null,
             ),
           ],
         ),
-        context);
+        context,
+        title: title);
   }
 
   dynamic _createUnifiedCard(BuildContext context, String imageSize) {
@@ -362,6 +388,8 @@ class _TweetCardState extends State<TweetCard> {
       case 'summary':
         var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
+        final title = card['binding_values']['title']['string_value'] as String?;
+        final title = card['binding_values']['title']['string_value'] as String?;
         return _createCard(
             _findCardUrl(card),
             Row(
@@ -371,15 +399,17 @@ class _TweetCardState extends State<TweetCard> {
                     flex: 4,
                     child: _createListTile(
                         context,
-                        card['binding_values']['title']['string_value'],
+                        title ?? '',
                         card['binding_values']?['description']?['string_value'],
                         card['binding_values']?['vanity_url']?['string_value']))
               ],
             ),
-            context);
+            context,
+            title: title);
       case 'summary_large_image':
         var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
+        final title = card['binding_values']['title']['string_value'] as String?;
         return _createCard(
             _findCardUrl(card),
             Column(
@@ -389,13 +419,14 @@ class _TweetCardState extends State<TweetCard> {
                 _createImage(imageSize, image, BoxFit.cover),
                 _createListTile(
                   context,
-                  card['binding_values']['title']['string_value'],
+                  title ?? '',
                   card['binding_values']?['description']?['string_value'],
                   card['binding_values']?['vanity_url']?['string_value'],
                 ),
               ],
             ),
-            context);
+            context,
+            title: title);
       case 'player':
         var image = card['binding_values']['player_image$imageKey']?['image_value'];
 
@@ -413,7 +444,8 @@ class _TweetCardState extends State<TweetCard> {
                         card['binding_values']?['vanity_url']?['string_value']))
               ],
             ),
-            context);
+            context,
+            title: title);
       // The image variants carry the same choice bindings; only the artwork
       // differs, and it was never shown. They used to fall through to the
       // default and render nothing at all.
@@ -443,7 +475,8 @@ class _TweetCardState extends State<TweetCard> {
                 _createListTile(context, title, null, vanityUrl),
               ],
             ),
-            context);
+            context,
+            title: title);
       case 'unified_card':
         try {
           return _createUnifiedCard(context, imageSize);
@@ -456,7 +489,8 @@ class _TweetCardState extends State<TweetCard> {
         var url = card['binding_values']['card_url']['string_value'];
         var image = card['binding_values']['event_thumbnail$imageKey']?['image_value'];
 
-        // TODO: This opens the URL externally. Create a screen for it in XTA
+        final title =
+            card['binding_values']['event_title']['string_value'] as String?;
         return _createCard(
             url,
             Column(
@@ -466,13 +500,14 @@ class _TweetCardState extends State<TweetCard> {
                 _createImage(imageSize, image, BoxFit.cover),
                 _createListTile(
                   context,
-                  card['binding_values']['event_title']['string_value'],
+                  title ?? '',
                   card['binding_values']['event_subtitle']?['string_value'],
                   null,
                 ),
               ],
             ),
-            context);
+            context,
+            title: title);
       case '745291183405076480:broadcast':
         // https://twitter.com/KwasiKwarteng/status/1573229010779516929
         final values = card['binding_values'] as Map<String, dynamic>?;
