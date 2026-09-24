@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/saved_tab_order.dart';
+import 'package:xta/saved/saved_view_store.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/x_look_theme.dart';
@@ -264,6 +265,149 @@ class SavedSearchField extends StatelessWidget {
 }
 
 enum SavedOverflowAction { createFolder, manageFolders, downloads, offline, cleanup, settings }
+
+enum SavedLibraryAction { sortNewest, sortOldest, select }
+
+class SavedLibraryActionButton extends StatelessWidget {
+  final SavedSort sort;
+  final ValueChanged<SavedLibraryAction> onSelected;
+
+  const SavedLibraryActionButton({
+    super.key,
+    required this.sort,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return PopupMenuButton<SavedLibraryAction>(
+      key: const ValueKey('saved-library-actions'),
+      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+      icon: const Icon(Icons.tune),
+      onSelected: onSelected,
+      itemBuilder: (_) => [
+        CheckedPopupMenuItem(
+          value: SavedLibraryAction.sortNewest,
+          checked: sort == SavedSort.newest,
+          child: Text(l10n.library_sort_newest),
+        ),
+        CheckedPopupMenuItem(
+          value: SavedLibraryAction.sortOldest,
+          checked: sort == SavedSort.oldest,
+          child: Text(l10n.library_sort_oldest),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem(
+          value: SavedLibraryAction.select,
+          child: Row(
+            children: [
+              const Icon(Icons.checklist_outlined, size: kTweetActionIconSize),
+              const SizedBox(width: kTweetSpace3),
+              Text(l10n.select),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class SavedSelectionBar extends StatelessWidget implements PreferredSizeWidget {
+  final int selectedCount;
+  final bool allSelected;
+  final VoidCallback onClose;
+  final VoidCallback onSelectAll;
+  final VoidCallback onMove;
+  final VoidCallback onDelete;
+
+  const SavedSelectionBar({
+    super.key,
+    required this.selectedCount,
+    required this.allSelected,
+    required this.onClose,
+    required this.onSelectAll,
+    required this.onMove,
+    required this.onDelete,
+  });
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return AppBar(
+      leading: IconButton(
+        tooltip: l10n.close,
+        onPressed: onClose,
+        icon: const Icon(Icons.close),
+      ),
+      title: Text(l10n.library_selected_count(selectedCount)),
+      actions: [
+        IconButton(
+          key: const ValueKey('saved-select-all'),
+          tooltip: allSelected ? l10n.library_clear_selection : l10n.library_select_all,
+          onPressed: onSelectAll,
+          icon: Icon(allSelected ? Icons.deselect : Icons.select_all),
+        ),
+        IconButton(
+          key: const ValueKey('saved-move-selected'),
+          tooltip: l10n.library_move_selected,
+          onPressed: selectedCount == 0 ? null : onMove,
+          icon: const Icon(Icons.drive_file_move_outline),
+        ),
+        IconButton(
+          key: const ValueKey('saved-delete-selected'),
+          tooltip: l10n.delete,
+          onPressed: selectedCount == 0 ? null : onDelete,
+          icon: const Icon(Icons.delete_outline),
+        ),
+      ],
+    );
+  }
+}
+
+class SavedSelectableTile extends StatelessWidget {
+  final String id;
+  final bool selected;
+  final VoidCallback onToggle;
+  final Widget child;
+
+  const SavedSelectableTile({
+    super.key,
+    required this.id,
+    required this.selected,
+    required this.onToggle,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: selected
+          ? tweetAccentColor(context).withValues(alpha: 0.08)
+          : Colors.transparent,
+      child: InkWell(
+        key: ValueKey('saved-select-$id'),
+        onTap: onToggle,
+        child: Stack(
+          children: [
+            IgnorePointer(child: child),
+            PositionedDirectional(
+              top: kTweetSpace2,
+              end: kTweetHorizontalPadding,
+              child: Semantics(
+                checked: selected,
+                child: Checkbox(value: selected, onChanged: (_) => onToggle()),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class SavedOverflowButton extends StatelessWidget {
   final ValueChanged<SavedOverflowAction> onSelected;

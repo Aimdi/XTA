@@ -38,8 +38,20 @@ void main() {
       store.toggleMedia();
       store.toggleSearch();
       store.setQuery(' flutter ');
+      store.setSort(SavedSort.oldest);
+      store.beginSelection('one');
+      store.toggleSelected('two');
       expect(store.state.mediaOnly, isTrue);
       expect(store.state.query, 'flutter');
+      expect(store.state.sort, SavedSort.oldest);
+      expect(store.state.selecting, isTrue);
+      expect(store.state.selectedIds, {'one', 'two'});
+
+      store.selectVisible(['three', 'four']);
+      expect(store.state.selectedIds, {'three', 'four'});
+      store.finishSelection();
+      expect(store.state.selecting, isFalse);
+      expect(store.state.selectedIds, isEmpty);
 
       store.toggleSearch();
       expect(store.state.searching, isFalse);
@@ -102,6 +114,68 @@ void main() {
       expect(mediaToggles, 1);
     },
   );
+
+  test('saved sorting preserves newest order and reverses for oldest', () {
+    const items = ['new', 'middle', 'old'];
+    expect(applySavedSort(items, SavedSort.newest), items);
+    expect(
+      applySavedSort(items, SavedSort.oldest),
+      ['old', 'middle', 'new'],
+    );
+  });
+
+  testWidgets('library actions expose sort and selection controls', (
+    tester,
+  ) async {
+    SavedLibraryAction? action;
+    await tester.pumpWidget(
+      _app(
+        SavedLibraryActionButton(
+          sort: SavedSort.newest,
+          onSelected: (value) => action = value,
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(const ValueKey('saved-library-actions')));
+    await tester.pumpAndSettle();
+    expect(find.text('Newest saved first'), findsOneWidget);
+    expect(find.text('Oldest saved first'), findsOneWidget);
+    expect(find.text('Select'), findsOneWidget);
+
+    await tester.tap(find.text('Select'));
+    expect(action, SavedLibraryAction.select);
+  });
+
+  testWidgets('selection bar disables destructive actions with no selection', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        SavedSelectionBar(
+          selectedCount: 0,
+          allSelected: false,
+          onClose: () {},
+          onSelectAll: () {},
+          onMove: () {},
+          onDelete: () {},
+        ),
+      ),
+    );
+
+    expect(
+      tester.widget<IconButton>(
+        find.byKey(const ValueKey('saved-move-selected')),
+      ).onPressed,
+      isNull,
+    );
+    expect(
+      tester.widget<IconButton>(
+        find.byKey(const ValueKey('saved-delete-selected')),
+      ).onPressed,
+      isNull,
+    );
+  });
 
   test('folder reconciliation keeps a valid custom folder', () {
     final store = SavedViewStore();

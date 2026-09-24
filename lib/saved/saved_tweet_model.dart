@@ -41,11 +41,33 @@ class SavedTweetModel extends Store<List<SavedTweet>> {
   }
 
   Future<void> setFolder(String id, String? folderId) async {
-    var database = await Repository.writable();
+    await setFolders([id], folderId);
+  }
 
-    await database.update(tableSavedTweet, {'folder_id': folderId}, where: 'id = ?', whereArgs: [id]);
+  Future<void> setFolders(Iterable<String> ids, String? folderId) async {
+    final selected = ids.toSet();
+    if (selected.isEmpty) return;
 
-    update(state.map((e) => e.id == id ? e.copyWith(folderId: folderId) : e).toList(), force: true);
+    final database = await Repository.writable();
+    final batch = database.batch();
+    for (final id in selected) {
+      batch.update(
+        tableSavedTweet,
+        {'folder_id': folderId},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    }
+    await batch.commit(noResult: true);
+
+    update(
+      state
+          .map((entry) => selected.contains(entry.id)
+              ? entry.copyWith(folderId: folderId)
+              : entry)
+          .toList(),
+      force: true,
+    );
   }
 
   Future<void> setNote(String id, String? note) async {
