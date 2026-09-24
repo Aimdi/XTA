@@ -13,6 +13,8 @@ Map<String, Object?> mastodonPostSnapshot(MastodonPost post) => {
   'spoiler': post.spoilerText,
   'sensitive': post.sensitive,
   'images': post.images,
+  'imageAspects': post.imageAspects,
+  'imageAlts': post.imageAlts,
   'published': post.publishedAt?.toIso8601String(),
   'edited': post.editedAt?.toIso8601String(),
   'boosted': post.boosted,
@@ -74,6 +76,14 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
       for (final image in json['images'].list)
         if (image.string != null) image.string!,
     ],
+    imageAspects: [
+      for (final aspect in json['imageAspects'].list)
+        aspect.number,
+    ],
+    imageAlts: [
+      for (final alt in json['imageAlts'].list)
+        alt.string,
+    ],
     publishedAt: DateTime.tryParse(json['published'].string ?? ''),
     editedAt: DateTime.tryParse(json['edited'].string ?? ''),
     boosted: json['boosted'].boolean ?? false,
@@ -97,6 +107,8 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
             text: quoted.text,
             url: quoted.url,
             images: quoted.images,
+            imageAspects: quoted.imageAspects,
+            imageAlts: quoted.imageAlts,
           ),
     linkCard: !card.exists
         ? null
