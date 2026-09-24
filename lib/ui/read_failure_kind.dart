@@ -16,6 +16,7 @@ enum ReadFailureKind {
   session,
   rateLimited,
   endpointRefused,
+  transactionUnavailable,
   unavailable,
   serviceUnavailable,
   unknown,
@@ -40,6 +41,9 @@ ReadFailureKind readFailureKind(Object? error) {
   }
   if (error is EndpointRefusedException) {
     return ReadFailureKind.endpointRefused;
+  }
+  if (error is TransactionIdUnavailableException) {
+    return ReadFailureKind.transactionUnavailable;
   }
   if (error is HttpException &&
       const [500, 502, 503, 504].contains(error.statusCode)) {
