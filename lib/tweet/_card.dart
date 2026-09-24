@@ -525,7 +525,11 @@ class _TweetCardState extends State<TweetCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.cover),
+                _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                ),
                 _createListTile(
                   context,
                   title ?? '',
