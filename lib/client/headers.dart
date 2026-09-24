@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
 import 'package:xta/constants.dart';
 
@@ -65,7 +66,7 @@ class TwitterHeaders {
       return Future.error(failure);
     }
 
-    final started = Future.sync(initializer).timeout(initializationTimeout);
+    final started = _deriveTransaction();
     _initFuture = started;
     _derivedAt = null;
 
@@ -97,6 +98,19 @@ class TwitterHeaders {
     );
 
     return started;
+  }
+
+  static Future<ClientTransaction> _deriveTransaction() async {
+    try {
+      return await Future.sync(initializer).timeout(initializationTimeout);
+    } on TimeoutException {
+      rethrow;
+    } catch (error, stack) {
+      Error.throwWithStackTrace(
+        TransactionIdUnavailableException(error),
+        stack,
+      );
+    }
   }
 
   static Future<Map<String, String>?> getXClientTransactionIdHeader(Uri? uri) async {
