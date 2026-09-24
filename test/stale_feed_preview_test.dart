@@ -18,6 +18,18 @@ void main() {
       expect(staleFeedReasonOf(NoWorkingAccountException()), StaleFeedReason.noWorkingAccount);
       expect(staleFeedReasonOf(NoAccountAvailableException()), StaleFeedReason.noAccount);
       expect(staleFeedReasonOf(EndpointRefusedException('Search')), StaleFeedReason.endpointRefused);
+      expect(
+        staleFeedReasonOf(HttpException(http.Response('', 401))),
+        StaleFeedReason.session,
+      );
+      expect(
+        staleFeedReasonOf(HttpException(http.Response('', 404))),
+        StaleFeedReason.unavailable,
+      );
+      expect(
+        staleFeedReasonOf(HttpException(http.Response('', 503))),
+        StaleFeedReason.serviceUnavailable,
+      );
     });
 
     test('anything else stays unknown rather than being guessed at', () {
