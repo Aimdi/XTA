@@ -36,16 +36,24 @@ import 'package:xta/status.dart';
 import 'package:xta/tweet/live_player_screen.dart';
 import 'package:xta/utils/urls.dart';
 
-/// Opens [url] in a plugin screen when one can read it, otherwise the browser.
-Future<void> openLink(BuildContext context, String url) async {
+/// Opens [url] in a native XTA screen when one can read it.
+Future<bool> openNativeLink(BuildContext context, String url) async {
   if (await openWithPlugins(context, url) || !context.mounted) {
-    return;
+    return true;
   }
   if (isLiveWatchUrl(url)) {
     await openLivePlayerFromUrl(context, url);
-    return;
+    return true;
   }
   if (await _openX(context, url) || !context.mounted) {
+    return true;
+  }
+  return false;
+}
+
+/// Opens [url] in a native XTA screen when one can read it, otherwise the browser.
+Future<void> openLink(BuildContext context, String url) async {
+  if (await openNativeLink(context, url) || !context.mounted) {
     return;
   }
   await openUri(context, url);
