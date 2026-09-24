@@ -20,6 +20,7 @@ import 'package:pref/pref.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/utils/media_quality.dart';
+import 'package:xta/utils/json.dart';
 
 /// Poll totals are grouped in the reader's locale. Building the pattern parses
 /// it, so one is kept per locale rather than one per build of every poll.
@@ -266,10 +267,13 @@ class _TweetCardState extends State<TweetCard> {
   }
 
   dynamic _createWebsiteCard(
-      BuildContext context, Map<String, dynamic> unifiedCard, String uri, String imageSize, Widget media) {
-    final title =
-        unifiedCard['component_objects']['details_1']['data']['title']['content']
-            as String?;
+      BuildContext context,
+      Map<String, dynamic> unifiedCard,
+      String? uri,
+      String imageSize,
+      Widget media,
+  ) {
+    final title = Json(unifiedCard)['component_objects']['details_1']['data']['title']['content'].string;
     return _createCard(
         uri,
         Column(
@@ -280,7 +284,7 @@ class _TweetCardState extends State<TweetCard> {
             _createListTile(
               context,
               title ?? '',
-              unifiedCard['component_objects']['details_1']['data']['subtitle']['content'],
+              Json(unifiedCard)['component_objects']['details_1']['data']['subtitle']['content'].string,
               null,
             ),
           ],
@@ -298,25 +302,34 @@ class _TweetCardState extends State<TweetCard> {
 
     switch (unifiedCard['type']) {
       case 'image_website':
-        var media = unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
-        var uri = unifiedCard['destination_objects']['browser_1']['data']['url_data']['url'];
+        final json = Json(unifiedCard);
+        final mediaId = json['component_objects']['media_1']['data']['id'].string;
+        final media = mediaId == null ? const Json(null) : json['media_entities'][mediaId];
+        final uri = json['destination_objects']['browser_1']['data']['url_data']['url'].string;
 
         var child = _createImage(
             imageSize,
             {
-              'url': media['media_url_https'],
-              'width': media['original_info']['width'],
-              'height': media['original_info']['height'],
+              'url': media['media_url_https'].string,
+              'width': media['original_info']['width'].number ?? 1,
+              'height': media['original_info']['height'].number ?? 1,
             },
             BoxFit.cover);
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       case 'video_website':
         // https://twitter.com/yenisafak/status/1560244349451096064
-        var media = unifiedCard['media_entities'][unifiedCard['component_objects']['media_1']['data']['id']];
-        var uri = unifiedCard['destination_objects']['browser_with_docked_media_1']['data']['url_data']['url'];
-
-        var child =
-            TweetMedia(media: [Media.fromJson(media)], username: widget.tweet.user!.screenName!, sensitive: false);
+        final json = Json(unifiedCard);
+        final mediaId = json['component_objects']['media_1']['data']['id'].string;
+        final rawMedia = mediaId == null ? null : json['media_entities'][mediaId].raw;
+        final uri = json['destination_objects']['browser_with_docked_media_1']['data']['url_data']['url'].string;
+        if (rawMedia is! Map<String, dynamic>) {
+          return Container();
+        }
+        var child = TweetMedia(
+          media: [Media.fromJson(rawMedia)],
+          username: widget.tweet.user?.screenName ?? '',
+          sensitive: false,
+        );
         return _createWebsiteCard(context, unifiedCard, uri, imageSize, child);
       default:
         return Container();
@@ -362,13 +375,17 @@ class _TweetCardState extends State<TweetCard> {
   }
 
   String? _findCardUrl(Map<String, dynamic> card) {
-    var link = card['url'];
+    final link = Json(card)['url'].string;
+    if (link == null || link.isEmpty) return null;
     var urls = widget.tweet.entities?.urls ?? [];
 
-    // Match up the card's URL with the link in the tweet entities, otherwise just use the card's URL
-    var url = urls.firstWhere((element) => element.url == link, orElse: () => Url.fromJson({'expanded_url': link}));
+    // Match up the card's URL with the link in the tweet entities, otherwise just use the card's URL.
+    var url = urls.firstWhere(
+      (element) => element.url == link,
+      orElse: () => Url.fromJson({'expanded_url': link}),
+    );
 
-    return url.expandedUrl;
+    return url.expandedUrl ?? link;
   }
 
   @override
@@ -391,7 +408,7 @@ class _TweetCardState extends State<TweetCard> {
       case 'summary':
         var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
-        final title = card['binding_values']['title']['string_value'] as String?;
+        final title = Json(card)['binding_values']['title']['string_value'].string;
         return _createCard(
             _findCardUrl(card),
             Row(
@@ -411,14 +428,18 @@ class _TweetCardState extends State<TweetCard> {
       case 'summary_large_image':
         var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
-        final title = card['binding_values']['title']['string_value'] as String?;
+        final title = Json(card)['binding_values']['title']['string_value'].string;
         return _createCard(
             _findCardUrl(card),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.cover),
+                _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                ),
                 _createListTile(
                   context,
                   title ?? '',
@@ -431,7 +452,7 @@ class _TweetCardState extends State<TweetCard> {
             title: title);
       case 'player':
         var image = card['binding_values']['player_image$imageKey']?['image_value'];
-        final title = card['binding_values']['title']['string_value'] as String?;
+        final title = Json(card)['binding_values']['title']['string_value'].string;
 
         return _createCard(
             _findCardUrl(card),
@@ -463,10 +484,11 @@ class _TweetCardState extends State<TweetCard> {
         return _createVoteCard(context, card, 4);
       case 'promo_website':
         // https://twitter.com/CMEGroup/status/1573288572647612416
-        var url = card['binding_values']['website_url']['string_value'];
-        var image = card['binding_values']['promo_image$imageKey']?['image_value'];
-        var title = card['binding_values']['title']['string_value'];
-        var vanityUrl = card['binding_values']['vanity_url']['string_value'];
+        final values = Json(card)['binding_values'];
+        final url = values['website_url']['string_value'].string;
+        final image = values['promo_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
 
         return _createCard(
             url,
@@ -474,8 +496,12 @@ class _TweetCardState extends State<TweetCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _createImage(imageSize, image, BoxFit.cover),
-                _createListTile(context, title, null, vanityUrl),
+                _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                ),
+                _createListTile(context, title ?? '', null, vanityUrl),
               ],
             ),
             context,
@@ -489,11 +515,10 @@ class _TweetCardState extends State<TweetCard> {
         }
       case '745291183405076480:live_event':
         // https://twitter.com/Erdoanz11/status/1573765738032152577
-        var url = card['binding_values']['card_url']['string_value'];
-        var image = card['binding_values']['event_thumbnail$imageKey']?['image_value'];
-
-        final title =
-            card['binding_values']['event_title']['string_value'] as String?;
+        final values = Json(card)['binding_values'];
+        final url = values['card_url']['string_value'].string;
+        final image = values['event_thumbnail$imageKey']['image_value'].raw;
+        final title = values['event_title']['string_value'].string;
         return _createCard(
             url,
             Column(
@@ -504,7 +529,7 @@ class _TweetCardState extends State<TweetCard> {
                 _createListTile(
                   context,
                   title ?? '',
-                  card['binding_values']['event_subtitle']?['string_value'],
+                  values['event_subtitle']['string_value'].string,
                   null,
                 ),
               ],
