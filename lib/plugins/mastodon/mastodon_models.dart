@@ -57,6 +57,8 @@ class MastodonPost {
   final List<String> images;
   final List<double?> imageAspects;
   final List<String?> imageAlts;
+  final List<String?> imageDownloadUrls;
+  final List<bool> imageIsVideo;
   final DateTime? publishedAt;
   final String url;
 
@@ -94,6 +96,8 @@ class MastodonPost {
     this.images = const [],
     this.imageAspects = const [],
     this.imageAlts = const [],
+    this.imageDownloadUrls = const [],
+    this.imageIsVideo = const [],
     this.publishedAt,
     this.boosted = false,
     this.boostedBy,
@@ -112,11 +116,17 @@ class MastodonPost {
 
   bool get hasMedia => images.isNotEmpty;
 
-  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
-    urls: images,
-    aspects: imageAspects,
-    alts: imageAlts,
-  );
+  List<PluginMediaItem> get mediaItems => [
+    for (var i = 0; i < images.length; i++)
+      PluginMediaItem(
+        url: images[i],
+        aspectRatio: i < imageAspects.length ? imageAspects[i] : null,
+        alt: i < imageAlts.length ? imageAlts[i] : null,
+        downloadUrl:
+            i < imageDownloadUrls.length ? imageDownloadUrls[i] : null,
+        isVideo: i < imageIsVideo.length && imageIsVideo[i],
+      ),
+  ];
 
   bool get hasSpoiler => spoilerText.trim().isNotEmpty;
 
@@ -133,6 +143,8 @@ class MastodonQuotedPost {
   final List<String> images;
   final List<double?> imageAspects;
   final List<String?> imageAlts;
+  final List<String?> imageDownloadUrls;
+  final List<bool> imageIsVideo;
 
   const MastodonQuotedPost({
     required this.id,
@@ -143,6 +155,8 @@ class MastodonQuotedPost {
     this.images = const [],
     this.imageAspects = const [],
     this.imageAlts = const [],
+    this.imageDownloadUrls = const [],
+    this.imageIsVideo = const [],
   });
 
   MastodonPost get asPost => MastodonPost(
@@ -154,6 +168,8 @@ class MastodonQuotedPost {
     images: images,
     imageAspects: imageAspects,
     imageAlts: imageAlts,
+    imageDownloadUrls: imageDownloadUrls,
+    imageIsVideo: imageIsVideo,
   );
 }
 
@@ -685,6 +701,8 @@ MastodonPost? mastodonPostFromStatus(
     images: images,
     imageAspects: [for (final item in media) item.aspectRatio],
     imageAlts: [for (final item in media) item.alt],
+    imageDownloadUrls: [for (final item in media) item.downloadUrl],
+    imageIsVideo: [for (final item in media) item.isVideo],
     publishedAt: DateTime.tryParse(
       status['created_at'].string ?? '',
     )?.toLocal(),
@@ -750,6 +768,8 @@ MastodonQuotedPost? mastodonQuoteOf(Json status, {String? homeDomain}) {
     images: post.images,
     imageAspects: post.imageAspects,
     imageAlts: post.imageAlts,
+    imageDownloadUrls: post.imageDownloadUrls,
+    imageIsVideo: post.imageIsVideo,
   );
 }
 
