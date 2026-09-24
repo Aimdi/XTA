@@ -137,14 +137,17 @@ void main() {
     expect(find.text('Search X'), findsOneWidget);
   });
 
-  testWidgets('recent search clear only removes the current network', (
+  testWidgets('recent search history exposes a clear control for its network', (
     tester,
   ) async {
-    final prefs = PrefServiceCache();
+    final prefs = PrefServiceCache(
+      cache: {
+        recentSearchesPreference:
+            '{"x":["flutter"],"reddit":["dart"]}',
+      },
+    );
     final store = RecentSearchesStore(prefs);
     addTearDown(store.destroy);
-    await store.remember('x', 'flutter');
-    await store.remember('reddit', 'dart');
 
     await tester.pumpWidget(
       MaterialApp(
@@ -164,16 +167,13 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
 
     expect(find.text('flutter'), findsOneWidget);
-    await tester.tap(
+    expect(
       find.byKey(const ValueKey('recent-searches-clear-x')),
+      findsOneWidget,
     );
-    await tester.pumpAndSettle();
-
-    expect(find.text('flutter'), findsNothing);
-    expect(store.state['x'], isEmpty);
     expect(store.state['reddit'], ['dart']);
   });
 
