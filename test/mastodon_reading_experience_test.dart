@@ -112,6 +112,8 @@ void main() {
       sensitive: true,
       replyToId: 'parent',
       images: const ['https://one.example/media.png'],
+      imageAspects: const [4 / 3],
+      imageAlts: const ['A saved landscape'],
       editedAt: DateTime.utc(2026),
       quote: const MastodonQuotedPost(
         id: 'q',
@@ -120,6 +122,8 @@ void main() {
         text: 'Quote',
         url: 'https://two.example/@b/q',
         images: ['https://two.example/q.png'],
+        imageAspects: [1.0],
+        imageAlts: ['Quoted image'],
       ),
       poll: const MastodonPoll(options: [MastodonPollOption(title: 'Yes', votes: 7)], votesCount: 7),
     );
@@ -128,7 +132,10 @@ void main() {
     expect(restored.spoilerText, 'Warning');
     expect(restored.replyToId, 'parent');
     expect(restored.poll!.options.single.votes, 7);
+    expect(restored.imageAlts.single, 'A saved landscape');
+    expect(restored.imageAspects.single, 4 / 3);
     expect(restored.quote!.images.single, 'https://two.example/q.png');
+    expect(restored.quote!.imageAlts.single, 'Quoted image');
     expect(restored.editedAt, DateTime.utc(2026));
     expect(mastodonPostFromSnapshot({'version': 99}), isNull);
   });
