@@ -147,7 +147,6 @@ void main() {
       },
     );
     final store = RecentSearchesStore(prefs);
-    addTearDown(store.destroy);
 
     await tester.pumpWidget(
       MaterialApp(
