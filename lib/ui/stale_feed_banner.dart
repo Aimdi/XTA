@@ -37,6 +37,12 @@ class StaleFeedBanner extends StatelessWidget {
         return '🔑';
       case StaleFeedReason.endpointRefused:
         return '🚧';
+      case StaleFeedReason.unavailable:
+        return '🚫';
+      case StaleFeedReason.serviceUnavailable:
+        return '🛠️';
+      case StaleFeedReason.session:
+        return '🔑';
       case StaleFeedReason.unknown:
         return '💥';
     }
@@ -56,9 +62,32 @@ class StaleFeedBanner extends StatelessWidget {
         return L10n.of(context).no_account_available_title;
       case StaleFeedReason.endpointRefused:
         return L10n.of(context).endpoint_refused_title;
+      case StaleFeedReason.unavailable:
+        return L10n.of(context).reader_request_unavailable;
+      case StaleFeedReason.serviceUnavailable:
+        return L10n.of(context).reader_service_unavailable;
+      case StaleFeedReason.session:
+        return L10n.of(context).reader_sign_in_needed;
       case StaleFeedReason.unknown:
         return L10n.of(context).oops_something_went_wrong;
     }
+  }
+
+  static String? detailOf(BuildContext context, StaleFeedReason reason) {
+    final l10n = L10n.of(context);
+    return switch (reason) {
+      StaleFeedReason.rateLimited => l10n.rate_limited_message,
+      StaleFeedReason.noWorkingAccount => l10n.no_working_account_message,
+      StaleFeedReason.noAccount => l10n.no_account_available_message,
+      StaleFeedReason.endpointRefused => l10n.endpoint_refused_message,
+      StaleFeedReason.unavailable => l10n.reader_request_unavailable_hint,
+      StaleFeedReason.serviceUnavailable =>
+        l10n.reader_service_unavailable_hint,
+      StaleFeedReason.session => l10n.reader_sign_in_needed,
+      StaleFeedReason.offline ||
+      StaleFeedReason.timedOut ||
+      StaleFeedReason.unknown => null,
+    };
   }
 
   /// "from 14:05" for posts saved today, the full date for older ones — the
@@ -95,7 +124,14 @@ class StaleFeedBanner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(titleOf(context, reason), style: theme.textTheme.titleSmall),
+                  Text(
+                    titleOf(context, reason),
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  if (detailOf(context, reason) case final detail?) ...[
+                    const SizedBox(height: 2),
+                    Text(detail, style: subtitle),
+                  ],
                   const SizedBox(height: 2),
                   Text(ageLineOf(context, cachedAt), style: subtitle),
                   if (retry != null)
