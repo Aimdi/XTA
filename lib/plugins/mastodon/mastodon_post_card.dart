@@ -9,6 +9,7 @@ import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_activity.dart';
 import 'package:xta/plugins/mastodon/mastodon_bookmark.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/mastodon/mastodon_profile_screen.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_text.dart';
@@ -234,41 +235,10 @@ class MastodonPostCard extends StatelessWidget {
   }
 
   Widget _media(BuildContext context) {
-    final radius = tweetMediaRadiusOf(context);
-    final width = MediaQuery.sizeOf(context).width;
-    final scale = MediaQuery.devicePixelRatioOf(context);
-
-    if (post.images.length == 1) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius),
-        child: AspectRatio(
-          aspectRatio: kMastodonMediaMaxAspectRatio,
-          child: ExtendedImage.network(
-            post.images.first,
-            fit: BoxFit.cover,
-            cacheWidth: (width * scale).ceil(),
-          ),
-        ),
-      );
-    }
-
-    return SizedBox(
-      height: 220,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: post.images.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 6),
-        itemBuilder: (context, index) => ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: ExtendedImage.network(
-            post.images[index],
-            width: 200,
-            height: 220,
-            fit: BoxFit.cover,
-            cacheWidth: (200 * scale).ceil(),
-          ),
-        ),
-      ),
+    if (!post.hasMedia) return const SizedBox.shrink();
+    return PluginPostMedia(
+      items: post.mediaItems,
+      sourceName: 'mastodon',
     );
   }
 }

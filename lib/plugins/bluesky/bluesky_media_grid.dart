@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 
 class BlueskyMediaGrid extends StatelessWidget {
   final List<BlueskyPost> posts;
@@ -45,7 +46,25 @@ class BlueskyMediaTile extends StatelessWidget {
         color: colors.surfaceContainerHighest,
         child: InkWell(
           key: ValueKey('bluesky-media-${post.uri}'),
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post))),
+          onTap: post.sensitive ||
+                  (post.mediaItems.isNotEmpty && post.mediaItems.first.isVideo)
+              ? () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlueskyThreadScreen(post: post),
+                  ),
+                )
+              : () => openPluginImageViewer(
+                  context,
+                  items: post.mediaItems,
+                  sourceName: 'bluesky',
+                  onOpenPost: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BlueskyThreadScreen(post: post),
+                    ),
+                  ),
+                ),
           child: Stack(
             fit: StackFit.expand,
             children: [

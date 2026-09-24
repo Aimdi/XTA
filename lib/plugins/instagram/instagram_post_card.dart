@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -207,6 +208,14 @@ class _PostMediaState extends State<_PostMedia> {
   @override
   Widget build(BuildContext context) {
     final urls = widget.post.displayUrls;
+    if (!widget.post.isVideo) {
+      return PluginPostMedia(
+        items: [
+          for (final url in urls) PluginMediaItem(url: url, aspectRatio: 1),
+        ],
+        sourceName: 'instagram',
+      );
+    }
     return ClipRRect(
       borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),
       child: AspectRatio(

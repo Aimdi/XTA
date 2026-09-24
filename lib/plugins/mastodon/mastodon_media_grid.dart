@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_thread_screen.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 
 class MastodonMediaGrid extends StatelessWidget {
   final List<MastodonPost> posts;
@@ -49,7 +50,24 @@ class MastodonMediaTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         child: InkWell(
           key: ValueKey('mastodon-media-${post.id}'),
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post))),
+          onTap: hidden || post.mediaItems.first.isVideo
+              ? () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MastodonThreadScreen(post: post),
+                  ),
+                )
+              : () => openPluginImageViewer(
+                  context,
+                  items: post.mediaItems,
+                  sourceName: 'mastodon',
+                  onOpenPost: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => MastodonThreadScreen(post: post),
+                    ),
+                  ),
+                ),
           child: Stack(
             fit: StackFit.expand,
             children: [

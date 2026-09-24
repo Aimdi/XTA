@@ -52,6 +52,7 @@ class BlueskyPost {
   final List<String> images;
   final List<double?> imageAspects;
   final List<bool> imageIsVideo;
+  final List<String?> imageAlts;
   final List<BlueskyFacet> facets;
   final DateTime? publishedAt;
 
@@ -91,6 +92,7 @@ class BlueskyPost {
     this.images = const [],
     this.imageAspects = const [],
     this.imageIsVideo = const [],
+    this.imageAlts = const [],
     this.facets = const [],
     this.publishedAt,
     this.replyCount = 0,
@@ -122,6 +124,7 @@ class BlueskyPost {
     urls: images,
     aspects: imageAspects,
     videos: imageIsVideo,
+    alts: imageAlts,
   );
 
   Map<String, dynamic> toJson() => {
@@ -135,6 +138,7 @@ class BlueskyPost {
     'images': images,
     'imageAspects': imageAspects,
     'imageIsVideo': imageIsVideo,
+    'imageAlts': imageAlts,
     'facets': facets.map((f) => f.toJson()).toList(),
     'publishedAt': publishedAt?.toIso8601String(),
     'url': url,
@@ -180,6 +184,7 @@ class BlueskyPost {
           const [],
       imageAspects: _snapshotAspects(json['imageAspects']),
       imageIsVideo: _snapshotFlags(json['imageIsVideo']),
+      imageAlts: _snapshotNullableStrings(json['imageAlts']),
       facets:
           (json['facets'] as List?)
               ?.map(BlueskyFacet.fromSnapshot)
@@ -246,6 +251,16 @@ List<bool> _snapshotFlags(Object? raw) {
     return const [];
   }
   return [for (final value in raw) value == true];
+}
+
+List<String?> _snapshotNullableStrings(Object? raw) {
+  if (raw is! List) {
+    return const [];
+  }
+  return [
+    for (final value in raw)
+      value is String && value.trim().isNotEmpty ? value : null,
+  ];
 }
 
 /// Ancestors (root → parent), the focal post, and reply descendants.
@@ -624,6 +639,7 @@ BlueskyPost? blueskyPostFromView(
     images: images,
     imageAspects: [for (final item in media) item.aspectRatio],
     imageIsVideo: [for (final item in media) item.isVideo],
+    imageAlts: [for (final item in media) item.alt],
     facets: facets,
     publishedAt: DateTime.tryParse(created ?? '')?.toLocal(),
     url: url,

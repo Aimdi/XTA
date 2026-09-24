@@ -90,7 +90,12 @@ class PluginLinkPostCard extends StatelessWidget {
             if (post.author.isNotEmpty) Text(post.author, style: Theme.of(context).textTheme.titleSmall),
             if (post.text.isNotEmpty) Padding(padding: const EdgeInsets.symmetric(vertical: 8), child: Text(post.text)),
             if (post.images.isNotEmpty)
-              PluginPostMedia(items: [for (final url in post.images) PluginMediaItem(url: url)]),
+              PluginPostMedia(
+                items: [
+                  for (final url in post.images) PluginMediaItem(url: url),
+                ],
+                sourceName: post.source,
+              ),
             Align(
               alignment: AlignmentDirectional.centerEnd,
               child: TextButton.icon(
