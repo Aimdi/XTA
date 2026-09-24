@@ -55,12 +55,6 @@ void main() {
     await Repository().migrate();
   });
 
-  tearDownAll(() async {
-    if (databaseDir.existsSync()) {
-      await databaseDir.delete(recursive: true);
-    }
-  });
-
   setUp(() async {
     final db = await Repository.writable();
     await db.delete(tableAccounts);
