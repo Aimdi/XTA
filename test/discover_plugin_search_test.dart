@@ -105,6 +105,38 @@ void main() {
     expect(find.text('Subreddits'), findsOneWidget);
   });
 
+  testWidgets('clearing Discover returns the selected plugin to its empty state', (
+    tester,
+  ) async {
+    final prefs = PrefServiceCache(cache: {optionPluginRedditEnabled: true});
+    final scope = SearchScopeStore()..select(pluginIdReddit);
+    final query = DiscoverQueryStore()..commit('hu tao');
+
+    await tester.pumpWidget(
+      _app(
+        prefs: prefs,
+        scope: scope,
+        query: query,
+        home: TrendsScreen(
+          scrollController: ScrollController(),
+          focusNode: FocusNode(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      find.byKey(const ValueKey('discover-search-clear')),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('discover-search-clear')));
+    await tester.pump();
+
+    expect(query.state, isEmpty);
+    expect(find.byType(RedditSearchBody), findsNothing);
+    expect(find.byType(DiscoverPluginEmpty), findsOneWidget);
+  });
+
   testWidgets('empty Reddit Discover is not the X worldwide list', (
     tester,
   ) async {
