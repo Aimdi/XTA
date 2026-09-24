@@ -40,4 +40,77 @@ void main() {
     await tester.pumpAndSettle();
     expect(handled, isFalse);
   });
+
+  testWidgets('openNativeLink handles X profiles without browser fallback', (
+    tester,
+  ) async {
+    final prefs = PrefServiceCache(cache: {
+      optionPluginSubstackEnabled: false,
+    });
+    var handled = false;
+
+    await tester.pumpWidget(
+      PrefService(
+        service: prefs,
+        child: MaterialApp(
+          routes: {
+            routeProfile: (_) => const Scaffold(body: Text('native profile')),
+          },
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                handled = await openNativeLink(
+                  context,
+                  'https://x.com/example',
+                );
+              },
+              child: const Text('open native'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('open native'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('native profile'), findsOneWidget);
+    Navigator.of(tester.element(find.text('native profile'))).pop();
+    await tester.pumpAndSettle();
+    expect(handled, isTrue);
+  });
+
+  testWidgets('openNativeLink leaves ordinary web links for the caller', (
+    tester,
+  ) async {
+    final prefs = PrefServiceCache(cache: {
+      optionPluginSubstackEnabled: false,
+    });
+    var handled = true;
+
+    await tester.pumpWidget(
+      PrefService(
+        service: prefs,
+        child: MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                handled = await openNativeLink(
+                  context,
+                  'https://example.com/article',
+                );
+              },
+              child: const Text('open web'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('open web'));
+    await tester.pump();
+
+    expect(handled, isFalse);
+  });
+
 }

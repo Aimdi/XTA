@@ -130,6 +130,7 @@ void main() {
                   {
                     'thumb': 'https://example.org/thumb.jpg',
                     'fullsize': 'https://example.org/full.jpg',
+                    'alt': 'A blue sky over the hills',
                   },
                 ],
               },
@@ -147,6 +148,8 @@ void main() {
       expect(post.images, ['https://example.org/full.jpg']);
       expect(post.imageAspects, [null]);
       expect(post.imageIsVideo, [false]);
+      expect(post.imageAlts, ['A blue sky over the hills']);
+      expect(post.mediaItems.single.alt, 'A blue sky over the hills');
       expect(post.url, 'https://bsky.app/profile/alice.bsky.social/post/rkey1');
       expect(post.publishedAt, isNotNull);
     });

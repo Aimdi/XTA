@@ -191,7 +191,7 @@ class BlueskyPostCard extends StatelessWidget {
   Widget _attachments() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
     if (post.hasMedia) ...[
       const SizedBox(height: 10),
-      PluginPostMedia(items: post.mediaItems),
+      PluginPostMedia(items: post.mediaItems, sourceName: 'bluesky'),
     ],
     if (post.quotedPost != null) ...[
       const SizedBox(height: 10),
@@ -366,8 +366,8 @@ class _QuotedPost extends StatelessWidget {
                 const SizedBox(height: 8),
                 quote.sensitive
                     ? BlueskyContentWarning(key: ValueKey('warning-${quote.uri}'),
-                        child: PluginPostMedia(items: quote.mediaItems))
-                    : PluginPostMedia(items: quote.mediaItems),
+                        child: PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'))
+                    : PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
               ],
               if (quote.text.isNotEmpty) ...[
                 const SizedBox(height: 6),

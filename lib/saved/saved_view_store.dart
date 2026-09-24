@@ -3,6 +3,13 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/saved/saved_tab_order.dart';
 
+enum SavedSort { newest, oldest }
+
+List<T> applySavedSort<T>(Iterable<T> items, SavedSort sort) {
+  final list = items.toList();
+  return sort == SavedSort.oldest ? list.reversed.toList() : list;
+}
+
 @immutable
 class SavedViewState {
   final String folder;
@@ -10,6 +17,9 @@ class SavedViewState {
   final bool searching;
   final String query;
   final bool likesByGroup;
+  final SavedSort sort;
+  final bool selecting;
+  final Set<String> selectedIds;
   final List<SubscriptionGroupMember> groupMembers;
   final List<SubscriptionGroup> groups;
 
@@ -19,6 +29,9 @@ class SavedViewState {
     this.searching = false,
     this.query = '',
     this.likesByGroup = false,
+    this.sort = SavedSort.newest,
+    this.selecting = false,
+    this.selectedIds = const <String>{},
     this.groupMembers = const [],
     this.groups = const [],
   });
@@ -29,6 +42,9 @@ class SavedViewState {
     bool? searching,
     String? query,
     bool? likesByGroup,
+    SavedSort? sort,
+    bool? selecting,
+    Set<String>? selectedIds,
     List<SubscriptionGroupMember>? groupMembers,
     List<SubscriptionGroup>? groups,
   }) {
@@ -38,6 +54,9 @@ class SavedViewState {
       searching: searching ?? this.searching,
       query: query ?? this.query,
       likesByGroup: likesByGroup ?? this.likesByGroup,
+      sort: sort ?? this.sort,
+      selecting: selecting ?? this.selecting,
+      selectedIds: selectedIds ?? this.selectedIds,
       groupMembers: groupMembers ?? this.groupMembers,
       groups: groups ?? this.groups,
     );
@@ -52,11 +71,62 @@ class SavedViewStore extends Store<SavedViewState> {
       update(state.copyWith(likesByGroup: !state.likesByGroup));
       return;
     }
-    update(state.copyWith(folder: folder, likesByGroup: false));
+    update(
+      state.copyWith(
+        folder: folder,
+        likesByGroup: false,
+        selecting: false,
+        selectedIds: const <String>{},
+      ),
+    );
   }
 
-  void showAll() =>
-      update(state.copyWith(folder: savedTabAll, likesByGroup: false));
+  void showAll() => update(
+    state.copyWith(
+      folder: savedTabAll,
+      likesByGroup: false,
+      selecting: false,
+      selectedIds: const <String>{},
+    ),
+  );
+
+  void setSort(SavedSort sort) => update(state.copyWith(sort: sort));
+
+  void beginSelection([String? id]) {
+    final selected = <String>{...state.selectedIds};
+    if (id != null) selected.add(id);
+    update(
+      state.copyWith(
+        selecting: true,
+        selectedIds: Set.unmodifiable(selected),
+      ),
+    );
+  }
+
+  void toggleSelected(String id) {
+    final selected = <String>{...state.selectedIds};
+    selected.contains(id) ? selected.remove(id) : selected.add(id);
+    update(
+      state.copyWith(
+        selecting: true,
+        selectedIds: Set.unmodifiable(selected),
+      ),
+    );
+  }
+
+  void selectVisible(Iterable<String> ids) => update(
+    state.copyWith(
+      selecting: true,
+      selectedIds: Set.unmodifiable(ids.toSet()),
+    ),
+  );
+
+  void finishSelection() => update(
+    state.copyWith(
+      selecting: false,
+      selectedIds: const <String>{},
+    ),
+  );
 
   void toggleMedia() => update(state.copyWith(mediaOnly: !state.mediaOnly));
 

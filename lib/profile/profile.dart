@@ -184,7 +184,9 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nestedScrollViewKey.currentState?.innerController.addListener(_listenToScroll);
+      final state = _nestedScrollViewKey.currentState;
+      state?.innerController.addListener(_listenToScroll);
+      state?.outerController.addListener(_listenToScroll);
     });
   }
 
@@ -210,7 +212,12 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     final requested = widget.defaultTabIndex ?? storedIndex;
     final initialIndex = requested.clamp(0, profileTabs.length - 1).toInt();
 
-    _tabController = TabController(length: profileTabs.length, vsync: this, initialIndex: initialIndex);
+    _tabController = TabController(
+      length: profileTabs.length,
+      vsync: this,
+      initialIndex: initialIndex,
+    );
+    _tabController.addListener(_handleTabChanged);
     _tabControllerInitialized = true;
   }
 
@@ -235,22 +242,62 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
 
   @override
   void dispose() {
-    _nestedScrollViewKey.currentState?.innerController.removeListener(_listenToScroll);
+    final scrollState = _nestedScrollViewKey.currentState;
+    scrollState?.innerController.removeListener(_listenToScroll);
+    scrollState?.outerController.removeListener(_listenToScroll);
     disposeRichTextParts(_descriptionParts);
-    if (_tabControllerInitialized) _tabController.dispose();
+    if (_tabControllerInitialized) {
+      _tabController.removeListener(_handleTabChanged);
+      _tabController.dispose();
+    }
     _viewStore.destroy();
     _scrollStore.destroy();
     super.dispose();
   }
 
   void _listenToScroll() {
-    final inner = _nestedScrollViewKey.currentState?.innerController;
-    if (inner == null || !inner.hasClients) return;
-    _scrollStore.showBackToTop(inner.positions.any((position) => position.pixels >= 400));
+    final state = _nestedScrollViewKey.currentState;
+    final inner = state?.innerController;
+    final outer = state?.outerController;
+    final innerScrolled =
+        inner?.hasClients == true &&
+        inner!.positions.any((position) => position.pixels >= 400);
+    final outerScrolled =
+        outer?.hasClients == true &&
+        outer!.positions.any((position) => position.pixels >= 400);
+    _scrollStore.showBackToTop(innerScrolled || outerScrolled);
+  }
+
+  void _handleTabChanged() {
+    if (_tabController.indexIsChanging) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _listenToScroll();
+    });
   }
 
   void _scrollToTop() {
-    _nestedScrollViewKey.currentState?.outerController.jumpTo(0);
+    final state = _nestedScrollViewKey.currentState;
+    if (state == null) return;
+    final inner = state.innerController;
+    final outer = state.outerController;
+    if (inner.hasClients) inner.jumpTo(0);
+    if (outer.hasClients) outer.jumpTo(0);
+    _scrollStore.showBackToTop(false);
+  }
+
+  void _selectPostsFilter(PostsFilter value) {
+    _viewStore.selectPostsFilter(value);
+    _scrollToTop();
+  }
+
+  void _selectMediaFilter(MediaFilter value) {
+    _viewStore.selectMediaFilter(value);
+    _scrollToTop();
+  }
+
+  void _selectArchiveFilter(ArchiveFilter value) {
+    _viewStore.selectArchiveFilter(value);
+    _scrollToTop();
   }
 
   void _openProfileMedia(String? url, String username) {
@@ -264,7 +311,12 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
   @override
   Widget build(BuildContext context) {
     final user = widget.profile.user;
-    if (user.idStr == null) return const SizedBox.shrink();
+    if (user.idStr == null) {
+      return ProfileEmptyState(
+        icon: Icons.person_off_outlined,
+        message: L10n.of(context).user_not_found,
+      );
+    }
 
     return ScopedBuilder<ProfileViewStore, ProfileViewState>(
       store: _viewStore,
@@ -528,7 +580,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
           ProfileFilterOption(value: PostsFilter.posts, label: L10n.of(context).tweets, icon: Icons.notes_outlined),
           ProfileFilterOption(value: PostsFilter.retweets, label: L10n.of(context).retweets, icon: Icons.repeat),
         ],
-        onSelected: _viewStore.selectPostsFilter,
+        onSelected: _selectPostsFilter,
       ),
       ProfileTabs.media => ProfileFilterMenu<MediaFilter>(
         selected: view.mediaFilter,
@@ -551,7 +603,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             icon: Icons.live_tv_outlined,
           ),
         ],
-        onSelected: _viewStore.selectMediaFilter,
+        onSelected: _selectMediaFilter,
       ),
       ProfileTabs.saved => ProfileFilterMenu<ArchiveFilter>(
         selected: view.archiveFilter,
@@ -569,7 +621,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             icon: Icons.bookmark_border,
           ),
         ],
-        onSelected: _viewStore.selectArchiveFilter,
+        onSelected: _selectArchiveFilter,
       ),
       ProfileTabs.postsAndReplies => null,
     };

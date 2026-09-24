@@ -157,7 +157,7 @@ class ThreadsPostCard extends StatelessWidget {
                               ],
                               if (post.hasMedia) ...[
                                 const SizedBox(height: 10),
-                                PluginPostMedia(items: post.mediaItems, imageBuilder: _threadsMediaImage),
+                                PluginPostMedia(items: post.mediaItems, imageBuilder: _threadsMediaImage, sourceName: 'threads'),
                               ],
                               if (post.linkCard != null) ...[
                                 const SizedBox(height: 10),
