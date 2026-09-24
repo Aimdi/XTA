@@ -19,6 +19,12 @@ void main() {
       expect(staleFeedReasonOf(NoAccountAvailableException()), StaleFeedReason.noAccount);
       expect(staleFeedReasonOf(EndpointRefusedException('Search')), StaleFeedReason.endpointRefused);
       expect(
+        staleFeedReasonOf(
+          TransactionIdUnavailableException(Exception('transaction parser')),
+        ),
+        StaleFeedReason.transactionUnavailable,
+      );
+      expect(
         staleFeedReasonOf(HttpException(http.Response('', 401))),
         StaleFeedReason.session,
       );
