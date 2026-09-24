@@ -14,6 +14,7 @@ enum StaleFeedReason {
   noWorkingAccount,
   noAccount,
   endpointRefused,
+  transactionUnavailable,
   unavailable,
   serviceUnavailable,
   session,
@@ -33,6 +34,8 @@ StaleFeedReason staleFeedReasonOf(Object? error) {
     ReadFailureKind.timedOut => StaleFeedReason.timedOut,
     ReadFailureKind.rateLimited => StaleFeedReason.rateLimited,
     ReadFailureKind.endpointRefused => StaleFeedReason.endpointRefused,
+    ReadFailureKind.transactionUnavailable =>
+      StaleFeedReason.transactionUnavailable,
     ReadFailureKind.unavailable => StaleFeedReason.unavailable,
     ReadFailureKind.serviceUnavailable => StaleFeedReason.serviceUnavailable,
     ReadFailureKind.session => StaleFeedReason.session,
