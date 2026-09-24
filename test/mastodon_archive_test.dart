@@ -105,22 +105,22 @@ void main() {
     await tester.pumpWidget(
       h.providers(h.app(child: SavedScreen(scrollController: h.scroll))),
     );
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
     await tester.tap(find.byKey(const ValueKey('saved-library-actions')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Select'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byKey(const ValueKey('saved-select-all')), findsOneWidget);
     expect(find.text('No posts selected'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('saved-select-all')));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('3 posts selected'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.close).first);
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.byKey(const ValueKey('saved-library-actions')), findsOneWidget);
     expect(tester.takeException(), isNull);
     await h.close(tester);
