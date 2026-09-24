@@ -61,10 +61,8 @@ class _TweetCardState extends State<TweetCard> {
   }
 
   static Map<String, dynamic>? _decodeUnifiedCard(Map<String, dynamic>? card) {
-    final raw = card?['binding_values']?['unified_card']?['string_value'];
-    if (raw is! String) {
-      return null;
-    }
+    final raw = Json(card)['binding_values']['unified_card']['string_value'].string;
+    if (raw == null) return null;
 
     try {
       return jsonDecode(raw) as Map<String, dynamic>;
@@ -419,70 +417,99 @@ class _TweetCardState extends State<TweetCard> {
 
     switch (card['name']) {
       case 'summary':
-        var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
-
-        final title = Json(card)['binding_values']['title']['string_value'].string;
+        final values = Json(card)['binding_values'];
+        final image = values['thumbnail_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final description = values['description']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
         return _createCard(
-            _findCardUrl(card),
-            Row(
-              children: [
-                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover)),
-                Expanded(
-                    flex: 4,
-                    child: _createListTile(
-                        context,
-                        title ?? '',
-                        card['binding_values']?['description']?['string_value'],
-                        card['binding_values']?['vanity_url']?['string_value']))
-              ],
-            ),
-            context,
-            title: title);
-      case 'summary_large_image':
-        var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
-
-        final title = Json(card)['binding_values']['title']['string_value'].string;
-        return _createCard(
-            _findCardUrl(card),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _createImage(
+          _findCardUrl(card),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: _createImage(
                   imageSize,
                   image is Map<String, dynamic> ? image : null,
                   BoxFit.cover,
                 ),
-                _createListTile(
+              ),
+              Expanded(
+                flex: 4,
+                child: _createListTile(
                   context,
                   title ?? '',
-                  card['binding_values']?['description']?['string_value'],
-                  card['binding_values']?['vanity_url']?['string_value'],
+                  description,
+                  vanityUrl,
                 ),
-              ],
-            ),
-            context,
-            title: title);
+              ),
+            ],
+          ),
+          context,
+          title: title,
+        );
+      case 'summary_large_image':
+        final values = Json(card)['binding_values'];
+        final image = values['thumbnail_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final description = values['description']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
+        return _createCard(
+          _findCardUrl(card),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _createImage(
+                imageSize,
+                image is Map<String, dynamic> ? image : null,
+                BoxFit.cover,
+              ),
+              _createListTile(
+                context,
+                title ?? '',
+                description,
+                vanityUrl,
+              ),
+            ],
+          ),
+          context,
+          title: title,
+        );
       case 'player':
-        var image = card['binding_values']['player_image$imageKey']?['image_value'];
-        final title = Json(card)['binding_values']['title']['string_value'].string;
+        final values = Json(card)['binding_values'];
+        final image = values['player_image$imageKey']['image_value'].raw;
+        final title = values['title']['string_value'].string;
+        final description = values['description']['string_value'].string;
+        final vanityUrl = values['vanity_url']['string_value'].string;
 
         return _createCard(
-            _findCardUrl(card),
-            Row(
-              children: [
-                Expanded(flex: 1, child: _createImage(imageSize, image, BoxFit.cover, aspectRatio: 1)),
-                Expanded(
-                    flex: 4,
-                    child: _createListTile(
-                        context,
-                        title ?? '',
-                        card['binding_values']?['description']?['string_value'],
-                        card['binding_values']?['vanity_url']?['string_value']))
-              ],
-            ),
-            context,
-            title: title);
+          _findCardUrl(card),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: _createImage(
+                  imageSize,
+                  image is Map<String, dynamic> ? image : null,
+                  BoxFit.cover,
+                  aspectRatio: 1,
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: _createListTile(
+                  context,
+                  title ?? '',
+                  description,
+                  vanityUrl,
+                ),
+              ),
+            ],
+          ),
+          context,
+          title: title,
+        );
       // The image variants carry the same choice bindings; only the artwork
       // differs, and it was never shown. They used to fall through to the
       // default and render nothing at all.
