@@ -863,15 +863,19 @@ class _SavedScreenState extends State<SavedScreen>
         onState: (context, view) => XtaSystemBars(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: kPluginHomeNavClearance),
-          child: FloatingActionButton(
-            heroTag: 'local-note-compose',
-            tooltip: L10n.of(context).local_note_fab_tooltip,
-            onPressed: () => _composeNote(),
-            child: const Icon(Icons.edit_note),
-          ),
-        ),
+        floatingActionButton: view.selecting
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(
+                  bottom: kPluginHomeNavClearance,
+                ),
+                child: FloatingActionButton(
+                  heroTag: 'local-note-compose',
+                  tooltip: L10n.of(context).local_note_fab_tooltip,
+                  onPressed: () => _composeNote(),
+                  child: const Icon(Icons.edit_note),
+                ),
+              ),
         body: NestedScrollView(
           controller: widget.scrollController,
           headerSliverBuilder: (context, innerBoxIsScrolled) {
@@ -985,9 +989,9 @@ class _SavedScreenState extends State<SavedScreen>
             ],
             child: Column(
               children: [
-                _buildFolderStrip(),
+                if (!view.selecting) _buildFolderStrip(),
                 SavedLibraryOnDeviceNotice(filter: _filter),
-                if (_searching) _buildSearchField(),
+                if (_searching && !view.selecting) _buildSearchField(),
                 Expanded(
                   child: _filter == savedTabFavorites
                       ? _buildFavoritesBody()
