@@ -114,7 +114,7 @@ class SavedViewStore extends Store<SavedViewState> {
     );
   }
 
-  void selectAll(Iterable<String> ids) => update(
+  void selectVisible(Iterable<String> ids) => update(
     state.copyWith(
       selecting: true,
       selectedIds: Set.unmodifiable(ids.toSet()),
