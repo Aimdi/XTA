@@ -1,4 +1,5 @@
 import 'package:html/parser.dart' as html;
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/utils/json.dart';
 
 /// Open Graph–style link preview attached to a public status (`card` in the API).
@@ -54,6 +55,8 @@ class MastodonPost {
   final String spoilerText;
   final bool sensitive;
   final List<String> images;
+  final List<double?> imageAspects;
+  final List<String?> imageAlts;
   final DateTime? publishedAt;
   final String url;
 
@@ -89,6 +92,8 @@ class MastodonPost {
     this.spoilerText = '',
     this.sensitive = false,
     this.images = const [],
+    this.imageAspects = const [],
+    this.imageAlts = const [],
     this.publishedAt,
     this.boosted = false,
     this.boostedBy,
@@ -107,6 +112,12 @@ class MastodonPost {
 
   bool get hasMedia => images.isNotEmpty;
 
+  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
+    urls: images,
+    aspects: imageAspects,
+    alts: imageAlts,
+  );
+
   bool get hasSpoiler => spoilerText.trim().isNotEmpty;
 
   bool get edited => editedAt != null;
@@ -120,6 +131,8 @@ class MastodonQuotedPost {
   final String text;
   final String url;
   final List<String> images;
+  final List<double?> imageAspects;
+  final List<String?> imageAlts;
 
   const MastodonQuotedPost({
     required this.id,
@@ -128,6 +141,8 @@ class MastodonQuotedPost {
     required this.text,
     required this.url,
     this.images = const [],
+    this.imageAspects = const [],
+    this.imageAlts = const [],
   });
 
   MastodonPost get asPost => MastodonPost(
@@ -137,6 +152,8 @@ class MastodonQuotedPost {
     text: text,
     url: url,
     images: images,
+    imageAspects: imageAspects,
+    imageAlts: imageAlts,
   );
 }
 
@@ -553,20 +570,37 @@ String mastodonHtmlToText(String? contentHtml) {
   return document.body?.text.replaceAll(RegExp(r'\n{3,}'), '\n\n').trim() ?? '';
 }
 
-List<String> mastodonImagesOf(Json status) {
-  final urls = <String>[];
+List<PluginMediaItem> mastodonMediaItemsOf(Json status) {
+  final items = <PluginMediaItem>[];
+  final seen = <String>{};
   for (final media in status['media_attachments'].list) {
     final type = media['type'].string ?? '';
     if (type != 'image' && type != 'gifv') {
       continue;
     }
-    final url = media['preview_url'].string ?? media['url'].string;
-    if (url != null && url.isNotEmpty && !urls.contains(url)) {
-      urls.add(url);
+    final preview = media['preview_url'].string;
+    final original = media['url'].string;
+    final url = preview ?? original;
+    if (url == null || url.isEmpty || !seen.add(url)) {
+      continue;
     }
+    final description = media['description'].string?.trim();
+    items.add(
+      PluginMediaItem(
+        url: url,
+        downloadUrl: original,
+        aspectRatio: pluginMediaAspectFrom(media['meta']['original'].raw),
+        alt: description == null || description.isEmpty ? null : description,
+        isVideo: type == 'gifv',
+      ),
+    );
   }
-  return urls;
+  return items;
 }
+
+List<String> mastodonImagesOf(Json status) => [
+  for (final item in mastodonMediaItemsOf(status)) item.url,
+];
 
 /// PreviewCard on a status, or null when Mastodon sent nothing useful.
 MastodonLinkCard? mastodonLinkCardOf(Json status) {
@@ -622,7 +656,8 @@ MastodonPost? mastodonPostFromStatus(
   );
   final spoiler = status['spoiler_text'].string?.trim() ?? '';
   final body = mastodonHtmlToText(status['content'].string);
-  final images = mastodonImagesOf(status);
+  final media = mastodonMediaItemsOf(status);
+  final images = [for (final item in media) item.url];
   final linkCard = mastodonLinkCardOf(status);
   final poll = mastodonPollOf(status);
   if (spoiler.isEmpty &&
@@ -648,6 +683,8 @@ MastodonPost? mastodonPostFromStatus(
     spoilerText: spoiler,
     sensitive: status['sensitive'].boolean ?? spoiler.isNotEmpty,
     images: images,
+    imageAspects: [for (final item in media) item.aspectRatio],
+    imageAlts: [for (final item in media) item.alt],
     publishedAt: DateTime.tryParse(
       status['created_at'].string ?? '',
     )?.toLocal(),
@@ -711,6 +748,8 @@ MastodonQuotedPost? mastodonQuoteOf(Json status, {String? homeDomain}) {
     text: post.text,
     url: post.url,
     images: post.images,
+    imageAspects: post.imageAspects,
+    imageAlts: post.imageAlts,
   );
 }
 
