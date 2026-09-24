@@ -46,6 +46,10 @@ void main() {
         readFailureKind(EndpointRefusedException('HomeTimeline')),
         ReadFailureKind.endpointRefused,
       );
+      expect(
+        readFailureKind(TransactionIdUnavailableException(Exception('shape'))),
+        ReadFailureKind.transactionUnavailable,
+      );
     });
 
     test('does not confuse raw 404 with a proven endpoint rotation', () {
