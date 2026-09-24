@@ -124,11 +124,13 @@ class PluginPostMedia extends StatelessWidget {
     required this.items,
     this.imageBuilder,
     this.sourceName = 'xta',
+    this.onOpenPost,
   });
 
   final List<PluginMediaItem> items;
   final PluginMediaImageBuilder? imageBuilder;
   final String sourceName;
+  final VoidCallback? onOpenPost;
 
   @override
   Widget build(BuildContext context) {
@@ -434,6 +436,7 @@ Future<void> openPluginImageViewer(
   int initialIndex = 0,
   PluginMediaImageBuilder? imageBuilder,
   String sourceName = 'xta',
+  VoidCallback? onOpenPost,
 }) async {
   final selection = visiblePluginMedia(items, initialIndex);
   if (selection.items.isEmpty) return;
@@ -450,6 +453,7 @@ Future<void> openPluginImageViewer(
         initialIndex: selection.initialIndex,
         imageBuilder: imageBuilder,
         sourceName: sourceName,
+        onOpenPost: onOpenPost,
       ),
       transitionsBuilder: (context, animation, secondary, child) =>
           FadeTransition(opacity: animation, child: child),
@@ -516,6 +520,13 @@ class _PluginImageViewerState extends State<PluginImageViewer> {
               ? Text('${_index + 1} / ${widget.items.length}')
               : null,
           actions: [
+            if (widget.onOpenPost != null)
+              IconButton(
+                key: const ValueKey('plugin-media-open-post'),
+                tooltip: L10n.of(context).open_post,
+                icon: const Icon(Icons.open_in_new),
+                onPressed: widget.onOpenPost,
+              ),
             if (_usableAlt(_current.alt))
               IconButton(
                 key: const ValueKey('plugin-media-alt'),
