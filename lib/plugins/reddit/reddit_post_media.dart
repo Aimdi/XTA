@@ -8,7 +8,7 @@ import 'package:xta/plugins/reddit/reddit_gallery.dart';
 import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_media_frame.dart';
 import 'package:xta/plugins/reddit/reddit_sort_sheet.dart';
-import 'package:xta/tweet/_media.dart';
+import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/tweet/_video.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/capped_network_image.dart';
@@ -480,25 +480,15 @@ Future<void> openRedditImageViewer(
   required List<String> urls,
   int initialIndex = 0,
   String username = 'reddit',
-}) async {
-  if (!context.mounted || urls.isEmpty) {
-    return;
-  }
-  final media = [for (final url in urls) createMediaFromUrl(url, null)];
-  final last = media.length - 1;
-  final index = initialIndex < 0
-      ? 0
-      : (initialIndex > last ? last : initialIndex);
-  await Navigator.push<void>(
+}) {
+  return openPluginImageViewer(
     context,
-    MaterialPageRoute(
-      builder: (_) => TweetMediaView(
-        initialIndex: index,
-        media: media,
-        username: username,
-        tweetMedia: false,
-      ),
-    ),
+    items: [
+      for (final url in urls)
+        PluginMediaItem(url: url),
+    ],
+    initialIndex: initialIndex,
+    sourceName: username,
   );
 }
 
