@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/utils/browsers.dart';
 import 'package:xta/utils/urls.dart';
@@ -62,12 +63,17 @@ class _ArticleScreenState extends State<ArticleScreen> {
           onWebResourceError: (_) {
             if (mounted) setState(() => _loading = false);
           },
-          onNavigationRequest: (request) {
+          onNavigationRequest: (request) async {
             final uri = Uri.tryParse(request.url);
             if (uri == null) return NavigationDecision.prevent;
+            if (uri.scheme == 'http' || uri.scheme == 'https') {
+              if (await openNativeLink(context, request.url)) {
+                return NavigationDecision.prevent;
+              }
+              return NavigationDecision.navigate;
+            }
             return switch (uri.scheme) {
-              'http' || 'https' || 'about' || 'data' || 'blob' =>
-                NavigationDecision.navigate,
+              'about' || 'data' || 'blob' => NavigationDecision.navigate,
               _ => NavigationDecision.prevent,
             };
           },
