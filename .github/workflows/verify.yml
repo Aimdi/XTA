@@ -120,6 +120,15 @@ jobs:
           test/download_center_test.dart
           test/rate_limit_retry_test.dart
 
+      - name: Search and Discover regressions
+        run: >-
+          flutter test --reporter expanded
+          test/search_scope_test.dart
+          test/search_chrome_test.dart
+          test/discover_ia_test.dart
+          test/discover_plugin_search_test.dart
+          test/discover_reading_test.dart
+
       - name: Canary report regressions
         run: python3 scripts/test_report_canary.py
 
