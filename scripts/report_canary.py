@@ -32,7 +32,7 @@ def redact(text):
         lambda m: m[0].split("?")[0].split("#")[0],
         text,
     )
-    return text.replace("~~~", "'''").replace(String.fromCharCode(96) * 3, "'''")
+    return text.replace("~~~", "'''").replace(chr(96) * 3, "'''")
 
 
 def classify(outcome, raw):
