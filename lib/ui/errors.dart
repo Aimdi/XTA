@@ -15,6 +15,7 @@ import 'package:xta/client/client.dart';
 import 'package:xta/client/login_webview.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/settings/diagnostics_screen.dart';
 
 /// Snackbar for work already under way, with a small spinner in place of an
 /// icon so a slow download does not look like a frozen one.
@@ -475,6 +476,29 @@ class FullPageErrorWidget extends FritterErrorWidget {
       return EndpointRefusedErrorWidget(onRetry: onRetry);
     }
 
+    if (error is TransactionIdUnavailableException) {
+      return ActionableErrorWidget(
+        emoji: '🧾',
+        title: L10n.of(context).reader_transaction_unavailable,
+        details: L10n.of(context).reader_transaction_unavailable_hint,
+        actions: [
+          if (onRetry != null)
+            TextButton(
+              onPressed: () => onRetry(),
+              child: Text(L10n.of(context).retry),
+            ),
+          TextButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DiagnosticsScreen()),
+            ),
+            icon: const Icon(Icons.info_outline),
+            label: Text(L10n.of(context).diagnostics),
+          ),
+        ],
+      );
+    }
+
     if (error is TwitterError) {
       return createEmojiError(error);
     }
@@ -533,6 +557,7 @@ class FullPageErrorWidget extends FritterErrorWidget {
         case ReadFailureKind.connection:
         case ReadFailureKind.timedOut:
         case ReadFailureKind.endpointRefused:
+        case ReadFailureKind.transactionUnavailable:
         case ReadFailureKind.unknown:
           return ActionableErrorWidget(
             emoji: '🌐',
