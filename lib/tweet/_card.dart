@@ -94,6 +94,9 @@ class _TweetCardState extends State<TweetCard> {
       onTap: url == null
           ? null
           : () async {
+              if (await openNativeLink(context, url) || !context.mounted) {
+                return;
+              }
               if (!canOpenInArticleScreen(url)) {
                 await openLink(context, url);
                 return;
