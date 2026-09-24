@@ -14,10 +14,18 @@ import 'package:webview_flutter/webview_flutter.dart';
 /// which is still leaving the app: their tabs, their history, their session.
 /// The article is the post's content, so it opens where the post did, with the
 /// way out still offered rather than taken for them.
+bool canOpenInArticleScreen(String url) {
+  final uri = Uri.tryParse(url);
+  return uri != null &&
+      (uri.scheme == 'http' || uri.scheme == 'https') &&
+      uri.host.isNotEmpty;
+}
+
 class ArticleScreen extends StatefulWidget {
   final String url;
+  final String? title;
 
-  const ArticleScreen({super.key, required this.url});
+  const ArticleScreen({super.key, required this.url, this.title});
 
   @override
   State<ArticleScreen> createState() => _ArticleScreenState();
@@ -27,20 +35,44 @@ class _ArticleScreenState extends State<ArticleScreen> {
   late final WebViewController _controller;
   var _loading = true;
   var _requested = false;
+  late String _currentUrl;
 
   @override
   void initState() {
     super.initState();
+    _currentUrl = widget.url;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(NavigationDelegate(
-        onPageFinished: (_) {
-          if (mounted) setState(() => _loading = false);
-        },
-        onWebResourceError: (_) {
-          if (mounted) setState(() => _loading = false);
-        },
-      ));
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            if (!mounted) return;
+            setState(() {
+              _currentUrl = url;
+              _loading = true;
+            });
+          },
+          onPageFinished: (url) {
+            if (!mounted) return;
+            setState(() {
+              _currentUrl = url;
+              _loading = false;
+            });
+          },
+          onWebResourceError: (_) {
+            if (mounted) setState(() => _loading = false);
+          },
+          onNavigationRequest: (request) {
+            final uri = Uri.tryParse(request.url);
+            if (uri == null) return NavigationDecision.prevent;
+            return switch (uri.scheme) {
+              'http' || 'https' || 'about' || 'data' || 'blob' =>
+                NavigationDecision.navigate,
+              _ => NavigationDecision.prevent,
+            };
+          },
+        ),
+      );
     // Prefs are not available until [didChangeDependencies]. The request is
     // issued there so the clean-links switch is honoured on first load.
   }
@@ -51,6 +83,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
     if (_requested) return;
     _requested = true;
     final url = prepareUrl(PrefService.of(context, listen: false), widget.url);
+    _currentUrl = url;
     _controller.loadRequest(Uri.parse(url));
   }
 
@@ -62,7 +95,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            l10n.article_on_x,
+            widget.title?.trim().isNotEmpty == true
+                ? widget.title!.trim()
+                : l10n.article_on_x,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -71,11 +106,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
               tooltip: l10n.share_link,
               icon: const Icon(Icons.share_outlined),
               onPressed: () {
-                final url = prepareUrl(
-                  PrefService.of(context, listen: false),
-                  widget.url,
-                );
-                SharePlus.instance.share(ShareParams(text: url));
+                SharePlus.instance.share(ShareParams(text: _currentUrl));
               },
             ),
             // Still offered, because an article that will not render in here
@@ -88,7 +119,7 @@ class _ArticleScreenState extends State<ArticleScreen> {
               onPressed: () {
                 final prefs = PrefService.of(context, listen: false);
                 openExternally(
-                  prepareUrl(prefs, widget.url),
+                  _currentUrl,
                   package:
                       prefs.get<String>(optionExternalBrowser) ??
                       systemDefaultBrowser,
