@@ -119,33 +119,45 @@ class _TweetCardState extends State<TweetCard> {
     );
   }
 
-  Widget _createImage(String size, Map<String, dynamic>? image, BoxFit fit, {double? aspectRatio}) {
-    if (image == null) {
-      return Container();
-    }
+  Widget _createImage(
+    String size,
+    Map<String, dynamic>? image,
+    BoxFit fit, {
+    double? aspectRatio,
+  }) {
+    if (image == null) return Container();
 
-    Widget child;
+    final data = Json(image);
+    final width = data['width'].number;
+    final height = data['height'].number;
+    final ratio = aspectRatio ??
+        (width != null && height != null && width > 0 && height > 0
+            ? width / height
+            : 16 / 9);
 
     if (size == 'disabled') {
-      child = Container();
-    } else {
-      child = LayoutBuilder(builder: (context, constraints) {
-        final maxW = constraints.maxWidth;
-        final cacheWidth = maxW.isFinite && maxW > 0
-            ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
-            : null;
-        return ExtendedImage.network(
-          image['url'],
-          cache: true,
-          fit: fit,
-          cacheWidth: cacheWidth,
-        );
-      });
+      return AspectRatio(aspectRatio: ratio, child: Container());
     }
 
+    final url = data['url'].string;
+    if (url == null || url.isEmpty) return Container();
+
     return AspectRatio(
-      aspectRatio: aspectRatio ?? image['width'] / image['height'],
-      child: child,
+      aspectRatio: ratio,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxW = constraints.maxWidth;
+          final cacheWidth = maxW.isFinite && maxW > 0
+              ? (maxW * MediaQuery.devicePixelRatioOf(context)).ceil()
+              : null;
+          return ExtendedImage.network(
+            url,
+            cache: true,
+            fit: fit,
+            cacheWidth: cacheWidth,
+          );
+        },
+      ),
     );
   }
 
