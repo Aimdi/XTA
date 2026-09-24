@@ -389,7 +389,6 @@ class _TweetCardState extends State<TweetCard> {
         var image = card['binding_values']['thumbnail_image$imageKey']?['image_value'];
 
         final title = card['binding_values']['title']['string_value'] as String?;
-        final title = card['binding_values']['title']['string_value'] as String?;
         return _createCard(
             _findCardUrl(card),
             Row(
@@ -429,6 +428,7 @@ class _TweetCardState extends State<TweetCard> {
             title: title);
       case 'player':
         var image = card['binding_values']['player_image$imageKey']?['image_value'];
+        final title = card['binding_values']['title']['string_value'] as String?;
 
         return _createCard(
             _findCardUrl(card),
@@ -439,7 +439,7 @@ class _TweetCardState extends State<TweetCard> {
                     flex: 4,
                     child: _createListTile(
                         context,
-                        card['binding_values']['title']['string_value'],
+                        title ?? '',
                         card['binding_values']?['description']?['string_value'],
                         card['binding_values']?['vanity_url']?['string_value']))
               ],
