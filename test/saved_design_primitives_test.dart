@@ -47,7 +47,7 @@ void main() {
       expect(store.state.selecting, isTrue);
       expect(store.state.selectedIds, {'one', 'two'});
 
-      store.selectAll(['three', 'four']);
+      store.selectVisible(['three', 'four']);
       expect(store.state.selectedIds, {'three', 'four'});
       store.finishSelection();
       expect(store.state.selecting, isFalse);
