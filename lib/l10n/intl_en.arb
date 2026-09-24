@@ -3652,5 +3652,25 @@
         "type": "int"
       }
     }
-  }
+  },
+  "reader_request_unavailable": "This request is unavailable",
+  "@reader_request_unavailable": {},
+  "reader_request_unavailable_hint": "X rejected this request. It may be temporarily unavailable or this part of the service may have changed.",
+  "@reader_request_unavailable_hint": {},
+  "reader_service_unavailable": "X is temporarily unavailable",
+  "@reader_service_unavailable": {},
+  "reader_service_unavailable_hint": "X returned a server error. You can keep reading cached posts and retry later.",
+  "@reader_service_unavailable_hint": {},
+  "reader_http_error": "X returned HTTP {code}.",
+  "@reader_http_error": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_transaction_unavailable": "X request signing is unavailable",
+  "@reader_transaction_unavailable": {},
+  "reader_transaction_unavailable_hint": "XTA could not derive the transaction token X currently requires. Your accounts may still be fine; retry shortly or check Diagnostics.",
+  "@reader_transaction_unavailable_hint": {}
 }

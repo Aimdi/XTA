@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' show ClientException;
+import 'package:http/http.dart' as http;
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/tweet/stale_feed_preview.dart';
 
@@ -12,12 +12,30 @@ void main() {
   group('staleFeedReasonOf', () {
     test('separates the failures a reader would act on differently', () {
       expect(staleFeedReasonOf(const SocketException('no route')), StaleFeedReason.offline);
-      expect(staleFeedReasonOf(ClientException('closed')), StaleFeedReason.offline);
+      expect(staleFeedReasonOf(http.ClientException('closed')), StaleFeedReason.offline);
       expect(staleFeedReasonOf(TimeoutException('slow')), StaleFeedReason.timedOut);
       expect(staleFeedReasonOf(RateLimitedException()), StaleFeedReason.rateLimited);
       expect(staleFeedReasonOf(NoWorkingAccountException()), StaleFeedReason.noWorkingAccount);
       expect(staleFeedReasonOf(NoAccountAvailableException()), StaleFeedReason.noAccount);
       expect(staleFeedReasonOf(EndpointRefusedException('Search')), StaleFeedReason.endpointRefused);
+      expect(
+        staleFeedReasonOf(
+          TransactionIdUnavailableException(Exception('transaction parser')),
+        ),
+        StaleFeedReason.transactionUnavailable,
+      );
+      expect(
+        staleFeedReasonOf(HttpException(http.Response('', 401))),
+        StaleFeedReason.session,
+      );
+      expect(
+        staleFeedReasonOf(HttpException(http.Response('', 404))),
+        StaleFeedReason.unavailable,
+      );
+      expect(
+        staleFeedReasonOf(HttpException(http.Response('', 503))),
+        StaleFeedReason.serviceUnavailable,
+      );
     });
 
     test('anything else stays unknown rather than being guessed at', () {

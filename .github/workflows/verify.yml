@@ -104,6 +104,10 @@ jobs:
           test/navigation_swipe_test.dart
           test/profile_design_primitives_test.dart
           test/quiet_reader_failure_test.dart
+          test/read_failure_kind_test.dart
+          test/stale_feed_preview_test.dart
+          test/transaction_key_test.dart
+          test/x_request_recovery_test.dart
 
       - name: Reader safety regressions
         run: >-

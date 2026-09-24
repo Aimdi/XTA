@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/ui/errors.dart';
 
@@ -96,6 +98,67 @@ void main() {
       await tester.tap(retry);
 
       expect(retried, isTrue);
+    });
+
+    testWidgets('HTTP server errors show a safe service message, not the response body', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        FullPageErrorWidget(
+          error: HttpException(
+            http.Response('internal secret diagnostic body', 503),
+          ),
+          stackTrace: StackTrace.current,
+          prefix: 'Unable to load the feed',
+          onRetry: () {},
+        ),
+      );
+
+      expect(find.text(L10n.current.reader_service_unavailable), findsOneWidget);
+      expect(find.textContaining('internal secret'), findsNothing);
+      expect(find.textContaining('StackTrace'), findsNothing);
+    });
+
+    testWidgets('transaction signing failures get their own actionable state', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        FullPageErrorWidget(
+          error: TransactionIdUnavailableException(
+            Exception('Could not find ondemand file index'),
+          ),
+          stackTrace: StackTrace.current,
+          prefix: 'Unable to load the feed',
+          onRetry: () {},
+        ),
+      );
+
+      expect(
+        find.text(L10n.current.reader_transaction_unavailable),
+        findsOneWidget,
+      );
+      expect(find.text(L10n.current.diagnostics), findsOneWidget);
+      expect(find.textContaining('ondemand file index'), findsNothing);
+    });
+
+    testWidgets('raw 404 stays generic instead of claiming endpoint rotation', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        FullPageErrorWidget(
+          error: HttpException(http.Response('not found body', 404)),
+          stackTrace: null,
+          prefix: 'Unable to load the feed',
+          onRetry: () {},
+        ),
+      );
+
+      expect(find.text(L10n.current.reader_request_unavailable), findsOneWidget);
+      expect(find.text(L10n.current.endpoint_refused_title), findsNothing);
+      expect(find.textContaining('not found body'), findsNothing);
     });
 
     testWidgets('shows no retry row when there is nothing to retry', (tester) async {

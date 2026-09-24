@@ -50,16 +50,18 @@ jobs:
           read -ra files <<< "$TEST_FILES"
           flutter test "${files[@]}" --dart-define=RUN_LIVE=true --reporter json > canary.jsonl 2>&1
       - name: Summarise this service
+        id: summary
         if: always()
         env:
           SERVICE: ${{ matrix.service }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           PROBE_OUTCOME: ${{ steps.probe.outcome }}
         run: |
-          python3 scripts/report_canary.py "$SERVICE" "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md
+          classification=$(python3 scripts/report_canary.py "$SERVICE" "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md)
+          echo "classification=$classification" >> "$GITHUB_OUTPUT"
           cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Report service failure
-        if: failure() && steps.probe.outcome == 'failure'
+        if: failure() && steps.probe.outcome == 'failure' && steps.summary.outputs.classification == 'service'
         env:
           GH_TOKEN: ${{ github.token }}
           SERVICE: ${{ matrix.service }}

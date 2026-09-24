@@ -1,48 +1,22 @@
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/rate_limit_retry.dart';
-import 'dart:async';
-import 'dart:io' show SocketException;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:xta/catcher/exceptions.dart';
-import 'package:xta/client/errors.dart';
+import 'package:xta/ui/read_failure_kind.dart';
+export 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/client/login_webview.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
-
-enum ReadFailureKind { connection, timedOut, session, rateLimited, unavailable, unknown }
-
-ReadFailureKind readFailureKind(Object? error) {
-  if (error is TimeoutException) return ReadFailureKind.timedOut;
-  if (error is SocketException || error is http.ClientException) return ReadFailureKind.connection;
-  if (error is RateLimitedException || (error is HttpException && error.statusCode == 429))
-    return ReadFailureKind.rateLimited;
-  if (error is NoAccountAvailableException ||
-      error is NoWorkingAccountException ||
-      (error is HttpException && error.statusCode == 401) ||
-      (error is TwitterError && const [32, 89, 215].contains(error.code))) {
-    return ReadFailureKind.session;
-  }
-  if (error is EndpointRefusedException || (error is HttpException && const [403, 404].contains(error.statusCode)))
-    return ReadFailureKind.unavailable;
-  return ReadFailureKind.unknown;
-}
-
-Object? recoverableReadFailure(Object? error) {
-  if (error is HttpException && const [500, 502, 503, 504].contains(error.statusCode)) return error;
-  return switch (readFailureKind(error)) {
-    ReadFailureKind.connection || ReadFailureKind.timedOut => error,
-    _ => null,
-  };
-}
 
 String readFailureMessage(L10n l10n, Object? error) => switch (readFailureKind(error)) {
   ReadFailureKind.connection => l10n.reader_connection_failed,
   ReadFailureKind.timedOut => l10n.timed_out,
   ReadFailureKind.session => l10n.reader_sign_in_needed,
   ReadFailureKind.rateLimited => l10n.rate_limited_title,
-  ReadFailureKind.unavailable => l10n.endpoint_refused_title,
+  ReadFailureKind.endpointRefused => l10n.endpoint_refused_title,
+  ReadFailureKind.transactionUnavailable => l10n.reader_transaction_unavailable,
+  ReadFailureKind.unavailable => l10n.reader_request_unavailable,
+  ReadFailureKind.serviceUnavailable => l10n.reader_service_unavailable,
   ReadFailureKind.unknown => l10n.oops_something_went_wrong,
 };
 
@@ -168,7 +142,16 @@ class _ReaderFailureDetails extends StatelessWidget {
             ],
           ),
           if (contextMessage != null) Text(contextMessage!),
-          if (kind == ReadFailureKind.rateLimited) Text(l10n.reader_rate_limit_hint),
+          if (kind == ReadFailureKind.rateLimited)
+            Text(l10n.reader_rate_limit_hint),
+          if (kind == ReadFailureKind.endpointRefused)
+            Text(l10n.endpoint_refused_message),
+          if (kind == ReadFailureKind.transactionUnavailable)
+            Text(l10n.reader_transaction_unavailable_hint),
+          if (kind == ReadFailureKind.unavailable)
+            Text(l10n.reader_request_unavailable_hint),
+          if (kind == ReadFailureKind.serviceUnavailable)
+            Text(l10n.reader_service_unavailable_hint),
           Wrap(
             spacing: 8,
             children: [
