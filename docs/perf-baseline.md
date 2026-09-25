@@ -95,6 +95,26 @@ Mechanism work after the tweet-module pass. Device rows above stay TBD.
   first frame. Pref listeners register once. Plugin media / Instagram / TikTok
   decode at paint size. Pixiv keeps only the visible masonry grid alive.
 
+## RSS cover decode budget (2026-09-25)
+
+The cloud environment still has no physical Android device, so frame and memory
+rows remain unmeasured. Static inspection found that RSS article covers were the
+remaining feed thumbnail path without a requested decode size: an 88dp slot
+could retain the source-sized bitmap in Flutter's shared image cache.
+
+The RSS cover now requests its actual constrained width multiplied by device
+pixel ratio. Widget verification renders the 88dp feed slot at 2x DPR and checks
+for a 176px `ExtendedResizeImage` width:
+
+```bash
+fvm flutter test test/rss_cover_performance_test.dart \
+  test/plugin_card_overflow_test.dart
+```
+
+This proves the decode-size contract, not a device-level speedup. A follow-up on
+the same mid-range Android device and image-heavy feed must compare three or more
+profile-mode scroll runs for build/raster p95 and steady/peak memory.
+
 ## Phase 2 targets (tweet module)
 
 1. Cap timeline photo decode via `extended_image` `cacheWidth` (not fullscreen).
