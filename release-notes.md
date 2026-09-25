@@ -4,6 +4,31 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi140
+
+Repairs another X initialization failure that could stop the timeline request
+before it was sent. X's current web entry script can reach its transaction
+signer through a shared script and a backtick-quoted import; aimdi139 did not
+follow that path.
+
+- Follow nested static and dynamic imports to discover the signing script,
+  including constant backtick-quoted paths.
+- Keep discovery within the existing 12-second deadline, with bounded depth,
+  request count and concurrency. Only trusted HTTPS X static assets are read;
+  these requests carry no account cookies and do not execute JavaScript.
+- Cover initialization, transaction signing, timeline parsing and the merged
+  account feed together in regression tests.
+
+For most Android phones, use **`xta-aimdi140_arm64-v8a.apk`**. Base version code
+**400001138** is above every aimdi139 variant. Signing configuration and app ID
+remain unchanged for in-place updates.
+
+Replaying captured X scripts reproduces the discovery failure in aimdi139 and
+successfully generates a transaction ID with this fix. Automated code checks
+passed. Signed-in timeline access on a physical device remains unverified:
+live probes received HTTP 403 or timed out during X's redirects. The captured
+scripts do not establish why QuaX works for a particular signed-in session.
+
 ### aimdi139
 
 Fixes a connection-recovery regression introduced in aimdi136 and adds missing
