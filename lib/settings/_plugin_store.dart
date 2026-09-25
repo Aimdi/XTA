@@ -168,6 +168,47 @@ class _SettingsPluginStoreFragmentState
       _listed,
       isInstalled: (plugin) => plugin.isEnabled(prefs),
     );
+    final noResults =
+        _query.trim().isNotEmpty &&
+        sections.installed.isEmpty &&
+        sections.availableByCategory.isEmpty;
+    final entries = <Widget>[
+      if (_loading) const LinearProgressIndicator(minHeight: 2),
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+        child: SearchBar(
+          key: const Key('plugin-store-search'),
+          hintText: l10n.plugin_store_search,
+          leading: const Icon(Icons.search),
+          onChanged: (value) => setState(() => _query = value),
+        ),
+      ),
+      if (_unreachable)
+        ListTile(
+          dense: true,
+          leading: const Icon(Icons.cloud_off),
+          title: Text(l10n.plugin_catalogue_unavailable),
+          subtitle: _catalogue.hasCache
+              ? Text(l10n.plugin_catalogue_cached)
+              : null,
+        ),
+      if (noResults) PluginStoreEmptyState(label: l10n.no_results),
+      if (sections.installed.isNotEmpty) ...[
+        _header(context, l10n.plugin_installed),
+        for (final plugin in sections.installed)
+          InstalledPluginRow(
+            key: ValueKey('plugin-installed-${plugin.id}'),
+            plugin: plugin,
+            onUninstall: () => _uninstall(plugin),
+            onChanged: () => setState(() {}),
+          ),
+      ],
+      if (sections.availableByCategory.isNotEmpty)
+        PluginAvailableSection(
+          groups: sections.availableByCategory,
+          onInstall: _install,
+        ),
+    ];
 
     return SettingsPageScaffold(
       title: l10n.plugin_store,
@@ -195,46 +236,9 @@ class _SettingsPluginStoreFragmentState
           onPressed: _loading ? null : _refresh,
         ),
       ],
-      body: RefreshIndicator(
+      body: PluginStoreBody(
         onRefresh: _refresh,
-        child: ListView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 24),
-          children: [
-            if (_loading) const LinearProgressIndicator(minHeight: 2),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: SearchBar(
-                hintText: l10n.plugin_store_search,
-                leading: const Icon(Icons.search),
-                onChanged: (value) => setState(() => _query = value),
-              ),
-            ),
-            if (_unreachable)
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.cloud_off),
-                title: Text(l10n.plugin_catalogue_unavailable),
-                subtitle: _catalogue.hasCache
-                    ? Text(l10n.plugin_catalogue_cached)
-                    : null,
-              ),
-            if (sections.installed.isNotEmpty) ...[
-              _header(context, l10n.plugin_installed),
-              for (final plugin in sections.installed)
-                InstalledPluginRow(
-                  plugin: plugin,
-                  onUninstall: () => _uninstall(plugin),
-                  onChanged: () => setState(() {}),
-                ),
-            ],
-            if (sections.availableByCategory.isNotEmpty)
-              PluginAvailableSection(
-                groups: sections.availableByCategory,
-                onInstall: _install,
-              ),
-          ],
-        ),
+        entries: entries,
       ),
     );
   }
@@ -256,6 +260,61 @@ class _SettingsPluginStoreFragmentState
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w700,
               ),
+      ),
+    );
+  }
+}
+
+/// Centered, lazy store viewport shared by production and focused tests.
+class PluginStoreBody extends StatelessWidget {
+  final List<Widget> entries;
+  final RefreshCallback onRefresh;
+
+  const PluginStoreBody({
+    super.key,
+    required this.entries,
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: kSettingsContentWidth),
+        child: RefreshIndicator(
+          onRefresh: onRefresh,
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 24),
+            itemCount: entries.length,
+            itemBuilder: (context, index) => entries[index],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PluginStoreEmptyState extends StatelessWidget {
+  final String label;
+
+  const PluginStoreEmptyState({super.key, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Semantics(
+      liveRegion: true,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+        child: Column(
+          children: [
+            Icon(Icons.search_off, size: 40, color: color),
+            const SizedBox(height: 12),
+            Text(label, style: TextStyle(color: color)),
+          ],
+        ),
       ),
     );
   }
@@ -304,6 +363,7 @@ class PluginAvailableSection extends StatelessWidget {
           ),
           for (final plugin in group.plugins)
             AvailablePluginRow(
+              key: ValueKey('plugin-available-${plugin.id}'),
               plugin: plugin,
               onInstall: () => onInstall(plugin),
             ),
