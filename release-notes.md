@@ -24,6 +24,9 @@ release signing certificate are unchanged for in-place updates.
 
 This patch targets the verified transaction-bootstrap failure. Authenticated
 account and physical-device checks still require testing on a signed-in device.
+The live CI check received HTTP 403 from both public bootstrap routes before
+parsing; live recovery is therefore unverified. This does not establish that
+the restriction is limited to CI.
 
 ### aimdi137
 
