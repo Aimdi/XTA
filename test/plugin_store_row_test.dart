@@ -208,11 +208,12 @@ void main() {
 
     expect(find.byIcon(Icons.search_off), findsOneWidget);
     expect(find.text('No results'), findsOneWidget);
-    expect(
-      tester.getSemantics(find.byType(PluginStoreEmptyState)).hasFlag(
-        SemanticsFlag.isLiveRegion,
+    final semantics = tester.widget<Semantics>(
+      find.descendant(
+        of: find.byType(PluginStoreEmptyState),
+        matching: find.byType(Semantics),
       ),
-      isTrue,
     );
+    expect(semantics.properties.liveRegion, isTrue);
   });
 }
