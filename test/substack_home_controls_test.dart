@@ -235,7 +235,7 @@ void main() {
     await tester.tap(find.text('Oldest first'));
     await tester.pumpAndSettle();
     await _closeOptions(tester);
-    expect(tester.widget<SubstackPostCard>(find.byType(SubstackPostCard).first).post.id, '11');
+    expect(tester.widget<SubstackPostCard>(find.byType(SubstackPostCard).first).post.id, '${substackFeedPageSize - 1}');
     final badge = find.descendant(of: find.byTooltip('Filters'), matching: find.byType(Badge));
     expect(tester.widget<Badge>(badge).isLabelVisible, isTrue);
     await _options(tester);
@@ -250,6 +250,8 @@ void main() {
   });
   testWidgets('Following opens a named publication list and its archive', (tester) async {
     _viewport(tester);
+    tester.view.padding = const FakeViewPadding(bottom: 34);
+    addTearDown(tester.view.resetPadding);
     final h = _Harness();
     await tester.pumpWidget(h.app());
     await tester.pumpAndSettle();
@@ -258,6 +260,7 @@ void main() {
     final publication = find.widgetWithText(ListTile, 'Field Notes');
     expect(publication, findsOneWidget);
     expect(find.descendant(of: publication, matching: find.text('Unread')), findsOneWidget);
+    expect(tester.getBottomRight(publication).dy, lessThanOrEqualTo(810));
     await expectLater(
       find.byKey(const ValueKey('substack-home-window')),
       matchesGoldenFile('../review-artifacts/renders/substack-following-sheet.png'),
@@ -389,6 +392,8 @@ void main() {
   });
   testWidgets('Home and card actions fit narrow enlarged RTL text', (tester) async {
     _viewport(tester, 320);
+    tester.view.padding = const FakeViewPadding(bottom: 34);
+    addTearDown(tester.view.resetPadding);
     final h = _Harness();
     await tester.pumpWidget(h.app(scale: 2, rtl: true));
     await tester.pumpAndSettle();
@@ -399,6 +404,7 @@ void main() {
     );
     await _options(tester);
     expect(find.widgetWithText(ChoiceChip, 'Podcasts'), findsOneWidget);
+    expect(tester.getBottomRight(find.text('Reset filters')).dy, lessThanOrEqualTo(810));
     await expectLater(
       find.byKey(const ValueKey('substack-home-window')),
       matchesGoldenFile('../review-artifacts/renders/substack-options-large-rtl.png'),

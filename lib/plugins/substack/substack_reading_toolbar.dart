@@ -34,11 +34,14 @@ class SubstackReadingToolbar extends StatelessWidget {
       useSafeArea: true,
       showDragHandle: true,
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .75),
-      builder: (context) => _PublicationPicker(
-        publications: publications,
-        posts: feed.allPosts,
-        readIds: readIds,
-        pinnedIds: publications.where((pub) => pubs.isPinned(pub.id)).map((pub) => pub.id).toSet(),
+      builder: (context) => SafeArea(
+        top: false,
+        child: _PublicationPicker(
+          publications: publications,
+          posts: feed.allPosts,
+          readIds: readIds,
+          pinnedIds: publications.where((pub) => pubs.isPinned(pub.id)).map((pub) => pub.id).toSet(),
+        ),
       ),
     );
     if (publication == null || !context.mounted) return;
@@ -56,7 +59,10 @@ class SubstackReadingToolbar extends StatelessWidget {
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .9),
       builder: (context) => Provider<SubstackHomeControlsStore>.value(
         value: controls,
-        child: _ReadingOptions(slot: slot, feed: feed, onFilter: onFilter, autofocus: autofocus),
+        child: SafeArea(
+          top: false,
+          child: _ReadingOptions(slot: slot, feed: feed, onFilter: onFilter, autofocus: autofocus),
+        ),
       ),
     );
   }
