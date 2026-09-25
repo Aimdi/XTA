@@ -28,11 +28,16 @@ http.Client get xHttpClient => _shared ??= http.Client();
 set xHttpClient(http.Client? client) => _shared = client;
 
 /// Retry only transient GET failures, within the original request deadline.
-Future<http.Response> getXResponse(Uri uri, {Map<String, String>? headers, Duration timeout = xRequestTimeout}) async {
+Future<http.Response> getXResponse(
+  Uri uri, {
+  Map<String, String>? headers,
+  Duration timeout = xRequestTimeout,
+  bool followRedirects = true,
+}) async {
   final budget = RequestBudget(timeout);
   for (var attempt = 0; ; attempt++) {
     try {
-      final response = await budget.run(() => _sendGet(uri, headers, budget.remaining));
+      final response = await budget.run(() => _sendGet(uri, headers, budget.remaining, followRedirects));
       if (attempt > 0 || !const [502, 503, 504].contains(response.statusCode)) return response;
       if (budget.remaining <= _retryDelay) return response;
     } on Exception catch (error) {
@@ -43,9 +48,10 @@ Future<http.Response> getXResponse(Uri uri, {Map<String, String>? headers, Durat
   }
 }
 
-Future<http.Response> _sendGet(Uri uri, Map<String, String>? headers, Duration timeout) async {
+Future<http.Response> _sendGet(Uri uri, Map<String, String>? headers, Duration timeout, bool followRedirects) async {
   final abort = Completer<void>();
   final request = http.AbortableRequest('GET', uri, abortTrigger: abort.future);
+  request.followRedirects = followRedirects;
   if (headers != null) request.headers.addAll(headers);
   return (() async => http.Response.fromStream(await xHttpClient.send(request)))().timeout(
     timeout,

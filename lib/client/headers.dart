@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io' show SocketException;
 
+import 'package:crypto/crypto.dart';
+import 'package:http/http.dart' as http;
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
 import 'package:xta/constants.dart';
@@ -28,47 +32,58 @@ class TwitterHeaders {
     'x-twitter-client-language': 'en',
   };
 
-  /// Seams for tests: deriving the key needs two live requests to x.com.
-  static Future<ClientTransaction> Function() initializer = ClientTransaction.initialize;
+  /// Override for tests; production derives the key with the selected session.
+  static Future<ClientTransaction> Function()? initializer;
   static DateTime Function() clock = DateTime.now;
   static const initializationTimeout = Duration(seconds: 12);
 
-  static Future<ClientTransaction>? _initFuture;
-  static DateTime? _derivedAt;
-  static Object? _lastFailure;
-  static DateTime? _failedAt;
+  static final _contexts = <String, _TransactionContext>{};
+  static Object _epoch = Object();
+  static Object? _lastInitializationFailure;
+  static Object? get lastInitializationFailure => _lastInitializationFailure;
 
   static void resetForTesting() {
-    _initFuture = null;
-    _derivedAt = null;
-    _lastFailure = null;
-    _failedAt = null;
-    initializer = ClientTransaction.initialize;
+    _contexts.clear();
+    _epoch = Object();
+    _lastInitializationFailure = null;
+    initializer = null;
     clock = DateTime.now;
   }
 
-  static Future<ClientTransaction> _transaction() {
+  static _TransactionContext _contextFor(String? cookie) {
+    // Retain only a digest as the cache key, never the session credentials.
+    final key = cookie == null ? 'anonymous' : sha256.convert(utf8.encode(cookie)).toString();
+    final context = _contexts.remove(key) ?? _TransactionContext();
+    _contexts[key] = context;
+    while (_contexts.length > 16) {
+      _contexts.remove(_contexts.keys.first);
+    }
+    return context;
+  }
+
+  static Future<ClientTransaction> _transaction(String? cookie) {
+    final context = _contextFor(cookie);
     final now = clock();
-    final cached = _initFuture;
+    final cached = context.future;
     if (cached != null &&
-        (_derivedAt == null ||
-            transactionKeyUsable(derivedAt: _derivedAt, now: now, lifetime: transactionKeyLifetime))) {
+        (context.derivedAt == null ||
+            transactionKeyUsable(derivedAt: context.derivedAt, now: now, lifetime: transactionKeyLifetime))) {
       return cached;
     }
 
-    // Forgetting a failure (below) means the next request tries again, which is
-    // the point — but deriving costs two requests to x.com, so an outright
-    // broken derivation would turn one feed load into twenty extra hits on X.
-    // Failures are therefore rate-limited rather than retried on every request.
-    final failure = _lastFailure;
-    final failedAt = _failedAt;
+    // A broken signer/parser is shared by every feed, so rate-limit its retries.
+    // Connection failures must reach the next recovery attempt: the reader's
+    // bounded retry schedule can finish before this cooldown expires.
+    final failure = context.lastFailure;
+    final failedAt = context.failedAt;
     if (failure != null && failedAt != null && now.difference(failedAt) < transactionKeyRetryCooldown) {
       return Future.error(failure);
     }
 
-    final started = _deriveTransaction();
-    _initFuture = started;
-    _derivedAt = null;
+    final started = _deriveTransaction(cookie);
+    final epoch = _epoch;
+    context.future = started;
+    context.derivedAt = null;
 
     // Deriving the key does two network requests and parses X's HTML, so it can
     // fail for entirely transient reasons. Leaving a rejected future cached
@@ -82,17 +97,19 @@ class TwitterHeaders {
     unawaited(
       started.then(
         (_) {
-          if (!identical(_initFuture, started)) return;
-          _derivedAt = clock();
-          _lastFailure = null;
-          _failedAt = null;
+          if (!identical(_epoch, epoch) || !identical(context.future, started)) return;
+          context.derivedAt = clock();
+          context.lastFailure = null;
+          context.failedAt = null;
+          _lastInitializationFailure = null;
         },
         onError: (Object error) {
-          if (!identical(_initFuture, started)) return;
-          _initFuture = null;
-          _derivedAt = null;
-          _lastFailure = error;
-          _failedAt = clock();
+          if (!identical(_epoch, epoch) || !identical(context.future, started)) return;
+          context.future = null;
+          context.derivedAt = null;
+          context.lastFailure = _isTransientFailure(error) ? null : error;
+          context.failedAt = context.lastFailure == null ? null : clock();
+          _lastInitializationFailure = error;
         },
       ),
     );
@@ -100,34 +117,53 @@ class TwitterHeaders {
     return started;
   }
 
-  static Future<ClientTransaction> _deriveTransaction() async {
+  static Future<ClientTransaction> _deriveTransaction(String? cookie) async {
     try {
-      return await Future.sync(initializer).timeout(initializationTimeout);
-    } on TimeoutException {
-      rethrow;
+      return await Future.sync(
+        initializer ?? () => ClientTransaction.initialize(cookie: cookie),
+      ).timeout(initializationTimeout);
     } catch (error, stack) {
-      Error.throwWithStackTrace(
-        TransactionIdUnavailableException(error),
-        stack,
-      );
+      if (_isTransientFailure(error)) rethrow;
+      Error.throwWithStackTrace(TransactionIdUnavailableException(error), stack);
     }
   }
 
-  static Future<Map<String, String>?> getXClientTransactionIdHeader(Uri? uri) async {
+  static bool _isTransientFailure(Object error) =>
+      error is TimeoutException || error is SocketException || error is http.ClientException;
+
+  static Future<Map<String, String>?> getXClientTransactionIdHeader(Uri? uri, {String? cookie}) async {
     if (uri == null) {
       return null;
     }
 
-    final ct = await _transaction();
+    final ct = await _transaction(cookie);
     return {'x-client-transaction-id': ct.generateTransactionId('GET', uri.path)};
   }
 
   static Future<Map<String, String>> getHeaders(Uri? uri, Map<dynamic, dynamic>? authHeader) async {
-    final xClientTransactionIdHeader = await getXClientTransactionIdHeader(uri);
+    final xClientTransactionIdHeader = await getXClientTransactionIdHeader(uri, cookie: _cookieOf(authHeader));
     return {
       ..._baseHeaders,
       if (authHeader != null) ...Map<String, String>.from(authHeader),
       ...?xClientTransactionIdHeader,
     };
   }
+
+  static String? _cookieOf(Map<dynamic, dynamic>? headers) {
+    if (headers == null) return null;
+    for (final entry in headers.entries) {
+      if (entry.key is String && (entry.key as String).toLowerCase() == 'cookie' && entry.value is String) {
+        final cookie = (entry.value as String).trim();
+        return cookie.isEmpty ? null : cookie;
+      }
+    }
+    return null;
+  }
+}
+
+class _TransactionContext {
+  Future<ClientTransaction>? future;
+  DateTime? derivedAt;
+  Object? lastFailure;
+  DateTime? failedAt;
 }

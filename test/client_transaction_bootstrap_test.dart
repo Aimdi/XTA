@@ -2,14 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:logging/logging.dart';
+import 'package:visibility_detector/visibility_detector.dart';
+import 'package:xta/catcher/exceptions.dart' show TransactionIdUnavailableException;
 import 'package:xta/client/client_regular_account.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
+import 'package:xta/ui/read_failure_kind.dart';
+import 'package:xta/utils/read_recovery.dart';
 
 const _bundle = 'https://abs.twimg.com/responsive-web/client-web/ondemand.s.abcdef1234567890a.js';
 const _runtime = 'e=>({1:"other",59924:"ondemand.s"}[e]||e)+"."+{1:"1234567",59924:"abcdef1234567890"}[e]+"a.js"';
@@ -18,10 +23,10 @@ const _loggedOut =
     '<html data-app-env="prod"><script src="https://abs.twimg.com/x-web/entry-client-logged-out-abc.js"></script></html>';
 final _keyBytes = List.generate(48, (index) => index);
 
-String _appShell({String runtime = _runtime, bool key = true, int frames = 4, String? script}) {
+String _appShell({String runtime = _runtime, bool key = true, int frames = 4, String? script, List<int>? keyBytes}) {
   final rows = List.filled(16, '20 40 60 80 100 120 140 160 180 200 220').join('C');
   return '''<html><head>
-    ${key ? '<meta name="twitter-site-verification" content="${base64Encode(_keyBytes)}">' : ''}
+    ${key ? '<meta name="twitter-site-verification" content="${base64Encode(keyBytes ?? _keyBytes)}">' : ''}
     <script>$runtime</script>${script == null ? '' : '<script src="$script"></script>'}
     </head><body>${List.generate(frames, (index) => '<svg id="loading-x-anim-$index"><g><path/><path d="M0 0C0 0C$rows"/></g></svg>').join()}
     </body></html>''';
@@ -119,7 +124,12 @@ void main() {
         expect(decoded.skip(1).take(_keyBytes.length).map((byte) => byte ^ decoded.first), _keyBytes);
         return http.Response(responseBody, 200);
       }
-      expect(request.headers, isNot(contains('cookie')));
+      expect(
+        request.headers['cookie'],
+        request.url.host == 'x.com' ? 'auth_token=test-session; ct0=test-csrf' : isNull,
+      );
+      expect(request.headers, isNot(contains('authorization')));
+      expect(request.headers, isNot(contains('x-csrf-token')));
       if (request.url.path == '/home') return http.Response(_loggedOut, 200);
       return http.Response(request.url.path == '/search' ? _appShell() : _indices, 200);
     });
@@ -129,7 +139,7 @@ void main() {
     final response = await account.fetch(
       timeline,
       log: Logger('bootstrap-test'),
-      authHeader: {'cookie': 'auth_token=test-session; ct0=test-csrf', 'x-csrf-token': 'test-csrf'},
+      authHeader: {'Cookie': 'auth_token=test-session; ct0=test-csrf', 'x-csrf-token': 'test-csrf'},
     );
 
     expect(response.statusCode, 200);
@@ -140,6 +150,169 @@ void main() {
       Uri.parse(_bundle),
       timeline,
     ]);
+  });
+
+  test('failed anonymous and account A bootstraps cannot block account B timeline reads', () async {
+    final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
+    final account = XRegularAccount();
+    addTearDown(account.dispose);
+    final bootstrapCookies = <String?>[];
+    respond((request) {
+      if (request.url == timeline) {
+        expect(request.headers['cookie'], 'auth_token=account-b');
+        expect(request.headers['x-client-transaction-id'], isNotEmpty);
+        return http.Response('account B timeline', 200);
+      }
+      expect(request.headers, isNot(contains('authorization')));
+      expect(request.headers, isNot(contains('x-csrf-token')));
+      if (request.url.host == 'abs.twimg.com') {
+        expect(request.headers, isNot(contains('cookie')));
+        return http.Response(_indices, 200);
+      }
+      final cookie = request.headers['cookie'];
+      bootstrapCookies.add(cookie);
+      return http.Response(cookie == 'auth_token=account-b' ? _appShell() : _loggedOut, 200);
+    });
+
+    await expectLater(
+      TwitterHeaders.getXClientTransactionIdHeader(timeline),
+      throwsA(isA<TransactionIdUnavailableException>()),
+    );
+    await expectLater(
+      account.fetch(timeline, log: Logger('context-test'), authHeader: {'Cookie': 'auth_token=account-a'}),
+      throwsA(isA<TransactionIdUnavailableException>()),
+    );
+    for (var attempt = 0; attempt < 2; attempt++) {
+      final result = await account.fetch(
+        timeline,
+        log: Logger('context-test'),
+        authHeader: {'cOoKiE': 'auth_token=account-b'},
+      );
+      expect(result.body, 'account B timeline');
+    }
+    expect(bootstrapCookies, [null, null, 'auth_token=account-a', 'auth_token=account-a', 'auth_token=account-b']);
+    expect(requests.where((uri) => uri == timeline), hasLength(2));
+  });
+
+  test('each account timeline keeps its own derived key and reuses only its matching cookie context', () async {
+    final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
+    final account = XRegularAccount();
+    addTearDown(account.dispose);
+    final bootstrapCookies = <String?>[];
+    respond((request) {
+      final cookie = request.headers['cookie'];
+      if (request.url == timeline) {
+        final encoded = base64.decode(base64.normalize(request.headers['x-client-transaction-id']!));
+        expect(encoded[1] ^ encoded.first, cookie == 'auth_token=account-a' ? 17 : 34);
+        return http.Response('loaded', 200);
+      }
+      if (request.url.host == 'abs.twimg.com') {
+        expect(cookie, isNull);
+        return http.Response(_indices, 200);
+      }
+      bootstrapCookies.add(cookie);
+      final key = [..._keyBytes];
+      key[0] = cookie == 'auth_token=account-a' ? 17 : 34;
+      return http.Response(_appShell(keyBytes: key), 200);
+    });
+
+    for (final accountId in ['a', 'b', 'a', 'b']) {
+      final result = await account.fetch(
+        timeline,
+        log: Logger('context-test'),
+        authHeader: {'Cookie': 'auth_token=account-$accountId'},
+      );
+      expect(result.statusCode, 200);
+    }
+    expect(bootstrapCookies, ['auth_token=account-a', 'auth_token=account-b']);
+    expect(requests.where((uri) => uri.host == 'abs.twimg.com'), hasLength(2));
+    expect(requests.where((uri) => uri == timeline), hasLength(4));
+  });
+
+  testWidgets('automatic recovery retries a transient bootstrap failure and sends a signed timeline request', (
+    tester,
+  ) async {
+    VisibilityDetectorController.instance.updateInterval = Duration.zero;
+    ReadRecovery.online = false;
+    final signals = StreamController<bool>.broadcast();
+    final changes = ValueNotifier(0);
+    final account = XRegularAccount();
+    addTearDown(() {
+      VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500);
+      ReadRecovery.online = false;
+      account.dispose();
+      changes.dispose();
+    });
+    addTearDown(signals.close);
+    final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
+    var offline = true;
+    var loading = false;
+    Object? failure;
+    http.Response? result;
+    respond((request) {
+      if (offline) throw const SocketException('offline at startup');
+      if (request.url == timeline) {
+        expect(request.headers['cookie'], 'auth_token=test-session; ct0=test-csrf');
+        expect(request.headers['x-csrf-token'], 'test-csrf');
+        expect(request.headers['x-client-transaction-id'], isNotEmpty);
+        return http.Response('timeline loaded', 200);
+      }
+      expect(
+        request.headers['cookie'],
+        request.url.host == 'x.com' ? 'auth_token=test-session; ct0=test-csrf' : isNull,
+      );
+      return http.Response(request.url.path == '/home' ? _appShell() : _indices, 200);
+    });
+    Future<void> load() async {
+      loading = true;
+      changes.value++;
+      try {
+        result = await account.fetch(
+          timeline,
+          log: Logger('recovery-test'),
+          authHeader: {'cookie': 'auth_token=test-session; ct0=test-csrf', 'x-csrf-token': 'test-csrf'},
+        );
+        failure = null;
+      } catch (error) {
+        failure = error;
+      } finally {
+        loading = false;
+        changes.value++;
+      }
+    }
+
+    final initial = load();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
+    await initial;
+    expect(readFailureKind(failure), ReadFailureKind.connection);
+    expect(requests.map((uri) => uri.path), ['/home', '/home']);
+
+    offline = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: ReadRecovery(
+            networkEvents: signals.stream,
+            changes: changes,
+            isLoading: () => loading,
+            recoverableFailure: () => recoverableReadFailure(failure),
+            retry: () => unawaited(load()),
+            child: const SizedBox.expand(),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    signals.add(true);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pump();
+
+    expect(result?.body, 'timeline loaded');
+    expect(failure, isNull);
+    expect(requests.skip(2), [Uri.https('x.com', '/home'), Uri.parse(_bundle), timeline]);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   for (final incomplete in [

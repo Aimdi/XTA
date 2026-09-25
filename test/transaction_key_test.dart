@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io' show SocketException;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
@@ -71,7 +73,6 @@ void main() {
       await tester.pump(TwitterHeaders.initializationTimeout + const Duration(seconds: 1));
       await Future.wait([first, second]);
       expect(attempts, 1);
-      now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
       expect((await TwitterHeaders.getXClientTransactionIdHeader(uri))?['x-client-transaction-id'], isNotEmpty);
       expect(attempts, 2);
       stalled.completeError(Exception('obsolete setup finally failed'));
@@ -80,6 +81,35 @@ void main() {
       expect(attempts, 2);
     });
 
+    for (final failure in <Object>[
+      const SocketException('offline'),
+      http.ClientException('connection closed'),
+      TimeoutException('network stalled'),
+    ]) {
+      test('${failure.runtimeType} keeps its type and the next concurrent requests recover immediately', () async {
+        final pending = Completer<ClientTransaction>();
+        var attempts = 0;
+        TwitterHeaders.initializer = () {
+          attempts++;
+          return attempts == 1 ? pending.future : Future.value(fakeTransaction());
+        };
+        final first = expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(same(failure)));
+        final second = expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(same(failure)));
+        pending.completeError(failure);
+        await Future.wait([first, second]);
+        expect(attempts, 1);
+        expect(TwitterHeaders.lastInitializationFailure, same(failure));
+
+        final recovered = await Future.wait([
+          TwitterHeaders.getHeaders(uri, null),
+          TwitterHeaders.getHeaders(uri, null),
+        ]);
+        expect(recovered.map((headers) => headers['x-client-transaction-id']), everyElement(isNotEmpty));
+        expect(attempts, 2);
+        expect(TwitterHeaders.lastInitializationFailure, isNull);
+      });
+    }
+
     test('synchronous setup failures also respect the retry cooldown', () async {
       var attempts = 0;
       TwitterHeaders.initializer = () {
@@ -87,7 +117,10 @@ void main() {
         throw StateError('bad initialization');
       };
       for (var i = 0; i < 2; i++) {
-        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+        await expectLater(
+          TwitterHeaders.getXClientTransactionIdHeader(uri),
+          throwsA(isA<TransactionIdUnavailableException>()),
+        );
       }
       expect(attempts, 1);
     });
@@ -121,7 +154,10 @@ void main() {
         return fakeTransaction();
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+      await expectLater(
+        TwitterHeaders.getXClientTransactionIdHeader(uri),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
       now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
 
       final header = await TwitterHeaders.getXClientTransactionIdHeader(uri);
@@ -144,7 +180,10 @@ void main() {
       };
 
       for (var i = 0; i < 5; i++) {
-        await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+        await expectLater(
+          TwitterHeaders.getXClientTransactionIdHeader(uri),
+          throwsA(isA<TransactionIdUnavailableException>()),
+        );
       }
 
       expect(attempts, 1, reason: 'the cooldown should have suppressed the retries');
@@ -155,10 +194,16 @@ void main() {
       TwitterHeaders.clock = () => now;
       TwitterHeaders.initializer = () async => throw Exception('X reshaped its HTML');
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+      await expectLater(
+        TwitterHeaders.getXClientTransactionIdHeader(uri),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
 
       // Suppressed, but still an error rather than a silently missing header.
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+      await expectLater(
+        TwitterHeaders.getXClientTransactionIdHeader(uri),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
     });
 
     test('a retry happens once the cooldown has elapsed', () async {
@@ -173,7 +218,10 @@ void main() {
         return fakeTransaction();
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+      await expectLater(
+        TwitterHeaders.getXClientTransactionIdHeader(uri),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
       now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
 
       expect((await TwitterHeaders.getXClientTransactionIdHeader(uri))?['x-client-transaction-id'], isNotNull);
@@ -192,7 +240,10 @@ void main() {
         return fakeTransaction();
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+      await expectLater(
+        TwitterHeaders.getXClientTransactionIdHeader(uri),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
       now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
       await TwitterHeaders.getXClientTransactionIdHeader(uri);
 
@@ -205,7 +256,10 @@ void main() {
         throw Exception('down again');
       };
 
-      await expectLater(TwitterHeaders.getXClientTransactionIdHeader(uri), throwsA(isA<TransactionIdUnavailableException>()));
+      await expectLater(
+        TwitterHeaders.getXClientTransactionIdHeader(uri),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
       expect(attempts, 3);
     });
 
@@ -242,10 +296,87 @@ void main() {
       expect(derivations, 1);
     });
 
+    test('anonymous failure cooldown does not block an authenticated context', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () async {
+        attempts++;
+        if (attempts == 1) throw const FormatException('anonymous page has no signer');
+        return fakeTransaction();
+      };
+
+      await expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(isA<TransactionIdUnavailableException>()));
+      final headers = await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-a'});
+      expect(headers['x-client-transaction-id'], isNotEmpty);
+      await expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(isA<TransactionIdUnavailableException>()));
+      expect(attempts, 2);
+    });
+
+    test('cookie contexts isolate failures and reuse keys with any Cookie header casing', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () async {
+        attempts++;
+        if (attempts == 1) throw const FormatException('account A page has no signer');
+        return fakeTransaction();
+      };
+
+      await expectLater(
+        TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-a'}),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
+      await Future.wait([
+        TwitterHeaders.getHeaders(uri, {'cookie': 'auth_token=account-b'}),
+        TwitterHeaders.getHeaders(uri, {'COOKIE': 'auth_token=account-b'}),
+      ]);
+      await expectLater(
+        TwitterHeaders.getHeaders(uri, {'cookie': 'auth_token=account-a'}),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-b'});
+      expect(attempts, 2);
+    });
+
+    test('changing the session cookie derives a fresh key', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () async {
+        attempts++;
+        return fakeTransaction();
+      };
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=old'});
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=new'});
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=new'});
+      expect(attempts, 2);
+    });
+
+    test('many session contexts evict old keys without evicting the most recently used one', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () async {
+        attempts++;
+        return fakeTransaction();
+      };
+      for (var index = 0; index < 17; index++) {
+        await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=session-$index'});
+      }
+      expect(attempts, 17);
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=session-16'});
+      expect(attempts, 17);
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=session-0'});
+      expect(attempts, 18);
+    });
+
     test('no header is asked for when there is no uri', () async {
       TwitterHeaders.initializer = () async => fail('should not derive a key');
 
       expect(await TwitterHeaders.getXClientTransactionIdHeader(null), isNull);
+    });
+
+    test('reset clears diagnostics and a late previous initialization cannot restore its error', () async {
+      final pending = Completer<ClientTransaction>();
+      TwitterHeaders.initializer = () => pending.future;
+      final first = expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(isA<TransactionIdUnavailableException>()));
+      TwitterHeaders.resetForTesting();
+      pending.completeError(const FormatException('old page'));
+      await first;
+      expect(TwitterHeaders.lastInitializationFailure, isNull);
     });
   });
 }

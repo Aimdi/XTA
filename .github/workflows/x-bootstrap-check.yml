@@ -6,6 +6,7 @@ on:
       - 'lib/client/x_client_transaction_id/**'
       - 'lib/client/headers.dart'
       - 'test/client_transaction_bootstrap_test.dart'
+      - 'test/client_transaction_modern_bootstrap_test.dart'
       - 'test/transaction_key_test.dart'
       - 'test/live/x_bootstrap_smoke_test.dart'
       - 'test/live/support/x_profile_probe.dart'

@@ -1,4 +1,9 @@
+import 'dart:async';
+import 'dart:io' as io;
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:xta/catcher/exceptions.dart' show TransactionIdUnavailableException;
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/settings/diagnostics_report.dart';
@@ -7,6 +12,7 @@ DiagnosticsReport _report({
   List<AccountDiagnostics> accounts = const [],
   bool registryEnabled = true,
   DateTime? registryFetchedAt,
+  Object? xSetupFailure,
 }) => DiagnosticsReport(
   appVersion: 'v4.12.0+400001040',
   accounts: accounts,
@@ -14,6 +20,7 @@ DiagnosticsReport _report({
   registryEnabled: registryEnabled,
   registryFetchedAt: registryFetchedAt,
   generatedAt: DateTime.utc(2026, 7, 25, 9, 30),
+  xSetupFailure: xSetupFailure,
 );
 
 void main() {
@@ -39,6 +46,53 @@ void main() {
   });
 
   group('report text', () {
+    test('a missing public account name never reveals the internal session identifier', () {
+      final text = _report(
+        accounts: const [
+          AccountDiagnostics(id: 'private-csrf-token', screenName: null, rateLimited: {}, notFoundUntil: null),
+        ],
+      ).toPlainText();
+      expect(text, contains('unnamed account: ok'));
+      expect(text, isNot(contains('private-csrf-token')));
+    });
+
+    test('reports wrapped bootstrap status and route without request or response secrets', () {
+      final failure = TransactionIdUnavailableException(
+        io.HttpException(
+          'X transaction bootstrap returned HTTP 403; Cookie: auth_token=private-session',
+          uri: Uri.parse('https://reader:private-password@x.com/search?q=private-query#private-fragment'),
+        ),
+      );
+      final text = _report(xSetupFailure: failure).toPlainText();
+      expect(text, contains('last X setup: HTTP 403 at x.com/search'));
+      expect(text, isNot(contains('private-')));
+      expect(text, isNot(contains('auth_token')));
+      expect(text, isNot(contains('Cookie:')));
+    });
+
+    test('connection, timeout and parse diagnostics never expose their exception text', () {
+      final failures = <Object>[
+        const io.SocketException('private-host'),
+        http.ClientException('private-response', Uri.parse('https://private-host/private-path')),
+        TimeoutException('private-token'),
+        const FormatException('private-body', 'private-source'),
+        Exception('private-error'),
+      ];
+      for (final failure in failures) {
+        expect(xSetupFailureSummary(failure), isNot(contains('private-')));
+      }
+      expect(xSetupFailureSummary(failures[0]), 'connection failed');
+      expect(xSetupFailureSummary(failures[1]), 'connection failed');
+      expect(xSetupFailureSummary(failures[2]), 'timed out');
+      expect(xSetupFailureSummary(failures[3]), 'signing data format not recognized');
+    });
+
+    test('untrusted URLs and non-bootstrap X paths are omitted', () {
+      for (final url in ['https://private-host/home', 'https://x.com/private-profile', 'http://x.com/home']) {
+        expect(xSetupFailureSummary(io.HttpException('HTTP 403', uri: Uri.parse(url))), 'HTTP 403');
+      }
+    });
+
     test('names the endpoint and account behind a failure', () {
       final text = _report(
         accounts: [

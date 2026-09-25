@@ -134,7 +134,7 @@ class _AccountTile extends StatelessWidget {
         account.isHealthy ? Icons.check_circle_outline : Icons.error_outline,
         color: account.isHealthy ? null : Theme.of(context).colorScheme.error,
       ),
-      title: Text('@${account.screenName ?? account.id}'),
+      title: Text(account.screenName == null ? L10n.of(context).account : '@${account.screenName}'),
       subtitle: Text(problems.isEmpty ? L10n.of(context).diagnostics_account_ok : problems.join('\n')),
       isThreeLine: problems.length > 1,
     );

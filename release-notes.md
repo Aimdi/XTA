@@ -4,6 +4,34 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi139
+
+Fixes a connection-recovery regression introduced in aimdi136 and adds missing
+support for X's current transaction-signing setup.
+
+- Temporary connection and timeout failures during X initialization remain
+  eligible for automatic recovery. They no longer spend every retry against
+  the cached failure; malformed signing data retains its retry cooldown.
+- Initialize with the selected account's existing X session. Guest requests and
+  different accounts have separate signing caches, so one failed session cannot
+  block another. Session cookies are restricted to HTTPS X pages and are never
+  attached to static-script requests or forwarded to another origin.
+- Discover the newer `x-web` / `sign.o` bundles as well as legacy `ondemand.s`
+  scripts, using the existing signing calculation and 12-second deadline.
+- The copied diagnostic report now includes a safe X setup failure category,
+  HTTP status and fixed route. It excludes exception bodies, URL queries and
+  internal session identifiers.
+
+For most Android phones, use **`xta-aimdi139_arm64-v8a.apk`**. Base version code
+**400001134** is above every aimdi138 variant. Signing configuration and app ID
+remain unchanged for in-place updates.
+
+The regression tests reproduce the broken behavior in aimdi138 and verify
+recovery, authenticated request construction, modern scripts and credential
+isolation. These fixtures cannot prove authenticated timeline access on a
+physical device. Earlier live CI requests received HTTP 403 from X; the user’s
+specific on-device failure is not conclusively identified by those responses.
+
 ### aimdi138
 
 Repairs X request initialization when X serves its new logged-out homepage.
