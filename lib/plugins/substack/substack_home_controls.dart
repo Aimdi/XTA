@@ -65,7 +65,8 @@ List<SubstackPost> filterSubstackLoaded(List<SubstackPost> posts, SubstackLoaded
 
 class SubstackLoadedControls extends StatefulWidget {
   final String slot;
-  const SubstackLoadedControls({super.key, required this.slot});
+  final bool autofocus;
+  const SubstackLoadedControls({super.key, required this.slot, this.autofocus = false});
   @override
   State<SubstackLoadedControls> createState() => _SubstackLoadedControlsState();
 }
@@ -97,6 +98,7 @@ class _SubstackLoadedControlsState extends State<SubstackLoadedControls> {
           Expanded(
             child: TextField(
               controller: _query,
+              autofocus: widget.autofocus,
               onChanged: (query) => store.configure(widget.slot, options.copy(query: query)),
               decoration: InputDecoration(
                 hintText: l10n.plugin_mastodon_loaded_search,
