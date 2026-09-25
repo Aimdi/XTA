@@ -176,6 +176,19 @@ jobs:
           test/substack_article_navigation_layout_test.dart
           test/substack_reader_recovery_test.dart
 
+      - name: Substack compact layout previews
+        if: always() && github.event_name == 'pull_request' && github.head_ref == 'fix/substack-declutter'
+        uses: actions/upload-artifact@v4
+        with:
+          name: substack-compact-layouts
+          path: |
+            review-artifacts/renders/substack-home-compact-de.png
+            review-artifacts/renders/substack-home-large-rtl.png
+            review-artifacts/renders/substack-following-sheet.png
+            review-artifacts/renders/substack-options-large-rtl.png
+          if-no-files-found: error
+          retention-days: 2
+
       - name: Discover regressions
         run: >-
           flutter test --reporter expanded --timeout 90s
