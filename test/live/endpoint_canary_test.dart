@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client_unauthenticated.dart';
 import 'package:xta/client/endpoint_overrides.dart';
 import 'package:xta/client/endpoints.dart';
@@ -77,7 +78,8 @@ void main() {
           // A blocked or flaky runner must not be reported as X breaking its
           // API, so transport failures are inconclusive rather than fatal.
           status = '---';
-          verdict = 'unreachable ($e)';
+          final cause = e is TransactionIdUnavailableException ? e.cause : e;
+          verdict = 'unreachable ($cause)';
           unreachable.add(endpoint.name);
         }
 

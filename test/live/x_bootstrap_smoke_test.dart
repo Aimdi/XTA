@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logging/logging.dart';
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/client_unauthenticated.dart';
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
@@ -24,7 +25,12 @@ void main() {
       final uri = publicXProfileUri();
       // Use real bootstrap derivation: a guest-only request can succeed while
       // every signed-in request fails before reaching its GraphQL endpoint.
-      final headers = await TwitterHeaders.getHeaders(uri, null);
+      final Map<String, String> headers;
+      try {
+        headers = await TwitterHeaders.getHeaders(uri, null);
+      } on TransactionIdUnavailableException catch (error, stack) {
+        Error.throwWithStackTrace(error.cause, stack);
+      }
       expect(headers['x-client-transaction-id'], isNotEmpty);
 
       final response = await fetchUnauthenticated(
