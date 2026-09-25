@@ -5,14 +5,26 @@ import re
 import sys
 
 
+_BOOTSTRAP_COMPATIBILITY_MARKERS = (
+    "couldn't find ondemand file index",
+    "could not find ondemand file index",
+    "couldn't find ondemand file hash",
+    "couldn't get key_byte indices",
+    "couldn't get [twitter-site-verification] key",
+    "x pages did not contain transaction signing data",
+)
+
 _INFRASTRUCTURE_MARKERS = (
     "this run proves nothing",
     "probe did not run",
     "building native assets failed",
     "hash of downloaded file",
     "failed to compile",
-    "couldn't find ondemand file index",
-    "could not find ondemand file index",
+    "timeoutexception",
+    "socketexception",
+    "failed host lookup",
+    "connection refused",
+    "connection reset",
 )
 
 
@@ -41,6 +53,10 @@ def classify(outcome, raw):
     if outcome != "failure":
         return "infrastructure"
     lower = raw.lower()
+    # A parser incompatibility is an app/API break even when the endpoint
+    # canary appends its generic "this run proves nothing" network footer.
+    if any(marker in lower for marker in _BOOTSTRAP_COMPATIBILITY_MARKERS):
+        return "service"
     if any(marker in lower for marker in _INFRASTRUCTURE_MARKERS):
         return "infrastructure"
     return "service"

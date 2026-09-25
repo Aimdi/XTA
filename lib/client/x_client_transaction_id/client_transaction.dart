@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show HttpException;
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -28,7 +29,7 @@ class ClientTransaction {
   });
 
   /// Builds a generator from already-derived parts. Tests use this because
-  /// [initialize] needs two live requests to x.com.
+  /// [initialize] needs live requests to X and its static bundle host.
   ClientTransaction.forTesting({
     required List<int> keyBytes,
     required String animationKey,
@@ -45,24 +46,11 @@ class ClientTransaction {
     int randomNumber = additionalRandomNumber,
   }) async {
     final budget = RequestBudget(const Duration(seconds: 12));
-    final homePageResponse = await getXResponse(
-      Uri.https('x.com', '/home'),
-      timeout: budget.remaining,
-      headers: {
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache',
-        'Referer': 'https://x.com',
-        'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-        'X-Twitter-Active-User': 'yes',
-        'X-Twitter-Client-Language': 'en',
-      },
-    );
-    final homePageHtml = homePageResponse.body;
-    final homePageDoc = html_parser.parse(homePageHtml);
-
-    final ondemandUrl = _getOndemandFileUrl(homePageHtml);
-    final ondemandResponse = await getXResponse(Uri.parse(ondemandUrl), timeout: budget.remaining);
+    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget);
+    final ondemandResponse = await getXResponse(ondemandUrl, timeout: budget.remaining);
+    if (ondemandResponse.statusCode < 200 || ondemandResponse.statusCode >= 300) {
+      throw HttpException('X signing bundle returned HTTP ${ondemandResponse.statusCode}', uri: ondemandUrl);
+    }
     final ondemandFileText = ondemandResponse.body;
 
     final (rowIndex, keyBytesIndices) = _getIndices(ondemandFileText);
@@ -110,6 +98,50 @@ class ClientTransaction {
 
   // --- Private helpers (static, mirroring Python class methods) ---
 
+  static const _bootstrapHeaders = {
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache',
+    'Referer': 'https://x.com',
+    'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
+    'X-Twitter-Active-User': 'yes',
+    'X-Twitter-Client-Language': 'en',
+  };
+
+  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(RequestBudget budget) async {
+    // X's logged-out homepage can omit the signer; its public search shell
+    // still includes it: iSarabjitDhiman/XClientTransaction#45.
+    final pages = [Uri.https('x.com', '/home'), Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'})];
+    for (final uri in pages) {
+      final response = await getXResponse(uri, timeout: budget.remaining, headers: _bootstrapHeaders);
+      if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw HttpException('X transaction bootstrap returned HTTP ${response.statusCode}', uri: uri);
+      }
+      final doc = html_parser.parse(response.body);
+      final bundle = _getOndemandFileUrl(response.body, doc);
+      if (bundle != null && _hasBootstrapData(doc)) return (doc, bundle);
+    }
+    throw const FormatException('X pages did not contain transaction signing data');
+  }
+
+  static bool _hasBootstrapData(html_dom.Document doc) {
+    final key = doc.querySelector("meta[name='twitter-site-verification']")?.attributes['content'];
+    if (key == null || key.isEmpty) return false;
+    try {
+      if (_getKeyBytes(key).length < 6) return false;
+    } on FormatException {
+      return false;
+    }
+    final frames = doc.querySelectorAll('[id^="loading-x-anim"]');
+    return frames.length >= 4 &&
+        frames.take(4).every((frame) {
+          if (frame.children.isEmpty || frame.children[0].children.length < 2) return false;
+          final path = frame.children[0].children[1].attributes['d'];
+          return path != null && path.length > 9 && path.contains('C');
+        });
+  }
+
   static (int, List<int>) _getIndices(String ondemandFileText) {
     final indices = indicesRegex
         .allMatches(ondemandFileText)
@@ -131,15 +163,32 @@ class ClientTransaction {
 
   static List<int> _getKeyBytes(String key) => base64.decode(key).toList();
 
-  static String _getOndemandFileUrl(String html) {
+  static Uri? _getOndemandFileUrl(String html, html_dom.Document doc) {
+    for (final script in doc.querySelectorAll('script[src]')) {
+      final uri = Uri.tryParse(script.attributes['src']!);
+      if (uri != null && _isSigningBundle(uri)) return uri;
+    }
     final indexMatch = onDemandFileRegex.firstMatch(html);
-    if (indexMatch == null) throw Exception("Couldn't find ondemand file index");
+    if (indexMatch == null) return null;
     final fileIndex = indexMatch.group(1)!;
-    final hashRegex = RegExp(',${RegExp.escape(fileIndex)}:"([0-9a-f]+)"');
+    final hashRegex = RegExp(
+      '''(?:^|[,{])\\s*["']?${RegExp.escape(fileIndex)}["']?\\s*:\\s*["']([a-zA-Z0-9_-]+)["']''',
+    );
     final hashMatch = hashRegex.firstMatch(html);
-    if (hashMatch == null) throw Exception("Couldn't find ondemand file hash");
+    if (hashMatch == null) return null;
     final filename = hashMatch.group(1)!;
-    return onDemandFileUrlTemplate.replaceAll('{filename}', filename);
+    final uri = Uri.parse(onDemandFileUrlTemplate.replaceAll('{filename}', filename));
+    return _isSigningBundle(uri) ? uri : null;
+  }
+
+  static bool _isSigningBundle(Uri uri) {
+    return uri.scheme == 'https' &&
+        uri.host == 'abs.twimg.com' &&
+        uri.userInfo.isEmpty &&
+        uri.port == 443 &&
+        !uri.hasQuery &&
+        !uri.hasFragment &&
+        RegExp(r'^/responsive-web/client-web/ondemand\.s\.[a-zA-Z0-9_-]+\.js$').hasMatch(uri.path);
   }
 
   static List<List<int>> _get2dArray(

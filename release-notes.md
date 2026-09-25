@@ -4,6 +4,30 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi138
+
+Repairs X request initialization when X serves its new logged-out homepage.
+The missing transaction script could prevent every signed-in X read from being
+sent, affecting timelines, profiles, search and conversations together.
+
+- Try X's public search page when the homepage lacks the transaction bootstrap
+  data or returns HTTP 403/404, within the existing request timeout.
+- Validate bootstrap responses and cover the complete initialization flow with
+  regression fixtures instead of substituting a precomputed transaction key.
+- Run a live bootstrap and public-profile check for changes to this code. Report
+  transaction parsing failures as client/API compatibility failures rather than
+  hiding them as probe infrastructure failures.
+
+For most Android phones, use **`xta-aimdi138_arm64-v8a.apk`**. The base version
+code is **400001130**, above every aimdi137 APK variant. The application id and
+release signing certificate are unchanged for in-place updates.
+
+This patch targets the verified transaction-bootstrap failure. Authenticated
+account and physical-device checks still require testing on a signed-in device.
+The live CI check received HTTP 403 from both public bootstrap routes before
+parsing; live recovery is therefore unverified. This does not establish that
+the restriction is limited to CI.
+
 ### aimdi137
 
 The next release brings the X, Mastodon, Bluesky and Substack reader upgrades
