@@ -230,7 +230,7 @@ void main() {
     await tester.pumpWidget(h.app());
     await tester.pumpAndSettle();
     await _options(tester);
-    await tester.tap(find.byTooltip('Sort'));
+    await tester.tap(find.byTooltip('Sort posts'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Oldest first'));
     await tester.pumpAndSettle();
