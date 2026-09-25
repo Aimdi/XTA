@@ -11,6 +11,7 @@ class SigningAssets {
   // Limits distinct assets; the shared transport may retry a transient failure.
   static const maxAssets = 16;
   static const concurrency = 4;
+  static const maxImportDepth = 3;
   final RequestBudget budget;
   final _visited = <Uri>{};
   int _requests = 0;
@@ -56,50 +57,81 @@ class SigningAssets {
     for (final uri in linked) {
       if (signer(uri)) return uri;
     }
-    final candidates = linked.where(_visited.add).take(maxAssets - 1 - _requests).toList();
-    if (candidates.isEmpty) return null;
-    return _scan(candidates);
+    return _SigningAssetSearch(this).run(linked);
+  }
+}
+
+class _SigningAssetSearch {
+  final SigningAssets assets;
+  final _queue = <({Uri uri, int depth})>[];
+  final _result = Completer<Uri?>();
+  int _active = 0;
+  int _loaded = 0;
+  Object? _firstError;
+
+  _SigningAssetSearch(this.assets);
+
+  Future<Uri?> run(Iterable<Uri> roots) {
+    _enqueue(roots, 0);
+    _pump();
+    return _result.future;
   }
 
-  Future<Uri?> _scan(List<Uri> candidates) {
-    final result = Completer<Uri?>();
-    var cursor = 0;
-    var loaded = 0;
-    Object? firstError;
-    Future<void> worker() async {
-      while (!result.isCompleted && cursor < candidates.length) {
-        final uri = candidates[cursor++];
-        try {
-          final source = await read(uri);
-          loaded++;
-          if (result.isCompleted) return;
-          final match = _findImport(uri, source);
-          if (match != null) result.complete(match);
-        } catch (error) {
-          firstError ??= error;
-        }
+  void _enqueue(Iterable<Uri> uris, int depth) {
+    if (depth > SigningAssets.maxImportDepth) return;
+    final next = uris.where(assets._visited.add).take(SigningAssets.maxAssets).toList();
+    // Real module imports precede unrelated HTML preloads and Vite lookup tables.
+    _queue.insertAll(0, next.map((uri) => (uri: uri, depth: depth)));
+  }
+
+  void _pump() {
+    while (!_result.isCompleted &&
+        _active < SigningAssets.concurrency &&
+        assets._requests < SigningAssets.maxAssets - 1 &&
+        _queue.isNotEmpty) {
+      final candidate = _queue.removeAt(0);
+      _active++;
+      unawaited(
+        _visit(candidate).whenComplete(() {
+          _active--;
+          _pump();
+        }),
+      );
+    }
+    if (_active != 0 || _result.isCompleted) return;
+    if (_loaded == 0 && _firstError != null) {
+      _result.completeError(_firstError!);
+    } else {
+      _result.complete(null);
+    }
+  }
+
+  Future<void> _visit(({Uri uri, int depth}) candidate) async {
+    try {
+      final source = await assets.read(candidate.uri);
+      _loaded++;
+      if (_result.isCompleted) return;
+      final signer = _references(candidate.uri, source, _literal).where(SigningAssets.signer).firstOrNull;
+      if (signer != null) {
+        _result.complete(signer);
+      } else {
+        _enqueue(_references(candidate.uri, source, _moduleImport), candidate.depth + 1);
       }
+    } catch (error) {
+      _firstError ??= error;
     }
-
-    unawaited(
-      Future.wait(List.generate(concurrency, (_) => worker())).then((_) {
-        if (result.isCompleted) return;
-        if (loaded == 0 && firstError != null) {
-          result.completeError(firstError!);
-        } else {
-          result.complete(null);
-        }
-      }),
-    );
-    return result.future;
   }
 
-  static Uri? _findImport(Uri parent, String source) {
-    final references = RegExp(r'''["']([^"'\s]+\.js)["']''').allMatches(source);
-    for (final reference in references) {
-      final uri = parent.resolve(reference.group(1)!);
-      if (signer(uri)) return uri;
+  // Template literals are accepted only when constant: never evaluate ${...}.
+  static final _literal = RegExp(r'''(["'`])([^"'`\s$]+\.js)\1''');
+  static final _moduleImport = RegExp(r'''(?:\bfrom\s*|\bimport\s*\(?\s*)(["'`])([^"'`\s$]+\.js)\1''');
+
+  static Iterable<Uri> _references(Uri parent, String source, RegExp pattern) sync* {
+    for (final match in pattern.allMatches(source)) {
+      final reference = Uri.tryParse(match.group(2)!);
+      if (reference == null) continue;
+      final uri = parent.resolveUri(reference);
+      if (SigningAssets.trusted(uri)) yield uri;
     }
-    return null;
   }
 }
