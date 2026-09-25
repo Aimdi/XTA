@@ -9,6 +9,7 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_brand.dart';
 import 'package:xta/plugins/plugin_storage.dart';
+import 'package:xta/settings/plugin_store_tile.dart';
 import 'package:xta/utils/pref_lists.dart';
 
 /// A plugin on offer but not installed: one line of what it does, and Install.
@@ -25,14 +26,25 @@ class AvailablePluginRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return _PluginStoreTile(
-      plugin: plugin,
-      subtitle: plugin.description(context),
-      trailing: FilledButton.tonal(
+    final theme = Theme.of(context);
+    return PluginStoreTile(
+      leading: pluginBrandIcon(context, plugin, size: 28),
+      title: Text(
+        plugin.title(context),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
+      ),
+      subtitle: Text(
+        plugin.description(context),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
+      ),
+      actions: FilledButton.tonal(
         onPressed: onInstall,
         style: FilledButton.styleFrom(
-          visualDensity: VisualDensity.compact,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          minimumSize: const Size(kPluginStoreTouchTarget, kPluginStoreTouchTarget),
           padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
         child: Text(l10n.plugin_install),
@@ -64,10 +76,17 @@ class InstalledPluginRow extends StatelessWidget {
     final tabPref = plugin.homeTabPrefKey;
     final settings = plugin.settingsScreen(context);
     final canOpen = plugin.homePage(context) != null;
+    final theme = Theme.of(context);
 
-    return _PluginStoreTile(
-      plugin: plugin,
-      subtitleWidget: PluginFootprintText(plugin: plugin),
+    return PluginStoreTile(
+      leading: pluginBrandIcon(context, plugin, size: 28),
+      title: Text(
+        plugin.title(context),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700),
+      ),
+      subtitle: PluginFootprintText(plugin: plugin),
       onTap: canOpen ? () => openPluginClient(context, plugin) : settings == null
           ? null
           : () async {
@@ -77,13 +96,19 @@ class InstalledPluginRow extends StatelessWidget {
               );
               onChanged();
             },
-      trailing: Row(
+      actions: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (canOpen) TextButton(
-            key: ValueKey('plugin-open-${plugin.id}'),
-            onPressed: () => openPluginClient(context, plugin),
-            child: Text(l10n.plugin_open)),
+          if (canOpen)
+            TextButton(
+              key: ValueKey('plugin-open-${plugin.id}'),
+              style: TextButton.styleFrom(
+                minimumSize: const Size(kPluginStoreTouchTarget, kPluginStoreTouchTarget),
+              ),
+              onPressed: () => openPluginClient(context, plugin),
+              child: Text(l10n.plugin_open),
+            ),
+          if (canOpen && settings != null) const SizedBox(width: 8),
           if (settings != null)
             _PluginIconButton(
               tooltip: l10n.settings,
@@ -96,13 +121,13 @@ class InstalledPluginRow extends StatelessWidget {
                 onChanged();
               },
             ),
+          if (canOpen || settings != null) const SizedBox(width: 8),
           PopupMenuButton<String>(
             tooltip: MaterialLocalizations.of(context).showMenuTooltip,
             padding: EdgeInsets.zero,
             iconSize: 20,
             style: const ButtonStyle(
-              visualDensity: VisualDensity.compact,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: WidgetStatePropertyAll(Size.square(kPluginStoreTouchTarget)),
             ),
             onSelected: (value) {
               if (value == 'tab' && tabPref != null) _setShowsTab(context, prefs, tabPref);
@@ -154,72 +179,6 @@ class InstalledPluginRow extends StatelessWidget {
   }
 }
 
-/// Compact store row: brand chip, title, one subtitle line, trailing actions.
-class _PluginStoreTile extends StatelessWidget {
-  final XtaPlugin plugin;
-  final String? subtitle;
-  final Widget? subtitleWidget;
-  final Widget trailing;
-  final VoidCallback? onTap;
-
-  const _PluginStoreTile({
-    required this.plugin,
-    required this.trailing,
-    this.subtitle,
-    this.subtitleWidget,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final caption = theme.textTheme.bodySmall!.copyWith(
-      color: theme.colorScheme.onSurfaceVariant,
-    );
-    final below =
-        subtitleWidget ??
-        (subtitle == null
-            ? null
-            : Text(
-                subtitle!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: caption,
-              ));
-
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-        child: Row(
-          children: [
-            pluginBrandIcon(context, plugin, size: 28),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    plugin.title(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium!.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (below != null) ...[const SizedBox(height: 2), below],
-                ],
-              ),
-            ),
-            const SizedBox(width: 4),
-            trailing,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _PluginIconButton extends StatelessWidget {
   final String tooltip;
   final IconData icon;
@@ -237,10 +196,12 @@ class _PluginIconButton extends StatelessWidget {
     return IconButton(
       tooltip: tooltip,
       onPressed: onPressed,
-      visualDensity: VisualDensity.compact,
       iconSize: 20,
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+      constraints: const BoxConstraints(
+        minWidth: kPluginStoreTouchTarget,
+        minHeight: kPluginStoreTouchTarget,
+      ),
       icon: Icon(
         icon,
         color: scheme.onSurfaceVariant,
