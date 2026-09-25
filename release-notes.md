@@ -4,6 +4,29 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi141
+
+Includes the long-session loading fixes from PR #295 for on-device testing.
+
+- Preserve in-flight plugin requests when a group feed rebuilds without a
+  membership change, instead of repeatedly cancelling and restarting them.
+- Release group and Home listeners when their screens close, and discard late
+  results from replaced group models.
+- Bound stalled group reads, offer Retry after a failed first load, and preserve
+  the displayed feed when a background reload fails.
+- Abort stalled Reddit token refreshes after 15 seconds so later reads can
+  recover without losing sign-in.
+- Restore bounded automatic recovery after returning to the app or switching
+  between working Wi-Fi and mobile connections.
+
+For most Android phones, use **`xta-aimdi141_arm64-v8a.apk`**. Base version code
+**400001142** is above every aimdi140 variant. The application ID and release
+signing certificate remain unchanged for in-place updates.
+
+The patch passed 3,067 tests (6 skipped) and Android compilation before release
+preparation. The release workflow verifies the final source and signed APKs.
+The full-app freeze reported during extended use still needs on-device testing.
+
 ### aimdi140
 
 Repairs another X initialization failure that could stop the timeline request
