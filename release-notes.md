@@ -4,6 +4,41 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi136
+
+This release combines the reader and reliability improvements from PRs #281–#285.
+
+- Saved becomes a stronger local Library with newest/oldest sorting, bulk
+  selection, move-to-folder, select-all-visible, and confirmed bulk removal.
+- X profiles preserve more reading state, back-to-top works across nested
+  scrolling, and rich cards/articles can open inside XTA while native X/plugin
+  links still route to their native screens.
+- Bluesky, Threads, Mastodon, Reddit, Instagram photos, and archived plugin
+  images share a more consistent fullscreen viewer with paging, zoom, ALT text,
+  download, share, counters, and source-post navigation where available.
+- Read failures now distinguish offline, timeout, rate limits, session problems,
+  endpoint refusal, transaction-token failures, unavailable requests, and X
+  server errors. Cached posts remain readable with clearer explanations.
+- Live canaries distinguish service/API failures from CI/probe infrastructure
+  failures, reducing misleading outage issues.
+- Search and Discover now share per-network recent-search history, clear controls,
+  Library Search access, and focused regression coverage.
+
+XTA remains read-oriented: nothing here adds compose, reply, quote, repost,
+server-side like, or DM functionality on X.
+
+For most Android phones, choose **`xta-aimdi136_arm64-v8a.apk`**. Universal,
+ARMv7, and x86_64 variants are also available. The base version code is
+**400001122**, above every aimdi135 ABI variant. The application id
+(`com.aimdi.xta`) and release signing certificate are unchanged for in-place
+updates.
+
+The combined tree passed formatting, static analysis, focused recovery/safety/
+Search/Discover/canary checks, the complete Flutter test suite, Android compile,
+and release-integrity validation before the release branch was cut. Physical
+device, sustained-performance, and authenticated live-account testing remain
+outside this CI environment.
+
 ### aimdi135
 
 Timeline and profile read failures now show small Retry and information controls.
