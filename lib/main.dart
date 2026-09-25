@@ -36,6 +36,7 @@ import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/home_account_filter.dart';
@@ -638,6 +639,7 @@ Future<void> main() async {
       optionPluginThreadsLikedPosts: '[]',
       optionPluginThreadsSearchHistory: '[]',
       optionPluginStoreShowPrivate: false,
+      optionAltMicrobloggingGrouped: true,
       optionSubscriptionGroupsOrderByAscending: true,
       optionDisableWarningsForUnrelatedPostsInFeed: false,
       // Reading is the whole point of the app, so posts are not clipped unless
@@ -979,6 +981,10 @@ Future<void> main() async {
                 Provider(create: (_) => SearchScopeStore()),
                 Provider(create: (_) => DiscoverQueryStore()),
                 Provider(create: (_) => FeedStripStore(prefService)),
+                Provider(
+                  create: (_) => AltMicrobloggingStore(prefService),
+                  dispose: (_, store) => store.destroy(),
+                ),
                 Provider(create: (_) => NetworkRecentsStore(prefService)),
                 Provider(create: (_) => HomeAccountFilterStore(prefService)),
                 Provider(create: (_) => HomeGroupFilterStore(prefService)),

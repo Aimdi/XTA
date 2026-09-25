@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/home/alt_microblogging.dart';
+import 'package:xta/settings/alt_microblogging_setting.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
@@ -168,7 +170,10 @@ class _SettingsPluginStoreFragmentState
       _listed,
       isInstalled: (plugin) => plugin.isEnabled(prefs),
     );
-    final noResults =
+    final showGrouping = _query.trim().isEmpty ||
+        '${l10n.alt_microblogging} ${l10n.alt_microblogging_group} Mastodon Bluesky Threads'
+            .toLowerCase().contains(_query.trim().toLowerCase());
+    final noResults = !showGrouping &&
         _query.trim().isNotEmpty &&
         sections.installed.isEmpty &&
         sections.availableByCategory.isEmpty;
@@ -193,6 +198,8 @@ class _SettingsPluginStoreFragmentState
               : null,
         ),
       if (noResults) PluginStoreEmptyState(label: l10n.no_results),
+      if (showGrouping)
+        AltMicrobloggingSetting(store: context.read<AltMicrobloggingStore>()),
       if (sections.installed.isNotEmpty) ...[
         _header(context, l10n.plugin_installed),
         for (final plugin in sections.installed)

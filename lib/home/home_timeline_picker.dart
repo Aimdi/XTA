@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 
 class HomeTimelineOption {
@@ -8,6 +9,7 @@ class HomeTimelineOption {
   final Widget mark;
   final bool plugin;
   final bool unread;
+  final String? subtitle;
 
   const HomeTimelineOption({
     required this.id,
@@ -15,6 +17,7 @@ class HomeTimelineOption {
     required this.mark,
     required this.plugin,
     required this.unread,
+    this.subtitle,
   });
 }
 
@@ -33,6 +36,8 @@ class HomeTimelinePicker extends StatelessWidget {
   final String selected;
   final List<HomeTimelineOption> groups;
   final bool showAdd;
+  final bool groupMicroblogs;
+  final String? rememberedMicroblog;
 
   const HomeTimelinePicker({
     super.key,
@@ -40,11 +45,33 @@ class HomeTimelinePicker extends StatelessWidget {
     required this.selected,
     this.groups = const [],
     this.showAdd = true,
+    this.groupMicroblogs = false,
+    this.rememberedMicroblog,
   });
+
+  List<HomeTimelineOption> _displayOptions(BuildContext context) {
+    final byId = {for (final option in options) option.id: option};
+    final members = options.where((option) => isAltMicrobloggingSource(option.id)).toList();
+    return [
+      for (final id in groupedMicrobloggingIds(byId.keys, grouped: groupMicroblogs))
+        if (id == altMicrobloggingSectionId)
+          HomeTimelineOption(
+            id: id,
+            label: L10n.of(context).alt_microblogging,
+            subtitle: members.map((option) => option.label).join(' · '),
+            mark: const Icon(Icons.forum_outlined, size: 22),
+            plugin: true,
+            unread: members.any((option) => option.unread),
+          )
+        else
+          byId[id]!,
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
+    final displayed = _displayOptions(context);
     return SafeArea(
       top: false,
       child: ConstrainedBox(
@@ -76,15 +103,15 @@ class HomeTimelinePicker extends StatelessWidget {
               child: ListView.builder(
                 shrinkWrap: true,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: options.length + (groups.isEmpty ? 0 : groups.length + 1),
+                itemCount: displayed.length + (groups.isEmpty ? 0 : groups.length + 1),
                 itemBuilder: (context, index) {
-                  if (index < options.length) return _row(context, options[index]);
-                  if (index == options.length)
+                  if (index < displayed.length) return _row(context, displayed[index]);
+                  if (index == displayed.length)
                     return Padding(
                       padding: const EdgeInsetsDirectional.fromSTEB(12, 20, 12, 8),
                       child: Text(l10n.groups, style: Theme.of(context).textTheme.titleSmall),
                     );
-                  return _row(context, groups[index - options.length - 1], group: true);
+                  return _row(context, groups[index - displayed.length - 1], group: true);
                 },
               ),
             ),
@@ -106,7 +133,8 @@ class HomeTimelinePicker extends StatelessWidget {
   }
 
   Widget _row(BuildContext context, HomeTimelineOption option, {bool group = false}) {
-    final isSelected = !group && option.id == selected;
+    final microblogs = !group && option.id == altMicrobloggingSectionId;
+    final isSelected = !group && (option.id == selected || (microblogs && isAltMicrobloggingSource(selected)));
     final accent = tweetReadableAccentColor(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -130,6 +158,7 @@ class HomeTimelinePicker extends StatelessWidget {
               child: ExcludeSemantics(child: option.mark),
             ),
             title: Text(option.label, style: TextStyle(fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500)),
+            subtitle: option.subtitle == null ? null : Text(option.subtitle!),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -147,7 +176,17 @@ class HomeTimelinePicker extends StatelessWidget {
             ),
             onTap: () => Navigator.pop(
               context,
-              group ? HomeTimelineSelection.group(option.id) : HomeTimelineSelection.source(option.id),
+              group
+                  ? HomeTimelineSelection.group(option.id)
+                  : HomeTimelineSelection.source(
+                      microblogs
+                          ? altMicrobloggingDestination(
+                              options.map((option) => option.id),
+                              selected: selected,
+                              remembered: rememberedMicroblog,
+                            )
+                          : option.id,
+                    ),
             ),
           ),
         ),

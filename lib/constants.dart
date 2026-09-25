@@ -414,6 +414,9 @@ const optionPluginInstagramLikedPosts = 'plugin.instagram.liked_posts';
 /// the public catalogue holds back with `available: false`.
 const optionPluginStoreShowPrivate = 'plugin_store.show_private';
 
+const optionAltMicrobloggingGrouped = 'home.alt_microblogging.grouped';
+const optionAltMicrobloggingLastSource = 'home.alt_microblogging.last_source';
+
 const optionShouldCheckForUpdates = 'should_check_for_updates';
 
 /// Marks that the update check has been turned off once for this fork. Without
