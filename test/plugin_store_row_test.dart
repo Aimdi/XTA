@@ -211,7 +211,7 @@ void main() {
     final liveRegion = find.descendant(
       of: find.byType(PluginStoreEmptyState),
       matching: find.byWidgetPredicate(
-        (widget) => widget is Semantics && widget.properties.liveRegion,
+        (widget) => widget is Semantics && widget.properties.liveRegion == true,
       ),
     );
     expect(liveRegion, findsOneWidget);
