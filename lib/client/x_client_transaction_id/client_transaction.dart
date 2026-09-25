@@ -114,6 +114,7 @@ class ClientTransaction {
     final pages = [Uri.https('x.com', '/home'), Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'})];
     for (final uri in pages) {
       final response = await getXResponse(uri, timeout: budget.remaining, headers: _bootstrapHeaders);
+      if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw HttpException('X transaction bootstrap returned HTTP ${response.statusCode}', uri: uri);
       }

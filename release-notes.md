@@ -11,7 +11,7 @@ The missing transaction script could prevent every signed-in X read from being
 sent, affecting timelines, profiles, search and conversations together.
 
 - Try X's public search page when the homepage lacks the transaction bootstrap
-  data, within the existing request timeout.
+  data or returns HTTP 403/404, within the existing request timeout.
 - Validate bootstrap responses and cover the complete initialization flow with
   regression fixtures instead of substituting a precomputed transaction key.
 - Run a live bootstrap and public-profile check for changes to this code. Report

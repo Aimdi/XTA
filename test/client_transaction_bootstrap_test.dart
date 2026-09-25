@@ -78,6 +78,34 @@ void main() {
     expect(requests.map((uri) => uri.toString()), ['https://x.com/home', 'https://x.com/search?q=AI&f=live', _bundle]);
   });
 
+  for (final status in [403, 404]) {
+    test('an unavailable homepage HTTP $status falls back without parsing its body', () async {
+      respond((request) {
+        if (request.url.path == '/home') return http.Response(_appShell(), status);
+        return http.Response(request.url.path == '/search' ? _appShell() : _indices, 200);
+      });
+
+      _expectValidId(await ClientTransaction.initialize());
+
+      expect(requests.map((uri) => uri.toString()), [
+        'https://x.com/home',
+        'https://x.com/search?q=AI&f=live',
+        _bundle,
+      ]);
+    });
+  }
+
+  test('both public routes returning HTTP 403 stops after the single fallback', () async {
+    respond((request) => http.Response(_appShell(), 403));
+
+    await expectLater(
+      ClientTransaction.initialize(),
+      throwsA(isA<HttpException>().having((error) => error.uri?.path, 'failed route', '/search')),
+    );
+
+    expect(requests.map((uri) => uri.path), ['/home', '/search']);
+  });
+
   test('an authenticated timeline fetch reaches X with its cookie and a real derived signer', () async {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     const responseBody = '{"data":{"home":{"home_timeline_urt":{"instructions":[]}}}}';
@@ -201,6 +229,17 @@ void main() {
 
     expect(requests.map((uri) => uri.path), ['/home']);
   });
+
+  for (final status in [500, 503]) {
+    test('homepage HTTP $status remains terminal after existing transient retries', () async {
+      respond((request) => http.Response(_appShell(), status));
+
+      await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
+
+      expect(requests.length, status == 503 ? 2 : 1);
+      expect(requests.every((uri) => uri.path == '/home'), isTrue);
+    });
+  }
 
   test('an unsuccessful signing bundle never produces an ID from its body', () async {
     respond((request) => request.url.host == 'x.com' ? http.Response(_appShell(), 200) : http.Response(_indices, 404));

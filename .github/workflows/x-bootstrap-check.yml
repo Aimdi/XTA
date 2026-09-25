@@ -54,3 +54,57 @@ jobs:
           python3 scripts/report_canary.py X "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md
           cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
           cat canary-report.md
+      - name: Check public bootstrap route responses
+        if: failure() && steps.probe.outcome == 'failure'
+        timeout-minutes: 1
+        run: |
+          python3 - <<'PY'
+          import json
+          from html.parser import HTMLParser
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          class BootstrapMarkers(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.verification = False
+                  self.frames = 0
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  if tag == "meta" and attrs.get("name") == "twitter-site-verification":
+                      self.verification = bool(attrs.get("content"))
+                  if (attrs.get("id") or "").startswith("loading-x-anim"):
+                      self.frames += 1
+
+          headers = {
+              "Accept-Language": "en-US,en;q=0.9",
+              "Cache-Control": "no-cache",
+              "Referer": "https://x.com",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+              "X-Twitter-Active-User": "yes",
+              "X-Twitter-Client-Language": "en",
+          }
+          for route in ("/home", "/search?q=AI&f=live"):
+              try:
+                  try:
+                      response = urlopen(Request("https://x.com" + route, headers=headers), timeout=12)
+                  except HTTPError as error:
+                      response = error
+                  with response:
+                      body = response.read()
+                      status = response.status
+                  html = body.decode("utf-8", errors="replace")
+                  markers = BootstrapMarkers()
+                  markers.feed(html)
+                  print(json.dumps({
+                      "route": route.split("?")[0],
+                      "status": status,
+                      "bytes": len(body),
+                      "ondemand_marker": "ondemand.s" in html,
+                      "verification_key": markers.verification,
+                      "animation_frames": markers.frames,
+                  }))
+              except (URLError, TimeoutError, OSError) as error:
+                  print(json.dumps({"route": route.split("?")[0], "network_error": type(error).__name__}))
+          PY
