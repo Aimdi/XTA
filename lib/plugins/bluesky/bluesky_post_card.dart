@@ -55,10 +55,7 @@ class BlueskyPostCard extends StatelessWidget {
       onOpen!();
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post)));
   }
 
   void _openAuthor(BuildContext context) {
@@ -67,10 +64,7 @@ class BlueskyPostCard extends StatelessWidget {
       return;
     }
     final actor = post.did.isNotEmpty ? post.did : post.handle;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: actor)));
   }
 
   void _openReposter(BuildContext context) {
@@ -78,10 +72,7 @@ class BlueskyPostCard extends StatelessWidget {
     if (handle == null || handle.isEmpty) {
       return;
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: handle)),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: handle)));
   }
 
   void _openBrowser(BuildContext context) {
@@ -97,18 +88,9 @@ class BlueskyPostCard extends StatelessWidget {
       case BlueskyFacetKind.link:
         openLink(context, facet.value);
       case BlueskyFacetKind.mention:
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BlueskyProfileScreen(actor: facet.value),
-          ),
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: facet.value)));
       case BlueskyFacetKind.tag:
-        showBlueskySearchSheet(
-          context,
-          initialQuery: '#${facet.value}',
-          initialTab: BlueskySearchTab.posts,
-        );
+        showBlueskySearchSheet(context, initialQuery: '#${facet.value}', initialTab: BlueskySearchTab.posts);
     }
   }
 
@@ -131,16 +113,12 @@ class BlueskyPostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (post.isRepost) _repostBanner(context),
-                    if (post.replyToHandle != null &&
-                        post.replyToHandle!.isNotEmpty)
+                    if (post.replyToHandle != null && post.replyToHandle!.isNotEmpty)
                       PluginReplyingTo(name: post.replyToHandle!),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        GestureDetector(
-                          onTap: () => _openAuthor(context),
-                          child: _avatar(context),
-                        ),
+                        GestureDetector(onTap: () => _openAuthor(context), child: _avatar(context)),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -151,22 +129,15 @@ class BlueskyPostCard extends StatelessWidget {
                                 behavior: HitTestBehavior.opaque,
                                 child: _header(context),
                               ),
-                              if (post.text.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                BlueskyRichText(
-                                  text: post.text,
-                                  facets: post.facets,
-                                  style: theme.textTheme.bodyLarge!.copyWith(
-                                    height: 1.35,
-                                  ),
-                                  onFacetTap: (facet) =>
-                                      _onFacet(context, facet),
-                                ),
-                              ],
-                              if (post.hasMedia || post.hasQuote || post.hasLinkCard)
-                                post.sensitive
-                                    ? BlueskyContentWarning(key: ValueKey('warning-${post.uri}'), child: _attachments())
-                                    : _attachments(),
+                              if (blueskyWarnsContent(post))
+                                BlueskyContentWarning(
+                                  key: ValueKey('warning-${post.uri}'),
+                                  identity: blueskyWarningIdentity(post),
+                                  unavailable: blueskyContentUnavailable(post),
+                                  child: _body(context),
+                                )
+                              else
+                                _body(context),
                               _BlueskyEngagementRow(
                                 post: post,
                                 onOpen: () => _open(context),
@@ -188,20 +159,40 @@ class BlueskyPostCard extends StatelessWidget {
     );
   }
 
-  Widget _attachments() => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-    if (post.hasMedia) ...[
-      const SizedBox(height: 10),
-      PluginPostMedia(items: post.mediaItems, sourceName: 'bluesky'),
+  Widget _body(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (post.text.isNotEmpty) ...[
+        const SizedBox(height: 6),
+        BlueskyRichText(
+          text: post.text,
+          facets: post.facets,
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35),
+          onFacetTap: (facet) => _onFacet(context, facet),
+        ),
+      ],
+      if (post.hasMedia || post.hasQuote || post.hasLinkCard)
+        post.sensitive && !blueskyWarnsContent(post)
+            ? BlueskyContentWarning(
+                key: ValueKey('warning-${post.uri}'),
+                identity: blueskyWarningIdentity(post),
+                child: _attachments(),
+              )
+            : _attachments(),
     ],
-    if (post.quotedPost != null) ...[
-      const SizedBox(height: 10),
-      _QuotedPost(quote: post.quotedPost!),
+  );
+
+  Widget _attachments() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (post.hasMedia) ...[
+        const SizedBox(height: 10),
+        PluginPostMedia(items: post.mediaItems, sourceName: 'bluesky'),
+      ],
+      if (post.quotedPost != null) ...[const SizedBox(height: 10), _QuotedPost(quote: post.quotedPost!)],
+      if (post.linkCard != null) ...[const SizedBox(height: 10), _BlueskyLinkPreview(card: post.linkCard!)],
     ],
-    if (post.linkCard != null) ...[
-      const SizedBox(height: 10),
-      _BlueskyLinkPreview(card: post.linkCard!),
-    ],
-  ]);
+  );
 
   Widget _repostBanner(BuildContext context) {
     final theme = Theme.of(context);
@@ -212,19 +203,22 @@ class BlueskyPostCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8, left: 60),
       child: InkWell(
         onTap: () => _openReposter(context),
-        child: ConstrainedBox(constraints: const BoxConstraints(minHeight: 48), child: Row(
-          children: [
-            Icon(Icons.repeat, size: 14, color: muted),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                L10n.of(context).plugin_bluesky_reposted(name),
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(color: muted),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Row(
+            children: [
+              Icon(Icons.repeat, size: 14, color: muted),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  L10n.of(context).plugin_bluesky_reposted(name),
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall!.copyWith(color: muted),
+                ),
               ),
-            ),
-          ],
-        )),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -247,8 +241,7 @@ class BlueskyPostCard extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context))
-                  .ceil(),
+              cacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).ceil(),
             ),
     );
   }
@@ -267,9 +260,7 @@ class BlueskyPostCard extends StatelessWidget {
             post.authorName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleSmall!.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w800),
           ),
           meta: [if (date != null) createRelativeDate(date)],
         ),
@@ -285,10 +276,7 @@ class BlueskyPostCard extends StatelessWidget {
             ),
             if (showSourceBadge) ...[
               const SizedBox(width: kPluginMetaGap),
-              Tooltip(
-                message: l10n.plugin_bluesky_title,
-                child: const BlueskyButterflyIcon(size: 14),
-              ),
+              Tooltip(message: l10n.plugin_bluesky_title, child: const BlueskyButterflyIcon(size: 14)),
             ],
             _followButton(context),
           ],
@@ -335,10 +323,7 @@ class _QuotedPost extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: quote)),
-        ),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: quote))),
         borderRadius: BorderRadius.circular(radius),
         child: Container(
           decoration: quoteCardDecoration(context),
@@ -350,60 +335,64 @@ class _QuotedPost extends StatelessWidget {
                 quote.authorName,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.titleSmall!.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700),
               ),
               Text(
                 '@${quote.handle}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall!.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
-              if (quote.hasMedia) ...[
-                const SizedBox(height: 8),
-                quote.sensitive
-                    ? BlueskyContentWarning(key: ValueKey('warning-${quote.uri}'),
-                        child: PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'))
-                    : PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
-              ],
-              if (quote.text.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                BlueskyRichText(
-                  text: quote.text,
-                  facets: quote.facets,
-                  maxLines: 6,
-                  overflow: TextOverflow.ellipsis,
-                  onFacetTap: (facet) {
-                    switch (facet.kind) {
-                      case BlueskyFacetKind.link:
-                        openLink(context, facet.value);
-                      case BlueskyFacetKind.mention:
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                BlueskyProfileScreen(actor: facet.value),
-                          ),
-                        );
-                      case BlueskyFacetKind.tag:
-                        showBlueskySearchSheet(
-                          context,
-                          initialQuery: '#${facet.value}',
-                          initialTab: BlueskySearchTab.posts,
-                        );
-                    }
-                  },
-                ),
-              ],
+              if (blueskyWarnsContent(quote))
+                BlueskyContentWarning(
+                  key: ValueKey('warning-${quote.uri}'),
+                  identity: blueskyWarningIdentity(quote),
+                  unavailable: blueskyContentUnavailable(quote),
+                  child: _content(context),
+                )
+              else
+                _content(context),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _content(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      if (quote.hasMedia) ...[
+        const SizedBox(height: 8),
+        quote.sensitive && !blueskyWarnsContent(quote)
+            ? BlueskyContentWarning(
+                key: ValueKey('warning-${quote.uri}'),
+                identity: blueskyWarningIdentity(quote),
+                child: PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
+              )
+            : PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
+      ],
+      if (quote.text.isNotEmpty) ...[
+        const SizedBox(height: 6),
+        BlueskyRichText(
+          text: quote.text,
+          facets: quote.facets,
+          maxLines: 6,
+          overflow: TextOverflow.ellipsis,
+          onFacetTap: (facet) {
+            switch (facet.kind) {
+              case BlueskyFacetKind.link:
+                openLink(context, facet.value);
+              case BlueskyFacetKind.mention:
+                Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyProfileScreen(actor: facet.value)));
+              case BlueskyFacetKind.tag:
+                showBlueskySearchSheet(context, initialQuery: '#${facet.value}', initialTab: BlueskySearchTab.posts);
+            }
+          },
+        ),
+      ],
+    ],
+  );
 }
 
 class _BlueskyLinkPreview extends StatelessWidget {
@@ -436,11 +425,7 @@ class _BlueskyLinkPreview extends StatelessWidget {
               if (card.hasImage)
                 AspectRatio(
                   aspectRatio: clampPluginMediaAspect(null),
-                  child: ExtendedImage.network(
-                    card.imageUrl!,
-                    fit: BoxFit.cover,
-                    cacheWidth: (width * scale).ceil(),
-                  ),
+                  child: ExtendedImage.network(card.imageUrl!, fit: BoxFit.cover, cacheWidth: (width * scale).ceil()),
                 ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
@@ -451,9 +436,7 @@ class _BlueskyLinkPreview extends StatelessWidget {
                       host,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.labelSmall!.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      style: theme.textTheme.labelSmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                     ),
                     if (card.title != null) ...[
                       const SizedBox(height: 4),
@@ -461,10 +444,7 @@ class _BlueskyLinkPreview extends StatelessWidget {
                         card.title!,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall!.copyWith(
-                          fontWeight: FontWeight.w700,
-                          height: 1.25,
-                        ),
+                        style: theme.textTheme.titleSmall!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
                       ),
                     ],
                     if (card.description != null) ...[
@@ -473,9 +453,7 @@ class _BlueskyLinkPreview extends StatelessWidget {
                         card.description!,
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall!.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.onSurfaceVariant),
                       ),
                     ],
                   ],
@@ -495,19 +473,15 @@ class _BlueskyEngagementRow extends StatelessWidget {
   final VoidCallback onOpen;
   final VoidCallback onOpenBrowser;
 
-  const _BlueskyEngagementRow({
-    required this.post,
-    required this.onOpen,
-    required this.onOpenBrowser,
-  });
+  const _BlueskyEngagementRow({required this.post, required this.onOpen, required this.onOpenBrowser});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
+    final l10n = L10n.of(context);
     final prefs = PrefService.of(context, listen: false);
-    final hideCounts =
-        prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final likes = context.read<BlueskyLikesStore>();
 
     String label(int count) => hideCounts ? '' : compactCount(count);
@@ -518,23 +492,32 @@ class _BlueskyEngagementRow extends StatelessWidget {
         alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: onOpen,
-            icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(
-              label(post.replyCount),
-              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+          Tooltip(
+            message: l10n.thread,
+            child: TextButton.icon(
+              style: footerButtonStyle,
+              onPressed: onOpen,
+              icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
+              label: Text(label(post.replyCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
             ),
           ),
-          TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: () => openBlueskyReposts(context, post),
-            onLongPress: () => openBlueskyQuotes(context, post),
-            icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(
-              label(post.repostCount),
-              style: theme.textTheme.bodySmall!.copyWith(color: muted),
+          Tooltip(
+            message: l10n.plugin_post_reposted_by,
+            child: TextButton.icon(
+              style: footerButtonStyle,
+              onPressed: () => openBlueskyReposts(context, post),
+              onLongPress: () => openBlueskyQuotes(context, post),
+              icon: Icon(Icons.repeat, size: 18, color: muted),
+              label: Text(label(post.repostCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            ),
+          ),
+          Tooltip(
+            message: l10n.quotes,
+            child: TextButton.icon(
+              style: footerButtonStyle,
+              onPressed: () => openBlueskyQuotes(context, post),
+              icon: Icon(Icons.format_quote_outlined, size: 18, color: muted),
+              label: Text(label(post.quoteCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
             ),
           ),
           ScopedBuilder<BlueskyLikesStore, List<BlueskyPost>>(
@@ -545,6 +528,7 @@ class _BlueskyEngagementRow extends StatelessWidget {
               final shown = post.likeCount + (isLiked ? 1 : 0);
               return LikeButton(
                 isLiked: isLiked,
+                tooltip: isLiked ? l10n.unlike_on_this_device : l10n.like_on_this_device,
                 label: hideCounts ? '' : compactCount(shown),
                 color: isLiked ? theme.colorScheme.primary : muted,
                 onPressed: () async {
@@ -557,7 +541,9 @@ class _BlueskyEngagementRow extends StatelessWidget {
               );
             },
           ),
-          PluginPostBookmark(post: PluginPostArchive(id: blueskyArchiveId(post), userId: post.did, content: blueskyArchiveBlob(post))),
+          PluginPostBookmark(
+            post: PluginPostArchive(id: blueskyArchiveId(post), userId: post.did, content: blueskyArchiveBlob(post)),
+          ),
           tweetFooterIconButton(
             context,
             Icons.open_in_new,

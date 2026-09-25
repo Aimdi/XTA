@@ -3,6 +3,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
+import 'package:xta/plugins/x/x_reader_routes.dart';
 import 'package:xta/plugins/x/x_screen.dart';
 
 const pluginIdX = 'x';
@@ -18,6 +19,8 @@ class XPlugin extends XtaPlugin {
   @override
   bool get supportsFeedStrip => true;
   @override
+  bool get supportsSearch => true;
+  @override
   IconData get icon => Icons.close;
   @override
   PluginCategory get category => PluginCategory.social;
@@ -28,5 +31,9 @@ class XPlugin extends XtaPlugin {
   @override
   String description(BuildContext context) => L10n.of(context).foryou;
   @override
-  Widget homeScreen({required ScrollController scrollController}) => XScreen(scrollController: scrollController);
+  Future<void> openSearch(BuildContext context, {String? initialQuery}) =>
+      openXSearch(context, initialQuery: initialQuery);
+  @override
+  Widget homeScreen({required ScrollController scrollController}) =>
+      XScreen(scrollController: scrollController);
 }

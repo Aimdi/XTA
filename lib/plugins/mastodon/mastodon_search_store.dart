@@ -2,6 +2,20 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 
+({String instance, String id})? mastodonSearchStatusTarget(String input) {
+  final uri = Uri.tryParse(input.trim());
+  if (uri == null || !const ['https', 'http'].contains(uri.scheme) || uri.host.isEmpty || uri.userInfo.isNotEmpty) {
+    return null;
+  }
+  final segments = uri.pathSegments.toList();
+  if (segments.isNotEmpty && segments.last.isEmpty) segments.removeLast();
+  final shortPath = segments.length == 2 && segments.first.startsWith('@') && segments.first.length > 1;
+  final longPath =
+      segments.length == 4 && segments[0] == 'users' && segments[1].isNotEmpty && segments[2] == 'statuses';
+  if ((!shortPath && !longPath) || !RegExp(r'^\d+$').hasMatch(segments.last)) return null;
+  return (instance: uri.origin, id: segments.last);
+}
+
 class MastodonSearchState {
   final String query;
   final bool loading;
@@ -27,18 +41,22 @@ class MastodonSearchStore extends Store<MastodonSearchState> {
   bool _closed = false;
   MastodonSearchStore(this.client, this.instances) : super(const MastodonSearchState());
 
-  void select(int tab) => update(
-    MastodonSearchState(
-      query: state.query,
-      loading: state.loading,
-      error: state.error,
-      tab: tab,
-      results: state.results,
-      tags: state.tags,
-    ),
-  );
+  void select(int tab) {
+    if (_closed) return;
+    update(
+      MastodonSearchState(
+        query: state.query,
+        loading: state.loading,
+        error: state.error,
+        tab: tab,
+        results: state.results,
+        tags: state.tags,
+      ),
+    );
+  }
 
   Future<void> search(String input) async {
+    if (_closed) return;
     final query = input.trim();
     final request = ++_request;
     update(MastodonSearchState(query: query, loading: true));
@@ -54,6 +72,15 @@ class MastodonSearchStore extends Store<MastodonSearchState> {
 
   Future<MastodonSearchState> _load(String query) async {
     if (query.isEmpty) return MastodonSearchState(tags: await client.getTrendingTagsAnywhere(instances));
+    final target = mastodonSearchStatusTarget(query);
+    if (target != null) {
+      final post = await client.getStatus(target.instance, target.id);
+      return MastodonSearchState(
+        query: query,
+        tab: 1,
+        results: MastodonSearchPage(posts: [post]),
+      );
+    }
     final acct = normaliseMastodonAcct(query);
     final MastodonSearchPage results;
     if (acct != null && query.contains('@')) {

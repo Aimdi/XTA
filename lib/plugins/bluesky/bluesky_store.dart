@@ -21,15 +21,9 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
 
   Future<List<BlueskyAccount>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(
-      tableBlueskySubscription,
-      orderBy: 'name COLLATE NOCASE',
-    );
+    final rows = await database.query(tableBlueskySubscription, orderBy: 'name COLLATE NOCASE');
 
-    return rows
-        .map(BlueskySubscription.fromMap)
-        .map(accountOf)
-        .toList(growable: false);
+    return rows.map(BlueskySubscription.fromMap).map(accountOf).toList(growable: false);
   }
 
   Future<void> add(BlueskyAccount account) async {
@@ -48,9 +42,7 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
   ///
   /// Returns how many rows were newly written — used by the import progress UI.
   Future<int> addMany(Iterable<BlueskyAccount> accounts) async {
-    final existing = {
-      for (final account in state) account.handle.toLowerCase(),
-    };
+    final existing = {for (final account in state) account.handle.toLowerCase()};
     final fresh = <BlueskyAccount>[];
     for (final account in accounts) {
       final handle = account.handle.trim();
@@ -85,16 +77,8 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
   Future<void> remove(String handle) async {
     await execute(() async {
       final database = await Repository.writable();
-      await database.delete(
-        tableBlueskySubscription,
-        where: 'id = ?',
-        whereArgs: [handle],
-      );
-      await database.delete(
-        tableSubscriptionGroupMember,
-        where: 'profile_id = ?',
-        whereArgs: [handle],
-      );
+      await database.delete(tableBlueskySubscription, where: 'id = ?', whereArgs: [handle]);
+      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [handle]);
       return _read();
     });
   }
@@ -105,22 +89,18 @@ class BlueskyAccountsStore extends Store<List<BlueskyAccount>> {
   }
 }
 
-BlueskySubscription subscriptionOf(BlueskyAccount account) =>
-    BlueskySubscription(
-      id: account.handle,
-      name: account.name,
-      avatarUrl: account.avatarUrl,
-      createdAt: DateTime.now(),
-      inFeed: true,
-    );
-
-BlueskyAccount accountOf(BlueskySubscription subscription) => BlueskyAccount(
-  handle: subscription.id,
-  name: subscription.name,
-  avatarUrl: subscription.avatarUrl,
+BlueskySubscription subscriptionOf(BlueskyAccount account) => BlueskySubscription(
+  id: account.handle,
+  name: account.name,
+  avatarUrl: account.avatarUrl,
+  createdAt: DateTime.now(),
+  inFeed: true,
 );
 
-/// The merged timeline of every followed account, newest first.
+BlueskyAccount accountOf(BlueskySubscription subscription) =>
+    BlueskyAccount(handle: subscription.id, name: subscription.name, avatarUrl: subscription.avatarUrl);
+
+/// The merged timeline of every followed account, newest activity first.
 class BlueskyFeedStore extends Store<List<BlueskyPost>> {
   final BlueskyClient client;
   final BlueskyAccountsStore accounts;
@@ -129,144 +109,215 @@ class BlueskyFeedStore extends Store<List<BlueskyPost>> {
 
   DateTime? _fetchedAt;
   String? _enteredFor;
+  String? _paintedServer;
+  _BlueskyReadCache? _cache;
+  Future<void>? _inFlight;
+  Object? _refreshError;
+  var _generation = 0;
+  var _closed = false;
+
+  DateTime? get fetchedAt => _fetchedAt;
+  Object? get refreshError => _refreshError;
 
   String _entryIdentity() {
     final actors = accounts.state.map((account) => account.actor).toList()..sort();
     return '${client.baseUrl}\n${actors.join('\n')}';
   }
 
-  /// Entering a tab is not a refresh, including a successful empty first page.
   Future<void> ensureLoaded({bool force = false}) async {
-    final pending = _inFlight;
-    if (pending != null) {
-      await pending;
-      return ensureLoaded(force: force);
-    }
+    if (_closed) return;
     final identity = _entryIdentity();
-    if (!force && _enteredFor == identity) return;
-    if (!force && _enteredFor == null && state.isNotEmpty) {
+    if (!force && _enteredFor == identity && _refreshError == null) return;
+    if (!force && _enteredFor == null && _cache == null && state.isNotEmpty) {
       _enteredFor = identity;
+      _paintedServer = client.baseUrl;
       return;
     }
     await refresh(force: force);
-    _enteredFor = identity;
   }
 
-  Future<void>? _inFlight;
-
-  /// When the last successful merge finished. Tests assert remounts keep it.
-  DateTime? get fetchedAt => _fetchedAt;
-
-  /// Reads the followed accounts and merges them.
-  ///
-  /// The Bluesky tab only calls this on pull-to-refresh or the first empty
-  /// paint. A second poll inside the cache window must not rebuild an unchanged
-  /// first page — that jumped the list to the top and flashed every card.
-  /// Pending accounts still fill in (the budget only asks for unread handles).
-  /// Pull-to-refresh passes [force].
   Future<void> refresh({bool force = false}) async {
+    if (_closed) return;
     final identity = _entryIdentity();
-    final actors = accounts.state.map((e) => e.actor).toList(growable: false);
+    if (!force && _inFlight != null && _activeIdentity == identity) return _inFlight;
+    final actors = accounts.state.map((account) => account.actor).toSet().toList();
     if (!force &&
+        _enteredFor == identity &&
+        _refreshError == null &&
         state.isNotEmpty &&
         pending(actors) == 0 &&
         pluginFeedIsFresh(_fetchedAt)) {
       return;
     }
-
-    final existing = _inFlight;
-    if (existing != null && !force) {
-      await existing;
-      return;
-    }
-
+    final request = ++_generation;
+    _activeIdentity = identity;
     final done = Completer<void>();
     _inFlight = done.future;
     try {
-      await _refreshBody(actors, force: force);
-      _enteredFor = identity;
+      await _refresh(actors, identity, request, force);
     } finally {
-      _inFlight = null;
+      if (request == _generation) _inFlight = null;
       done.complete();
     }
   }
 
-  Future<void> _refreshBody(List<String> actors, {required bool force}) async {
-    if (state.isNotEmpty) {
-      try {
-        _emit(await postsFor(actors, forceRefresh: force, onPartial: _emit));
-      } catch (_) {
-        // Keep what is already on screen — a failed poll must not blank it.
-      }
-      return;
+  String? _activeIdentity;
+
+  Future<void> _refresh(List<String> actors, String identity, int request, bool force) async {
+    final server = client.baseUrl;
+    if (_paintedServer != null && _paintedServer != server) {
+      update(const []);
+      _fetchedAt = null;
     }
-    await execute(
-      () => postsFor(actors, forceRefresh: force, onPartial: _emit),
-    );
+    _paintedServer = server;
+    final previousError = _refreshError;
+    _refreshError = null;
+    if (state.isEmpty) setLoading(true);
+    try {
+      final result = await _read(
+        actors,
+        force: force,
+        onPartial: (posts) {
+          if (_current(identity, request)) _emit(posts);
+        },
+      );
+      if (!_current(identity, request)) return;
+      _refreshError = result.error;
+      _enteredFor = result.error == null ? identity : null;
+      if (result.error == null) _fetchedAt = DateTime.now();
+      _emit(result.posts, complete: true, notify: previousError != _refreshError);
+      if (result.error != null && state.isEmpty) setError(result.error!);
+    } catch (error) {
+      if (!_current(identity, request)) return;
+      _refreshError = error;
+      _enteredFor = null;
+      if (state.isEmpty) {
+        setError(error);
+      } else {
+        update(List.of(state));
+      }
+    } finally {
+      if (_current(identity, request)) setLoading(false);
+    }
   }
 
-  /// Posts for [actors], newest first — used by the Bluesky tab and by group
-  /// feeds that mix Bluesky members in beside X.
-  ///
-  /// There is no following feed on the public AppView, so this is one request
-  /// per account. Bounded per call: importing somebody's following list used to
-  /// mean several hundred requests on every refresh, which the AppView rate
-  /// limits into an empty tab — the very thing the import was for.
+  bool _current(String identity, int request) => !_closed && request == _generation && identity == _entryIdentity();
+
+  /// Group reads share the author cache, but never publish into Following.
   Future<List<BlueskyPost>> postsFor(
     List<String> actors, {
     bool forceRefresh = false,
     void Function(List<BlueskyPost>)? onPartial,
   }) async {
-    // A different AppView is a different Bluesky answering, so what was cached
-    // under the old one is not an answer to the new question — Threads and
-    // Mastodon already forget on a credential change; this one did not.
-    final appView = client.baseUrl;
-    if (_cachedFrom != appView) {
-      _cachedFrom = appView;
-      _posts.clear();
-      _fetchedAt = null;
-    }
-
-    final posts = stabilizeBlueskyFeed(
-      await _posts.merge(
-        actors,
-        (actor) async {
-          final page = await client.getAuthorFeed(
-            actor,
-            limit: blueskyPostsPerAccount,
-          );
-          return page.posts;
-        },
-        forceRefresh: forceRefresh,
-        maxFetches: blueskyMaxAccountsPerLoad,
-        onPartial: onPartial == null
-            ? null
-            : (partial) => onPartial(stabilizeBlueskyFeed(partial)),
-      ),
-    );
-    if (posts.isNotEmpty) {
-      _fetchedAt = DateTime.now();
-    }
-    return posts;
+    final result = await _read(actors, force: forceRefresh, onPartial: onPartial);
+    if (result.posts.isEmpty && result.error != null) throw result.error!;
+    return result.posts;
   }
 
-  void _emit(List<BlueskyPost> posts) {
-    final next = stabilizeBlueskyFeed(posts);
-    if (!blueskyFeedShouldReplace(state, next)) {
-      return;
-    }
-    update(next);
+  Future<({List<BlueskyPost> posts, Object? error})> _read(
+    List<String> actors, {
+    required bool force,
+    void Function(List<BlueskyPost>)? onPartial,
+  }) async {
+    final server = client.baseUrl;
+    if (_cache?.server != server) _cache = _BlueskyReadCache(server);
+    final cache = _cache!;
+    return cache.read(actors, client, force: force, onPartial: onPartial);
   }
 
-  String? _cachedFrom;
+  void _emit(List<BlueskyPost> posts, {bool complete = false, bool notify = false}) {
+    final next = stabilizeBlueskyFeed(complete ? posts : [...posts, ...state]);
+    final replace = complete ? !sameBlueskyFeedPage(state, next) : blueskyFeedShouldReplace(state, next);
+    if (replace || notify) update(next);
+  }
 
-  /// How many followed accounts have still to be read, so the tab can say that
-  /// a big import is filling in rather than looking finished and short.
-  int pending(List<String> actors) => _posts.pendingCount(actors);
+  int pending(List<String> actors) =>
+      _cache?.server == client.baseUrl ? _cache!.pending(actors) : actors.toSet().length;
 
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    _generation++;
+    return super.destroy();
+  }
+}
+
+/// Keeps failed authors retryable while preserving their last successful page.
+class _BlueskyReadCache {
+  final String server;
+  _BlueskyReadCache(this.server);
+
+  final _pages = <String, List<BlueskyPost>>{};
+  final _readAt = <String, DateTime>{};
+  final _attemptedAt = <String, DateTime>{};
+  final _failures = <String, Object>{};
+  final _requests = <String, int>{};
   final _posts = AccountPostCache<BlueskyPost>(
-    dateOf: (post) => post.publishedAt,
+    dateOf: (post) => post.timelineDate,
     perAccount: blueskyPostsPerAccount,
     concurrency: 2,
   );
+
+  int pending(List<String> actors) {
+    final distinct = actors.toSet();
+    return distinct.where(_failures.containsKey).length +
+        _posts.pendingCount(distinct.where((actor) => !_failures.containsKey(actor)).toList());
+  }
+
+  List<String> _prioritize(List<String> actors) => actors.toSet().toList()
+    ..sort((a, b) {
+      final unreadOrder = (_attemptedAt.containsKey(a) ? 1 : 0).compareTo(_attemptedAt.containsKey(b) ? 1 : 0);
+      if (unreadOrder != 0) return unreadOrder;
+      final failureOrder = (_failures.containsKey(a) ? 0 : 1).compareTo(_failures.containsKey(b) ? 0 : 1);
+      if (failureOrder != 0) return failureOrder;
+      final times = _failures.containsKey(a) ? _attemptedAt : _readAt;
+      return (times[a] ?? DateTime(0)).compareTo(times[b] ?? DateTime(0));
+    });
+
+  Future<({List<BlueskyPost> posts, Object? error})> read(
+    List<String> actors,
+    BlueskyClient client, {
+    required bool force,
+    void Function(List<BlueskyPost>)? onPartial,
+  }) async {
+    final ordered = _prioritize(actors);
+    final errors = <String, Object>{};
+    final retry = ordered.any(_failures.containsKey);
+    List<BlueskyPost> result = const [];
+    try {
+      result = await _posts.merge(
+        ordered,
+        (actor) => _fetch(actor, client, errors),
+        forceRefresh: force || retry,
+        maxFetches: blueskyMaxAccountsPerLoad,
+        onPartial: onPartial == null ? null : (rows) => onPartial(stabilizeBlueskyFeed(rows)),
+      );
+    } catch (error) {
+      if (errors.isEmpty) rethrow;
+    }
+    final failed = ordered.where(_failures.containsKey).toList();
+    return (
+      posts: stabilizeBlueskyFeed([...result, for (final actor in failed) ...?_pages[actor]]),
+      error: errors.isEmpty ? (failed.isEmpty ? null : _failures[failed.first]) : errors.values.first,
+    );
+  }
+
+  Future<List<BlueskyPost>> _fetch(String actor, BlueskyClient client, Map<String, Object> errors) async {
+    final request = (_requests[actor] ?? 0) + 1;
+    _requests[actor] = request;
+    _attemptedAt[actor] = DateTime.now();
+    try {
+      if (client.baseUrl != server) throw StateError('Bluesky AppView changed');
+      final page = await client.getAuthorFeed(actor, limit: blueskyPostsPerAccount);
+      if (_requests[actor] != request) return _pages[actor] ?? page.posts;
+      _pages[actor] = page.posts;
+      _readAt[actor] = DateTime.now();
+      _failures.remove(actor);
+      return page.posts;
+    } catch (error) {
+      if (_requests[actor] == request) _failures[actor] = error;
+      errors[actor] = error;
+      rethrow;
+    }
+  }
 }

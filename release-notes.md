@@ -4,6 +4,50 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi137
+
+The next release brings the X, Mastodon, Bluesky and Substack reader upgrades
+together with the Plugin Store, Antenna and RSS cover improvements from
+PRs #287–#289.
+
+- **X:** a usable reader hub with search, Subscriptions, Saved and Accounts;
+  richer media/reply/repost search filters, clearer post navigation and more
+  resilient people search on compact screens.
+- **Mastodon:** saved timeline filters and ordering, independent profile tabs,
+  richer profile metadata, focused conversation reading, safer content warnings,
+  improved polls and recoverable hashtag/search results.
+- **Bluesky:** restored Following position, loaded-post filters, full People/Posts
+  search, pinned custom feeds and lists, improved profiles and conversations,
+  and more reliable public-feed paging and content warnings.
+- **Substack:** article contents and find-in-article, publication previews,
+  search across followed publications, improved archives, collapsible comments,
+  Note images and Home/Inbox read-state controls with recoverable loading.
+- **Plugin Store:** adaptive phone/tablet rows, larger action targets, useful
+  no-results feedback and lazy loading of rows.
+- **Antennas:** creation from the empty state, named Settings/Delete actions
+  and an editor that remains usable with the keyboard, large text and tablets.
+- **RSS covers:** decoded image size follows the painted width and screen
+  density, reducing unnecessarily large decoded bitmaps.
+- Compact screens, enlarged text and right-to-left layouts receive focused
+  coverage; new plugin labels are translated across all 29 supported locales.
+
+XTA remains read-oriented. Follows, likes, saves and reading controls described
+here stay on the device; no remote posting or paywall bypass is added.
+
+For most Android phones, including GrapheneOS phones, use
+**`xta-aimdi137_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 outputs retain their
+usual variants. The base version code is **400001126**, above every aimdi136
+ABI variant. The application id (`com.aimdi.xta`) and release signing certificate
+are unchanged for in-place updates.
+
+The combined tree passed 2,997 Flutter tests with five opt-in live tests skipped,
+and static analysis reported no errors or warnings. The 51 new Dart files pass
+the formatting gate. Release APKs are built from the tagged merge commit, with
+source, signing-certificate and provenance checks before publication;
+`release-build.json` and `SHA256SUMS` accompany the four APK variants.
+Physical-device WebView, accessibility and authenticated live-account checks
+remain outstanding.
+
 ### aimdi136
 
 This release combines the reader and reliability improvements from PRs #281–#285.

@@ -20,7 +20,8 @@ import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/plugins/mastodon/mastodon_reading_store.dart';
-import 'package:xta/plugins/mastodon/mastodon_reading_list.dart';
+import 'package:xta/plugins/mastodon/mastodon_timeline_controls.dart';
+import 'package:xta/plugins/mastodon/mastodon_timeline_pane.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 /// A compact Home reader or a dedicated Mastodon client.
@@ -43,6 +44,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
   late final PluginSessionLease _session;
   late final _MastodonTabStore _tabs;
   late final MastodonReadingStore _reading;
+  late final MastodonTimelineControlsStore _timelineControls;
   final _restoredTabs = <int>{};
   String get _surface => widget.fullClient ? 'client' : 'home';
   late final PluginViewStore<bool> _people;
@@ -56,6 +58,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
     final prefs = PrefService.of(context, listen: false);
     final scope = mastodonConfiguredInstances(prefs).join('|');
     _reading = _session.obtain('reading', () => MastodonReadingStore(prefs, scope));
+    _timelineControls = _session.obtain('timeline-controls', () => MastodonTimelineControlsStore(prefs));
     _reading.changeScope(scope);
     _tabs = _session.obtain('view', () => _MastodonTabStore(_reading.state.tab));
     _people = _session.obtain('people', () => PluginViewStore(_reading.state.people));
@@ -140,49 +143,98 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     _tabs.restore(context, 'mastodon');
-    return Provider<MastodonReadingStore>.value(value: _reading, child: ScopedBuilder<_MastodonTabStore, int>(
-      store: _tabs,
-      onState: (context, tab) => Scaffold(
-        primary: !PluginEmbedded.maybeOf(context),
-        appBar: widget.fullClient ? MastodonClientBar(selected: tab,
-          height: (MediaQuery.textScalerOf(context).scale(40) + 16).clamp(64, double.infinity),
-          onSearch: _lookUpProfile, onSettings: _settings) : null,
-        bottomNavigationBar: widget.fullClient ? MastodonNavigation(selected: tab, onSelected: _onTab) : null,
-        body: NotificationListener<ScrollNotification>(
-          onNotification: (notification) { _updateChrome(notification.metrics, notification.depth); return false; },
-          child: NotificationListener<ScrollMetricsNotification>(
-            onNotification: (notification) { _updateChrome(notification.metrics, notification.depth); return false; },
-            child: Column(children: [
-            _controls(context, tab),
-            Expanded(child: PageStorage(bucket: _pageStorage,
-              child: PluginLazyTabs(index: tab, children: [
-                (_) => _ExplorePane(slot: '$_surface:0', scrollController: widget.scrollController),
-                (_) => _PublicPane(slot: '$_surface:1', store: context.read<MastodonLocalStore>(),
-                  emptyIcon: Icons.home_outlined, scrollController: widget.scrollController),
-                (_) => _PublicPane(slot: '$_surface:2', store: context.read<MastodonFederatedStore>(),
-                  emptyIcon: Icons.public, scrollController: widget.scrollController),
-                (_) => ScopedBuilder<PluginViewStore<bool>, bool>(store: _people,
-                  onState: (context, people) => people
-                    ? MastodonPeoplePane(onAdd: _addAccount, scrollController: widget.scrollController)
-                    : _FollowingPane(slot: '$_surface:3', scrollController: widget.scrollController)),
-              ]),
-            )),
-          ])),
+    return MultiProvider(
+      providers: [
+        Provider<MastodonReadingStore>.value(value: _reading),
+        Provider<MastodonTimelineControlsStore>.value(value: _timelineControls),
+      ],
+      child: ScopedBuilder<_MastodonTabStore, int>(
+        store: _tabs,
+        onState: (context, tab) => Scaffold(
+          primary: !PluginEmbedded.maybeOf(context),
+          appBar: widget.fullClient
+              ? MastodonClientBar(
+                  selected: tab,
+                  height: (MediaQuery.textScalerOf(context).scale(40) + 16).clamp(64, double.infinity),
+                  onSearch: _lookUpProfile,
+                  onSettings: _settings,
+                )
+              : null,
+          bottomNavigationBar: widget.fullClient ? MastodonNavigation(selected: tab, onSelected: _onTab) : null,
+          body: NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              _updateChrome(notification.metrics, notification.depth);
+              return false;
+            },
+            child: NotificationListener<ScrollMetricsNotification>(
+              onNotification: (notification) {
+                _updateChrome(notification.metrics, notification.depth);
+                return false;
+              },
+              child: Column(
+                children: [
+                  _controls(context, tab),
+                  Expanded(
+                    child: PageStorage(
+                      bucket: _pageStorage,
+                      child: PluginLazyTabs(
+                        index: tab,
+                        children: [
+                          (_) => _ExplorePane(slot: '$_surface:0', scrollController: widget.scrollController),
+                          (_) => _PublicPane(
+                            slot: '$_surface:1',
+                            store: context.read<MastodonLocalStore>(),
+                            emptyIcon: Icons.home_outlined,
+                            scrollController: widget.scrollController,
+                          ),
+                          (_) => _PublicPane(
+                            slot: '$_surface:2',
+                            store: context.read<MastodonFederatedStore>(),
+                            emptyIcon: Icons.public,
+                            scrollController: widget.scrollController,
+                          ),
+                          (_) => ScopedBuilder<PluginViewStore<bool>, bool>(
+                            store: _people,
+                            onState: (context, people) => people
+                                ? MastodonPeoplePane(onAdd: _addAccount, scrollController: widget.scrollController)
+                                : _FollowingPane(slot: '$_surface:3', scrollController: widget.scrollController),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
-    ));
+    );
   }
 
   Widget _controls(BuildContext context, int tab) => ScopedBuilder<PluginViewStore<bool>, bool>(
     store: _chrome,
     onState: (context, visible) {
-      final child = widget.fullClient || visible ? Column(mainAxisSize: MainAxisSize.min, children: [
-        if (!widget.fullClient) MastodonCompactBar(selected: tab, onSelected: _onTab,
-          onSearch: _lookUpProfile, onSettings: _settings),
-        if (tab == 3) ScopedBuilder<PluginViewStore<bool>, bool>(
-          store: _people, onState: (context, people) => MastodonFollowingControls(
-            people: people, onSelected: _selectPeople, onAdd: _addAccount)),
-      ]) : const SizedBox.shrink();
+      final child = widget.fullClient || visible
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!widget.fullClient)
+                  MastodonCompactBar(
+                    selected: tab,
+                    onSelected: _onTab,
+                    onSearch: _lookUpProfile,
+                    onSettings: _settings,
+                  ),
+                if (tab == 3)
+                  ScopedBuilder<PluginViewStore<bool>, bool>(
+                    store: _people,
+                    onState: (context, people) =>
+                        MastodonFollowingControls(people: people, onSelected: _selectPeople, onAdd: _addAccount),
+                  ),
+              ],
+            )
+          : const SizedBox.shrink();
       // Bypass the render animation for reduced motion. A zero-duration
       // AnimatedSize can redirty its own layout in Flutter 3.44.
       if (widget.fullClient || MediaQuery.disableAnimationsOf(context)) return child;
@@ -204,7 +256,17 @@ class _MastodonScreenState extends State<MastodonScreen> {
     } else {
       final store = context.read<MastodonFeedStore>();
       final accounts = context.read<MastodonAccountsStore>();
-      if (store.state.isEmpty) store.update(point.posts.where((post) => accounts.follows(post.acct)).toList());
+      if (store.state.isEmpty) {
+        store.update(
+          point.posts
+              .where(
+                (post) =>
+                    accounts.follows(post.acct) ||
+                    (post.boostedByAcct != null && accounts.follows(post.boostedByAcct!)),
+              )
+              .toList(),
+        );
+      }
     }
   }
 
@@ -274,9 +336,15 @@ class _ExplorePane extends StatelessWidget {
     }
     return RefreshIndicator(
       onRefresh: context.read<MastodonExploreStore>().refresh,
-      child: MastodonReadingList(slot: slot, controller: scrollController,
-        posts: page.posts, tags: page.tags,
-        heading: page.tags.isEmpty ? null : _TrendingTags(tags: page.tags)),
+      child: MastodonTimelinePane(
+        slot: slot,
+        controller: scrollController,
+        posts: page.posts,
+        tags: page.tags,
+        refreshError: context.read<MastodonExploreStore>().refreshError,
+        onRefresh: context.read<MastodonExploreStore>().refresh,
+        heading: page.tags.isEmpty ? null : _TrendingTags(tags: page.tags),
+      ),
     );
   }
 }
@@ -299,15 +367,24 @@ class _TrendingTags extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
-          SizedBox(height: MediaQuery.textScalerOf(context).scale(14) + 40, child: ListView.separated(
-            scrollDirection: Axis.horizontal, itemCount: tags.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 8),
-            itemBuilder: (context, index) => Center(child: ActionChip(
-              avatar: const Icon(Icons.tag, size: 16), label: Text(tags[index].name),
-              onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tags[index].name))),
-            )),
-          )),
+          SizedBox(
+            height: MediaQuery.textScalerOf(context).scale(14) + 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: tags.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) => Center(
+                child: ActionChip(
+                  avatar: const Icon(Icons.tag, size: 16),
+                  label: Text(tags[index].name),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tags[index].name)),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -363,8 +440,18 @@ class _PublicPane extends StatelessWidget {
       },
       child: RefreshIndicator(
         onRefresh: store.refresh,
-        child: MastodonReadingList(slot: slot, controller: scrollController,
-          posts: posts, instance: store.instance, loadingMore: store.loadingMore),
+        child: MastodonTimelinePane(
+          slot: slot,
+          controller: scrollController,
+          posts: posts,
+          instance: store.instance,
+          loadingMore: store.loadingMore,
+          loadMoreError: store.loadMoreError,
+          onLoadMore: store.canLoadMore ? store.loadMore : null,
+          onRetryMore: store.retryLoadMore,
+          refreshError: store.refreshError,
+          onRefresh: store.refresh,
+        ),
       ),
     );
   }
@@ -423,8 +510,14 @@ class _FollowingPane extends StatelessWidget {
     }
     return RefreshIndicator(
       onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
-      child: MastodonReadingList(key: const PageStorageKey('mastodon-following-posts'),
-        slot: slot, controller: scrollController, posts: posts),
+      child: MastodonTimelinePane(
+        key: const PageStorageKey('mastodon-following-posts'),
+        slot: slot,
+        controller: scrollController,
+        posts: posts,
+        refreshError: context.read<MastodonFeedStore>().refreshError,
+        onRefresh: () => context.read<MastodonFeedStore>().refresh(force: true),
+      ),
     );
   }
 }
@@ -471,13 +564,16 @@ class _MastodonAddAccountDialogState extends State<_MastodonAddAccountDialog> {
     final l10n = L10n.of(context);
     return AlertDialog(
       title: Text(widget.lookup ? l10n.plugin_mastodon_lookup : l10n.plugin_mastodon_add),
-      content: Form(key: _form, child: TextFormField(
-        controller: _controller,
-        autofocus: true,
-        decoration: InputDecoration(hintText: l10n.plugin_mastodon_handle_hint),
-        validator: (value) => normaliseMastodonAcct(value ?? '') == null ? l10n.plugin_mastodon_invalid_handle : null,
-        onFieldSubmitted: (_) => _submit(),
-      )),
+      content: Form(
+        key: _form,
+        child: TextFormField(
+          controller: _controller,
+          autofocus: true,
+          decoration: InputDecoration(hintText: l10n.plugin_mastodon_handle_hint),
+          validator: (value) => normaliseMastodonAcct(value ?? '') == null ? l10n.plugin_mastodon_invalid_handle : null,
+          onFieldSubmitted: (_) => _submit(),
+        ),
+      ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
         TextButton(onPressed: _submit, child: Text(l10n.ok)),

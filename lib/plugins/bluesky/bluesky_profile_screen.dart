@@ -8,14 +8,18 @@ import 'package:share_plus/share_plus.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_follows_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_facets.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_store.dart';
+import 'package:xta/plugins/bluesky/bluesky_profile_links.dart';
+import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_media_grid.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
+import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/tweet/_media.dart';
@@ -47,26 +51,10 @@ class _ProfileTabSpec {
 }
 
 const _profileTabs = [
-  _ProfileTabSpec(
-    PluginProfileFeedTab.posts,
-    Icons.wysiwyg_outlined,
-    _tweetsLabel,
-  ),
-  _ProfileTabSpec(
-    PluginProfileFeedTab.replies,
-    Icons.mode_comment_outlined,
-    _repliesLabel,
-  ),
-  _ProfileTabSpec(
-    PluginProfileFeedTab.media,
-    Icons.smart_display_outlined,
-    _mediaLabel,
-  ),
-  _ProfileTabSpec(
-    PluginProfileFeedTab.saved,
-    Icons.bookmark_border,
-    _savedLabel,
-  ),
+  _ProfileTabSpec(PluginProfileFeedTab.posts, Icons.wysiwyg_outlined, _tweetsLabel),
+  _ProfileTabSpec(PluginProfileFeedTab.replies, Icons.mode_comment_outlined, _repliesLabel),
+  _ProfileTabSpec(PluginProfileFeedTab.media, Icons.smart_display_outlined, _mediaLabel),
+  _ProfileTabSpec(PluginProfileFeedTab.saved, Icons.bookmark_border, _savedLabel),
 ];
 
 String _tweetsLabel(L10n l10n) => l10n.tweets;
@@ -84,8 +72,7 @@ class BlueskyProfileScreen extends StatefulWidget {
   State<BlueskyProfileScreen> createState() => _BlueskyProfileScreenState();
 }
 
-class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
-    with TickerProviderStateMixin {
+class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with TickerProviderStateMixin {
   late final BlueskyProfileStore _store;
   final _nestedKey = GlobalKey<NestedScrollViewState>();
   late final TabController _tabController;
@@ -93,9 +80,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
   @override
   void initState() {
     super.initState();
-    _store = BlueskyProfileStore(
-      context.read<BlueskyClient>(), context.read<BlueskyLikesStore>(), widget.actor,
-    );
+    _store = BlueskyProfileStore(context.read<BlueskyClient>(), context.read<BlueskyLikesStore>(), widget.actor);
     _tabController = TabController(length: _profileTabs.length, vsync: this);
     _tabController.addListener(_onTabController);
     _store.refresh();
@@ -131,8 +116,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
     }
   }
 
-  Future<void> _addToGroup(BlueskyProfile profile) =>
-      addBlueskyAccountToGroup(context, profile.toAccount());
+  Future<void> _addToGroup(BlueskyProfile profile) => addBlueskyAccountToGroup(context, profile.toAccount());
 
   void _openMedia(String url) {
     final handle = _store.state.profile?.handle ?? widget.actor;
@@ -172,8 +156,12 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
               ? const Center(child: CircularProgressIndicator())
               : Padding(
                   padding: const EdgeInsets.all(24),
-                  child: FullPageErrorWidget(error: error, stackTrace: null,
-                    prefix: blueskyErrorMessage(L10n.of(context), error), onRetry: _store.refresh),
+                  child: FullPageErrorWidget(
+                    error: error,
+                    stackTrace: null,
+                    prefix: blueskyErrorMessage(L10n.of(context), error),
+                    onRetry: _store.refresh,
+                  ),
                 ),
         );
       }
@@ -193,7 +181,8 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
 
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
-        if (notification.depth == 1 && notification.metrics.axis == Axis.vertical &&
+        if (notification.depth == 1 &&
+            notification.metrics.axis == Axis.vertical &&
             notification.metrics.extentAfter < 400) {
           _store.loadMore();
         }
@@ -203,116 +192,112 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
         onRefresh: _store.refresh,
         notificationPredicate: (notification) => notification.depth <= 1,
         child: NestedScrollView(
-        key: _nestedKey,
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              pinned: true,
-              stretch: true,
-              forceElevated: innerBoxIsScrolled,
-              expandedHeight: bannerHeight + _kAvatarOverlap,
-              backgroundColor: theme.colorScheme.surface,
-              surfaceTintColor: Colors.transparent,
-              centerTitle: false,
-              automaticallyImplyLeading: false,
-              leadingWidth: 56,
-              leading: Center(
-                child: _BannerButton(
-                  icon: Icons.arrow_back,
-                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                  onPressed: () => Navigator.maybePop(context),
-                ),
-              ),
-              title: innerBoxIsScrolled
-                  ? Text(
-                      profile.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    )
-                  : null,
-              actions: [
-                Center(
+          key: _nestedKey,
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                pinned: true,
+                stretch: true,
+                forceElevated: innerBoxIsScrolled,
+                expandedHeight: bannerHeight + _kAvatarOverlap,
+                backgroundColor: theme.colorScheme.surface,
+                surfaceTintColor: Colors.transparent,
+                centerTitle: false,
+                automaticallyImplyLeading: false,
+                leadingWidth: 56,
+                leading: Center(
                   child: _BannerButton(
-                    icon: Icons.share,
-                    tooltip: l10n.share_link,
-                    onPressed: () => Share.share(
-                      'https://bsky.app/profile/${profile.handle}',
-                    ),
+                    icon: Icons.arrow_back,
+                    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                    onPressed: () => Navigator.maybePop(context),
                   ),
                 ),
-                const SizedBox(width: 8),
-              ],
-              flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
-                background: _ProfileBanner(
-                  profile: profile,
-                  bannerHeight: bannerHeight,
-                  following: following,
-                  onOpenBanner: profile.bannerUrl == null
-                      ? null
-                      : () => _openMedia(profile.bannerUrl!),
-                  onOpenAvatar: profile.avatarUrl == null
-                      ? null
-                      : () => _openMedia(profile.avatarUrl!),
-                  onFollowToggle: () => _toggleFollow(profile),
-                  onAddToGroup: () => _addToGroup(profile),
+                title: innerBoxIsScrolled
+                    ? Text(profile.displayName, maxLines: 1, overflow: TextOverflow.ellipsis)
+                    : null,
+                actions: [
+                  Center(
+                    child: _BannerButton(
+                      icon: Icons.search,
+                      tooltip: l10n.search,
+                      onPressed: () => showBlueskySearchSheet(
+                        context,
+                        initialAuthor: profile.handle,
+                        initialTab: BlueskySearchTab.posts,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Center(
+                    child: _BannerButton(
+                      icon: Icons.share,
+                      tooltip: l10n.share_link,
+                      onPressed: () => Share.share('https://bsky.app/profile/${profile.handle}'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  background: _ProfileBanner(
+                    profile: profile,
+                    bannerHeight: bannerHeight,
+                    following: following,
+                    onOpenBanner: profile.bannerUrl == null ? null : () => _openMedia(profile.bannerUrl!),
+                    onOpenAvatar: profile.avatarUrl == null ? null : () => _openMedia(profile.avatarUrl!),
+                    onFollowToggle: () => _toggleFollow(profile),
+                    onAddToGroup: () => _addToGroup(profile),
+                  ),
                 ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: BlueskyProfileCard(profile: profile),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _TabBarDelegate(
-                tabBar: AnimatedBuilder(
-                  animation: _tabController,
-                  builder: (context, _) => TabBar(
-                    controller: _tabController,
-                    indicator: UnderlineTabIndicator(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(2),
+              SliverToBoxAdapter(child: BlueskyProfileCard(profile: profile)),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _TabBarDelegate(
+                  tabBar: AnimatedBuilder(
+                    animation: _tabController,
+                    builder: (context, _) => TabBar(
+                      controller: _tabController,
+                      indicator: UnderlineTabIndicator(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(2)),
+                        borderSide: BorderSide(width: 3, color: theme.colorScheme.onSurface),
                       ),
-                      borderSide: BorderSide(
-                        width: 3,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    indicatorSize: TabBarIndicatorSize.label,
-                    labelColor: theme.colorScheme.onSurface,
-                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-                    dividerColor: theme.colorScheme.surfaceBright.withAlpha(
-                      150,
-                    ),
-                    onTap: (index) {
-                      if (_profileTabs[index].tab == state.selected) {
-                        _scrollToTop();
-                      }
-                    },
-                    tabs: [
-                      for (final (i, spec) in _profileTabs.indexed)
-                        Tab(
-                          child: _ProfileTabLabel(
-                            icon: spec.icon,
-                            label: spec.label(l10n),
-                            selected: _tabController.index == i,
+                      labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      indicatorSize: TabBarIndicatorSize.label,
+                      labelColor: theme.colorScheme.onSurface,
+                      unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                      dividerColor: theme.colorScheme.surfaceBright.withAlpha(150),
+                      onTap: (index) {
+                        if (_profileTabs[index].tab == state.selected) {
+                          _scrollToTop();
+                        }
+                      },
+                      tabs: [
+                        for (final (i, spec) in _profileTabs.indexed)
+                          Tab(
+                            child: _ProfileTabLabel(
+                              icon: spec.icon,
+                              label: spec.label(l10n),
+                              selected: _tabController.index == i,
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ];
-        },
-        body: state.selected == PluginProfileFeedTab.saved
-            ? ScopedBuilder<BlueskyLikesStore, List<BlueskyPost>>(
-                store: context.read<BlueskyLikesStore>(),
-                onState: (context, liked) => _feedBody(context, state,
-                  posts: blueskyLikesByAuthor(liked, did: profile.did, handle: profile.handle)),
-              )
-            : _feedBody(context, state),
+            ];
+          },
+          body: state.selected == PluginProfileFeedTab.saved
+              ? ScopedBuilder<BlueskyLikesStore, List<BlueskyPost>>(
+                  store: context.read<BlueskyLikesStore>(),
+                  onState: (context, liked) => _feedBody(
+                    context,
+                    state,
+                    posts: blueskyLikesByAuthor(liked, did: profile.did, handle: profile.handle),
+                  ),
+                )
+              : _feedBody(context, state),
         ),
       ),
     );
@@ -321,50 +306,100 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen>
   Widget _feedBody(BuildContext context, BlueskyProfileState state, {List<BlueskyPost>? posts}) {
     final l10n = L10n.of(context);
     final feed = state.feed;
-    final visible = posts ?? feed.posts;
+    final visible = posts ?? state.visiblePosts;
     final error = feed.error ?? state.error;
     return CustomScrollView(
       key: PageStorageKey('bluesky-profile-${widget.actor}-${state.selected.name}'),
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
+        if (state.selected == PluginProfileFeedTab.posts && state.loadingPin)
+          const SliverToBoxAdapter(child: LinearProgressIndicator()),
+        if (state.selected == PluginProfileFeedTab.posts && state.pinError != null)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 12,
+                children: [
+                  Text('${l10n.pinned_tweet}: ${blueskyErrorMessage(l10n, state.pinError!)}'),
+                  TextButton(onPressed: _store.retryPin, child: Text(l10n.retry)),
+                ],
+              ),
+            ),
+          ),
         if (state.selected == PluginProfileFeedTab.saved)
-          SliverToBoxAdapter(child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Text(l10n.likes_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
-          )),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Text(l10n.likes_stay_on_device_notice, style: Theme.of(context).textTheme.bodySmall),
+            ),
+          ),
         if (state.selected == PluginProfileFeedTab.media)
           BlueskyMediaGrid(posts: visible)
         else
           SliverList.builder(
             itemCount: visible.length,
-            itemBuilder: (context, index) => BlueskyPostCard(
-              key: ValueKey(visible[index].uri), post: visible[index], showSourceBadge: false,
+            itemBuilder: (context, index) => Column(
+              key: ValueKey(visible[index].uri),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (state.selected == PluginProfileFeedTab.posts && visible[index].uri == state.pinnedPost?.uri)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.push_pin_outlined, size: 16),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(l10n.pinned_tweet, style: Theme.of(context).textTheme.labelMedium)),
+                      ],
+                    ),
+                  ),
+                BlueskyPostCard(post: visible[index], showSourceBadge: false),
+              ],
             ),
           ),
-        if (visible.isEmpty && feed.loaded && !feed.loading)
-          SliverToBoxAdapter(child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(state.selected == PluginProfileFeedTab.saved
-                ? l10n.plugin_bluesky_liked_empty : l10n.plugin_bluesky_no_posts,
-              textAlign: TextAlign.center),
-          )),
+        if (visible.isEmpty &&
+            feed.loaded &&
+            !feed.loading &&
+            !(state.selected == PluginProfileFeedTab.posts && state.loadingPin))
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                state.selected == PluginProfileFeedTab.saved
+                    ? l10n.plugin_bluesky_liked_empty
+                    : l10n.plugin_bluesky_no_posts,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
         if (feed.loading || state.loading)
-          const SliverToBoxAdapter(child: Padding(
-            padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()),
-          )),
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          ),
         if (error != null)
-          SliverToBoxAdapter(child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: FullPageErrorWidget(error: error, stackTrace: null,
-              prefix: blueskyErrorMessage(l10n, error),
-              onRetry: () => state.error == null
-                  ? _store.load(state.selected, more: feed.loaded && feed.cursor != null)
-                  : _store.refresh()),
-          )),
-        if (feed.cursor != null && !feed.loading && error == null)
-          SliverToBoxAdapter(child: Center(child: TextButton(
-            onPressed: _store.loadMore, child: Text(l10n.plugin_reddit_load_more),
-          ))),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: FullPageErrorWidget(
+                error: error,
+                stackTrace: null,
+                prefix: blueskyErrorMessage(l10n, error),
+                onRetry: _store.retry,
+              ),
+            ),
+          ),
+        if (feed.cursor != null && !feed.loading && feed.error == null)
+          SliverToBoxAdapter(
+            child: Center(
+              child: TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_reddit_load_more)),
+            ),
+          ),
         const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
       ],
     );
@@ -432,10 +467,7 @@ class _ProfileBanner extends StatelessWidget {
         Positioned(
           left: 16,
           bottom: 0,
-          child: _AvatarRing(
-            profile: profile,
-            onTap: onOpenAvatar,
-          ),
+          child: _AvatarRing(profile: profile, onTap: onOpenAvatar),
         ),
         Positioned(
           left: 16 + _kAvatarSize + 24,
@@ -445,9 +477,7 @@ class _ProfileBanner extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: _FollowActions(
               following: following,
-              followLabel: following
-                  ? l10n.plugin_bluesky_unfollow
-                  : l10n.plugin_bluesky_follow,
+              followLabel: following ? l10n.plugin_bluesky_unfollow : l10n.plugin_bluesky_follow,
               groupLabel: l10n.add_to_group,
               onFollowToggle: onFollowToggle,
               onAddToGroup: onAddToGroup,
@@ -459,9 +489,7 @@ class _ProfileBanner extends StatelessWidget {
   }
 
   Widget _bannerImage(BuildContext context, String? banner, ThemeData theme) {
-    final fallback = ColoredBox(
-      color: theme.colorScheme.primary.withValues(alpha: 0.35),
-    );
+    final fallback = ColoredBox(color: theme.colorScheme.primary.withValues(alpha: 0.35));
     if (banner == null) {
       return fallback;
     }
@@ -470,9 +498,7 @@ class _ProfileBanner extends StatelessWidget {
       fit: BoxFit.cover,
       width: double.infinity,
       height: double.infinity,
-      cacheWidth: (MediaQuery.sizeOf(context).width *
-              MediaQuery.devicePixelRatioOf(context))
-          .ceil(),
+      cacheWidth: (MediaQuery.sizeOf(context).width * MediaQuery.devicePixelRatioOf(context)).ceil(),
     );
     if (onOpenBanner == null) {
       return image;
@@ -503,8 +529,7 @@ class _AvatarRing extends StatelessWidget {
             width: _kAvatarSize,
             height: _kAvatarSize,
             fit: BoxFit.cover,
-            cacheWidth: (_kAvatarSize * MediaQuery.devicePixelRatioOf(context))
-                .ceil(),
+            cacheWidth: (_kAvatarSize * MediaQuery.devicePixelRatioOf(context)).ceil(),
           );
 
     final ring = CircleAvatar(
@@ -599,74 +624,66 @@ class BlueskyProfileCard extends StatelessWidget {
         children: [
           Text(
             profile.displayName,
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
           ),
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
+            child: SelectableText(
               '@${profile.handle}',
               style: TextStyle(
                 fontSize: 14,
-                color: theme.brightness == Brightness.dark
-                    ? Colors.white70
-                    : Colors.black54,
+                color: theme.brightness == Brightness.dark ? Colors.white70 : Colors.black54,
               ),
             ),
           ),
           if (bio.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
-              child: Text(bio, style: theme.textTheme.bodyMedium),
+              child: BlueskyRichText(
+                text: bio,
+                facets: blueskyProfileLinks(bio),
+                style: theme.textTheme.bodyMedium,
+                onFacetTap: (facet) => openLink(context, facet.value),
+              ),
             ),
           if (createdAt != null)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.calendar_today_outlined,
-                    size: 14,
-                    color: theme.hintColor,
-                  ),
+                  Icon(Icons.calendar_today_outlined, size: 14, color: theme.hintColor),
                   const SizedBox(width: 4),
-                  Text(
-                    l10n.joined(DateFormat('MMMM yyyy').format(createdAt)),
-                    style: metadataStyle,
-                  ),
+                  Flexible(child: Text(l10n.joined(DateFormat('MMMM yyyy').format(createdAt)), style: metadataStyle)),
                 ],
               ),
             ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _count(
-                  context,
-                  compactCount(profile.followsCount),
-                  l10n.following.toLowerCase(),
-                  onTap: () => _openFollows(context, BlueskyFollowsKind.following),
-                ),
-                const SizedBox(width: 8),
-                _count(
-                  context,
-                  compactCount(profile.followersCount),
-                  l10n.followers.toLowerCase(),
-                  onTap: () => _openFollows(context, BlueskyFollowsKind.followers),
-                ),
-              ],
-            ),
+          Wrap(
+            spacing: 12,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              _count(
+                context,
+                compactCount(profile.followsCount),
+                l10n.following.toLowerCase(),
+                onTap: () => _openFollows(context, BlueskyFollowsKind.following),
+              ),
+              _count(
+                context,
+                compactCount(profile.followersCount),
+                l10n.followers.toLowerCase(),
+                onTap: () => _openFollows(context, BlueskyFollowsKind.followers),
+              ),
+              Text(l10n.folder_post_count(profile.postsCount), style: metadataStyle),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Future<void> _openFollows(
-    BuildContext context,
-    BlueskyFollowsKind kind,
-  ) async {
+  Future<void> _openFollows(BuildContext context, BlueskyFollowsKind kind) async {
     final actor = profile.did.isNotEmpty ? profile.did : profile.handle;
     if (actor.isEmpty) {
       return;
@@ -679,12 +696,7 @@ class BlueskyProfileCard extends StatelessWidget {
     );
   }
 
-  Widget _count(
-    BuildContext context,
-    String value,
-    String label, {
-    VoidCallback? onTap,
-  }) {
+  Widget _count(BuildContext context, String value, String label, {VoidCallback? onTap}) {
     const metadataStyle = TextStyle(fontSize: 12.5);
     final text = Text.rich(
       TextSpan(
@@ -702,12 +714,15 @@ class BlueskyProfileCard extends StatelessWidget {
       return text;
     }
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: text,
+    return Semantics(
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(4),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Align(widthFactor: 1, heightFactor: 1, child: text),
+        ),
       ),
     );
   }
@@ -719,11 +734,7 @@ class _BannerButton extends StatelessWidget {
   final String tooltip;
   final VoidCallback onPressed;
 
-  const _BannerButton({
-    required this.icon,
-    required this.tooltip,
-    required this.onPressed,
-  });
+  const _BannerButton({required this.icon, required this.tooltip, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -752,11 +763,7 @@ class _ProfileTabLabel extends StatelessWidget {
   final String label;
   final bool selected;
 
-  const _ProfileTabLabel({
-    required this.icon,
-    required this.label,
-    required this.selected,
-  });
+  const _ProfileTabLabel({required this.icon, required this.label, required this.selected});
 
   @override
   Widget build(BuildContext context) {
@@ -791,18 +798,10 @@ class _TabBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => 48;
 
   @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Material(
-      color: Theme.of(context).colorScheme.surface,
-      child: tabBar,
-    );
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Material(color: Theme.of(context).colorScheme.surface, child: tabBar);
   }
 
   @override
-  bool shouldRebuild(covariant _TabBarDelegate oldDelegate) =>
-      tabBar != oldDelegate.tabBar;
+  bool shouldRebuild(covariant _TabBarDelegate oldDelegate) => tabBar != oldDelegate.tabBar;
 }

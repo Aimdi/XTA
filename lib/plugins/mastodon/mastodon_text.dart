@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/plugin_links.dart';
 
 /// Status body with tappable `@mentions` and `#tags`, like Tusky / Ivory.
 class MastodonRichText extends StatefulWidget {
@@ -10,6 +11,7 @@ class MastodonRichText extends StatefulWidget {
   final int? maxLines;
   final ValueChanged<String>? onMentionTap;
   final ValueChanged<String>? onTagTap;
+  final ValueChanged<String>? onLinkTap;
 
   const MastodonRichText({
     super.key,
@@ -19,6 +21,7 @@ class MastodonRichText extends StatefulWidget {
     this.maxLines,
     this.onMentionTap,
     this.onTagTap,
+    this.onLinkTap,
   });
 
   @override
@@ -45,24 +48,24 @@ class _MastodonRichTextState extends State<MastodonRichText> {
   Widget build(BuildContext context) {
     _clear();
     final theme = Theme.of(context);
-    final style =
-        widget.style ?? theme.textTheme.bodyLarge!.copyWith(height: 1.35);
+    final style = widget.style ?? theme.textTheme.bodyLarge!.copyWith(height: 1.35);
     final link = style.copyWith(color: theme.colorScheme.primary);
-    final parts = mastodonTextParts(
-      widget.text,
-      mentionAccts: widget.mentionAccts,
-    );
+    final parts = mastodonTextParts(widget.text, mentionAccts: widget.mentionAccts);
     return Text.rich(
       TextSpan(children: [for (final part in parts) _span(part, style, link)]),
       maxLines: widget.maxLines,
-      overflow: widget.maxLines == null
-          ? TextOverflow.clip
-          : TextOverflow.ellipsis,
+      overflow: widget.maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
     );
   }
 
   InlineSpan _span(MastodonTextPart part, TextStyle style, TextStyle link) {
-    if (part.kind == MastodonTextKind.text) {
+    final interactive = switch (part.kind) {
+      MastodonTextKind.text => false,
+      MastodonTextKind.mention => widget.onMentionTap != null,
+      MastodonTextKind.tag => widget.onTagTap != null,
+      MastodonTextKind.link => true,
+    };
+    if (!interactive) {
       return TextSpan(text: part.text, style: style);
     }
     final recognizer = TapGestureRecognizer()..onTap = () => _open(part);
@@ -71,6 +74,14 @@ class _MastodonRichTextState extends State<MastodonRichText> {
   }
 
   void _open(MastodonTextPart part) {
+    if (part.kind == MastodonTextKind.link) {
+      if (widget.onLinkTap != null) {
+        widget.onLinkTap!(part.value);
+      } else {
+        openLink(context, part.value);
+      }
+      return;
+    }
     if (part.kind == MastodonTextKind.tag) {
       widget.onTagTap?.call(part.value);
       return;

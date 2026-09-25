@@ -8,6 +8,8 @@ import 'package:xta/home/_for_you.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_selection_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/x/x_reader_chrome.dart';
+import 'package:xta/plugins/x/x_reader_routes.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 
 /// The X source retains the established For you reader and its local state.
@@ -16,20 +18,23 @@ class XTimelineView extends StatelessWidget {
   final int revision;
   const XTimelineView({super.key, required this.feed, this.revision = 0});
 
+  Future<void> _openDestination(
+    BuildContext context,
+    XReaderDestination destination,
+  ) async {
+    await openXReaderDestination(context, destination);
+    if (context.mounted && destination == XReaderDestination.accounts) {
+      await context.read<FeedRefreshController>().refresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      PluginHomeChrome(
-        title: L10n.of(context).source_x,
-        mark: const Icon(Icons.close),
-        tabs: [
-          PluginHomeTab(
-            icon: Icons.auto_awesome_outlined,
-            label: L10n.of(context).foryou,
-            selected: true,
-            onTap: () {},
-          ),
-        ],
+      XReaderChrome(
+        onSearch: () => openXSearch(context),
+        onOpenDestination: (destination) =>
+            _openDestination(context, destination),
       ),
       Expanded(
         child: ForYouTweets(
@@ -80,14 +85,17 @@ class _XScreenState extends State<XScreen> {
         title: Text(L10n.of(context).source_x),
         actions: [
           IconButton(
-            tooltip: MaterialLocalizations.of(context).refreshIndicatorSemanticLabel,
+            tooltip: MaterialLocalizations.of(
+              context,
+            ).refreshIndicatorSemanticLabel,
             icon: const Icon(Icons.refresh),
             onPressed: _refreshController.refresh,
           ),
           IconButton(
             tooltip: L10n.of(context).home_feed_accounts,
             icon: const Icon(Icons.manage_accounts_outlined),
-            onPressed: () => showHomeAccountFilterSheet(context, onChanged: _refresh),
+            onPressed: () =>
+                showHomeAccountFilterSheet(context, onChanged: _refresh),
           ),
         ],
       ),
@@ -96,7 +104,8 @@ class _XScreenState extends State<XScreen> {
         child: PluginEmbedded(
           child: ScopedBuilder<HomeSelectionStore<int>, int>(
             store: _revision,
-            onState: (_, revision) => XTimelineView(feed: _feed, revision: revision),
+            onState: (_, revision) =>
+                XTimelineView(feed: _feed, revision: revision),
           ),
         ),
       ),

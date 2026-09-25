@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/group/deck_groups.dart';
+import 'package:xta/group/future_pool.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:sqflite/sqflite.dart';
@@ -18,7 +21,29 @@ import 'package:xta/plugins/substack/substack_models.dart';
 class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
   final BasePrefService prefs;
 
+  Future<void> _pinWrites = Future.value();
+  bool _closing = false;
+
   SubstackPublicationsStore(this.prefs) : super(const []);
+
+  Future<void> _changePins(Future<List<SubstackPublication>> Function() work) {
+    if (_closing) return Future.value();
+    _pinWrites = _pinWrites.then((_) async {
+      try {
+        update(await work());
+      } catch (error) {
+        setError(error);
+      }
+    });
+    return _pinWrites;
+  }
+
+  @override
+  Future<void> destroy() async {
+    _closing = true;
+    await _pinWrites;
+    await super.destroy();
+  }
 
   Future<void> load() async {
     await execute(() async {
@@ -29,41 +54,34 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
 
   Future<List<SubstackPublication>> _read() async {
     final database = await Repository.readOnly();
-    final rows = await database.query(
-      tableSubstackSubscription,
-      orderBy: 'name COLLATE NOCASE',
-    );
+    final rows = await database.query(tableSubstackSubscription, orderBy: 'name COLLATE NOCASE');
 
-    final publications = rows
-        .map(SubstackSubscription.fromMap)
-        .map(publicationOf)
-        .toList(growable: false);
+    final publications = rows.map(SubstackSubscription.fromMap).map(publicationOf).toList(growable: false);
     return _withPins(publications);
   }
 
-  List<String> get _pinnedIds => parseDeckGroupIds(
-    prefs.get(optionPluginSubstackPinnedPublications) as String?,
-  );
+  List<String> get _pinnedIds => parseDeckGroupIds(prefs.get(optionPluginSubstackPinnedPublications) as String?);
 
   bool isPinned(String id) => _pinnedIds.contains(id);
 
   /// Pinned publications first (pin order), then the rest A–Z.
-  List<SubstackPublication> _withPins(List<SubstackPublication> publications) =>
-      sortSubstackPublicationsWithPins(publications, _pinnedIds);
+  List<SubstackPublication> _withPins(List<SubstackPublication> publications) {
+    final alphabetical = publications.toList()..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    return sortSubstackPublicationsWithPins(alphabetical, _pinnedIds);
+  }
 
   Future<void> togglePinned(String id) async {
     if (id.isEmpty) return;
-    await execute(() async {
+    await _changePins(() async {
       final ids = _pinnedIds.toList();
       if (ids.contains(id)) {
         ids.remove(id);
       } else {
         ids.add(id);
       }
-      await prefs.set(
-        optionPluginSubstackPinnedPublications,
-        joinDeckGroupIds(ids),
-      );
+      if (!await prefs.set(optionPluginSubstackPinnedPublications, joinDeckGroupIds(ids))) {
+        throw StateError('Substack preference write failed');
+      }
       return _withPins(state);
     });
   }
@@ -97,24 +115,13 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
   }
 
   Future<void> remove(String id) async {
-    await execute(() async {
+    await _changePins(() async {
       final database = await Repository.writable();
-      await database.delete(
-        tableSubstackSubscription,
-        where: 'id = ?',
-        whereArgs: [id],
-      );
+      await database.delete(tableSubstackSubscription, where: 'id = ?', whereArgs: [id]);
       // A publication that is gone should not linger as a member of a group.
-      await database.delete(
-        tableSubscriptionGroupMember,
-        where: 'profile_id = ?',
-        whereArgs: [id],
-      );
+      await database.delete(tableSubscriptionGroupMember, where: 'profile_id = ?', whereArgs: [id]);
       final ids = _pinnedIds.toList()..remove(id);
-      await prefs.set(
-        optionPluginSubstackPinnedPublications,
-        joinDeckGroupIds(ids),
-      );
+      await prefs.set(optionPluginSubstackPinnedPublications, joinDeckGroupIds(ids));
       return _read();
     });
   }
@@ -124,23 +131,21 @@ class SubstackPublicationsStore extends Store<List<SubstackPublication>> {
 ///
 /// The plugin thinks in publications and the subscription tables think in
 /// subscriptions; these keep the two from having to know each other's shape.
-SubstackSubscription subscriptionOf(SubstackPublication publication) =>
-    SubstackSubscription(
-      id: publication.id,
-      baseUrl: publication.baseUrl,
-      name: publication.name,
-      logoUrl: publication.logoUrl,
-      createdAt: DateTime.now(),
-      inFeed: true,
-    );
+SubstackSubscription subscriptionOf(SubstackPublication publication) => SubstackSubscription(
+  id: publication.id,
+  baseUrl: publication.baseUrl,
+  name: publication.name,
+  logoUrl: publication.logoUrl,
+  createdAt: DateTime.now(),
+  inFeed: true,
+);
 
-SubstackPublication publicationOf(SubstackSubscription subscription) =>
-    SubstackPublication(
-      subdomain: subscription.id,
-      baseUrl: subscription.baseUrl,
-      name: subscription.name,
-      logoUrl: subscription.logoUrl,
-    );
+SubstackPublication publicationOf(SubstackSubscription subscription) => SubstackPublication(
+  subdomain: subscription.id,
+  baseUrl: subscription.baseUrl,
+  name: subscription.name,
+  logoUrl: subscription.logoUrl,
+);
 
 /// Pinned ids first (in pin order), then the remaining publications unchanged.
 List<SubstackPublication> sortSubstackPublicationsWithPins(
@@ -162,298 +167,464 @@ List<SubstackPublication> sortSubstackPublicationsWithPins(
   return [...pinned, ...rest];
 }
 
-class SubstackReadStore extends Store<Set<String>> {
+/// Preference mutations finish in order; a rejected write leaves state intact.
+abstract class _SubstackLocalStore<T> extends Store<T> {
   final BasePrefService prefs;
+  Future<void> _writes = Future.value();
+  bool _closing = false;
 
-  SubstackReadStore(this.prefs) : super(const {});
+  _SubstackLocalStore(this.prefs, super.initialState);
 
-  Future<void> load() async {
-    await execute(() async {
-      return readIdsFromPrefs(prefs.get(optionPluginSubstackReadIds)).toSet();
+  Future<void> serial(Future<T> Function() work) {
+    if (_closing) return Future.value();
+    _writes = _writes.then((_) async {
+      try {
+        update(await work());
+      } catch (error) {
+        setError(error);
+      }
+    });
+    return _writes;
+  }
+
+  Future<void> persist(String key, String value) async {
+    if (!await prefs.set(key, value)) throw StateError('Substack preference write failed');
+  }
+
+  @override
+  Future<void> destroy() async {
+    _closing = true;
+    await _writes;
+    await super.destroy();
+  }
+}
+
+class SubstackReadStore extends _SubstackLocalStore<Set<String>> {
+  SubstackReadStore(BasePrefService prefs) : super(prefs, const {});
+
+  Future<void> load() => serial(() async => readIdsFromPrefs(prefs.get(optionPluginSubstackReadIds)).toSet());
+  Future<void> markRead(String id) => markAllRead([id]);
+  Future<void> markUnread(String id) => markAllUnread([id]);
+
+  Future<void> markAllRead(Iterable<String> ids) {
+    final requested = ids.where((id) => id.isNotEmpty).toSet();
+    return serial(() async {
+      final next = [...requested, ...state.where((id) => !requested.contains(id))].take(substackReadIdsCap).toSet();
+      await persist(optionPluginSubstackReadIds, readIdsToPrefs(next.toList()));
+      return next;
     });
   }
 
-  Future<void> markRead(String id) async {
-    if (id.isEmpty || state.contains(id)) return;
-    await execute(() async {
-      final next = [id, ...state];
-      final capped = next.take(substackReadIdsCap).toList();
-      await prefs.set(optionPluginSubstackReadIds, readIdsToPrefs(capped));
-      return capped.toSet();
-    });
-  }
-
-  /// Marks every id in [ids] as read (newest first in the capped list).
-  Future<void> markAllRead(Iterable<String> ids) async {
-    final fresh = ids
-        .where((id) => id.isNotEmpty && !state.contains(id))
-        .toList();
-    if (fresh.isEmpty) return;
-    await execute(() async {
-      final next = [...fresh, ...state];
-      final capped = next.take(substackReadIdsCap).toList();
-      await prefs.set(optionPluginSubstackReadIds, readIdsToPrefs(capped));
-      return capped.toSet();
+  Future<void> markAllUnread(Iterable<String> ids) {
+    final requested = ids.toSet();
+    return serial(() async {
+      final next = state.where((id) => !requested.contains(id)).toSet();
+      await persist(optionPluginSubstackReadIds, readIdsToPrefs(next.toList()));
+      return next;
     });
   }
 
   bool isRead(String id) => state.contains(id);
 }
 
-/// Hearts that stay on this device — Substack is never told (like Threads likes).
-class SubstackLikesStore extends Store<List<SubstackPost>> {
-  final BasePrefService prefs;
+abstract class _SubstackPostLibrary extends _SubstackLocalStore<List<SubstackPost>> {
+  final String preference;
+  final int capacity;
+  _SubstackPostLibrary(BasePrefService prefs, this.preference, this.capacity) : super(prefs, const []);
 
-  SubstackLikesStore(this.prefs) : super(const []);
+  Future<void> load() => serial(() async => SubstackPost.listFromPrefs(prefs.get(preference)));
 
-  Future<void> load() async {
-    await execute(
-      () async =>
-          SubstackPost.listFromPrefs(prefs.get(optionPluginSubstackLikedPosts)),
-    );
-  }
-
-  bool isLiked(String id) => state.any((p) => p.id == id);
-
-  Future<void> toggle(SubstackPost post) async {
-    if (post.id.isEmpty) return;
-    await execute(() async {
-      final next = isLiked(post.id)
-          ? state.where((p) => p.id != post.id).toList()
-          : [post, ...state.where((p) => p.id != post.id)];
-      final capped = next.take(substackLikedPostsCap).toList();
-      await prefs.set(
-        optionPluginSubstackLikedPosts,
-        SubstackPost.listToPrefs(capped),
-      );
-      return capped;
+  Future<void> toggle(SubstackPost post) {
+    if (post.id.isEmpty) return Future.value();
+    return serial(() async {
+      final remaining = state.where((item) => item.id != post.id);
+      final next = (state.any((item) => item.id == post.id) ? remaining : [post, ...remaining]).take(capacity).toList();
+      await persist(preference, SubstackPost.listToPrefs(next));
+      return next;
     });
   }
 }
 
-/// Bookmarks that stay on this device — the Substack-app Save stand-in.
-class SubstackSavedStore extends Store<List<SubstackPost>> {
-  final BasePrefService prefs;
+/// Hearts and bookmarks are local; no Substack write endpoint is used.
+class SubstackLikesStore extends _SubstackPostLibrary {
+  SubstackLikesStore(BasePrefService prefs) : super(prefs, optionPluginSubstackLikedPosts, substackLikedPostsCap);
+  bool isLiked(String id) => state.any((post) => post.id == id);
+}
 
-  SubstackSavedStore(this.prefs) : super(const []);
+class SubstackSavedStore extends _SubstackPostLibrary {
+  SubstackSavedStore(BasePrefService prefs) : super(prefs, optionPluginSubstackSavedPosts, substackSavedPostsCap);
+  bool isSaved(String id) => state.any((post) => post.id == id);
+}
 
-  Future<void> load() async {
-    await execute(
-      () async =>
-          SubstackPost.listFromPrefs(prefs.get(optionPluginSubstackSavedPosts)),
-    );
+const substackPublicationsPerBatch = 24;
+const substackPublicationConcurrency = 3;
+
+class _PublicationPage {
+  final List<SubstackPost> posts;
+  final int offset;
+  final bool loaded;
+  final bool hasMore;
+  final Object? error;
+  final int? failedOffset;
+  final int attempt;
+  const _PublicationPage({
+    this.posts = const [],
+    this.offset = 0,
+    this.loaded = false,
+    this.hasMore = true,
+    this.error,
+    this.failedOffset,
+    this.attempt = 0,
+  });
+}
+
+String _sourceUrl(String value) {
+  final uri = Uri.tryParse(value.trim());
+  return uri == null ? value.trim() : uri.replace(path: uri.path.replaceFirst(RegExp(r'/+$'), '')).toString();
+}
+
+String _publicationKey(SubstackPublication publication) => '${publication.id}\n${_sourceUrl(publication.baseUrl)}';
+String substackFeedPostKey(SubstackPost post) => '${_sourceUrl(post.publicationBaseUrl)}\n${post.id}';
+
+List<SubstackPost> _mergeSubstackPosts(Iterable<SubstackPost> posts) {
+  final unique = <String, SubstackPost>{};
+  for (final post in posts) {
+    if (post.id.isNotEmpty) unique[substackFeedPostKey(post)] = post;
   }
-
-  bool isSaved(String id) => state.any((p) => p.id == id);
-
-  Future<void> toggle(SubstackPost post) async {
-    if (post.id.isEmpty) return;
-    await execute(() async {
-      final next = isSaved(post.id)
-          ? state.where((p) => p.id != post.id).toList()
-          : [post, ...state.where((p) => p.id != post.id)];
-      final capped = next.take(substackSavedPostsCap).toList();
-      await prefs.set(
-        optionPluginSubstackSavedPosts,
-        SubstackPost.listToPrefs(capped),
-      );
-      return capped;
-    });
-  }
+  return unique.values.toList();
 }
 
 class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
   final SubstackClient client;
   final SubstackPublicationsStore publications;
-
-  var _offset = 0;
+  final _pages = <String, _PublicationPage>{};
   var _allPosts = const <SubstackPost>[];
   var _filter = SubstackFeedFilter.all;
   Set<String> _readIds = const {};
   DateTime? _fetchedAt;
+  String? _loadedIdentity;
+  String? _activeIdentity;
+  Future<void>? _pending;
+  var _generation = 0;
+  var _attempt = 0;
+  var _closed = false;
+  bool _refreshing = false;
+  bool _loadingMore = false;
+  Object? _refreshError;
+  Object? _loadMoreError;
 
-  SubstackFeedStore(this.client, this.publications)
-    : super(const SubstackFeedSnapshot());
-
+  SubstackFeedStore(this.client, this.publications) : super(const SubstackFeedSnapshot());
   SubstackFeedFilter get filter => _filter;
-
-  /// Unfiltered merged posts (Home chips / Inbox read from this).
   List<SubstackPost> get allPosts => _allPosts;
-
   DateTime? get fetchedAt => _fetchedAt;
+  Object? get refreshError => _refreshError;
+  Object? get loadMoreError => _loadMoreError;
+  bool get refreshing => _refreshing;
+  bool get loadingMore => _loadingMore;
+  int get pendingCount => _sources.where((pub) => _pages[_publicationKey(pub)]?.loaded != true).length;
 
-  /// When the home strip remounts this tab, skip a full refetch if the last
-  /// one is still inside [kAccountPostsCacheTtl]. Pull-to-refresh passes
-  /// [force].
+  List<SubstackPublication> get _sources =>
+      {for (final pub in publications.state) _publicationKey(pub): pub}.values.toList();
+  String get _identity {
+    final keys = _sources.map(_publicationKey).toList()..sort();
+    return keys.join('\n');
+  }
+
   Future<void> refresh({bool force = false}) async {
-    if (publications.state.isEmpty) {
-      if (_allPosts.isNotEmpty) {
-        _allPosts = const [];
-        update(const SubstackFeedSnapshot());
-      }
+    if (_closed) return;
+    final identity = _identity;
+    if (_sources.isEmpty) {
+      _generation++;
+      _pending = null;
+      _loadedIdentity = _activeIdentity = identity;
+      _refreshing = _loadingMore = false;
+      _refreshError = _loadMoreError = null;
+      _pages.clear();
+      // There is no remote work to refresh, including on a forced refresh.
       _fetchedAt ??= DateTime.now();
+      _publish();
       return;
     }
+    if (!force && _refreshing && _activeIdentity == identity) return _pending;
     if (!force &&
-        _allPosts.isNotEmpty &&
+        _loadedIdentity == identity &&
+        pendingCount == 0 &&
+        _refreshError == null &&
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
       return;
     }
-    _offset = 0;
-    if (_allPosts.isNotEmpty) {
-      try {
-        update(await _fetchPage(replace: true));
-      } catch (_) {
-        update(state);
-      }
-      return;
-    }
-    await execute(() => _fetchPage(replace: true));
+    await _load(more: false);
   }
 
   Future<void> loadMore() async {
-    if (!state.canLoadMore) return;
-    await execute(() => _fetchPage(replace: false));
+    if (_closed || _refreshing || _loadingMore || !state.canLoadMore) return;
+    if (_loadedIdentity != null && _loadedIdentity != _identity) return refresh();
+    await _load(more: true);
   }
 
-  /// Applies a local inbox filter without refetching.
+  Future<void> retryLoadMore() => loadMore();
+
   void setFilter(SubstackFeedFilter filter, Set<String> readIds) {
+    if (_closed) return;
     _filter = filter;
-    _readIds = readIds;
+    _readIds = Set.of(readIds);
+    _publish();
+  }
+
+  void syncReadIds(Set<String> readIds) {
+    if (_closed) return;
+    _readIds = Set.of(readIds);
+    _publish();
+  }
+
+  Future<void> _load({required bool more}) async {
+    final identity = _identity;
+    final request = ++_generation;
+    final done = Completer<void>();
+    _pending = done.future;
+    _activeIdentity = identity;
+    _refreshing = !more;
+    _loadingMore = more;
+    if (more) {
+      _loadMoreError = null;
+    } else {
+      _refreshError = null;
+      _loadMoreError = null;
+    }
+    _retainSources();
+    _publish();
+    if (_allPosts.isEmpty) setLoading(true);
+    try {
+      final candidates = _candidates(more: more);
+      await mapWithConcurrency(
+        candidates.take(substackPublicationsPerBatch),
+        substackPublicationConcurrency,
+        (pub) => _readPublication(pub, request, identity, more: more),
+      );
+      if (!_current(request, identity)) return;
+      _loadedIdentity = identity;
+      final failure = _pages.values.where((page) => page.error != null).firstOrNull?.error;
+      if (more) {
+        _loadMoreError = failure;
+        if (failure == null) _refreshError = null;
+      } else {
+        _refreshError = failure;
+      }
+      if (failure == null) _fetchedAt = DateTime.now();
+      _publish();
+      if (_allPosts.isEmpty && failure != null) setError(failure);
+    } catch (error) {
+      if (!_current(request, identity)) return;
+      if (more) {
+        _loadMoreError = error;
+      } else {
+        _refreshError = error;
+      }
+      if (_allPosts.isEmpty) setError(error);
+    } finally {
+      if (!_closed && request == _generation) {
+        _refreshing = _loadingMore = false;
+        setLoading(false);
+        final failure = more ? _loadMoreError : _refreshError;
+        if (_allPosts.isEmpty && failure != null) {
+          setError(failure, force: true);
+        } else {
+          _publish();
+        }
+        _pending = null;
+      }
+      done.complete();
+    }
+  }
+
+  void _retainSources() {
+    final active = _sources.map(_publicationKey).toSet();
+    _pages.removeWhere((key, _) => !active.contains(key));
+  }
+
+  List<SubstackPublication> _candidates({required bool more}) =>
+      _sources.where((pub) {
+        final page = _pages[_publicationKey(pub)];
+        return !more || page == null || page.error != null || page.hasMore;
+      }).toList()..sort((a, b) {
+        final left = _pages[_publicationKey(a)] ?? const _PublicationPage();
+        final right = _pages[_publicationKey(b)] ?? const _PublicationPage();
+        final untouched = (left.attempt == 0 ? 0 : 1).compareTo(right.attempt == 0 ? 0 : 1);
+        if (untouched != 0) return untouched;
+        // Rotate attempted sources too: permanent failures must not starve
+        // older pages from publications that are still readable.
+        return left.attempt.compareTo(right.attempt);
+      });
+
+  Future<void> _readPublication(SubstackPublication pub, int request, String identity, {required bool more}) async {
+    if (!_current(request, identity)) return;
+    final key = _publicationKey(pub);
+    final before = _pages[key] ?? const _PublicationPage();
+    final offset = more ? before.failedOffset ?? before.offset : 0;
+    final attempt = ++_attempt;
+    try {
+      final posts = await client.fetchPosts(pub, limit: substackFeedPageSize, offset: offset);
+      if (!_current(request, identity)) return;
+      final progressed =
+          offset == 0 ||
+          posts.any((post) => !before.posts.any((old) => substackFeedPostKey(old) == substackFeedPostKey(post)));
+      _pages[key] = _PublicationPage(
+        posts: _mergeSubstackPosts([if (offset > 0) ...before.posts, ...posts]),
+        offset: offset + substackFeedPageSize,
+        loaded: true,
+        hasMore: progressed && posts.length >= substackFeedPageSize,
+        attempt: attempt,
+      );
+    } catch (error) {
+      if (!_current(request, identity)) return;
+      _pages[key] = _PublicationPage(
+        posts: before.posts,
+        offset: before.offset,
+        loaded: before.loaded,
+        hasMore: before.hasMore,
+        error: error,
+        failedOffset: offset,
+        attempt: attempt,
+      );
+    }
+    _publish();
+  }
+
+  bool _current(int request, String identity) => !_closed && request == _generation && identity == _identity;
+
+  void _publish() {
+    _allPosts = _mergeSubstackPosts(_pages.values.expand((page) => page.posts))
+      ..sort((a, b) {
+        final date = (b.publishedAt ?? DateTime(0)).compareTo(a.publishedAt ?? DateTime(0));
+        return date == 0 ? substackFeedPostKey(a).compareTo(substackFeedPostKey(b)) : date;
+      });
     update(
-      _snapshotFromCache(
-        canLoadMore: state.canLoadMore,
-        failedCount: state.failedCount,
+      SubstackFeedSnapshot(
+        posts: _allPosts.where((post) => postMatchesSubstackFilter(post, _filter, _readIds)).toList(),
+        canLoadMore: pendingCount > 0 || _pages.values.any((page) => page.hasMore || page.error != null),
+        failedCount: _pages.values.where((page) => page.error != null).length,
       ),
     );
   }
 
-  void syncReadIds(Set<String> readIds) {
-    _readIds = readIds;
-    if (_filter == SubstackFeedFilter.unread) {
-      update(
-        _snapshotFromCache(
-          canLoadMore: state.canLoadMore,
-          failedCount: state.failedCount,
-        ),
-      );
-    }
-  }
-
-  Future<SubstackFeedSnapshot> _fetchPage({required bool replace}) async {
-    final pubs = publications.state;
-    if (pubs.isEmpty) {
-      _allPosts = const [];
-      return const SubstackFeedSnapshot();
-    }
-
-    final results = await Future.wait(
-      pubs.map((p) async {
-        try {
-          final posts = await client.fetchPosts(
-            p,
-            limit: substackFeedPageSize,
-            offset: _offset,
-          );
-          return (posts: posts, failed: false);
-        } catch (_) {
-          return (posts: const <SubstackPost>[], failed: true);
-        }
-      }),
-    );
-
-    final pagePosts = results.expand((e) => e.posts).toList();
-    final failedCount = results.where((e) => e.failed).length;
-    final canLoadMore = results.any(
-      (e) => e.posts.length >= substackFeedPageSize,
-    );
-
-    _offset += substackFeedPageSize;
-
-    final merged = replace ? pagePosts : _mergePosts(_allPosts, pagePosts);
-    merged.sort((a, b) => (b.postDate ?? '').compareTo(a.postDate ?? ''));
-    _allPosts = merged;
-    _fetchedAt = DateTime.now();
-
-    return _snapshotFromCache(
-      canLoadMore: canLoadMore,
-      failedCount: replace ? failedCount : state.failedCount,
-    );
-  }
-
-  SubstackFeedSnapshot _snapshotFromCache({
-    required bool canLoadMore,
-    required int failedCount,
-  }) {
-    final visible = _allPosts
-        .where((p) => postMatchesSubstackFilter(p, _filter, _readIds))
-        .toList();
-    return SubstackFeedSnapshot(
-      posts: visible,
-      canLoadMore: canLoadMore,
-      failedCount: failedCount,
-    );
-  }
-
-  List<SubstackPost> _mergePosts(
-    List<SubstackPost> existing,
-    List<SubstackPost> incoming,
-  ) {
-    final seen = existing.map((e) => e.id).toSet();
-    return [...existing, ...incoming.where((e) => !seen.contains(e.id))];
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    _generation++;
+    return super.destroy();
   }
 }
 
-/// Global public Notes discovery (not a personalized Following timeline).
+/// Public Notes discovery keeps every cursor bound to its issuing host.
 class SubstackNotesStore extends Store<SubstackNotesPage> {
   final SubstackClient client;
   final SubstackPublicationsStore publications;
-
-  var _notes = const <SubstackNote>[];
+  String? _host;
   String? _cursor;
   var _hostIndex = 0;
+  var _generation = 0;
+  var _closed = false;
+  bool _refreshing = false;
+  bool _loadingMore = false;
   DateTime? _fetchedAt;
+  String? _loadedIdentity;
+  String? _activeIdentity;
+  final _cursors = <String>{};
+  Object? _refreshError;
+  Object? _loadMoreError;
 
-  SubstackNotesStore(this.client, this.publications)
-    : super(const SubstackNotesPage());
+  SubstackNotesStore(this.client, this.publications) : super(const SubstackNotesPage());
+  bool get refreshing => _refreshing;
+  bool get loadingMore => _loadingMore;
+  Object? get refreshError => _refreshError;
+  Object? get loadMoreError => _loadMoreError;
+  String get _identity {
+    final keys = publications.state.map(_publicationKey).toList()..sort();
+    return keys.join('\n');
+  }
 
   Future<void> refresh({bool force = false}) async {
+    if (_closed || (_refreshing && !force && _activeIdentity == _identity)) return;
     if (!force &&
-        _notes.isNotEmpty &&
+        _loadedIdentity == _identity &&
+        _refreshError == null &&
         pluginFeedIsFresh(_fetchedAt, ttl: kAccountPostsCacheTtl)) {
       return;
     }
-    _cursor = null;
-    if (_notes.isNotEmpty) {
-      try {
-        update(await _fetch(replace: true));
-      } catch (_) {
-        update(state);
-      }
-      return;
-    }
-    await execute(() => _fetch(replace: true));
+    await _load(more: false);
   }
 
   Future<void> loadMore() async {
-    if (state.nextCursor == null || state.nextCursor!.isEmpty) return;
-    await execute(() => _fetch(replace: false));
+    if (_closed || _refreshing || _loadingMore || _cursor == null) return;
+    if (_loadedIdentity != _identity) return refresh();
+    await _load(more: true);
   }
 
-  Future<SubstackNotesPage> _fetch({required bool replace}) async {
-    final hostName = _nextNotesHost();
-    final page = await client.fetchReaderNotes(
-      host: hostName,
-      cursor: replace ? null : _cursor,
-    );
-    _cursor = page.nextCursor;
-    final merged = replace ? page.notes : _mergeNotes(_notes, page.notes);
-    _notes = merged;
-    _fetchedAt = DateTime.now();
-    return SubstackNotesPage(notes: merged, nextCursor: page.nextCursor);
+  Future<void> retryLoadMore() => loadMore();
+
+  Future<void> _load({required bool more}) async {
+    final request = ++_generation;
+    final identity = _identity;
+    _activeIdentity = identity;
+    final host = more ? _host : _nextNotesHost();
+    final cursor = more ? _cursor : null;
+    _refreshing = !more;
+    _loadingMore = more;
+    if (more) {
+      _loadMoreError = null;
+    } else {
+      _refreshError = null;
+      _loadMoreError = null;
+    }
+    if (!more && _loadedIdentity != null && _loadedIdentity != identity) update(const SubstackNotesPage());
+    if (state.notes.isEmpty) {
+      setLoading(true);
+    } else {
+      update(state, force: true);
+    }
+    try {
+      final page = await client.fetchReaderNotes(host: host, cursor: cursor);
+      if (!_current(request, identity)) return;
+      if (!more) _cursors.clear();
+      if (cursor != null) _cursors.add(cursor);
+      final next = page.nextCursor?.trim();
+      _cursor = next == null || next.isEmpty || _cursors.contains(next) ? null : next;
+      _host = host;
+      _loadedIdentity = identity;
+      _fetchedAt = DateTime.now();
+      final notes = <String, SubstackNote>{};
+      for (final note in [if (more) ...state.notes, ...page.notes]) {
+        if (note.id.isNotEmpty) notes[note.id] = note;
+      }
+      update(SubstackNotesPage(notes: notes.values.toList(), nextCursor: _cursor));
+    } catch (error) {
+      if (!_current(request, identity)) return;
+      if (more) {
+        _loadMoreError = error;
+      } else {
+        _refreshError = error;
+      }
+      if (state.notes.isEmpty) {
+        setError(error);
+      } else {
+        update(state, force: true);
+      }
+    } finally {
+      if (!_closed && request == _generation) {
+        _refreshing = _loadingMore = false;
+        setLoading(false);
+        final failure = more ? _loadMoreError : _refreshError;
+        if (state.notes.isEmpty && failure != null) {
+          setError(failure, force: true);
+        } else {
+          update(state, force: true);
+        }
+      }
+    }
   }
 
-  /// Rotate among followed hosts so Notes discovery is not stuck on one pub.
+  bool _current(int request, String identity) => !_closed && request == _generation && identity == _identity;
+
   String? _nextNotesHost() {
     final pubs = publications.state;
     if (pubs.isEmpty) return null;
@@ -462,12 +633,11 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
     return host;
   }
 
-  List<SubstackNote> _mergeNotes(
-    List<SubstackNote> existing,
-    List<SubstackNote> incoming,
-  ) {
-    final seen = existing.map((e) => e.id).toSet();
-    return [...existing, ...incoming.where((e) => !seen.contains(e.id))];
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    _generation++;
+    return super.destroy();
   }
 }
 

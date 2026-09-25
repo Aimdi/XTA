@@ -11,7 +11,7 @@ String articleReadingBridge(ArticleReadingState state, {double textScale = 1}) =
   const root = document.querySelector('.content') || document.querySelector('article') || document.body;
   const selector = 'p,h1,h2,h3,h4,li,blockquote,figure,pre,table';
   const blocks = Array.from(root.querySelectorAll(selector)).filter(function(block) { return !block.querySelector(selector); });
-  let interacted = false, userScrolled = false, restoring = true, timer;
+  let interacted = false, userScrolled = false, restoring = true, jumped = false, timer;
   function maxScroll() { return Math.max(0, document.documentElement.scrollHeight - window.innerHeight); }
   function point() {
     let index = blocks.findIndex(function(b) { return b.getBoundingClientRect().bottom > 0; });
@@ -40,7 +40,13 @@ String articleReadingBridge(ArticleReadingState state, {double textScale = 1}) =
       document.body.style.lineHeight = spacing;
       requestAnimationFrame(function() { move(current); send(); });
     },
-    startOver: function() { interacted = true; userScrolled = false; window.scrollTo(0, 0); send(); }
+    startOver: function() { interacted = true; userScrolled = false; window.scrollTo(0, 0); send(); },
+    jumpTo: function(node) {
+      jumped = true; restoring = false; interacted = false; userScrolled = false;
+      observer.disconnect();
+      node.scrollIntoView({block: 'start', behavior: 'auto'});
+      send();
+    }
   };
   document.documentElement.style.fontSize = ${state.fontSize * textScale} + 'px';
   document.body.style.fontSize = ${state.fontSize * textScale} + 'px';
@@ -51,9 +57,9 @@ String articleReadingBridge(ArticleReadingState state, {double textScale = 1}) =
     if (interacted) userScrolled = true;
     clearTimeout(timer); timer = setTimeout(send, 200);
   }, {passive: true});
-  const observer = new ResizeObserver(function() { if (!interacted) move(saved); });
+  const observer = new ResizeObserver(function() { if (!interacted && !jumped) move(saved); });
   observer.observe(document.body);
-  requestAnimationFrame(function() { move(saved); restoring = false; send(); });
+  requestAnimationFrame(function() { if (!jumped) move(saved); restoring = false; send(); });
   setTimeout(function() { observer.disconnect(); }, 3000);
 })();
 ''';

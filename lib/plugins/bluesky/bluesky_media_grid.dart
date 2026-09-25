@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/bluesky/bluesky_content_warning.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_thread_screen.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
@@ -37,38 +38,31 @@ class BlueskyMediaTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final l10n = L10n.of(context);
+    final covered = post.sensitive || blueskyContentUnavailable(post);
+    final alt = post.mediaItems.firstOrNull?.alt?.trim();
+    final description = covered ? l10n.content_warning : (alt?.isNotEmpty == true ? alt! : l10n.media);
     return Semantics(
       button: true,
-      label: '${post.authorName} · ${post.sensitive ? l10n.content_warning : l10n.media}',
+      label: '${post.authorName} · $description',
       child: Material(
         clipBehavior: Clip.antiAlias,
         borderRadius: BorderRadius.circular(6),
         color: colors.surfaceContainerHighest,
         child: InkWell(
           key: ValueKey('bluesky-media-${post.uri}'),
-          onTap: post.sensitive ||
-                  (post.mediaItems.isNotEmpty && post.mediaItems.first.isVideo)
-              ? () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlueskyThreadScreen(post: post),
-                  ),
-                )
+          onTap: covered || (post.mediaItems.isNotEmpty && post.mediaItems.first.isVideo)
+              ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post)))
               : () => openPluginImageViewer(
                   context,
                   items: post.mediaItems,
                   sourceName: 'bluesky',
-                  onOpenPost: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlueskyThreadScreen(post: post),
-                    ),
-                  ),
+                  onOpenPost: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => BlueskyThreadScreen(post: post))),
                 ),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              if (post.sensitive)
+              if (covered)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.all(8),
@@ -78,7 +72,7 @@ class BlueskyMediaTile extends StatelessWidget {
                         const Icon(Icons.visibility_off_outlined),
                         const SizedBox(height: 6),
                         Text(
-                          l10n.content_warning,
+                          blueskyContentUnavailable(post) ? l10n.bluesky_content_unavailable : l10n.content_warning,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -94,15 +88,28 @@ class BlueskyMediaTile extends StatelessWidget {
                     post.images.first,
                     fit: BoxFit.cover,
                     cacheWidth: (constraints.maxWidth * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                    excludeFromSemantics: true,
                     loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed
                         ? Icon(Icons.broken_image_outlined, color: colors.onSurfaceVariant)
                         : null,
                   ),
                 ),
-              if (!post.sensitive && post.imageIsVideo.isNotEmpty && post.imageIsVideo.first)
+              if (!covered && post.imageIsVideo.isNotEmpty && post.imageIsVideo.first)
                 const Center(child: _MediaBadge(icon: Icons.play_arrow_rounded)),
               if (post.images.length > 1)
                 const PositionedDirectional(end: 6, top: 6, child: _MediaBadge(icon: Icons.collections_outlined)),
+              if (!covered && alt?.isNotEmpty == true)
+                PositionedDirectional(
+                  start: 6,
+                  bottom: 6,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                      child: Text(l10n.alt_text_badge, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

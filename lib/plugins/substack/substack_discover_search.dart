@@ -4,36 +4,30 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
-import 'package:xta/plugins/substack/substack_models.dart';
-import 'package:xta/ui/empty_pane.dart';
-import 'package:xta/ui/errors.dart';
+import 'package:xta/plugins/substack/substack_post_card.dart';
+import 'package:xta/plugins/substack/substack_search_store.dart';
 
-/// Substack publications for the Discover hub.
+/// The Discover hub shares the guarded publication and pasted-article search.
 class SubstackDiscoverSearch extends StatefulWidget {
   final String query;
-
   const SubstackDiscoverSearch({super.key, required this.query});
-
   @override
   State<SubstackDiscoverSearch> createState() => _SubstackDiscoverSearchState();
 }
 
 class _SubstackDiscoverSearchState extends State<SubstackDiscoverSearch> {
-  late final _SubstackDiscoverStore _store;
-
+  late final SubstackSearchStore _store;
   @override
   void initState() {
     super.initState();
-    _store = _SubstackDiscoverStore(context.read<SubstackClient>());
+    _store = SubstackSearchStore(context.read<SubstackClient>());
     _store.search(widget.query);
   }
 
   @override
   void didUpdateWidget(SubstackDiscoverSearch old) {
     super.didUpdateWidget(old);
-    if (old.query != widget.query) {
-      _store.search(widget.query);
-    }
+    if (old.query != widget.query) _store.search(widget.query);
   }
 
   @override
@@ -43,53 +37,44 @@ class _SubstackDiscoverSearchState extends State<SubstackDiscoverSearch> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
-    return ScopedBuilder<_SubstackDiscoverStore, List<SubstackPublication>>(
-      store: _store,
-      onLoading: (_) => const Center(child: CircularProgressIndicator()),
-      onError: (_, error) => FullPageErrorWidget(
-        error: error,
-        stackTrace: null,
-        prefix: l10n.unable_to_load_the_search_results,
-        onRetry: () => _store.search(widget.query),
-      ),
-      onState: (context, results) {
-        if (results.isEmpty) {
-          return EmptyPane(icon: Icons.search_off, message: l10n.no_results);
-        }
-        return ListView(
+  Widget build(BuildContext context) => ScopedBuilder<SubstackSearchStore, SubstackSearchState>(
+    store: _store,
+    onState: (context, state) {
+      final l10n = L10n.of(context);
+      return RefreshIndicator(
+        onRefresh: _store.refresh,
+        child: ListView(
           children: [
-            for (final publication in results)
-              ListTile(
-                title: Text(publication.name),
-                subtitle: Text(publication.subdomain),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        SubstackArchiveScreen(publication: publication),
-                  ),
+            if (state.loading) const LinearProgressIndicator(),
+            if (state.error != null)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    Text(l10n.plugin_substack_load_error),
+                    TextButton(onPressed: state.retryMore ? _store.loadMore : _store.refresh, child: Text(l10n.retry)),
+                  ],
                 ),
               ),
+            for (final publication in state.publications)
+              ListTile(
+                title: Text(publication.displayName),
+                subtitle: Text(publication.baseUrl),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: publication)),
+                ),
+              ),
+            for (final post in state.posts) SubstackPostCard(post: post),
+            if (!state.loading && state.error == null && state.publications.isEmpty && state.posts.isEmpty)
+              Padding(padding: const EdgeInsets.all(24), child: Text(l10n.no_results)),
+            if (state.loadingMore)
+              const Center(child: CircularProgressIndicator())
+            else if (state.hasMore)
+              TextButton(onPressed: _store.loadMore, child: Text(l10n.plugin_substack_load_more)),
           ],
-        );
-      },
-    );
-  }
-}
-
-class _SubstackDiscoverStore extends Store<List<SubstackPublication>> {
-  final SubstackClient client;
-
-  _SubstackDiscoverStore(this.client) : super(const []);
-
-  Future<void> search(String value) async {
-    final query = value.trim();
-    if (query.isEmpty) {
-      update(const []);
-      return;
-    }
-    await execute(() => client.discoverPublications(query));
-  }
+        ),
+      );
+    },
+  );
 }

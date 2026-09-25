@@ -53,80 +53,92 @@ class SubstackPostCard extends StatelessWidget {
     final date = post.publishedAt;
     final hasCover = post.coverImage != null && post.coverImage!.isNotEmpty;
 
-    return GestureDetector(onLongPress: () => showPluginLinkPostActions(context, source: 'substack',
-      url: post.canonicalUrl ?? '${post.publicationBaseUrl}/p/${post.slug}', author: post.authorName ?? post.publicationName,
-      text: [post.title, if (post.excerpt != null) post.excerpt!].join('\n'), images: [if (post.coverImage != null) post.coverImage!]), child: RepaintBoundary(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          tweetFlatCard(
-            color: Theme.of(context).cardColor,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _header(context, date, unread: unread),
-                      if (post.authorName?.isNotEmpty == true) ...[
-                        const SizedBox(height: 4),
-                        Text(post.authorName!, style: theme.textTheme.bodySmall),
-                      ],
-                      const SizedBox(height: 8),
-                      InkWell(
-                        onTap: () => _open(context),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              post.title,
-                              maxLines: hasCover ? 4 : 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.titleMedium!.copyWith(
-                                fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
-                                height: 1.25,
-                              ),
-                            ),
-                            if (post.excerpt != null) ...[
-                              const SizedBox(height: 6),
+    return GestureDetector(
+      onLongPress: () => showPluginLinkPostActions(
+        context,
+        source: 'substack',
+        url: post.canonicalUrl ?? '${post.publicationBaseUrl}/p/${post.slug}',
+        author: post.authorName ?? post.publicationName,
+        text: [post.title, if (post.excerpt != null) post.excerpt!].join('\n'),
+        images: [if (post.coverImage != null) post.coverImage!],
+      ),
+      child: RepaintBoundary(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            tweetFlatCard(
+              color: Theme.of(context).cardColor,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _header(context, date, unread: unread),
+                        if (post.authorName?.isNotEmpty == true) ...[
+                          const SizedBox(height: 4),
+                          Text(post.authorName!, style: theme.textTheme.bodySmall),
+                        ],
+                        const SizedBox(height: 8),
+                        InkWell(
+                          onTap: () => _open(context),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
                               Text(
-                                post.excerpt!,
-                                maxLines: hasCover ? 2 : 3,
+                                post.title,
+                                maxLines: hasCover ? 4 : 3,
                                 overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium!.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                  height: 1.35,
+                                style: theme.textTheme.titleMedium!.copyWith(
+                                  fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
+                                  height: 1.25,
                                 ),
                               ),
+                              if (post.excerpt != null) ...[
+                                const SizedBox(height: 6),
+                                Text(
+                                  post.excerpt!,
+                                  maxLines: hasCover ? 2 : 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodyMedium!.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    height: 1.35,
+                                  ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (hasCover)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: InkWell(onTap: () => _open(context), child: _cover(context)),
+                      ],
                     ),
                   ),
-                Padding(padding: const EdgeInsets.fromLTRB(8, 0, 8, 4), child: _counts(context)),
-              ],
+                  if (hasCover)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: InkWell(onTap: () => _open(context), child: _cover(context)),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                    child: _counts(context, unread: unread),
+                  ),
+                ],
+              ),
             ),
-          ),
-          tweetHairlineDivider(context),
-        ],
+            tweetHairlineDivider(context),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Widget _header(BuildContext context, DateTime? date, {required bool unread}) {
     final theme = Theme.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) > 1.4;
     final logo = logoUrl;
     final hasBadges = showSourceBadge || post.isPaywalled || post.isPodcast;
 
@@ -184,11 +196,16 @@ class SubstackPostCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                meta: date == null ? const [] : [createRelativeDate(date)],
+                meta: date == null || largeText ? const [] : [createRelativeDate(date)],
               ),
             ),
           ],
         ),
+        if (largeText && date != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text(createRelativeDate(date), style: theme.textTheme.bodySmall),
+          ),
         if (hasBadges) ...[
           const SizedBox(height: 6),
           Wrap(
@@ -206,7 +223,7 @@ class SubstackPostCard extends StatelessWidget {
     );
   }
 
-  Widget _counts(BuildContext context) {
+  Widget _counts(BuildContext context, {required bool unread}) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final likes = context.read<SubstackLikesStore>();
@@ -224,7 +241,8 @@ class SubstackPostCard extends StatelessWidget {
           store: saved,
           onState: (context, _) {
             final isSaved = saved.isSaved(post.id);
-            return Row(
+            return Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 LikeButton(
                   isLiked: isLiked,
@@ -246,12 +264,33 @@ class SubstackPostCard extends StatelessWidget {
                   () => saved.toggle(post),
                   L10n.of(context).saved,
                 ),
-                TextButton.icon(
-                  style: footerButtonStyle,
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackCommentsScreen(post: post))),
-                  icon: Icon(Icons.mode_comment_outlined, size: 20, color: muted),
-                  label: Text('$comments', style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+                Tooltip(
+                  message: L10n.of(context).plugin_substack_comments,
+                  child: TextButton.icon(
+                    style: footerButtonStyle,
+                    onPressed: () =>
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackCommentsScreen(post: post))),
+                    icon: Icon(Icons.mode_comment_outlined, size: 20, color: muted),
+                    label: Text('$comments', style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+                  ),
+                ),
+                IconButton(
+                  tooltip: unread
+                      ? L10n.of(context).plugin_substack_mark_read
+                      : L10n.of(context).plugin_substack_mark_unread,
+                  icon: Icon(
+                    unread ? Icons.mark_email_read_outlined : Icons.mark_email_unread_outlined,
+                    size: 20,
+                    color: muted,
+                  ),
+                  onPressed: () {
+                    final read = context.read<SubstackReadStore>();
+                    if (unread) {
+                      read.markRead(post.id);
+                    } else {
+                      read.markUnread(post.id);
+                    }
+                  },
                 ),
               ],
             );

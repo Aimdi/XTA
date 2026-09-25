@@ -13,8 +13,11 @@ class SubstackArticleCache {
   final FFCache _cache;
   static const _ttl = Duration(days: 14);
 
-  static String keyFor(SubstackPublication publication, String slug) =>
-      '${publication.id}::${slug.trim().toLowerCase()}';
+  static String keyFor(SubstackPublication publication, String slug) {
+    final base = Uri.tryParse(publication.baseUrl);
+    final origin = base != null && base.hasAuthority ? base.origin : publication.baseUrl;
+    return '$origin::${slug.trim()}';
+  }
 
   Future<SubstackPost?> get(SubstackPublication publication, String slug) async {
     try {
@@ -23,12 +26,13 @@ class SubstackArticleCache {
       if (raw is! String || raw.isEmpty) return null;
       final map = jsonDecode(raw);
       if (map is! Map) return null;
-      return SubstackPost.fromJson(
+      final post = SubstackPost.fromJson(
         Map<String, dynamic>.from(map),
         publicationBaseUrl: publication.baseUrl,
         publicationName: publication.name,
         includeBody: true,
       );
+      return post.slug == slug.trim() ? post : null;
     } catch (_) {
       return null;
     }

@@ -46,6 +46,10 @@ void main() {
     test('a post with an empty id opens nothing', () {
       expect(openablePost(_post(id: '')), isNull);
     });
+
+    test('a post with a blank id opens nothing', () {
+      expect(openablePost(_post(id: '  ')), isNull);
+    });
   });
 
   group('what tapping an author opens', () {
@@ -73,6 +77,18 @@ void main() {
 
     test('a different author on that same profile is still tappable', () {
       expect(openableProfile(_author(screenName: 'someone'), currentUsername: 'reader')?.screenName, 'someone');
+    });
+
+    test('handle case does not reopen the current profile', () {
+      expect(openableProfile(_author(screenName: 'Alice'), currentUsername: 'aLiCe'), isNull);
+    });
+
+    test('a handle suffix does not hide a different author', () {
+      expect(openableProfile(_author(screenName: 'malice'), currentUsername: 'alice')?.screenName, 'malice');
+    });
+
+    test('an empty current handle does not suppress all profiles', () {
+      expect(openableProfile(_author(screenName: 'alice'), currentUsername: '')?.screenName, 'alice');
     });
   });
 }

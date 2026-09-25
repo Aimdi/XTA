@@ -59,11 +59,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      # lib/generated and lib/oss_licenses.dart are gitignored, so analysis
-      # would drown in missing-import errors without generating them first.
+      # Localization and icon packs are gitignored and needed for analysis.
+      # The unused license generator is incompatible with Flutter 3.44.4.
       - name: Generate sources
         run: |
-          dart run dart_pubspec_licenses:generate
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
 
@@ -126,6 +125,56 @@ jobs:
           test/search_scope_test.dart
           test/search_chrome_test.dart
           test/search_results_entry_test.dart
+          test/search_users_lifetime_test.dart
+          test/advanced_search_test.dart
+          test/advanced_search_form_test.dart
+
+      - name: X reader regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          test/x_reader_hub_test.dart
+          test/tweet_footer_actions_test.dart
+          test/tweet_footer_semantics_test.dart
+          test/tweet_open_test.dart
+
+      - name: Mastodon reader regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          test/mastodon_timeline_controls_test.dart
+          test/mastodon_reader_metadata_test.dart
+          test/mastodon_feed_reliability_test.dart
+          test/mastodon_profile_reader_test.dart
+          test/mastodon_thread_reader_test.dart
+          test/mastodon_reading_cards_test.dart
+          test/mastodon_search_hashtag_test.dart
+          test/mastodon_reading_experience_test.dart
+          test/mastodon_content_warning_test.dart
+
+      - name: Bluesky reader regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          test/bluesky_protocol_regression_test.dart
+          test/bluesky_following_recovery_test.dart
+          test/bluesky_search_upgrade_test.dart
+          test/bluesky_feed_browser_test.dart
+          test/bluesky_profile_upgrade_test.dart
+          test/bluesky_conversation_controls_test.dart
+          test/bluesky_reader_controls_test.dart
+          test/bluesky_home_recovery_test.dart
+          test/bluesky_reading_layout_test.dart
+
+      - name: Substack reader regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          test/substack_protocol_regression_test.dart
+          test/substack_store_recovery_test.dart
+          test/substack_home_controls_test.dart
+          test/substack_search_upgrade_test.dart
+          test/substack_publication_reader_test.dart
+          test/substack_discussion_reader_test.dart
+          test/substack_article_navigation_test.dart
+          test/substack_article_navigation_layout_test.dart
+          test/substack_reader_recovery_test.dart
 
       - name: Discover regressions
         run: >-

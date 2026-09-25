@@ -10,6 +10,7 @@ import 'package:xta/plugins/bluesky/bluesky_feeds_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_reader_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_search_sheet.dart';
 import 'package:xta/plugins/bluesky/bluesky_settings.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
@@ -24,6 +25,7 @@ import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
 import 'package:xta/user.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
+import 'package:xta/plugins/plugin_session.dart';
 
 /// Account-free Bluesky reading: local follows, public AppView feeds.
 ///
@@ -55,8 +57,7 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
   String title(BuildContext context) => L10n.of(context).plugin_bluesky_title;
 
   @override
-  String description(BuildContext context) =>
-      L10n.of(context).plugin_bluesky_description;
+  String description(BuildContext context) => L10n.of(context).plugin_bluesky_description;
 
   @override
   NavigationPage homePage(BuildContext context) {
@@ -85,17 +86,13 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
   }
 
   @override
-  List<String> get tables => const [
-    tableBlueskySubscription,
-    tableBlueskyLocalLike,
-  ];
+  List<String> get tables => const [tableBlueskySubscription, tableBlueskyLocalLike];
 
   @override
   String get subscriptionTable => tableBlueskySubscription;
 
   @override
-  Subscription subscriptionFromMap(Map<String, Object?> row) =>
-      BlueskySubscription.fromMap(row);
+  Subscription subscriptionFromMap(Map<String, Object?> row) => BlueskySubscription.fromMap(row);
 
   @override
   bool owns(Subscription subscription) => subscription is BlueskySubscription;
@@ -114,25 +111,21 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
       () => BlueskyProfileScreen(actor: subscription.id);
 
   @override
-  Future<void> reloadFromDatabase(BuildContext context) =>
-      context.read<BlueskyAccountsStore>().load();
+  Future<void> reloadFromDatabase(BuildContext context) => context.read<BlueskyAccountsStore>().load();
 
   @override
   Future<void> unfollow(BuildContext context, Subscription subscription) =>
       context.read<BlueskyAccountsStore>().remove(subscription.id);
 
   @override
-  bool inHomeFeed(BuildContext context) =>
-      blueskyInHomeFeed(PrefService.of(context, listen: false));
+  bool inHomeFeed(BuildContext context) => blueskyInHomeFeed(PrefService.of(context, listen: false));
 
   @override
   List<String> homeFeedIds(BuildContext context) => blueskyHomeIds(context);
 
   @override
-  Future<List<InterleavedItem>> interleavedPosts(
-    BuildContext context,
-    List<String> ids,
-  ) => loadBlueskyInterleaved(context, ids);
+  Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids) =>
+      loadBlueskyInterleaved(context, ids);
 
   @override
   List<PluginBackupSection> get backupSections => [
@@ -158,15 +151,18 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginBlueskyPinnedFeeds, '[]');
     await prefs.set(optionPluginBlueskyPinnedLists, '[]');
     await prefs.set(optionPluginBlueskyHandle, '');
+    await prefs.set(blueskyReaderPreference, '');
   }
 
   @override
   Future<void> forgetLoadedData(BuildContext context) async {
+    final reader = context.read<PluginSessionStore?>()?.state['bluesky/reader'];
     final accounts = context.read<BlueskyAccountsStore>();
     final likes = context.read<BlueskyLikesStore>();
     final feed = context.read<BlueskyFeedStore>();
     final algos = context.read<BlueskyAlgoStore>();
     final lists = context.read<BlueskyListsStore>();
+    if (reader is BlueskyReaderStore) await reader.reset();
     await accounts.load();
     await likes.load();
     await feed.refresh(force: true);
