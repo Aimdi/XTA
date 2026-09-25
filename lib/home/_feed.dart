@@ -201,6 +201,10 @@ class _FeedScreenState extends State<FeedScreen> {
   FeedStripStore? _stripStore;
   HomeAccountFilterStore? _accountFilter;
   HomeGroupFilterStore? _groupFilter;
+  void Function()? _disposeTabObserver;
+  void Function()? _disposeStripObserver;
+  void Function()? _disposeAccountFilterObserver;
+  void Function()? _disposeGroupFilterObserver;
   Timer? _unreadReloadDebounce;
   bool _restoredMediaMode = false;
   bool _controlsUpdateQueued = false;
@@ -254,16 +258,18 @@ class _FeedScreenState extends State<FeedScreen> {
     }
     final store = context.read<FeedTabStore>();
     if (!identical(store, _tabStore)) {
+      _disposeTabObserver?.call();
       _tabStore = store;
       if (_tab == null) _view.selectSource(store.state.id);
-      store.observer(onState: _onFeedChosenElsewhere);
+      _disposeTabObserver = store.observer(onState: _onFeedChosenElsewhere);
     }
 
     final strip = context.read<FeedStripStore>();
     if (!identical(strip, _stripStore)) {
+      _disposeStripObserver?.call();
       _stripStore = strip;
       _lastStripPlugins = List<String>.from(strip.state);
-      strip.observer(onState: _onStripChanged);
+      _disposeStripObserver = strip.observer(onState: _onStripChanged);
       strip.seedEnabled();
       // Hidden-tab plugins used to live as Groups chips. Pin them here so
       // switching sites stays on the home strip.
@@ -272,22 +278,26 @@ class _FeedScreenState extends State<FeedScreen> {
 
     final filter = context.read<HomeAccountFilterStore>();
     if (!identical(filter, _accountFilter)) {
+      _disposeAccountFilterObserver?.call();
       _accountFilter = filter;
       _lastDisabledAccountIds = Set<String>.from(filter.state);
       // Settings → Accounts and the manage-accounts sheet both write here.
       // Remount For you whenever the set changes so a toggle on Following (or
       // in Settings) does not leave a KeepAlive'd For you showing spare accounts.
-      filter.observer(onState: _onHomeAccountFilterChanged);
+      _disposeAccountFilterObserver = filter.observer(onState: _onHomeAccountFilterChanged);
     }
 
     try {
       final groupFilter = context.read<HomeGroupFilterStore>();
       if (!identical(groupFilter, _groupFilter)) {
+        _disposeGroupFilterObserver?.call();
         _groupFilter = groupFilter;
         _lastDisabledGroupIds = Set<String>.from(groupFilter.state);
-        groupFilter.observer(onState: _onHomeGroupFilterChanged);
+        _disposeGroupFilterObserver = groupFilter.observer(onState: _onHomeGroupFilterChanged);
       }
     } on ProviderNotFoundException {
+      _disposeGroupFilterObserver?.call();
+      _disposeGroupFilterObserver = null;
       _groupFilter = null;
     }
   }
@@ -368,6 +378,10 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   void dispose() {
+    _disposeTabObserver?.call();
+    _disposeStripObserver?.call();
+    _disposeAccountFilterObserver?.call();
+    _disposeGroupFilterObserver?.call();
     widget.scrollController.removeListener(_queueControlsUpdate);
     _unreadReloadDebounce?.cancel();
     _filterReload?.cancel();

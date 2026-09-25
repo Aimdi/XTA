@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -25,6 +26,7 @@ class RedditAuth {
 
   static const _authorizeEndpoint = 'https://www.reddit.com/api/v1/authorize.compact';
   static const _tokenEndpoint = 'https://www.reddit.com/api/v1/access_token';
+  static const _tokenTimeout = Duration(seconds: 15);
 
   final http.Client httpClient;
 
@@ -85,6 +87,27 @@ class RedditAuth {
     want: 'access_token',
   );
 
+  Future<http.Response> _postToken(String clientId, Map<String, String> body) {
+    final abort = Completer<void>();
+    final request = http.AbortableRequest('POST', Uri.parse(_tokenEndpoint), abortTrigger: abort.future);
+    request.headers.addAll({
+      // An installed app has no secret, so the password half is empty.
+      'Authorization': 'Basic ${base64Encode(utf8.encode('${clientId.trim()}:'))}',
+      'User-Agent': RedditClient.userAgent,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+    request.body = body.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&');
+    // Include the response body and abort this request, keeping the shared
+    // client usable when a later token renewal or another reader retries.
+    return (() async => http.Response.fromStream(await httpClient.send(request)))().timeout(
+      _tokenTimeout,
+      onTimeout: () {
+        abort.complete();
+        throw TimeoutException('Reddit token request timed out', _tokenTimeout);
+      },
+    );
+  }
+
   Future<String> _tokenRequest({
     required String clientId,
     required Map<String, String> body,
@@ -96,16 +119,7 @@ class RedditAuth {
 
     late final http.Response response;
     try {
-      response = await httpClient.post(
-        Uri.parse(_tokenEndpoint),
-        headers: {
-          // An installed app has no secret, so the password half is empty.
-          'Authorization': 'Basic ${base64Encode(utf8.encode('${clientId.trim()}:'))}',
-          'User-Agent': RedditClient.userAgent,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: body.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&'),
-      );
+      response = await _postToken(clientId, body);
     } catch (e) {
       throw RedditException(RedditErrorKind.network, '$e');
     }

@@ -1,6 +1,7 @@
 import 'package:xta/utils/local_undo.dart';
 import 'dart:convert';
 
+import 'package:xta/utils/read_request_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -52,13 +53,24 @@ Future<Map<String, String?>> readGroupParents(DatabaseExecutor database) async {
 class GroupModel extends Store<SubscriptionGroupGet> {
   final String id;
   final BasePrefService? prefs;
+  final Future<SubscriptionGroupGet> Function()? reader;
+  final Duration readTimeout;
+  final _reads = ReadRequestScope();
+  int _generation = 0;
+  bool _closed = false;
 
   /// Other groups being read alongside this one, for as long as the reader
   /// wants them together. Their members join this group's feed; nothing about
   /// either group is changed.
   final Set<String> alsoRead;
 
-  GroupModel(this.id, {this.alsoRead = const {}, this.prefs})
+  GroupModel(
+    this.id, {
+    this.alsoRead = const {},
+    this.prefs,
+    this.reader,
+    this.readTimeout = const Duration(seconds: 15),
+  })
     : super(
         SubscriptionGroupGet(
           id: '',
@@ -74,14 +86,28 @@ class GroupModel extends Store<SubscriptionGroupGet> {
       );
 
   Future<void> loadGroup({bool showLoading = true}) async {
-    // Soft reloads (membership change while the feed is open) must not flip
-    // Triple into loading — ScopedBuilder.transition would swap the timeline
-    // for a skeleton and wipe scroll. First open still uses execute().
-    if (!showLoading) {
-      update(await _readGroup());
-      return;
+    if (_closed) return;
+    final generation = ++_generation;
+    _reads.cancel();
+    bool current() => !_closed && generation == _generation;
+    // Membership reloads keep the existing feed and its scroll position.
+    if (showLoading) setLoading(true);
+    try {
+      final group = await _reads.start(reader ?? _readGroup, timeout: readTimeout);
+      if (current()) update(group, force: true);
+    } catch (error) {
+      if (current() && (showLoading || state.id.isEmpty)) setError(error, force: true);
+    } finally {
+      if (current()) setLoading(false);
     }
-    await execute(_readGroup);
+  }
+
+  @override
+  Future destroy() {
+    _closed = true;
+    _generation++;
+    _reads.cancel();
+    return super.destroy();
   }
 
   Future<SubscriptionGroupGet> _readGroup() async {

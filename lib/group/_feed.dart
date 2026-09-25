@@ -197,7 +197,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// these cannot share one paginator with the X side. They are fetched once per
   /// mount and slotted among the chains by date.
   final _pluginFeed = ProgressiveFeedStore();
-  Future<void> _loadPluginPosts() async {
+  Future<void> _loadPluginPosts({bool refresh = true}) async {
     if (!mounted) return;
     final loaders = <String, SourceLoader>{};
     final keys = <String, String>{};
@@ -216,10 +216,8 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
       keys[id] = _pluginFeed.cache.key(id, ids);
       loaders[id] = () => source.interleavedPosts(context, ids);
     }
-    await _pluginFeed.load(loaders, keys);
+    await _pluginFeed.load(loaders, keys, refresh: refresh);
   }
-
-  Future<void> _reloadPluginSources(Iterable<SubscriptionSource> sources) => _loadPluginPosts();
 
   // Chronological feeds only: in popular order a "seen up to" boundary is
   // meaningless, and the media grid shares this loader but shows no divider.
@@ -525,7 +523,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     // again afterwards. Fetching them only in initState therefore asked for the
     // posts of an empty list and never asked again — which is why a group with
     // a subreddit in it stayed empty of Reddit posts however long you waited.
-    unawaited(_reloadPluginSources(sourcesNeedingReload(before: oldWidget.pluginMembers, after: widget.pluginMembers)));
+    unawaited(_loadPluginPosts(refresh: false));
 
     if (oldWidget.includeReplies != widget.includeReplies ||
         oldWidget.includeRetweets != widget.includeRetweets ||

@@ -31,7 +31,7 @@ class NetworkStateChannel(context: Context, messenger: BinaryMessenger) : EventC
         if (network == lastNetwork && validated == lastValidated) return
         lastNetwork = network
         lastValidated = validated
-        sink?.success(validated)
+        sink?.success(mapOf("online" to validated, "networkId" to network?.toString()))
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink) {

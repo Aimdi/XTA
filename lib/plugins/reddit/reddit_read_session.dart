@@ -50,10 +50,10 @@ class RedditReadSession {
         preferPublic: false,
         userToken: token,
       );
-    } on RedditException {
-      // Reddit no longer accepts this refresh token — drop it so every path
-      // falls back the same way instead of retrying a dead session.
-      await prefs.set(optionPluginRedditRefreshToken, '');
+    } on RedditException catch (error) {
+      if (error.kind == RedditErrorKind.unauthorized) {
+        await prefs.set(optionPluginRedditRefreshToken, '');
+      }
       return RedditReadSession(clientId: clientId, preferPublic: false);
     }
   }

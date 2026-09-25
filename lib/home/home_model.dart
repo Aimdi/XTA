@@ -22,13 +22,20 @@ class HomePage {
 class HomeModel extends Store<List<HomePage>> {
   final BasePrefService prefs;
   final GroupsModel groupsModel;
+  late final void Function() _disposeGroupsObserver;
 
   HomeModel(this.prefs, this.groupsModel) : super([]) {
-    groupsModel.observer(
+    _disposeGroupsObserver = groupsModel.observer(
       onState: (state) async {
         await loadPages();
       },
     );
+  }
+
+  @override
+  Future destroy() {
+    _disposeGroupsObserver();
+    return super.destroy();
   }
 
   Future<void> resetPages() async {
