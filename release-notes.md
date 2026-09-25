@@ -4,6 +4,26 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi142
+
+Makes Substack Home and Inbox easier to read after feedback that the controls
+crowded the feed.
+
+- Replace the publication avatar strip, permanent search field, and filter row
+  with one compact toolbar.
+- Open followed publications by name, with unread and pinned indicators.
+- Keep loaded-article search, sorting, and content filters in an on-demand sheet,
+  with active-setting indicators and reset.
+- Move Discover, Add publication, and Mark all as read into the overflow menu.
+- Show partial loading failures as a compact warning with details and Retry.
+
+Includes the long-session loading fixes from aimdi141. The original intermittent
+freeze still needs extended testing on the device.
+
+For most Android phones, use **`xta-aimdi142_arm64-v8a.apk`**. Base version code
+**400001146** is above every aimdi141 variant. The application ID and release
+signing certificate remain unchanged for in-place updates.
+
 ### aimdi141
 
 Includes the long-session loading fixes from PR #295 for on-device testing.
