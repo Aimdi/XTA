@@ -107,12 +107,19 @@ class MastodonFixtureClient extends MastodonClient {
           url: 'https://studio.example/@new',
         );
   @override
-  Future<({MastodonProfile profile, List<MastodonPost> posts, Set<String> pinnedIds, String instance})> profileAnywhere(
-    List<String> instances,
-    String acct,
-  ) async => (
+  Future<
+    ({
+      MastodonProfile profile,
+      List<MastodonPost> posts,
+      List<MastodonPost> rawPosts,
+      Set<String> pinnedIds,
+      String instance,
+    })
+  >
+  profileAnywhere(List<String> instances, String acct) async => (
     profile: sampleProfile,
     posts: samplePosts.take(3).toList(),
+    rawPosts: samplePosts.take(3).toList(),
     pinnedIds: <String>{},
     instance: 'https://studio.example',
   );

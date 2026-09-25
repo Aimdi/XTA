@@ -36,8 +36,7 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final arguments =
-        ModalRoute.of(context)!.settings.arguments as SearchArguments;
+    final arguments = ModalRoute.of(context)!.settings.arguments as SearchArguments;
 
     return _ResultsScreen(
       initialTab: arguments.initialTab,
@@ -52,18 +51,13 @@ class _ResultsScreen extends StatefulWidget {
   final String? query;
   final bool focusInputOnOpen;
 
-  const _ResultsScreen({
-    required this.initialTab,
-    this.query,
-    this.focusInputOnOpen = false,
-  });
+  const _ResultsScreen({required this.initialTab, this.query, this.focusInputOnOpen = false});
 
   @override
   State<_ResultsScreen> createState() => _ResultsScreenState();
 }
 
-class _ResultsScreenState extends State<_ResultsScreen>
-    with SingleTickerProviderStateMixin {
+class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _queryController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
@@ -84,11 +78,8 @@ class _ResultsScreenState extends State<_ResultsScreen>
   void initState() {
     super.initState();
     final initialQuery = (widget.query ?? '').trim();
-    _tabController = TabController(
-      length: 4,
-      vsync: this,
-      initialIndex: widget.initialTab,
-    )..addListener(_applyPendingQuery);
+    _tabController = TabController(length: 4, vsync: this, initialIndex: widget.initialTab)
+      ..addListener(_applyPendingQuery);
     _viewStore = SearchViewStore(initialQuery: initialQuery);
     _topTweets = SearchTweetsPagination(product: 'Top');
     _latestTweets = SearchTweetsPagination(product: 'Latest');
@@ -107,9 +98,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
     if (widget.focusInputOnOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        _queryController.selection = TextSelection.collapsed(
-          offset: _queryController.text.length,
-        );
+        _queryController.selection = TextSelection.collapsed(offset: _queryController.text.length);
         _focusNode.requestFocus();
       });
     }
@@ -146,6 +135,9 @@ class _ResultsScreenState extends State<_ResultsScreen>
     _viewStore.commitQuery(query);
     _pendingQuery = query;
     _appliedTo.clear();
+    if (_tabController.index != 3) {
+      unawaited(_searchUsersModel.searchUsers(''));
+    }
     _applyPendingQuery();
     if (submitted != null) {
       if (query.isNotEmpty) {
@@ -193,15 +185,10 @@ class _ResultsScreenState extends State<_ResultsScreen>
   }
 
   Future<void> _openAdvancedSearch(AdvancedSearchState current) async {
-    final initial = current.activeFilters.isEmpty
-        ? AdvancedSearchState.fromQuery(_queryController.text)
-        : current;
+    final initial = current.activeFilters.isEmpty ? AdvancedSearchState.fromQuery(_queryController.text) : current;
     final result = await Navigator.push<AdvancedSearchState>(
       context,
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (_) => AdvancedSearchScreen(initialState: initial),
-      ),
+      MaterialPageRoute(fullscreenDialog: true, builder: (_) => AdvancedSearchScreen(initialState: initial)),
     );
     if (!mounted || result == null) return;
     _viewStore.applyAdvanced(result);
@@ -236,9 +223,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
         tooltip: L10n.of(context).reader_search_all,
         onPressed: () => Navigator.push(
           context,
-          MaterialPageRoute<void>(
-            builder: (_) => ReaderSearchScreen(initialQuery: state.query),
-          ),
+          MaterialPageRoute<void>(builder: (_) => ReaderSearchScreen(initialQuery: state.query)),
         ),
       ),
       IconButton(
@@ -255,25 +240,23 @@ class _ResultsScreenState extends State<_ResultsScreen>
   }
 
   List<Widget> _filterChips(AdvancedSearchState advanced) {
-    return advanced.activeFilters.map((filter) {
-      final label = advancedFilterLabel(context, filter);
-      final value = advanced.valueOf(filter);
-      return SearchActiveFilterChip(
-        label: value.isEmpty ? label : '$label: $value',
-        onDeleted: () => _clearFilter(filter),
-      );
-    }).toList(growable: false);
+    return advanced.activeFilters
+        .map((filter) {
+          final label = advancedFilterLabel(context, filter);
+          final value = advanced.valueOf(filter);
+          return SearchActiveFilterChip(
+            label: value.isEmpty ? label : '$label: $value',
+            onDeleted: () => _clearFilter(filter),
+          );
+        })
+        .toList(growable: false);
   }
 
   Widget _results(SearchViewState state) {
     if (!state.hasQuery) {
       return Column(
         children: [
-          RecentSearchesBar(
-            store: _history,
-            scope: searchScopeX,
-            onSelected: _recent,
-          ),
+          RecentSearchesBar(store: _history, scope: searchScopeX, onSelected: _recent),
           const Expanded(child: SearchStartState()),
         ],
       );
@@ -284,10 +267,7 @@ class _ResultsScreenState extends State<_ResultsScreen>
           animateSize: true,
           child: state.advanced.activeFilters.isEmpty
               ? const SizedBox.shrink(key: ValueKey('search-filters-empty'))
-              : SearchFilterStrip(
-                  key: const ValueKey('search-filters-active'),
-                  chips: _filterChips(state.advanced),
-                ),
+              : SearchFilterStrip(key: const ValueKey('search-filters-active'), chips: _filterChips(state.advanced)),
         ),
         Expanded(
           child: TabBarView(
@@ -319,36 +299,53 @@ class _ResultsScreenState extends State<_ResultsScreen>
     );
   }
 
+  PreferredSizeWidget _searchHeader(SearchViewState state) {
+    final l10n = L10n.of(context);
+    final enlargedText = MediaQuery.textScalerOf(context).scale(1) >= 1.3;
+    final separateField = MediaQuery.sizeOf(context).width < 600 || enlargedText;
+    final tabs = SearchResultsTabBar(
+      controller: _tabController,
+      tabs: [
+        Tab(text: l10n.popular),
+        Tab(text: l10n.recent),
+        Tab(text: l10n.media),
+        Tab(text: l10n.account),
+      ],
+    );
+    final fieldHeight = enlargedText ? kSearchLargeTextFieldHeight : kSearchFieldHeight;
+    return AppBar(
+      toolbarHeight: enlargedText ? 72 : 64,
+      leading: BackButton(onPressed: () => Navigator.pop(context)),
+      titleSpacing: 0,
+      title: separateField
+          ? Text(l10n.search_in_plugin(l10n.source_x), maxLines: 1, overflow: TextOverflow.ellipsis)
+          : _searchField(state),
+      actions: _queryActions(state),
+      bottom: separateField
+          ? PreferredSize(
+              preferredSize: Size.fromHeight(fieldHeight + kTweetSpace2 * 2 + tabs.preferredSize.height),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding, vertical: kTweetSpace2),
+                    child: _searchField(state),
+                  ),
+                  tabs,
+                ],
+              ),
+            )
+          : tabs,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     return ScopedBuilder<SearchViewStore, SearchViewState>(
       store: _viewStore,
       onState: (_, state) => SearchSystemBars(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          appBar: AppBar(
-            toolbarHeight: MediaQuery.textScalerOf(context).scale(1) >= 1.3
-                ? 72
-                : 64,
-            leading: IconButton(
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-            titleSpacing: 0,
-            title: _searchField(state),
-            actions: _queryActions(state),
-            bottom: SearchResultsTabBar(
-              controller: _tabController,
-              tabs: [
-                Tab(text: l10n.popular),
-                Tab(text: l10n.recent),
-                Tab(text: l10n.media),
-                Tab(text: l10n.account),
-              ],
-            ),
-          ),
+          appBar: _searchHeader(state),
           body: TweetContextScope(child: _results(state)),
         ),
       ),
@@ -375,16 +372,11 @@ class _UserSearchResultList extends StatelessWidget {
       ),
       onState: (_, items) {
         if (items.isEmpty) {
-          return ProfileEmptyState(
-            icon: Icons.person_search,
-            message: L10n.of(context).no_results,
-          );
+          return ProfileEmptyState(icon: Icons.person_search, message: L10n.of(context).no_results);
         }
         return ListView.separated(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.paddingOf(context).bottom,
-          ),
+          padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom),
           itemCount: items.length,
           separatorBuilder: (context, index) => Padding(
             padding: const EdgeInsetsDirectional.only(
@@ -392,8 +384,7 @@ class _UserSearchResultList extends StatelessWidget {
             ),
             child: tweetHairlineDivider(context),
           ),
-          itemBuilder: (context, index) =>
-              UserTile(user: UserSubscription.fromUser(items[index])),
+          itemBuilder: (context, index) => UserTile(user: UserSubscription.fromUser(items[index])),
         );
       },
     );

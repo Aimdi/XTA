@@ -3,24 +3,19 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
-import 'package:xta/plugins/bluesky/bluesky_feed.dart';
 import 'package:xta/plugins/bluesky/bluesky_feeds_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_import_list_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
 import 'package:xta/plugins/bluesky/bluesky_profile_screen.dart';
+import 'package:xta/plugins/bluesky/bluesky_source_reader.dart';
 import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
-import 'package:xta/ui/empty_pane.dart';
-import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
 
-/// Discover / custom-feed tab. Loads once; tab switches reuse the cache.
 class BlueskyAlgoPane extends StatefulWidget {
   final ScrollController scrollController;
-
   const BlueskyAlgoPane({super.key, required this.scrollController});
-
   @override
   State<BlueskyAlgoPane> createState() => _BlueskyAlgoPaneState();
 }
@@ -30,46 +25,35 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      context.read<BlueskyAlgoStore>().ensureLoaded(discoverName: L10n.of(context).plugin_bluesky_discover);
+      if (mounted) _load();
     });
   }
 
-  Future<void> _refresh() => context.read<BlueskyAlgoStore>().ensureLoaded(
-    force: true,
+  Future<void> _load({bool force = false}) => context.read<BlueskyAlgoStore>().ensureLoaded(
+    force: force,
     discoverName: L10n.of(context).plugin_bluesky_discover,
   );
 
   Future<void> _openFeed() async {
-    final raw = await _prompt(
-      context,
-      title: L10n.of(context).plugin_bluesky_open_feed,
-      hint: L10n.of(context).plugin_bluesky_feed_hint,
-    );
-    if (raw == null || !mounted) {
-      return;
-    }
+    final l10n = L10n.of(context);
+    final raw = await _prompt(context, title: l10n.plugin_bluesky_open_feed, hint: l10n.plugin_bluesky_feed_hint);
+    if (raw == null || !mounted) return;
     final ref = parseBlueskyFeedRef(raw);
-    if (ref == null) {
-      _snack(L10n.of(context).plugin_bluesky_invalid_feed);
-      return;
-    }
+    if (ref == null) return _snack(context, l10n.plugin_bluesky_invalid_feed);
     final store = context.read<BlueskyAlgoStore>();
+    final client = context.read<BlueskyClient>();
     try {
-      final uri = await context.read<BlueskyClient>().resolveFeedUri(ref);
-      await store.open(uri);
-    } catch (e) {
-      if (mounted) {
-        _snack(blueskyErrorMessage(L10n.of(context), e));
-      }
+      final uri = await client.resolveFeedUri(ref);
+      if (mounted) await store.open(uri);
+    } catch (error) {
+      if (mounted) _snack(context, blueskyErrorMessage(l10n, error));
     }
   }
 
-  void _snack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-  }
+  void _browse() => Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => BlueskyFeedCatalogScreen(store: context.read<BlueskyAlgoStore>())),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -77,133 +61,57 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
     final store = context.read<BlueskyAlgoStore>();
     return ScopedBuilder<BlueskyAlgoStore, BlueskyAlgoState>(
       store: store,
-      distinct: (state) =>
-          '${state.selectedUri}\n${blueskyFeedDistinct(state.posts)}\n${state.pinned.length}\n${state.popular.length}',
-      onLoading: (_) {
-        if (store.state.posts.isNotEmpty || store.state.selectedUri != null) {
-          return _body(context, l10n, store, store.state);
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
-      onError: (context, error) {
-        if (store.state.posts.isNotEmpty) {
-          return _body(context, l10n, store, store.state);
-        }
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: blueskyErrorMessage(l10n, error ?? Exception()),
-            onRetry: _refresh,
+      onState: (_, state) {
+        final selected = _selectedGenerator(state, l10n);
+        return _SourceTimeline(
+          scrollController: widget.scrollController,
+          page: state.page,
+          onRefresh: () => _load(force: true),
+          onMore: store.loadMore,
+          onRetry: () => store.open(state.selectedUri ?? kBlueskyDiscoverFeedUri, force: true),
+          header: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ChipStrip(
+                chips: _algoChips(l10n, state),
+                onTap: (uri) =>
+                    store.open(uri, name: uri == kBlueskyDiscoverFeedUri ? l10n.plugin_bluesky_discover : null),
+              ),
+              _selectedHeader(
+                context,
+                title: selected.displayName,
+                description: selected.description,
+                creator: selected.creatorHandle,
+                pinned: state.isPinned(selected.uri),
+                onOpen: _openFeed,
+                openLabel: l10n.plugin_bluesky_open_feed,
+                onPinToggle: () => _runPin(
+                  context,
+                  () => state.isPinned(selected.uri) ? store.unpin(selected.uri) : store.pin(selected),
+                ),
+                extra: TextButton.icon(
+                  onPressed: _browse,
+                  icon: const Icon(Icons.manage_search),
+                  label: Text(l10n.plugin_bluesky_find_feeds),
+                ),
+              ),
+              if (state.catalogError != null || state.createdError != null)
+                _FeedFailure(
+                  error: state.catalogError ?? state.createdError!,
+                  onRetry: () => store.loadCatalog(force: true),
+                ),
+            ],
           ),
+          emptyMessage: l10n.plugin_bluesky_feed_empty,
         );
       },
-      onState: (context, state) => _body(context, l10n, store, state),
     );
-  }
-
-  Widget _body(BuildContext context, L10n l10n, BlueskyAlgoStore store, BlueskyAlgoState state) {
-    final chips = _algoChips(l10n, state);
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (state.hasMore && notification.metrics.pixels >= notification.metrics.maxScrollExtent - 400) {
-          store.loadMore();
-        }
-        return false;
-      },
-      child: RefreshIndicator(
-        onRefresh: _refresh,
-        child: state.posts.isEmpty
-            ? EmptyPane(
-                icon: Icons.auto_awesome_outlined,
-                message: l10n.plugin_bluesky_feeds_empty,
-                scrollController: widget.scrollController,
-                onRefresh: _refresh,
-                leading: _chipStrip(chips),
-                action: TextButton.icon(
-                  onPressed: _openFeed,
-                  icon: const Icon(Icons.link),
-                  label: Text(l10n.plugin_bluesky_open_feed),
-                ),
-              )
-            : FeedListView(
-                controller: pluginInnerScrollController(context, widget.scrollController),
-                padding: pluginFeedPadding(context),
-                itemCount: state.posts.length + 2,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _chipStrip(chips);
-                  }
-                  if (index == 1) {
-                    return _selectedHeader(
-                      context,
-                      title: state.selectedName.isEmpty ? l10n.plugin_bluesky_discover : state.selectedName,
-                      pinned: state.selectedUri != null && state.isPinned(state.selectedUri!),
-                      onOpen: _openFeed,
-                      openLabel: l10n.plugin_bluesky_open_feed,
-                      onPinToggle: () {
-                        final uri = state.selectedUri;
-                        if (uri == null) {
-                          return;
-                        }
-                        if (state.isPinned(uri)) {
-                          store.unpin(uri);
-                        } else {
-                          store.pin(_selectedGenerator(state, l10n));
-                        }
-                      },
-                    );
-                  }
-                  final post = state.posts[index - 2];
-                  return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
-                },
-              ),
-      ),
-    );
-  }
-
-  List<_FeedChip> _algoChips(L10n l10n, BlueskyAlgoState state) {
-    final seen = <String>{};
-    final chips = <_FeedChip>[];
-    void add(String uri, String label) {
-      if (uri.isEmpty || !seen.add(uri)) {
-        return;
-      }
-      chips.add(
-        _FeedChip(
-          uri: uri,
-          label: label,
-          selected: state.selectedUri == uri || (state.selectedUri == null && uri == kBlueskyDiscoverFeedUri),
-        ),
-      );
-    }
-
-    add(kBlueskyDiscoverFeedUri, l10n.plugin_bluesky_discover);
-    for (final feed in state.pinned) {
-      add(feed.uri, feed.displayName);
-    }
-    for (final feed in state.created) {
-      add(feed.uri, feed.displayName);
-    }
-    for (final feed in state.popular) {
-      add(feed.uri, feed.displayName);
-    }
-    return chips;
-  }
-
-  Widget _chipStrip(List<_FeedChip> chips) {
-    final store = context.read<BlueskyAlgoStore>();
-    return _ChipStrip(chips: chips, onTap: (uri) => store.open(uri));
   }
 }
 
-/// Lists tab: pinned lists, lookup by handle, and that list's posts.
 class BlueskyListsPane extends StatefulWidget {
   final ScrollController scrollController;
-
   const BlueskyListsPane({super.key, required this.scrollController});
-
   @override
   State<BlueskyListsPane> createState() => _BlueskyListsPaneState();
 }
@@ -213,13 +121,9 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<BlueskyListsStore>().ensureLoaded();
-      }
+      if (mounted) context.read<BlueskyListsStore>().ensureLoaded();
     });
   }
-
-  Future<void> _refresh() => context.read<BlueskyListsStore>().ensureLoaded(force: true);
 
   Future<void> _lookup() async {
     final l10n = L10n.of(context);
@@ -228,33 +132,22 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
       title: l10n.plugin_bluesky_lookup_lists,
       hint: l10n.plugin_bluesky_import_list_hint,
     );
-    if (raw == null || !mounted) {
-      return;
-    }
+    if (raw == null || !mounted) return;
     final store = context.read<BlueskyListsStore>();
     final client = context.read<BlueskyClient>();
-    final listRef = parseBlueskyListRef(raw);
     try {
-      if (listRef != null) {
-        final uri = await client.resolveListUri(listRef);
-        await store.open(uri);
-        return;
+      final ref = parseBlueskyListRef(raw);
+      if (ref != null) {
+        final uri = await client.resolveListUri(ref);
+        if (mounted) await store.open(uri);
+      } else {
+        final handle = normaliseBlueskyHandle(raw);
+        if (handle == null) return _snack(context, l10n.plugin_bluesky_invalid_list);
+        await store.lookupActor(handle);
       }
-      final handle = normaliseBlueskyHandle(raw);
-      if (handle == null) {
-        _snack(l10n.plugin_bluesky_invalid_list);
-        return;
-      }
-      await store.lookupActor(handle);
-    } catch (e) {
-      if (mounted) {
-        _snack(blueskyErrorMessage(l10n, e));
-      }
+    } catch (error) {
+      if (mounted) _snack(context, blueskyErrorMessage(l10n, error));
     }
-  }
-
-  void _snack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -263,172 +156,351 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
     final store = context.read<BlueskyListsStore>();
     return ScopedBuilder<BlueskyListsStore, BlueskyListsState>(
       store: store,
-      distinct: (state) =>
-          '${state.selectedUri}\n${blueskyFeedDistinct(state.posts)}\n${state.pinned.length}\n${state.actorLists.length}',
-      onLoading: (_) {
-        if (store.state.posts.isNotEmpty || store.state.pinned.isNotEmpty || store.state.actorLists.isNotEmpty) {
-          return _body(context, l10n, store, store.state);
+      onState: (_, state) {
+        final lists = <String, BlueskyListInfo>{};
+        for (final list in [...state.pinned, ...state.actorLists]) {
+          lists.putIfAbsent(list.uri, () => list);
         }
-        return const Center(child: CircularProgressIndicator());
-      },
-      onError: (context, error) {
-        if (store.state.posts.isNotEmpty) {
-          return _body(context, l10n, store, store.state);
-        }
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: FullPageErrorWidget(
-            error: error,
-            stackTrace: null,
-            prefix: blueskyErrorMessage(l10n, error ?? Exception()),
-            onRetry: _refresh,
-          ),
-        );
-      },
-      onState: (context, state) => _body(context, l10n, store, state),
-    );
-  }
-
-  Widget _body(BuildContext context, L10n l10n, BlueskyListsStore store, BlueskyListsState state) {
-    final chips = [
-      for (final list in [...state.pinned, ...state.actorLists])
-        _FeedChip(
-          uri: list.uri,
-          label: list.name.isEmpty ? (blueskyRkeyOf(list.uri) ?? list.uri) : list.name,
-          selected: state.selectedUri == list.uri,
-        ),
-    ];
-    final seen = <String>{};
-    final unique = [
-      for (final chip in chips)
-        if (seen.add(chip.uri)) chip,
-    ];
-
-    return NotificationListener<ScrollNotification>(
-      onNotification: (notification) {
-        if (state.hasMore && notification.metrics.pixels >= notification.metrics.maxScrollExtent - 400) {
-          store.loadMore();
-        }
-        return false;
-      },
-      child: RefreshIndicator(
-        onRefresh: _refresh,
-        child: state.posts.isEmpty
-            ? EmptyPane(
-                icon: Icons.list_alt_outlined,
-                message: l10n.plugin_bluesky_lists_empty,
-                scrollController: widget.scrollController,
-                onRefresh: _refresh,
-                leading: unique.isEmpty ? null : _ChipStrip(chips: unique, onTap: (uri) => store.open(uri)),
-                action: Column(
-                  children: [
-                    FilledButton.icon(
-                      onPressed: _lookup,
-                      icon: const Icon(Icons.search),
-                      label: Text(l10n.plugin_bluesky_lookup_lists),
-                    ),
-                    if (state.selectedUri != null) ...[
-                      const SizedBox(height: 8),
-                      TextButton.icon(
+        final selected =
+            lists[state.selectedUri] ?? BlueskyListInfo(uri: state.selectedUri ?? '', name: state.selectedName);
+        return _SourceTimeline(
+          scrollController: widget.scrollController,
+          page: state.page,
+          onRefresh: () => store.ensureLoaded(force: true),
+          onMore: store.loadMore,
+          onRetry: () =>
+              state.selectedUri == null ? store.ensureLoaded(force: true) : store.open(state.selectedUri!, force: true),
+          header: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _ChipStrip(
+                chips: [
+                  for (final list in lists.values)
+                    _FeedChip(uri: list.uri, label: list.name, selected: state.selectedUri == list.uri),
+                ],
+                onTap: (uri) => store.open(uri),
+              ),
+              if (state.listsLoading) const LinearProgressIndicator(),
+              if (state.listsError != null)
+                _FeedFailure(error: state.listsError!, onRetry: () => store.lookupActor(state.actor)),
+              if (state.listsLoaded && state.actorLists.isEmpty)
+                Padding(padding: const EdgeInsets.all(16), child: Text(l10n.plugin_bluesky_no_lists_found)),
+              if (state.listsCursor != null)
+                TextButton(
+                  onPressed: state.listsLoading ? null : store.loadMoreLists,
+                  child: Text(l10n.plugin_bluesky_load_more),
+                ),
+              _selectedHeader(
+                context,
+                title: selected.name.isEmpty ? l10n.plugin_bluesky_lists : selected.name,
+                description: selected.description,
+                creator: selected.creatorHandle,
+                pinned: state.isPinned(selected.uri),
+                onOpen: _lookup,
+                openLabel: l10n.plugin_bluesky_lookup_lists,
+                onPinToggle: selected.uri.isEmpty
+                    ? null
+                    : () => _runPin(
+                        context,
+                        () => state.isPinned(selected.uri) ? store.unpin(selected.uri) : store.pin(selected),
+                      ),
+                extra: selected.uri.isEmpty
+                    ? null
+                    : TextButton.icon(
                         onPressed: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => BlueskyImportListScreen(initialList: state.selectedUri)),
+                          MaterialPageRoute(builder: (_) => BlueskyImportListScreen(initialList: selected.uri)),
                         ),
                         icon: const Icon(Icons.cloud_download_outlined),
                         label: Text(l10n.plugin_bluesky_import_list),
                       ),
-                    ],
-                  ],
-                ),
-              )
-            : FeedListView(
-                controller: pluginInnerScrollController(context, widget.scrollController),
-                padding: pluginFeedPadding(context),
-                itemCount: state.posts.length + 2,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _ChipStrip(chips: unique, onTap: (uri) => store.open(uri));
-                  }
-                  if (index == 1) {
-                    return _selectedHeader(
-                      context,
-                      title: state.selectedName,
-                      pinned: state.selectedUri != null && state.isPinned(state.selectedUri!),
-                      onOpen: _lookup,
-                      openLabel: l10n.plugin_bluesky_lookup_lists,
-                      onPinToggle: () {
-                        final uri = state.selectedUri;
-                        if (uri == null) {
-                          return;
-                        }
-                        if (state.isPinned(uri)) {
-                          store.unpin(uri);
-                        } else {
-                          store.pin(BlueskyListInfo(uri: uri, name: state.selectedName));
-                        }
-                      },
-                      extra: TextButton(
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => BlueskyImportListScreen(initialList: state.selectedUri)),
-                        ),
-                        child: Text(l10n.plugin_bluesky_import_list),
-                      ),
-                    );
-                  }
-                  final post = state.posts[index - 2];
-                  return BlueskyPostCard(key: ValueKey('list-${post.uri}'), post: post, showSourceBadge: false);
-                },
               ),
+            ],
+          ),
+          emptyMessage: state.selectedUri == null ? l10n.plugin_bluesky_lists_empty : l10n.plugin_bluesky_feed_empty,
+        );
+      },
+    );
+  }
+}
+
+class _SourceTimeline extends StatelessWidget {
+  final ScrollController scrollController;
+  final BlueskySourcePage page;
+  final Widget header;
+  final String emptyMessage;
+  final Future<void> Function() onRefresh;
+  final Future<void> Function() onRetry;
+  final Future<void> Function() onMore;
+  const _SourceTimeline({
+    required this.scrollController,
+    required this.page,
+    required this.header,
+    required this.emptyMessage,
+    required this.onRefresh,
+    required this.onRetry,
+    required this.onMore,
+  });
+
+  @override
+  Widget build(BuildContext context) => NotificationListener<ScrollNotification>(
+    onNotification: (notification) {
+      if (notification.depth == 0 &&
+          notification.metrics.axis == Axis.vertical &&
+          page.hasMore &&
+          page.moreError == null &&
+          notification.metrics.pixels > 0 &&
+          notification.metrics.extentAfter < 400) {
+        onMore();
+      }
+      return false;
+    },
+    child: RefreshIndicator(
+      onRefresh: onRefresh,
+      child: FeedListView(
+        controller: pluginInnerScrollController(context, scrollController),
+        padding: pluginFeedPadding(context),
+        itemCount: page.posts.length + 3,
+        itemBuilder: (context, index) {
+          if (index == 0) return header;
+          if (index == 1) {
+            return Column(
+              children: [
+                if (page.loading) const LinearProgressIndicator(),
+                if (page.error != null) _FeedFailure(error: page.error!, onRetry: onRetry),
+                if (!page.loading && page.error == null && page.posts.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(emptyMessage, textAlign: TextAlign.center),
+                  ),
+              ],
+            );
+          }
+          if (index == page.posts.length + 2) return _SourceFooter(page: page, onMore: onMore);
+          final post = page.posts[index - 2];
+          return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
+        },
+      ),
+    ),
+  );
+}
+
+class _SourceFooter extends StatelessWidget {
+  final BlueskySourcePage page;
+  final Future<void> Function() onMore;
+  const _SourceFooter({required this.page, required this.onMore});
+  @override
+  Widget build(BuildContext context) {
+    if (page.loadingMore) {
+      return const Padding(
+        padding: EdgeInsets.all(20),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (page.moreError != null) return _FeedFailure(error: page.moreError!, onRetry: onMore);
+    if (!page.hasMore) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Center(
+        child: TextButton.icon(
+          onPressed: page.loading ? null : onMore,
+          icon: const Icon(Icons.expand_more),
+          label: Text(L10n.of(context).plugin_bluesky_load_more),
+        ),
       ),
     );
   }
+}
+
+class _FeedFailure extends StatelessWidget {
+  final Object error;
+  final Future<void> Function() onRetry;
+  const _FeedFailure({required this.error, required this.onRetry});
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Text(blueskyErrorMessage(l10n, error), textAlign: TextAlign.center),
+          TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(l10n.retry)),
+        ],
+      ),
+    );
+  }
+}
+
+class BlueskyFeedCatalogScreen extends StatefulWidget {
+  final BlueskyAlgoStore store;
+  const BlueskyFeedCatalogScreen({super.key, required this.store});
+  @override
+  State<BlueskyFeedCatalogScreen> createState() => _BlueskyFeedCatalogScreenState();
+}
+
+class _BlueskyFeedCatalogScreenState extends State<BlueskyFeedCatalogScreen> {
+  late final TextEditingController _query = TextEditingController(text: widget.store.state.query);
+  @override
+  void dispose() {
+    _query.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final store = widget.store;
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.plugin_bluesky_find_feeds)),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextField(
+              controller: _query,
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                labelText: l10n.plugin_bluesky_search_feeds_hint,
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  tooltip: l10n.search,
+                  onPressed: () => store.searchCatalog(_query.text),
+                  icon: const Icon(Icons.arrow_forward),
+                ),
+              ),
+              onSubmitted: store.searchCatalog,
+            ),
+          ),
+          Expanded(
+            child: ScopedBuilder<BlueskyAlgoStore, BlueskyAlgoState>(
+              store: store,
+              onState: (_, state) {
+                final feeds = <String, BlueskyFeedGenerator>{};
+                for (final feed in [
+                  ...(state.query.isEmpty ? [...state.pinned, ...state.created] : <BlueskyFeedGenerator>[]),
+                  ...state.popular,
+                ]) {
+                  feeds.putIfAbsent(feed.uri, () => feed);
+                }
+                final entries = feeds.values.toList(growable: false);
+                return RefreshIndicator(
+                  onRefresh: () => store.searchCatalog(state.query),
+                  child: ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: entries.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == entries.length) {
+                        return Column(
+                          children: [
+                            if (state.catalogLoading)
+                              const Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
+                            if (state.catalogError != null)
+                              _FeedFailure(
+                                error: state.catalogError!,
+                                onRetry: () => state.catalogCursor == null
+                                    ? store.searchCatalog(state.query)
+                                    : store.loadMoreCatalog(),
+                              ),
+                            if (!state.catalogLoading && state.catalogError == null && entries.isEmpty)
+                              Padding(
+                                padding: const EdgeInsets.all(24),
+                                child: Text(l10n.plugin_bluesky_no_feeds_found),
+                              ),
+                            if (!state.catalogLoading && state.catalogError == null && state.catalogCursor != null)
+                              TextButton(onPressed: store.loadMoreCatalog, child: Text(l10n.plugin_bluesky_load_more)),
+                          ],
+                        );
+                      }
+                      final feed = entries[index];
+                      return ListTile(
+                        isThreeLine: feed.description.isNotEmpty && feed.creatorHandle != null,
+                        title: Text(feed.displayName),
+                        selected: state.selectedUri == feed.uri,
+                        subtitle: Text(
+                          [
+                            if (feed.creatorHandle != null) '@${feed.creatorHandle}',
+                            if (feed.description.isNotEmpty) feed.description,
+                          ].join('\n'),
+                        ),
+                        trailing: IconButton(
+                          tooltip: state.isPinned(feed.uri) ? l10n.unpin : l10n.pin,
+                          icon: Icon(state.isPinned(feed.uri) ? Icons.push_pin : Icons.push_pin_outlined),
+                          onPressed: () => _runPin(
+                            context,
+                            () => state.isPinned(feed.uri) ? store.unpin(feed.uri) : store.pin(feed),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
+                          store.open(feed.uri, name: feed.displayName);
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+List<_FeedChip> _algoChips(L10n l10n, BlueskyAlgoState state) {
+  final seen = <String>{kBlueskyDiscoverFeedUri};
+  return [
+    _FeedChip(
+      uri: kBlueskyDiscoverFeedUri,
+      label: l10n.plugin_bluesky_discover,
+      selected: state.selectedUri == null || state.selectedUri == kBlueskyDiscoverFeedUri,
+    ),
+    for (final feed in [...state.pinned, ...state.created, ...state.popular])
+      if (feed.uri.isNotEmpty && seen.add(feed.uri))
+        _FeedChip(uri: feed.uri, label: feed.displayName, selected: state.selectedUri == feed.uri),
+  ];
 }
 
 class _FeedChip {
   final String uri;
   final String label;
   final bool selected;
-
   const _FeedChip({required this.uri, required this.label, required this.selected});
 }
 
 class _ChipStrip extends StatelessWidget {
   final List<_FeedChip> chips;
   final ValueChanged<String> onTap;
-
   const _ChipStrip({required this.chips, required this.onTap});
-
   @override
-  Widget build(BuildContext context) {
-    if (chips.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    return PluginFilterRow(
-      children: [
-        for (final chip in chips)
-          ChoiceChip(
-            label: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 240),
-              child: Text(chip.label, maxLines: 2, overflow: TextOverflow.ellipsis),
-            ),
-            selected: chip.selected,
-            showCheckmark: true,
-            materialTapTargetSize: MaterialTapTargetSize.padded,
-            onSelected: (_) => onTap(chip.uri),
-          ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => chips.isEmpty
+      ? const SizedBox.shrink()
+      : PluginFilterRow(
+          children: [
+            for (final chip in chips)
+              ChoiceChip(
+                label: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 240),
+                  child: Text(chip.label, maxLines: 2, overflow: TextOverflow.ellipsis),
+                ),
+                selected: chip.selected,
+                showCheckmark: true,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
+                onSelected: (_) => onTap(chip.uri),
+              ),
+          ],
+        );
 }
 
 Widget _selectedHeader(
   BuildContext context, {
   required String title,
+  String description = '',
+  String? creator,
   required bool pinned,
   required VoidCallback onOpen,
   required String openLabel,
-  required VoidCallback onPinToggle,
+  VoidCallback? onPinToggle,
   Widget? extra,
 }) {
   final l10n = L10n.of(context);
@@ -441,17 +513,19 @@ Widget _selectedHeader(
           header: true,
           child: Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
         ),
-        const SizedBox(height: 4),
+        if (creator != null) Text('@$creator', style: Theme.of(context).textTheme.bodySmall),
+        if (description.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 4), child: Text(description)),
         Wrap(
           spacing: 8,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             TextButton.icon(onPressed: onOpen, icon: const Icon(Icons.link), label: Text(openLabel)),
-            TextButton.icon(
-              icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined),
-              onPressed: onPinToggle,
-              label: Text(pinned ? l10n.unpin : l10n.pin),
-            ),
+            if (onPinToggle != null)
+              TextButton.icon(
+                icon: Icon(pinned ? Icons.push_pin : Icons.push_pin_outlined),
+                onPressed: onPinToggle,
+                label: Text(pinned ? l10n.unpin : l10n.pin),
+              ),
             ?extra,
           ],
         ),
@@ -463,9 +537,7 @@ Widget _selectedHeader(
 BlueskyFeedGenerator _selectedGenerator(BlueskyAlgoState state, L10n l10n) {
   final uri = state.selectedUri ?? kBlueskyDiscoverFeedUri;
   for (final feed in [...state.pinned, ...state.created, ...state.popular]) {
-    if (feed.uri == uri) {
-      return feed;
-    }
+    if (feed.uri == uri) return feed;
   }
   return BlueskyFeedGenerator(
     uri: uri,
@@ -473,32 +545,32 @@ BlueskyFeedGenerator _selectedGenerator(BlueskyAlgoState state, L10n l10n) {
   );
 }
 
-Future<String?> _prompt(BuildContext context, {required String title, required String hint}) {
-  return showDialog<String>(
-    context: context,
-    builder: (_) => _BlueskyPromptDialog(title: title, hint: hint),
-  );
+Future<void> _runPin(BuildContext context, Future<void> Function() action) async {
+  try {
+    await action();
+  } catch (error) {
+    if (context.mounted) _snack(context, blueskyErrorMessage(L10n.of(context), error));
+  }
 }
+
+void _snack(BuildContext context, String message) =>
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+
+Future<String?> _prompt(BuildContext context, {required String title, required String hint}) => showDialog<String>(
+  context: context,
+  builder: (_) => _BlueskyPromptDialog(title: title, hint: hint),
+);
 
 class _BlueskyPromptDialog extends StatefulWidget {
   final String title;
   final String hint;
-
   const _BlueskyPromptDialog({required this.title, required this.hint});
-
   @override
   State<_BlueskyPromptDialog> createState() => _BlueskyPromptDialogState();
 }
 
 class _BlueskyPromptDialogState extends State<_BlueskyPromptDialog> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
+  final _controller = TextEditingController();
   @override
   void dispose() {
     _controller.dispose();

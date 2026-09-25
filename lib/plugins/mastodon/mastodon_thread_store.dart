@@ -1,73 +1,42 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
+import 'package:xta/plugins/mastodon/mastodon_thread_outline.dart';
 
-class MastodonReplyRow {
-  final MastodonPost post;
-  final int depth;
-  final int descendants;
-  final bool collapsed;
-  const MastodonReplyRow(this.post, this.depth, this.descendants, this.collapsed);
-}
-
-/// Preserve API sibling order, keep orphans readable and tolerate cycles.
-List<MastodonReplyRow> mastodonReplyRows(MastodonThread thread, Set<String> collapsed) {
-  final posts = {
-    for (final post in thread.descendants)
-      if (post.id != thread.status.id) post.id: post,
-  };
-  final children = <String?, List<String>>{};
-  for (final post in posts.values) {
-    final parent = posts.containsKey(post.replyToId) && post.replyToId != post.id ? post.replyToId : null;
-    (children[parent] ??= []).add(post.id);
-  }
-  int countBelow(String id) {
-    final seen = <String>{id};
-    final pending = [...?children[id]];
-    while (pending.isNotEmpty) {
-      final next = pending.removeLast();
-      if (seen.add(next)) pending.addAll(children[next] ?? const []);
-    }
-    return seen.length - 1;
-  }
-
-  final rows = <MastodonReplyRow>[];
-  final visited = <String>{};
-  void visit(String root) {
-    final pending = [(root, 0, false)];
-    while (pending.isNotEmpty) {
-      final (id, depth, hidden) = pending.removeLast();
-      if (!visited.add(id)) continue;
-      if (!hidden) rows.add(MastodonReplyRow(posts[id]!, depth, countBelow(id), collapsed.contains(id)));
-      for (final child in (children[id] ?? const <String>[]).reversed) {
-        pending.add((child, depth + 1, hidden || collapsed.contains(id)));
-      }
-    }
-  }
-
-  for (final root in children[null] ?? const <String>[]) {
-    visit(root);
-  }
-  // Cyclic or disconnected data still has a readable representation.
-  for (final id in posts.keys) {
-    if (!visited.contains(id)) visit(id);
-  }
-  return rows;
-}
+export 'package:xta/plugins/mastodon/mastodon_thread_outline.dart';
 
 class MastodonThreadState {
   final MastodonThread thread;
   final Set<String> collapsed;
   final bool ancestorsOpen;
+  final bool authorOnly;
   final bool loading;
   final Object? error;
   const MastodonThreadState(
     this.thread, {
     this.collapsed = const {},
     this.ancestorsOpen = false,
+    this.authorOnly = false,
     this.loading = false,
     this.error,
   });
+
+  MastodonThreadState copyWith({
+    MastodonThread? thread,
+    Set<String>? collapsed,
+    bool? ancestorsOpen,
+    bool? authorOnly,
+    bool? loading,
+    Object? error,
+    bool clearError = false,
+  }) => MastodonThreadState(
+    thread ?? this.thread,
+    collapsed: collapsed == null ? this.collapsed : Set.unmodifiable(collapsed),
+    ancestorsOpen: ancestorsOpen ?? this.ancestorsOpen,
+    authorOnly: authorOnly ?? this.authorOnly,
+    loading: loading ?? this.loading,
+    error: clearError ? null : error ?? this.error,
+  );
 }
 
 class MastodonThreadStore extends Store<MastodonThreadState> {
@@ -79,48 +48,52 @@ class MastodonThreadStore extends Store<MastodonThreadState> {
     : super(MastodonThreadState(MastodonThread(status: seed)));
 
   void toggle(String id) {
+    if (_closed) return;
     final collapsed = {...state.collapsed};
     if (!collapsed.remove(id)) collapsed.add(id);
+    update(state.copyWith(collapsed: collapsed));
+  }
+
+  void toggleAncestors() {
+    if (!_closed) update(state.copyWith(ancestorsOpen: !state.ancestorsOpen));
+  }
+
+  void selectAuthor(bool selected) {
+    if (!_closed && selected != state.authorOnly) update(state.copyWith(authorOnly: selected, collapsed: {}));
+  }
+
+  void setAllExpanded(bool expanded) {
+    if (_closed) return;
+    final branches = mastodonReplyRows(state.thread, {}, authorOnly: state.authorOnly);
     update(
-      MastodonThreadState(
-        state.thread,
-        collapsed: collapsed,
-        ancestorsOpen: state.ancestorsOpen,
-        loading: state.loading,
-        error: state.error,
+      state.copyWith(
+        collapsed: expanded
+            ? {}
+            : {
+                for (final row in branches)
+                  if (row.descendants > 0) row.post.id,
+              },
       ),
     );
   }
 
-  void toggleAncestors() => update(
-    MastodonThreadState(
-      state.thread,
-      collapsed: state.collapsed,
-      ancestorsOpen: !state.ancestorsOpen,
-      loading: state.loading,
-      error: state.error,
-    ),
-  );
+  void focusSelected() {
+    if (!_closed) update(state.copyWith(ancestorsOpen: false));
+  }
 
   Future<void> refresh() async {
+    if (_closed) return;
     final request = ++_request;
-    update(
-      MastodonThreadState(state.thread, collapsed: state.collapsed, ancestorsOpen: state.ancestorsOpen, loading: true),
-    );
+    update(state.copyWith(loading: true, clearError: true));
     try {
       final thread = await client.fetchThreadAnywhere(instances, state.thread.status);
       if (_closed || request != _request) return;
-      update(MastodonThreadState(thread, collapsed: state.collapsed, ancestorsOpen: state.ancestorsOpen));
+      final ids = thread.descendants.map((post) => post.id).toSet();
+      update(
+        state.copyWith(thread: thread, collapsed: state.collapsed.intersection(ids), loading: false, clearError: true),
+      );
     } catch (error) {
-      if (!_closed && request == _request)
-        update(
-          MastodonThreadState(
-            state.thread,
-            collapsed: state.collapsed,
-            ancestorsOpen: state.ancestorsOpen,
-            error: error,
-          ),
-        );
+      if (!_closed && request == _request) update(state.copyWith(loading: false, error: error));
     }
   }
 

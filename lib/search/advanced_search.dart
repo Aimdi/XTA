@@ -11,10 +11,7 @@ import 'package:xta/tweet/tweet_chrome.dart';
 class AdvancedSearchScreen extends StatefulWidget {
   final AdvancedSearchState initialState;
 
-  const AdvancedSearchScreen({
-    super.key,
-    this.initialState = const AdvancedSearchState(),
-  });
+  const AdvancedSearchScreen({super.key, this.initialState = const AdvancedSearchState()});
 
   @override
   State<AdvancedSearchScreen> createState() => _AdvancedSearchScreenState();
@@ -30,37 +27,20 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
     _store = AdvancedSearchStore(widget.initialState);
     _controllers = {
       AdvancedSearchFilter.allWords: _controller(widget.initialState.allWords),
-      AdvancedSearchFilter.exactPhrase: _controller(
-        widget.initialState.exactPhrase,
-      ),
+      AdvancedSearchFilter.exactPhrase: _controller(widget.initialState.exactPhrase),
       AdvancedSearchFilter.anyWords: _controller(widget.initialState.anyWords),
-      AdvancedSearchFilter.noneWords: _controller(
-        widget.initialState.noneWords,
-      ),
+      AdvancedSearchFilter.noneWords: _controller(widget.initialState.noneWords),
       AdvancedSearchFilter.hashtags: _controller(widget.initialState.hashtags),
-      AdvancedSearchFilter.fromAccounts: _controller(
-        widget.initialState.fromAccounts,
-      ),
-      AdvancedSearchFilter.toAccounts: _controller(
-        widget.initialState.toAccounts,
-      ),
-      AdvancedSearchFilter.mentioningAccounts: _controller(
-        widget.initialState.mentioningAccounts,
-      ),
-      AdvancedSearchFilter.minReplies: _controller(
-        widget.initialState.minReplies,
-      ),
-      AdvancedSearchFilter.minLikes: _controller(
-        widget.initialState.minLikes,
-      ),
-      AdvancedSearchFilter.minRetweets: _controller(
-        widget.initialState.minRetweets,
-      ),
+      AdvancedSearchFilter.fromAccounts: _controller(widget.initialState.fromAccounts),
+      AdvancedSearchFilter.toAccounts: _controller(widget.initialState.toAccounts),
+      AdvancedSearchFilter.mentioningAccounts: _controller(widget.initialState.mentioningAccounts),
+      AdvancedSearchFilter.minReplies: _controller(widget.initialState.minReplies),
+      AdvancedSearchFilter.minLikes: _controller(widget.initialState.minLikes),
+      AdvancedSearchFilter.minRetweets: _controller(widget.initialState.minRetweets),
     };
   }
 
-  TextEditingController _controller(String value) =>
-      TextEditingController(text: value);
+  TextEditingController _controller(String value) => TextEditingController(text: value);
 
   @override
   void dispose() {
@@ -71,8 +51,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
     super.dispose();
   }
 
-  TextEditingController _controllerFor(AdvancedSearchFilter filter) =>
-      _controllers[filter]!;
+  TextEditingController _controllerFor(AdvancedSearchFilter filter) => _controllers[filter]!;
 
   void _apply() => Navigator.pop(context, _store.state);
 
@@ -83,11 +62,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
     _store.reset();
   }
 
-  Widget _field(
-    AdvancedSearchFilter filter,
-    String label, {
-    bool number = false,
-  }) {
+  Widget _field(AdvancedSearchFilter filter, String label, {bool number = false}) {
     final controller = _controllerFor(filter);
     return AdvancedSearchField(
       controller: controller,
@@ -101,10 +76,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
     );
   }
 
-  Future<void> _pickDate({
-    required DateTime? current,
-    required ValueChanged<DateTime?> onChanged,
-  }) async {
+  Future<void> _pickDate({required DateTime? current, required ValueChanged<DateTime?> onChanged}) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: current ?? DateTime.now(),
@@ -121,9 +93,7 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
   }) {
     return AdvancedSearchDateRow(
       label: label,
-      value: value == null
-          ? L10n.of(context).not_set
-          : DateFormat('yyyy-MM-dd').format(value),
+      value: value == null ? L10n.of(context).not_set : DateFormat('yyyy-MM-dd').format(value),
       selected: value != null,
       onTap: () => _pickDate(current: value, onChanged: onChanged),
       onClear: () => onChanged(null),
@@ -146,50 +116,57 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
     return [
       _field(AdvancedSearchFilter.fromAccounts, l10n.from_these_accounts),
       _field(AdvancedSearchFilter.toAccounts, l10n.to_these_accounts),
-      _field(
-        AdvancedSearchFilter.mentioningAccounts,
-        l10n.mentioning_these_accounts,
-      ),
+      _field(AdvancedSearchFilter.mentioningAccounts, l10n.mentioning_these_accounts),
     ];
   }
 
-  List<Widget> _filterFields(
-    BuildContext context,
-    AdvancedSearchState state,
-  ) {
+  List<Widget> _filterFields(BuildContext context, AdvancedSearchState state) {
     final l10n = L10n.of(context);
     return [
-      _field(
-        AdvancedSearchFilter.minReplies,
-        l10n.minimum_replies,
-        number: true,
-      ),
-      _field(
-        AdvancedSearchFilter.minLikes,
-        l10n.minimum_likes,
-        number: true,
-      ),
-      _field(
-        AdvancedSearchFilter.minRetweets,
-        l10n.minimum_reposts,
-        number: true,
+      _field(AdvancedSearchFilter.minReplies, l10n.minimum_replies, number: true),
+      _field(AdvancedSearchFilter.minLikes, l10n.minimum_likes, number: true),
+      _field(AdvancedSearchFilter.minRetweets, l10n.minimum_reposts, number: true),
+      AdvancedSearchToggleRow(
+        label: l10n.hide_replies,
+        value: state.excludeReplies,
+        onChanged: _store.setExcludeReplies,
       ),
       AdvancedSearchToggleRow(
-        label: l10n.only_show_posts_with_media,
-        value: state.onlyMedia,
-        onChanged: _store.setOnlyMedia,
+        label: l10n.hide_retweets,
+        value: state.excludeRetweets,
+        onChanged: _store.setExcludeRetweets,
       ),
-      _dateRow(
-        label: l10n.since_date,
-        value: state.since,
-        onChanged: _store.setSince,
-      ),
-      _dateRow(
-        label: l10n.until_date,
-        value: state.until,
-        onChanged: _store.setUntil,
-      ),
+      _dateRow(label: l10n.since_date, value: state.since, onChanged: _store.setSince),
+      _dateRow(label: l10n.until_date, value: state.until, onChanged: _store.setUntil),
     ];
+  }
+
+  Widget _contentChoices(AdvancedSearchState state) {
+    final l10n = L10n.of(context);
+    final labels = {
+      AdvancedSearchContentFilter.all: l10n.all,
+      AdvancedSearchContentFilter.media: l10n.media,
+      AdvancedSearchContentFilter.photos: l10n.photos,
+      AdvancedSearchContentFilter.videos: l10n.videos,
+      AdvancedSearchContentFilter.links: l10n.search_links,
+    };
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding),
+      child: Wrap(
+        spacing: kTweetSpace2,
+        runSpacing: kTweetSpace1,
+        children: labels.entries
+            .map(
+              (entry) => ChoiceChip(
+                key: ValueKey(entry.key),
+                label: Text(entry.value),
+                selected: state.contentFilter == entry.key,
+                onSelected: (_) => _store.setContentFilter(entry.key),
+              ),
+            )
+            .toList(),
+      ),
+    );
   }
 
   @override
@@ -212,29 +189,23 @@ class _AdvancedSearchScreenState extends State<AdvancedSearchScreen> {
           body: ListView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             children: [
-              AdvancedFilterSection(
-                icon: Icons.text_fields,
-                title: l10n.search_term,
-                children: _wordFields(context),
-              ),
+              AdvancedFilterSection(icon: Icons.text_fields, title: l10n.search_term, children: _wordFields(context)),
               AdvancedFilterSection(
                 icon: Icons.alternate_email,
                 title: l10n.account,
                 children: _accountFields(context),
               ),
               AdvancedFilterSection(
-                icon: Icons.tune,
-                title: l10n.filters,
-                children: _filterFields(context, state),
+                icon: Icons.perm_media_outlined,
+                title: l10n.content_filter,
+                children: [_contentChoices(state)],
               ),
+              AdvancedFilterSection(icon: Icons.tune, title: l10n.filters, children: _filterFields(context, state)),
               SearchQueryPreview(query: state.query),
               const SizedBox(height: kTweetSpace2),
             ],
           ),
-          bottomNavigationBar: SearchApplyBar(
-            enabled: true,
-            onPressed: _apply,
-          ),
+          bottomNavigationBar: SearchApplyBar(enabled: true, onPressed: _apply),
         ),
       ),
     );

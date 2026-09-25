@@ -30,46 +30,156 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
   }
 
   @override
-  void dispose() { _store.destroy(); _scroll.dispose(); super.dispose(); }
+  void dispose() {
+    _store.destroy();
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => ScopedBuilder<BlueskyThreadStore, BlueskyThreadState>(
     store: _store,
     onState: (context, state) => Scaffold(
-      appBar: AppBar(title: Text(L10n.of(context).thread), actions: [
-        IconButton(tooltip: L10n.of(context).open_in_browser,
-          onPressed: () => openUri(context, state.thread.post.url), icon: const Icon(Icons.open_in_new)),
-      ]),
+      appBar: AppBar(
+        title: Text(L10n.of(context).thread),
+        actions: [
+          IconButton(
+            key: const ValueKey('bluesky-thread-jump'),
+            tooltip: L10n.of(context).mastodon_thread_selected,
+            onPressed: _focusSelected,
+            icon: const Icon(Icons.vertical_align_top),
+          ),
+          IconButton(
+            tooltip: L10n.of(context).open_in_browser,
+            onPressed: () => openUri(context, state.thread.post.url),
+            icon: const Icon(Icons.open_in_new),
+          ),
+          PopupMenuButton<bool>(
+            key: const ValueKey('bluesky-thread-branches'),
+            enabled: state.branches.isNotEmpty,
+            onSelected: _store.setAllExpanded,
+            itemBuilder: (context) => [
+              PopupMenuItem(value: true, child: Text(L10n.of(context).mastodon_thread_expand_all)),
+              PopupMenuItem(value: false, child: Text(L10n.of(context).mastodon_thread_collapse_all)),
+            ],
+          ),
+        ],
+      ),
       body: RefreshIndicator(onRefresh: _store.refresh, child: _conversation(context, state)),
     ),
   );
+
+  void _focusSelected() {
+    _store.focusSelected();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scroll.hasClients) return;
+      if (MediaQuery.disableAnimationsOf(context)) {
+        _scroll.jumpTo(0);
+      } else {
+        _scroll.animateTo(0, duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+      }
+    });
+  }
 
   Widget _conversation(BuildContext context, BlueskyThreadState state) {
     final l10n = L10n.of(context);
     final thread = state.thread;
     final rows = blueskyVisibleReplies(state.branches, state.collapsed);
-    final contextCount = state.contextOpen ? thread.ancestors.length : 0;
-    final hasContext = thread.ancestors.isNotEmpty;
-    final selectedIndex = contextCount + (hasContext ? 1 : 0);
-    final statusCount = state.loading || state.error != null ? 1 : 0;
-    final repliesStart = selectedIndex + 1 + statusCount;
+    final beforeReplies = <Widget>[
+      if (thread.ancestors.isNotEmpty) _contextToggle(context, state),
+      if (state.contextOpen) ...thread.ancestors.map(_post),
+      _selected(context, thread.post),
+      if (state.loading)
+        const Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      if (state.error != null)
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: FullPageErrorWidget(
+            error: state.error,
+            stackTrace: null,
+            prefix: blueskyErrorMessage(l10n, state.error!),
+            onRetry: _store.refresh,
+          ),
+        ),
+      if (thread.replies.isNotEmpty) _controls(context, state),
+      if (!state.loading && state.error == null && rows.isEmpty)
+        Padding(
+          key: const ValueKey('bluesky-thread-empty'),
+          padding: const EdgeInsets.all(24),
+          child: Text(
+            state.authorOnly ? l10n.mastodon_thread_no_author_replies : l10n.mastodon_thread_no_replies,
+            textAlign: TextAlign.center,
+          ),
+        ),
+    ];
     return FeedListView(
-      controller: _scroll, physics: const AlwaysScrollableScrollPhysics(),
+      controller: _scroll,
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 24),
-      itemCount: repliesStart + rows.length,
-      itemBuilder: (context, index) {
-        if (hasContext && index == 0) return _contextToggle(context, state);
-        if (index < selectedIndex) return _post(thread.ancestors[index - 1]);
-        if (index == selectedIndex) return _selected(context, thread.post);
-        if (index < repliesStart) {
-          if (state.error == null) return const Padding(padding: EdgeInsets.all(24),
-            child: Center(child: CircularProgressIndicator()));
-          return Padding(padding: const EdgeInsets.all(16), child: FullPageErrorWidget(
-            error: state.error, stackTrace: null,
-            prefix: blueskyErrorMessage(l10n, state.error!), onRetry: _store.refresh));
-        }
-        return _reply(context, rows[index - repliesStart]);
-      },
+      itemCount: beforeReplies.length + rows.length,
+      itemBuilder: (context, index) =>
+          index < beforeReplies.length ? beforeReplies[index] : _reply(context, rows[index - beforeReplies.length]),
+    );
+  }
+
+  String _orderLabel(L10n l10n, BlueskyReplyOrder order) => switch (order) {
+    BlueskyReplyOrder.original => l10n.bluesky_thread_sort_default,
+    BlueskyReplyOrder.newest => l10n.plugin_mastodon_order_newest,
+    BlueskyReplyOrder.oldest => l10n.plugin_mastodon_order_oldest,
+    BlueskyReplyOrder.popular => l10n.bluesky_thread_sort_popular,
+  };
+
+  Widget _controls(BuildContext context, BlueskyThreadState state) {
+    final l10n = L10n.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          ChoiceChip(
+            key: const ValueKey('bluesky-thread-all'),
+            label: Text(l10n.all),
+            selected: !state.authorOnly,
+            onSelected: (_) => _store.selectAuthor(false),
+          ),
+          ChoiceChip(
+            key: const ValueKey('bluesky-thread-author'),
+            label: Text(l10n.mastodon_thread_author),
+            selected: state.authorOnly,
+            onSelected: (_) => _store.selectAuthor(true),
+          ),
+          PopupMenuButton<BlueskyReplyOrder>(
+            key: const ValueKey('bluesky-thread-sort'),
+            tooltip: l10n.plugin_reddit_sort,
+            initialValue: state.order,
+            onSelected: _store.selectOrder,
+            itemBuilder: (context) => [
+              for (final order in BlueskyReplyOrder.values)
+                CheckedPopupMenuItem(
+                  value: order,
+                  checked: order == state.order,
+                  child: Text(_orderLabel(l10n, order)),
+                ),
+            ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.sort, size: 20),
+                  const SizedBox(width: 8),
+                  Flexible(child: Text(_orderLabel(l10n, state.order))),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -86,8 +196,9 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
     selected: true,
     child: Container(
       key: const ValueKey('bluesky-thread-selected'),
-      decoration: BoxDecoration(border: BorderDirectional(
-        start: BorderSide(width: 3, color: Theme.of(context).colorScheme.primary))),
+      decoration: BoxDecoration(
+        border: BorderDirectional(start: BorderSide(width: 3, color: Theme.of(context).colorScheme.primary)),
+      ),
       child: _post(post, selected: true),
     ),
   );
@@ -100,23 +211,44 @@ class _BlueskyThreadScreenState extends State<BlueskyThreadScreen> {
       key: ValueKey('bluesky-reply-${branch.post.uri}'),
       padding: EdgeInsetsDirectional.only(start: 8.0 + 12.0 * row.depth.clamp(0, 2)),
       child: DecoratedBox(
-        decoration: BoxDecoration(border: BorderDirectional(start: BorderSide(color: colors.outlineVariant, width: 2))),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          _post(branch.post),
-          if (branch.children.isNotEmpty) Align(alignment: AlignmentDirectional.centerStart,
-            child: TextButton.icon(
-              key: ValueKey('bluesky-collapse-${branch.post.uri}'),
-              onPressed: () => _store.toggle(branch.post.uri),
-              icon: Icon(row.collapsed ? Icons.expand_more : Icons.expand_less),
-              label: Text('${row.collapsed ? l10n.show : l10n.hide} · ${l10n.plugin_profile_replies} · ${branch.descendants}'),
-            )),
-        ]),
+        decoration: BoxDecoration(
+          border: BorderDirectional(start: BorderSide(color: colors.outlineVariant, width: 2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (branch.contextOnly)
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 0),
+                child: Text(
+                  l10n.mastodon_thread_context,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ),
+            _post(branch.post),
+            if (branch.children.isNotEmpty)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                  key: ValueKey('bluesky-collapse-${branch.post.uri}'),
+                  onPressed: () => _store.toggle(branch.post.uri),
+                  icon: Icon(row.collapsed ? Icons.expand_more : Icons.expand_less),
+                  label: Text(
+                    '${row.collapsed ? l10n.show : l10n.hide} · ${l10n.plugin_profile_replies} · ${branch.descendants}',
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _post(BlueskyPost post, {bool selected = false}) => BlueskyPostCard(
-    key: ValueKey('thread-post-${post.uri}'), post: post, showSourceBadge: false,
-    openOnTap: !selected, onOpen: selected ? () {} : null,
+    key: ValueKey('thread-post-${post.uri}'),
+    post: post,
+    showSourceBadge: false,
+    openOnTap: !selected,
+    onOpen: selected ? () {} : null,
   );
 }

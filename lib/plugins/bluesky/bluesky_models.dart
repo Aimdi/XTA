@@ -11,31 +11,19 @@ class BlueskyLinkCard {
   final String? description;
   final String? imageUrl;
 
-  const BlueskyLinkCard({
-    required this.url,
-    this.title,
-    this.description,
-    this.imageUrl,
-  });
+  const BlueskyLinkCard({required this.url, this.title, this.description, this.imageUrl});
 
   bool get hasImage => imageUrl != null && imageUrl!.isNotEmpty;
 
-  Map<String, dynamic> toJson() => {
-    'url': url,
-    'title': title,
-    'description': description,
-    'imageUrl': imageUrl,
-  };
+  Map<String, dynamic> toJson() => {'url': url, 'title': title, 'description': description, 'imageUrl': imageUrl};
 
   factory BlueskyLinkCard.fromSnapshot(Object? raw) {
-    final json = raw is Map
-        ? Map<String, dynamic>.from(raw)
-        : const <String, dynamic>{};
+    final json = Json(raw);
     return BlueskyLinkCard(
-      url: json['url'] as String? ?? '',
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      imageUrl: json['imageUrl'] as String?,
+      url: json['url'].string ?? '',
+      title: json['title'].string,
+      description: json['description'].string,
+      imageUrl: json['imageUrl'].string,
     );
   }
 }
@@ -55,6 +43,7 @@ class BlueskyPost {
   final List<String?> imageAlts;
   final List<BlueskyFacet> facets;
   final DateTime? publishedAt;
+  final DateTime? repostedAt;
 
   /// Where the post lives on bsky.app, for opening it there.
   final String url;
@@ -95,6 +84,7 @@ class BlueskyPost {
     this.imageAlts = const [],
     this.facets = const [],
     this.publishedAt,
+    this.repostedAt,
     this.replyCount = 0,
     this.repostCount = 0,
     this.likeCount = 0,
@@ -111,21 +101,28 @@ class BlueskyPost {
   });
 
   bool get hasMedia => images.isNotEmpty;
+  DateTime? get timelineDate => repostedAt ?? publishedAt;
   String? get reposterActor => (repostedByDid?.isNotEmpty == true) ? repostedByDid : repostedByHandle;
   bool get isRepost => reposterActor?.isNotEmpty == true;
-  bool get sensitive => labels.any(const {
-    'porn', 'sexual', 'sexual-cartoon', 'nudity', 'graphic-media',
-    'sensitive', 'self-harm', 'gore', '!warn', '!hide',
-  }.contains);
+  bool get sensitive => labels.any(
+    const {
+      'porn',
+      'sexual',
+      'sexual-cartoon',
+      'nudity',
+      'graphic-media',
+      'sensitive',
+      'self-harm',
+      'gore',
+      '!warn',
+      '!hide',
+    }.contains,
+  );
   bool get hasQuote => quotedPost != null;
   bool get hasLinkCard => linkCard != null;
 
-  List<PluginMediaItem> get mediaItems => pluginMediaItemsFrom(
-    urls: images,
-    aspects: imageAspects,
-    videos: imageIsVideo,
-    alts: imageAlts,
-  );
+  List<PluginMediaItem> get mediaItems =>
+      pluginMediaItemsFrom(urls: images, aspects: imageAspects, videos: imageIsVideo, alts: imageAlts);
 
   Map<String, dynamic> toJson() => {
     'uri': uri,
@@ -141,6 +138,7 @@ class BlueskyPost {
     'imageAlts': imageAlts,
     'facets': facets.map((f) => f.toJson()).toList(),
     'publishedAt': publishedAt?.toIso8601String(),
+    'repostedAt': repostedAt?.toIso8601String(),
     'url': url,
     'replyCount': replyCount,
     'repostCount': repostCount,
@@ -157,60 +155,50 @@ class BlueskyPost {
     'labels': labels,
   };
 
-  factory BlueskyPost.fromSnapshot(Object? raw) {
-    final json = raw is Map
-        ? Map<String, dynamic>.from(raw)
-        : const <String, dynamic>{};
-    final handle = json['handle'] as String? ?? '';
-    final linkRaw = json['linkCard'];
-    final linkCard = linkRaw == null
-        ? null
-        : BlueskyLinkCard.fromSnapshot(linkRaw);
-    final quoteRaw = json['quotedPost'];
-    final quoted = quoteRaw == null ? null : BlueskyPost.fromSnapshot(quoteRaw);
-
+  factory BlueskyPost.fromSnapshot(Object? raw, {int depth = 0}) {
+    final json = Json(raw);
+    final handle = json['handle'].string ?? '';
+    final link = json['linkCard'].exists ? BlueskyLinkCard.fromSnapshot(json['linkCard'].raw) : null;
+    final quote = depth < 4 && json['quotedPost'].exists
+        ? BlueskyPost.fromSnapshot(json['quotedPost'].raw, depth: depth + 1)
+        : null;
     return BlueskyPost(
-      uri: json['uri'] as String? ?? '',
-      cid: json['cid'] as String? ?? '',
+      uri: json['uri'].string ?? '',
+      cid: json['cid'].string ?? '',
       handle: handle,
-      did: json['did'] as String? ?? '',
-      authorName: json['authorName'] as String? ?? handle,
-      avatarUrl: json['avatarUrl'] as String?,
-      text: json['text'] as String? ?? '',
-      images:
-          (json['images'] as List?)?.whereType<String>().toList(
-            growable: false,
-          ) ??
-          const [],
-      imageAspects: _snapshotAspects(json['imageAspects']),
-      imageIsVideo: _snapshotFlags(json['imageIsVideo']),
-      imageAlts: _snapshotNullableStrings(json['imageAlts']),
-      facets:
-          (json['facets'] as List?)
-              ?.map(BlueskyFacet.fromSnapshot)
-              .where((f) => f.value.isNotEmpty && f.byteEnd > f.byteStart)
-              .toList(growable: false) ??
-          const [],
-      publishedAt: DateTime.tryParse(
-        json['publishedAt'] as String? ?? '',
-      )?.toLocal(),
-      url: json['url'] as String? ?? '',
-      replyCount: _snapshotCount(json['replyCount']),
-      repostCount: _snapshotCount(json['repostCount']),
-      likeCount: _snapshotCount(json['likeCount']),
-      quoteCount: _snapshotCount(json['quoteCount']),
-      repostedByName: json['repostedByName'] as String?,
-      repostedByHandle: json['repostedByHandle'] as String?,
-      repostedByDid: json['repostedByDid'] as String?,
-      quotedPost: quoted == null || quoted.uri.isEmpty ? null : quoted,
-      linkCard: linkCard == null || linkCard.url.isEmpty ? null : linkCard,
-      replyToHandle: json['replyToHandle'] as String?,
-      replyToUri: Json(json)['replyToUri'].string,
-      labels: [for (final label in Json(json)['labels'].list)
-        if (label.string != null) label.string!],
+      did: json['did'].string ?? '',
+      authorName: json['authorName'].string ?? handle,
+      avatarUrl: json['avatarUrl'].string,
+      text: json['text'].string ?? '',
+      images: [
+        for (final value in json['images'].list)
+          if (value.string != null) value.string!,
+      ],
+      imageAspects: _snapshotAspects(json['imageAspects'].raw),
+      imageIsVideo: _snapshotFlags(json['imageIsVideo'].raw),
+      imageAlts: _snapshotNullableStrings(json['imageAlts'].raw),
+      facets: _safeSnapshotFacets(json['facets']),
+      publishedAt: DateTime.tryParse(json['publishedAt'].string ?? '')?.toLocal(),
+      repostedAt: DateTime.tryParse(json['repostedAt'].string ?? '')?.toLocal(),
+      url: json['url'].string ?? '',
+      replyCount: _snapshotCount(json['replyCount'].raw),
+      repostCount: _snapshotCount(json['repostCount'].raw),
+      likeCount: _snapshotCount(json['likeCount'].raw),
+      quoteCount: _snapshotCount(json['quoteCount'].raw),
+      repostedByName: json['repostedByName'].string,
+      repostedByHandle: json['repostedByHandle'].string,
+      repostedByDid: json['repostedByDid'].string,
+      quotedPost: quote == null || quote.uri.isEmpty ? null : quote,
+      linkCard: link == null || link.url.isEmpty ? null : link,
+      replyToHandle: json['replyToHandle'].string,
+      replyToUri: json['replyToUri'].string,
+      labels: [
+        for (final label in json['labels'].list)
+          if (label.string != null) label.string!,
+      ],
       isReply:
-          json['isReply'] as bool? ??
-          ((json['replyToHandle'] as String?)?.isNotEmpty ?? false),
+          json['isReply'].boolean ??
+          ((json['replyToHandle'].string ?? '').isNotEmpty || (json['replyToUri'].string ?? '').isNotEmpty),
     );
   }
 
@@ -233,17 +221,29 @@ class BlueskyPost {
     }
   }
 
-  static String listToPrefs(List<BlueskyPost> posts) =>
-      jsonEncode(posts.map((e) => e.toJson()).toList());
+  static String listToPrefs(List<BlueskyPost> posts) => jsonEncode(posts.map((e) => e.toJson()).toList());
 }
 
-int _snapshotCount(Object? value) => value is num ? value.toInt() : 0;
+List<BlueskyFacet> _safeSnapshotFacets(Json values) {
+  final result = <BlueskyFacet>[];
+  for (final value in values.list) {
+    try {
+      final facet = BlueskyFacet.fromSnapshot(value.raw);
+      if (facet.value.isNotEmpty && facet.byteStart >= 0 && facet.byteEnd > facet.byteStart) result.add(facet);
+    } catch (_) {
+      /* One damaged facet must not discard an otherwise readable post. */
+    }
+  }
+  return result;
+}
+
+int _snapshotCount(Object? value) => value is num && value.isFinite ? value.toInt().clamp(0, 1 << 53) : 0;
 
 List<double?> _snapshotAspects(Object? raw) {
   if (raw is! List) {
     return const [];
   }
-  return [for (final value in raw) value is num ? value.toDouble() : null];
+  return [for (final value in raw) value is num && value.isFinite && value > 0 ? value.toDouble() : null];
 }
 
 List<bool> _snapshotFlags(Object? raw) {
@@ -257,10 +257,7 @@ List<String?> _snapshotNullableStrings(Object? raw) {
   if (raw is! List) {
     return const [];
   }
-  return [
-    for (final value in raw)
-      value is String && value.trim().isNotEmpty ? value : null,
-  ];
+  return [for (final value in raw) value is String && value.trim().isNotEmpty ? value : null];
 }
 
 /// Ancestors (root → parent), the focal post, and reply descendants.
@@ -269,11 +266,7 @@ class BlueskyThread {
   final List<BlueskyPost> ancestors;
   final List<BlueskyPost> replies;
 
-  const BlueskyThread({
-    required this.post,
-    this.ancestors = const [],
-    this.replies = const [],
-  });
+  const BlueskyThread({required this.post, this.ancestors = const [], this.replies = const []});
 }
 
 /// A Bluesky profile, as the public AppView reports it.
@@ -288,6 +281,7 @@ class BlueskyProfile {
   final int followersCount;
   final int followsCount;
   final int postsCount;
+  final String? pinnedPostUri;
 
   const BlueskyProfile({
     required this.did,
@@ -300,6 +294,7 @@ class BlueskyProfile {
     this.followersCount = 0,
     this.followsCount = 0,
     this.postsCount = 0,
+    this.pinnedPostUri,
   });
 
   factory BlueskyProfile.fromJson(Object? json) {
@@ -321,15 +316,12 @@ class BlueskyProfile {
       followersCount: data['followersCount'].integer ?? 0,
       followsCount: data['followsCount'].integer ?? 0,
       postsCount: data['postsCount'].integer ?? 0,
+      pinnedPostUri: data['pinnedPost']['uri'].string,
     );
   }
 
-  BlueskyAccount toAccount() => BlueskyAccount(
-    handle: handle,
-    name: displayName,
-    avatarUrl: avatarUrl,
-    did: did.isEmpty ? null : did,
-  );
+  BlueskyAccount toAccount() =>
+      BlueskyAccount(handle: handle, name: displayName, avatarUrl: avatarUrl, did: did.isEmpty ? null : did);
 }
 
 /// An account the reader follows locally — not a Bluesky follow graph edge.
@@ -340,23 +332,17 @@ class BlueskyAccount {
   final String? avatarUrl;
   final String? did;
 
-  const BlueskyAccount({
-    required this.handle,
-    required this.name,
-    this.avatarUrl,
-    this.did,
-  });
+  const BlueskyAccount({required this.handle, required this.name, this.avatarUrl, this.did});
 
   /// What the AppView wants as `actor`: prefer the DID when we have one.
   String get actor => (did != null && did!.isNotEmpty) ? did! : handle;
 
-  BlueskyAccount copyWith({String? name, String? avatarUrl, String? did}) =>
-      BlueskyAccount(
-        handle: handle,
-        name: name ?? this.name,
-        avatarUrl: avatarUrl ?? this.avatarUrl,
-        did: did ?? this.did,
-      );
+  BlueskyAccount copyWith({String? name, String? avatarUrl, String? did}) => BlueskyAccount(
+    handle: handle,
+    name: name ?? this.name,
+    avatarUrl: avatarUrl ?? this.avatarUrl,
+    did: did ?? this.did,
+  );
 }
 
 /// Official public AppView — read-only xrpc without a Bluesky login.
@@ -381,17 +367,11 @@ String? normaliseBlueskyAppView(String input) {
     return null;
   }
   final path = uri.path.replaceAll(RegExp(r'/+$'), '');
-  return Uri(
-    scheme: uri.scheme,
-    host: host,
-    port: uri.hasPort ? uri.port : null,
-    path: path,
-  ).toString();
+  return Uri(scheme: uri.scheme, host: host, port: uri.hasPort ? uri.port : null, path: path).toString();
 }
 
 /// Resolved AppView URL from prefs, always falling back to the working default.
-String blueskyAppViewFromPrefs(String? raw) =>
-    normaliseBlueskyAppView(raw ?? '') ?? kBlueskyDefaultAppView;
+String blueskyAppViewFromPrefs(String? raw) => normaliseBlueskyAppView(raw ?? '') ?? kBlueskyDefaultAppView;
 
 /// A handle, profile URL, or DID as the plugin wants it.
 ///
@@ -422,9 +402,7 @@ String? normaliseBlueskyHandle(String input) {
   }
 
   // Handles are DNS-like: letters, digits, hyphens, dots; at least one dot.
-  if (!RegExp(
-    r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$',
-  ).hasMatch(lower)) {
+  if (!RegExp(r'^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$').hasMatch(lower)) {
     return null;
   }
   return lower;
@@ -432,14 +410,13 @@ String? normaliseBlueskyHandle(String input) {
 
 /// Web URL for a post: handle + rkey of an `at://` URI.
 String? blueskyWebUrl({required String handle, required String atUri}) {
-  if (handle.isEmpty) {
-    return null;
-  }
+  if (!atUri.startsWith('at://')) return null;
+  final parts = atUri.substring(5).split('/');
+  if (parts.length != 3 || parts[1] != 'app.bsky.feed.post') return null;
+  final actor = normaliseBlueskyHandle(handle) ?? normaliseBlueskyHandle(parts.first);
   final rkey = blueskyRkeyOf(atUri);
-  if (rkey == null) {
-    return null;
-  }
-  return 'https://bsky.app/profile/$handle/post/$rkey';
+  if (actor == null || rkey == null) return null;
+  return Uri.https('bsky.app', '/profile/$actor/post/$rkey').toString();
 }
 
 /// The record key of an `at://did/…/collection/rkey` URI.
@@ -448,11 +425,11 @@ String? blueskyRkeyOf(String atUri) {
     return null;
   }
   final parts = atUri.substring('at://'.length).split('/');
-  if (parts.length < 3) {
+  if (parts.length != 3) {
     return null;
   }
   final rkey = parts.last.trim();
-  return rkey.isEmpty ? null : rkey;
+  return RegExp(r'^[A-Za-z0-9._~:-]+$').hasMatch(rkey) && rkey != '.' && rkey != '..' ? rkey : null;
 }
 
 /// Official `getAuthorFeed` filters — Posts / Replies / Media on bsky.app.
@@ -506,11 +483,7 @@ List<PluginMediaItem> blueskyMediaOf(Json post) {
       final thumb = embed['thumbnail'].string;
       if (thumb != null && thumb.isNotEmpty) {
         addItem(
-          PluginMediaItem(
-            url: thumb,
-            aspectRatio: pluginMediaAspectFrom(embed['aspectRatio'].raw),
-            isVideo: true,
-          ),
+          PluginMediaItem(url: thumb, aspectRatio: pluginMediaAspectFrom(embed['aspectRatio'].raw), isVideo: true),
         );
       }
     }
@@ -523,9 +496,7 @@ List<PluginMediaItem> blueskyMediaOf(Json post) {
   return items;
 }
 
-List<String> blueskyImagesOf(Json post) => [
-  for (final item in blueskyMediaOf(post)) item.url,
-];
+List<String> blueskyImagesOf(Json post) => [for (final item in blueskyMediaOf(post)) item.url];
 
 BlueskyLinkCard? blueskyLinkCardOf(Json post) {
   final external = post['embed']['external'];
@@ -551,9 +522,7 @@ BlueskyLinkCard? _linkCardFrom(Json external) {
   return BlueskyLinkCard(
     url: url,
     title: title == null || title.isEmpty ? null : title,
-    description: description == null || description.isEmpty
-        ? null
-        : description,
+    description: description == null || description.isEmpty ? null : description,
     imageUrl: thumb == null || thumb.isEmpty ? null : thumb,
   );
 }
@@ -569,12 +538,10 @@ BlueskyPost? blueskyQuotedPostOf(Json post) {
     record = record['record'];
   }
   final type = record['\$type'].string ?? '';
-  if (type.contains('viewNotFound') ||
-      type.contains('viewBlocked') ||
-      type.contains('viewDetached')) {
+  if (type.contains('viewNotFound') || type.contains('viewBlocked') || type.contains('viewDetached')) {
     return null;
   }
-  return blueskyPostFromView(record.raw, allowEmpty: true);
+  return blueskyPostFromView(record.raw, allowEmpty: true, parseQuote: false);
 }
 
 /// Turns a PostView (or embed viewRecord) into a [BlueskyPost].
@@ -583,6 +550,7 @@ BlueskyPost? blueskyPostFromView(
   String? repostedByName,
   String? repostedByHandle,
   String? repostedByDid,
+  DateTime? repostedAt,
   String? replyToHandle,
   String? replyToUri,
   bool allowEmpty = false,
@@ -601,22 +569,16 @@ BlueskyPost? blueskyPostFromView(
 
   // viewRecord carries text under `value`; PostView under `record`.
   final record = post['record'].exists ? post['record'] : post['value'];
-  final text = record['text'].string?.trim() ?? '';
+  final text = record['text'].string ?? '';
   final facets = blueskyFacetsOf(record);
   final media = blueskyMediaOf(post);
   final images = [for (final item in media) item.url];
   final linkCard = blueskyLinkCardOf(post);
   final quoted = parseQuote ? blueskyQuotedPostOf(post) : null;
-  final replyHandle =
-      replyToHandle ??
-      post['reply']['parent']['author']['handle'].string?.trim();
+  final replyHandle = replyToHandle ?? post['reply']['parent']['author']['handle'].string?.trim();
   final replyFromRecord = record['reply']['parent']['uri'].string;
 
-  if (!allowEmpty &&
-      text.isEmpty &&
-      images.isEmpty &&
-      quoted == null &&
-      linkCard == null) {
+  if (!allowEmpty && text.trim().isEmpty && images.isEmpty && quoted == null && linkCard == null) {
     return null;
   }
 
@@ -650,11 +612,10 @@ BlueskyPost? blueskyPostFromView(
     repostedByName: repostedByName,
     repostedByHandle: repostedByHandle,
     repostedByDid: repostedByDid,
+    repostedAt: repostedAt,
     quotedPost: quoted,
     linkCard: linkCard,
-    replyToHandle: (replyHandle != null && replyHandle.isNotEmpty)
-        ? replyHandle
-        : null,
+    replyToHandle: (replyHandle != null && replyHandle.isNotEmpty) ? replyHandle : null,
     replyToUri: replyFromRecord ?? replyToUri,
     labels: blueskyLabelsOf(post, record),
     isReply:
@@ -667,8 +628,7 @@ BlueskyPost? blueskyPostFromView(
 /// AppView labels are already hydrated; ignore explicit negations.
 List<String> blueskyLabelsOf(Json post, Json record) => {
   for (final label in [...post['labels'].list, ...post['author']['labels'].list, ...record['labels']['values'].list])
-    if (label['neg'].boolean != true && label['val'].string != null)
-      label['val'].string!,
+    if (label['neg'].boolean != true && label['val'].string != null) label['val'].string!,
 }.toList(growable: false);
 
 /// Turns one feed item's `post` (+ optional repost reason) into a [BlueskyPost].
@@ -689,14 +649,16 @@ BlueskyPost? blueskyPostFromFeedItem(Object? item) {
     repostName = (name == null || name.isEmpty) ? repostHandle : name;
   }
 
-  final replyHandle = root['reply']['parent']['author']['handle'].string
-      ?.trim();
+  final replyHandle = root['reply']['parent']['author']['handle'].string?.trim();
 
   return blueskyPostFromView(
     post.raw,
     repostedByName: repostName,
     repostedByHandle: repostHandle,
     repostedByDid: repostDid,
+    repostedAt: repostDid == null && repostHandle == null
+        ? null
+        : DateTime.tryParse(reason['indexedAt'].string ?? '')?.toLocal(),
     replyToHandle: replyHandle,
   );
 }
@@ -752,12 +714,7 @@ BlueskyPost? _threadViewPost(Json node, {String? parentUri}) {
   return blueskyPostFromView(node['post'].raw, replyToUri: parentUri);
 }
 
-void _collectReplies(
-  Json replies,
-  List<BlueskyPost> out, {
-  required int depth,
-  required String parentUri,
-}) {
+void _collectReplies(Json replies, List<BlueskyPost> out, {required int depth, required String parentUri}) {
   if (depth > 12) {
     return;
   }
@@ -827,8 +784,17 @@ class BlueskyListInfo {
     'creatorHandle': creatorHandle,
   };
 
-  factory BlueskyListInfo.fromSnapshot(Object? raw) =>
-      BlueskyListInfo.fromJson(raw);
+  factory BlueskyListInfo.fromSnapshot(Object? raw) {
+    final data = Json(raw);
+    return BlueskyListInfo.fromJson({
+      'uri': data['uri'].raw,
+      'name': data['name'].raw,
+      'description': data['description'].raw,
+      'listItemCount': data['itemCount'].raw ?? data['listItemCount'].raw,
+      'avatar': data['avatarUrl'].raw ?? data['avatar'].raw,
+      'creator': {'handle': data['creatorHandle'].raw ?? data['creator']['handle'].raw},
+    });
+  }
 }
 
 /// One page of lists created by an actor.
@@ -856,8 +822,7 @@ class BlueskyListRef {
 
   const BlueskyListRef.atUri(this.atUri) : actor = null, rkey = null;
 
-  const BlueskyListRef.web({required this.actor, required this.rkey})
-    : atUri = null;
+  const BlueskyListRef.web({required this.actor, required this.rkey}) : atUri = null;
 }
 
 /// Parses a public list URL or `at://…/app.bsky.graph.list/…` URI.
@@ -877,9 +842,7 @@ BlueskyListRef? parseBlueskyListRef(String input) {
   }
 
   final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
-  if (segments.length >= 4 &&
-      segments[0] == 'profile' &&
-      segments[2] == 'lists') {
+  if (segments.length >= 4 && segments[0] == 'profile' && segments[2] == 'lists') {
     final actor = segments[1].trim();
     final rkey = segments[3].trim();
     if (actor.isEmpty || rkey.isEmpty) {
@@ -899,8 +862,7 @@ class BlueskyStarterPackRef {
 
   const BlueskyStarterPackRef.atUri(this.atUri) : actor = null, rkey = null;
 
-  const BlueskyStarterPackRef.web({required this.actor, required this.rkey})
-    : atUri = null;
+  const BlueskyStarterPackRef.web({required this.actor, required this.rkey}) : atUri = null;
 }
 
 /// Parses a public starter-pack URL or `at://…/app.bsky.graph.starterpack/…`.
@@ -912,8 +874,7 @@ BlueskyStarterPackRef? parseBlueskyStarterPackRef(String input) {
     return null;
   }
 
-  if (value.startsWith('at://') &&
-      value.contains('/app.bsky.graph.starterpack/')) {
+  if (value.startsWith('at://') && value.contains('/app.bsky.graph.starterpack/')) {
     return BlueskyStarterPackRef.atUri(value);
   }
 
@@ -944,13 +905,9 @@ String? starterPackListUri(Object? json) {
 BlueskyFollowsPage parseBlueskyFollowsPage(Object? json) {
   final root = Json(json);
   return BlueskyFollowsPage(
-    follows:
-        [
-              for (final follow in root['follows'].list)
-                BlueskyProfile.fromJson(follow.raw),
-            ]
-            .where((p) => p.handle.isNotEmpty || p.did.isNotEmpty)
-            .toList(growable: false),
+    follows: [
+      for (final follow in root['follows'].list) BlueskyProfile.fromJson(follow.raw),
+    ].where((p) => p.handle.isNotEmpty || p.did.isNotEmpty).toList(growable: false),
     cursor: root['cursor'].string,
   );
 }
@@ -958,13 +915,9 @@ BlueskyFollowsPage parseBlueskyFollowsPage(Object? json) {
 BlueskyFollowersPage parseBlueskyFollowersPage(Object? json) {
   final root = Json(json);
   return BlueskyFollowersPage(
-    followers:
-        [
-              for (final follower in root['followers'].list)
-                BlueskyProfile.fromJson(follower.raw),
-            ]
-            .where((p) => p.handle.isNotEmpty || p.did.isNotEmpty)
-            .toList(growable: false),
+    followers: [
+      for (final follower in root['followers'].list) BlueskyProfile.fromJson(follower.raw),
+    ].where((p) => p.handle.isNotEmpty || p.did.isNotEmpty).toList(growable: false),
     cursor: root['cursor'].string,
   );
 }
@@ -974,8 +927,7 @@ BlueskyListsPage parseBlueskyListsPage(Object? json) {
   return BlueskyListsPage(
     lists: [
       for (final list in root['lists'].list)
-        if (BlueskyListInfo.fromJson(list.raw).uri.isNotEmpty)
-          BlueskyListInfo.fromJson(list.raw),
+        if (BlueskyListInfo.fromJson(list.raw).uri.isNotEmpty) BlueskyListInfo.fromJson(list.raw),
     ],
     cursor: root['cursor'].string,
   );
@@ -986,20 +938,15 @@ BlueskyListMembersPage parseBlueskyListMembersPage(Object? json) {
   final listRaw = root['list'].raw;
   return BlueskyListMembersPage(
     list: listRaw == null ? null : BlueskyListInfo.fromJson(listRaw),
-    members:
-        [
-              for (final item in root['items'].list)
-                BlueskyProfile.fromJson(item['subject'].raw),
-            ]
-            .where((p) => p.handle.isNotEmpty || p.did.isNotEmpty)
-            .toList(growable: false),
+    members: [
+      for (final item in root['items'].list) BlueskyProfile.fromJson(item['subject'].raw),
+    ].where((p) => p.handle.isNotEmpty || p.did.isNotEmpty).toList(growable: false),
     cursor: root['cursor'].string,
   );
 }
 
 /// Official Discover / What's Hot algo on bsky.app (public, guest-readable).
-const kBlueskyDiscoverFeedUri =
-    'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot';
+const kBlueskyDiscoverFeedUri = 'at://did:plc:z72i7hdynmk6r22z27h6tvur/app.bsky.feed.generator/whats-hot';
 
 /// A custom feed generator (`app.bsky.feed.defs#generatorView`).
 class BlueskyFeedGenerator {
@@ -1025,9 +972,7 @@ class BlueskyFeedGenerator {
     final creator = data['creator']['handle'].string?.trim();
     return BlueskyFeedGenerator(
       uri: uri,
-      displayName: (name == null || name.isEmpty)
-          ? (blueskyRkeyOf(uri) ?? uri)
-          : name,
+      displayName: (name == null || name.isEmpty) ? (blueskyRkeyOf(uri) ?? uri) : name,
       description: data['description'].string?.trim() ?? '',
       avatarUrl: avatar == null || avatar.isEmpty ? null : avatar,
       creatorHandle: creator == null || creator.isEmpty ? null : creator,
@@ -1042,8 +987,16 @@ class BlueskyFeedGenerator {
     'creatorHandle': creatorHandle,
   };
 
-  factory BlueskyFeedGenerator.fromSnapshot(Object? raw) =>
-      BlueskyFeedGenerator.fromJson(raw);
+  factory BlueskyFeedGenerator.fromSnapshot(Object? raw) {
+    final data = Json(raw);
+    return BlueskyFeedGenerator.fromJson({
+      'uri': data['uri'].raw,
+      'displayName': data['displayName'].raw,
+      'description': data['description'].raw,
+      'avatar': data['avatarUrl'].raw ?? data['avatar'].raw,
+      'creator': {'handle': data['creatorHandle'].raw ?? data['creator']['handle'].raw},
+    });
+  }
 }
 
 /// One page of feed generators (`feeds` + optional cursor).
@@ -1062,8 +1015,7 @@ class BlueskyFeedRef {
 
   const BlueskyFeedRef.atUri(this.atUri) : actor = null, rkey = null;
 
-  const BlueskyFeedRef.web({required this.actor, required this.rkey})
-    : atUri = null;
+  const BlueskyFeedRef.web({required this.actor, required this.rkey}) : atUri = null;
 }
 
 /// Parses a public feed URL or `at://…/app.bsky.feed.generator/…` URI.
@@ -1073,8 +1025,7 @@ BlueskyFeedRef? parseBlueskyFeedRef(String input) {
     return null;
   }
 
-  if (value.startsWith('at://') &&
-      value.contains('/app.bsky.feed.generator/')) {
+  if (value.startsWith('at://') && value.contains('/app.bsky.feed.generator/')) {
     return BlueskyFeedRef.atUri(value);
   }
 
@@ -1084,9 +1035,7 @@ BlueskyFeedRef? parseBlueskyFeedRef(String input) {
   }
 
   final segments = uri.pathSegments.where((e) => e.isNotEmpty).toList();
-  if (segments.length >= 4 &&
-      segments[0] == 'profile' &&
-      segments[2] == 'feed') {
+  if (segments.length >= 4 && segments[0] == 'profile' && segments[2] == 'feed') {
     final actor = segments[1].trim();
     final rkey = segments[3].trim();
     if (actor.isEmpty || rkey.isEmpty) {
@@ -1099,9 +1048,7 @@ BlueskyFeedRef? parseBlueskyFeedRef(String input) {
 
 List<BlueskyFeedGenerator> parseBlueskyFeedGenerators(Object? json) {
   final root = Json(json);
-  final items = root['feeds'].exists
-      ? root['feeds'].list
-      : (root['view'].exists ? [root['view']] : const <Json>[]);
+  final items = root['feeds'].exists ? root['feeds'].list : (root['view'].exists ? [root['view']] : const <Json>[]);
   return [
     for (final feed in items) BlueskyFeedGenerator.fromJson(feed.raw),
   ].where((e) => e.uri.isNotEmpty).toList(growable: false);
@@ -1109,10 +1056,7 @@ List<BlueskyFeedGenerator> parseBlueskyFeedGenerators(Object? json) {
 
 BlueskyFeedGeneratorsPage parseBlueskyFeedGeneratorsPage(Object? json) {
   final root = Json(json);
-  return BlueskyFeedGeneratorsPage(
-    feeds: parseBlueskyFeedGenerators(root.raw),
-    cursor: root['cursor'].string,
-  );
+  return BlueskyFeedGeneratorsPage(feeds: parseBlueskyFeedGenerators(root.raw), cursor: root['cursor'].string);
 }
 
 List<BlueskyFeedGenerator> blueskyGeneratorsFromPrefs(String? raw) {
@@ -1134,8 +1078,7 @@ List<BlueskyFeedGenerator> blueskyGeneratorsFromPrefs(String? raw) {
   }
 }
 
-String blueskyGeneratorsToPrefs(List<BlueskyFeedGenerator> feeds) =>
-    jsonEncode(feeds.map((e) => e.toJson()).toList());
+String blueskyGeneratorsToPrefs(List<BlueskyFeedGenerator> feeds) => jsonEncode(feeds.map((e) => e.toJson()).toList());
 
 List<BlueskyListInfo> blueskyListsFromPrefs(String? raw) {
   if (raw == null || raw.isEmpty) {
@@ -1156,5 +1099,4 @@ List<BlueskyListInfo> blueskyListsFromPrefs(String? raw) {
   }
 }
 
-String blueskyListsToPrefs(List<BlueskyListInfo> lists) =>
-    jsonEncode(lists.map((e) => e.toJson()).toList());
+String blueskyListsToPrefs(List<BlueskyListInfo> lists) => jsonEncode(lists.map((e) => e.toJson()).toList());

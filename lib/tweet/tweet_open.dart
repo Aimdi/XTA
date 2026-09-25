@@ -24,7 +24,7 @@ import 'package:xta/client/client.dart';
 /// one. Null when there is no post to open, which is the only case in which a
 /// tap may rightly do nothing.
 ({String id, String? username})? openablePost(TweetWithCard tweet) {
-  final id = tweet.idStr;
+  final id = tweet.idStr?.trim();
   if (id == null || id.isEmpty) {
     return null;
   }
@@ -41,7 +41,7 @@ import 'package:xta/client/client.dart';
   if (user == null || screenName == null || screenName.isEmpty) {
     return null;
   }
-  if (currentUsername != null && screenName.endsWith(currentUsername)) {
+  if (currentUsername != null && screenName.toLowerCase() == currentUsername.toLowerCase()) {
     return null;
   }
 

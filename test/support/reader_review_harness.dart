@@ -45,12 +45,19 @@ MastodonPost reviewPost(String id, {String? parent, bool media = false, bool sen
 class ReaderReviewClient extends MastodonFixtureClient {
   final pictures = [for (var i = 0; i < 12; i++) reviewPost('image-$i', media: true, sensitive: i == 3)];
   @override
-  Future<({MastodonProfile profile, List<MastodonPost> posts, Set<String> pinnedIds, String instance})> profileAnywhere(
-    List<String> instances,
-    String acct,
-  ) async => (
+  Future<
+    ({
+      MastodonProfile profile,
+      List<MastodonPost> posts,
+      List<MastodonPost> rawPosts,
+      Set<String> pinnedIds,
+      String instance,
+    })
+  >
+  profileAnywhere(List<String> instances, String acct) async => (
     profile: sampleProfile,
     posts: [reviewPost('root'), ...pictures],
+    rawPosts: pictures,
     pinnedIds: {'root'},
     instance: 'https://studio.example',
   );

@@ -1,65 +1,89 @@
+import 'dart:async';
+
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/mastodon/mastodon_client.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 
+enum MastodonProfileTab { posts, replies, media }
+
+class MastodonProfileTimeline {
+  final List<MastodonPost> posts;
+  final String? cursor;
+  final bool loaded;
+  final bool loading;
+  final bool more;
+  final Object? error;
+
+  const MastodonProfileTimeline({
+    this.posts = const [],
+    this.cursor,
+    this.loaded = false,
+    this.loading = false,
+    this.more = true,
+    this.error,
+  });
+
+  MastodonProfileTimeline copy({bool? loading, bool? more, Object? error}) => MastodonProfileTimeline(
+    posts: posts,
+    cursor: cursor,
+    loaded: loaded,
+    loading: loading ?? this.loading,
+    more: more ?? this.more,
+    error: error,
+  );
+}
+
 class MastodonProfileState {
   final MastodonProfile? profile;
   final String? instance;
-  final List<MastodonPost> posts;
-  final List<MastodonPost> media;
+  final Map<MastodonProfileTab, MastodonProfileTimeline> timelines;
   final Set<String> pinnedIds;
-  final bool mediaSelected;
+  final MastodonProfileTab selected;
   final bool loading;
-  final bool loadingMore;
-  final bool mediaLoaded;
-  final bool morePosts;
-  final bool moreMedia;
-  final Object? error;
+  final Object? profileError;
 
   const MastodonProfileState({
     this.profile,
     this.instance,
-    this.posts = const [],
-    this.media = const [],
+    this.timelines = const {},
     this.pinnedIds = const {},
-    this.mediaSelected = false,
+    this.selected = MastodonProfileTab.posts,
     this.loading = false,
-    this.loadingMore = false,
-    this.mediaLoaded = false,
-    this.morePosts = true,
-    this.moreMedia = true,
-    this.error,
+    this.profileError,
   });
 
-  List<MastodonPost> get visible => mediaSelected ? media : posts;
+  MastodonProfileTimeline timeline(MastodonProfileTab tab) => timelines[tab] ?? const MastodonProfileTimeline();
+  MastodonProfileTimeline get current => timeline(selected);
+  List<MastodonPost> get posts => timeline(MastodonProfileTab.posts).posts;
+  List<MastodonPost> get media => timeline(MastodonProfileTab.media).posts;
+  List<MastodonPost> get visible => current.posts;
+  bool get mediaSelected => selected == MastodonProfileTab.media;
+  bool get loadingMore => current.loading;
+  bool get mediaLoaded => timeline(MastodonProfileTab.media).loaded;
+  bool get morePosts => timeline(MastodonProfileTab.posts).more;
+  bool get moreMedia => timeline(MastodonProfileTab.media).more;
+  Object? get error => profileError ?? current.error;
 
   MastodonProfileState copy({
     MastodonProfile? profile,
     String? instance,
-    List<MastodonPost>? posts,
-    List<MastodonPost>? media,
+    Map<MastodonProfileTab, MastodonProfileTimeline>? timelines,
     Set<String>? pinnedIds,
-    bool? mediaSelected,
+    MastodonProfileTab? selected,
     bool? loading,
-    bool? loadingMore,
-    bool? mediaLoaded,
     bool? morePosts,
-    bool? moreMedia,
-    Object? error,
+    Object? profileError,
   }) => MastodonProfileState(
     profile: profile ?? this.profile,
     instance: instance ?? this.instance,
-    posts: posts ?? this.posts,
-    media: media ?? this.media,
+    timelines: morePosts == null
+        ? timelines ?? this.timelines
+        : {...this.timelines, MastodonProfileTab.posts: timeline(MastodonProfileTab.posts).copy(more: morePosts)},
     pinnedIds: pinnedIds ?? this.pinnedIds,
-    mediaSelected: mediaSelected ?? this.mediaSelected,
+    selected: selected ?? this.selected,
     loading: loading ?? this.loading,
-    loadingMore: loadingMore ?? this.loadingMore,
-    mediaLoaded: mediaLoaded ?? this.mediaLoaded,
-    morePosts: morePosts ?? this.morePosts,
-    moreMedia: moreMedia ?? this.moreMedia,
-    error: error,
+    profileError: profileError,
   );
 }
 
@@ -73,8 +97,14 @@ class MastodonProfileStore extends Store<MastodonProfileState> {
   MastodonProfileStore(this.client, this.instances, this.acct) : super(const MastodonProfileState());
 
   Future<void> refresh() async {
+    if (_closed) return;
     final generation = ++_generation;
-    update(state.copy(loading: true, loadingMore: false));
+    update(
+      state.copy(
+        loading: true,
+        timelines: {for (final entry in state.timelines.entries) entry.key: entry.value.copy(loading: false)},
+      ),
+    );
     try {
       final page = await client.profileAnywhere(instances, acct);
       if (_closed || generation != _generation) return;
@@ -82,55 +112,69 @@ class MastodonProfileStore extends Store<MastodonProfileState> {
         state.copy(
           profile: page.profile,
           instance: page.instance,
-          posts: page.posts,
           pinnedIds: page.pinnedIds,
-          morePosts: page.posts.length >= 20,
           loading: false,
-          media: const [],
-          mediaLoaded: false,
-          moreMedia: true,
+          timelines: {
+            MastodonProfileTab.posts: MastodonProfileTimeline(
+              posts: page.posts,
+              cursor: page.rawPosts.lastOrNull?.pagingId,
+              loaded: true,
+              more: page.rawPosts.length >= 20,
+            ),
+          },
         ),
       );
-      if (state.mediaSelected) await loadMore();
+      if (state.selected != MastodonProfileTab.posts) await loadMore();
     } catch (error) {
-      if (!_closed && generation == _generation) update(state.copy(loading: false, error: error));
+      if (!_closed && generation == _generation) update(state.copy(loading: false, profileError: error));
     }
   }
 
-  void selectMedia(bool media) {
-    update(state.copy(mediaSelected: media));
-    if (media && !state.mediaLoaded) loadMore();
+  void select(MastodonProfileTab tab) {
+    if (_closed) return;
+    update(state.copy(selected: tab, profileError: state.profileError));
+    if (!state.current.loaded && !state.loading) unawaited(loadMore());
   }
+
+  void selectMedia(bool media) => select(media ? MastodonProfileTab.media : MastodonProfileTab.posts);
+
+  Future<void> retry() => state.profileError == null ? loadMore() : refresh();
 
   Future<void> loadMore() async {
     final profile = state.profile;
     final instance = state.instance;
-    final media = state.mediaSelected;
-    if (_closed || state.loading || state.loadingMore || profile == null || instance == null) return;
-    if (media ? !state.moreMedia : !state.morePosts) return;
+    final tab = state.selected;
+    final current = state.current;
+    if (_closed || state.loading || current.loading || !current.more || profile == null || instance == null) return;
     final generation = _generation;
-    final current = media ? state.media : state.posts;
-    update(state.copy(loadingMore: true));
+    _updateTimeline(tab, current.copy(loading: true));
     try {
       final page = await client.getStatuses(
         instance,
         profile.id,
-        onlyMedia: media,
-        maxId: current.isEmpty ? null : current.last.id,
+        excludeReplies: tab == MastodonProfileTab.posts,
+        onlyMedia: tab == MastodonProfileTab.media,
+        maxId: current.cursor,
       );
       if (_closed || generation != _generation) return;
-      final combined = appendUniqueMastodonPosts(current, page);
-      update(
-        media
-            ? state.copy(media: combined, mediaLoaded: true, moreMedia: page.length >= 20, loadingMore: false)
-            : state.copy(posts: combined, morePosts: page.length >= 20, loadingMore: false),
+      final combined = appendUniqueMastodonPosts(current.posts, page);
+      final cursor = page.lastOrNull?.pagingId;
+      _updateTimeline(
+        tab,
+        MastodonProfileTimeline(
+          posts: combined,
+          cursor: cursor,
+          loaded: true,
+          more: page.length >= 20 && cursor != current.cursor,
+        ),
       );
-      // A tab change during a posts request must still load the media tab.
-      if (!media && state.mediaSelected && !state.mediaLoaded) await loadMore();
     } catch (error) {
-      if (!_closed && generation == _generation) update(state.copy(loadingMore: false, error: error));
+      if (!_closed && generation == _generation) _updateTimeline(tab, current.copy(error: error, loading: false));
     }
   }
+
+  void _updateTimeline(MastodonProfileTab tab, MastodonProfileTimeline timeline) =>
+      update(state.copy(timelines: {...state.timelines, tab: timeline}, profileError: state.profileError));
 
   @override
   Future<void> destroy() {

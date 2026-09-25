@@ -1,77 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
+import 'package:xta/plugins/bluesky/bluesky_thread_outline.dart';
 
-class BlueskyReplyBranch {
-  final BlueskyPost post;
-  final List<BlueskyReplyBranch> children;
-  const BlueskyReplyBranch(this.post, this.children);
-  int get descendants => children.fold(0, (count, child) => count + 1 + child.descendants);
-}
-
-/// Rebuild reply branches from canonical AT URIs, preserving sibling order.
-List<BlueskyReplyBranch> blueskyReplyBranches(BlueskyThread thread) {
-  final posts = <String, BlueskyPost>{};
-  for (final post in thread.replies) {
-    if (post.uri.isNotEmpty && post.uri != thread.post.uri) posts.putIfAbsent(post.uri, () => post);
-  }
-  final children = <String, List<String>>{};
-  final roots = <String>[];
-  for (final post in posts.values) {
-    final parent = post.replyToUri;
-    if (parent != null && parent != post.uri && posts.containsKey(parent)) {
-      (children[parent] ??= []).add(post.uri);
-    } else {
-      roots.add(post.uri);
-    }
-  }
-  final visited = <String>{};
-  BlueskyReplyBranch build(String uri) {
-    visited.add(uri);
-    final nested = <BlueskyReplyBranch>[];
-    for (final child in children[uri] ?? const <String>[]) {
-      if (!visited.contains(child)) nested.add(build(child));
-    }
-    return BlueskyReplyBranch(posts[uri]!, nested);
-  }
-
-  final result = <BlueskyReplyBranch>[];
-  for (final uri in [...roots, ...posts.keys]) {
-    if (!visited.contains(uri)) result.add(build(uri));
-  }
-  return result;
-}
-
-class BlueskyReplyRow {
-  final BlueskyReplyBranch branch;
-  final int depth;
-  final bool collapsed;
-  const BlueskyReplyRow(this.branch, this.depth, this.collapsed);
-}
-
-List<BlueskyReplyRow> blueskyVisibleReplies(List<BlueskyReplyBranch> branches, Set<String> collapsed) {
-  final rows = <BlueskyReplyRow>[];
-  void append(BlueskyReplyBranch branch, int depth) {
-    final hidden = collapsed.contains(branch.post.uri);
-    rows.add(BlueskyReplyRow(branch, depth, hidden));
-    if (!hidden) {
-      for (final child in branch.children) {
-        append(child, depth + 1);
-      }
-    }
-  }
-
-  for (final branch in branches) {
-    append(branch, 0);
-  }
-  return rows;
-}
+export 'package:xta/plugins/bluesky/bluesky_thread_outline.dart';
 
 class BlueskyThreadState {
   final BlueskyThread thread;
   final List<BlueskyReplyBranch> branches;
   final Set<String> collapsed;
   final bool contextOpen;
+  final bool authorOnly;
+  final BlueskyReplyOrder order;
   final bool loading;
   final Object? error;
   const BlueskyThreadState({
@@ -79,6 +21,8 @@ class BlueskyThreadState {
     this.branches = const [],
     this.collapsed = const {},
     this.contextOpen = false,
+    this.authorOnly = false,
+    this.order = BlueskyReplyOrder.original,
     this.loading = false,
     this.error,
   });
@@ -87,15 +31,26 @@ class BlueskyThreadState {
     BlueskyThread? thread,
     Set<String>? collapsed,
     bool? contextOpen,
-    bool loading = false,
+    bool? authorOnly,
+    BlueskyReplyOrder? order,
+    bool? loading,
     Object? error,
+    bool clearError = false,
   }) => BlueskyThreadState(
     thread: thread ?? this.thread,
-    branches: thread == null ? branches : blueskyReplyBranches(thread),
-    collapsed: collapsed ?? this.collapsed,
+    branches: thread == null && authorOnly == null && order == null
+        ? branches
+        : blueskyReplyBranches(
+            thread ?? this.thread,
+            authorOnly: authorOnly ?? this.authorOnly,
+            order: order ?? this.order,
+          ),
+    collapsed: collapsed == null ? this.collapsed : Set.unmodifiable(collapsed),
     contextOpen: contextOpen ?? this.contextOpen,
-    loading: loading,
-    error: error,
+    authorOnly: authorOnly ?? this.authorOnly,
+    order: order ?? this.order,
+    loading: loading ?? this.loading,
+    error: clearError ? null : error ?? this.error,
   );
 }
 
@@ -105,24 +60,70 @@ class BlueskyThreadStore extends Store<BlueskyThreadState> {
   var _closed = false;
   BlueskyThreadStore(this.client, BlueskyPost post) : super(BlueskyThreadState(thread: BlueskyThread(post: post)));
 
-  void toggleContext() =>
-      update(state.copyWith(contextOpen: !state.contextOpen, loading: state.loading, error: state.error));
+  void toggleContext() {
+    if (!_closed) update(state.copyWith(contextOpen: !state.contextOpen));
+  }
 
   void toggle(String uri) {
+    if (_closed) return;
     final collapsed = {...state.collapsed};
     if (!collapsed.remove(uri)) collapsed.add(uri);
-    update(state.copyWith(collapsed: collapsed, loading: state.loading, error: state.error));
+    update(state.copyWith(collapsed: collapsed));
+  }
+
+  void selectAuthor(bool selected) {
+    if (!_closed && selected != state.authorOnly) update(state.copyWith(authorOnly: selected, collapsed: {}));
+  }
+
+  void selectOrder(BlueskyReplyOrder order) {
+    if (!_closed && order != state.order) update(state.copyWith(order: order));
+  }
+
+  void setAllExpanded(bool expanded) {
+    if (_closed) return;
+    update(
+      state.copyWith(
+        collapsed: expanded
+            ? {}
+            : {
+                for (final row in blueskyVisibleReplies(state.branches, {}))
+                  if (row.branch.descendants > 0) row.branch.post.uri,
+              },
+      ),
+    );
+  }
+
+  void focusSelected() {
+    if (!_closed) update(state.copyWith(contextOpen: false));
   }
 
   Future<void> refresh() async {
+    if (_closed) return;
     final request = ++_request;
-    update(state.copyWith(loading: true));
+    final source = client.baseUrl;
+    update(state.copyWith(loading: true, clearError: true));
     try {
       final thread = await client.getPostThread(state.thread.post.uri);
-      if (!_closed && request == _request) update(state.copyWith(thread: thread));
+      if (!_accept(request, source)) return;
+      final known = thread.replies.map((post) => post.uri).toSet();
+      update(
+        state.copyWith(
+          thread: thread,
+          collapsed: state.collapsed.intersection(known),
+          loading: false,
+          clearError: true,
+        ),
+      );
     } catch (error) {
-      if (!_closed && request == _request) update(state.copyWith(error: error));
+      if (_accept(request, source)) update(state.copyWith(loading: false, error: error));
     }
+  }
+
+  bool _accept(int request, String source) {
+    if (_closed || request != _request) return false;
+    if (source == client.baseUrl) return true;
+    unawaited(refresh());
+    return false;
   }
 
   @override

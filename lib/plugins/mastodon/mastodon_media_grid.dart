@@ -38,9 +38,12 @@ class MastodonMediaTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!post.hasMedia) return const SizedBox.shrink();
     final l10n = L10n.of(context);
     final colors = Theme.of(context).colorScheme;
     final hidden = post.sensitive || post.hasSpoiler;
+    final first = post.mediaItems.first;
+    final alt = first.alt?.trim();
     return Semantics(
       button: true,
       label: '${post.authorName} · ${hidden ? l10n.content_warning : l10n.media}',
@@ -51,22 +54,13 @@ class MastodonMediaTile extends StatelessWidget {
         child: InkWell(
           key: ValueKey('mastodon-media-${post.id}'),
           onTap: hidden || post.mediaItems.first.isVideo
-              ? () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MastodonThreadScreen(post: post),
-                  ),
-                )
+              ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post)))
               : () => openPluginImageViewer(
                   context,
                   items: post.mediaItems,
                   sourceName: 'mastodon',
-                  onOpenPost: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => MastodonThreadScreen(post: post),
-                    ),
-                  ),
+                  onOpenPost: () =>
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonThreadScreen(post: post))),
                 ),
           child: Stack(
             fit: StackFit.expand,
@@ -99,6 +93,35 @@ class MastodonMediaTile extends StatelessWidget {
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ],
+                    ),
+                  ),
+                ),
+              if (!hidden && first.isVideo)
+                const Center(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 28),
+                    ),
+                  ),
+                ),
+              if (!hidden && alt != null && alt.isNotEmpty)
+                PositionedDirectional(
+                  start: 4,
+                  bottom: 4,
+                  child: Tooltip(
+                    message: l10n.alt_text_title,
+                    child: TextButton(
+                      key: ValueKey('mastodon-media-alt-${post.id}'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black87,
+                        minimumSize: const Size(48, 48),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+                      onPressed: () => showPluginAltText(context, alt),
+                      child: Text(l10n.alt_text_badge),
                     ),
                   ),
                 ),

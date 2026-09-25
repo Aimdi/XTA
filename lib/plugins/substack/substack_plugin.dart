@@ -18,6 +18,7 @@ import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/substack/substack_screen.dart';
 import 'package:xta/plugins/substack/substack_search_sheet.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
+import 'package:xta/plugins/substack/substack_search_store.dart';
 
 class SubstackPlugin extends XtaPlugin with SubscriptionSource {
   SubstackPlugin();
@@ -133,6 +134,7 @@ class SubstackPlugin extends XtaPlugin with SubscriptionSource {
     await prefs.set(optionPluginSubstackLikedPosts, '[]');
     await prefs.set(optionPluginSubstackSavedPosts, '[]');
     await prefs.set(optionPluginSubstackPinnedPublications, '');
+    await prefs.set(substackSearchHistoryKey, '[]');
   }
 
   @override

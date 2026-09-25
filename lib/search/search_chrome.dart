@@ -27,6 +27,11 @@ String advancedFilterLabel(BuildContext context, AdvancedSearchFilter filter) {
     AdvancedSearchFilter.minLikes => l10n.minimum_likes,
     AdvancedSearchFilter.minRetweets => l10n.minimum_reposts,
     AdvancedSearchFilter.onlyMedia => l10n.only_show_posts_with_media,
+    AdvancedSearchFilter.photos => l10n.photos,
+    AdvancedSearchFilter.videos => l10n.videos,
+    AdvancedSearchFilter.links => l10n.search_links,
+    AdvancedSearchFilter.excludeReplies => l10n.hide_replies,
+    AdvancedSearchFilter.excludeRetweets => l10n.hide_retweets,
     AdvancedSearchFilter.since => l10n.since_date,
     AdvancedSearchFilter.until => l10n.until_date,
   };
@@ -68,30 +73,15 @@ class XtaSearchField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         hintText: L10n.of(context).search,
-        constraints: BoxConstraints(
-          minWidth: 0,
-          minHeight: fieldHeight,
-          maxHeight: fieldHeight,
-        ),
+        constraints: BoxConstraints(minWidth: 0, minHeight: fieldHeight, maxHeight: fieldHeight),
         textInputAction: TextInputAction.search,
         onSubmitted: onSubmitted,
         onTapOutside: (_) => focusNode.unfocus(),
         elevation: const WidgetStatePropertyAll(0),
         backgroundColor: WidgetStatePropertyAll(background),
-        side: WidgetStatePropertyAll(
-          BorderSide(
-            color:
-                tokens?.border ?? Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(fieldHeight / 2),
-          ),
-        ),
-        padding: const WidgetStatePropertyAll(
-          EdgeInsetsDirectional.only(start: kTweetSpace3, end: kTweetSpace1),
-        ),
+        side: WidgetStatePropertyAll(BorderSide(color: tokens?.border ?? Theme.of(context).colorScheme.outlineVariant)),
+        shape: WidgetStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(fieldHeight / 2))),
+        padding: const WidgetStatePropertyAll(EdgeInsetsDirectional.only(start: kTweetSpace3, end: kTweetSpace1)),
         trailing: [
           if (controller.text.isNotEmpty)
             IconButton(
@@ -99,10 +89,7 @@ class XtaSearchField extends StatelessWidget {
               icon: const Icon(Icons.close),
               onPressed: onClear,
             ),
-          _AdvancedSearchButton(
-            count: activeFilterCount,
-            onPressed: onAdvanced,
-          ),
+          _AdvancedSearchButton(count: activeFilterCount, onPressed: onAdvanced),
         ],
       ),
     );
@@ -117,12 +104,7 @@ class _AdvancedSearchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = Icon(
-      Icons.tune,
-      color: count > 0
-          ? tweetReadableAccentColor(context)
-          : tweetSecondaryColor(context),
-    );
+    final icon = Icon(Icons.tune, color: count > 0 ? tweetReadableAccentColor(context) : tweetSecondaryColor(context));
     return IconButton(
       tooltip: L10n.of(context).advanced_search,
       isSelected: count > 0,
@@ -134,11 +116,8 @@ class _AdvancedSearchButton extends StatelessWidget {
 }
 
 class SearchResultsTabBar extends ReaderTabBar {
-  const SearchResultsTabBar({
-    super.key,
-    required super.controller,
-    required super.tabs,
-  }) : super(height: kSearchTabsHeight);
+  const SearchResultsTabBar({super.key, required super.controller, required super.tabs})
+    : super(height: kSearchTabsHeight);
 }
 
 class SearchFilterStrip extends StatelessWidget {
@@ -152,10 +131,7 @@ class SearchFilterStrip extends StatelessWidget {
     return SizedBox(
       height: kSearchFilterStripHeight,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(
-          horizontal: kTweetHorizontalPadding,
-          vertical: kTweetSpace1,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding, vertical: kTweetSpace1),
         scrollDirection: Axis.horizontal,
         itemCount: chips.length,
         separatorBuilder: (_, _) => const SizedBox(width: kTweetSpace2),
@@ -169,11 +145,7 @@ class SearchActiveFilterChip extends StatelessWidget {
   final String label;
   final VoidCallback onDeleted;
 
-  const SearchActiveFilterChip({
-    super.key,
-    required this.label,
-    required this.onDeleted,
-  });
+  const SearchActiveFilterChip({super.key, required this.label, required this.onDeleted});
 
   @override
   Widget build(BuildContext context) {
@@ -184,16 +156,12 @@ class SearchActiveFilterChip extends StatelessWidget {
           constraints: const BoxConstraints(maxWidth: 240),
           child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
-        labelStyle: tweetMetadataStyle(
-          context,
-        ).copyWith(color: tweetPrimaryColor(context)),
+        labelStyle: tweetMetadataStyle(context).copyWith(color: tweetPrimaryColor(context)),
         deleteIconColor: tweetSecondaryColor(context),
         deleteButtonTooltipMessage: L10n.of(context).group_combine_clear,
         onDeleted: onDeleted,
         side: BorderSide(color: tweetDividerColor(context)),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(kSearchControlRadius),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(kSearchControlRadius)),
         backgroundColor: tweetSurfaceColor(context),
       ),
     );
@@ -216,9 +184,7 @@ class SearchStartState extends StatelessWidget {
             Text(
               L10n.of(context).search_in_plugin(L10n.of(context).source_x),
               textAlign: TextAlign.center,
-              style: tweetBodyStyle(
-                context,
-              ).copyWith(color: tweetSecondaryColor(context)),
+              style: tweetBodyStyle(context).copyWith(color: tweetSecondaryColor(context)),
             ),
           ],
         ),
@@ -232,12 +198,7 @@ class AdvancedFilterSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
 
-  const AdvancedFilterSection({
-    super.key,
-    required this.title,
-    required this.children,
-    this.icon,
-  });
+  const AdvancedFilterSection({super.key, required this.title, required this.children, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -254,11 +215,7 @@ class AdvancedFilterSection extends StatelessWidget {
           child: Row(
             children: [
               if (icon != null) ...[
-                Icon(
-                  icon,
-                  size: kTweetActionIconSize,
-                  color: tweetReadableAccentColor(context),
-                ),
+                Icon(icon, size: kTweetActionIconSize, color: tweetReadableAccentColor(context)),
                 const SizedBox(width: kTweetSpace2),
               ],
               Expanded(child: Text(title, style: tweetLabelStyle(context))),
@@ -293,19 +250,12 @@ class AdvancedSearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     final tokens = XLookTokens.maybeOf(context);
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        kTweetHorizontalPadding,
-        kTweetSpace1,
-        kTweetHorizontalPadding,
-        kTweetSpace2,
-      ),
+      padding: const EdgeInsets.fromLTRB(kTweetHorizontalPadding, kTweetSpace1, kTweetHorizontalPadding, kTweetSpace2),
       child: TextField(
         controller: controller,
         onChanged: onChanged,
         keyboardType: number ? TextInputType.number : TextInputType.text,
-        inputFormatters: number
-            ? [FilteringTextInputFormatter.digitsOnly]
-            : null,
+        inputFormatters: number ? [FilteringTextInputFormatter.digitsOnly] : null,
         textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           labelText: label,
@@ -323,9 +273,7 @@ class AdvancedSearchField extends StatelessWidget {
                   icon: const Icon(Icons.close),
                   onPressed: onClear,
                 ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(kSearchControlRadius),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(kSearchControlRadius)),
         ),
       ),
     );
@@ -355,11 +303,9 @@ class SearchQueryPreview extends StatelessWidget {
           const SizedBox(height: kTweetSpace2),
           SelectableText(
             query.isEmpty ? L10n.of(context).not_set : query,
-            style: tweetBodyStyle(context).copyWith(
-              color: query.isEmpty
-                  ? tweetSecondaryColor(context)
-                  : tweetPrimaryColor(context),
-            ),
+            style: tweetBodyStyle(
+              context,
+            ).copyWith(color: query.isEmpty ? tweetSecondaryColor(context) : tweetPrimaryColor(context)),
           ),
         ],
       ),
@@ -400,11 +346,7 @@ class AdvancedSearchDateRow extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: kTweetActionIconSize,
-                  color: tweetSecondaryColor(context),
-                ),
+                Icon(Icons.calendar_today_outlined, size: kTweetActionIconSize, color: tweetSecondaryColor(context)),
                 const SizedBox(width: kTweetSpace3),
                 Expanded(
                   child: Column(
@@ -423,10 +365,7 @@ class AdvancedSearchDateRow extends StatelessWidget {
                     onPressed: onClear,
                   )
                 else
-                  const SizedBox.square(
-                    dimension: kTweetTouchTarget,
-                    child: Icon(Icons.chevron_right),
-                  ),
+                  const SizedBox.square(dimension: kTweetTouchTarget, child: Icon(Icons.chevron_right)),
               ],
             ),
           ),
@@ -441,12 +380,7 @@ class AdvancedSearchToggleRow extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const AdvancedSearchToggleRow({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
+  const AdvancedSearchToggleRow({super.key, required this.label, required this.value, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -454,9 +388,7 @@ class AdvancedSearchToggleRow extends StatelessWidget {
       title: Text(label, style: tweetBodyStyle(context)),
       value: value,
       onChanged: onChanged,
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: kTweetHorizontalPadding,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding),
     );
   }
 }
@@ -465,25 +397,16 @@ class SearchApplyBar extends StatelessWidget {
   final bool enabled;
   final VoidCallback onPressed;
 
-  const SearchApplyBar({
-    super.key,
-    required this.enabled,
-    required this.onPressed,
-  });
+  const SearchApplyBar({super.key, required this.enabled, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    final background =
-        XLookTokens.maybeOf(context)?.background ??
-        Theme.of(context).scaffoldBackgroundColor;
+    final background = XLookTokens.maybeOf(context)?.background ?? Theme.of(context).scaffoldBackgroundColor;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: background,
         border: Border(
-          top: BorderSide(
-            color: tweetDividerColor(context),
-            width: kTweetDividerThickness,
-          ),
+          top: BorderSide(color: tweetDividerColor(context), width: kTweetDividerThickness),
         ),
       ),
       child: SafeArea(
@@ -491,9 +414,7 @@ class SearchApplyBar extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(kTweetSpace3),
           child: FilledButton.icon(
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(kTweetTouchTarget),
-            ),
+            style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(kTweetTouchTarget)),
             onPressed: enabled ? onPressed : null,
             icon: const Icon(Icons.search),
             label: Text(L10n.of(context).search),

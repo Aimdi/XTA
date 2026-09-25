@@ -30,21 +30,10 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('count actions stay named when their visible count is hidden', (
-    tester,
-  ) async {
+  testWidgets('count actions stay named when their visible count is hidden', (tester) async {
     final handle = tester.ensureSemantics();
 
-    await pump(
-      tester,
-      tweetFooterTextButton(
-        Icons.chat_bubble_outline,
-        '',
-        Colors.grey,
-        () {},
-        'Open post',
-      ),
-    );
+    await pump(tester, tweetFooterTextButton(Icons.chat_bubble_outline, '', Colors.grey, () {}, 'Open post'));
 
     expect(find.bySemanticsLabel('Open post'), findsOneWidget);
     handle.dispose();
@@ -53,22 +42,10 @@ void main() {
   testWidgets('footer controls preserve a 48dp touch target', (tester) async {
     await pump(
       tester,
-      Builder(
-        builder: (context) => tweetFooterIconButton(
-          context,
-          Icons.share,
-          null,
-          null,
-          () {},
-          'Share post',
-        ),
-      ),
+      Builder(builder: (context) => tweetFooterIconButton(context, Icons.share, null, null, () {}, 'Share post')),
     );
 
-    expect(
-      tester.getSize(find.byType(IconButton)),
-      const Size.square(kTweetTouchTarget),
-    );
+    expect(tester.getSize(find.byType(IconButton)), const Size.square(kTweetTouchTarget));
   });
 
   testWidgets('saving and unsaving are told apart by name, not only by icon', (tester) async {
@@ -126,18 +103,23 @@ void main() {
 
     await pump(
       tester,
-      LikeButton(
-        isLiked: false,
-        label: '12',
-        color: Colors.grey,
-        tooltip: 'Like on this device',
-        onPressed: () {},
-      ),
+      LikeButton(isLiked: false, label: '12', color: Colors.grey, tooltip: 'Like on this device', onPressed: () {}),
+    );
+
+    expect(tester.getSemantics(find.byType(LikeButton)).label, 'Like on this device, 12');
+    handle.dispose();
+  });
+
+  testWidgets('an unavailable local like is announced as disabled', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pump(
+      tester,
+      const LikeButton(isLiked: false, label: '', color: Colors.grey, tooltip: 'Like on this device', onPressed: null),
     );
 
     expect(
-      tester.getSemantics(find.byType(LikeButton)).label,
-      'Like on this device, 12',
+      tester.getSemantics(find.byType(LikeButton)),
+      matchesSemantics(label: 'Like on this device', isButton: true, hasEnabledState: true),
     );
     handle.dispose();
   });

@@ -203,6 +203,7 @@ class MastodonClient {
     ({
       MastodonProfile profile,
       List<MastodonPost> posts,
+      List<MastodonPost> rawPosts,
       Set<String> pinnedIds,
       String instance,
     })
@@ -222,6 +223,7 @@ class MastodonClient {
         return (
           profile: profile,
           posts: mergeMastodonPinned(pinned, posts),
+          rawPosts: posts,
           pinnedIds: {for (final post in pinned) post.id},
           instance: instance,
         );
@@ -511,7 +513,7 @@ class MastodonClient {
           return post;
         }
       }
-      maxId = posts.last.id;
+      maxId = posts.last.pagingId;
     }
     return null;
   }

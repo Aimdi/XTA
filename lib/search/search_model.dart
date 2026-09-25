@@ -8,6 +8,7 @@ import 'package:xta/search/advanced_search_model.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/read_request_scope.dart';
 
 @immutable
 class SearchViewState {
@@ -115,15 +116,48 @@ class SearchMediaPagination {
 }
 
 class SearchUsersModel extends Store<List<UserWithExtra>> {
-  SearchUsersModel() : super([]);
+  final Future<List<UserWithExtra>> Function(String) _search;
+  final Duration requestTimeout;
+  final _reads = ReadRequestScope();
+  int _generation = 0;
+  bool _closed = false;
+
+  SearchUsersModel({
+    Future<List<UserWithExtra>> Function(String)? search,
+    this.requestTimeout = const Duration(seconds: 30),
+  }) : _search = search ?? Twitter.searchUsers,
+       super([]);
+
+  @override
+  dynamic get error => triple.error;
 
   Future<void> searchUsers(String query) async {
-    await execute(() async {
-      if (query.isEmpty) {
-        return [];
-      } else {
-        return await Twitter.searchUsers(query);
-      }
-    });
+    if (_closed) return;
+    final generation = ++_generation;
+    _reads.cancel();
+    bool current() => !_closed && generation == _generation;
+    final trimmed = query.trim();
+    update([], force: true);
+    setLoading(trimmed.isNotEmpty, force: true);
+    if (trimmed.isEmpty) return;
+    try {
+      final users = await _reads.start(
+        () => withRateLimitOperations(['SearchTimeline'], () => _search(trimmed)),
+        timeout: requestTimeout,
+      );
+      if (current()) update(users, force: true);
+    } catch (error) {
+      if (current()) setError(error, force: true);
+    } finally {
+      if (current()) setLoading(false, force: true);
+    }
+  }
+
+  @override
+  Future<void> destroy() {
+    _closed = true;
+    _generation++;
+    _reads.cancel();
+    return super.destroy();
   }
 }

@@ -5,6 +5,8 @@ import 'package:xta/utils/json.dart';
 Map<String, Object?> mastodonPostSnapshot(MastodonPost post) => {
   'version': 1,
   'id': post.id,
+  'timelineId': post.timelineId,
+  'timelineAt': post.timelineAt?.toIso8601String(),
   'acct': post.acct,
   'name': post.authorName,
   'avatar': post.avatarUrl,
@@ -43,6 +45,9 @@ Map<String, Object?> mastodonPostSnapshot(MastodonPost post) => {
       'votes': poll.votesCount,
       'expired': poll.expired,
       'multiple': poll.multiple,
+      'voters': poll.votersCount,
+      'expires': poll.expiresAt?.toIso8601String(),
+      'resultsAvailable': poll.resultsAvailable,
       'options': [
         for (final option in poll.options) {'title': option.title, 'votes': option.votes},
       ],
@@ -67,6 +72,8 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
   final poll = json['poll'];
   return MastodonPost(
     id: id,
+    timelineId: json['timelineId'].string,
+    timelineAt: DateTime.tryParse(json['timelineAt'].string ?? ''),
     acct: acct,
     url: url,
     authorName: json['name'].string ?? acct,
@@ -78,22 +85,10 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
       for (final image in json['images'].list)
         if (image.string != null) image.string!,
     ],
-    imageAspects: [
-      for (final aspect in json['imageAspects'].list)
-        aspect.number,
-    ],
-    imageAlts: [
-      for (final alt in json['imageAlts'].list)
-        alt.string,
-    ],
-    imageDownloadUrls: [
-      for (final url in json['imageDownloadUrls'].list)
-        url.string,
-    ],
-    imageIsVideo: [
-      for (final flag in json['imageIsVideo'].list)
-        flag.boolean ?? false,
-    ],
+    imageAspects: [for (final aspect in json['imageAspects'].list) aspect.number],
+    imageAlts: [for (final alt in json['imageAlts'].list) alt.string],
+    imageDownloadUrls: [for (final url in json['imageDownloadUrls'].list) url.string],
+    imageIsVideo: [for (final flag in json['imageIsVideo'].list) flag.boolean ?? false],
     publishedAt: DateTime.tryParse(json['published'].string ?? ''),
     editedAt: DateTime.tryParse(json['edited'].string ?? ''),
     boosted: json['boosted'].boolean ?? false,
@@ -115,6 +110,8 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
             acct: quoted.acct,
             authorName: quoted.authorName,
             text: quoted.text,
+            spoilerText: quoted.spoilerText,
+            sensitive: quoted.sensitive,
             url: quoted.url,
             images: quoted.images,
             imageAspects: quoted.imageAspects,
@@ -138,6 +135,9 @@ MastodonPost? mastodonPostFromSnapshot(Object? value, {bool includeQuote = true}
             votesCount: poll['votes'].integer ?? 0,
             expired: poll['expired'].boolean ?? false,
             multiple: poll['multiple'].boolean ?? false,
+            votersCount: poll['voters'].integer,
+            expiresAt: DateTime.tryParse(poll['expires'].string ?? ''),
+            resultsAvailable: poll['resultsAvailable'].boolean ?? true,
             options: [
               for (final option in poll['options'].list)
                 MastodonPollOption(title: option['title'].string ?? '', votes: option['votes'].integer ?? 0),

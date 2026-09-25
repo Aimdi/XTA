@@ -5,22 +5,10 @@ import 'package:html/parser.dart' as html_parser;
 ///
 /// `javascript:` is the obvious one; `data:` can carry a whole HTML document,
 /// which is the same thing wearing a different hat.
-final _executableUrl = RegExp(
-  r'^\s*(javascript|vbscript|data)\s*:',
-  caseSensitive: false,
-);
+final _executableUrl = RegExp(r'^\s*(javascript|vbscript|data)\s*:', caseSensitive: false);
 
 /// Attributes that hold a URL, and so can smuggle one of the above.
-const _urlAttributes = {
-  'href',
-  'src',
-  'srcset',
-  'action',
-  'formaction',
-  'poster',
-  'background',
-  'data',
-};
+const _urlAttributes = {'href', 'src', 'srcset', 'action', 'formaction', 'poster', 'background', 'data'};
 
 /// Removes the parts of a post that are code rather than writing.
 ///
@@ -39,7 +27,8 @@ void _stripExecutable(Element element) {
   for (final key in element.attributes.keys.toList()) {
     final name = '$key'.toLowerCase().split(':').last;
 
-    if (name.startsWith('on') || name == 'srcdoc' ||
+    if (name.startsWith('on') ||
+        name == 'srcdoc' ||
         (_urlAttributes.contains(name) &&
             _executableUrl.hasMatch((element.attributes[key] ?? '').replaceAll(RegExp(r'[\u0000-\u0020]'), '')))) {
       element.attributes.remove(key);
@@ -78,11 +67,8 @@ String sanitizeSubstackBodyHtml(String raw) {
     node.remove();
   }
 
-  for (final node in List<Element>.from(
-    fragment.querySelectorAll('div, span'),
-  )) {
-    if (node.text.trim().isEmpty &&
-        node.querySelector('img, iframe, video, picture, table') == null) {
+  for (final node in List<Element>.from(fragment.querySelectorAll('div, span'))) {
+    if (node.text.trim().isEmpty && node.querySelector('img, iframe, video, picture, table') == null) {
       node.remove();
     }
   }
@@ -91,9 +77,7 @@ String sanitizeSubstackBodyHtml(String raw) {
     _stripExecutable(node);
   }
 
-  return fragment.nodes
-      .map((node) => node is Element ? node.outerHtml : node.text)
-      .join();
+  return fragment.outerHtml;
 }
 
 /// Plain text suitable for device TTS, with paragraph breaks preserved.
@@ -150,11 +134,7 @@ String substackHtmlToPlainText(String raw) {
   }
 
   walk(body);
-  return buffer
-      .toString()
-      .replaceAll(RegExp(r'[ \t]+\n'), '\n')
-      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
-      .trim();
+  return buffer.toString().replaceAll(RegExp(r'[ \t]+\n'), '\n').replaceAll(RegExp(r'\n{3,}'), '\n\n').trim();
 }
 
 String buildSubstackSpeakText({
@@ -172,8 +152,7 @@ String buildSubstackSpeakText({
       : '';
   final parts = <String>[
     title.trim(),
-    if (publicationName != null && publicationName.trim().isNotEmpty)
-      publicationName.trim(),
+    if (publicationName != null && publicationName.trim().isNotEmpty) publicationName.trim(),
     if (authorName != null && authorName.trim().isNotEmpty) authorName.trim(),
     if (subtitle != null && subtitle.trim().isNotEmpty) subtitle.trim(),
     body,
@@ -248,6 +227,7 @@ String wrapSubstackHtml({
   required String muted,
   required String link,
   required bool isDark,
+  bool isRtl = false,
   String? subtitle,
   String? authorName,
   String? publicationName,
@@ -259,8 +239,7 @@ String wrapSubstackHtml({
 }) {
   final cleanBody = sanitizeSubstackBodyHtml(body);
   final meta = [
-    if (publicationName != null && publicationName.isNotEmpty)
-      _escape(publicationName),
+    if (publicationName != null && publicationName.isNotEmpty) _escape(publicationName),
     if (authorName != null && authorName.isNotEmpty) _escape(authorName),
   ].join(' · ');
 
@@ -269,7 +248,7 @@ String wrapSubstackHtml({
 
   return '''
 <!DOCTYPE html>
-<html>
+<html dir="${isRtl ? 'rtl' : 'ltr'}">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3" />
@@ -331,12 +310,13 @@ String wrapSubstackHtml({
   a { color: $link; text-decoration-thickness: from-font; }
   strong, b { font-weight: 700; }
   em, i { font-style: italic; }
-  ul, ol { padding-left: 1.35em; margin: 0 0 1.05em; }
+  ul, ol { padding-inline-start: 1.35em; margin: 0 0 1.05em; }
   li { margin: 0.35em 0; }
   blockquote {
     margin: 1.2em 0;
-    padding: 0.15em 0 0.15em 1em;
-    border-left: 3px solid $link;
+    padding-block: 0.15em;
+    padding-inline-start: 1em;
+    border-inline-start: 3px solid $link;
     color: $muted;
   }
   hr {
@@ -375,6 +355,8 @@ String wrapSubstackHtml({
   }
   pre code { padding: 0; background: transparent; }
   table {
+    display: block;
+    overflow-x: auto;
     width: 100%;
     border-collapse: collapse;
     margin: 1.2em 0;
@@ -383,7 +365,7 @@ String wrapSubstackHtml({
   th, td {
     border: 1px solid $rule;
     padding: 8px 10px;
-    text-align: left;
+    text-align: start;
     vertical-align: top;
   }
   .twitter-embed, .youtube-wrap, .youtube-inner {
@@ -397,6 +379,9 @@ String wrapSubstackHtml({
     font-size: 0.9em;
   }
   .preview-end p { margin: 0.4em 0; }
+  [data-xta-block], [id], a[name] { scroll-margin-top: 16px; }
+  [data-xta-selected] { outline: 2px solid $link; outline-offset: 5px; }
+  :focus-visible { outline: 2px solid $link; outline-offset: 4px; }
   body { -webkit-touch-callout: none; }
 </style>
 </head>
@@ -423,19 +408,12 @@ String _footerHtml(String? text, String? link, String? linkLabel) {
     return '';
   }
 
-  final action =
-      (link != null &&
-          link.isNotEmpty &&
-          linkLabel != null &&
-          linkLabel.isNotEmpty)
+  final action = (link != null && link.isNotEmpty && linkLabel != null && linkLabel.isNotEmpty)
       ? '<p><a href="${_escape(link)}">${_escape(linkLabel)}</a></p>'
       : '';
 
   return '<div class="preview-end"><p>${_escape(text)}</p>$action</div>';
 }
 
-String _escape(String value) => value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;');
+String _escape(String value) =>
+    value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
