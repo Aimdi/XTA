@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show mapEquals;
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/tweet/feed_snapshot_cache.dart';
 import 'package:xta/tweet/interleaved_items.dart';
@@ -56,7 +57,10 @@ class ProgressiveFeedStore extends Store<ProgressiveFeedState> {
     if (pending != null) update(ProgressiveFeedState(visible: pending, sources: state.sources));
   }
 
-  Future<void> load(Map<String, SourceLoader> loaders, Map<String, String> keys) async {
+  Future<void> load(Map<String, SourceLoader> loaders, Map<String, String> keys, {bool refresh = true}) async {
+    if (_closed) return;
+    // Widget rebuilds must not cancel healthy requests or reset their deadlines.
+    if (!refresh && mapEquals(_keys, keys)) return;
     final retained = {
       for (final key in loaders.keys)
         if (_keys[key] == keys[key] && state.visible.containsKey(key)) key: state.visible[key]!,

@@ -217,6 +217,7 @@ class _SubscriptionGroupScreenContentState
         error: error,
         stackTrace: null,
         prefix: L10n.current.unable_to_load_the_group,
+        onRetry: () => context.read<GroupModel>().loadGroup(),
       ),
       onState: (_, group) {
         // TODO: This is pretty gross. Figure out how to have a "no data" state

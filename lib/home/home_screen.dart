@@ -100,6 +100,7 @@ class _HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<_HomeScreen> {
   int _initialPage = 0;
   List<NavigationPage> _pages = [];
+  late void Function() _disposePagesObserver;
 
   @override
   void initState() {
@@ -107,7 +108,23 @@ class _HomeScreenState extends State<_HomeScreen> {
 
     _pages = _selectedPages(widget.model.state);
     _initialPage = _initialPageOf(_pages);
-    widget.model.observer(onState: _onPages);
+    _disposePagesObserver = widget.model.observer(onState: _onPages);
+  }
+
+  @override
+  void didUpdateWidget(_HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (identical(widget.model, oldWidget.model)) return;
+    _disposePagesObserver();
+    _pages = _selectedPages(widget.model.state);
+    _initialPage = _initialPageOf(_pages);
+    _disposePagesObserver = widget.model.observer(onState: _onPages);
+  }
+
+  @override
+  void dispose() {
+    _disposePagesObserver();
+    super.dispose();
   }
 
   List<NavigationPage> _selectedPages(List<HomePage> state) {

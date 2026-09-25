@@ -19,12 +19,26 @@ class RecoveryGate {
   }
 }
 
+class ReadNetworkState {
+  final bool online;
+  final String? networkId;
+  const ReadNetworkState({required this.online, this.networkId});
+
+  factory ReadNetworkState.fromPlatform(Object? value) => value is Map
+      ? ReadNetworkState(
+          online: value['online'] == true,
+          networkId: value['networkId'] is String ? value['networkId'] as String : null,
+        )
+      : ReadNetworkState(online: value == true);
+}
+
 /// Kept-alive tabs and routes behind a profile must not all retry together.
 class ReadRecovery extends StatefulWidget {
   final Widget child;
   final Object? Function() recoverableFailure;
   final VoidCallback retry;
   final Stream<bool>? networkEvents;
+  final Stream<ReadNetworkState>? networkStates;
   final Listenable? changes;
   final bool Function()? isLoading;
   final List<Duration> retryDelays;
@@ -34,22 +48,26 @@ class ReadRecovery extends StatefulWidget {
     required this.recoverableFailure,
     required this.retry,
     this.networkEvents,
+    this.networkStates,
     this.changes,
     this.isLoading,
     this.retryDelays = const [Duration(seconds: 2), Duration(seconds: 5), Duration(seconds: 15)],
   });
   static bool online = false;
-  static final _signals = StreamController<bool>.broadcast();
+  static String? _networkId;
+  static final _signals = StreamController<ReadNetworkState>.broadcast();
   static bool _started = false;
-  static Stream<bool> get network {
+  static Stream<ReadNetworkState> get network {
     if (!_started) {
       _started = true;
 
       // Publish the initial state too: a cold-start failure may occur before
       // any connectivity transition. Retry budgets live in the reading surface.
       const EventChannel('com.aimdi.xta/network_state').receiveBroadcastStream().listen((value) {
-        online = value == true;
-        _signals.add(online);
+        final state = ReadNetworkState.fromPlatform(value);
+        online = state.online;
+        _networkId = state.networkId;
+        _signals.add(state);
       }, onError: (Object _) {});
     }
     return _signals.stream;
@@ -59,11 +77,14 @@ class ReadRecovery extends StatefulWidget {
   State<ReadRecovery> createState() => _ReadRecoveryState();
 }
 
-class _ReadRecoveryState extends State<ReadRecovery> {
-  StreamSubscription<bool>? _network;
+class _ReadRecoveryState extends State<ReadRecovery> with WidgetsBindingObserver {
+  StreamSubscription<ReadNetworkState>? _network;
   Timer? _retryTimer;
+  Timer? _renewCooldown;
   bool _visible = false;
   bool _online = false;
+  bool _backgrounded = false;
+  String? _networkId;
   int _attempts = 0;
   Object? _scheduledFailure;
   Object? _attemptedFailure;
@@ -72,21 +93,46 @@ class _ReadRecoveryState extends State<ReadRecovery> {
   void initState() {
     super.initState();
     _online = ReadRecovery.online;
+    _networkId = ReadRecovery._networkId;
+    WidgetsBinding.instance.addObserver(this);
     _subscribe();
     widget.changes?.addListener(_consider);
   }
 
   void _subscribe() {
-    final events = widget.networkEvents ?? (Platform.isAndroid ? ReadRecovery.network : null);
-    _network = events?.listen((value) {
-      final reconnected = value && !_online;
-      _online = ReadRecovery.online = value;
-      if (reconnected) {
-        _attempts = 0;
-        _attemptedFailure = null;
-      }
+    final events =
+        widget.networkStates ??
+        widget.networkEvents?.map((value) => ReadNetworkState(online: value)) ??
+        (Platform.isAndroid ? ReadRecovery.network : null);
+    _network = events?.listen((state) {
+      final reconnected = state.online && (!_online || (state.networkId != null && state.networkId != _networkId));
+      _online = ReadRecovery.online = state.online;
+      _networkId = state.networkId;
+      if (reconnected) _renewRecovery();
       _consider();
     }, onError: (Object _) {});
+  }
+
+  void _renewRecovery() {
+    // Resume and handover often arrive together. Each gets a bounded budget,
+    // but duplicate platform signals must not restart that budget repeatedly.
+    if (_renewCooldown != null) return;
+    _cancelTimer();
+    _attempts = 0;
+    _attemptedFailure = null;
+    _renewCooldown = Timer(const Duration(seconds: 10), () => _renewCooldown = null);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      _backgrounded = true;
+      _cancelTimer();
+    } else if (state == AppLifecycleState.resumed && _backgrounded) {
+      _backgrounded = false;
+      _renewRecovery();
+      _consider();
+    }
   }
 
   void _cancelTimer() {
@@ -139,7 +185,7 @@ class _ReadRecoveryState extends State<ReadRecovery> {
       oldWidget.changes?.removeListener(_consider);
       widget.changes?.addListener(_consider);
     }
-    if (oldWidget.networkEvents != widget.networkEvents) {
+    if (oldWidget.networkEvents != widget.networkEvents || oldWidget.networkStates != widget.networkStates) {
       _network?.cancel();
       _subscribe();
     }
@@ -148,9 +194,11 @@ class _ReadRecoveryState extends State<ReadRecovery> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     widget.changes?.removeListener(_consider);
     _network?.cancel();
     _cancelTimer();
+    _renewCooldown?.cancel();
     super.dispose();
   }
 
@@ -162,7 +210,7 @@ class _ReadRecoveryState extends State<ReadRecovery> {
     },
     onVisible: () {
       _visible = true;
-      if (widget.networkEvents == null) _online = ReadRecovery.online;
+      if (widget.networkEvents == null && widget.networkStates == null) _online = ReadRecovery.online;
       _consider();
     },
     child: widget.child,

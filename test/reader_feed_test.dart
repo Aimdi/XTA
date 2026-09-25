@@ -89,6 +89,46 @@ void main() {
     expect(store.state.items.single.id, 'new');
     await store.destroy();
   });
+  test('rebuilding an unchanged feed does not restart or cancel pending sources', () async {
+    final pending = Completer<List<InterleavedItem>>();
+    final started = Completer<void>();
+    final store = ProgressiveFeedStore(cache: FeedSnapshotCache(storage: storage));
+    addTearDown(store.destroy);
+    var requests = 0;
+    Future<List<InterleavedItem>> fetch() {
+      requests++;
+      if (!started.isCompleted) started.complete();
+      return pending.future;
+    }
+
+    final loading = store.load({'rss': fetch}, {'rss': 'feed:unchanged'});
+    await started.future;
+    for (var rebuild = 0; rebuild < 30; rebuild++) {
+      await store.load({'rss': fetch}, {'rss': 'feed:unchanged'}, refresh: false);
+    }
+    expect(requests, 1);
+    expect(store.state.sources['rss']!.loading, isTrue);
+    pending.complete([post('completed')]);
+    await loading;
+    expect(store.state.items.single.id, 'completed');
+    expect(store.state.sources['rss']!.loading, isFalse);
+  });
+  test('changed members and explicit refresh still reload plugin sources', () async {
+    final store = ProgressiveFeedStore(cache: FeedSnapshotCache(storage: storage));
+    addTearDown(store.destroy);
+    var requests = 0;
+    Future<List<InterleavedItem>> fetch() async => [post('request-${++requests}')];
+
+    await store.load({'rss': fetch}, {'rss': 'feed:first'});
+    await store.load({'rss': fetch}, {'rss': 'feed:changed'}, refresh: false);
+    expect(requests, 2);
+    expect(store.state.items.single.id, 'request-2');
+    await store.load({'rss': fetch}, {'rss': 'feed:changed'});
+    expect(requests, 3);
+    await store.load({}, {}, refresh: false);
+    expect(store.state.items, isEmpty);
+    expect(store.state.sources, isEmpty);
+  });
   test('snapshots survive new store instances and damaged rows are ignored', () async {
     final cache = FeedSnapshotCache(storage: storage);
     await cache.write('feed:a', [post('saved')]);

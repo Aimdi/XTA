@@ -88,6 +88,7 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
   bool get _isHomeFeed => widget.groupId == '-1';
 
   CombinedGroupsStore? _combined;
+  void Function()? _disposeCombinedObserver;
   Set<String> _alsoRead = const {};
 
   @override
@@ -112,6 +113,7 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
       return;
     }
 
+    _groupModel.destroy();
     setState(() {
       _alsoRead = next;
       _groupModel = GroupModel(widget.groupId, alsoRead: next, prefs: PrefService.of(context, listen: false))
@@ -138,8 +140,9 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
     // both, without either group being changed.
     final combined = context.read<CombinedGroupsStore>();
     if (!identical(combined, _combined)) {
+      _disposeCombinedObserver?.call();
       _combined = combined;
-      combined.observer(onState: (_) => _onCombinationChanged());
+      _disposeCombinedObserver = combined.observer(onState: (_) => _onCombinationChanged());
       _onCombinationChanged();
     }
   }
@@ -164,6 +167,8 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
   @override
   void dispose() {
     _reloadDebounce?.cancel();
+    _disposeCombinedObserver?.call();
+    _groupModel.destroy();
     _subscriptionsModel?.removeReloadListener(_callbackKey);
     _groupsModel?.removeReloadListener(_callbackKey);
     super.dispose();
