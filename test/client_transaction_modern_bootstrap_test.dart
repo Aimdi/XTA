@@ -5,8 +5,12 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:xta/client/headers.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
+import 'package:xta/database/entities.dart';
+import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/tweet/paginated_tweet_list.dart';
 
 const _root = 'https://abs.twimg.com/x-web/client-web';
 const _signer = '$_root/sign.o-a1b2c3.js';
@@ -37,7 +41,9 @@ void main() {
   }
 
   setUp(requests.clear);
+  setUp(TwitterHeaders.resetForTesting);
   tearDown(() {
+    TwitterHeaders.resetForTesting();
     xHttpClient.close();
     xHttpClient = null;
   });
@@ -66,6 +72,107 @@ void main() {
 
     _valid(await ClientTransaction.initialize());
     expect(requests.length, 2);
+  });
+
+  test('current entry follows static imports before preload tables to a backtick signer', () async {
+    // Observed on x.com/home on 2026-09-25: entry-client-logged-out imports
+    // sentry-filter, which dynamically imports sign.o using backticks.
+    respond((request) {
+      if (request.url.host == 'x.com') {
+        return http.Response(_shell('<script type="module" src="$_root/entry-client.js"></script>'), 200);
+      }
+      if (request.url.path.endsWith('/entry-client.js')) {
+        return http.Response(
+          'const preloads = [${List.generate(40, (i) => '"assets/unrelated-$i.js"').join(',')}];'
+          'import {sign} from "./assets/sentry-filter.js";',
+          200,
+        );
+      }
+      if (request.url.path.endsWith('/sentry-filter.js')) {
+        return http.Response('const load = () => import(`../sign.o-a1b2c3.js`);', 200);
+      }
+      expect(request.url.toString(), _signer);
+      return http.Response(_indices, 200);
+    });
+
+    _valid(await ClientTransaction.initialize(cookie: _cookie));
+    expect(requests.map((request) => request.url.toString()), [
+      'https://x.com/home',
+      '$_root/entry-client.js',
+      '$_root/assets/sentry-filter.js',
+      _signer,
+    ]);
+    expect(
+      requests
+          .where((request) => request.url.host == 'abs.twimg.com')
+          .every((request) => !request.headers.containsKey('cookie')),
+      isTrue,
+    );
+  });
+
+  test('a direct backtick signer import is accepted without evaluating JavaScript', () async {
+    respond((request) {
+      if (request.url.host == 'x.com') return http.Response(_shell('<script src="$_root/entry.js"></script>'), 200);
+      return http.Response(request.url.toString() == _signer ? _indices : 'import(`./sign.o-a1b2c3.js`)', 200);
+    });
+    _valid(await ClientTransaction.initialize());
+    expect(requests.length, 3);
+  });
+
+  test('a cold X home feed loads posts through nested signing discovery and the real timeline parser', () async {
+    final fixture = jsonDecode(File('test/fixtures/UserTweets/add_entries.json').readAsStringSync());
+    var timelineRequests = 0;
+    respond((request) {
+      if (request.url.path.endsWith('/HomeTimeline')) {
+        timelineRequests++;
+        expect(request.headers['cookie'], _cookie);
+        expect(request.headers['x-csrf-token'], 'test-csrf');
+        expect(request.headers['x-client-transaction-id'], isNotEmpty);
+        return http.Response(
+          jsonEncode({
+            'data': {
+              'home': {
+                'home_timeline_urt': {
+                  'instructions': [
+                    {'type': 'TimelineAddEntries', 'entries': fixture['entries']},
+                  ],
+                },
+              },
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }
+      if (request.url.host == 'x.com') return http.Response(_shell('<script src="$_root/entry.js"></script>'), 200);
+      expect(request.headers, isNot(contains('cookie')));
+      if (request.url.path.endsWith('/entry.js')) return http.Response('import "./shared.js";', 200);
+      return http.Response(request.url.toString() == _signer ? _indices : 'import(`./sign.o-a1b2c3.js`)', 200);
+    });
+    var counter = 0;
+    final feed = TweetFeedController();
+    addTearDown(feed.dispose);
+    feed.loader = (cursor) => loadMergedForYouPage(
+      accounts: [
+        Account(
+          id: 'reader',
+          screenName: 'reader',
+          authHeader: jsonEncode({'cookie': _cookie, 'x-csrf-token': 'test-csrf'}),
+        ),
+      ],
+      disabledIds: {},
+      cursor: cursor,
+      count: 20,
+      includeReplies: true,
+      getTweetsCounter: () => counter,
+      incrementTweetsCounter: () => counter++,
+    );
+
+    await feed.softRefresh();
+
+    expect(feed.controller.value.error, isNull);
+    expect(feed.items?.map((chain) => chain.id), ['2079275370742677949', '2079275369304150492']);
+    expect(timelineRequests, 1);
   });
 
   test('an entry script after many preloads is inspected before the preload limit', () async {
@@ -174,8 +281,56 @@ void main() {
     expect(requests.map((request) => request.url.toString()), [
       'https://x.com/home',
       '$_root/app-a.js',
+      '$_root/design.o-bad.js', // A trusted module, but never mistaken for a signer.
       'https://x.com/search?q=AI&f=live',
     ]);
+  });
+
+  test('cyclic module imports are visited once and dynamic templates are not evaluated', () async {
+    respond((request) {
+      if (request.url.host == 'x.com') return http.Response(_shell('<script src="$_root/entry.js"></script>'), 200);
+      return http.Response(
+        request.url.path.endsWith('/entry.js')
+            ? 'export {value} from "./child.js"; import(`./sign.o-\${dynamicName}.js`);'
+            : 'import "./entry.js"; export {value} from "./child.js";',
+        200,
+      );
+    });
+    await expectLater(ClientTransaction.initialize(), throwsA(isA<FormatException>()));
+    expect(requests.map((request) => request.url.toString()), [
+      'https://x.com/home',
+      '$_root/entry.js',
+      '$_root/child.js',
+      'https://x.com/search?q=AI&f=live',
+    ]);
+  });
+
+  test('nested imports share the sixteen-asset budget and four-request concurrency limit', () async {
+    var active = 0;
+    var peak = 0;
+    respond((request) async {
+      if (request.url.host == 'x.com') return http.Response(_shell('<script src="$_root/entry.js"></script>'), 200);
+      active++;
+      if (active > peak) peak = active;
+      await Future<void>.delayed(Duration.zero);
+      active--;
+      return http.Response(List.generate(30, (i) => 'import "./child-$i.js";').join(), 200);
+    });
+    await expectLater(ClientTransaction.initialize(), throwsA(isA<FormatException>()));
+    final assets = requests.where((request) => request.url.host == 'abs.twimg.com').toList();
+    expect(assets.length, 15);
+    expect(assets.map((request) => request.url).toSet().length, assets.length);
+    expect(peak, 4);
+  });
+
+  test('a deeply nested graph stops at the import depth limit', () async {
+    respond((request) {
+      if (request.url.host == 'x.com') return http.Response(_shell('<script src="$_root/level-0.js"></script>'), 200);
+      final level = int.parse(RegExp(r'level-(\d+)').firstMatch(request.url.path)!.group(1)!);
+      return http.Response('import "./level-${level + 1}.js";', 200);
+    });
+    await expectLater(ClientTransaction.initialize(), throwsA(isA<FormatException>()));
+    expect(requests.where((request) => request.url.host == 'abs.twimg.com').length, 4);
   });
 
   test('a CDN redirect is not followed and never receives a cookie', () async {
