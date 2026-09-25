@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:html/dom.dart' as html_dom;
 import 'package:html/parser.dart' as html_parser;
+import 'package:http/http.dart' as http;
 import 'package:xta/client/http_client.dart';
 import 'package:xta/utils/request_budget.dart';
 
@@ -13,6 +14,7 @@ import 'constants.dart';
 import 'cubic_curve.dart';
 import 'interpolate.dart';
 import 'rotation.dart';
+import 'signing_assets.dart';
 import 'utils.dart';
 
 class ClientTransaction {
@@ -42,16 +44,14 @@ class ClientTransaction {
 
   /// Fetches x.com and initializes the transaction ID generator.
   static Future<ClientTransaction> initialize({
+    String? cookie,
     String randomKeyword = defaultKeyword,
     int randomNumber = additionalRandomNumber,
   }) async {
     final budget = RequestBudget(const Duration(seconds: 12));
-    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget);
-    final ondemandResponse = await getXResponse(ondemandUrl, timeout: budget.remaining);
-    if (ondemandResponse.statusCode < 200 || ondemandResponse.statusCode >= 300) {
-      throw HttpException('X signing bundle returned HTTP ${ondemandResponse.statusCode}', uri: ondemandUrl);
-    }
-    final ondemandFileText = ondemandResponse.body;
+    final assets = SigningAssets(budget);
+    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget, assets, cookie);
+    final ondemandFileText = await assets.read(ondemandUrl);
 
     final (rowIndex, keyBytesIndices) = _getIndices(ondemandFileText);
     final key = _getKey(homePageDoc);
@@ -108,21 +108,53 @@ class ClientTransaction {
     'X-Twitter-Client-Language': 'en',
   };
 
-  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(RequestBudget budget) async {
+  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(
+    RequestBudget budget,
+    SigningAssets assets,
+    String? cookie,
+  ) async {
     // X's logged-out homepage can omit the signer; its public search shell
     // still includes it: iSarabjitDhiman/XClientTransaction#45.
-    final pages = [Uri.https('x.com', '/home'), Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'})];
+    final pages = [
+      Uri.https('x.com', '/home'),
+      Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}),
+    ];
     for (final uri in pages) {
-      final response = await getXResponse(uri, timeout: budget.remaining, headers: _bootstrapHeaders);
+      final response = await _fetchPage(uri, budget, cookie);
       if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw HttpException('X transaction bootstrap returned HTTP ${response.statusCode}', uri: uri);
       }
       final doc = html_parser.parse(response.body);
-      final bundle = _getOndemandFileUrl(response.body, doc);
-      if (bundle != null && _hasBootstrapData(doc)) return (doc, bundle);
+      if (!_hasBootstrapData(doc)) continue;
+      final bundle = _getOndemandFileUrl(response.body, doc) ?? await assets.discover(doc);
+      if (bundle != null) return (doc, bundle);
     }
     throw const FormatException('X pages did not contain transaction signing data');
+  }
+
+  static Future<http.Response> _fetchPage(Uri uri, RequestBudget budget, String? cookie) async {
+    for (var redirects = 0; ; redirects++) {
+      final response = await getXResponse(
+        uri,
+        timeout: budget.remaining,
+        followRedirects: false,
+        headers: {..._bootstrapHeaders, if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie},
+      );
+      if (!const [301, 302, 303, 307, 308].contains(response.statusCode)) return response;
+      final location = response.headers['location'];
+      final next = location == null ? null : Uri.tryParse(location);
+      final resolved = next == null ? null : uri.resolveUri(next);
+      if (redirects >= 3 ||
+          resolved == null ||
+          resolved.scheme != 'https' ||
+          resolved.host != 'x.com' ||
+          resolved.port != 443 ||
+          resolved.userInfo.isNotEmpty) {
+        throw HttpException('X transaction bootstrap redirect was refused', uri: uri);
+      }
+      uri = resolved;
+    }
   }
 
   static bool _hasBootstrapData(html_dom.Document doc) {

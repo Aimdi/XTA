@@ -4,6 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/client/accounts.dart';
 import 'package:xta/client/endpoints.dart';
+import 'package:xta/client/headers.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
@@ -27,6 +28,7 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
         registryFetchedAt: DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? ''),
         generatedAt: now,
         operations: ReadActivityLog.shared.snapshot(),
+        xSetupFailure: TwitterHeaders.lastInitializationFailure,
       );
     });
   }
