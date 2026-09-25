@@ -10,6 +10,6 @@ final RegExp indicesRegex = RegExp(
 );
 
 final RegExp onDemandFileRegex = RegExp(
-  r''',(\d+):["']ondemand\.s["']''',
+  r'''(?:^|[,{])\s*["']?(\d+)["']?\s*:\s*["']ondemand\.s["']''',
   multiLine: true,
 );

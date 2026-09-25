@@ -1,0 +1,56 @@
+name: X bootstrap check
+
+on:
+  pull_request:
+    paths:
+      - 'lib/client/x_client_transaction_id/**'
+      - 'lib/client/headers.dart'
+      - 'test/client_transaction_bootstrap_test.dart'
+      - 'test/transaction_key_test.dart'
+      - 'test/live/x_bootstrap_smoke_test.dart'
+      - 'test/live/support/x_profile_probe.dart'
+      - 'scripts/report_canary.py'
+      - 'scripts/test_report_canary.py'
+      - '.github/workflows/x-bootstrap-check.yml'
+      - '.github/workflows/api-canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: x-bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: Check canary failure classification
+        run: python3 -m unittest discover -s scripts -p test_report_canary.py
+      - name: Derive live X signing data and fetch a public profile
+        id: probe
+        run: >-
+          flutter test test/live/x_bootstrap_smoke_test.dart
+          --no-pub --dart-define=RUN_LIVE=true --reporter json
+          > canary.jsonl 2>&1
+      - name: Summarise live check
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PROBE_OUTCOME: ${{ steps.probe.outcome }}
+        run: |
+          python3 scripts/report_canary.py X "$RUN_URL" "$PROBE_OUTCOME" canary.jsonl canary-report.md
+          cat canary-report.md >> "$GITHUB_STEP_SUMMARY"
+          cat canary-report.md

@@ -31,9 +31,12 @@ class CanaryReportTest(unittest.TestCase):
         samples = [
             'Building native assets failed',
             'Bad state: Hash of downloaded file sqlite.so is wrong',
-            "Couldn't find ondemand file index",
             'Every endpoint was unreachable, so this run proves nothing about X.',
             'Failed to compile',
+            'TimeoutException after 0:00:12.000000',
+            'SocketException: Failed host lookup: x.com',
+            'ClientException: Connection reset by peer',
+            'ClientException: Connection refused',
         ]
         for raw in samples:
             with self.subTest(raw=raw):
@@ -42,6 +45,32 @@ class CanaryReportTest(unittest.TestCase):
                     'Classification: **infrastructure**',
                     report('X', 'https://github.com/run', 'failure', raw),
                 )
+
+    def test_bootstrap_parser_failures_override_inconclusive_footer(self):
+        samples = [
+            "Couldn't find ondemand file index",
+            "Could not find ondemand file index",
+            "Couldn't find ondemand file hash",
+            "Couldn't get KEY_BYTE indices",
+            "Couldn't get [twitter-site-verification] key from the page source",
+            'FormatException: X pages did not contain transaction signing data',
+        ]
+        for failure in samples:
+            raw = json.dumps({
+                'type': 'error',
+                'error': failure + '\nEvery endpoint was unreachable, so this run proves nothing about X.',
+            })
+            with self.subTest(failure=failure):
+                self.assertEqual(classify('failure', raw), 'service')
+                self.assertIn(
+                    'Classification: **service**',
+                    report('X', 'https://github.com/run', 'failure', raw),
+                )
+
+    def test_success_and_skipped_setup_do_not_reclassify_log_text(self):
+        raw = "Couldn't find ondemand file index"
+        self.assertEqual(classify('success', raw), 'success')
+        self.assertEqual(classify('skipped', raw), 'infrastructure')
 
     def test_secrets_and_url_queries_are_removed(self):
         raw = json.dumps({'type': 'error', 'error': 'Authorization: Bearer TOPSECRET\nCookie: SESSION\nhttps://example.org/api?token=SECRETQUERY', 'stackTrace': ''})

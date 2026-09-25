@@ -20,7 +20,7 @@ jobs:
         include:
           - service: X
             key: x
-            tests: test/live/guest_api_smoke_test.dart test/live/endpoint_canary_test.dart
+            tests: test/live/guest_api_smoke_test.dart test/live/x_bootstrap_smoke_test.dart test/live/endpoint_canary_test.dart
           - service: Instagram
             key: instagram
             tests: test/live/instagram_search_smoke_test.dart
