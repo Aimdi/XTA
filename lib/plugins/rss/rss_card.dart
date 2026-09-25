@@ -111,16 +111,25 @@ class RssItemCard extends StatelessWidget {
 
   Widget _cover(BuildContext context) => ClipRRect(
     borderRadius: BorderRadius.circular(8),
-    child: ExtendedImage.network(
-      item.imageUrl!,
-      fit: BoxFit.cover,
-      cache: true,
-      loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed
-          ? ColoredBox(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: const Icon(Icons.article_outlined),
-            )
-          : null,
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final logicalWidth = constraints.maxWidth;
+        final cacheWidth = logicalWidth.isFinite && logicalWidth > 0
+            ? (logicalWidth * MediaQuery.devicePixelRatioOf(context)).ceil()
+            : null;
+        return ExtendedImage.network(
+          item.imageUrl!,
+          fit: BoxFit.cover,
+          cache: true,
+          cacheWidth: cacheWidth,
+          loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed
+              ? ColoredBox(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  child: const Icon(Icons.article_outlined),
+                )
+              : null,
+        );
+      },
     ),
   );
 }
