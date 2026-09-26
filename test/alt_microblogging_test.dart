@@ -165,7 +165,7 @@ void main() {
       expect(find.byKey(const ValueKey('home-source-mastodon')), findsNothing);
       expect(find.byKey(const ValueKey('home-source-threads')), findsNothing);
       expect(find.byKey(const ValueKey('home-add-timeline')).hitTestable(), findsOneWidget);
-      expect(find.descendant(of: row, matching: find.bySemanticsLabel(L10n.current.group_has_unread)), findsOneWidget);
+      expect(tester.getSemantics(row).label, contains(L10n.current.group_has_unread));
       expect(tester.takeException(), isNull);
       await _render(large ? 'picker-large-rtl' : 'picker-de', find.byType(Overlay).first);
       await tester.tap(row);

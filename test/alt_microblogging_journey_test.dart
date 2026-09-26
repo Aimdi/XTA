@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/combined_groups.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/_feed.dart';
@@ -21,6 +22,7 @@ import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'support/bluesky_reading_harness.dart';
 import 'support/mastodon_harness.dart';
@@ -100,8 +102,14 @@ void main() {
         matchesGoldenFile('../review-artifacts/renders/alt-microblogging-reader.png'),
       );
     }
-    await tester.ensureVisible(find.byTooltip('Liked'));
-    await tester.tap(find.byTooltip('Liked'));
+    final likedTab = find.byTooltip(L10n.current.plugin_bluesky_liked);
+    await tester.scrollUntilVisible(
+      likedTab,
+      160,
+      scrollable: find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(Scrollable)).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(likedTab);
     await tester.pumpAndSettle();
     expect(find.text(bluePost('root').text), findsOneWidget);
     final posts = feed.state;
@@ -117,7 +125,7 @@ void main() {
     expect(find.byKey(const ValueKey('home-source-bluesky')), findsOneWidget);
     expect(find.byKey(const ValueKey('home-source-threads')), findsOneWidget);
     expect(find.byKey(const ValueKey('home-source-mastodon')), findsOneWidget);
-    await tester.tap(find.byTooltip('Close'));
+    await tester.tap(find.byTooltip(L10n.current.close));
     await tester.pumpAndSettle();
     await grouping.setGrouped(true);
     await tester.pumpAndSettle();
