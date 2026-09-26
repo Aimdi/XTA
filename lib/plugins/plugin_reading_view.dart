@@ -5,7 +5,11 @@ class PluginReadingPosition<T> {
   final List<T> posts;
   final String anchor;
   final double leading;
-  const PluginReadingPosition({required this.posts, required this.anchor, this.leading = 0});
+  const PluginReadingPosition({
+    required this.posts,
+    required this.anchor,
+    this.leading = 0,
+  });
 }
 
 /// Anchors variable-height reader rows without changing the source page order.
@@ -21,6 +25,7 @@ class PluginReadingView<T> extends StatefulWidget {
   final bool restoreInitial;
   final int snapshotLimit;
   final Widget? heading;
+  final int headingAfter;
   final Widget? footer;
   final bool loadingMore;
   const PluginReadingView({
@@ -36,6 +41,7 @@ class PluginReadingView<T> extends StatefulWidget {
     this.restoreInitial = true,
     this.snapshotLimit = 144,
     this.heading,
+    this.headingAfter = 0,
     this.footer,
     this.loadingMore = false,
   });
@@ -43,7 +49,8 @@ class PluginReadingView<T> extends StatefulWidget {
   State<PluginReadingView<T>> createState() => _PluginReadingViewState<T>();
 }
 
-class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with WidgetsBindingObserver {
+class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
+    with WidgetsBindingObserver {
   final _viewport = GlobalKey();
   final _center = GlobalKey();
   final _rows = <String, GlobalKey>{};
@@ -59,13 +66,19 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final controller = pluginInnerScrollController(context, widget.controller);
+      final controller = pluginInnerScrollController(
+        context,
+        widget.controller,
+      );
       if (widget.restoreInitial &&
           _anchor != null &&
           controller?.hasClients == true &&
           widget.posts.any((post) => widget.keyOf(post) == _anchor)) {
         controller!.jumpTo(
-          (-_initial!.leading).clamp(controller.position.minScrollExtent, controller.position.maxScrollExtent),
+          (-_initial!.leading).clamp(
+            controller.position.minScrollExtent,
+            controller.position.maxScrollExtent,
+          ),
         );
       }
       _restoring = false;
@@ -99,7 +112,8 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
     var visible = 0;
     var leading = 0.0;
     for (var index = 0; index < widget.posts.length; index++) {
-      final box = _rows[widget.keyOf(widget.posts[index])]?.currentContext?.findRenderObject();
+      final box = _rows[widget.keyOf(widget.posts[index])]?.currentContext
+          ?.findRenderObject();
       if (box is! RenderBox || !box.hasSize) continue;
       final y = box.localToGlobal(Offset.zero).dy - top;
       if (y + box.size.height > 1 && y < viewport.size.height) {
@@ -109,8 +123,13 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
       }
     }
     final source = widget.snapshotPosts ?? widget.posts;
-    final sourceIndex = source.indexWhere((post) => widget.keyOf(post) == widget.keyOf(widget.posts[visible]));
-    final start = ((sourceIndex < 0 ? 0 : sourceIndex) - 24).clamp(0, source.length);
+    final sourceIndex = source.indexWhere(
+      (post) => widget.keyOf(post) == widget.keyOf(widget.posts[visible]),
+    );
+    final start = ((sourceIndex < 0 ? 0 : sourceIndex) - 24).clamp(
+      0,
+      source.length,
+    );
     widget.onRemember(
       PluginReadingPosition(
         posts: source.skip(start).take(widget.snapshotLimit).toList(),
@@ -137,9 +156,23 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
 
   @override
   Widget build(BuildContext context) {
-    _rows.removeWhere((url, key) => !widget.posts.any((post) => widget.keyOf(post) == url));
-    final anchorIndex = _anchor == null ? -1 : widget.posts.indexWhere((post) => widget.keyOf(post) == _anchor);
+    _rows.removeWhere(
+      (url, key) => !widget.posts.any((post) => widget.keyOf(post) == url),
+    );
+    final anchorIndex = _anchor == null
+        ? -1
+        : widget.posts.indexWhere((post) => widget.keyOf(post) == _anchor);
     final prefix = widget.heading == null ? 0 : 1;
+    final headingIndex = widget.headingAfter.clamp(0, widget.posts.length);
+    final centerIndex = anchorIndex < 0
+        ? 0
+        : anchorIndex + (prefix > 0 && anchorIndex >= headingIndex ? 1 : 0);
+    final length = widget.posts.length + prefix;
+    Widget item(int index) {
+      if (prefix > 0 && index == headingIndex) return widget.heading!;
+      return _post(index - (prefix > 0 && index > headingIndex ? 1 : 0));
+    }
+
     final padding = pluginFeedPadding(context);
     final footer = widget.loadingMore || widget.footer != null ? 1 : 0;
     Widget tail() =>
@@ -166,21 +199,15 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
         slivers: [
           if (anchorIndex >= 0)
             SliverList.builder(
-              itemCount: anchorIndex + prefix,
-              itemBuilder: (context, index) {
-                final before = anchorIndex - index - 1;
-                return before < 0 ? widget.heading! : _post(before);
-              },
+              itemCount: centerIndex,
+              itemBuilder: (context, index) => item(centerIndex - index - 1),
             ),
           SliverList.builder(
             key: anchorIndex < 0 ? null : _center,
-            itemCount: anchorIndex < 0
-                ? widget.posts.length + prefix + footer
-                : widget.posts.length - anchorIndex + footer,
+            itemCount: length - centerIndex + footer,
             itemBuilder: (context, index) {
-              if (anchorIndex < 0 && index < prefix) return widget.heading!;
-              final postIndex = anchorIndex < 0 ? index - prefix : index + anchorIndex;
-              return postIndex >= widget.posts.length ? tail() : _post(postIndex);
+              final position = index + centerIndex;
+              return position >= length ? tail() : item(position);
             },
           ),
           SliverPadding(padding: padding),

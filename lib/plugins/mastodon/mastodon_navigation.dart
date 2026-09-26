@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_bookmarks.dart';
 import 'package:xta/saved/saved_source_filter.dart';
@@ -20,12 +21,21 @@ List<String> mastodonSectionLabels(BuildContext context) {
   ];
 }
 
-const mastodonSectionIcons = [Icons.explore_outlined, Icons.home_outlined, Icons.public, Icons.people_outline];
+const mastodonSectionIcons = [
+  Icons.explore_outlined,
+  Icons.home_outlined,
+  Icons.public,
+  Icons.people_outline,
+];
 
 class MastodonNavigation extends StatelessWidget {
   final int selected;
   final ValueChanged<int> onSelected;
-  const MastodonNavigation({super.key, required this.selected, required this.onSelected});
+  const MastodonNavigation({
+    super.key,
+    required this.selected,
+    required this.onSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +43,10 @@ class MastodonNavigation extends StatelessWidget {
     final labels = mastodonSectionLabels(context);
     return NavigationBar(
       key: const ValueKey('mastodon-navigation'),
-      height: (MediaQuery.textScalerOf(context).scale(14) * 2 + 48).clamp(80, double.infinity),
+      height: (MediaQuery.textScalerOf(context).scale(14) * 2 + 48).clamp(
+        80,
+        double.infinity,
+      ),
       selectedIndex: order.indexOf(selected),
       onDestinationSelected: (index) => onSelected(order[index]),
       destinations: [
@@ -81,14 +94,20 @@ class MastodonClientBar extends StatelessWidget implements PreferredSizeWidget {
                 mastodonSectionLabels(context)[selected],
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
             ],
           ),
         ),
       ],
     ),
-    actions: mastodonActions(context, onSearch: onSearch, onSettings: onSettings),
+    actions: mastodonActions(
+      context,
+      onSearch: onSearch,
+      onSettings: onSettings,
+    ),
   );
 }
 
@@ -99,8 +118,12 @@ List<Widget> mastodonActions(
   bool compact = false,
 }) => [
   if (!compact)
-    IconButton(key: const ValueKey('mastodon-bookmarks'), icon: const Icon(Icons.bookmark_border),
-      tooltip: L10n.of(context).saved, onPressed: () => openPluginBookmarks(context, SavedSource.mastodon)),
+    IconButton(
+      key: const ValueKey('mastodon-bookmarks'),
+      icon: const Icon(Icons.bookmark_border),
+      tooltip: L10n.of(context).saved,
+      onPressed: () => openPluginBookmarks(context, SavedSource.mastodon),
+    ),
   IconButton(
     key: const ValueKey('mastodon-search'),
     style: compact ? pluginActionButtonStyle : null,
@@ -109,12 +132,13 @@ List<Widget> mastodonActions(
     onPressed: onSearch,
   ),
   if (compact)
-    PopupMenuButton<String>(
+    PluginHomeMenu(
       key: const ValueKey('mastodon-more'),
       style: pluginActionButtonStyle,
       tooltip: MaterialLocalizations.of(context).showMenuTooltip,
       onSelected: (value) {
-        if (value == 'saved') openPluginBookmarks(context, SavedSource.mastodon);
+        if (value == 'saved')
+          openPluginBookmarks(context, SavedSource.mastodon);
         if (value == 'settings') onSettings();
       },
       itemBuilder: (context) => [
@@ -157,7 +181,16 @@ class MastodonCompactBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final labels = mastodonSectionLabels(context);
     final embedded = PluginEmbedded.maybeOf(context);
-    return SafeArea(
+    final tabs = [
+      for (var index = 0; index < labels.length; index++)
+        PluginHomeTab(
+          icon: mastodonSectionIcons[index],
+          label: labels[index],
+          selected: selected == index,
+          onTap: () => onSelected(index),
+        ),
+    ];
+    final fallback = SafeArea(
       top: !embedded,
       bottom: false,
       child: Material(
@@ -179,10 +212,32 @@ class MastodonCompactBar extends StatelessWidget {
                 ],
               ),
             ),
-            ...mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: embedded),
+            ...mastodonActions(
+              context,
+              onSearch: onSearch,
+              onSettings: onSettings,
+              compact: embedded,
+            ),
           ],
         ),
       ),
+    );
+    return PluginDockContribution(
+      slot: 'navigation',
+      content: PluginDockContent(
+        section: PluginSectionPicker(
+          key: const ValueKey('mastodon-section-picker'),
+          tabs: tabs,
+        ),
+        sectionWidth: pluginDockSectionWidth(context, labels[selected]),
+        actions: mastodonActions(
+          context,
+          onSearch: onSearch,
+          onSettings: onSettings,
+          compact: true,
+        ),
+      ),
+      fallback: fallback,
     );
   }
 }
@@ -193,8 +248,12 @@ class _MastodonSourceLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget label(String value) =>
-        Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium);
+    Widget label(String value) => Text(
+      value,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.labelMedium,
+    );
     final title = L10n.of(context).plugin_mastodon_title;
     if (selected != 1 && selected != 2) return label(title);
     final MastodonPublicFeedStore store = selected == 1
@@ -202,7 +261,8 @@ class _MastodonSourceLabel extends StatelessWidget {
         : context.read<MastodonFederatedStore>();
     return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
       store: store,
-      onState: (context, _) => label(mastodonInstanceDomain(store.instance ?? '') ?? title),
+      onState: (context, _) =>
+          label(mastodonInstanceDomain(store.instance ?? '') ?? title),
       onLoading: (_) => label(title),
       onError: (_, _) => label(title),
     );

@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -33,19 +34,29 @@ class SubstackReadingToolbar extends StatelessWidget {
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .75),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .75,
+      ),
       builder: (context) => SafeArea(
         top: false,
         child: _PublicationPicker(
           publications: publications,
           posts: feed.allPosts,
           readIds: readIds,
-          pinnedIds: publications.where((pub) => pubs.isPinned(pub.id)).map((pub) => pub.id).toSet(),
+          pinnedIds: publications
+              .where((pub) => pubs.isPinned(pub.id))
+              .map((pub) => pub.id)
+              .toSet(),
         ),
       ),
     );
     if (publication == null || !context.mounted) return;
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackArchiveScreen(publication: publication)));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SubstackArchiveScreen(publication: publication),
+      ),
+    );
     if (context.mounted) await feed.refresh(force: false);
   }
 
@@ -56,12 +67,19 @@ class SubstackReadingToolbar extends StatelessWidget {
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * .9),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * .9,
+      ),
       builder: (context) => Provider<SubstackHomeControlsStore>.value(
         value: controls,
         child: SafeArea(
           top: false,
-          child: _ReadingOptions(slot: slot, feed: feed, onFilter: onFilter, autofocus: autofocus),
+          child: _ReadingOptions(
+            slot: slot,
+            feed: feed,
+            onFilter: onFilter,
+            autofocus: autofocus,
+          ),
         ),
       ),
     );
@@ -74,8 +92,16 @@ class SubstackReadingToolbar extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: Text(l10n.plugin_substack_partial_error(feed.state.failedCount)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.close)),
-          FilledButton(onPressed: feed.refreshing ? null : () => Navigator.pop(context, true), child: Text(l10n.retry)),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.close),
+          ),
+          FilledButton(
+            onPressed: feed.refreshing
+                ? null
+                : () => Navigator.pop(context, true),
+            child: Text(l10n.retry),
+          ),
         ],
       ),
     );
@@ -87,8 +113,9 @@ class SubstackReadingToolbar extends StatelessWidget {
     final l10n = L10n.of(context);
     final options = context.read<SubstackHomeControlsStore>().options(slot);
     final filtered =
-        options.order != SubstackLoadedOrder.newest || (onFilter != null && feed.filter != SubstackFeedFilter.all);
-    return Padding(
+        options.order != SubstackLoadedOrder.newest ||
+        (onFilter != null && feed.filter != SubstackFeedFilter.all);
+    final fallback = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
@@ -97,21 +124,32 @@ class SubstackReadingToolbar extends StatelessWidget {
               alignment: AlignmentDirectional.centerStart,
               child: TextButton.icon(
                 style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                  foregroundColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant,
                   minimumSize: const Size(48, 48),
                 ),
                 onPressed: () => _openPublications(context),
                 icon: const Icon(Icons.newspaper_outlined, size: 20),
-                label: Text(l10n.plugin_substack_library_following, maxLines: 1, overflow: TextOverflow.ellipsis),
+                label: Text(
+                  l10n.plugin_substack_library_following,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
           ),
           if (feed.state.failedCount > 0)
             IconButton(
               style: pluginActionButtonStyle,
-              tooltip: l10n.plugin_substack_partial_error(feed.state.failedCount),
+              tooltip: l10n.plugin_substack_partial_error(
+                feed.state.failedCount,
+              ),
               onPressed: () => _showLoadFailure(context),
-              icon: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
+              icon: Icon(
+                Icons.warning_amber_outlined,
+                color: Theme.of(context).colorScheme.error,
+              ),
             ),
           IconButton(
             style: pluginActionButtonStyle,
@@ -136,6 +174,54 @@ class SubstackReadingToolbar extends StatelessWidget {
         ],
       ),
     );
+    return PluginDockContribution(
+      slot: 'reading',
+      content: PluginDockContent(
+        leading: TextButton.icon(
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => _openPublications(context),
+          icon: const Icon(Icons.newspaper_outlined, size: 20),
+          label: Text(
+            l10n.plugin_substack_library_following,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        search: IconButton(
+          style: pluginActionButtonStyle,
+          tooltip: l10n.plugin_mastodon_loaded_search,
+          onPressed: () => _openOptions(context, autofocus: true),
+          icon: Badge(
+            isLabelVisible: options.query.trim().isNotEmpty,
+            child: const Icon(Icons.search),
+          ),
+        ),
+        trailing: [
+          if (feed.state.failedCount > 0)
+            IconButton(
+              style: pluginActionButtonStyle,
+              tooltip: l10n.plugin_substack_partial_error(
+                feed.state.failedCount,
+              ),
+              onPressed: () => _showLoadFailure(context),
+              icon: Icon(
+                Icons.warning_amber_outlined,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+          PluginDockFilterButton(
+            activeCount:
+                (options.query.trim().isEmpty ? 0 : 1) +
+                (options.order == SubstackLoadedOrder.newest ? 0 : 1) +
+                (onFilter != null && feed.filter != SubstackFeedFilter.all
+                    ? 1
+                    : 0),
+            onPressed: () => _openOptions(context),
+          ),
+        ],
+      ),
+      fallback: fallback,
+    );
   }
 }
 
@@ -148,7 +234,9 @@ class _SheetHeading extends StatelessWidget {
     padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
     child: Row(
       children: [
-        Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
+        Expanded(
+          child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+        ),
         IconButton(
           style: pluginActionButtonStyle,
           tooltip: L10n.of(context).close,
@@ -165,7 +253,12 @@ class _ReadingOptions extends StatelessWidget {
   final SubstackFeedStore feed;
   final ValueChanged<SubstackFeedFilter>? onFilter;
   final bool autofocus;
-  const _ReadingOptions({required this.slot, required this.feed, required this.onFilter, required this.autofocus});
+  const _ReadingOptions({
+    required this.slot,
+    required this.feed,
+    required this.onFilter,
+    required this.autofocus,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -177,32 +270,40 @@ class _ReadingOptions extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 16),
         child: ScopedBuilder<SubstackHomeControlsStore, SubstackHomeOptions>(
           store: controls,
-          onState: (context, _) => ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
-            store: feed,
-            onState: (context, _) => Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _SheetHeading(l10n.filters),
-                SubstackLoadedControls(slot: slot, autofocus: autofocus),
-                if (onFilter != null) _ContentFilters(selected: feed.filter, onSelected: onFilter!),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        controls.configure(slot, const SubstackLoadedOptions());
-                        onFilter?.call(SubstackFeedFilter.all);
-                      },
-                      icon: const Icon(Icons.filter_list_off),
-                      label: Text(l10n.plugin_reader_reset_filters),
+          onState: (context, _) =>
+              ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
+                store: feed,
+                onState: (context, _) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _SheetHeading(l10n.filters),
+                    SubstackLoadedControls(slot: slot, autofocus: autofocus),
+                    if (onFilter != null)
+                      _ContentFilters(
+                        selected: feed.filter,
+                        onSelected: onFilter!,
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton.icon(
+                          onPressed: () {
+                            controls.configure(
+                              slot,
+                              const SubstackLoadedOptions(),
+                            );
+                            onFilter?.call(SubstackFeedFilter.all);
+                          },
+                          icon: const Icon(Icons.filter_list_off),
+                          label: Text(l10n.plugin_reader_reset_filters),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
         ),
       ),
     );
@@ -273,7 +374,9 @@ class _PublicationPicker extends StatelessWidget {
             itemCount: publications.length,
             itemBuilder: (context, index) {
               final pub = publications[index];
-              final unread = unreadPublications.contains(pub.baseUrl.toLowerCase());
+              final unread = unreadPublications.contains(
+                pub.baseUrl.toLowerCase(),
+              );
               return ListTile(
                 leading: Badge(
                   isLabelVisible: unread,
@@ -281,19 +384,28 @@ class _PublicationPicker extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: pub.logoUrl == null
-                        ? const SizedBox.square(dimension: 36, child: Icon(Icons.newspaper_outlined))
+                        ? const SizedBox.square(
+                            dimension: 36,
+                            child: Icon(Icons.newspaper_outlined),
+                          )
                         : ExtendedImage.network(
                             pub.logoUrl!,
                             width: 36,
                             height: 36,
                             fit: BoxFit.cover,
-                            cacheWidth: (36 * MediaQuery.devicePixelRatioOf(context)).ceil(),
+                            cacheWidth:
+                                (36 * MediaQuery.devicePixelRatioOf(context))
+                                    .ceil(),
                           ),
                   ),
                 ),
                 title: Text(pub.displayName),
-                subtitle: unread ? Text(l10n.plugin_substack_filter_unread) : null,
-                trailing: pinnedIds.contains(pub.id) ? const Icon(Icons.push_pin_outlined, size: 18) : null,
+                subtitle: unread
+                    ? Text(l10n.plugin_substack_filter_unread)
+                    : null,
+                trailing: pinnedIds.contains(pub.id)
+                    ? const Icon(Icons.push_pin_outlined, size: 18)
+                    : null,
                 onTap: () => Navigator.pop(context, pub),
               );
             },

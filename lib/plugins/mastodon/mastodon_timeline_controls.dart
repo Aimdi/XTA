@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -57,10 +58,14 @@ class MastodonTimelineOptions {
     final json = Json(raw);
     return MastodonTimelineOptions(
       content:
-          MastodonContentFilter.values.where((value) => value.name == json['content'].string).firstOrNull ??
+          MastodonContentFilter.values
+              .where((value) => value.name == json['content'].string)
+              .firstOrNull ??
           MastodonContentFilter.all,
       order:
-          MastodonTimelineOrder.values.where((value) => value.name == json['order'].string).firstOrNull ??
+          MastodonTimelineOrder.values
+              .where((value) => value.name == json['order'].string)
+              .firstOrNull ??
           MastodonTimelineOrder.feed,
       hideBoosts: json['hideBoosts'].boolean ?? false,
       hideReplies: json['hideReplies'].boolean ?? false,
@@ -70,7 +75,8 @@ class MastodonTimelineOptions {
 
 const mastodonTimelinePreference = 'plugin.mastodon.timeline.v1';
 
-class MastodonTimelineControlsStore extends Store<Map<String, MastodonTimelineOptions>> {
+class MastodonTimelineControlsStore
+    extends Store<Map<String, MastodonTimelineOptions>> {
   final BasePrefService prefs;
   Timer? _timer;
   Future<void> _writes = Future.value();
@@ -81,14 +87,18 @@ class MastodonTimelineControlsStore extends Store<Map<String, MastodonTimelineOp
       final raw = prefs.get<String>(mastodonTimelinePreference) ?? '';
       if (raw.length > 10000) return;
       final json = Json(jsonDecode(raw));
-      update({for (var tab = 0; tab < 4; tab++) '$tab': MastodonTimelineOptions.parse(json['$tab'].raw)});
+      update({
+        for (var tab = 0; tab < 4; tab++)
+          '$tab': MastodonTimelineOptions.parse(json['$tab'].raw),
+      });
     } catch (_) {
       /* Invalid preferences leave the complete feed visible. */
     }
   }
 
   String _key(String slot) => slot.split(':').last;
-  MastodonTimelineOptions options(String slot) => state[_key(slot)] ?? const MastodonTimelineOptions();
+  MastodonTimelineOptions options(String slot) =>
+      state[_key(slot)] ?? const MastodonTimelineOptions();
 
   void select(String slot, MastodonTimelineOptions options) {
     if (_closed) return;
@@ -101,7 +111,9 @@ class MastodonTimelineControlsStore extends Store<Map<String, MastodonTimelineOp
 
   Future<void> flush() {
     _timer?.cancel();
-    final raw = jsonEncode(state.map((key, value) => MapEntry(key, value.toJson())));
+    final raw = jsonEncode(
+      state.map((key, value) => MapEntry(key, value.toJson())),
+    );
     _writes = _writes
         .then((_) async {
           await prefs.set(mastodonTimelinePreference, raw);
@@ -118,24 +130,39 @@ class MastodonTimelineControlsStore extends Store<Map<String, MastodonTimelineOp
   }
 }
 
-List<MastodonPost> filterMastodonTimeline(List<MastodonPost> posts, MastodonTimelineOptions options) {
+List<MastodonPost> filterMastodonTimeline(
+  List<MastodonPost> posts,
+  MastodonTimelineOptions options,
+) {
   final seen = <String>{};
-  final terms = options.query.toLowerCase().trim().split(RegExp(r'\s+')).where((term) => term.isNotEmpty);
+  final terms = options.query
+      .toLowerCase()
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((term) => term.isNotEmpty);
   final matches = posts.where((post) {
     if (options.hideBoosts && post.boosted) return false;
-    if (options.hideReplies && (post.replyToId != null || post.replyToAcct != null)) return false;
-    if (options.content == MastodonContentFilter.media && !post.hasMedia) return false;
+    if (options.hideReplies &&
+        (post.replyToId != null || post.replyToAcct != null))
+      return false;
+    if (options.content == MastodonContentFilter.media && !post.hasMedia)
+      return false;
     if (options.content == MastodonContentFilter.links &&
         post.linkCard == null &&
         !RegExp(r'https?://', caseSensitive: false).hasMatch(post.text)) {
       return false;
     }
-    final haystack = '${post.text} ${post.spoilerText} ${post.acct} ${post.authorName} ${post.linkCard?.title ?? ''}'
-        .toLowerCase();
-    return terms.every(haystack.contains) && seen.add(canonicalMastodonPostKey(post));
+    final haystack =
+        '${post.text} ${post.spoilerText} ${post.acct} ${post.authorName} ${post.linkCard?.title ?? ''}'
+            .toLowerCase();
+    return terms.every(haystack.contains) &&
+        seen.add(canonicalMastodonPostKey(post));
   }).toList();
   if (options.order == MastodonTimelineOrder.feed) return matches;
-  final positions = {for (var i = 0; i < matches.length; i++) canonicalMastodonPostKey(matches[i]): i};
+  final positions = {
+    for (var i = 0; i < matches.length; i++)
+      canonicalMastodonPostKey(matches[i]): i,
+  };
   matches.sort((a, b) {
     final left = a.timelineDate;
     final right = b.timelineDate;
@@ -144,28 +171,36 @@ List<MastodonPost> filterMastodonTimeline(List<MastodonPost> posts, MastodonTime
     var order = left == null || right == null ? 0 : left.compareTo(right);
     if (options.order == MastodonTimelineOrder.newest) order = -order;
     return order == 0
-        ? positions[canonicalMastodonPostKey(a)]!.compareTo(positions[canonicalMastodonPostKey(b)]!)
+        ? positions[canonicalMastodonPostKey(a)]!.compareTo(
+            positions[canonicalMastodonPostKey(b)]!,
+          )
         : order;
   });
   return matches;
 }
 
-String mastodonOrderLabel(L10n l10n, MastodonTimelineOrder order) => switch (order) {
-  MastodonTimelineOrder.feed => l10n.plugin_mastodon_order_server,
-  MastodonTimelineOrder.newest => l10n.plugin_mastodon_order_newest,
-  MastodonTimelineOrder.oldest => l10n.plugin_mastodon_order_oldest,
-};
+String mastodonOrderLabel(L10n l10n, MastodonTimelineOrder order) =>
+    switch (order) {
+      MastodonTimelineOrder.feed => l10n.plugin_mastodon_order_server,
+      MastodonTimelineOrder.newest => l10n.plugin_mastodon_order_newest,
+      MastodonTimelineOrder.oldest => l10n.plugin_mastodon_order_oldest,
+    };
 
 class MastodonTimelineToolbar extends StatelessWidget {
   final MastodonTimelineControlsStore store;
   final String slot;
   final MastodonTimelineOptions options;
-  const MastodonTimelineToolbar({super.key, required this.store, required this.slot, required this.options});
+  const MastodonTimelineToolbar({
+    super.key,
+    required this.store,
+    required this.slot,
+    required this.options,
+  });
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Padding(
+    final fallback = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
@@ -192,7 +227,8 @@ class MastodonTimelineToolbar extends StatelessWidget {
             child: PopupMenuButton<MastodonTimelineOrder>(
               tooltip: l10n.plugin_mastodon_sort,
               initialValue: options.order,
-              onSelected: (order) => store.select(slot, options.copy(order: order)),
+              onSelected: (order) =>
+                  store.select(slot, options.copy(order: order)),
               itemBuilder: (_) => [
                 for (final order in MastodonTimelineOrder.values)
                   CheckedPopupMenuItem(
@@ -206,7 +242,9 @@ class MastodonTimelineToolbar extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Flexible(child: Text(mastodonOrderLabel(l10n, options.order))),
+                    Flexible(
+                      child: Text(mastodonOrderLabel(l10n, options.order)),
+                    ),
                     const SizedBox(width: 4),
                     const Icon(Icons.sort, size: 20),
                   ],
@@ -216,6 +254,25 @@ class MastodonTimelineToolbar extends StatelessWidget {
           ),
         ],
       ),
+    );
+    return PluginDockContribution(
+      slot: 'reading',
+      content: PluginDockContent(
+        trailing: [
+          PluginDockFilterButton(
+            activeCount:
+                options.activeFilters +
+                (options.order == MastodonTimelineOrder.feed ? 0 : 1),
+            onPressed: () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => _TimelineSheet(store: store, slot: slot),
+            ),
+          ),
+        ],
+      ),
+      fallback: fallback,
     );
   }
 }
@@ -229,7 +286,9 @@ class _TimelineSheet extends StatefulWidget {
 }
 
 class _TimelineSheetState extends State<_TimelineSheet> {
-  late final TextEditingController _query = TextEditingController(text: widget.store.options(widget.slot).query);
+  late final TextEditingController _query = TextEditingController(
+    text: widget.store.options(widget.slot).query,
+  );
   @override
   void dispose() {
     _query.dispose();
@@ -239,20 +298,34 @@ class _TimelineSheetState extends State<_TimelineSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return ScopedBuilder<MastodonTimelineControlsStore, Map<String, MastodonTimelineOptions>>(
+    return ScopedBuilder<
+      MastodonTimelineControlsStore,
+      Map<String, MastodonTimelineOptions>
+    >(
       store: widget.store,
       onState: (context, _) {
         final options = widget.store.options(widget.slot);
-        void select(MastodonTimelineOptions value) => widget.store.select(widget.slot, value);
+        void select(MastodonTimelineOptions value) =>
+            widget.store.select(widget.slot, value);
         return SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.viewInsetsOf(context).bottom + 24),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            MediaQuery.viewInsetsOf(context).bottom + 24,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
-                  Expanded(child: Text(l10n.filters, style: Theme.of(context).textTheme.titleLarge)),
+                  Expanded(
+                    child: Text(
+                      l10n.filters,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
                   IconButton(
                     tooltip: l10n.close,
                     onPressed: () => Navigator.pop(context),
@@ -260,7 +333,27 @@ class _TimelineSheetState extends State<_TimelineSheet> {
                   ),
                 ],
               ),
-              Text(l10n.plugin_mastodon_loaded_controls, style: Theme.of(context).textTheme.bodySmall),
+              Text(
+                l10n.plugin_mastodon_loaded_controls,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.plugin_mastodon_sort,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final order in MastodonTimelineOrder.values)
+                    ChoiceChip(
+                      label: Text(mastodonOrderLabel(l10n, order)),
+                      selected: options.order == order,
+                      onSelected: (_) => select(options.copy(order: order)),
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                    ),
+                ],
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _query,

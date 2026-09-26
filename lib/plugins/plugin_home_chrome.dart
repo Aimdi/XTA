@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ const pluginActionButtonStyle = ButtonStyle(
 class PluginEmbedded extends InheritedWidget {
   const PluginEmbedded({super.key, required super.child});
 
-  static bool maybeOf(BuildContext context) => context.dependOnInheritedWidgetOfExactType<PluginEmbedded>() != null;
+  static bool maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<PluginEmbedded>() != null;
 
   @override
   bool updateShouldNotify(covariant PluginEmbedded oldWidget) => false;
@@ -27,7 +29,12 @@ class PluginHomeTab {
   final bool selected;
   final VoidCallback onTap;
 
-  const PluginHomeTab({required this.icon, required this.label, required this.selected, required this.onTap});
+  const PluginHomeTab({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 }
 
 /// Home uses a named section picker when the complete section rail cannot fit.
@@ -55,7 +62,9 @@ class PluginHomeChrome extends StatelessWidget {
     final labelStyle = Theme.of(context).textTheme.labelLarge;
     final rowHeight = math.max(
       48.0,
-      MediaQuery.textScalerOf(context).scale(labelStyle?.fontSize ?? 14) * (labelStyle?.height ?? 1.4) + 16,
+      MediaQuery.textScalerOf(context).scale(labelStyle?.fontSize ?? 14) *
+              (labelStyle?.height ?? 1.4) +
+          16,
     );
     final bar = Material(
       color: Theme.of(context).scaffoldBackgroundColor,
@@ -69,7 +78,10 @@ class PluginHomeChrome extends StatelessWidget {
                 children: [
                   if (Navigator.canPop(context)) const BackButton(),
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 16, end: 10),
+                    padding: const EdgeInsetsDirectional.only(
+                      start: 16,
+                      end: 10,
+                    ),
                     child: mark ?? const SizedBox.shrink(),
                   ),
                   Expanded(
@@ -97,14 +109,23 @@ class PluginHomeChrome extends StatelessWidget {
                       builder: (context, constraints) {
                         // Only the top-level embedded toolbar is condensed.
                         // Inner filters and standalone navigation keep their rails.
-                        if (embedded && title != null && tabs.length > 1 && !_tabsFit(context, constraints.maxWidth)) {
-                          return PluginSectionPicker(tabs: tabs, accent: accent);
+                        if (embedded &&
+                            title != null &&
+                            tabs.length > 1 &&
+                            !_tabsFit(context, constraints.maxWidth)) {
+                          return PluginSectionPicker(
+                            tabs: tabs,
+                            accent: accent,
+                          );
                         }
                         return ListView(
                           scrollDirection: Axis.horizontal,
                           primary: false,
                           padding: const EdgeInsets.symmetric(horizontal: 4),
-                          children: [for (final tab in tabs) _TabButton(tab: tab, accent: accent)],
+                          children: [
+                            for (final tab in tabs)
+                              _TabButton(tab: tab, accent: accent),
+                          ],
                         );
                       },
                     ),
@@ -118,11 +139,31 @@ class PluginHomeChrome extends StatelessWidget {
     );
     final controls = IconButtonTheme(
       data: IconButtonThemeData(
-        style: IconButtonTheme.of(context).style?.merge(pluginActionButtonStyle) ?? pluginActionButtonStyle,
+        style:
+            IconButtonTheme.of(context).style?.merge(pluginActionButtonStyle) ??
+            pluginActionButtonStyle,
       ),
       child: bar,
     );
-    return embedded ? controls : SafeArea(bottom: false, child: controls);
+    final fallback = embedded
+        ? controls
+        : SafeArea(bottom: false, child: controls);
+    if (!embedded || title == null) return fallback;
+    final selected =
+        tabs.where((tab) => tab.selected).firstOrNull ?? tabs.firstOrNull;
+    return PluginDockContribution(
+      slot: 'navigation',
+      content: PluginDockContent(
+        section: tabs.isEmpty
+            ? null
+            : PluginSectionPicker(tabs: tabs, accent: accent),
+        sectionWidth: selected == null
+            ? 0
+            : pluginDockSectionWidth(context, selected.label),
+        actions: actions,
+      ),
+      fallback: fallback,
+    );
   }
 
   bool _tabsFit(BuildContext context, double width) {
@@ -152,7 +193,8 @@ class PluginSectionPicker extends StatelessWidget {
   final List<PluginHomeTab> tabs;
   final Color? accent;
 
-  const PluginSectionPicker({super.key, required this.tabs, this.accent}) : assert(tabs.length > 0);
+  const PluginSectionPicker({super.key, required this.tabs, this.accent})
+    : assert(tabs.length > 0);
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +251,11 @@ class PluginSectionPicker extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(Icons.expand_more, size: 20, color: tweetSecondaryColor(context)),
+              Icon(
+                Icons.expand_more,
+                size: 20,
+                color: tweetSecondaryColor(context),
+              ),
             ],
           ),
         ),
@@ -218,8 +264,15 @@ class PluginSectionPicker extends StatelessWidget {
   }
 }
 
-AppBar pluginHomeTabAppBar({required Widget tabs, List<Widget> actions = const []}) =>
-    AppBar(automaticallyImplyLeading: false, titleSpacing: 0, title: tabs, actions: actions);
+AppBar pluginHomeTabAppBar({
+  required Widget tabs,
+  List<Widget> actions = const [],
+}) => AppBar(
+  automaticallyImplyLeading: false,
+  titleSpacing: 0,
+  title: tabs,
+  actions: actions,
+);
 
 class _TabButton extends StatelessWidget {
   final PluginHomeTab tab;
@@ -233,7 +286,9 @@ class _TabButton extends StatelessWidget {
       accent ?? tweetReadableAccentColor(context),
       Theme.of(context).scaffoldBackgroundColor,
     );
-    final foreground = tab.selected ? tweetPrimaryColor(context) : tweetSecondaryColor(context);
+    final foreground = tab.selected
+        ? tweetPrimaryColor(context)
+        : tweetSecondaryColor(context);
     return Semantics(
       button: true,
       selected: tab.selected,
@@ -247,19 +302,30 @@ class _TabButton extends StatelessWidget {
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: tab.selected ? selectedColor : Colors.transparent, width: 2)),
+              border: Border(
+                bottom: BorderSide(
+                  color: tab.selected ? selectedColor : Colors.transparent,
+                  width: 2,
+                ),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(tab.icon, size: 20, color: tab.selected ? selectedColor : foreground),
+                Icon(
+                  tab.icon,
+                  size: 20,
+                  color: tab.selected ? selectedColor : foreground,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   tab.label,
                   maxLines: 1,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: foreground,
-                    fontWeight: tab.selected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: tab.selected
+                        ? FontWeight.w700
+                        : FontWeight.w500,
                   ),
                 ),
               ],
