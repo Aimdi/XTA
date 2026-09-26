@@ -38,12 +38,8 @@ void main() {
     await Repository().migrate();
     if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
       autoUpdateGoldenFiles = true;
-      await (FontLoader(
-        'Inter',
-      )..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
-      await (FontLoader(
-        'MaterialIcons',
-      )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+      await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
+      await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
     }
   });
 
@@ -53,9 +49,7 @@ void main() {
     (320, 2, true, true),
     (840, 2, false, false),
   ]) {
-    testWidgets('assembled Home layout $width $scale rtl=$rtl dark=$dark', (
-      tester,
-    ) async {
+    testWidgets('assembled Home layout $width $scale rtl=$rtl dark=$dark', (tester) async {
       tester.view.physicalSize = Size(width, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -90,26 +84,11 @@ void main() {
               Provider<FeedStripStore>.value(value: strip),
               Provider<GroupsModel>.value(value: groups),
               Provider<SubscriptionsModel>.value(value: subscriptions),
-              Provider(
-                create: (_) => HomeAccountFilterStore(prefs),
-                dispose: (_, store) => store.destroy(),
-              ),
-              Provider(
-                create: (_) => HomeGroupFilterStore(prefs),
-                dispose: (_, store) => store.destroy(),
-              ),
-              Provider(
-                create: (_) => ChromeAvatarStore(prefs),
-                dispose: (_, store) => store.destroy(),
-              ),
-              Provider(
-                create: (_) => NetworkRecentsStore(prefs),
-                dispose: (_, store) => store.destroy(),
-              ),
-              Provider(
-                create: (_) => CombinedGroupsStore(),
-                dispose: (_, store) => store.destroy(),
-              ),
+              Provider(create: (_) => HomeAccountFilterStore(prefs), dispose: (_, store) => store.destroy()),
+              Provider(create: (_) => HomeGroupFilterStore(prefs), dispose: (_, store) => store.destroy()),
+              Provider(create: (_) => ChromeAvatarStore(prefs), dispose: (_, store) => store.destroy()),
+              Provider(create: (_) => NetworkRecentsStore(prefs), dispose: (_, store) => store.destroy()),
+              Provider(create: (_) => CombinedGroupsStore(), dispose: (_, store) => store.destroy()),
               Provider<BlueskyClient>.value(value: blue.client),
               Provider<BlueskyAccountsStore>.value(value: blue.accounts),
               Provider<BlueskyLikesStore>.value(value: blue.likes),
@@ -117,11 +96,7 @@ void main() {
             ],
             child: Scaffold(
               drawer: const Drawer(),
-              body: FeedScreen(
-                scrollController: mastodon.scroll,
-                id: '-1',
-                name: 'Home',
-              ),
+              body: FeedScreen(scrollController: mastodon.scroll, id: '-1', name: 'Home'),
             ),
           ),
         ),
@@ -135,39 +110,22 @@ void main() {
       final search = find.byTooltip(L10n.current.plugin_bluesky_search);
       expect(search, findsOneWidget);
       expect(tester.getTopLeft(search).dy, lessThan(56));
-      expect(
-        tester
-            .getSize(
-              find.byKey(const ValueKey('alt-microblogging-service-bluesky')),
-            )
-            .width,
-        48,
-      );
+      expect(tester.getSize(find.byKey(const ValueKey('alt-microblogging-service-bluesky'))).width, 48);
       expect(blue.client.calls, hasLength(1));
       expect(tester.takeException(), isNull);
       if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
         await expectLater(
           find.byKey(const ValueKey('mastodon-window')),
-          matchesGoldenFile(
-            '../review-artifacts/renders/home-$width-$scale-$rtl-$dark.png',
-          ),
+          matchesGoldenFile('../review-artifacts/renders/home-$width-$scale-$rtl-$dark.png'),
         );
       }
       // The relocated filter controls still steer this exact reader store.
-      final reader = tester
-          .element(find.byType(BlueskyReaderView))
-          .read<BlueskyReaderStore>();
+      final reader = tester.element(find.byType(BlueskyReaderView)).read<BlueskyReaderStore>();
       final beforeState = tester.state(find.byType(BlueskyScreen));
       await tester.tap(find.byTooltip(L10n.current.filters));
       await tester.pumpAndSettle();
-      expect(
-        find.text(L10n.current.plugin_mastodon_loaded_controls),
-        findsOneWidget,
-      );
-      final oldest = find.widgetWithText(
-        ChoiceChip,
-        L10n.current.plugin_mastodon_order_oldest,
-      );
+      expect(find.text(L10n.current.plugin_mastodon_loaded_controls), findsOneWidget);
+      final oldest = find.widgetWithText(ChoiceChip, L10n.current.plugin_mastodon_order_oldest);
       await tester.ensureVisible(oldest);
       await tester.tap(oldest);
       await tester.pumpAndSettle();
@@ -175,33 +133,14 @@ void main() {
       await tester.tap(find.byTooltip(L10n.current.close));
       await tester.pumpAndSettle();
       expect(tester.state(find.byType(BlueskyScreen)), same(beforeState));
-      expect(
-        blue.client.calls,
-        hasLength(1),
-        reason: 'Local controls must not refetch the feed.',
-      );
-      final menu = find.descendant(
-        of: find.byType(PluginDockActions),
-        matching: find.byType(PopupMenuButton<String>),
-      );
+      expect(blue.client.calls, hasLength(1), reason: 'Local controls must not refetch the feed.');
+      final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
       await tester.tap(menu);
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('open-client-bluesky')), findsOneWidget);
       expect(
-        tester
-            .widgetList<PopupMenuItem<String>>(
-              find.byType(PopupMenuItem<String>),
-            )
-            .map((item) => item.value),
-        containsAll([
-          'add',
-          'saved',
-          'following',
-          'list',
-          'starter',
-          'settings',
-          'xta:open-client',
-        ]),
+        tester.widgetList<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).map((item) => item.value),
+        containsAll(['add', 'saved', 'following', 'list', 'starter', 'settings', 'xta:open-client']),
       );
       await tester.tapAt(const Offset(8, 730));
       await tester.pumpAndSettle();

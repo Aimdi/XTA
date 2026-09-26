@@ -67,8 +67,7 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
                       context: context,
                       isScrollControlled: true,
                       useSafeArea: true,
-                      builder: (_) =>
-                          _ReaderFilters(store: _store, slot: widget.slot),
+                      builder: (_) => _ReaderFilters(store: _store, slot: widget.slot),
                     ),
                   ),
                 ],
@@ -85,15 +84,9 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
                             context: context,
                             isScrollControlled: true,
                             useSafeArea: true,
-                            builder: (_) => _ReaderFilters(
-                              store: _store,
-                              slot: widget.slot,
-                            ),
+                            builder: (_) => _ReaderFilters(store: _store, slot: widget.slot),
                           ),
-                          icon: Badge(
-                            isLabelVisible: options.filtered,
-                            child: const Icon(Icons.tune),
-                          ),
+                          icon: Badge(isLabelVisible: options.filtered, child: const Icon(Icons.tune)),
                           label: Text(l10n.filters),
                         ),
                       ),
@@ -102,10 +95,7 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
                       child: PopupMenuButton<BlueskyReaderOrder>(
                         tooltip: l10n.plugin_mastodon_sort,
                         initialValue: options.order,
-                        onSelected: (order) => _store.configure(
-                          widget.slot,
-                          options.copy(order: order),
-                        ),
+                        onSelected: (order) => _store.configure(widget.slot, options.copy(order: order)),
                         itemBuilder: (_) => [
                           for (final order in BlueskyReaderOrder.values)
                             CheckedPopupMenuItem(
@@ -119,9 +109,7 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Flexible(
-                                child: Text(_orderLabel(l10n, options.order)),
-                              ),
+                              Flexible(child: Text(_orderLabel(l10n, options.order))),
                               const SizedBox(width: 4),
                               const Icon(Icons.sort, size: 20),
                             ],
@@ -146,32 +134,20 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
                 },
                 onFlush: _store.flush,
                 heading: widget.heading,
-                headingAfter: PluginHomeDockScope.maybeOf(context) == null
-                    ? 0
-                    : 3,
+                headingAfter: PluginHomeDockScope.maybeOf(context) == null ? 0 : 3,
                 footer: visible.isEmpty
                     ? Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Text(l10n.plugin_reader_empty_filter),
-                          ),
+                          Padding(padding: const EdgeInsets.all(24), child: Text(l10n.plugin_reader_empty_filter)),
                           TextButton(
-                            onPressed: () => _store.configure(
-                              widget.slot,
-                              const BlueskyReaderOptions(),
-                            ),
+                            onPressed: () => _store.configure(widget.slot, const BlueskyReaderOptions()),
                             child: Text(l10n.plugin_reader_reset_filters),
                           ),
                           if (widget.footer != null) widget.footer!,
                         ],
                       )
                     : widget.footer,
-                itemBuilder: (_, post) => BlueskyPostCard(
-                  key: ValueKey(post.uri),
-                  post: post,
-                  showSourceBadge: false,
-                ),
+                itemBuilder: (_, post) => BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false),
               ),
             ),
           ],
@@ -196,9 +172,7 @@ class _ReaderFilters extends StatefulWidget {
 }
 
 class _ReaderFiltersState extends State<_ReaderFilters> {
-  late final _query = TextEditingController(
-    text: widget.store.options(widget.slot).query,
-  );
+  late final _query = TextEditingController(text: widget.store.options(widget.slot).query);
   @override
   void dispose() {
     _query.dispose();
@@ -212,27 +186,16 @@ class _ReaderFiltersState extends State<_ReaderFilters> {
       store: widget.store,
       onState: (context, _) {
         final options = widget.store.options(widget.slot);
-        void select(BlueskyReaderOptions value) =>
-            widget.store.configure(widget.slot, value);
+        void select(BlueskyReaderOptions value) => widget.store.configure(widget.slot, value);
         return SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            MediaQuery.viewInsetsOf(context).bottom + 24,
-          ),
+          padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.viewInsetsOf(context).bottom + 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      l10n.filters,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
+                  Expanded(child: Text(l10n.filters, style: Theme.of(context).textTheme.titleLarge)),
                   IconButton(
                     tooltip: l10n.close,
                     onPressed: () => Navigator.pop(context),
@@ -240,15 +203,9 @@ class _ReaderFiltersState extends State<_ReaderFilters> {
                   ),
                 ],
               ),
-              Text(
-                l10n.plugin_mastodon_loaded_controls,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+              Text(l10n.plugin_mastodon_loaded_controls, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 12),
-              Text(
-                l10n.plugin_mastodon_sort,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
+              Text(l10n.plugin_mastodon_sort, style: Theme.of(context).textTheme.titleSmall),
               Wrap(
                 spacing: 8,
                 children: [

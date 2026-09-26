@@ -74,22 +74,13 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
       query.isEmpty ||
       query
           .split(RegExp(r'\s+'))
-          .every(
-            (term) => '${option.label} ${option.subtitle ?? ''}'
-                .toLowerCase()
-                .contains(term),
-          );
+          .every((term) => '${option.label} ${option.subtitle ?? ''}'.toLowerCase().contains(term));
 
   List<HomeTimelineOption> _displayOptions(BuildContext context) {
     final byId = {for (final option in widget.options) option.id: option};
-    final members = widget.options
-        .where((option) => isAltMicrobloggingSource(option.id))
-        .toList();
+    final members = widget.options.where((option) => isAltMicrobloggingSource(option.id)).toList();
     return [
-      for (final id in groupedMicrobloggingIds(
-        byId.keys,
-        grouped: widget.groupMicroblogs,
-      ))
+      for (final id in groupedMicrobloggingIds(byId.keys, grouped: widget.groupMicroblogs))
         if (id == altMicrobloggingSectionId)
           HomeTimelineOption(
             id: id,
@@ -105,21 +96,16 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
   }
 
   @override
-  Widget build(BuildContext context) => ScopedBuilder<_PickerQuery, String>(
-    store: _query,
-    onState: (context, query) => _buildPicker(context, query),
-  );
+  Widget build(BuildContext context) =>
+      ScopedBuilder<_PickerQuery, String>(store: _query, onState: (context, query) => _buildPicker(context, query));
 
   Widget _buildPicker(BuildContext context, String query) {
     final l10n = L10n.of(context);
     final displayed = query.isEmpty
         ? _displayOptions(context)
         : widget.options.where((option) => _matches(option, query)).toList();
-    final groups = widget.groups
-        .where((option) => _matches(option, query))
-        .toList();
-    final hasSearch =
-        widget.options.length + widget.groups.length > 8 || query.isNotEmpty;
+    final groups = widget.groups.where((option) => _matches(option, query)).toList();
+    final hasSearch = widget.options.length + widget.groups.length > 8 || query.isNotEmpty;
     final keyboard = MediaQuery.viewInsetsOf(context).bottom;
     return Padding(
       padding: EdgeInsets.only(bottom: keyboard),
@@ -128,12 +114,10 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
         child: ConstrainedBox(
           key: const ValueKey('home-source-sheet'),
           constraints: BoxConstraints(
-            maxHeight:
-                ((MediaQuery.sizeOf(context).height -
-                            keyboard -
-                            MediaQuery.paddingOf(context).top) *
-                        0.9)
-                    .clamp(0.0, MediaQuery.sizeOf(context).height * 0.75),
+            maxHeight: ((MediaQuery.sizeOf(context).height - keyboard - MediaQuery.paddingOf(context).top) * 0.9).clamp(
+              0.0,
+              MediaQuery.sizeOf(context).height * 0.75,
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -146,8 +130,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
                     Expanded(
                       child: Text(
                         l10n.home,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                     IconButton(
@@ -182,38 +165,20 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
                   ),
                 ),
               if (displayed.isEmpty && groups.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(l10n.no_results),
-                ),
+                Padding(padding: const EdgeInsets.all(16), child: Text(l10n.no_results)),
               Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.symmetric(horizontal: 12),
-                  itemCount:
-                      displayed.length +
-                      (groups.isEmpty ? 0 : groups.length + 1),
+                  itemCount: displayed.length + (groups.isEmpty ? 0 : groups.length + 1),
                   itemBuilder: (context, index) {
-                    if (index < displayed.length)
-                      return _row(context, displayed[index]);
+                    if (index < displayed.length) return _row(context, displayed[index]);
                     if (index == displayed.length)
                       return Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          12,
-                          20,
-                          12,
-                          8,
-                        ),
-                        child: Text(
-                          l10n.groups,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
+                        padding: const EdgeInsetsDirectional.fromSTEB(12, 20, 12, 8),
+                        child: Text(l10n.groups, style: Theme.of(context).textTheme.titleSmall),
                       );
-                    return _row(
-                      context,
-                      groups[index - displayed.length - 1],
-                      group: true,
-                    );
+                    return _row(context, groups[index - displayed.length - 1], group: true);
                   },
                 ),
               ),
@@ -222,13 +187,8 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                   child: OutlinedButton.icon(
                     key: const ValueKey('home-add-timeline'),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(48, 48),
-                    ),
-                    onPressed: () => Navigator.pop(
-                      context,
-                      const HomeTimelineSelection.add(),
-                    ),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
+                    onPressed: () => Navigator.pop(context, const HomeTimelineSelection.add()),
                     icon: const Icon(Icons.add),
                     label: Text(l10n.feed_strip_add),
                   ),
@@ -240,25 +200,17 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
     );
   }
 
-  Widget _row(
-    BuildContext context,
-    HomeTimelineOption option, {
-    bool group = false,
-  }) {
+  Widget _row(BuildContext context, HomeTimelineOption option, {bool group = false}) {
     final microblogs = !group && option.id == altMicrobloggingSectionId;
     final isSelected =
-        !group &&
-        (option.id == widget.selected ||
-            (microblogs && isAltMicrobloggingSource(widget.selected)));
+        !group && (option.id == widget.selected || (microblogs && isAltMicrobloggingSource(widget.selected)));
     final accent = tweetReadableAccentColor(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Semantics(
         selected: isSelected,
         child: Material(
-          color: isSelected
-              ? tweetAccentColor(context).withValues(alpha: 0.12)
-              : Colors.transparent,
+          color: isSelected ? tweetAccentColor(context).withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           child: ListTile(
             key: ValueKey('home-${group ? 'group' : 'source'}-${option.id}'),
@@ -266,20 +218,9 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
             minLeadingWidth: 24,
             horizontalTitleGap: 12,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            leading: SizedBox(
-              width: 24,
-              height: 24,
-              child: ExcludeSemantics(child: option.mark),
-            ),
-            title: Text(
-              option.label,
-              style: TextStyle(
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            leading: SizedBox(width: 24, height: 24, child: ExcludeSemantics(child: option.mark)),
+            title: Text(option.label, style: TextStyle(fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500)),
             subtitle: option.subtitle == null ? null : Text(option.subtitle!),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -290,16 +231,10 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
                     child: Container(
                       width: 8,
                       height: 8,
-                      decoration: BoxDecoration(
-                        color: accent,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
                     ),
                   ),
-                if (isSelected) ...[
-                  const SizedBox(width: 12),
-                  Icon(Icons.check, color: accent),
-                ],
+                if (isSelected) ...[const SizedBox(width: 12), Icon(Icons.check, color: accent)],
               ],
             ),
             onTap: () => Navigator.pop(

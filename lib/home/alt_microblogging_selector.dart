@@ -25,10 +25,7 @@ class AltMicrobloggingSelector extends StatelessWidget {
     if (compact) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final id in sourceIds.where(isAltMicrobloggingSource))
-            _compactService(context, id),
-        ],
+        children: [for (final id in sourceIds.where(isAltMicrobloggingSource)) _compactService(context, id)],
       );
     }
     return Semantics(
@@ -42,10 +39,7 @@ class AltMicrobloggingSelector extends StatelessWidget {
         child: Row(
           children: [
             for (final id in sourceIds.where(isAltMicrobloggingSource))
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 8),
-                child: _service(context, id),
-              ),
+              Padding(padding: const EdgeInsetsDirectional.only(end: 8), child: _service(context, id)),
           ],
         ),
       ),
@@ -58,9 +52,7 @@ class AltMicrobloggingSelector extends StatelessWidget {
     final active = id == selected;
     return Semantics(
       selected: active,
-      label: unread.contains(id)
-          ? '$label, ${L10n.of(context).group_has_unread}'
-          : label,
+      label: unread.contains(id) ? '$label, ${L10n.of(context).group_has_unread}' : label,
       button: true,
       onTap: () => onSelected(id),
       excludeSemantics: true,
@@ -71,18 +63,11 @@ class AltMicrobloggingSelector extends StatelessWidget {
           tooltip: label,
           style: IconButton.styleFrom(
             minimumSize: const Size.square(48),
-            backgroundColor: active
-                ? Theme.of(context).colorScheme.primaryContainer
-                : null,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            backgroundColor: active ? Theme.of(context).colorScheme.primaryContainer : null,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           onPressed: () => onSelected(id),
-          icon: Badge(
-            isLabelVisible: unread.contains(id),
-            child: pluginBrandIcon(context, plugin, size: 22),
-          ),
+          icon: Badge(isLabelVisible: unread.contains(id), child: pluginBrandIcon(context, plugin, size: 22)),
         ),
       ),
     );
@@ -92,19 +77,14 @@ class AltMicrobloggingSelector extends StatelessWidget {
     final plugin = pluginById(id)!;
     final label = plugin.title(context);
     return Semantics(
-      label: unread.contains(id)
-          ? '$label, ${L10n.of(context).group_has_unread}'
-          : label,
+      label: unread.contains(id) ? '$label, ${L10n.of(context).group_has_unread}' : label,
       selected: selected == id,
       button: true,
       onTap: () => onSelected(id),
       excludeSemantics: true,
       child: ChoiceChip(
         key: ValueKey('alt-microblogging-service-$id'),
-        avatar: Badge(
-          isLabelVisible: unread.contains(id),
-          child: pluginBrandIcon(context, plugin, size: 20),
-        ),
+        avatar: Badge(isLabelVisible: unread.contains(id), child: pluginBrandIcon(context, plugin, size: 20)),
         label: Text(label),
         selected: selected == id,
         showCheckmark: false,

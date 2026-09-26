@@ -17,12 +17,7 @@ class MastodonFollowingControls extends StatelessWidget {
   final bool people;
   final ValueChanged<bool> onSelected;
   final VoidCallback onAdd;
-  const MastodonFollowingControls({
-    super.key,
-    required this.people,
-    required this.onSelected,
-    required this.onAdd,
-  });
+  const MastodonFollowingControls({super.key, required this.people, required this.onSelected, required this.onAdd});
 
   @override
   Widget build(BuildContext context) => PluginDockContribution(
@@ -30,12 +25,8 @@ class MastodonFollowingControls extends StatelessWidget {
     content: PluginDockContent(
       trailing: [
         PopupMenuButton<String>(
-          tooltip: people
-              ? L10n.of(context).plugin_mastodon_accounts
-              : L10n.of(context).tweets,
-          icon: Icon(
-            people ? Icons.people_outline : Icons.view_stream_outlined,
-          ),
+          tooltip: people ? L10n.of(context).plugin_mastodon_accounts : L10n.of(context).tweets,
+          icon: Icon(people ? Icons.people_outline : Icons.view_stream_outlined),
           style: pluginActionButtonStyle,
           onSelected: (value) {
             if (value == 'add') {
@@ -45,11 +36,7 @@ class MastodonFollowingControls extends StatelessWidget {
             }
           },
           itemBuilder: (context) => [
-            CheckedPopupMenuItem(
-              value: 'posts',
-              checked: !people,
-              child: Text(L10n.of(context).tweets),
-            ),
+            CheckedPopupMenuItem(value: 'posts', checked: !people, child: Text(L10n.of(context).tweets)),
             CheckedPopupMenuItem(
               value: 'people',
               checked: people,
@@ -94,88 +81,56 @@ class MastodonFollowingControls extends StatelessWidget {
 class MastodonPeoplePane extends StatelessWidget {
   final VoidCallback onAdd;
   final ScrollController scrollController;
-  const MastodonPeoplePane({
-    super.key,
-    required this.onAdd,
-    required this.scrollController,
-  });
+  const MastodonPeoplePane({super.key, required this.onAdd, required this.scrollController});
 
   @override
-  Widget build(BuildContext context) =>
-      ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
-        store: context.read<MastodonAccountsStore>(),
-        onState: (context, accounts) {
-          final l10n = L10n.of(context);
-          if (accounts.isEmpty) {
-            return EmptyPane(
-              icon: Icons.people_outline,
-              message: l10n.plugin_mastodon_empty,
-              action: FilledButton.icon(
-                onPressed: onAdd,
-                icon: const Icon(Icons.person_add_alt),
-                label: Text(l10n.plugin_mastodon_add),
-              ),
-            );
-          }
-          return ListView.separated(
-            key: const PageStorageKey('mastodon-following-people'),
-            controller: pluginInnerScrollController(context, scrollController),
-            padding: pluginFeedPadding(
-              context,
-              extra: const EdgeInsets.only(top: 8),
+  Widget build(BuildContext context) => ScopedBuilder<MastodonAccountsStore, List<MastodonAccount>>(
+    store: context.read<MastodonAccountsStore>(),
+    onState: (context, accounts) {
+      final l10n = L10n.of(context);
+      if (accounts.isEmpty) {
+        return EmptyPane(
+          icon: Icons.people_outline,
+          message: l10n.plugin_mastodon_empty,
+          action: FilledButton.icon(
+            onPressed: onAdd,
+            icon: const Icon(Icons.person_add_alt),
+            label: Text(l10n.plugin_mastodon_add),
+          ),
+        );
+      }
+      return ListView.separated(
+        key: const PageStorageKey('mastodon-following-people'),
+        controller: pluginInnerScrollController(context, scrollController),
+        padding: pluginFeedPadding(context, extra: const EdgeInsets.only(top: 8)),
+        itemCount: accounts.length,
+        separatorBuilder: (_, _) => const Divider(height: 1, indent: 76),
+        itemBuilder: (context, index) {
+          final account = accounts[index];
+          return ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            leading: MastodonPersonAvatar(acct: account.acct, name: account.name, url: account.avatarUrl),
+            title: Text(account.name, maxLines: 2, overflow: TextOverflow.ellipsis),
+            subtitle: Text('@${account.acct}', maxLines: 2, overflow: TextOverflow.ellipsis),
+            trailing: IconButton(
+              icon: const Icon(Icons.group_add_outlined),
+              tooltip: l10n.add_to_group,
+              onPressed: () => addMastodonAccountToGroup(context, account),
             ),
-            itemCount: accounts.length,
-            separatorBuilder: (_, _) => const Divider(height: 1, indent: 76),
-            itemBuilder: (context, index) {
-              final account = accounts[index];
-              return ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 6,
-                ),
-                leading: MastodonPersonAvatar(
-                  acct: account.acct,
-                  name: account.name,
-                  url: account.avatarUrl,
-                ),
-                title: Text(
-                  account.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: Text(
-                  '@${account.acct}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.group_add_outlined),
-                  tooltip: l10n.add_to_group,
-                  onPressed: () => addMastodonAccountToGroup(context, account),
-                ),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MastodonProfileScreen(acct: account.acct),
-                  ),
-                ),
-              );
-            },
+            onTap: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: account.acct))),
           );
         },
       );
+    },
+  );
 }
 
 class MastodonPersonAvatar extends StatelessWidget {
   final String acct;
   final String name;
   final String? url;
-  const MastodonPersonAvatar({
-    super.key,
-    required this.acct,
-    required this.name,
-    this.url,
-  });
+  const MastodonPersonAvatar({super.key, required this.acct, required this.name, this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -194,10 +149,7 @@ class MastodonPersonAvatar extends StatelessWidget {
               height: 44,
               fit: BoxFit.cover,
               cacheWidth: (44 * MediaQuery.devicePixelRatioOf(context)).ceil(),
-              loadStateChanged: (state) =>
-                  state.extendedImageLoadState == LoadState.failed
-                  ? fallback
-                  : null,
+              loadStateChanged: (state) => state.extendedImageLoadState == LoadState.failed ? fallback : null,
             ),
     );
   }

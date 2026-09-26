@@ -5,11 +5,7 @@ class PluginReadingPosition<T> {
   final List<T> posts;
   final String anchor;
   final double leading;
-  const PluginReadingPosition({
-    required this.posts,
-    required this.anchor,
-    this.leading = 0,
-  });
+  const PluginReadingPosition({required this.posts, required this.anchor, this.leading = 0});
 }
 
 /// Anchors variable-height reader rows without changing the source page order.
@@ -49,8 +45,7 @@ class PluginReadingView<T> extends StatefulWidget {
   State<PluginReadingView<T>> createState() => _PluginReadingViewState<T>();
 }
 
-class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
-    with WidgetsBindingObserver {
+class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with WidgetsBindingObserver {
   final _viewport = GlobalKey();
   final _center = GlobalKey();
   final _rows = <String, GlobalKey>{};
@@ -66,19 +61,13 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final controller = pluginInnerScrollController(
-        context,
-        widget.controller,
-      );
+      final controller = pluginInnerScrollController(context, widget.controller);
       if (widget.restoreInitial &&
           _anchor != null &&
           controller?.hasClients == true &&
           widget.posts.any((post) => widget.keyOf(post) == _anchor)) {
         controller!.jumpTo(
-          (-_initial!.leading).clamp(
-            controller.position.minScrollExtent,
-            controller.position.maxScrollExtent,
-          ),
+          (-_initial!.leading).clamp(controller.position.minScrollExtent, controller.position.maxScrollExtent),
         );
       }
       _restoring = false;
@@ -112,8 +101,7 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
     var visible = 0;
     var leading = 0.0;
     for (var index = 0; index < widget.posts.length; index++) {
-      final box = _rows[widget.keyOf(widget.posts[index])]?.currentContext
-          ?.findRenderObject();
+      final box = _rows[widget.keyOf(widget.posts[index])]?.currentContext?.findRenderObject();
       if (box is! RenderBox || !box.hasSize) continue;
       final y = box.localToGlobal(Offset.zero).dy - top;
       if (y + box.size.height > 1 && y < viewport.size.height) {
@@ -123,13 +111,8 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
       }
     }
     final source = widget.snapshotPosts ?? widget.posts;
-    final sourceIndex = source.indexWhere(
-      (post) => widget.keyOf(post) == widget.keyOf(widget.posts[visible]),
-    );
-    final start = ((sourceIndex < 0 ? 0 : sourceIndex) - 24).clamp(
-      0,
-      source.length,
-    );
+    final sourceIndex = source.indexWhere((post) => widget.keyOf(post) == widget.keyOf(widget.posts[visible]));
+    final start = ((sourceIndex < 0 ? 0 : sourceIndex) - 24).clamp(0, source.length);
     widget.onRemember(
       PluginReadingPosition(
         posts: source.skip(start).take(widget.snapshotLimit).toList(),
@@ -156,17 +139,11 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
 
   @override
   Widget build(BuildContext context) {
-    _rows.removeWhere(
-      (url, key) => !widget.posts.any((post) => widget.keyOf(post) == url),
-    );
-    final anchorIndex = _anchor == null
-        ? -1
-        : widget.posts.indexWhere((post) => widget.keyOf(post) == _anchor);
+    _rows.removeWhere((url, key) => !widget.posts.any((post) => widget.keyOf(post) == url));
+    final anchorIndex = _anchor == null ? -1 : widget.posts.indexWhere((post) => widget.keyOf(post) == _anchor);
     final prefix = widget.heading == null ? 0 : 1;
     final headingIndex = widget.headingAfter.clamp(0, widget.posts.length);
-    final centerIndex = anchorIndex < 0
-        ? 0
-        : anchorIndex + (prefix > 0 && anchorIndex >= headingIndex ? 1 : 0);
+    final centerIndex = anchorIndex < 0 ? 0 : anchorIndex + (prefix > 0 && anchorIndex >= headingIndex ? 1 : 0);
     final length = widget.posts.length + prefix;
     Widget item(int index) {
       if (prefix > 0 && index == headingIndex) return widget.heading!;
@@ -198,10 +175,7 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>>
         center: anchorIndex < 0 ? null : _center,
         slivers: [
           if (anchorIndex >= 0)
-            SliverList.builder(
-              itemCount: centerIndex,
-              itemBuilder: (context, index) => item(centerIndex - index - 1),
-            ),
+            SliverList.builder(itemCount: centerIndex, itemBuilder: (context, index) => item(centerIndex - index - 1)),
           SliverList.builder(
             key: anchorIndex < 0 ? null : _center,
             itemCount: length - centerIndex + footer,

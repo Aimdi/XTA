@@ -21,21 +21,12 @@ List<String> mastodonSectionLabels(BuildContext context) {
   ];
 }
 
-const mastodonSectionIcons = [
-  Icons.explore_outlined,
-  Icons.home_outlined,
-  Icons.public,
-  Icons.people_outline,
-];
+const mastodonSectionIcons = [Icons.explore_outlined, Icons.home_outlined, Icons.public, Icons.people_outline];
 
 class MastodonNavigation extends StatelessWidget {
   final int selected;
   final ValueChanged<int> onSelected;
-  const MastodonNavigation({
-    super.key,
-    required this.selected,
-    required this.onSelected,
-  });
+  const MastodonNavigation({super.key, required this.selected, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -43,10 +34,7 @@ class MastodonNavigation extends StatelessWidget {
     final labels = mastodonSectionLabels(context);
     return NavigationBar(
       key: const ValueKey('mastodon-navigation'),
-      height: (MediaQuery.textScalerOf(context).scale(14) * 2 + 48).clamp(
-        80,
-        double.infinity,
-      ),
+      height: (MediaQuery.textScalerOf(context).scale(14) * 2 + 48).clamp(80, double.infinity),
       selectedIndex: order.indexOf(selected),
       onDestinationSelected: (index) => onSelected(order[index]),
       destinations: [
@@ -94,20 +82,14 @@ class MastodonClientBar extends StatelessWidget implements PreferredSizeWidget {
                 mastodonSectionLabels(context)[selected],
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
             ],
           ),
         ),
       ],
     ),
-    actions: mastodonActions(
-      context,
-      onSearch: onSearch,
-      onSettings: onSettings,
-    ),
+    actions: mastodonActions(context, onSearch: onSearch, onSettings: onSettings),
   );
 }
 
@@ -137,16 +119,11 @@ List<Widget> mastodonActions(
       style: pluginActionButtonStyle,
       tooltip: MaterialLocalizations.of(context).showMenuTooltip,
       onSelected: (value) {
-        if (value == 'saved')
-          openPluginBookmarks(context, SavedSource.mastodon);
+        if (value == 'saved') openPluginBookmarks(context, SavedSource.mastodon);
         if (value == 'settings') onSettings();
       },
       itemBuilder: (context) => [
-        PopupMenuItem(
-          key: const ValueKey('mastodon-bookmarks'),
-          value: 'saved',
-          child: Text(L10n.of(context).saved),
-        ),
+        PopupMenuItem(key: const ValueKey('mastodon-bookmarks'), value: 'saved', child: Text(L10n.of(context).saved)),
         PopupMenuItem(
           key: const ValueKey('mastodon-settings'),
           value: 'settings',
@@ -212,12 +189,7 @@ class MastodonCompactBar extends StatelessWidget {
                 ],
               ),
             ),
-            ...mastodonActions(
-              context,
-              onSearch: onSearch,
-              onSettings: onSettings,
-              compact: embedded,
-            ),
+            ...mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: embedded),
           ],
         ),
       ),
@@ -225,17 +197,9 @@ class MastodonCompactBar extends StatelessWidget {
     return PluginDockContribution(
       slot: 'navigation',
       content: PluginDockContent(
-        section: PluginSectionPicker(
-          key: const ValueKey('mastodon-section-picker'),
-          tabs: tabs,
-        ),
+        section: PluginSectionPicker(key: const ValueKey('mastodon-section-picker'), tabs: tabs),
         sectionWidth: pluginDockSectionWidth(context, labels[selected]),
-        actions: mastodonActions(
-          context,
-          onSearch: onSearch,
-          onSettings: onSettings,
-          compact: true,
-        ),
+        actions: mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: true),
       ),
       fallback: fallback,
     );
@@ -248,12 +212,8 @@ class _MastodonSourceLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget label(String value) => Text(
-      value,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.labelMedium,
-    );
+    Widget label(String value) =>
+        Text(value, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.labelMedium);
     final title = L10n.of(context).plugin_mastodon_title;
     if (selected != 1 && selected != 2) return label(title);
     final MastodonPublicFeedStore store = selected == 1
@@ -261,8 +221,7 @@ class _MastodonSourceLabel extends StatelessWidget {
         : context.read<MastodonFederatedStore>();
     return ScopedBuilder<MastodonPublicFeedStore, List<MastodonPost>>(
       store: store,
-      onState: (context, _) =>
-          label(mastodonInstanceDomain(store.instance ?? '') ?? title),
+      onState: (context, _) => label(mastodonInstanceDomain(store.instance ?? '') ?? title),
       onLoading: (_) => label(title),
       onError: (_, _) => label(title),
     );

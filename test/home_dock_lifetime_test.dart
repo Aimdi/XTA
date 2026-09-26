@@ -27,16 +27,22 @@ class _Client extends SubstackClient {
   Future<List<SubstackPost>> fetchPosts(SubstackPublication publication, {int limit = 12, int offset = 0}) async => [
     for (var i = offset; i < offset + limit; i++)
       SubstackPost(
-        id: '$i', title: 'Morning reading $i', slug: 'morning-$i',
-        publicationBaseUrl: publication.baseUrl, publicationName: publication.name,
-        authorName: 'Reader', subtitle: 'An article to read.',
+        id: '$i',
+        title: 'Morning reading $i',
+        slug: 'morning-$i',
+        publicationBaseUrl: publication.baseUrl,
+        publicationName: publication.name,
+        authorName: 'Reader',
+        subtitle: 'An article to read.',
         postDate: DateTime.utc(2026, 9, 25).subtract(Duration(days: i)).toIso8601String(),
       ),
   ];
 }
 
 class _Publications extends SubstackPublicationsStore {
-  _Publications(super.prefs) { update([_publication]); }
+  _Publications(super.prefs) {
+    update([_publication]);
+  }
   @override
   Future<void> load() async {}
 }
@@ -65,17 +71,32 @@ class _Fixture {
         Provider<SubstackNotesStore>.value(value: notes),
       ],
       child: MaterialApp(
-        localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+        localizationsDelegates: const [
+          L10n.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         supportedLocales: L10n.delegate.supportedLocales,
         home: PluginHomeDockScope(
-          store: dock, source: 'substack', enabled: true, openClientLabel: 'Open Substack', onOpenClient: () {},
+          store: dock,
+          source: 'substack',
+          enabled: true,
+          openClientLabel: 'Open Substack',
+          onOpenClient: () {},
           child: Scaffold(
-            appBar: AppBar(title: const Text('Substack'), actions: [PluginDockActions(store: dock, source: 'substack')]),
-            body: Column(children: [
-              PluginDockRow(store: dock, source: 'substack'),
-              Expanded(child: PluginEmbedded(child: SubstackScreen(scrollController: scroll))),
-            ]),
+            appBar: AppBar(
+              title: const Text('Substack'),
+              actions: [PluginDockActions(store: dock, source: 'substack')],
+            ),
+            body: Column(
+              children: [
+                PluginDockRow(store: dock, source: 'substack'),
+                Expanded(
+                  child: PluginEmbedded(child: SubstackScreen(scrollController: scroll)),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -84,9 +105,15 @@ class _Fixture {
   Future<void> close(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();
-    await feed.destroy(); await notes.destroy(); await read.destroy();
-    await likes.destroy(); await saved.destroy(); await pubs.destroy(); await dock.destroy();
-    scroll.dispose(); client.httpClient.close();
+    await feed.destroy();
+    await notes.destroy();
+    await read.destroy();
+    await likes.destroy();
+    await saved.destroy();
+    await pubs.destroy();
+    await dock.destroy();
+    scroll.dispose();
+    client.httpClient.close();
   }
 }
 
@@ -124,15 +151,31 @@ void main() {
   testWidgets('a menu opened for a departed source cannot execute its old action', (tester) async {
     final dock = PluginHomeDockStore();
     var calls = 0;
-    Widget app(String source) => MaterialApp(home: PluginHomeDockScope(
-      store: dock, source: source, enabled: true, openClientLabel: 'Client', onOpenClient: () {},
-      child: Scaffold(body: PluginDockActions(store: dock, source: source)),
-    ));
-    dock.publish('blue', 'navigation', Object(), PluginDockContent(actions: [
-      PluginHomeMenu(onSelected: (_) => calls++, itemBuilder: (_) => [
-        const PopupMenuItem(value: 'old', child: Text('Old action')),
-      ]),
-    ]));
+    Widget app(String source) => MaterialApp(
+      home: PluginHomeDockScope(
+        store: dock,
+        source: source,
+        enabled: true,
+        openClientLabel: 'Client',
+        onOpenClient: () {},
+        child: Scaffold(
+          body: PluginDockActions(store: dock, source: source),
+        ),
+      ),
+    );
+    dock.publish(
+      'blue',
+      'navigation',
+      Object(),
+      PluginDockContent(
+        actions: [
+          PluginHomeMenu(
+            onSelected: (_) => calls++,
+            itemBuilder: (_) => [const PopupMenuItem(value: 'old', child: Text('Old action'))],
+          ),
+        ],
+      ),
+    );
     await tester.pumpWidget(app('blue'));
     await tester.pumpAndSettle();
     await tester.tap(find.byType(PopupMenuButton<String>));
