@@ -12,21 +12,6 @@ on:
 permissions:
   contents: read
 jobs:
-  review-source:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Prepare source for offline review
-        run: git archive --format=zip --output="$RUNNER_TEMP/home-review-source.zip" HEAD
-      - uses: actions/upload-artifact@v4
-        with:
-          name: home-review-source-${{ github.sha }}
-          path: ${{ runner.temp }}/home-review-source.zip
-          retention-days: 1
   compact-home:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -44,4 +29,4 @@ jobs:
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
       - name: New Home behavior
-        run: flutter test --no-pub --reporter expanded test/unified_home_picker_test.dart
+        run: flutter test --no-pub --reporter expanded test/unified_home_picker_test.dart test/unified_home_layout_test.dart
