@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -162,8 +163,8 @@ class _EhScreenState extends State<EhScreen> {
                   icon: const Icon(Icons.search),
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSearchScreen())),
                 ),
-                IconButton(
-                  tooltip: l10n.settings,
+                PluginHomeSecondaryAction(
+                  label: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EhSettingsScreen())),
                 ),

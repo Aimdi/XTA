@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/instagram/instagram_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -112,8 +113,8 @@ class _InstagramScreenState extends State<InstagramScreen> {
                   icon: const Icon(Icons.search),
                   onPressed: _openSearch,
                 ),
-                IconButton(
-                  tooltip: l10n.settings,
+                PluginHomeSecondaryAction(
+                  label: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
                   onPressed: () async {
                     await Navigator.push(context, MaterialPageRoute(builder: (_) => const InstagramSettingsScreen()));

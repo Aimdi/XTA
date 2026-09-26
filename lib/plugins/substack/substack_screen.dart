@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -169,7 +170,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
                     ),
                   ],
                   actions: [
-                    PopupMenuButton<String>(
+                    PluginHomeMenu(
                       onSelected: (value) {
                         if (value == 'discover') {
                           _openDiscover();
@@ -189,6 +190,12 @@ class _SubstackScreenState extends State<SubstackScreen> {
                     ),
                   ],
                 ),
+                if (_tab < 2)
+                  SubstackHomeReadingDock(
+                    key: ValueKey('substack-reading-$_tab'),
+                    slot: _tab == 0 ? 'home' : 'inbox',
+                    onFilter: _tab == 0 ? _setFilter : null,
+                  ),
                 const Divider(height: 1),
                 Expanded(
                   child: PluginLazyTabs(

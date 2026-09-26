@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -96,7 +97,11 @@ class _MastodonScreenState extends State<MastodonScreen> {
   }
 
   void _updateChrome(ScrollMetrics metrics, int depth) {
-    if (widget.fullClient || depth != 0 || metrics.axis != Axis.vertical) return;
+    if (widget.fullClient ||
+        PluginHomeDockScope.maybeOf(context) != null ||
+        depth != 0 ||
+        metrics.axis != Axis.vertical)
+      return;
     if (metrics.pixels <= metrics.minScrollExtent + 0.5) {
       _chrome.select(true);
     } else if (metrics.pixels > metrics.minScrollExtent + 24) {

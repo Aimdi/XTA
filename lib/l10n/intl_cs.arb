@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Tento server nedokáže bezpečně chránit zálohy před souběžnými změnami.",
   "@sync_unsafe_server": {},
   "sync_history": "Předchozí zálohy",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Vždy zobrazovat ovládací prvky"
 }

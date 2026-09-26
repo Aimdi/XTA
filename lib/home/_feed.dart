@@ -1,3 +1,5 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
+import 'package:xta/plugins/plugin_home_reading_controls.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -14,7 +16,7 @@ import 'package:xta/home/alt_microblogging_selector.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_timeline_controls.dart';
-import 'package:xta/home/home_timeline_picker.dart';
+import 'package:xta/home/home_source_picker.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/_settings.dart';
 import 'package:xta/group/group_custom_settings.dart';
@@ -29,7 +31,6 @@ import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/feed_read_position.dart';
 import 'package:xta/group/group_unread_store.dart';
-import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_client_route.dart';
@@ -190,6 +191,7 @@ class FeedScreen extends StatefulWidget {
 class _FeedScreenState extends State<FeedScreen> {
   TweetFeedController _forYouFeed = TweetFeedController();
   final _view = HomeFeedViewStore();
+  final _dock = PluginHomeDockStore();
   FeedTab? get _tab => _view.state.sourceId == null ? null : FeedTab(_view.state.sourceId!);
   // Bumped on For-you refresh so the tab remounts with a fresh controller —
   // softRefresh alone left mid-scroll users looking at stale tiles until they
@@ -389,6 +391,7 @@ class _FeedScreenState extends State<FeedScreen> {
     _filterReload?.cancel();
     _forYouFeed.dispose();
     _view.destroy();
+    _dock.destroy();
     super.dispose();
   }
 
@@ -515,115 +518,148 @@ class _FeedScreenState extends State<FeedScreen> {
       });
     }
 
-    return GroupFeedShell(
-      key: ValueKey('home-shell-${widget.id}'),
-      scrollController: widget.scrollController,
-      groupId: widget.id,
-      centerTitle: false,
-      flatAppBar: true,
-      fixedHeader: true,
-      leading: const DrawerAvatarButton(),
-      titleBuilder: (context) {
-        final source = available.firstWhere((option) => option.id == tab);
-        return GroupUnreadScope(
-          builder: (context, unreadIds) => HomeTimelineTitle(
-            label: grouped && isAltMicrobloggingSource(tab.id)
-                ? L10n.of(context).alt_microblogging
-                : source.titleBuilder(context),
-            mark: grouped && isAltMicrobloggingSource(tab.id)
-                ? const Icon(Icons.forum_outlined, size: 22)
-                : source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
-            unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
-            onPressed: () => _pickSource(context),
-          ),
-        );
+    final docked = tab.isPlugin && tab != FeedTab.x && tab != FeedTab.reddit;
+    final activePlugin = pluginById(tab.id);
+    return PluginHomeDockScope(
+      store: _dock,
+      source: tab.id,
+      enabled: docked,
+      compact: true,
+      openClientLabel: activePlugin == null ? '' : L10n.of(context).plugin_open_client(activePlugin.title(context)),
+      onOpenClient: () {
+        if (mounted && activePlugin != null) openPluginClient(context, activePlugin);
       },
-      actionsBuilder: (context) {
-        // Reddit brings its own bar: sorting, search and adding a subreddit
-        // are what this feed is steered with, and the generic feed actions
-        // steer nothing here. Its overflow carries the app settings so they
-        // stay reachable from this tab too.
-        if (tab == FeedTab.reddit) {
-          return [
-            Padding(
-              padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
-              child: RedditFeedActions(
-                showAppSettings: true,
-                onOpenClient: () => openPluginClient(context, pluginById(tab.id)!),
-              ),
-            ),
-          ];
-        }
-
-        if (tab.isPlugin && tab != FeedTab.x) {
-          final plugin = pluginById(tab.id)!;
-          return [
-            HomeAppBarActions(
-              children: [
-                IconButton(
-                  key: ValueKey('open-client-${plugin.id}'),
-                  tooltip: L10n.of(context).plugin_open_client(plugin.title(context)),
-                  icon: const Icon(Icons.open_in_new),
-                  onPressed: () => openPluginClient(context, plugin),
+      child: GroupFeedShell(
+        key: ValueKey('home-shell-${widget.id}'),
+        scrollController: widget.scrollController,
+        groupId: widget.id,
+        centerTitle: false,
+        flatAppBar: true,
+        fixedHeader: true,
+        leading: const DrawerAvatarButton(),
+        titleBuilder: (context) {
+          final source = available.firstWhere((option) => option.id == tab);
+          return ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
+            store: _dock,
+            onState: (context, _) {
+              final sections = _dock.content(tab.id, 'navigation')?.tabs;
+              final section = sections?.where((section) => section.selected).firstOrNull;
+              return GroupUnreadScope(
+                builder: (context, unreadIds) => HomeTimelineTitle(
+                  label: source.titleBuilder(context),
+                  sectionLabel: docked ? section?.label : null,
+                  mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+                  unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
+                  onPressed: () => _pickSource(context),
                 ),
-              ],
-            ),
-          ];
-        }
-
-        // Toolbar and pull-to-refresh share the registered feed operation.
-        final model = context.read<GroupModel>();
-        final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
-        final actions = defaultGroupActions(
-          context,
-          model: model,
-          showMore: false,
-          showRefresh: tab == FeedTab.foryou,
-          onRefresh: () => context.read<FeedRefreshController>().refresh(),
-          showSettings: false,
-          extra: [
-            IconButton(
-              tooltip: L10n.of(context).home_feed_accounts,
-              icon: Badge.count(
-                count: disabledCount,
-                isLabelVisible: disabledCount > 0,
-                child: Icon(disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
+              );
+            },
+          );
+        },
+        actionsBuilder: (context) {
+          if (docked) {
+            return [
+              GroupUnreadScope(
+                builder: (context, unread) => PluginDockActions(
+                  store: _dock,
+                  source: tab.id,
+                  services: grouped && isAltMicrobloggingSource(tab.id)
+                      ? AltMicrobloggingSelector(
+                          compact: true,
+                          sourceIds: available.map((option) => option.id.id).toList(),
+                          selected: tab.id,
+                          unread: unread,
+                          onSelected: (id) {
+                            Navigator.pop(context);
+                            _selectStripTab(FeedTab(id));
+                          },
+                        )
+                      : null,
+                ),
               ),
-              onPressed: () => showHomeAccountFilterSheet(context),
-            ),
-          ],
-        );
-        return [HomeAppBarActions(children: actions)];
-      },
-      bodyBuilder: (context) => Column(
-        children: [
-          grouped && isAltMicrobloggingSource(tab.id)
-              ? GroupUnreadScope(
-                  builder: (context, unread) => AltMicrobloggingSelector(
-                    sourceIds: available.map((option) => option.id.id).toList(),
-                    selected: tab.id,
-                    unread: unread,
-                    onSelected: (id) => _selectStripTab(FeedTab(id)),
+            ];
+          }
+          // Reddit brings its own bar: sorting, search and adding a subreddit
+          // are what this feed is steered with, and the generic feed actions
+          // steer nothing here. Its overflow carries the app settings so they
+          // stay reachable from this tab too.
+          if (tab == FeedTab.reddit) {
+            return [
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
+                child: RedditFeedActions(
+                  showAppSettings: true,
+                  onOpenClient: () => openPluginClient(context, pluginById(tab.id)!),
+                ),
+              ),
+            ];
+          }
+
+          if (tab.isPlugin && tab != FeedTab.x) {
+            final plugin = pluginById(tab.id)!;
+            return [
+              HomeAppBarActions(
+                children: [
+                  IconButton(
+                    key: ValueKey('open-client-${plugin.id}'),
+                    tooltip: L10n.of(context).plugin_open_client(plugin.title(context)),
+                    icon: const Icon(Icons.open_in_new),
+                    onPressed: () => openPluginClient(context, plugin),
                   ),
-                )
-              : const SizedBox.shrink(),
-          HomeCollapsingControls(
-            key: const ValueKey('home-reading-controls'),
-            visible: _view.state.controlsVisible && tab == FeedTab.following,
-            child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
+                ],
+              ),
+            ];
+          }
+
+          // Toolbar and pull-to-refresh share the registered feed operation.
+          final model = context.read<GroupModel>();
+          final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
+          final actions = defaultGroupActions(
+            context,
+            model: model,
+            showMore: false,
+            showRefresh: tab == FeedTab.foryou,
+            onRefresh: () => context.read<FeedRefreshController>().refresh(),
+            showSettings: false,
+            extra: [
+              IconButton(
+                tooltip: L10n.of(context).home_feed_accounts,
+                icon: Badge.count(
+                  count: disabledCount,
+                  isLabelVisible: disabledCount > 0,
+                  child: Icon(disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
+                ),
+                onPressed: () => showHomeAccountFilterSheet(context),
+              ),
+            ],
+          );
+          return [HomeAppBarActions(children: actions)];
+        },
+        bodyBuilder: (context) => HomeReadingViewport(
+          store: _dock.controls,
+          source: tab.id,
+          enabled: docked,
+          prefs: prefs,
+          controls: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HomeCollapsingControls(
+                key: const ValueKey('home-reading-controls'),
+                visible: _view.state.controlsVisible && tab == FeedTab.following,
+                child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
+              ),
+            ],
           ),
-          Expanded(
-            child: NotificationListener<ScrollMetricsNotification>(
-              onNotification: (notification) {
-                if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
-                  _queueControlsUpdate();
-                }
-                return false;
-              },
-              child: _timelineBody(tab, prefs),
-            ),
+          child: NotificationListener<ScrollMetricsNotification>(
+            onNotification: (notification) {
+              if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
+                _queueControlsUpdate();
+              }
+              return false;
+            },
+            child: _timelineBody(tab, prefs),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -651,38 +687,15 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   Future<void> _pickSource(BuildContext context) async {
-    final selection = await showModalBottomSheet<HomeTimelineSelection>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (_) => ScopedBuilder<FeedStripStore, List<String>>(
-        store: _stripStore!,
-        onState: (context, pins) => GroupUnreadScope(
-          builder: (context, unread) => HomeTimelinePicker(
-            selected: _tab?.id ?? FeedTab.following.id,
-            options: _sourceOptions(context, pins, unread),
-            groupMicroblogs: altMicrobloggingGrouped(PrefService.of(context, listen: false)),
-            rememberedMicroblog: PrefService.of(context, listen: false).get<String>(optionAltMicrobloggingLastSource),
-          ),
-        ),
-      ),
-    );
-    if (!mounted || !context.mounted || selection == null) return;
-    final id = selection.id ?? await showFeedStripAddSheet(context);
-    if (!mounted || !context.mounted || id == null) return;
+    final picked = await showHomeSourcePicker(context);
+    if (!mounted || !context.mounted || picked == null) return;
+    if (picked.groupId != null) {
+      final group = context.read<GroupsModel>().state.where((group) => group.id == picked.groupId).firstOrNull;
+      if (group != null) await openGroupAndRefreshUnread(context, id: group.id, name: group.name);
+      return;
+    }
     final available = availableFeedTabsFromIds(_stripStore!.state, PrefService.of(context, listen: false));
-    if (available.any((option) => option.id.id == id)) _selectStripTab(FeedTab(id));
+    final id = picked.id;
+    if (id != null && available.any((option) => option.id.id == id)) _selectStripTab(FeedTab(id));
   }
-
-  List<HomeTimelineOption> _sourceOptions(BuildContext context, List<String> pins, Set<String> unread) => [
-    for (final option in availableFeedTabsFromIds(pins, PrefService.of(context, listen: false)))
-      HomeTimelineOption(
-        id: option.id.id,
-        label: option.titleBuilder(context),
-        mark: option.mark ?? Icon(option.icon ?? option.id.icon, size: 22),
-        plugin: option.id.isPlugin,
-        unread: unread.contains(_unreadKeyFor(option.id)),
-      ),
-  ];
 }

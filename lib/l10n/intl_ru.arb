@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Этот сервер не может безопасно защитить резервные копии от одновременных изменений.",
   "@sync_unsafe_server": {},
   "sync_history": "Предыдущие резервные копии",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Всегда показывать элементы управления"
 }

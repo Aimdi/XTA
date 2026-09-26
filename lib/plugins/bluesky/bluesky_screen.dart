@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/plugins/plugin_bookmarks.dart';
@@ -166,8 +167,10 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = L10n.of(context);
-    final compact = PluginEmbedded.maybeOf(context) ||
-        MediaQuery.sizeOf(context).width < 360 || MediaQuery.textScalerOf(context).scale(1) > 1.4;
+    final compact =
+        PluginEmbedded.maybeOf(context) ||
+        MediaQuery.sizeOf(context).width < 360 ||
+        MediaQuery.textScalerOf(context).scale(1) > 1.4;
     _shell.restore(context, 'bluesky');
 
     return Provider<BlueskyReaderStore>.value(
@@ -226,7 +229,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
                       tooltip: l10n.plugin_bluesky_add,
                       onPressed: _addAccount,
                     ),
-                  PopupMenuButton<String>(
+                  PluginHomeMenu(
                     onSelected: (value) {
                       if (value == 'add') {
                         _addAccount();

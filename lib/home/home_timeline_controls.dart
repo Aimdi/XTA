@@ -37,6 +37,7 @@ class HomeCollapsingControls extends StatelessWidget {
 
 class HomeTimelineTitle extends StatelessWidget {
   final String label;
+  final String? sectionLabel;
   final Widget mark;
   final bool unread;
   final VoidCallback onPressed;
@@ -44,6 +45,7 @@ class HomeTimelineTitle extends StatelessWidget {
   const HomeTimelineTitle({
     super.key,
     required this.label,
+    this.sectionLabel,
     required this.mark,
     required this.onPressed,
     this.unread = false,
@@ -54,7 +56,7 @@ class HomeTimelineTitle extends StatelessWidget {
     message: L10n.of(context).home_networks,
     child: Semantics(
       button: true,
-      label: unread ? '$label, ${L10n.of(context).group_has_unread}' : label,
+      label: [label, if (sectionLabel != null) sectionLabel!, if (unread) L10n.of(context).group_has_unread].join(', '),
       child: InkWell(
         key: const ValueKey('home-source-picker'),
         onTap: onPressed,
@@ -64,22 +66,48 @@ class HomeTimelineTitle extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: ExcludeSemantics(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Badge(isLabelVisible: unread, smallSize: 7, child: mark),
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(Icons.expand_more, size: 20, color: tweetSecondaryColor(context)),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final showMark = constraints.maxWidth >= 64 + MediaQuery.textScalerOf(context).scale(48);
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (showMark) ...[
+                        Badge(isLabelVisible: unread, smallSize: 7, child: mark),
+                        const SizedBox(width: 10),
+                      ],
+                      Flexible(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            if (sectionLabel != null && MediaQuery.textScalerOf(context).scale(14) <= 18)
+                              Text(
+                                sectionLabel!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.labelMedium?.copyWith(color: tweetSecondaryColor(context)),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Badge(
+                        isLabelVisible: unread && !showMark,
+                        smallSize: 7,
+                        child: Icon(Icons.expand_more, size: 20, color: tweetSecondaryColor(context)),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),

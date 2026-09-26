@@ -21,6 +21,7 @@ class PluginReadingView<T> extends StatefulWidget {
   final bool restoreInitial;
   final int snapshotLimit;
   final Widget? heading;
+  final int headingAfter;
   final Widget? footer;
   final bool loadingMore;
   const PluginReadingView({
@@ -36,6 +37,7 @@ class PluginReadingView<T> extends StatefulWidget {
     this.restoreInitial = true,
     this.snapshotLimit = 144,
     this.heading,
+    this.headingAfter = 0,
     this.footer,
     this.loadingMore = false,
   });
@@ -140,6 +142,14 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
     _rows.removeWhere((url, key) => !widget.posts.any((post) => widget.keyOf(post) == url));
     final anchorIndex = _anchor == null ? -1 : widget.posts.indexWhere((post) => widget.keyOf(post) == _anchor);
     final prefix = widget.heading == null ? 0 : 1;
+    final headingIndex = widget.headingAfter.clamp(0, widget.posts.length);
+    final centerIndex = anchorIndex < 0 ? 0 : anchorIndex + (prefix > 0 && anchorIndex >= headingIndex ? 1 : 0);
+    final length = widget.posts.length + prefix;
+    Widget item(int index) {
+      if (prefix > 0 && index == headingIndex) return widget.heading!;
+      return _post(index - (prefix > 0 && index > headingIndex ? 1 : 0));
+    }
+
     final padding = pluginFeedPadding(context);
     final footer = widget.loadingMore || widget.footer != null ? 1 : 0;
     Widget tail() =>
@@ -165,22 +175,13 @@ class _PluginReadingViewState<T> extends State<PluginReadingView<T>> with Widget
         center: anchorIndex < 0 ? null : _center,
         slivers: [
           if (anchorIndex >= 0)
-            SliverList.builder(
-              itemCount: anchorIndex + prefix,
-              itemBuilder: (context, index) {
-                final before = anchorIndex - index - 1;
-                return before < 0 ? widget.heading! : _post(before);
-              },
-            ),
+            SliverList.builder(itemCount: centerIndex, itemBuilder: (context, index) => item(centerIndex - index - 1)),
           SliverList.builder(
             key: anchorIndex < 0 ? null : _center,
-            itemCount: anchorIndex < 0
-                ? widget.posts.length + prefix + footer
-                : widget.posts.length - anchorIndex + footer,
+            itemCount: length - centerIndex + footer,
             itemBuilder: (context, index) {
-              if (anchorIndex < 0 && index < prefix) return widget.heading!;
-              final postIndex = anchorIndex < 0 ? index - prefix : index + anchorIndex;
-              return postIndex >= widget.posts.length ? tail() : _post(postIndex);
+              final position = index + centerIndex;
+              return position >= length ? tail() : item(position);
             },
           ),
           SliverPadding(padding: padding),

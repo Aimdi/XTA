@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -122,7 +123,19 @@ class PluginHomeChrome extends StatelessWidget {
       ),
       child: bar,
     );
-    return embedded ? controls : SafeArea(bottom: false, child: controls);
+    final fallback = embedded ? controls : SafeArea(bottom: false, child: controls);
+    if (!embedded || title == null) return fallback;
+    final selected = tabs.where((tab) => tab.selected).firstOrNull ?? tabs.firstOrNull;
+    return PluginDockContribution(
+      slot: 'navigation',
+      content: PluginDockContent(
+        tabs: tabs,
+        section: tabs.isEmpty ? null : PluginSectionPicker(tabs: tabs, accent: accent),
+        sectionWidth: selected == null ? 0 : pluginDockSectionWidth(context, selected.label),
+        actions: actions,
+      ),
+      fallback: fallback,
+    );
   }
 
   bool _tabsFit(BuildContext context, double width) {
@@ -131,9 +144,9 @@ class PluginHomeChrome extends StatelessWidget {
       final painter = TextPainter(
         text: TextSpan(
           text: tab.label,
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: tab.selected ? FontWeight.w700 : FontWeight.w500,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelLarge?.copyWith(fontWeight: tab.selected ? FontWeight.w700 : FontWeight.w500),
         ),
         textDirection: Directionality.of(context),
         textScaler: MediaQuery.textScalerOf(context),
@@ -180,10 +193,7 @@ class PluginSectionPicker extends StatelessWidget {
                   Icon(tabs[index].icon, size: 20),
                   const SizedBox(width: 12),
                   Expanded(child: Text(tabs[index].label)),
-                  if (index == selected) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check, size: 18),
-                  ],
+                  if (index == selected) ...[const SizedBox(width: 8), const Icon(Icons.check, size: 18)],
                 ],
               ),
             ),
@@ -202,10 +212,9 @@ class PluginSectionPicker extends StatelessWidget {
                   current.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: tweetPrimaryColor(context),
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(color: tweetPrimaryColor(context), fontWeight: FontWeight.w700),
                 ),
               ),
               const SizedBox(width: 4),

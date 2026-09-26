@@ -1,0 +1,65 @@
+name: Unified Home checks
+
+on:
+  push:
+    branches: ['ui/unified-home-controls']
+  pull_request:
+    paths:
+      - 'lib/home/**'
+      - 'lib/plugins/**'
+      - 'test/*home*test.dart'
+      - 'test/*dock*test.dart'
+      - '.github/workflows/unified-home-check.yml'
+permissions:
+  contents: read
+concurrency:
+  group: unified-home-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  compact-home:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Generate pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: New Home behavior and assembled previews
+        run: |
+          mkdir -p review-artifacts
+          set +e
+          timeout --signal=TERM --kill-after=10s 120s flutter test --no-pub --reporter expanded --timeout 90s --dart-define=RENDER_UNIFIED_HOME=true test/unified_home_picker_test.dart test/unified_home_layout_test.dart test/plugin_home_dock_test.dart test/home_dock_lifetime_test.dart test/home_timeline_picker_test.dart test/alt_microblogging_journey_test.dart test/plugin_reader_accessibility_test.dart test/substack_home_controls_test.dart > review-artifacts/home-tests.log 2>&1
+          result=$?
+          printf '\nProcess exit: %s\n' "$result" >> review-artifacts/home-tests.log
+          tail -n 160 review-artifacts/home-tests.log
+          exit "$result"
+      - name: Analyze
+        if: always()
+        run: |
+          mkdir -p review-artifacts
+          set +e
+          flutter analyze --no-fatal-infos > review-artifacts/analysis.log 2>&1
+          result=$?
+          cat review-artifacts/analysis.log
+          exit "$result"
+      - name: Record review source
+        if: always()
+        run: |
+          git rev-parse HEAD > review-artifacts/source-sha.txt
+          git archive --format=zip --output=review-artifacts/home-review-source.zip HEAD lib/home lib/plugins test
+      - name: Layout evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: unified-home-layouts-${{ github.run_id }}
+          path: review-artifacts/
+          if-no-files-found: error
+          retention-days: 2

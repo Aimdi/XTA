@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Deze server kan back-ups niet veilig beschermen tegen gelijktijdige wijzigingen.",
   "@sync_unsafe_server": {},
   "sync_history": "Eerdere back-ups",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Bedieningselementen zichtbaar houden"
 }

@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_bookmarks.dart';
 import 'package:xta/saved/saved_source_filter.dart';
@@ -99,8 +100,12 @@ List<Widget> mastodonActions(
   bool compact = false,
 }) => [
   if (!compact)
-    IconButton(key: const ValueKey('mastodon-bookmarks'), icon: const Icon(Icons.bookmark_border),
-      tooltip: L10n.of(context).saved, onPressed: () => openPluginBookmarks(context, SavedSource.mastodon)),
+    IconButton(
+      key: const ValueKey('mastodon-bookmarks'),
+      icon: const Icon(Icons.bookmark_border),
+      tooltip: L10n.of(context).saved,
+      onPressed: () => openPluginBookmarks(context, SavedSource.mastodon),
+    ),
   IconButton(
     key: const ValueKey('mastodon-search'),
     style: compact ? pluginActionButtonStyle : null,
@@ -109,7 +114,7 @@ List<Widget> mastodonActions(
     onPressed: onSearch,
   ),
   if (compact)
-    PopupMenuButton<String>(
+    PluginHomeMenu(
       key: const ValueKey('mastodon-more'),
       style: pluginActionButtonStyle,
       tooltip: MaterialLocalizations.of(context).showMenuTooltip,
@@ -118,11 +123,7 @@ List<Widget> mastodonActions(
         if (value == 'settings') onSettings();
       },
       itemBuilder: (context) => [
-        PopupMenuItem(
-          key: const ValueKey('mastodon-bookmarks'),
-          value: 'saved',
-          child: Text(L10n.of(context).saved),
-        ),
+        PopupMenuItem(key: const ValueKey('mastodon-bookmarks'), value: 'saved', child: Text(L10n.of(context).saved)),
         PopupMenuItem(
           key: const ValueKey('mastodon-settings'),
           value: 'settings',
@@ -157,7 +158,16 @@ class MastodonCompactBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final labels = mastodonSectionLabels(context);
     final embedded = PluginEmbedded.maybeOf(context);
-    return SafeArea(
+    final tabs = [
+      for (var index = 0; index < labels.length; index++)
+        PluginHomeTab(
+          icon: mastodonSectionIcons[index],
+          label: labels[index],
+          selected: selected == index,
+          onTap: () => onSelected(index),
+        ),
+    ];
+    final fallback = SafeArea(
       top: !embedded,
       bottom: false,
       child: Material(
@@ -183,6 +193,16 @@ class MastodonCompactBar extends StatelessWidget {
           ],
         ),
       ),
+    );
+    return PluginDockContribution(
+      slot: 'navigation',
+      content: PluginDockContent(
+        tabs: tabs,
+        section: PluginSectionPicker(key: const ValueKey('mastodon-section-picker'), tabs: tabs),
+        sectionWidth: pluginDockSectionWidth(context, labels[selected]),
+        actions: mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: true),
+      ),
+      fallback: fallback,
     );
   }
 }

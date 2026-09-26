@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "此服务器无法安全地保护备份免受同时更改的影响。",
   "@sync_unsafe_server": {},
   "sync_history": "以前的备份",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "始终显示控件"
 }

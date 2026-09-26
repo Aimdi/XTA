@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -16,6 +17,7 @@ class SubstackReadingToolbar extends StatelessWidget {
   final List<SubstackPublication> publications;
   final Set<String> readIds;
   final ValueChanged<SubstackFeedFilter>? onFilter;
+  final bool publishToHome;
 
   const SubstackReadingToolbar({
     super.key,
@@ -24,6 +26,7 @@ class SubstackReadingToolbar extends StatelessWidget {
     required this.publications,
     required this.readIds,
     this.onFilter,
+    this.publishToHome = false,
   });
 
   Future<void> _openPublications(BuildContext context) async {
@@ -84,11 +87,12 @@ class SubstackReadingToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (PluginHomeDockScope.maybeOf(context) != null && !publishToHome) return const SizedBox.shrink();
     final l10n = L10n.of(context);
     final options = context.read<SubstackHomeControlsStore>().options(slot);
     final filtered =
         options.order != SubstackLoadedOrder.newest || (onFilter != null && feed.filter != SubstackFeedFilter.all);
-    return Padding(
+    final fallback = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
@@ -135,6 +139,73 @@ class SubstackReadingToolbar extends StatelessWidget {
           ),
         ],
       ),
+    );
+    return PluginDockContribution(
+      slot: 'reading',
+      content: PluginDockContent(
+        leading: TextButton.icon(
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: () => _openPublications(context),
+          icon: const Icon(Icons.newspaper_outlined, size: 20),
+          label: Text(l10n.plugin_substack_library_following, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        search: IconButton(
+          style: pluginActionButtonStyle,
+          tooltip: l10n.plugin_mastodon_loaded_search,
+          onPressed: () => _openOptions(context, autofocus: true),
+          icon: Badge(isLabelVisible: options.query.trim().isNotEmpty, child: const Icon(Icons.search)),
+        ),
+        trailing: [
+          if (feed.state.failedCount > 0)
+            IconButton(
+              style: pluginActionButtonStyle,
+              tooltip: l10n.plugin_substack_partial_error(feed.state.failedCount),
+              onPressed: () => _showLoadFailure(context),
+              icon: Icon(Icons.warning_amber_outlined, color: Theme.of(context).colorScheme.error),
+            ),
+          PluginDockFilterButton(
+            activeCount:
+                (options.query.trim().isEmpty ? 0 : 1) +
+                (options.order == SubstackLoadedOrder.newest ? 0 : 1) +
+                (onFilter != null && feed.filter != SubstackFeedFilter.all ? 1 : 0),
+            onPressed: () => _openOptions(context),
+          ),
+        ],
+      ),
+      fallback: fallback,
+    );
+  }
+}
+
+/// The published actions outlive recycled list items, but not their active pane.
+class SubstackHomeReadingDock extends StatelessWidget {
+  final String slot;
+  final ValueChanged<SubstackFeedFilter>? onFilter;
+  const SubstackHomeReadingDock({super.key, required this.slot, this.onFilter});
+
+  @override
+  Widget build(BuildContext context) {
+    if (PluginHomeDockScope.maybeOf(context) == null) return const SizedBox.shrink();
+    final feed = context.read<SubstackFeedStore>();
+    return TripleBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
+      store: context.read<SubstackPublicationsStore>(),
+      builder: (context, pubs) => pubs.state.isEmpty
+          ? const SizedBox.shrink()
+          : TripleBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
+              store: feed,
+              builder: (context, _) => TripleBuilder<SubstackReadStore, Set<String>>(
+                store: context.read<SubstackReadStore>(),
+                builder: (context, read) => SubstackReadingToolbar(
+                  key: ValueKey(slot),
+                  slot: slot,
+                  feed: feed,
+                  publications: pubs.state,
+                  readIds: read.state,
+                  onFilter: onFilter,
+                  publishToHome: true,
+                ),
+              ),
+            ),
     );
   }
 }

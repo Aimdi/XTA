@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -165,7 +166,7 @@ class MastodonTimelineToolbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    return Padding(
+    final fallback = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
         children: [
@@ -217,6 +218,23 @@ class MastodonTimelineToolbar extends StatelessWidget {
         ],
       ),
     );
+    return PluginDockContribution(
+      slot: 'reading',
+      content: PluginDockContent(
+        trailing: [
+          PluginDockFilterButton(
+            activeCount: options.activeFilters + (options.order == MastodonTimelineOrder.feed ? 0 : 1),
+            onPressed: () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => _TimelineSheet(store: store, slot: slot),
+            ),
+          ),
+        ],
+      ),
+      fallback: fallback,
+    );
   }
 }
 
@@ -261,6 +279,20 @@ class _TimelineSheetState extends State<_TimelineSheet> {
                 ],
               ),
               Text(l10n.plugin_mastodon_loaded_controls, style: Theme.of(context).textTheme.bodySmall),
+              const SizedBox(height: 12),
+              Text(l10n.plugin_mastodon_sort, style: Theme.of(context).textTheme.titleSmall),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final order in MastodonTimelineOrder.values)
+                    ChoiceChip(
+                      label: Text(mastodonOrderLabel(l10n, order)),
+                      selected: options.order == order,
+                      onSelected: (_) => select(options.copy(order: order)),
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
+                    ),
+                ],
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: _query,

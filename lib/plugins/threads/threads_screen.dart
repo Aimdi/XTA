@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -149,17 +150,32 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                   tooltip: l10n.plugin_threads_search,
                   onPressed: _lookUpProfile,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.person_add_alt),
-                  tooltip: l10n.plugin_threads_add_account,
-                  onPressed: _addAccount,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.settings),
-                  tooltip: l10n.settings,
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const ThreadsSettingsScreen())),
-                ),
+                if (PluginHomeDockScope.maybeOf(context) != null)
+                  PluginHomeMenu(
+                    onSelected: (value) {
+                      if (value == 'add') _addAccount();
+                      if (value == 'settings') {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ThreadsSettingsScreen()));
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      PopupMenuItem(value: 'add', child: Text(l10n.plugin_threads_add_account)),
+                      PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
+                    ],
+                  )
+                else ...[
+                  IconButton(
+                    icon: const Icon(Icons.person_add_alt),
+                    tooltip: l10n.plugin_threads_add_account,
+                    onPressed: _addAccount,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.settings),
+                    tooltip: l10n.settings,
+                    onPressed: () =>
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ThreadsSettingsScreen())),
+                  ),
+                ],
               ],
             ),
             const Divider(height: 1),
@@ -215,6 +231,7 @@ class _HomePane extends StatelessWidget {
         final accounts = context.read<ThreadsAccountsStore>();
         final people = peopleToFollowFromThreads(posts: posts, alreadyFollows: accounts.follows);
         final peopleOffset = people.isEmpty ? 0 : 1;
+        final peopleIndex = PluginHomeDockScope.maybeOf(context) == null ? 0 : posts.length.clamp(0, 3);
         final pendingOffset = pending > 0 ? 1 : 0;
         return RefreshIndicator(
           // The reader pulled: that is the one moment worth going past the cache.
@@ -224,7 +241,7 @@ class _HomePane extends StatelessWidget {
             padding: pluginFeedPadding(context),
             itemCount: posts.length + peopleOffset + pendingOffset,
             itemBuilder: (context, index) {
-              if (peopleOffset == 1 && index == 0) {
+              if (peopleOffset == 1 && index == peopleIndex) {
                 return PluginFeedPeopleStrip(
                   title: l10n.plugin_threads_from_feed,
                   followLabel: l10n.plugin_threads_follow,
@@ -239,7 +256,7 @@ class _HomePane extends StatelessWidget {
                   ),
                 );
               }
-              final postIndex = index - peopleOffset;
+              final postIndex = index - (index > peopleIndex ? peopleOffset : 0);
               if (postIndex >= posts.length) {
                 return _PendingAccountsNote(pending: pending);
               }

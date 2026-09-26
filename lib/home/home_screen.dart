@@ -1,3 +1,4 @@
+import 'package:xta/home/home_group_drawer.dart';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -10,11 +11,9 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread_store.dart';
-import 'package:xta/home/home_group_drawer.dart';
-import 'package:xta/home/home_timeline_picker.dart';
+import 'package:xta/home/home_source_picker.dart';
 import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/feed_strip_store.dart';
-import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/home/_account_avatar.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/_feed.dart';
@@ -455,8 +454,9 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                     showLabels: showLabels,
                     disableAnimations: disableAnimations,
                     onSelected: (index) => _onBarDestination(context, slots, index, currentPage),
-                    longPressIndex: slots.indexWhere((slot) =>
-                        slot.pageIndex != null && _barPages[slot.pageIndex!].id == 'feed'),
+                    longPressIndex: slots.indexWhere(
+                      (slot) => slot.pageIndex != null && _barPages[slot.pageIndex!].id == 'feed',
+                    ),
                     onLongPress: (index) {
                       final page = slots[index].pageIndex;
                       if (page != null && _barPages[page].id == 'feed') _openHomePicker(context, page);
@@ -533,55 +533,17 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
 
   Future<void> _openHomePicker(BuildContext context, int page) async {
     final tabs = context.read<FeedTabStore>();
-    final prefs = PrefService.of(context, listen: false);
-    final sources = availableFeedTabsFromIds(context.read<FeedStripStore>().state, prefs);
-    final groups = drawerGroupsForQuery(context.read<GroupsModel>().state, '');
-    final picked = await showModalBottomSheet<HomeTimelineSelection>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      builder: (_) => HomeTimelinePicker(
-        selected: tabs.state.id,
-        showAdd: false,
-        groupMicroblogs: altMicrobloggingGrouped(prefs),
-        rememberedMicroblog: prefs.get<String>(optionAltMicrobloggingLastSource),
-        options: [
-          for (final source in sources)
-            HomeTimelineOption(
-              id: source.id.id,
-              label: source.titleBuilder(context),
-              mark: source.mark ?? Icon(source.icon),
-              plugin: source.id.isPlugin,
-              unread: false,
-            ),
-        ],
-        groups: [
-          for (final group in groups)
-            HomeTimelineOption(
-              id: group.id,
-              label: group.name,
-              mark: GroupMark.forGroup(group, size: 32),
-              plugin: false,
-              unread: false,
-            ),
-        ],
-      ),
-    );
+    final picked = await showHomeSourcePicker(context);
     if (!mounted || !context.mounted || picked == null) return;
     if (picked.groupId != null) {
-      final group = groups.where((g) => g.id == picked.groupId).firstOrNull;
-      if (group != null)
-        Navigator.pushNamed(
-          context,
-          routeGroup,
-          arguments: GroupScreenArguments(id: group.id, name: group.name),
-        );
+      final group = context.read<GroupsModel>().state.where((group) => group.id == picked.groupId).firstOrNull;
+      if (group != null) await openGroupAndRefreshUnread(context, id: group.id, name: group.name);
     } else if (picked.id != null) {
+      final sources = availableFeedTabsFromIds(context.read<FeedStripStore>().state, widget.prefs);
+      if (!sources.any((source) => source.id.id == picked.id)) return;
       tabs.select(FeedTab(picked.id!));
       await rememberNetwork(context, picked.id!);
-      if (!mounted) return;
-      _goToPage(page, animate: false);
+      if (mounted) _goToPage(page, animate: false);
     }
   }
 
