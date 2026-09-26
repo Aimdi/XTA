@@ -1,30 +1,29 @@
-## XTA — aimdi145
+## XTA — aimdi146
 
-### Reddit-style compact Home
+### Slim Microblogs readers
 
-Home plugins now share one slim header, with the source on the left and
-options on the right. More of the feed is visible immediately.
+Mastodon, Bluesky and Threads now share a compact reader layout in Home and
+inside their full clients.
 
-- Section selection, Alt Microblogging service switching and reading controls
-  open from the options button, without reserving another navigation row.
-- Existing search and primary actions stay directly accessible. Secondary
-  actions and full-client entry remain available through the menus.
-- The source chooser supports local search, groups and unread indicators.
-  Opening controls or switching sources preserves loaded readers and their
-  saved reading positions.
-- Alt Microblogging grouping remains reversible. People suggestions appear
-  below initial posts so they do not displace the first content.
-- Narrow screens and enlarged text keep readable source labels and full-sized
-  tap targets. Each plugin retains its identity and existing functions.
+- A single 52dp header holds the service mark, section selection, search and
+  options. Larger accessibility text can increase the height; touch targets
+  remain full-sized.
+- Mastodon's extra bottom navigation is removed. Its active server, filters,
+  saved posts and account controls remain available in options.
+- Threads' followed accounts open on demand, with profile, add and confirmed
+  unfollow actions, instead of taking permanent space above the feed.
+- Service switching, local filters, lazy sections and reading positions are
+  preserved.
+- The category is now called **Microblogs**, with shorter labels in all
+  supported locales and the existing speech-bubble icon.
 
-This includes the completed work from PR #304. The older Home PR #240 was
-already included in the app's history and has been closed as integrated.
+This release includes PR #306. Substack's layout is unchanged.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi145_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001158**, above
-every aimdi144 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi146_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001162**, above
+every aimdi145 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -32,4 +31,4 @@ the full Flutter test suite on the tagged source before building. It verifies
 all four APK variants, versions and signing certificates before publication.
 **`release-build.json`** and **`SHA256SUMS`** accompany the APKs.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi144)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi145)
