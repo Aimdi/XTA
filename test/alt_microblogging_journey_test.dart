@@ -102,14 +102,26 @@ void main() {
         matchesGoldenFile('../review-artifacts/renders/alt-microblogging-reader.png'),
       );
     }
-    final likedTab = find.byTooltip(L10n.current.plugin_bluesky_liked);
-    await tester.scrollUntilVisible(
-      likedTab,
-      160,
-      scrollable: find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(Scrollable)).first,
-    );
+    final actionsMenu = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(PopupMenuButton<String>));
+    await tester.tap(actionsMenu);
     await tester.pumpAndSettle();
-    await tester.tap(likedTab);
+    expect(
+      tester.widgetList<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).map((item) => item.value),
+      containsAll(['add', 'saved', 'following', 'list', 'starter', 'settings']),
+    );
+    expect(blue.client.calls, hasLength(1), reason: 'Opening actions must not refresh the feed.');
+    await tester.tap(find.widgetWithText(PopupMenuItem<String>, L10n.current.plugin_bluesky_add));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsOneWidget);
+    await tester.tap(find.text(L10n.current.cancel));
+    await tester.pumpAndSettle();
+    expect(blue.client.calls, hasLength(1));
+    final picker = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(PluginSectionPicker));
+    expect(picker, findsOneWidget);
+    await tester.tap(picker);
+    await tester.pumpAndSettle();
+    expect(blue.client.calls, hasLength(1), reason: 'Opening sections must not load another feed.');
+    await tester.tap(find.widgetWithText(PopupMenuItem<int>, L10n.current.plugin_bluesky_liked));
     await tester.pumpAndSettle();
     expect(find.text(bluePost('root').text), findsOneWidget);
     final posts = feed.state;
@@ -137,6 +149,12 @@ void main() {
     expect(selection.state.id, 'mastodon');
     expect(find.byType(MastodonScreen), findsOneWidget);
     expect(find.byType(BlueskyScreen), findsNothing);
+    await tester.tap(find.byKey(const ValueKey('mastodon-more')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('mastodon-bookmarks')), findsOneWidget);
+    expect(find.byKey(const ValueKey('mastodon-settings')), findsOneWidget);
+    await tester.tapAt(const Offset(8, 700));
+    await tester.pumpAndSettle();
     final blueChip = find.byKey(const ValueKey('alt-microblogging-service-bluesky'));
     await tester.ensureVisible(blueChip);
     await tester.tap(blueChip);
