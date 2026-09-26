@@ -23,7 +23,7 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_screen.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
-import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
@@ -166,12 +166,12 @@ void main() {
     await expectLater(find.byType(FeedScreen), matchesGoldenFile('../review-artifacts/renders/home-hackernews.png'));
     expect(rss.calls, 0, reason: 'An unvisited plugin must not fetch.');
     expect(find.byTooltip('Home feed accounts'), findsNothing);
-    final picker = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(PluginSectionPicker));
+    final picker = find.byKey(const ValueKey('home-plugin-options'));
     expect(picker, findsOneWidget);
     await tester.tap(picker);
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top], reason: 'Opening sections must not fetch.');
-    await tester.tap(find.widgetWithText(PopupMenuItem<int>, 'New'));
+    await tester.tap(find.byKey(const ValueKey('home-section-1')));
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top, HnFeed.newest]);
     final hnList = find.descendant(of: find.byType(HnScreen), matching: find.byType(Scrollable)).last;
@@ -180,6 +180,9 @@ void main() {
     final scrollBefore = tester.state<ScrollableState>(hnList).position.pixels;
     expect(scrollBefore, greaterThan(0));
     expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
+    final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
+    await tester.tap(menu);
+    await tester.pumpAndSettle();
     final open = find.byKey(const ValueKey('open-client-hackernews'));
     expect(tester.getSize(open).height, greaterThanOrEqualTo(48));
     await tester.tap(open);
@@ -197,7 +200,10 @@ void main() {
     final hnOption = find.byKey(const ValueKey('home-source-hackernews'));
     final rssOption = find.byKey(const ValueKey('home-source-rss'));
     expect(tester.getTopLeft(hnOption).dy, lessThan(tester.getTopLeft(rssOption).dy));
-    await expectLater(find.byType(Overlay).first, matchesGoldenFile('../review-artifacts/renders/home-source-picker.png'));
+    await expectLater(
+      find.byType(Overlay).first,
+      matchesGoldenFile('../review-artifacts/renders/home-source-picker.png'),
+    );
     await tester.tap(rssOption);
     await tester.pumpAndSettle();
     expect(rss.calls, 1);
