@@ -119,6 +119,43 @@ void main() {
           matchesGoldenFile('../review-artifacts/renders/home-$width-$scale-$rtl-$dark.png'),
         );
       }
+      if (width == 390 && scale == 1) {
+        final filters = find.byTooltip(L10n.current.filters);
+        final readerView = find.byType(BlueskyReaderView);
+        final originalReader = tester.state(find.byType(BlueskyScreen));
+        mastodon.scroll.jumpTo(80);
+        await tester.pumpAndSettle();
+        expect(filters.hitTestable(), findsOneWidget, reason: 'Restoring scroll is not a reading gesture.');
+        mastodon.scroll.jumpTo(0);
+        await tester.pumpAndSettle();
+        await tester.drag(readerView, const Offset(0, -320));
+        await tester.pumpAndSettle();
+        expect(filters.hitTestable(), findsNothing, reason: 'Secondary controls recede during deliberate reading.');
+        expect(search.hitTestable(), findsOneWidget, reason: 'The main header remains accessible.');
+        await tester.drag(readerView, const Offset(0, 100));
+        await tester.pumpAndSettle();
+        expect(filters.hitTestable(), findsOneWidget, reason: 'An upward gesture restores controls.');
+        final more = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
+        await tester.tap(more);
+        await tester.pumpAndSettle();
+        final pin = find.byKey(const ValueKey('home-pin-controls'));
+        expect(pin, findsOneWidget);
+        await tester.tap(pin);
+        await tester.pumpAndSettle();
+        await tester.drag(readerView, const Offset(0, -280));
+        await tester.pumpAndSettle();
+        expect(filters.hitTestable(), findsOneWidget, reason: 'Pinned controls stay visible.');
+        expect(prefs.get<bool>('home_keep_controls_visible'), isTrue);
+        await tester.tap(more);
+        await tester.pumpAndSettle();
+        await tester.tap(pin);
+        await tester.pumpAndSettle();
+        expect(prefs.get<bool>('home_keep_controls_visible'), isFalse);
+        mastodon.scroll.jumpTo(0);
+        await tester.pumpAndSettle();
+        expect(tester.state(find.byType(BlueskyScreen)), same(originalReader));
+        expect(blue.client.calls, hasLength(1));
+      }
       // The relocated filter controls still steer this exact reader store.
       final reader = tester.element(find.byType(BlueskyReaderView)).read<BlueskyReaderStore>();
       final beforeState = tester.state(find.byType(BlueskyScreen));
