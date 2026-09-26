@@ -109,6 +109,7 @@ void main() {
       }
       final search = find.byTooltip(L10n.current.plugin_bluesky_search);
       expect(search, findsOneWidget);
+      expect(tester.getSize(find.text(L10n.current.plugin_bluesky_title).first).width, greaterThanOrEqualTo(48));
       expect(tester.getTopLeft(search).dy, lessThan(56));
       expect(find.byKey(const ValueKey('home-plugin-context')), findsNothing);
       expect(find.byKey(const ValueKey('home-plugin-options')), findsOneWidget);
