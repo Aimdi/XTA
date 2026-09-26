@@ -148,3 +148,18 @@ x.com egress works here.
   APK build also needs the launcher icons: `.venv/bin/python generate_icons.py` then
   `fvm dart run flutter_launcher_icons` (icon resources persist in the snapshot, so this
   is only needed when icons change).
+
+## Installed design skills
+
+For UI layout, compactness, placement, and visual hierarchy work, read
+`docs/xta-design-skills.md` first. The installed `impeccable` and `ui-ux-pro-max`
+skills are available under `.agents/skills/` (Codex), `.claude/skills/` (Claude
+Code), and `.grok/skills/` (Grok Build). Keep the three copies of these two skills
+identical; `python3 scripts/check_design_skills.py` verifies them, in addition
+to the existing `bash scripts/check_skill_sync.sh` guardrail.
+
+Use Impeccable's critique/distill/layout workflow and UI UX Pro Max's Flutter
+stack guidance to refine existing XTA surfaces. Preserve features, true-black
+support, native conventions and accessible touch targets. These skills do not
+override any existing hard rule above, authorize a redesign, or authorize a
+merge/release. No automatic hooks are installed.

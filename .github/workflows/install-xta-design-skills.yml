@@ -1,0 +1,56 @@
+name: Install pinned XTA design skills
+
+# One-time bootstrap, restricted to this installation branch. Removed after
+# vendoring; it does not merge or release and never edits runtime application code.
+on:
+  push:
+    branches: ['chore/xta-design-skills']
+    paths:
+      - '.github/workflows/install-xta-design-skills.yml'
+      - 'scripts/vendor_design_skills.py'
+permissions:
+  contents: read
+jobs:
+  vendor:
+    if: github.repository == 'Aimdi/XTA' && github.ref == 'refs/heads/chore/xta-design-skills'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: project
+          ref: chore/xta-design-skills
+      - uses: actions/checkout@v4
+        with:
+          repository: pbakaus/impeccable
+          ref: 9d715cc4f5564a990ca8345abfdd5df6dc9b41c8
+          path: upstream-impeccable
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: nextlevelbuilder/ui-ux-pro-max-skill
+          ref: dcc40ff5133ef78276117db0cc34e7b83cc8aeba
+          path: upstream-uipro
+          persist-credentials: false
+      - name: Vendor complete skills without global installers or hooks
+        working-directory: project
+        run: python3 scripts/vendor_design_skills.py ../upstream-impeccable ../upstream-uipro
+      - name: Verify resources, syntax, Flutter lookup and existing sync guardrail
+        working-directory: project
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 scripts/check_design_skills.py
+          bash scripts/check_skill_sync.sh
+      - name: Commit only skill installations and agent documentation
+        working-directory: project
+        run: |
+          git add -- .agents/skills/impeccable .agents/skills/ui-ux-pro-max .claude/skills/impeccable .claude/skills/ui-ux-pro-max .grok/skills/impeccable .grok/skills/ui-ux-pro-max AGENTS.md CLAUDE.md
+          # Preserve upstream reference/code bytes, including their whitespace.
+          # Our documentation remains whitespace-checked; resource, syntax and
+          # synchronization validation above still covers every installed copy.
+          git diff --cached --check -- AGENTS.md CLAUDE.md
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'chore: vendor pinned Impeccable and UI UX Pro Max design skills'
+          git push origin HEAD:refs/heads/chore/xta-design-skills

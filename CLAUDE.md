@@ -156,3 +156,18 @@ incremental rewrite plan.
 `lib/database/**` always prompt, and hooks in `.claude/hooks/` block pinned-dep
 bumps, run codegen at session start, and `dart format` edited Dart files. See
 "Enforced guardrails" in `AGENTS.md`.
+
+## Installed design skills
+
+For UI layout, compactness, placement, and visual hierarchy work, read
+`docs/xta-design-skills.md` first. The installed `impeccable` and `ui-ux-pro-max`
+skills are available under `.agents/skills/` (Codex), `.claude/skills/` (Claude
+Code), and `.grok/skills/` (Grok Build). Keep the three copies of these two skills
+identical; `python3 scripts/check_design_skills.py` verifies them, in addition
+to the existing `bash scripts/check_skill_sync.sh` guardrail.
+
+Use Impeccable's critique/distill/layout workflow and UI UX Pro Max's Flutter
+stack guidance to refine existing XTA surfaces. Preserve features, true-black
+support, native conventions and accessible touch targets. These skills do not
+override any existing hard rule above, authorize a redesign, or authorize a
+merge/release. No automatic hooks are installed.
