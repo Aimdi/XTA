@@ -3810,5 +3810,6 @@
   "recent_searches": "Recent searches",
   "@recent_searches": {},
   "clear_recent_searches": "Clear recent searches",
-  "@clear_recent_searches": {}
+  "@clear_recent_searches": {},
+  "home_keep_controls_visible": "Keep controls visible"
 }

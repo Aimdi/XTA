@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Questo server non può proteggere i backup da modifiche simultanee.",
   "@sync_unsafe_server": {},
   "sync_history": "Backup precedenti",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Mantieni visibili i controlli"
 }

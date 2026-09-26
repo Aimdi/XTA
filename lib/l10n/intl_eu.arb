@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Zerbitzari honek ezin ditu babeskopiak aldi bereko aldaketetatik modu seguruan babestu.",
   "@sync_unsafe_server": {},
   "sync_history": "Aurreko babeskopiak",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Mantendu kontrolak ikusgai"
 }

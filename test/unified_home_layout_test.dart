@@ -135,7 +135,10 @@ void main() {
         await tester.drag(readerView, const Offset(0, 100));
         await tester.pumpAndSettle();
         expect(filters.hitTestable(), findsOneWidget, reason: 'An upward gesture restores controls.');
-        final more = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
+        final more = find.descendant(
+          of: find.byType(PluginDockActions),
+          matching: find.byType(PopupMenuButton<String>),
+        );
         await tester.tap(more);
         await tester.pumpAndSettle();
         final pin = find.byKey(const ValueKey('home-pin-controls'));

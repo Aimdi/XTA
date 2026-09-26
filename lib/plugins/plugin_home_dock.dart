@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:xta/plugins/plugin_home_reading_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
@@ -30,6 +31,7 @@ class PluginDockEntry {
 
 class PluginHomeDockStore extends Store<Map<String, PluginDockEntry>> {
   bool _closed = false;
+  final controls = HomeReadingControlsStore();
   PluginHomeDockStore() : super(const {});
 
   void publish(String source, String slot, Object owner, PluginDockContent content) {
@@ -48,6 +50,7 @@ class PluginHomeDockStore extends Store<Map<String, PluginDockEntry>> {
   @override
   Future<void> destroy() async {
     _closed = true;
+    await controls.destroy();
     await super.destroy();
   }
 }
@@ -233,8 +236,13 @@ class PluginHomeMenu extends StatelessWidget {
     return PopupMenuButton<String>(
       style: style,
       tooltip: tooltip,
-      onSelected: (value) {
-        if (value == 'xta:open-client') {
+      onOpened: () => scope?.store.controls.reveal(),
+      onSelected: (value) async {
+        if (!context.mounted || scope?.source != PluginHomeDockScope.maybeOf(context)?.source) return;
+        if (value == 'xta:pin-controls') {
+          final controls = scope?.store.controls;
+          if (controls != null) await controls.setPinned(!controls.state.pinned);
+        } else if (value == 'xta:open-client') {
           if (context.mounted) scope?.onOpenClient();
         } else {
           onSelected?.call(value);
@@ -244,6 +252,12 @@ class PluginHomeMenu extends StatelessWidget {
         ...itemBuilder(context),
         if (scope != null) ...[
           const PopupMenuDivider(),
+          CheckedPopupMenuItem<String>(
+            key: const ValueKey('home-pin-controls'),
+            value: 'xta:pin-controls',
+            checked: scope.store.controls.state.pinned,
+            child: Text(L10n.of(context).home_keep_controls_visible),
+          ),
           PopupMenuItem(
             key: ValueKey('open-client-${scope.source}'),
             value: 'xta:open-client',

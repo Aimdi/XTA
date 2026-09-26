@@ -150,7 +150,7 @@ void main() {
         await tester.pumpWidget(h.app(scale: scale, rtl: rtl));
         await tester.pumpAndSettle();
         expect(find.byTooltip(L10n.current.filters), findsOneWidget);
-        expect(find.byTooltip(L10n.current.search), findsOneWidget);
+        expect(find.byTooltip(L10n.current.plugin_mastodon_loaded_search), findsOneWidget);
         if (scale == 1) {
           expect(tester.getTopLeft(find.byType(SubstackPostCard).first).dy, lessThanOrEqualTo(112));
         }

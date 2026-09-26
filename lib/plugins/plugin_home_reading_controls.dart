@@ -28,8 +28,9 @@ class HomeReadingControlsStore extends Store<HomeReadingControlsState> {
   void bind(String source, BasePrefService? prefs) {
     if (_closed) return;
     _prefs = prefs;
-    final pinned = prefs == null ? state.pinned : prefs.getKeys().contains(homeKeepControlsVisibleKey) &&
-        prefs.get(homeKeepControlsVisibleKey) == true;
+    final pinned = prefs == null
+        ? state.pinned
+        : prefs.getKeys().contains(homeKeepControlsVisibleKey) && prefs.get(homeKeepControlsVisibleKey) == true;
     if (source != state.source || pinned != state.pinned) {
       _travel = 0;
       _direction = 0;
@@ -138,8 +139,10 @@ class _HomeReadingViewportState extends State<HomeReadingViewport> {
   @override
   void didUpdateWidget(HomeReadingViewport oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.source != oldWidget.source || widget.store != oldWidget.store ||
-        widget.enabled != oldWidget.enabled || widget.prefs != oldWidget.prefs) {
+    if (widget.source != oldWidget.source ||
+        widget.store != oldWidget.store ||
+        widget.enabled != oldWidget.enabled ||
+        widget.prefs != oldWidget.prefs) {
       _generation++;
       _metrics = null;
       _delta = 0;
@@ -183,7 +186,11 @@ class _HomeReadingViewportState extends State<HomeReadingViewport> {
         scrollExtent: metrics.maxScrollExtent - metrics.minScrollExtent,
         controlsHeight: math.max(48, height),
         userDelta: delta,
-        protected: _focus.hasFocus || media.accessibleNavigation || media.viewInsets.bottom > 0 ||
+        protected:
+            _focus.hasFocus ||
+            media.accessibleNavigation ||
+            media.viewInsets.bottom > 0 ||
+            View.of(context).viewInsets.bottom > 0 ||
             ModalRoute.of(context)?.isCurrent == false,
       );
     });
@@ -212,7 +219,8 @@ class _HomeReadingViewportState extends State<HomeReadingViewport> {
           child: NotificationListener<ScrollNotification>(
             onNotification: (notice) {
               final delta = notice is ScrollUpdateNotification && notice.dragDetails != null
-                  ? notice.scrollDelta ?? 0.0 : 0.0;
+                  ? notice.scrollDelta ?? 0.0
+                  : 0.0;
               _observe(notice.metrics, notice.depth, delta);
               return false;
             },

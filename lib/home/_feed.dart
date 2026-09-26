@@ -1,4 +1,5 @@
 import 'package:xta/plugins/plugin_home_dock.dart';
+import 'package:xta/plugins/plugin_home_reading_controls.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -608,53 +609,58 @@ class _FeedScreenState extends State<FeedScreen> {
           );
           return [HomeAppBarActions(children: actions)];
         },
-        bodyBuilder: (context) => Column(
-          children: [
-            if (docked)
-              GroupUnreadScope(
-                builder: (context, unread) => PluginDockRow(
-                  store: _dock,
-                  source: tab.id,
-                  servicesWidth: available.where((option) => isAltMicrobloggingSource(option.id.id)).length * 48.0,
-                  services: grouped && isAltMicrobloggingSource(tab.id)
-                      ? AltMicrobloggingSelector(
-                          compact: true,
+        bodyBuilder: (context) => HomeReadingViewport(
+          store: _dock.controls,
+          source: tab.id,
+          enabled: docked,
+          prefs: prefs,
+          controls: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (docked)
+                GroupUnreadScope(
+                  builder: (context, unread) => PluginDockRow(
+                    store: _dock,
+                    source: tab.id,
+                    servicesWidth: available.where((option) => isAltMicrobloggingSource(option.id.id)).length * 48.0,
+                    services: grouped && isAltMicrobloggingSource(tab.id)
+                        ? AltMicrobloggingSelector(
+                            compact: true,
+                            sourceIds: available.map((option) => option.id.id).toList(),
+                            selected: tab.id,
+                            unread: unread,
+                            onSelected: (id) => _selectStripTab(FeedTab(id)),
+                          )
+                        : null,
+                  ),
+                )
+              else
+                grouped && isAltMicrobloggingSource(tab.id)
+                    ? GroupUnreadScope(
+                        builder: (context, unread) => AltMicrobloggingSelector(
                           sourceIds: available.map((option) => option.id.id).toList(),
                           selected: tab.id,
                           unread: unread,
                           onSelected: (id) => _selectStripTab(FeedTab(id)),
-                        )
-                      : null,
-                ),
-              )
-            else
-              grouped && isAltMicrobloggingSource(tab.id)
-                  ? GroupUnreadScope(
-                      builder: (context, unread) => AltMicrobloggingSelector(
-                        sourceIds: available.map((option) => option.id.id).toList(),
-                        selected: tab.id,
-                        unread: unread,
-                        onSelected: (id) => _selectStripTab(FeedTab(id)),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            HomeCollapsingControls(
-              key: const ValueKey('home-reading-controls'),
-              visible: _view.state.controlsVisible && tab == FeedTab.following,
-              child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
-            ),
-            Expanded(
-              child: NotificationListener<ScrollMetricsNotification>(
-                onNotification: (notification) {
-                  if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
-                    _queueControlsUpdate();
-                  }
-                  return false;
-                },
-                child: _timelineBody(tab, prefs),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              HomeCollapsingControls(
+                key: const ValueKey('home-reading-controls'),
+                visible: _view.state.controlsVisible && tab == FeedTab.following,
+                child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: NotificationListener<ScrollMetricsNotification>(
+            onNotification: (notification) {
+              if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
+                _queueControlsUpdate();
+              }
+              return false;
+            },
+            child: _timelineBody(tab, prefs),
+          ),
         ),
       ),
     );

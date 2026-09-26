@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "यह सर्वर बैकअप को एक साथ होने वाले बदलावों से सुरक्षित नहीं रख सकता।",
   "@sync_unsafe_server": {},
   "sync_history": "पिछले बैकअप",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "कंट्रोल हमेशा दिखाएँ"
 }

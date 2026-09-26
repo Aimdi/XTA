@@ -3610,5 +3610,6 @@
   "sync_unsafe_server": "Máy chủ này không thể bảo vệ bản sao lưu an toàn trước các thay đổi đồng thời.",
   "@sync_unsafe_server": {},
   "sync_history": "Các bản sao lưu trước",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển"
 }

@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Aquest servidor no pot protegir les còpies de seguretat de canvis simultanis.",
   "@sync_unsafe_server": {},
   "sync_history": "Còpies anteriors",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Mantén els controls visibles"
 }

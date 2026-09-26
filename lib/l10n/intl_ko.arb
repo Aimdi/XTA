@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "이 서버는 동시 변경으로부터 백업을 안전하게 보호할 수 없습니다.",
   "@sync_unsafe_server": {},
   "sync_history": "이전 백업",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "컨트롤 항상 표시"
 }

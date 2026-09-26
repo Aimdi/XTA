@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Server ini tidak dapat melindungi cadangan dari perubahan bersamaan dengan aman.",
   "@sync_unsafe_server": {},
   "sync_history": "Cadangan sebelumnya",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Selalu tampilkan kontrol"
 }

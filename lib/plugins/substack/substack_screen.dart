@@ -190,6 +190,12 @@ class _SubstackScreenState extends State<SubstackScreen> {
                     ),
                   ],
                 ),
+                if (_tab < 2)
+                  SubstackHomeReadingDock(
+                    key: ValueKey('substack-reading-$_tab'),
+                    slot: _tab == 0 ? 'home' : 'inbox',
+                    onFilter: _tab == 0 ? _setFilter : null,
+                  ),
                 const Divider(height: 1),
                 Expanded(
                   child: PluginLazyTabs(

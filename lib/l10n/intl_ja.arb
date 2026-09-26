@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "このサーバーでは、同時に行われる変更からバックアップを安全に保護できません。",
   "@sync_unsafe_server": {},
   "sync_history": "以前のバックアップ",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "操作ボタンを常に表示"
 }

@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Denne serveren kan ikke beskytte sikkerhetskopier mot samtidige endringer.",
   "@sync_unsafe_server": {},
   "sync_history": "Tidligere sikkerhetskopier",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Hold kontrollene synlige"
 }

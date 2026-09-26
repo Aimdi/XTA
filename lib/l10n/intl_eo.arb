@@ -3613,5 +3613,6 @@
   "sync_unsafe_server": "Ĉi tiu servilo ne povas sekure protekti sekurkopiojn kontraŭ samtempaj ŝanĝoj.",
   "@sync_unsafe_server": {},
   "sync_history": "Antaŭaj sekurkopioj",
-  "@sync_history": {}
+  "@sync_history": {},
+  "home_keep_controls_visible": "Teni la regilojn videblaj"
 }

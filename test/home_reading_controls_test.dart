@@ -12,10 +12,20 @@ void main() {
   });
   tearDown(() => store.destroy());
 
-  void scroll(double delta, {double before = 200, double extent = 1000, double height = 48,
-      bool protected = false, String source = 'blue'}) => store.observe(
-    source: source, extentBefore: before, scrollExtent: extent,
-    controlsHeight: height, userDelta: delta, protected: protected,
+  void scroll(
+    double delta, {
+    double before = 200,
+    double extent = 1000,
+    double height = 48,
+    bool protected = false,
+    String source = 'blue',
+  }) => store.observe(
+    source: source,
+    extentBefore: before,
+    scrollExtent: extent,
+    controlsHeight: height,
+    userDelta: delta,
+    protected: protected,
   );
 
   test('deliberate down hides, small reversals do not flicker, deliberate up reveals', () {
@@ -78,29 +88,42 @@ void main() {
     testWidgets('real viewport retains controls for $protection', (tester) async {
       final focus = FocusNode();
       final scrollController = ScrollController();
+      if (protection == 'keyboard') {
+        tester.view.viewInsets = const FakeViewPadding(bottom: 200);
+        addTearDown(tester.view.resetViewInsets);
+      }
       try {
-        await tester.pumpWidget(MaterialApp(
-          home: Builder(builder: (context) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              accessibleNavigation: protection == 'accessibility',
-              viewInsets: EdgeInsets.only(bottom: protection == 'keyboard' ? 200 : 0),
-            ),
-            child: Scaffold(body: HomeReadingViewport(
-              store: store,
-              source: 'blue',
-              enabled: true,
-              prefs: prefs,
-              controls: SizedBox(height: 48, child: TextButton(
-                focusNode: focus, onPressed: () {}, child: const Text('Reading options'),
-              )),
-              child: ListView(
-                controller: scrollController,
-                children: [for (var i = 0; i < (protection == 'short' ? 2 : 30); i++)
-                  SizedBox(height: 80, child: Text('Post $i'))],
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  accessibleNavigation: protection == 'accessibility',
+                  viewInsets: EdgeInsets.only(bottom: protection == 'keyboard' ? 200 : 0),
+                ),
+                child: Scaffold(
+                  body: HomeReadingViewport(
+                    store: store,
+                    source: 'blue',
+                    enabled: true,
+                    prefs: prefs,
+                    controls: SizedBox(
+                      height: 48,
+                      child: TextButton(focusNode: focus, onPressed: () {}, child: const Text('Reading options')),
+                    ),
+                    child: ListView(
+                      controller: scrollController,
+                      children: [
+                        for (var i = 0; i < (protection == 'short' ? 2 : 30); i++)
+                          SizedBox(height: 80, child: Text('Post $i')),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            )),
-          )),
-        ));
+            ),
+          ),
+        );
         await tester.pumpAndSettle();
         if (protection == 'focus') {
           focus.requestFocus();
