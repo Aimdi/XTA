@@ -1,0 +1,36 @@
+name: Compact Home checks
+
+on:
+  pull_request:
+    branches: [claude/main]
+    paths:
+      - 'lib/plugins/**'
+      - 'test/plugin_home_chrome_test.dart'
+      - 'test/plugin_reader_accessibility_test.dart'
+      - '.github/workflows/compact-home-check.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compact-home:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned sources
+        run: |
+          flutter pub get
+          dart run intl_utils:generate
+          dart run flutter_iconpicker:generate_packs --packs material
+      - name: Compact navigation and accessibility
+        run: >-
+          flutter test --no-pub --reporter expanded --timeout 60s
+          test/plugin_home_chrome_test.dart
+          test/plugin_reader_accessibility_test.dart

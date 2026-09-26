@@ -96,21 +96,47 @@ List<Widget> mastodonActions(
   BuildContext context, {
   required VoidCallback onSearch,
   required VoidCallback onSettings,
+  bool compact = false,
 }) => [
-  IconButton(key: const ValueKey('mastodon-bookmarks'), icon: const Icon(Icons.bookmark_border),
-    tooltip: L10n.of(context).saved, onPressed: () => openPluginBookmarks(context, SavedSource.mastodon)),
+  if (!compact)
+    IconButton(key: const ValueKey('mastodon-bookmarks'), icon: const Icon(Icons.bookmark_border),
+      tooltip: L10n.of(context).saved, onPressed: () => openPluginBookmarks(context, SavedSource.mastodon)),
   IconButton(
     key: const ValueKey('mastodon-search'),
+    style: compact ? pluginActionButtonStyle : null,
     icon: const Icon(Icons.search),
     tooltip: L10n.of(context).plugin_mastodon_search,
     onPressed: onSearch,
   ),
-  IconButton(
-    key: const ValueKey('mastodon-settings'),
-    icon: const Icon(Icons.tune),
-    tooltip: L10n.of(context).settings,
-    onPressed: onSettings,
-  ),
+  if (compact)
+    PopupMenuButton<String>(
+      key: const ValueKey('mastodon-more'),
+      style: pluginActionButtonStyle,
+      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+      onSelected: (value) {
+        if (value == 'saved') openPluginBookmarks(context, SavedSource.mastodon);
+        if (value == 'settings') onSettings();
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          key: const ValueKey('mastodon-bookmarks'),
+          value: 'saved',
+          child: Text(L10n.of(context).saved),
+        ),
+        PopupMenuItem(
+          key: const ValueKey('mastodon-settings'),
+          value: 'settings',
+          child: Text(L10n.of(context).settings),
+        ),
+      ],
+    )
+  else
+    IconButton(
+      key: const ValueKey('mastodon-settings'),
+      icon: const Icon(Icons.tune),
+      tooltip: L10n.of(context).settings,
+      onPressed: onSettings,
+    ),
 ];
 
 /// A single row inside Home; never adds a second bottom navigation bar.
@@ -130,8 +156,9 @@ class MastodonCompactBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final labels = mastodonSectionLabels(context);
+    final embedded = PluginEmbedded.maybeOf(context);
     return SafeArea(
-      top: !PluginEmbedded.maybeOf(context),
+      top: !embedded,
       bottom: false,
       child: Material(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -139,46 +166,20 @@ class MastodonCompactBar extends StatelessWidget {
           key: const ValueKey('mastodon-compact-controls'),
           children: [
             Expanded(
-              child: PopupMenuButton<int>(
+              child: PluginSectionPicker(
                 key: const ValueKey('mastodon-section-picker'),
-                tooltip: L10n.of(context).plugin_mastodon_title,
-                initialValue: selected,
-                onSelected: onSelected,
-                itemBuilder: (context) => [
-                  for (var index = 0; index < 4; index++)
-                    PopupMenuItem(
-                      value: index,
-                      child: Row(
-                        children: [
-                          Icon(mastodonSectionIcons[index]),
-                          const SizedBox(width: 12),
-                          Expanded(child: Text(labels[index])),
-                          if (selected == index) const Icon(Icons.check, size: 18),
-                        ],
-                      ),
+                tabs: [
+                  for (var index = 0; index < labels.length; index++)
+                    PluginHomeTab(
+                      icon: mastodonSectionIcons[index],
+                      label: labels[index],
+                      selected: selected == index,
+                      onTap: () => onSelected(index),
                     ),
                 ],
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 8, 14),
-                  child: Row(
-                    children: [
-                      Icon(mastodonSectionIcons[selected], size: 22),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          labels[selected],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                      ),
-                      const Icon(Icons.expand_more, size: 20),
-                    ],
-                  ),
-                ),
               ),
             ),
-            ...mastodonActions(context, onSearch: onSearch, onSettings: onSettings),
+            ...mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: embedded),
           ],
         ),
       ),

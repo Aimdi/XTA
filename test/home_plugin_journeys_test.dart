@@ -166,8 +166,12 @@ void main() {
     await expectLater(find.byType(FeedScreen), matchesGoldenFile('../review-artifacts/renders/home-hackernews.png'));
     expect(rss.calls, 0, reason: 'An unvisited plugin must not fetch.');
     expect(find.byTooltip('Home feed accounts'), findsNothing);
-    final sections = find.descendant(of: find.byType(PluginHomeChrome), matching: find.text('New'));
-    await tester.tap(sections);
+    final picker = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(PluginSectionPicker));
+    expect(picker, findsOneWidget);
+    await tester.tap(picker);
+    await tester.pumpAndSettle();
+    expect(hn.calls, [HnFeed.top], reason: 'Opening sections must not fetch.');
+    await tester.tap(find.widgetWithText(PopupMenuItem<int>, 'New'));
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top, HnFeed.newest]);
     final hnList = find.descendant(of: find.byType(HnScreen), matching: find.byType(Scrollable)).last;
