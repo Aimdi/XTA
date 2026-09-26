@@ -132,7 +132,6 @@ void main() {
     testWidgets('one Home row retains unread state and opens a real reader, large RTL $large', (tester) async {
       _viewport(tester, large ? 320 : 390);
       final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
       HomeTimelineSelection? picked;
       await tester.pumpWidget(
         _app(
@@ -171,6 +170,7 @@ void main() {
       await tester.tap(row);
       await tester.pumpAndSettle();
       expect(picked?.id, 'mastodon');
+      semantics.dispose();
     });
   }
 
