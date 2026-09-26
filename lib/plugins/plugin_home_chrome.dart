@@ -11,7 +11,7 @@ const pluginActionButtonStyle = ButtonStyle(
   tapTargetSize: MaterialTapTargetSize.padded,
 );
 
-/// The Home strip already provides identity and the top safe area.
+/// Home already provides identity and the top safe area.
 class PluginEmbedded extends InheritedWidget {
   const PluginEmbedded({super.key, required super.child});
 
@@ -52,7 +52,11 @@ class PluginHomeChrome extends StatelessWidget {
   Widget build(BuildContext context) {
     final embedded = PluginEmbedded.maybeOf(context);
     final hasIdentity = !embedded && title != null;
-    final rowHeight = math.max(48.0, MediaQuery.textScalerOf(context).scale(14) + 20);
+    final labelStyle = Theme.of(context).textTheme.labelLarge;
+    final rowHeight = math.max(
+      48.0,
+      MediaQuery.textScalerOf(context).scale(labelStyle?.fontSize ?? 14) * (labelStyle?.height ?? 1.4) + 16,
+    );
     final bar = Material(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
