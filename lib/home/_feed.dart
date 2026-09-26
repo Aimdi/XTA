@@ -1,3 +1,4 @@
+import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_home_reading_controls.dart';
 import 'dart:async';
@@ -536,6 +537,7 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         flatAppBar: true,
         fixedHeader: true,
+        toolbarHeight: isAltMicrobloggingSource(tab.id) ? microblogToolbarHeight(context) : null,
         leading: const DrawerAvatarButton(),
         titleBuilder: (context) {
           final source = available.firstWhere((option) => option.id == tab);
@@ -563,6 +565,7 @@ class _FeedScreenState extends State<FeedScreen> {
                 builder: (context, unread) => PluginDockActions(
                   store: _dock,
                   source: tab.id,
+                  unified: isAltMicrobloggingSource(tab.id),
                   services: grouped && isAltMicrobloggingSource(tab.id)
                       ? AltMicrobloggingSelector(
                           compact: true,

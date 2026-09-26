@@ -39,6 +39,7 @@ class GroupFeedShell extends StatefulWidget {
   /// Home keeps source and plugin controls below a fixed app header. A nested
   /// outer offset can otherwise move a newly selected plugin under that header.
   final bool fixedHeader;
+  final double? toolbarHeight;
 
   /// The app bar's leading slot. The home feed puts the account avatar here (it
   /// opens the drawer, as X's does); a pushed group leaves it null for the
@@ -61,6 +62,7 @@ class GroupFeedShell extends StatefulWidget {
     this.centerTitle = false,
     this.flatAppBar = false,
     this.fixedHeader = false,
+    this.toolbarHeight,
     this.leading,
     this.usesFeedCache = false,
   });
@@ -243,7 +245,7 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
 
   Widget _fixedHome(BuildContext context) {
     final bottom = _bottom(context);
-    final toolbarHeight = Theme.of(context).appBarTheme.toolbarHeight ?? kToolbarHeight;
+    final toolbarHeight = widget.toolbarHeight ?? Theme.of(context).appBarTheme.toolbarHeight ?? kToolbarHeight;
     return Column(
       children: [
         SizedBox(

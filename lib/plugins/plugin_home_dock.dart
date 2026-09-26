@@ -68,7 +68,7 @@ class PluginHomeDockScope extends InheritedWidget {
   final bool enabled;
   final bool compact;
   final String openClientLabel;
-  final VoidCallback onOpenClient;
+  final VoidCallback? onOpenClient;
   const PluginHomeDockScope({
     super.key,
     required this.store,
@@ -155,7 +155,8 @@ class PluginDockActions extends StatelessWidget {
   final PluginHomeDockStore store;
   final String source;
   final Widget? services;
-  const PluginDockActions({super.key, required this.store, required this.source, this.services});
+  final bool unified;
+  const PluginDockActions({super.key, required this.store, required this.source, this.services, this.unified = false});
   @override
   Widget build(BuildContext context) => ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
     store: store,
@@ -163,13 +164,15 @@ class PluginDockActions extends StatelessWidget {
       final navigation = store.content(source, 'navigation');
       final reading = store.content(source, 'reading');
       final compact = PluginHomeDockScope.maybeOf(context)?.compact == true;
-      final actions = [...?navigation?.actions];
+      final actions = [
+        for (final action in navigation?.actions ?? <Widget>[])
+          if (!unified || action is! PluginHomeMenu) action,
+      ];
       if (compact) {
-        // All feed controls use one button; the plugin's own search and menu
-        // remain independent so their scope and callbacks are unchanged.
+        // Microblogs combine secondary actions and feed controls in one sheet.
         actions.insert(
-          math.max(0, actions.length - 1),
-          PluginDockOptionsButton(store: store, source: source, services: services),
+          unified ? actions.length : math.max(0, actions.length - 1),
+          PluginDockOptionsButton(store: store, source: source, services: services, includeActions: unified),
         );
       }
       return KeyedSubtree(
@@ -267,6 +270,41 @@ class PluginHomeMenu extends StatelessWidget {
   final String? tooltip;
   const PluginHomeMenu({super.key, required this.itemBuilder, this.onSelected, this.style, this.tooltip});
 
+  void select(BuildContext context, String value) {
+    final scope = PluginHomeDockScope.maybeOf(context);
+    if (value == 'xta:pin-controls') {
+      final controls = scope?.store.controls;
+      if (controls != null) controls.setPinned(!controls.state.pinned);
+    } else if (value == 'xta:open-client') {
+      scope?.onOpenClient?.call();
+    } else {
+      onSelected?.call(value);
+    }
+  }
+
+  List<PopupMenuEntry<String>> entries(BuildContext context) {
+    final scope = PluginHomeDockScope.maybeOf(context);
+    return [
+      ...itemBuilder(context),
+      if (scope != null && (!scope.compact || scope.onOpenClient != null)) ...[
+        const PopupMenuDivider(),
+        if (!scope.compact)
+          CheckedPopupMenuItem<String>(
+            key: const ValueKey('home-pin-controls'),
+            value: 'xta:pin-controls',
+            checked: scope.store.controls.state.pinned,
+            child: Text(L10n.of(context).home_keep_controls_visible),
+          ),
+        if (scope.onOpenClient != null)
+          PopupMenuItem(
+            key: ValueKey('open-client-${scope.source}'),
+            value: 'xta:open-client',
+            child: Text(scope.openClientLabel),
+          ),
+      ],
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final scope = PluginHomeDockScope.maybeOf(context);
@@ -274,35 +312,11 @@ class PluginHomeMenu extends StatelessWidget {
       style: style,
       tooltip: tooltip,
       onOpened: () => scope?.store.controls.reveal(),
-      onSelected: (value) async {
+      onSelected: (value) {
         if (!context.mounted || scope?.source != PluginHomeDockScope.maybeOf(context)?.source) return;
-        if (value == 'xta:pin-controls') {
-          final controls = scope?.store.controls;
-          if (controls != null) await controls.setPinned(!controls.state.pinned);
-        } else if (value == 'xta:open-client') {
-          if (context.mounted) scope?.onOpenClient();
-        } else {
-          onSelected?.call(value);
-        }
+        select(context, value);
       },
-      itemBuilder: (context) => [
-        ...itemBuilder(context),
-        if (scope != null) ...[
-          const PopupMenuDivider(),
-          if (!scope.compact)
-            CheckedPopupMenuItem<String>(
-              key: const ValueKey('home-pin-controls'),
-              value: 'xta:pin-controls',
-              checked: scope.store.controls.state.pinned,
-              child: Text(L10n.of(context).home_keep_controls_visible),
-            ),
-          PopupMenuItem(
-            key: ValueKey('open-client-${scope.source}'),
-            value: 'xta:open-client',
-            child: Text(scope.openClientLabel),
-          ),
-        ],
-      ],
+      itemBuilder: (_) => entries(context),
     );
   }
 }
@@ -331,13 +345,20 @@ class PluginDockOptionsButton extends StatelessWidget {
   final PluginHomeDockStore store;
   final String source;
   final Widget? services;
-  const PluginDockOptionsButton({super.key, required this.store, required this.source, this.services});
+  final bool includeActions;
+  const PluginDockOptionsButton({
+    super.key,
+    required this.store,
+    required this.source,
+    this.services,
+    this.includeActions = false,
+  });
 
   @override
   Widget build(BuildContext context) => IconButton(
     key: const ValueKey('home-plugin-options'),
     style: pluginActionButtonStyle,
-    tooltip: L10n.of(context).filters,
+    tooltip: includeActions ? MaterialLocalizations.of(context).showMenuTooltip : L10n.of(context).filters,
     icon: const Icon(Icons.tune),
     onPressed: () => _open(context),
   );
@@ -402,6 +423,8 @@ class PluginDockOptionsButton extends StatelessWidget {
                       },
                     ),
                   if (tabs.isEmpty && navigation?.section != null) navigation!.section!,
+                  if (includeActions && navigation?.leading != null)
+                    Padding(padding: const EdgeInsets.all(16), child: navigation!.leading!),
                   if (reading != null || following != null) ...[
                     const Divider(),
                     IconButtonTheme(
@@ -418,13 +441,34 @@ class PluginDockOptionsButton extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (navigation?.actions.isEmpty ?? true)
+                  if (includeActions)
+                    for (final menu in navigation?.actions.whereType<PluginHomeMenu>() ?? <PluginHomeMenu>[]) ...[
+                      const Divider(),
+                      for (final entry in menu.entries(opener))
+                        if (entry is PopupMenuDivider)
+                          const Divider()
+                        else if (entry is PopupMenuItem<String>)
+                          ListTile(
+                            key: entry.key,
+                            minTileHeight: 48,
+                            title: entry.child,
+                            enabled: entry.enabled,
+                            onTap: () {
+                              Navigator.pop(context);
+                              if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) {
+                                entry.onTap?.call();
+                                if (entry.value != null) menu.select(opener, entry.value!);
+                              }
+                            },
+                          ),
+                    ],
+                  if ((navigation?.actions.isEmpty ?? true) && scope.onOpenClient != null)
                     ListTile(
                       leading: const Icon(Icons.open_in_new),
                       title: Text(scope.openClientLabel),
                       onTap: () {
                         Navigator.pop(context);
-                        if (opener.mounted) scope.onOpenClient();
+                        if (opener.mounted) scope.onOpenClient?.call();
                       },
                     ),
                 ],

@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "Otras apps pueden reproducir audio en segundo plano cuando esta app está ejecutándose",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "Microblogs alternativos",
+  "alt_microblogging": "Microblogs",
   "@alt_microblogging": {},
   "alt_microblogging_group": "Agrupar servicios de microblogging",
   "@alt_microblogging_group": {},

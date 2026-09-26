@@ -26,12 +26,18 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(MastodonPostCard), findsWidgets);
       if (variant == 'people') {
-        await tester.tap(find.text('Following').last);
+        await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
         await tester.pumpAndSettle();
-        if (!const bool.fromEnvironment('MASTODON_LAYOUT_BEFORE')) {
-          await tester.tap(find.text('Accounts'));
-          await tester.pumpAndSettle();
-        }
+        await tester.tap(find.byKey(const ValueKey('home-section-3')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(PopupMenuButton<String>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Accounts'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
+        await tester.pumpAndSettle();
       }
       if (variant == 'search') {
         final context = tester.element(find.byKey(const ValueKey('mastodon-render')));

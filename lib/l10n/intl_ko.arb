@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "이 앱이 실행 중일 때 다른 앱이 백그라운드에서 오디오를 재생할 수 있습니다",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "대안 마이크로블로그",
+  "alt_microblogging": "마이크로블로그",
   "@alt_microblogging": {},
   "alt_microblogging_group": "마이크로블로그 서비스 묶기",
   "@alt_microblogging_group": {},

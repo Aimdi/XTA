@@ -1,3 +1,4 @@
+import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -120,37 +121,38 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
     final l10n = L10n.of(context);
     _shell.restore(context, 'threads');
 
-    return Scaffold(
-      primary: !PluginEmbedded.maybeOf(context),
-      body: ScopedBuilder<_ThreadsShellStore, int>(
-        store: _shell,
-        onState: (context, tab) => Column(
-          children: [
-            PluginHomeChrome(
-              title: l10n.plugin_threads_title,
-              mark: pluginMark(ThreadsPlugin(), size: 24),
-              accent: ThreadsPlugin().brandColor,
-              tabs: [
-                PluginHomeTab(
-                  label: l10n.plugin_threads_home,
-                  icon: Icons.home_outlined,
-                  selected: tab == 0,
-                  onTap: () => _shell.select(0),
-                ),
-                PluginHomeTab(
-                  label: l10n.plugin_threads_liked,
-                  icon: Icons.favorite_border,
-                  selected: tab == 1,
-                  onTap: () => _shell.select(1),
-                ),
-              ],
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  tooltip: l10n.plugin_threads_search,
-                  onPressed: _lookUpProfile,
-                ),
-                if (PluginHomeDockScope.maybeOf(context) != null)
+    return MicroblogReaderShell(
+      plugin: ThreadsPlugin(),
+      builder: (context) => Scaffold(
+        primary: !PluginEmbedded.maybeOf(context),
+        body: ScopedBuilder<_ThreadsShellStore, int>(
+          store: _shell,
+          onState: (context, tab) => Column(
+            children: [
+              PluginHomeChrome(
+                title: l10n.plugin_threads_title,
+                mark: pluginMark(ThreadsPlugin(), size: 24),
+                accent: ThreadsPlugin().brandColor,
+                tabs: [
+                  PluginHomeTab(
+                    label: l10n.plugin_threads_home,
+                    icon: Icons.home_outlined,
+                    selected: tab == 0,
+                    onTap: () => _shell.select(0),
+                  ),
+                  PluginHomeTab(
+                    label: l10n.plugin_threads_liked,
+                    icon: Icons.favorite_border,
+                    selected: tab == 1,
+                    onTap: () => _shell.select(1),
+                  ),
+                ],
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.search),
+                    tooltip: l10n.plugin_threads_search,
+                    onPressed: _lookUpProfile,
+                  ),
                   PluginHomeMenu(
                     onSelected: (value) {
                       if (value == 'add') _addAccount();
@@ -162,38 +164,27 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                       PopupMenuItem(value: 'add', child: Text(l10n.plugin_threads_add_account)),
                       PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
                     ],
-                  )
-                else ...[
-                  IconButton(
-                    icon: const Icon(Icons.person_add_alt),
-                    tooltip: l10n.plugin_threads_add_account,
-                    onPressed: _addAccount,
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.settings),
-                    tooltip: l10n.settings,
-                    onPressed: () =>
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ThreadsSettingsScreen())),
-                  ),
-                ],
-              ],
-            ),
-            const Divider(height: 1),
-            Expanded(
-              child: PluginLazyTabs(
-                index: tab,
-                children: [
-                  (_) => _HomePane(
-                    scrollController: widget.scrollController,
-                    onAddAccount: _addAccount,
-                    onLookUpProfile: _lookUpProfile,
-                    onRefresh: () => _loadHome(force: true),
-                  ),
-                  (_) => _LikedPane(scrollController: _likedScrollController, likes: context.read<ThreadsLikesStore>()),
                 ],
               ),
-            ),
-          ],
+              const Divider(height: 1),
+              Expanded(
+                child: PluginLazyTabs(
+                  index: tab,
+                  children: [
+                    (_) => _HomePane(
+                      scrollController: widget.scrollController,
+                      onAddAccount: _addAccount,
+                      onLookUpProfile: _lookUpProfile,
+                      onRefresh: () => _loadHome(force: true),
+                    ),
+                    (_) =>
+                        _LikedPane(scrollController: _likedScrollController, likes: context.read<ThreadsLikesStore>()),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -473,8 +464,78 @@ class ThreadsFollowingStrip extends StatelessWidget {
     }
   }
 
+  Future<void> _openFollowing(BuildContext opener) {
+    final store = opener.read<ThreadsAccountsStore>();
+    return showModalBottomSheet<void>(
+      context: opener,
+      showDragHandle: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(opener).height * .85),
+      builder: (context) => SafeArea(
+        top: false,
+        child: ScopedBuilder<ThreadsAccountsStore, List<ThreadsAccount>>(
+          store: store,
+          onState: (context, accounts) => ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(L10n.of(context).following, style: Theme.of(context).textTheme.titleLarge),
+              ),
+              for (final account in accounts)
+                ListTile(
+                  leading: _FollowingAvatar(account: account),
+                  title: Text('@${account.handle}'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (opener.mounted) {
+                      Navigator.push(
+                        opener,
+                        MaterialPageRoute(builder: (_) => ThreadsProfileScreen(username: account.handle)),
+                      );
+                    }
+                  },
+                  trailing: IconButton(
+                    style: pluginActionButtonStyle,
+                    tooltip: L10n.of(context).plugin_threads_unfollow,
+                    onPressed: () => _confirmUnfollow(opener, account),
+                    icon: const Icon(Icons.person_remove_outlined),
+                  ),
+                ),
+              if (onAddAccount != null)
+                ListTile(
+                  leading: const Icon(Icons.person_add_alt),
+                  title: Text(L10n.of(context).plugin_threads_add_account),
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (opener.mounted) onAddAccount?.call();
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => PluginDockContribution(
+    slot: 'following',
+    content: PluginDockContent(
+      leading: TextButton.icon(
+        key: const ValueKey('threads-following'),
+        style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+        onPressed: () => _openFollowing(context),
+        icon: const Icon(Icons.people_outline),
+        label: Text(L10n.of(context).following),
+      ),
+    ),
+    fallback: _strip(context),
+  );
+
+  Widget _strip(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = L10n.of(context);
 

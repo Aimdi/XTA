@@ -9,6 +9,7 @@ import 'package:xta/plugins/bluesky/bluesky_reader_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'support/bluesky_reading_harness.dart';
+import 'support/microblog_controls.dart';
 
 class _HomeHarness {
   final blue = BlueReadingHarness();
@@ -77,8 +78,9 @@ void main() {
     final first = _HomeHarness();
     await tester.pumpWidget(first.app());
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byTooltip('Liked'));
-    await tester.tap(find.byTooltip('Liked'));
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-section-3')));
     await tester.pumpAndSettle();
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.text(bluePost('root').text), findsOneWidget);
@@ -106,24 +108,20 @@ void main() {
       find.byKey(const ValueKey('bluesky-window')),
       matchesGoldenFile('../review-artifacts/renders/bluesky-following-controls.png'),
     );
-    await tester.tap(find.text('Filters'));
-    await tester.pumpAndSettle();
+    await openMicroblogFilters(tester);
     expect(find.text('Search loaded posts'), findsOneWidget);
     expect(find.text('Hide reposts'), findsOneWidget);
     expect(find.text('Hide replies'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'post-12');
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Close'));
-    await tester.pumpAndSettle();
+    await closeMicroblogFilters(tester);
     expect(find.byType(BlueskyPostCard), findsOneWidget);
     expect(find.text(bluePost('post-12').text), findsOneWidget);
     expect(h.blue.client.calls, hasLength(1));
-    await tester.tap(find.text('Filters'));
-    await tester.pumpAndSettle();
+    await openMicroblogFilters(tester);
     await tester.tap(find.text('Reset filters'));
     await tester.pumpAndSettle();
-    await tester.tap(find.byTooltip('Close'));
-    await tester.pumpAndSettle();
+    await closeMicroblogFilters(tester);
     expect(find.byType(BlueskyPostCard).evaluate().length, greaterThan(1));
     expect(h.blue.client.calls, hasLength(1));
     expect(tester.takeException(), isNull);
@@ -135,9 +133,8 @@ void main() {
     final h = _HomeHarness();
     await tester.pumpWidget(h.app(scale: 2, rtl: true));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Filters'));
-    await tester.pumpAndSettle();
-    expect(find.byTooltip('Close'), findsOneWidget);
+    await openMicroblogFilters(tester);
+    expect(find.byTooltip('Close').hitTestable(), findsOneWidget);
     expect(find.text('Hide reposts'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await expectLater(

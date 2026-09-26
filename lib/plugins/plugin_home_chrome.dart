@@ -51,7 +51,7 @@ class PluginHomeChrome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final embedded = PluginEmbedded.maybeOf(context);
+    final embedded = PluginEmbedded.maybeOf(context) || PluginHomeDockScope.maybeOf(context) != null;
     final hasIdentity = !embedded && title != null;
     final labelStyle = Theme.of(context).textTheme.labelLarge;
     final rowHeight = math.max(
@@ -164,8 +164,10 @@ class PluginHomeChrome extends StatelessWidget {
 class PluginSectionPicker extends StatelessWidget {
   final List<PluginHomeTab> tabs;
   final Color? accent;
+  final double verticalPadding;
 
-  const PluginSectionPicker({super.key, required this.tabs, this.accent}) : assert(tabs.length > 0);
+  const PluginSectionPicker({super.key, required this.tabs, this.accent, this.verticalPadding = 8})
+    : assert(tabs.length > 0);
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +204,7 @@ class PluginSectionPicker extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: verticalPadding),
           child: Row(
             children: [
               Icon(current.icon, size: 20, color: color),

@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +21,6 @@ import 'package:xta/plugins/bluesky/bluesky_client.dart';
 import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
-import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'support/bluesky_reading_harness.dart';
 import 'support/mastodon_harness.dart';
@@ -156,15 +156,21 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
       await tester.pumpAndSettle();
-      final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
-      await tester.tap(menu);
+      await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
       await tester.pumpAndSettle();
       expect(find.byKey(const ValueKey('open-client-bluesky')), findsOneWidget);
-      expect(
-        tester.widgetList<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).map((item) => item.value),
-        containsAll(['add', 'saved', 'following', 'list', 'starter', 'settings', 'xta:open-client']),
-      );
-      await tester.tapAt(const Offset(8, 730));
+      for (final label in [
+        L10n.current.plugin_bluesky_add,
+        L10n.current.saved,
+        L10n.current.plugin_bluesky_import_following,
+        L10n.current.plugin_bluesky_import_list,
+        L10n.current.plugin_bluesky_import_starter,
+        L10n.current.settings,
+      ]) {
+        expect(find.widgetWithText(ListTile, label), findsOneWidget);
+      }
+      await tester.ensureVisible(find.byKey(const ValueKey('home-plugin-options-close')));
+      await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       await mastodon.close(tester);

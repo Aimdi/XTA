@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "Altres apps poden reproduir àudio en segon pla quan aquesta app s'està executant",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "Microblogs alternatius",
+  "alt_microblogging": "Microblogs",
   "@alt_microblogging": {},
   "alt_microblogging_group": "Agrupa els serveis de microblogs",
   "@alt_microblogging_group": {},
