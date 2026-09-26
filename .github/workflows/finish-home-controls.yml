@@ -25,7 +25,22 @@ jobs:
           flutter-version-file: .fvmrc
           cache: true
       - name: Apply exact-source UI and localization changes
-        run: python3 scripts/finish_home_controls_patch.py
+        run: |
+          python3 scripts/finish_home_controls_patch.py
+          python3 - <<'PY'
+          from pathlib import Path
+          edits = [
+              ('lib/plugins/plugin_home_reading_controls.dart', 'media.viewInsets.bottom > 0 ||', 'media.viewInsets.bottom > 0 || View.of(context).viewInsets.bottom > 0 ||'),
+              ('test/home_dock_lifetime_test.dart', 'expect(find.byTooltip(L10n.current.search), findsOneWidget);', 'expect(find.byTooltip(L10n.current.plugin_mastodon_loaded_search), findsOneWidget);'),
+              ('test/home_reading_controls_test.dart', "      final scrollController = ScrollController();\n      try {", "      final scrollController = ScrollController();\n      if (protection == 'keyboard') {\n        tester.view.viewInsets = const FakeViewPadding(bottom: 200);\n        addTearDown(tester.view.resetViewInsets);\n      }\n      try {"),
+          ]
+          for name, before, after in edits:
+              p = Path(name)
+              text = p.read_text()
+              if text.count(before) != 1:
+                  raise SystemExit('Unexpected source for reviewed fix: ' + name)
+              p.write_text(text.replace(before, after, 1))
+          PY
       - name: Generate and format with the pinned SDK
         run: |
           flutter pub get
