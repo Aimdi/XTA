@@ -57,4 +57,48 @@ void main() {
     expect(tester.takeException(), isNull);
     await store.destroy();
   });
+
+  for (final width in [320.0, 840.0]) {
+    testWidgets('large-text reading labels receive their own row only when needed at $width', (tester) async {
+      final store = PluginHomeDockStore();
+      store.publish(
+        'reader',
+        'navigation',
+        Object(),
+        const PluginDockContent(section: Text('Home'), sectionWidth: 240),
+      );
+      store.publish(
+        'reader',
+        'reading',
+        Object(),
+        const PluginDockContent(leading: Text('Books'), trailing: [SizedBox.square(dimension: 48)]),
+      );
+      try {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (context) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
+                child: Scaffold(
+                  body: Align(
+                    alignment: Alignment.topCenter,
+                    child: SizedBox(width: width, child: PluginDockRow(store: store, source: 'reader')),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final sectionY = tester.getTopLeft(find.text('Home')).dy;
+        final readingY = tester.getTopLeft(find.text('Books')).dy;
+        expect(readingY, width < 400 ? greaterThan(sectionY) : sectionY);
+        expect(tester.takeException(), isNull);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump();
+        await store.destroy();
+      }
+    });
+  }
 }
