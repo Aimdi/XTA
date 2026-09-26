@@ -9,6 +9,8 @@ import 'package:xta/plugins/x/x_plugin.dart';
 import 'package:xta/plugins/x/x_screen.dart';
 import 'package:xta/home/chrome_avatar.dart';
 import 'package:xta/home/feed_strip_store.dart';
+import 'package:xta/home/alt_microblogging.dart';
+import 'package:xta/home/alt_microblogging_selector.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_timeline_controls.dart';
@@ -486,10 +488,14 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      ScopedBuilder<HomeFeedViewStore, HomeFeedViewState>(store: _view, onState: (context, _) => _buildFeed(context));
+  Widget build(BuildContext context) => AltMicrobloggingScope(
+    builder: (context, grouped) => ScopedBuilder<HomeFeedViewStore, HomeFeedViewState>(
+      store: _view,
+      onState: (context, _) => _buildFeed(context, grouped),
+    ),
+  );
 
-  Widget _buildFeed(BuildContext context) {
+  Widget _buildFeed(BuildContext context, bool grouped) {
     _queueControlsUpdate();
     // Strip membership is observed separately; listening to every pref here
     // rebuilt Following on theme, zen, and unrelated plugin writes.
@@ -521,8 +527,12 @@ class _FeedScreenState extends State<FeedScreen> {
         final source = available.firstWhere((option) => option.id == tab);
         return GroupUnreadScope(
           builder: (context, unreadIds) => HomeTimelineTitle(
-            label: source.titleBuilder(context),
-            mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+            label: grouped && isAltMicrobloggingSource(tab.id)
+                ? L10n.of(context).alt_microblogging
+                : source.titleBuilder(context),
+            mark: grouped && isAltMicrobloggingSource(tab.id)
+                ? const Icon(Icons.forum_outlined, size: 22)
+                : source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
             unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
             onPressed: () => _pickSource(context),
           ),
@@ -587,6 +597,16 @@ class _FeedScreenState extends State<FeedScreen> {
       },
       bodyBuilder: (context) => Column(
         children: [
+          grouped && isAltMicrobloggingSource(tab.id)
+              ? GroupUnreadScope(
+                  builder: (context, unread) => AltMicrobloggingSelector(
+                    sourceIds: available.map((option) => option.id.id).toList(),
+                    selected: tab.id,
+                    unread: unread,
+                    onSelected: (id) => _selectStripTab(FeedTab(id)),
+                  ),
+                )
+              : const SizedBox.shrink(),
           HomeCollapsingControls(
             key: const ValueKey('home-reading-controls'),
             visible: _view.state.controlsVisible && tab == FeedTab.following,
@@ -642,6 +662,8 @@ class _FeedScreenState extends State<FeedScreen> {
           builder: (context, unread) => HomeTimelinePicker(
             selected: _tab?.id ?? FeedTab.following.id,
             options: _sourceOptions(context, pins, unread),
+            groupMicroblogs: altMicrobloggingGrouped(PrefService.of(context, listen: false)),
+            rememberedMicroblog: PrefService.of(context, listen: false).get<String>(optionAltMicrobloggingLastSource),
           ),
         ),
       ),

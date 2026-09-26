@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
+import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -108,6 +109,7 @@ Future<String?> showNetworkSwitcherSheet(
   required List<XtaPlugin> plugins,
   required String? currentId,
   List<String> recentIds = const [],
+  bool groupMicroblogs = false,
 }) {
   return showModalBottomSheet<String>(
     context: context,
@@ -118,6 +120,7 @@ Future<String?> showNetworkSwitcherSheet(
       plugins: plugins,
       currentId: currentId,
       recentIds: recentIds,
+      groupMicroblogs: groupMicroblogs,
     ),
   );
 }
@@ -126,23 +129,29 @@ class _NetworkSwitcherSheet extends StatelessWidget {
   final List<XtaPlugin> plugins;
   final String? currentId;
   final List<String> recentIds;
+  final bool groupMicroblogs;
 
   const _NetworkSwitcherSheet({
     required this.plugins,
     required this.currentId,
     required this.recentIds,
+    required this.groupMicroblogs,
   });
 
   @override
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
-    final recent = [
+    final ordered = [
       for (final id in recentIds) ...plugins.where((p) => p.id == id),
-    ];
-    final rest = [
       for (final plugin in plugins)
         if (!recentIds.contains(plugin.id)) plugin,
     ];
+    final ids = groupedMicrobloggingIds(ordered.map((plugin) => plugin.id), grouped: groupMicroblogs);
+    bool isRecent(String id) => id == altMicrobloggingSectionId
+        ? recentIds.any((id) => isAltMicrobloggingSource(id) && plugins.any((plugin) => plugin.id == id))
+        : recentIds.contains(id);
+    final recent = ids.where(isRecent).toList();
+    final rest = ids.where((id) => !isRecent(id)).toList();
 
     return SizedBox(
       key: homeNetworksSheetKey,
@@ -163,11 +172,11 @@ class _NetworkSwitcherSheet extends StatelessWidget {
           ),
           if (recent.isNotEmpty) ...[
             _section(context, l10n.home_networks_recent),
-            for (final plugin in recent) _row(context, plugin),
+            for (final id in recent) _entry(context, id),
           ],
           if (rest.isNotEmpty) ...[
             _section(context, l10n.home_networks_all),
-            for (final plugin in rest) _row(context, plugin),
+            for (final id in rest) _entry(context, id),
           ],
           const Divider(height: 1),
           ListTile(
@@ -189,6 +198,19 @@ class _NetworkSwitcherSheet extends StatelessWidget {
   Widget _section(BuildContext context, String title) {
     return ListTile(
       title: Text(title, style: Theme.of(context).textTheme.titleSmall),
+    );
+  }
+
+  Widget _entry(BuildContext context, String id) {
+    if (id != altMicrobloggingSectionId) return _row(context, plugins.firstWhere((plugin) => plugin.id == id));
+    final members = plugins.where((plugin) => isAltMicrobloggingSource(plugin.id)).toList();
+    return ExpansionTile(
+      key: const PageStorageKey('network-switcher-alt-microblogging'),
+      leading: const Icon(Icons.forum_outlined),
+      title: Text(L10n.of(context).alt_microblogging),
+      subtitle: Text(members.map((plugin) => plugin.title(context)).join(' · ')),
+      initiallyExpanded: isAltMicrobloggingSource(currentId),
+      children: [for (final plugin in members) _row(context, plugin)],
     );
   }
 
@@ -222,9 +244,8 @@ List<XtaPlugin> pluginsForSwitcher(Iterable<String> ids) => [
 ];
 
 Future<void> rememberNetwork(BuildContext context, String pluginId) async {
-  try {
-    await context.read<NetworkRecentsStore>().touch(pluginId);
-  } on ProviderNotFoundException {
-    // Tests and routes without recents still switch.
-  }
+  final grouping = context.read<AltMicrobloggingStore?>();
+  final recents = context.read<NetworkRecentsStore?>();
+  await grouping?.remember(pluginId);
+  await recents?.touch(pluginId);
 }

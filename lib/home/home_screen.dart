@@ -12,6 +12,7 @@ import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread_store.dart';
 import 'package:xta/home/home_group_drawer.dart';
 import 'package:xta/home/home_timeline_picker.dart';
+import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 import 'package:xta/home/_account_avatar.dart';
@@ -543,6 +544,8 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
       builder: (_) => HomeTimelinePicker(
         selected: tabs.state.id,
         showAdd: false,
+        groupMicroblogs: altMicrobloggingGrouped(prefs),
+        rememberedMicroblog: prefs.get<String>(optionAltMicrobloggingLastSource),
         options: [
           for (final source in sources)
             HomeTimelineOption(
@@ -576,6 +579,8 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
         );
     } else if (picked.id != null) {
       tabs.select(FeedTab(picked.id!));
+      await rememberNetwork(context, picked.id!);
+      if (!mounted) return;
       _goToPage(page, animate: false);
     }
   }
@@ -598,6 +603,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
       plugins: pluginPages,
       currentId: pluginById(currentId)?.id,
       recentIds: recent,
+      groupMicroblogs: altMicrobloggingGrouped(widget.prefs),
     );
     if (!mounted || !context.mounted || picked == null) return;
     final pageIndex = _barPages.indexWhere((page) => page.id == picked);

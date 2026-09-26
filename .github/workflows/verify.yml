@@ -87,6 +87,22 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
+      - name: Alt Microblogging navigation and undo
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          --dart-define=RENDER_ALT_MICROBLOGGING=true
+          test/alt_microblogging_test.dart
+          test/alt_microblogging_journey_test.dart
+
+      - name: Alt Microblogging layout previews
+        if: always() && github.event_name == 'pull_request' && github.head_ref == 'feat/alt-microblogging'
+        uses: actions/upload-artifact@v4
+        with:
+          name: alt-microblogging-layouts
+          path: review-artifacts/renders/alt-microblogging-*.png
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Reader recovery regressions
         run: >-
           flutter test --reporter expanded --timeout 90s
