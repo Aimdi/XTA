@@ -56,10 +56,21 @@ void main() {
             expect(tester.getSize(settingsButton).height, greaterThanOrEqualTo(48));
             expect(tester.getSize(settingsButton).width, greaterThanOrEqualTo(48));
             await tester.tap(settingsButton);
-            await tester.tap(find.byIcon(Icons.home_outlined));
-            expect(settings, 1, reason: 'The section rail must not intercept settings.');
+            if (find.byType(PluginSectionPicker).evaluate().isNotEmpty) {
+              expect(tester.getSize(find.byType(PluginSectionPicker)).height, greaterThanOrEqualTo(48));
+              await tester.tap(find.byType(PluginSectionPicker));
+              await tester.pumpAndSettle();
+              expect(selected, 0, reason: 'Opening the menu must not load a section.');
+              expect(find.text('Subscriptions and publications'), findsOneWidget);
+              await tester.tap(find.byType(PopupMenuItem<int>).first);
+              await tester.pumpAndSettle();
+            } else {
+              await tester.tap(find.byIcon(Icons.home_outlined));
+            }
+            expect(settings, 1, reason: 'Section navigation must not intercept settings.');
             expect(selected, 1);
             expect(find.text('A long localized plugin name'), embedded ? findsNothing : findsOneWidget);
+            expect(tester.takeException(), isNull);
           });
         }
       }
