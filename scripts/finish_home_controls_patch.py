@@ -170,8 +170,6 @@ for path in paths:
     value = json.dumps(translations[path.stem[5:]], ensure_ascii=False)
     path.write_text(text[:at].rstrip() + ',\n  "home_keep_controls_visible": ' + value + '\n' + text[at:])
 
-workflow = '.github/workflows/unified-home-check.yml'
-replace(workflow, 'test/home_dock_lifetime_test.dart test/home_timeline_picker_test.dart',
-    'test/home_dock_lifetime_test.dart test/home_reading_controls_test.dart test/home_timeline_picker_test.dart')
-replace(workflow, 'HEAD lib/home lib/plugins test', 'HEAD lib test docs scripts l10n.py pubspec.yaml pubspec.lock .fvmrc')
-print('Applied exact-source UI patches and complete pin-label translations. No client/database/dependency changes.')
+# The existing verification workflow already runs the full test suite. Do not
+# update any retained workflow: its write was refused by the job token.
+print('Applied exact-source UI patches and complete pin-label translations. No client/database/dependency or retained workflow changes.')
