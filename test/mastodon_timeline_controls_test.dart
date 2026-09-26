@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
-import 'package:xta/plugins/plugin_home_dock.dart';
+import 'support/microblog_controls.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_reading_store.dart';
@@ -30,29 +30,6 @@ MastodonPost entry(
   publishedAt: day == null ? null : DateTime.utc(2026, 9, day),
   timelineAt: boostedDay == null ? null : DateTime.utc(2026, 9, boostedDay),
 );
-
-Future<void> openFilters(WidgetTester tester) async {
-  await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
-  await tester.pumpAndSettle();
-  final filters = find.byType(PluginDockFilterButton);
-  await tester.ensureVisible(filters);
-  await tester.pumpAndSettle();
-  await tester.tap(filters);
-  await tester.pumpAndSettle();
-}
-
-Future<void> closeFilters(WidgetTester tester) async {
-  final close = find.byTooltip('Close').last;
-  await tester.ensureVisible(close);
-  await tester.pumpAndSettle();
-  await tester.tap(close);
-  await tester.pumpAndSettle();
-  final optionsClose = find.byKey(const ValueKey('home-plugin-options-close'));
-  await tester.ensureVisible(optionsClose);
-  await tester.pumpAndSettle();
-  await tester.tap(optionsClose);
-  await tester.pumpAndSettle();
-}
 
 void main() {
   test('combined filters use all query words and preserve source ordering', () {
@@ -169,11 +146,11 @@ void main() {
     final harness = MastodonHarness();
     await tester.pumpWidget(harness.app());
     await tester.pumpAndSettle();
-    await openFilters(tester);
+    await openMicroblogFilters(tester);
     expect(find.text('Filters and sorting apply to posts already loaded on this device.'), findsOneWidget);
     await tester.enterText(find.byType(TextField), 'piano');
     await tester.pumpAndSettle();
-    await closeFilters(tester);
+    await closeMicroblogFilters(tester);
     final cards = tester.widgetList<MastodonPostCard>(find.byType(MastodonPostCard));
     expect(cards, isNotEmpty);
     expect(cards.every((card) => card.post.text.contains('piano')), true);
@@ -189,10 +166,10 @@ void main() {
     final harness = MastodonHarness();
     await tester.pumpWidget(harness.app());
     await tester.pumpAndSettle();
-    await openFilters(tester);
+    await openMicroblogFilters(tester);
     await tester.enterText(find.byType(TextField), 'no-such-post');
     await tester.pumpAndSettle();
-    await closeFilters(tester);
+    await closeMicroblogFilters(tester);
     expect(find.text('No items match these filters'), findsOneWidget);
     expect(find.byType(MastodonPostCard), findsNothing);
     await tester.tap(find.text('Reset filters'));
@@ -210,7 +187,7 @@ void main() {
     final harness = MastodonHarness();
     await tester.pumpWidget(harness.app(scale: 1.6, rtl: true));
     await tester.pumpAndSettle();
-    await openFilters(tester);
+    await openMicroblogFilters(tester);
     await tester.enterText(find.byType(TextField), 'piano');
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
