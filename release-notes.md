@@ -4,6 +4,24 @@ A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read 
 without posting, keep what you follow on your own device — with the plugins and
 fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
 
+### aimdi143
+
+Mastodon, Bluesky and Threads now share one **Alt Microblogging** section in
+Home. Select a service inside that section to use its existing reader, search,
+filters and full-client controls. The section remembers your last-used available
+service and keeps unread indicators visible.
+
+Grouping is on by default. To restore separate entries, open **Settings →
+Plugin store → Group microblogging services** and turn the switch off. Turning
+it back on groups them again. Accounts, subscriptions, saved items, local likes,
+reader settings and the original source order are preserved.
+
+Includes the Substack layout improvements and loading fixes from aimdi142.
+
+For most Android phones, use **`xta-aimdi143_arm64-v8a.apk`**. Base version code
+**400001150** is above every aimdi142 variant. The application ID and release
+signing certificate remain unchanged for in-place updates.
+
 ### aimdi142
 
 Makes Substack Home and Inbox easier to read after feedback that the controls
