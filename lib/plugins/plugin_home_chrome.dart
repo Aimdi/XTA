@@ -38,6 +38,7 @@ class PluginHomeChrome extends StatelessWidget {
   final Widget? mark;
   final List<PluginHomeTab> tabs;
   final List<Widget> actions;
+  final Widget? search;
   final Color? accent;
 
   const PluginHomeChrome({
@@ -46,6 +47,7 @@ class PluginHomeChrome extends StatelessWidget {
     this.mark,
     this.tabs = const [],
     this.actions = const [],
+    this.search,
     this.accent,
   });
 
@@ -130,6 +132,7 @@ class PluginHomeChrome extends StatelessWidget {
       slot: 'navigation',
       content: PluginDockContent(
         tabs: tabs,
+        search: search,
         section: tabs.isEmpty ? null : PluginSectionPicker(tabs: tabs, accent: accent),
         sectionWidth: selected == null ? 0 : pluginDockSectionWidth(context, selected.label),
         actions: actions,
