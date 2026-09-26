@@ -16,6 +16,7 @@ import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/substack/substack_archive_screen.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_home_controls.dart';
+import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/substack/substack_note_card.dart';
 import 'package:xta/plugins/substack/substack_post_card.dart';
 import 'package:xta/plugins/substack/substack_reading_toolbar.dart';
@@ -37,6 +38,7 @@ class SubstackScreen extends StatefulWidget {
 }
 
 class _SubstackScreenState extends State<SubstackScreen> {
+  final _dock = PluginHomeDockStore();
   late final PluginSessionLease _session;
   late final PluginViewStore<int> _view;
   late final SubstackHomeControlsStore _controls;
@@ -77,6 +79,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
 
   @override
   void dispose() {
+    _dock.destroy();
     _session.dispose();
     _notesScrollController.dispose();
     _inboxScrollController.dispose();
@@ -123,6 +126,30 @@ class _SubstackScreenState extends State<SubstackScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (PluginHomeDockScope.maybeOf(context) != null) return _buildContent(context);
+    return PluginHomeDockScope(
+      store: _dock,
+      source: 'substack',
+      enabled: true,
+      compact: true,
+      openClientLabel: '',
+      onOpenClient: null,
+      child: Material(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              SubstackCompactHeader(store: _dock, showBack: Navigator.canPop(context)),
+              Expanded(child: Builder(builder: _buildContent)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
     final pubs = context.read<SubstackPublicationsStore>();
     final feed = context.read<SubstackFeedStore>();
     final notes = context.read<SubstackNotesStore>();
@@ -143,6 +170,12 @@ class _SubstackScreenState extends State<SubstackScreen> {
                   title: l10n.plugin_substack_title,
                   mark: pluginMark(SubstackPlugin(), size: 24),
                   accent: SubstackPlugin().brandColor,
+                  search: IconButton(
+                    style: pluginActionButtonStyle,
+                    tooltip: l10n.search,
+                    onPressed: _openDiscover,
+                    icon: const Icon(Icons.search),
+                  ),
                   tabs: [
                     PluginHomeTab(
                       selected: _tab == 0,
