@@ -80,6 +80,8 @@ class PluginFeedPeopleStrip extends StatelessWidget {
     return SizedBox(
       height: height,
       child: ListView.separated(
+        // ExpansionTile stores a bool; the list must own a separate offset slot.
+        key: PageStorageKey('plugin-feed-people-scroll-$title'),
         scrollDirection: Axis.horizontal,
         primary: false,
         padding: EdgeInsetsDirectional.only(start: PluginEmbedded.maybeOf(context) ? 12 : 0, end: 16),
