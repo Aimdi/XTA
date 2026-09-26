@@ -82,7 +82,10 @@ void main() {
                 child: Scaffold(
                   body: Align(
                     alignment: Alignment.topCenter,
-                    child: SizedBox(width: width, child: PluginDockRow(store: store, source: 'reader')),
+                    child: SizedBox(
+                      width: width,
+                      child: PluginDockRow(store: store, source: 'reader'),
+                    ),
                   ),
                 ),
               ),

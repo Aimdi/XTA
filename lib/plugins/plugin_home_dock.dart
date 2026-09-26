@@ -12,6 +12,7 @@ class PluginDockContent {
   final List<Widget> actions;
   final Widget? search;
   final Widget? leading;
+
   /// Minimum reading-label space before applying the user's text scale.
   final double leadingWidth;
   final List<Widget> trailing;
@@ -224,7 +225,12 @@ class PluginDockRow extends StatelessWidget {
                     if (leading != null && splitReading)
                       ConstrainedBox(
                         constraints: const BoxConstraints(minHeight: 48),
-                        child: Row(children: [Expanded(child: leading), ...trailing]),
+                        child: Row(
+                          children: [
+                            Expanded(child: leading),
+                            ...trailing,
+                          ],
+                        ),
                       ),
                   ],
                 );
