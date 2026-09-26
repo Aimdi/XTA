@@ -60,7 +60,7 @@ class _Fixture {
   late final saved = SubstackSavedStore(prefs);
   late final feed = SubstackFeedStore(client, pubs);
   late final notes = SubstackNotesStore(client, pubs);
-  Widget app({double scale = 1, bool rtl = false}) => PrefService(
+  Widget app({double scale = 1, bool rtl = false, bool compact = false}) => PrefService(
     service: prefs,
     child: MultiProvider(
       providers: [
@@ -93,6 +93,7 @@ class _Fixture {
           store: dock,
           source: 'substack',
           enabled: true,
+          compact: compact,
           openClientLabel: 'Open Substack',
           onOpenClient: () {},
           child: Scaffold(
@@ -102,7 +103,7 @@ class _Fixture {
             ),
             body: Column(
               children: [
-                PluginDockRow(store: dock, source: 'substack'),
+                if (!compact) PluginDockRow(store: dock, source: 'substack'),
                 Expanded(
                   child: PrimaryScrollController(
                     controller: scroll,
@@ -172,6 +173,31 @@ void main() {
       }
     });
   }
+  testWidgets('compact Substack gives the second toolbar space to articles and preserves archives', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final h = _Fixture();
+    try {
+      await tester.pumpWidget(h.app(compact: true));
+      await tester.pumpAndSettle();
+      expect(tester.getTopLeft(find.byType(SubstackPostCard).first).dy, lessThanOrEqualTo(64));
+      await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+      await tester.pumpAndSettle();
+      final publications = find.widgetWithText(TextButton, L10n.current.plugin_substack_library_following);
+      await tester.ensureVisible(publications);
+      await tester.tap(publications);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Field Notes').last);
+      await tester.pumpAndSettle();
+      expect(find.byType(SubstackArchiveScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await h.close(tester);
+    }
+  });
+
   testWidgets('Substack reading controls survive scrolling past their lazy owner', (tester) async {
     final h = _Fixture();
     try {

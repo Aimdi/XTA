@@ -4,7 +4,15 @@
 
 Implement the approved compact Home proposal on aimdi144 without replacing XTA's Flutter architecture. More content should appear above the fold, source changes should be predictable, and every existing plugin action must remain accessible. This is a UI pull request, not permission to merge or publish a release.
 
-## Layout
+## September 26 refinement: Reddit-style plugin headers
+
+The user requested Reddit's minimal Home presentation across plugins, with options on the right. Embedded plugin feeds now use the existing 56px Home header as their only navigation toolbar. The source title can show the active section beneath it at normal text sizes; at larger sizes the section remains available in the options sheet and accessibility label.
+
+Search or the primary action stays direct. A right-side options button opens section selection, Alt Microblogging service switching and the existing reading controls. Secondary actions share an overflow menu, including Open full client. Closing the sheet must leave the reader and its loading/scroll state intact. Reddit and X retain their existing compact host controls. Other embedded feed plugins use the shared host without an allowlist. Standalone navigation stays independent.
+
+The earlier always-visible service/context row is superseded by this smaller layout. No automatic collapse is needed for the plugin navigation; the existing expanded host remains supported for standalone fixtures and consumers.
+
+## Earlier layout (superseded where stated above)
 
 - Home owns the source title, avatar, and primary actions. For migrated embedded readers, plugin navigation and reading controls share a context row rather than adding independent toolbars.
 - Alt Microblogging retains its reversible category and one-tap service switching. Use existing service marks with 48px targets; the title names the selected service. Fall back to readable additional rows with long labels or large text.

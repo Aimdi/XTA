@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/tiktok/tiktok_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -98,8 +99,8 @@ class _TikTokScreenState extends State<TikTokScreen> {
               ],
               actions: [
                 IconButton(tooltip: l10n.plugin_tiktok_search, icon: const Icon(Icons.search), onPressed: _openSearch),
-                IconButton(
-                  tooltip: l10n.settings,
+                PluginHomeSecondaryAction(
+                  label: l10n.settings,
                   icon: const Icon(Icons.settings_outlined),
                   onPressed: () =>
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const TikTokSettingsScreen())),

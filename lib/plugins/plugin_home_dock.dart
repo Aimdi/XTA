@@ -7,6 +7,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 
 /// A presentation contribution. Reader stores and callbacks stay with the reader.
 class PluginDockContent {
+  final List<PluginHomeTab> tabs;
   final Widget? section;
   final double sectionWidth;
   final List<Widget> actions;
@@ -17,6 +18,7 @@ class PluginDockContent {
   final double leadingWidth;
   final List<Widget> trailing;
   const PluginDockContent({
+    this.tabs = const [],
     this.section,
     this.sectionWidth = 112,
     this.actions = const [],
@@ -64,6 +66,7 @@ class PluginHomeDockScope extends InheritedWidget {
   final PluginHomeDockStore store;
   final String source;
   final bool enabled;
+  final bool compact;
   final String openClientLabel;
   final VoidCallback onOpenClient;
   const PluginHomeDockScope({
@@ -71,6 +74,7 @@ class PluginHomeDockScope extends InheritedWidget {
     required this.store,
     required this.source,
     required this.enabled,
+    this.compact = false,
     required this.openClientLabel,
     required this.onOpenClient,
     required super.child,
@@ -86,6 +90,7 @@ class PluginHomeDockScope extends InheritedWidget {
       store != oldWidget.store ||
       source != oldWidget.source ||
       enabled != oldWidget.enabled ||
+      compact != oldWidget.compact ||
       openClientLabel != oldWidget.openClientLabel;
 }
 
@@ -149,20 +154,31 @@ class _PluginDockContributionState extends State<PluginDockContribution> {
 class PluginDockActions extends StatelessWidget {
   final PluginHomeDockStore store;
   final String source;
-  const PluginDockActions({super.key, required this.store, required this.source});
+  final Widget? services;
+  const PluginDockActions({super.key, required this.store, required this.source, this.services});
   @override
   Widget build(BuildContext context) => ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
     store: store,
     onState: (context, _) {
       final navigation = store.content(source, 'navigation');
       final reading = store.content(source, 'reading');
+      final compact = PluginHomeDockScope.maybeOf(context)?.compact == true;
+      final actions = [...?navigation?.actions];
+      if (compact) {
+        // All feed controls use one button; the plugin's own search and menu
+        // remain independent so their scope and callbacks are unchanged.
+        actions.insert(
+          math.max(0, actions.length - 1),
+          PluginDockOptionsButton(store: store, source: source, services: services),
+        );
+      }
       return KeyedSubtree(
         key: ValueKey('home-dock-actions-$source'),
         child: IconButtonTheme(
           data: const IconButtonThemeData(style: pluginActionButtonStyle),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [if (reading?.search != null) reading!.search!, ...?navigation?.actions],
+            children: [if (reading?.search != null) reading!.search!, ...actions],
           ),
         ),
       );
@@ -273,12 +289,13 @@ class PluginHomeMenu extends StatelessWidget {
         ...itemBuilder(context),
         if (scope != null) ...[
           const PopupMenuDivider(),
-          CheckedPopupMenuItem<String>(
-            key: const ValueKey('home-pin-controls'),
-            value: 'xta:pin-controls',
-            checked: scope.store.controls.state.pinned,
-            child: Text(L10n.of(context).home_keep_controls_visible),
-          ),
+          if (!scope.compact)
+            CheckedPopupMenuItem<String>(
+              key: const ValueKey('home-pin-controls'),
+              value: 'xta:pin-controls',
+              checked: scope.store.controls.state.pinned,
+              child: Text(L10n.of(context).home_keep_controls_visible),
+            ),
           PopupMenuItem(
             key: ValueKey('open-client-${scope.source}'),
             value: 'xta:open-client',
@@ -286,6 +303,136 @@ class PluginHomeMenu extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+/// A secondary action becomes a labelled overflow entry inside Home.
+class PluginHomeSecondaryAction extends StatelessWidget {
+  final String label;
+  final Widget icon;
+  final VoidCallback? onPressed;
+  const PluginHomeSecondaryAction({super.key, required this.label, required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    if (PluginHomeDockScope.maybeOf(context) == null) {
+      return IconButton(tooltip: label, icon: icon, onPressed: onPressed);
+    }
+    return PluginHomeMenu(
+      onSelected: (_) => onPressed?.call(),
+      itemBuilder: (_) => [PopupMenuItem(value: 'action', enabled: onPressed != null, child: Text(label))],
+    );
+  }
+}
+
+/// The same controls as the expanded dock, shown only when requested.
+class PluginDockOptionsButton extends StatelessWidget {
+  final PluginHomeDockStore store;
+  final String source;
+  final Widget? services;
+  const PluginDockOptionsButton({super.key, required this.store, required this.source, this.services});
+
+  @override
+  Widget build(BuildContext context) => IconButton(
+    key: const ValueKey('home-plugin-options'),
+    style: pluginActionButtonStyle,
+    tooltip: L10n.of(context).filters,
+    icon: const Icon(Icons.tune),
+    onPressed: () => _open(context),
+  );
+
+  Future<void> _open(BuildContext opener) {
+    final scope = PluginHomeDockScope.maybeOf(opener)!;
+    return showModalBottomSheet<void>(
+      context: opener,
+      showDragHandle: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(opener).height * .85),
+      builder: (context) => SafeArea(
+        top: false,
+        child: ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
+          store: store,
+          onState: (context, _) {
+            if (!opener.mounted || PluginHomeDockScope.maybeOf(opener)?.source != source) {
+              return const SizedBox.shrink();
+            }
+            final navigation = store.content(source, 'navigation');
+            final reading = store.content(source, 'reading');
+            final following = store.content(source, 'following');
+            final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.only(start: 8),
+                          child: Text(L10n.of(context).feed, style: Theme.of(context).textTheme.titleLarge),
+                        ),
+                      ),
+                      IconButton(
+                        key: const ValueKey('home-plugin-options-close'),
+                        style: pluginActionButtonStyle,
+                        tooltip: L10n.of(context).close,
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  if (services != null) services!,
+                  for (var index = 0; index < tabs.length; index++)
+                    ListTile(
+                      key: ValueKey('home-section-$index'),
+                      minTileHeight: 48,
+                      leading: Icon(tabs[index].icon, size: 22),
+                      title: Text(tabs[index].label),
+                      selected: tabs[index].selected,
+                      trailing: tabs[index].selected ? const Icon(Icons.check, size: 20) : null,
+                      onTap: () {
+                        Navigator.pop(context);
+                        if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) {
+                          tabs[index].onTap();
+                        }
+                      },
+                    ),
+                  if (tabs.isEmpty && navigation?.section != null) navigation!.section!,
+                  if (reading != null || following != null) ...[
+                    const Divider(),
+                    IconButtonTheme(
+                      data: const IconButtonThemeData(style: pluginActionButtonStyle),
+                      child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 4,
+                        children: [
+                          if (reading?.leading != null) reading!.leading!,
+                          if (following?.leading != null) following!.leading!,
+                          ...?following?.trailing,
+                          ...?reading?.trailing,
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (navigation?.actions.isEmpty ?? true)
+                    ListTile(
+                      leading: const Icon(Icons.open_in_new),
+                      title: Text(scope.openClientLabel),
+                      onTap: () {
+                        Navigator.pop(context);
+                        if (opener.mounted) scope.onOpenClient();
+                      },
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

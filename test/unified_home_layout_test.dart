@@ -105,12 +105,13 @@ void main() {
       final first = find.byType(BlueskyPostCard).first;
       expect(first, findsOneWidget);
       if (width >= 390 && scale == 1) {
-        expect(tester.getTopLeft(first).dy, lessThanOrEqualTo(112));
+        expect(tester.getTopLeft(first).dy, lessThanOrEqualTo(64));
       }
       final search = find.byTooltip(L10n.current.plugin_bluesky_search);
       expect(search, findsOneWidget);
       expect(tester.getTopLeft(search).dy, lessThan(56));
-      expect(tester.getSize(find.byKey(const ValueKey('alt-microblogging-service-bluesky'))).width, 48);
+      expect(find.byKey(const ValueKey('home-plugin-context')), findsNothing);
+      expect(find.byKey(const ValueKey('home-plugin-options')), findsOneWidget);
       expect(blue.client.calls, hasLength(1));
       expect(tester.takeException(), isNull);
       if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
@@ -119,50 +120,20 @@ void main() {
           matchesGoldenFile('../review-artifacts/renders/home-$width-$scale-$rtl-$dark.png'),
         );
       }
-      if (width == 390 && scale == 1) {
-        final filters = find.byTooltip(L10n.current.filters);
-        final readerView = find.byType(BlueskyReaderView);
-        final originalReader = tester.state(find.byType(BlueskyScreen));
-        mastodon.scroll.jumpTo(80);
-        await tester.pumpAndSettle();
-        expect(filters.hitTestable(), findsOneWidget, reason: 'Restoring scroll is not a reading gesture.');
-        mastodon.scroll.jumpTo(0);
-        await tester.pumpAndSettle();
-        await tester.drag(readerView, const Offset(0, -320));
-        await tester.pumpAndSettle();
-        expect(filters.hitTestable(), findsNothing, reason: 'Secondary controls recede during deliberate reading.');
-        expect(search.hitTestable(), findsOneWidget, reason: 'The main header remains accessible.');
-        await tester.drag(readerView, const Offset(0, 100));
-        await tester.pumpAndSettle();
-        expect(filters.hitTestable(), findsOneWidget, reason: 'An upward gesture restores controls.');
-        final more = find.descendant(
-          of: find.byType(PluginDockActions),
-          matching: find.byType(PopupMenuButton<String>),
-        );
-        await tester.tap(more);
-        await tester.pumpAndSettle();
-        final pin = find.byKey(const ValueKey('home-pin-controls'));
-        expect(pin, findsOneWidget);
-        await tester.tap(pin);
-        await tester.pumpAndSettle();
-        await tester.drag(readerView, const Offset(0, -280));
-        await tester.pumpAndSettle();
-        expect(filters.hitTestable(), findsOneWidget, reason: 'Pinned controls stay visible.');
-        expect(prefs.get<bool>('home_keep_controls_visible'), isTrue);
-        await tester.tap(more);
-        await tester.pumpAndSettle();
-        await tester.tap(pin);
-        await tester.pumpAndSettle();
-        expect(prefs.get<bool>('home_keep_controls_visible'), isFalse);
-        mastodon.scroll.jumpTo(0);
-        await tester.pumpAndSettle();
-        expect(tester.state(find.byType(BlueskyScreen)), same(originalReader));
-        expect(blue.client.calls, hasLength(1));
-      }
+      // Options stay reachable without reserving another row above the feed.
+      final originalReader = tester.state(find.byType(BlueskyScreen));
+      await tester.drag(find.byType(BlueskyReaderView), const Offset(0, -280));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+      await tester.pumpAndSettle();
+      expect(tester.getSize(find.byKey(const ValueKey('alt-microblogging-service-bluesky'))).width, 48);
+      expect(find.byKey(const ValueKey('home-section-1')), findsOneWidget);
+      expect(tester.state(find.byType(BlueskyScreen)), same(originalReader));
+      expect(blue.client.calls, hasLength(1));
       // The relocated filter controls still steer this exact reader store.
       final reader = tester.element(find.byType(BlueskyReaderView)).read<BlueskyReaderStore>();
       final beforeState = tester.state(find.byType(BlueskyScreen));
-      await tester.tap(find.byTooltip(L10n.current.filters));
+      await tester.tap(find.byType(PluginDockFilterButton));
       await tester.pumpAndSettle();
       expect(find.text(L10n.current.plugin_mastodon_loaded_controls), findsOneWidget);
       final oldest = find.widgetWithText(ChoiceChip, L10n.current.plugin_mastodon_order_oldest);
@@ -170,10 +141,12 @@ void main() {
       await tester.tap(oldest);
       await tester.pumpAndSettle();
       expect(reader.options('following').order, BlueskyReaderOrder.oldest);
-      await tester.tap(find.byTooltip(L10n.current.close));
+      await tester.tap(find.byTooltip(L10n.current.close).last);
       await tester.pumpAndSettle();
       expect(tester.state(find.byType(BlueskyScreen)), same(beforeState));
       expect(blue.client.calls, hasLength(1), reason: 'Local controls must not refetch the feed.');
+      await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
+      await tester.pumpAndSettle();
       final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
       await tester.tap(menu);
       await tester.pumpAndSettle();

@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -125,9 +126,7 @@ class _StocksScreenState extends State<StocksScreen> {
     if (asset == null) {
       openTicker(context, symbol);
     } else {
-      Navigator.push(context, MaterialPageRoute<void>(
-        builder: (_) => CryptoAssetScreen(asset: asset),
-      ));
+      Navigator.push(context, MaterialPageRoute<void>(builder: (_) => CryptoAssetScreen(asset: asset)));
     }
   }
 
@@ -227,8 +226,8 @@ class _StocksScreenState extends State<StocksScreen> {
               ],
               actions: [
                 IconButton(tooltip: l10n.plugin_stocks_add, icon: const Icon(Icons.add), onPressed: _addSymbol),
-                IconButton(
-                  tooltip: l10n.plugin_stocks_watchlist,
+                PluginHomeSecondaryAction(
+                  label: l10n.plugin_stocks_watchlist,
                   icon: const Icon(Icons.list),
                   onPressed: _manageWatchlist,
                 ),
@@ -256,9 +255,8 @@ class _StocksScreenState extends State<StocksScreen> {
         onLoading: (_) => const PluginFeedSkeleton(),
         onState: (context, symbols) => ScopedBuilder<CryptoQuoteStore, Map<String, CryptoMarket>>(
           store: _cryptoQuotes,
-          onState: (_, crypto) => _tabHome(symbols, {
-            ...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote,
-          }, l10n),
+          onState: (_, crypto) =>
+              _tabHome(symbols, {...quotes, for (final entry in crypto.entries) entry.key: entry.value.quote}, l10n),
         ),
       ),
     );
@@ -288,8 +286,14 @@ class _StocksScreenState extends State<StocksScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        StocksWatchlistReel(symbols: symbols, quotes: quotes, selected: _filterSymbol, onSelected: _onChipSelected,
-          assets: _watchlist.cryptoAssets, onOpen: _openAsset),
+        StocksWatchlistReel(
+          symbols: symbols,
+          quotes: quotes,
+          selected: _filterSymbol,
+          onSelected: _onChipSelected,
+          assets: _watchlist.cryptoAssets,
+          onOpen: _openAsset,
+        ),
         Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 8),
           child: Wrap(

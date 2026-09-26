@@ -518,12 +518,13 @@ class _FeedScreenState extends State<FeedScreen> {
       });
     }
 
-    final docked = const {'bluesky', 'mastodon', 'threads', 'substack'}.contains(tab.id);
+    final docked = tab.isPlugin && tab != FeedTab.x && tab != FeedTab.reddit;
     final activePlugin = pluginById(tab.id);
     return PluginHomeDockScope(
       store: _dock,
       source: tab.id,
       enabled: docked,
+      compact: true,
       openClientLabel: activePlugin == null ? '' : L10n.of(context).plugin_open_client(activePlugin.title(context)),
       onOpenClient: () {
         if (mounted && activePlugin != null) openPluginClient(context, activePlugin);
@@ -538,21 +539,46 @@ class _FeedScreenState extends State<FeedScreen> {
         leading: const DrawerAvatarButton(),
         titleBuilder: (context) {
           final source = available.firstWhere((option) => option.id == tab);
-          return GroupUnreadScope(
-            builder: (context, unreadIds) => HomeTimelineTitle(
-              label: !docked && grouped && isAltMicrobloggingSource(tab.id)
-                  ? L10n.of(context).alt_microblogging
-                  : source.titleBuilder(context),
-              mark: !docked && grouped && isAltMicrobloggingSource(tab.id)
-                  ? const Icon(Icons.forum_outlined, size: 22)
-                  : source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
-              unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
-              onPressed: () => _pickSource(context),
-            ),
+          return ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
+            store: _dock,
+            onState: (context, _) {
+              final sections = _dock.content(tab.id, 'navigation')?.tabs;
+              final section = sections?.where((section) => section.selected).firstOrNull;
+              return GroupUnreadScope(
+                builder: (context, unreadIds) => HomeTimelineTitle(
+                  label: source.titleBuilder(context),
+                  sectionLabel: docked ? section?.label : null,
+                  mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+                  unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
+                  onPressed: () => _pickSource(context),
+                ),
+              );
+            },
           );
         },
         actionsBuilder: (context) {
-          if (docked) return [PluginDockActions(store: _dock, source: tab.id)];
+          if (docked) {
+            return [
+              GroupUnreadScope(
+                builder: (context, unread) => PluginDockActions(
+                  store: _dock,
+                  source: tab.id,
+                  services: grouped && isAltMicrobloggingSource(tab.id)
+                      ? AltMicrobloggingSelector(
+                          compact: true,
+                          sourceIds: available.map((option) => option.id.id).toList(),
+                          selected: tab.id,
+                          unread: unread,
+                          onSelected: (id) {
+                            Navigator.pop(context);
+                            _selectStripTab(FeedTab(id));
+                          },
+                        )
+                      : null,
+                ),
+              ),
+            ];
+          }
           // Reddit brings its own bar: sorting, search and adding a subreddit
           // are what this feed is steered with, and the generic feed actions
           // steer nothing here. Its overflow carries the app settings so they
@@ -617,34 +643,6 @@ class _FeedScreenState extends State<FeedScreen> {
           controls: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (docked)
-                GroupUnreadScope(
-                  builder: (context, unread) => PluginDockRow(
-                    store: _dock,
-                    source: tab.id,
-                    servicesWidth: available.where((option) => isAltMicrobloggingSource(option.id.id)).length * 48.0,
-                    services: grouped && isAltMicrobloggingSource(tab.id)
-                        ? AltMicrobloggingSelector(
-                            compact: true,
-                            sourceIds: available.map((option) => option.id.id).toList(),
-                            selected: tab.id,
-                            unread: unread,
-                            onSelected: (id) => _selectStripTab(FeedTab(id)),
-                          )
-                        : null,
-                  ),
-                )
-              else
-                grouped && isAltMicrobloggingSource(tab.id)
-                    ? GroupUnreadScope(
-                        builder: (context, unread) => AltMicrobloggingSelector(
-                          sourceIds: available.map((option) => option.id.id).toList(),
-                          selected: tab.id,
-                          unread: unread,
-                          onSelected: (id) => _selectStripTab(FeedTab(id)),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
               HomeCollapsingControls(
                 key: const ValueKey('home-reading-controls'),
                 visible: _view.state.controlsVisible && tab == FeedTab.following,

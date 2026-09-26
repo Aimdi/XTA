@@ -129,6 +129,7 @@ class PluginHomeChrome extends StatelessWidget {
     return PluginDockContribution(
       slot: 'navigation',
       content: PluginDockContent(
+        tabs: tabs,
         section: tabs.isEmpty ? null : PluginSectionPicker(tabs: tabs, accent: accent),
         sectionWidth: selected == null ? 0 : pluginDockSectionWidth(context, selected.label),
         actions: actions,

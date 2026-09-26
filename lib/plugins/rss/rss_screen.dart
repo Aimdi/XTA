@@ -1,3 +1,4 @@
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -117,27 +118,24 @@ class _RssScreenState extends State<RssScreen> {
                 ),
               ],
               actions: [
-                if (_tab == 0)
-                  ScopedBuilder<RssTimelineStore, RssFeedSnapshot>(
-                    store: timeline,
-                    onState: (context, _) {
-                      final readIds = context.read<RssReadStore>().state;
-                      final hasUnread = timeline.allItems.any((item) => !readIds.contains(item.id));
-                      if (!hasUnread) return const SizedBox.shrink();
-                      return IconButton(
-                        tooltip: l10n.plugin_rss_mark_all_read,
-                        icon: const Icon(Icons.done_all),
-                        onPressed: _markAllRead,
-                      );
-                    },
-                  ),
-                IconButton(
-                  tooltip: l10n.settings,
-                  icon: const Icon(Icons.settings_outlined),
-                  onPressed: () =>
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const RssSettingsScreen())),
-                ),
                 IconButton(tooltip: l10n.plugin_rss_add, icon: const Icon(Icons.add), onPressed: _openAdd),
+                ScopedBuilder<RssTimelineStore, RssFeedSnapshot>(
+                  store: timeline,
+                  onState: (context, _) => PluginHomeMenu(
+                    onSelected: (value) {
+                      if (value == 'read') _markAllRead();
+                      if (value == 'settings') {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const RssSettingsScreen()));
+                      }
+                    },
+                    itemBuilder: (_) => [
+                      if (_tab == 0 &&
+                          timeline.allItems.any((item) => !context.read<RssReadStore>().state.contains(item.id)))
+                        PopupMenuItem(value: 'read', child: Text(l10n.plugin_rss_mark_all_read)),
+                      PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
+                    ],
+                  ),
+                ),
               ],
             ),
             const Divider(height: 1),

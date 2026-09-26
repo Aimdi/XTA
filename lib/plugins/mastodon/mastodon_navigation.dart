@@ -197,6 +197,7 @@ class MastodonCompactBar extends StatelessWidget {
     return PluginDockContribution(
       slot: 'navigation',
       content: PluginDockContent(
+        tabs: tabs,
         section: PluginSectionPicker(key: const ValueKey('mastodon-section-picker'), tabs: tabs),
         sectionWidth: pluginDockSectionWidth(context, labels[selected]),
         actions: mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: true),
