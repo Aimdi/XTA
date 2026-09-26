@@ -93,7 +93,10 @@ class _Fixture {
               children: [
                 PluginDockRow(store: dock, source: 'substack'),
                 Expanded(
-                  child: PluginEmbedded(child: SubstackScreen(scrollController: scroll)),
+                  child: PrimaryScrollController(
+                    controller: scroll,
+                    child: PluginEmbedded(child: SubstackScreen(scrollController: scroll)),
+                  ),
                 ),
               ],
             ),
@@ -104,7 +107,7 @@ class _Fixture {
   );
   Future<void> close(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox());
-    await tester.pumpAndSettle();
+    await tester.pump();
     await feed.destroy();
     await notes.destroy();
     await read.destroy();
@@ -120,32 +123,38 @@ class _Fixture {
 void main() {
   testWidgets('Substack reading controls survive scrolling past their lazy owner', (tester) async {
     final h = _Fixture();
-    addTearDown(() => h.close(tester));
-    await tester.pumpWidget(h.app());
-    await tester.pumpAndSettle();
-    expect(find.byType(SubstackPostCard), findsWidgets);
-    expect(find.byTooltip(L10n.current.filters), findsOneWidget);
-    h.scroll.jumpTo(1400);
-    await tester.pumpAndSettle();
-    expect(h.dock.content('substack', 'reading'), isNotNull);
-    expect(find.byTooltip(L10n.current.filters), findsOneWidget);
-    await tester.tap(find.byTooltip(L10n.current.filters));
-    await tester.pumpAndSettle();
-    expect(find.byType(TextField), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    try {
+      await tester.pumpWidget(h.app());
+      await tester.pumpAndSettle();
+      expect(find.byType(SubstackPostCard), findsWidgets);
+      expect(find.byTooltip(L10n.current.filters), findsOneWidget);
+      h.scroll.jumpTo(1400);
+      await tester.pumpAndSettle();
+      expect(h.dock.content('substack', 'reading'), isNotNull);
+      expect(find.byTooltip(L10n.current.filters), findsOneWidget);
+      await tester.tap(find.byTooltip(L10n.current.filters));
+      await tester.pumpAndSettle();
+      expect(find.byType(TextField), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await h.close(tester);
+    }
   });
 
   testWidgets('hosted Substack publications retain archive navigation', (tester) async {
     final h = _Fixture();
-    addTearDown(() => h.close(tester));
-    await tester.pumpWidget(h.app());
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TextButton, L10n.current.plugin_substack_library_following));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Field Notes').last);
-    await tester.pumpAndSettle();
-    expect(find.byType(SubstackArchiveScreen), findsOneWidget);
-    expect(tester.takeException(), isNull);
+    try {
+      await tester.pumpWidget(h.app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, L10n.current.plugin_substack_library_following));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Field Notes').last);
+      await tester.pumpAndSettle();
+      expect(find.byType(SubstackArchiveScreen), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    } finally {
+      await h.close(tester);
+    }
   });
 
   testWidgets('a menu opened for a departed source cannot execute its old action', (tester) async {
