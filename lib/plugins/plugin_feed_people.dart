@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 
@@ -69,26 +71,39 @@ class PluginFeedPeopleStrip extends StatelessWidget {
     );
   }
 
-  Widget _peopleRow(BuildContext context) => SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    padding: EdgeInsetsDirectional.only(start: PluginEmbedded.maybeOf(context) ? 12 : 0, end: 16),
-    child: Row(
-      children: [
-        for (var index = 0; index < people.length; index++) ...[
-          if (index > 0) const SizedBox(width: 8),
-          ActionChip(
-            avatar: avatar(people[index]),
-            label: Text('@${people[index].handle}'),
-            materialTapTargetSize: MaterialTapTargetSize.padded,
-            onPressed: () => onOpen(people[index]),
-          ),
-          TextButton(
-            style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-            onPressed: () => onFollow(people[index]),
-            child: Text(followLabel),
-          ),
-        ],
-      ],
-    ),
+  Widget _peopleRow(BuildContext context) {
+    final style = Theme.of(context).textTheme.labelLarge;
+    final height = math.max(
+      48.0,
+      MediaQuery.textScalerOf(context).scale(style?.fontSize ?? 14) * (style?.height ?? 1.4) + 24,
+    );
+    return SizedBox(
+      height: height,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        primary: false,
+        padding: EdgeInsetsDirectional.only(start: PluginEmbedded.maybeOf(context) ? 12 : 0, end: 16),
+        itemCount: people.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        itemBuilder: (context, index) => _personActions(context, people[index]),
+      ),
+    );
+  }
+
+  Widget _personActions(BuildContext context, PluginFeedPerson person) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      ActionChip(
+        avatar: avatar(person),
+        label: Text('@${person.handle}', style: Theme.of(context).textTheme.labelLarge),
+        materialTapTargetSize: MaterialTapTargetSize.padded,
+        onPressed: () => onOpen(person),
+      ),
+      TextButton(
+        style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+        onPressed: () => onFollow(person),
+        child: Text(followLabel),
+      ),
+    ],
   );
 }
