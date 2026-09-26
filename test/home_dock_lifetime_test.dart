@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:xta/ui/x_look_theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -58,7 +60,7 @@ class _Fixture {
   late final saved = SubstackSavedStore(prefs);
   late final feed = SubstackFeedStore(client, pubs);
   late final notes = SubstackNotesStore(client, pubs);
-  Widget app() => PrefService(
+  Widget app({double scale = 1, bool rtl = false}) => PrefService(
     service: prefs,
     child: MultiProvider(
       providers: [
@@ -71,6 +73,15 @@ class _Fixture {
         Provider<SubstackNotesStore>.value(value: notes),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: xLookLightsOutTheme(null),
+        builder: (context, child) => RepaintBoundary(
+          key: const ValueKey('hosted-substack-window'),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+            child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
+          ),
+        ),
         localizationsDelegates: const [
           L10n.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -121,6 +132,46 @@ class _Fixture {
 }
 
 void main() {
+  setUpAll(() async {
+    if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
+      autoUpdateGoldenFiles = true;
+      await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
+      await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
+    }
+  });
+  for (final (width, scale, rtl) in <(double, double, bool)>[(390, 1, false), (320, 2, true)]) {
+    testWidgets('hosted Substack controls and content fit $width $scale RTL=$rtl', (tester) async {
+      tester.view.physicalSize = Size(width, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final h = _Fixture();
+      try {
+        await tester.pumpWidget(h.app(scale: scale, rtl: rtl));
+        await tester.pumpAndSettle();
+        expect(find.byTooltip(L10n.current.filters), findsOneWidget);
+        expect(find.byTooltip(L10n.current.search), findsOneWidget);
+        if (scale == 1) {
+          expect(tester.getTopLeft(find.byType(SubstackPostCard).first).dy, lessThanOrEqualTo(112));
+        }
+        expect(tester.takeException(), isNull);
+        if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
+          await expectLater(
+            find.byKey(const ValueKey('hosted-substack-window')),
+            matchesGoldenFile('../review-artifacts/renders/hosted-substack-$width-$scale-$rtl.png'),
+          );
+        }
+        h.scroll.jumpTo(1400);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byTooltip(L10n.current.filters));
+        await tester.pumpAndSettle();
+        expect(find.byType(TextField), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        await h.close(tester);
+      }
+    });
+  }
   testWidgets('Substack reading controls survive scrolling past their lazy owner', (tester) async {
     final h = _Fixture();
     try {
@@ -161,6 +212,13 @@ void main() {
     final dock = PluginHomeDockStore();
     var calls = 0;
     Widget app(String source) => MaterialApp(
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L10n.delegate.supportedLocales,
       home: PluginHomeDockScope(
         store: dock,
         source: source,

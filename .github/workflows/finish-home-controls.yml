@@ -31,7 +31,7 @@ jobs:
           flutter pub get
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
-          dart format lib/home/_feed.dart lib/plugins/plugin_home_dock.dart lib/plugins/plugin_home_reading_controls.dart lib/plugins/substack/substack_screen.dart lib/plugins/substack/substack_reading_toolbar.dart test/home_dock_lifetime_test.dart test/home_reading_controls_test.dart test/unified_home_layout_test.dart
+          dart format --line-length 120 lib/home/_feed.dart lib/plugins/plugin_home_dock.dart lib/plugins/plugin_home_reading_controls.dart lib/plugins/substack/substack_screen.dart lib/plugins/substack/substack_reading_toolbar.dart test/home_dock_lifetime_test.dart test/home_reading_controls_test.dart test/unified_home_layout_test.dart
           python3 l10n.py --check-only
           python3 scripts/validate_arb.py
           bash scripts/check_skill_sync.sh

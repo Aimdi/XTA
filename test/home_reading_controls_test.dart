@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/plugins/plugin_home_reading_controls.dart';
@@ -72,4 +73,50 @@ void main() {
     expect(store.state.visible, isTrue);
     expect(store.state.source, 'substack');
   });
+
+  for (final protection in ['focus', 'keyboard', 'accessibility', 'short']) {
+    testWidgets('real viewport retains controls for $protection', (tester) async {
+      final focus = FocusNode();
+      final scrollController = ScrollController();
+      try {
+        await tester.pumpWidget(MaterialApp(
+          home: Builder(builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              accessibleNavigation: protection == 'accessibility',
+              viewInsets: EdgeInsets.only(bottom: protection == 'keyboard' ? 200 : 0),
+            ),
+            child: Scaffold(body: HomeReadingViewport(
+              store: store,
+              source: 'blue',
+              enabled: true,
+              prefs: prefs,
+              controls: SizedBox(height: 48, child: TextButton(
+                focusNode: focus, onPressed: () {}, child: const Text('Reading options'),
+              )),
+              child: ListView(
+                controller: scrollController,
+                children: [for (var i = 0; i < (protection == 'short' ? 2 : 30); i++)
+                  SizedBox(height: 80, child: Text('Post $i'))],
+              ),
+            )),
+          )),
+        ));
+        await tester.pumpAndSettle();
+        if (protection == 'focus') {
+          focus.requestFocus();
+          await tester.pump();
+        }
+        await tester.drag(find.byType(ListView), const Offset(0, -300));
+        await tester.pumpAndSettle();
+        expect(store.state.visible, isTrue);
+        expect(find.text('Reading options').hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump();
+        focus.dispose();
+        scrollController.dispose();
+      }
+    });
+  }
 }
