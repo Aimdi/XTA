@@ -133,6 +133,7 @@ void main() {
       // The relocated filter controls still steer this exact reader store.
       final reader = tester.element(find.byType(BlueskyReaderView)).read<BlueskyReaderStore>();
       final beforeState = tester.state(find.byType(BlueskyScreen));
+      await tester.ensureVisible(find.byType(PluginDockFilterButton));
       await tester.tap(find.byType(PluginDockFilterButton));
       await tester.pumpAndSettle();
       expect(find.text(L10n.current.plugin_mastodon_loaded_controls), findsOneWidget);
@@ -145,6 +146,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.state(find.byType(BlueskyScreen)), same(beforeState));
       expect(blue.client.calls, hasLength(1), reason: 'Local controls must not refetch the feed.');
+      await tester.ensureVisible(find.byKey(const ValueKey('home-plugin-options-close')));
       await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
       await tester.pumpAndSettle();
       final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
