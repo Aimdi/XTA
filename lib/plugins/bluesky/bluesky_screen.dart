@@ -166,7 +166,8 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = L10n.of(context);
-    final compact = MediaQuery.sizeOf(context).width < 360 || MediaQuery.textScalerOf(context).scale(1) > 1.4;
+    final compact = PluginEmbedded.maybeOf(context) ||
+        MediaQuery.sizeOf(context).width < 360 || MediaQuery.textScalerOf(context).scale(1) > 1.4;
     _shell.restore(context, 'bluesky');
 
     return Provider<BlueskyReaderStore>.value(
@@ -507,7 +508,7 @@ class _LikedPane extends StatelessWidget {
 
 /// Asks for a handle or DID, and hands back the normalised one.
 Future<String?> showBlueskyAddAccountDialog(BuildContext context, {bool lookup = false}) {
-  return showDialog<String>(
+  return showDialog<String?>(
     context: context,
     builder: (_) => _BlueskyAddAccountDialog(lookup: lookup),
   );
