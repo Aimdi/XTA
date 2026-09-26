@@ -1,0 +1,764 @@
+## XTA
+
+A read-only fork of [QuaX](https://github.com/Teskann/QuaX). Same idea — read X
+without posting, keep what you follow on your own device — with the plugins and
+fixes below on top. Nothing here adds compose, reply, quote, or like-on-X.
+
+### aimdi143
+
+Mastodon, Bluesky and Threads now share one **Alt Microblogging** section in
+Home. Select a service inside that section to use its existing reader, search,
+filters and full-client controls. The section remembers your last-used available
+service and keeps unread indicators visible.
+
+Grouping is on by default. To restore separate entries, open **Settings →
+Plugin store → Group microblogging services** and turn the switch off. Turning
+it back on groups them again. Accounts, subscriptions, saved items, local likes,
+reader settings and the original source order are preserved.
+
+Includes the Substack layout improvements and loading fixes from aimdi142.
+
+For most Android phones, use **`xta-aimdi143_arm64-v8a.apk`**. Base version code
+**400001150** is above every aimdi142 variant. The application ID and release
+signing certificate remain unchanged for in-place updates.
+
+### aimdi142
+
+Makes Substack Home and Inbox easier to read after feedback that the controls
+crowded the feed.
+
+- Replace the publication avatar strip, permanent search field, and filter row
+  with one compact toolbar.
+- Open followed publications by name, with unread and pinned indicators.
+- Keep loaded-article search, sorting, and content filters in an on-demand sheet,
+  with active-setting indicators and reset.
+- Move Discover, Add publication, and Mark all as read into the overflow menu.
+- Show partial loading failures as a compact warning with details and Retry.
+
+Includes the long-session loading fixes from aimdi141. The original intermittent
+freeze still needs extended testing on the device.
+
+For most Android phones, use **`xta-aimdi142_arm64-v8a.apk`**. Base version code
+**400001146** is above every aimdi141 variant. The application ID and release
+signing certificate remain unchanged for in-place updates.
+
+### aimdi141
+
+Includes the long-session loading fixes from PR #295 for on-device testing.
+
+- Preserve in-flight plugin requests when a group feed rebuilds without a
+  membership change, instead of repeatedly cancelling and restarting them.
+- Release group and Home listeners when their screens close, and discard late
+  results from replaced group models.
+- Bound stalled group reads, offer Retry after a failed first load, and preserve
+  the displayed feed when a background reload fails.
+- Abort stalled Reddit token refreshes after 15 seconds so later reads can
+  recover without losing sign-in.
+- Restore bounded automatic recovery after returning to the app or switching
+  between working Wi-Fi and mobile connections.
+
+For most Android phones, use **`xta-aimdi141_arm64-v8a.apk`**. Base version code
+**400001142** is above every aimdi140 variant. The application ID and release
+signing certificate remain unchanged for in-place updates.
+
+The patch passed 3,067 tests (6 skipped) and Android compilation before release
+preparation. The release workflow verifies the final source and signed APKs.
+The full-app freeze reported during extended use still needs on-device testing.
+
+### aimdi140
+
+Repairs another X initialization failure that could stop the timeline request
+before it was sent. X's current web entry script can reach its transaction
+signer through a shared script and a backtick-quoted import; aimdi139 did not
+follow that path.
+
+- Follow nested static and dynamic imports to discover the signing script,
+  including constant backtick-quoted paths.
+- Keep discovery within the existing 12-second deadline, with bounded depth,
+  request count and concurrency. Only trusted HTTPS X static assets are read;
+  these requests carry no account cookies and do not execute JavaScript.
+- Cover initialization, transaction signing, timeline parsing and the merged
+  account feed together in regression tests.
+
+For most Android phones, use **`xta-aimdi140_arm64-v8a.apk`**. Base version code
+**400001138** is above every aimdi139 variant. Signing configuration and app ID
+remain unchanged for in-place updates.
+
+Replaying captured X scripts reproduces the discovery failure in aimdi139 and
+successfully generates a transaction ID with this fix. Automated code checks
+passed. Signed-in timeline access on a physical device remains unverified:
+live probes received HTTP 403 or timed out during X's redirects. The captured
+scripts do not establish why QuaX works for a particular signed-in session.
+
+### aimdi139
+
+Fixes a connection-recovery regression introduced in aimdi136 and adds missing
+support for X's current transaction-signing setup.
+
+- Temporary connection and timeout failures during X initialization remain
+  eligible for automatic recovery. They no longer spend every retry against
+  the cached failure; malformed signing data retains its retry cooldown.
+- Initialize with the selected account's existing X session. Guest requests and
+  different accounts have separate signing caches, so one failed session cannot
+  block another. Session cookies are restricted to HTTPS X pages and are never
+  attached to static-script requests or forwarded to another origin.
+- Discover the newer `x-web` / `sign.o` bundles as well as legacy `ondemand.s`
+  scripts, using the existing signing calculation and 12-second deadline.
+- The copied diagnostic report now includes a safe X setup failure category,
+  HTTP status and fixed route. It excludes exception bodies, URL queries and
+  internal session identifiers.
+
+For most Android phones, use **`xta-aimdi139_arm64-v8a.apk`**. Base version code
+**400001134** is above every aimdi138 variant. Signing configuration and app ID
+remain unchanged for in-place updates.
+
+The regression tests reproduce the broken behavior in aimdi138 and verify
+recovery, authenticated request construction, modern scripts and credential
+isolation. These fixtures cannot prove authenticated timeline access on a
+physical device. Earlier live CI requests received HTTP 403 from X; the user’s
+specific on-device failure is not conclusively identified by those responses.
+
+### aimdi138
+
+Repairs X request initialization when X serves its new logged-out homepage.
+The missing transaction script could prevent every signed-in X read from being
+sent, affecting timelines, profiles, search and conversations together.
+
+- Try X's public search page when the homepage lacks the transaction bootstrap
+  data or returns HTTP 403/404, within the existing request timeout.
+- Validate bootstrap responses and cover the complete initialization flow with
+  regression fixtures instead of substituting a precomputed transaction key.
+- Run a live bootstrap and public-profile check for changes to this code. Report
+  transaction parsing failures as client/API compatibility failures rather than
+  hiding them as probe infrastructure failures.
+
+For most Android phones, use **`xta-aimdi138_arm64-v8a.apk`**. The base version
+code is **400001130**, above every aimdi137 APK variant. The application id and
+release signing certificate are unchanged for in-place updates.
+
+This patch targets the verified transaction-bootstrap failure. Authenticated
+account and physical-device checks still require testing on a signed-in device.
+The live CI check received HTTP 403 from both public bootstrap routes before
+parsing; live recovery is therefore unverified. This does not establish that
+the restriction is limited to CI.
+
+### aimdi137
+
+The next release brings the X, Mastodon, Bluesky and Substack reader upgrades
+together with the Plugin Store, Antenna and RSS cover improvements from
+PRs #287–#289.
+
+- **X:** a usable reader hub with search, Subscriptions, Saved and Accounts;
+  richer media/reply/repost search filters, clearer post navigation and more
+  resilient people search on compact screens.
+- **Mastodon:** saved timeline filters and ordering, independent profile tabs,
+  richer profile metadata, focused conversation reading, safer content warnings,
+  improved polls and recoverable hashtag/search results.
+- **Bluesky:** restored Following position, loaded-post filters, full People/Posts
+  search, pinned custom feeds and lists, improved profiles and conversations,
+  and more reliable public-feed paging and content warnings.
+- **Substack:** article contents and find-in-article, publication previews,
+  search across followed publications, improved archives, collapsible comments,
+  Note images and Home/Inbox read-state controls with recoverable loading.
+- **Plugin Store:** adaptive phone/tablet rows, larger action targets, useful
+  no-results feedback and lazy loading of rows.
+- **Antennas:** creation from the empty state, named Settings/Delete actions
+  and an editor that remains usable with the keyboard, large text and tablets.
+- **RSS covers:** decoded image size follows the painted width and screen
+  density, reducing unnecessarily large decoded bitmaps.
+- Compact screens, enlarged text and right-to-left layouts receive focused
+  coverage; new plugin labels are translated across all 29 supported locales.
+
+XTA remains read-oriented. Follows, likes, saves and reading controls described
+here stay on the device; no remote posting or paywall bypass is added.
+
+For most Android phones, including GrapheneOS phones, use
+**`xta-aimdi137_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 outputs retain their
+usual variants. The base version code is **400001126**, above every aimdi136
+ABI variant. The application id (`com.aimdi.xta`) and release signing certificate
+are unchanged for in-place updates.
+
+The combined tree passed 2,997 Flutter tests with five opt-in live tests skipped,
+and static analysis reported no errors or warnings. The 51 new Dart files pass
+the formatting gate. Release APKs are built from the tagged merge commit, with
+source, signing-certificate and provenance checks before publication;
+`release-build.json` and `SHA256SUMS` accompany the four APK variants.
+Physical-device WebView, accessibility and authenticated live-account checks
+remain outstanding.
+
+### aimdi136
+
+This release combines the reader and reliability improvements from PRs #281–#285.
+
+- Saved becomes a stronger local Library with newest/oldest sorting, bulk
+  selection, move-to-folder, select-all-visible, and confirmed bulk removal.
+- X profiles preserve more reading state, back-to-top works across nested
+  scrolling, and rich cards/articles can open inside XTA while native X/plugin
+  links still route to their native screens.
+- Bluesky, Threads, Mastodon, Reddit, Instagram photos, and archived plugin
+  images share a more consistent fullscreen viewer with paging, zoom, ALT text,
+  download, share, counters, and source-post navigation where available.
+- Read failures now distinguish offline, timeout, rate limits, session problems,
+  endpoint refusal, transaction-token failures, unavailable requests, and X
+  server errors. Cached posts remain readable with clearer explanations.
+- Live canaries distinguish service/API failures from CI/probe infrastructure
+  failures, reducing misleading outage issues.
+- Search and Discover now share per-network recent-search history, clear controls,
+  Library Search access, and focused regression coverage.
+
+XTA remains read-oriented: nothing here adds compose, reply, quote, repost,
+server-side like, or DM functionality on X.
+
+For most Android phones, choose **`xta-aimdi136_arm64-v8a.apk`**. Universal,
+ARMv7, and x86_64 variants are also available. The base version code is
+**400001122**, above every aimdi135 ABI variant. The application id
+(`com.aimdi.xta`) and release signing certificate are unchanged for in-place
+updates.
+
+The combined tree passed formatting, static analysis, focused recovery/safety/
+Search/Discover/canary checks, the complete Flutter test suite, Android compile,
+and release-integrity validation before the release branch was cut. Physical
+device, sustained-performance, and authenticated live-account testing remain
+outside this CI environment.
+
+### aimdi135
+
+Timeline and profile read failures now show small Retry and information controls.
+Error messages and account/diagnostics actions appear only when you open details.
+This also covers failed pagination, profile media, and cached-feed refreshes.
+
+- Keep existing posts readable without a large error panel or repeated message.
+- Preserve automatic reconnect recovery and known rate-limit countdowns.
+- Keep details and Retry accessible on narrow screens and with larger text.
+- Retain the orbital logo and all reader/safety improvements from aimdi134.
+
+For most Android phones, choose **`xta-aimdi135_arm64-v8a.apk`**. Universal,
+ARMv7, and x86_64 variants are also available. The application id and signing
+certificate are unchanged; version codes exceed every aimdi134 variant.
+
+Automated widget, recovery, analyzer, and release-integrity checks cover this
+patch. Physical-device and authenticated-network checks remain unverified here.
+
+### aimdi134
+
+New white orbital logo on black, enlarged for the launcher, with adaptive and
+themed icons. This release includes the completed reader recovery and safety
+improvements from PR #275.
+
+- Profiles and abandoned reads no longer hold up later timeline, subscription,
+  or group actions. Group batches appear progressively and retry only failures.
+- Recover visible failed reads after connectivity returns, and undo local
+  subscription or group membership changes.
+- Search text, authors, and links in the current Home/group feed's loaded posts,
+  including offline.
+- Subscription cleanup preserves accounts when lookups fail. Rate-limited
+  features show known reset countdowns and disable premature retries.
+- Release unused video players when Android reports memory pressure.
+- Cloud backups check for changes from another device before overwriting and
+  retain up to 20 previous versions. Article annotations are included in backups.
+- Interrupted downloads resume where supported, with validated byte ranges and
+  safe restarts when a file changes. Cancellation removes partial downloads.
+- Service monitoring distinguishes X, Instagram, TikTok, and Substack failures.
+
+For most Android phones, including GrapheneOS phones, choose
+**`xta-aimdi134_arm64-v8a.apk`**. The universal, ARMv7, and x86_64 variants are
+also available. The existing application id and release signing certificate
+are retained, and the version code exceeds every aimdi133 variant.
+
+Safe backup overwrites require server ETags and conditional-write support.
+Download resumption depends on server support. Physical-device, live WebDAV,
+and authenticated-network checks remain unverified in this build environment.
+
+### aimdi133
+
+This release improves loading recovery, sharing into XTA, local notes, search, and offline reading.
+
+- Share a Twitter/X link to XTA from Android's share menu. Cold starts and an already-open app both handle the incoming link.
+- Notes use post-style cards and a smoother composer. Text and attachment drafts recover when you reopen their composer.
+- Timeline requests have bounded waits and recovery. Mixed sources load independently, cached profiles remain readable during refresh failures, and source-local retry controls explain common failures.
+- Search Saved, notes, followed accounts, groups, and retained article text from one library search screen. Choose a network explicitly when you want a remote search.
+- Repeated article links form expandable stacks that preserve every original post's commentary.
+- Group discovery explains suggestions and remembers dismiss/more/less preferences, with undo.
+- Retained articles support highlighted passages, attached notes, and suggested tags. Optional screenshot text extraction asks before using your configured AI endpoint.
+- Integrated reading controls, offline copies, downloads management, Bluesky media/thread improvements, and playback continuity.
+
+For most Android phones, including GrapheneOS phones, choose **`xta-aimdi133_arm64-v8a.apk`**. Universal, ARMv7 and x86_64 variants are also available. The version code advances beyond every aimdi132 variant and retains the existing app identity and release signing certificate for in-place updates.
+
+Live authenticated-network and physical-device behavior were not exercised in this build environment. Screenshot extraction requires an image-capable configured model and may contain transcription errors.
+
+### aimdi132
+
+This release fixes the group Discover/Entdecken crash and adds OpenRouter support to AI/KI settings.
+
+- Group Discovery cards now render correctly when opened from a group. Setup failures show a working Retry action; unavailable sources keep successful discoveries visible.
+- AI/KI settings include an OpenRouter preset alongside Grok and OpenAI. Enter your API key and a full model ID such as `openrouter/free`, or use an editable OpenAI-compatible server URL.
+- Compatible APIs accept either a base URL or a complete chat-completions endpoint. Requests time out cleanly, and malformed provider replies fall back without crashing.
+- Switching provider presets clears the previous provider key. Setup guidance is translated across all supported locales, and the README explains OpenRouter setup.
+
+For most Android phones, choose **`xta-aimdi132_arm64-v8a.apk`**. Universal,
+ARMv7 and x86_64 builds are also available. The base version code is 400001106,
+above every aimdi131 variant. The existing application id (`com.aimdi.xta`)
+and release signing certificate are retained for in-place updates.
+
+Validation: all 2,336 app tests passed, including nine new regression tests;
+five existing opt-in live tests were skipped. The Discovery crash was reproduced
+before the fix and the same test now passes. Formatting, analysis, translation
+integrity and skill sync passed. Physical-device and live-provider-key testing
+were not performed.
+
+### aimdi131
+
+This release fixes stuck loading and crashes when following people or editing groups.
+
+- Rapid follows and group saves now finish in order without cancelling earlier local writes.
+- Group saves publish the refreshed member list before finishing. Repeated follows preserve existing group memberships and feed settings.
+- Failed or stalled group loading and member searches stop the spinner and allow a retry. Closing a loading dialog safely ignores late results.
+- Successful retries clear previous errors, and idle group stores finish cleanup correctly.
+
+For most Android phones, choose **`xta-aimdi131_arm64-v8a.apk`**. Universal,
+ARMv7 and x86_64 builds are also available. The base version code is 400001102,
+above every aimdi130 variant. The existing application id (`com.aimdi.xta`)
+and release signing certificate are retained for in-place updates.
+
+Validation: all 2,327 app tests passed, including 15 new loading and cleanup
+regression tests; five existing opt-in live tests were skipped. Formatting,
+analysis, translation integrity and skill sync passed. Physical-device and
+live-account testing were not performed.
+
+### aimdi130
+
+This release brings the plugin, grouping and reading improvements from PR #264.
+
+- X has its own Home source with For you. Home's group drawer and active-account/group filters are clearer and searchable.
+- Crypto tracking distinguishes tokens by network and contract, with ticker or contract search and DEX Screener quotes.
+- Followed accounts can be added to groups across account plugins, including Pixiv. Discover finds unfamiliar reposted/quoted authors and related Pixiv artwork. Connected AI adds group discovery sparkle actions and an explicit sorting option for ungrouped follows.
+- Plugin posts share local bookmarks, folders and notes. Bluesky and Mastodon expose repost/quote readers and clickable repost attribution where the service supports them.
+- Bluesky retains loaded timelines when reopened. Pixiv gains continuous vertical reading, a direction toggle and page selection. X livestream and Space cards have a clearer layout.
+- Archive notes have smoother editing, keyboard-accessible save controls and protection for unsaved changes.
+
+For most Android phones, choose **`xta-aimdi130_arm64-v8a.apk`**. Universal,
+ARMv7 and x86_64 builds are also available. The base version code is 400001098,
+above all aimdi129 variants. The existing application id (`com.aimdi.xta`) and
+release signing certificate are retained for in-place updates.
+
+Validation before release: 2,312 app tests passed, five existing live tests
+skipped; formatting, analysis, focused checks and the review APK build passed.
+Physical-device and live-account testing were not performed. Mastodon quote
+availability depends on the instance/token, crypto coverage depends on DEX
+Screener, and bookmarks/notes are local to XTA.
+
+### aimdi129
+
+This maintenance release adds the release-integrity improvements from PR #262.
+Each download is checked against the tagged source, Android package/version,
+architecture and existing release signing certificate before publication.
+`SHA256SUMS` and `release-build.json` accompany the APKs so downloads can be
+matched to the verified build.
+
+For most current Android phones, choose **`xta-aimdi129_arm64-v8a.apk`**.
+Universal, ARMv7 and x86_64 APKs are also available. The base version code is
+400001094, above every aimdi128 variant, with the existing ABI offsets and
+application id (`com.aimdi.xta`) retained for in-place updates.
+
+The app retains aimdi128's features and interface. This release changes the
+build and publication process; it does not introduce a new UI redesign.
+
+### aimdi128
+
+Home uses a compact source picker and Posts / Media tabs. Reading controls hide
+while scrolling and return only when you reach the top.
+
+Mastodon now has dedicated timeline navigation, a profile thumbnail grid,
+connected and collapsible conversations, and reading-position restoration
+across app restarts. Installed plugins have a direct Open action and a separate
+settings gear. Mastodon joins the shared Saved collection with folders, notes,
+search and source filters. Discover includes recent searches and inline Mastodon
+results; settings search opens and highlights individual controls.
+
+For most current Android phones, choose **`xta-aimdi128_arm64-v8a.apk`**.
+Universal, ARMv7 and x86_64 APKs are also provided. Builds use the existing
+release signing key and application id (`com.aimdi.xta`). The base version code
+is 400001090, above all aimdi127 variants, with existing ABI offsets retained.
+
+Merged PRs: #256, #257 and #258. The merged application tree matches the reviewed
+implementation exactly. Verification: 2,234 tests passed, five skipped; all
+46 focused journeys/render checks, analysis and debug APK build passed.
+Physical-device and live-account testing were not performed.
+
+### aimdi127
+
+Home and all 16 existing plugin experiences have been redesigned on the released
+aimdi126 XTA base. The implementation is merged in PR #254.
+
+For most current Android phones, choose **`xta-aimdi127_arm64-v8a.apk`**. A
+universal APK and ARMv7/x86_64 variants are also available. Release builds use
+the existing signing configuration and application id (`com.aimdi.xta`). The
+base Android version code is 400001086, above every aimdi126 variant; the
+existing per-ABI offsets are retained. Existing databases and settings need no
+reset.
+
+- **Home:** a persistent source strip, contextual actions and a clear route to
+  each full plugin client. Source switches retain loaded content, sections,
+  filters and scroll position. The header keeps reader controls reachable.
+- **Social and video:** Threads, Bluesky, Mastodon, Instagram and TikTok have
+  clearer source, account and creator navigation using their existing features.
+- **Community and articles:** Reddit separates feed/community selection from
+  sorting and search; Hacker News gives headlines and comments distinct
+  actions; RSS and Substack prioritize article text, sources and reading filters.
+- **Artwork and markets:** Pixiv, Booru and EhViewer have readable sections,
+  compact filters and adaptive galleries. Stocks distinguishes quotes from
+  related posts and makes filtering and retry actions clearer.
+- **Integrations:** Karakeep, Deepmarks and Immich have clearer setup and
+  connection feedback. Editing connection fields invalidates old probe results;
+  saves and uploads remain explicit existing actions.
+
+Existing plugin marks, private visibility, navigation customizations, accounts,
+subscriptions, groups, local libraries and content preferences are preserved.
+X remains read-oriented. Backend/database code and dependency/SDK pins are
+unchanged.
+
+Verification of the merged implementation: 2,179 tests passed, five opt-in live
+tests skipped; 30 focused reader journeys, analysis and debug build passed.
+The review report contains before/after production-widget test renders. No
+physical-device or emulator session was available; live accounts, media playback,
+TalkBack and sustained performance still need hands-on review.
+
+### aimdi126
+
+**XTA, built directly on the released aimdi125 XTA tree. Not QuaX.**
+
+Install **`xta-aimdi126_arm64-v8a.apk`**. It uses the same app id (`com.aimdi.xta`) and signing lineage, so it updates over aimdi125 without clearing data.
+
+Home now has a cleaner pinned header while retaining XTA's existing icons and actions. The title stays readable at large text sizes, action targets remain accessible, and Following / For you / plugin timelines share one compact scrollable strip with a fixed Add timeline button. Plugin marks, unread badges, filters, refresh, account controls, swipe navigation, and the bottom bar behave as before.
+
+This release changes only Home chrome. Shared post cards and the screens reached from the bottom navigation are unchanged. Existing accounts, plugins, subscriptions, groups, saved posts, local likes and notes, media preferences, databases, and read-only behavior are preserved.
+
+### aimdi125
+
+**XTA, built directly on the released aimdi124 XTA tree. Not QuaX.**
+
+Install **`xta-aimdi125_arm64-v8a.apk`**. It uses the same app id (`com.aimdi.xta`) and signing lineage, so it updates over aimdi124 or aimdi123 without clearing data.
+
+This corrective release finishes the visible Settings treatment that aimdi124 missed. Backgrounds and accents use the approved compact selectors, the separate True Black controls remain available, media layouts use the same selected-state treatment, and the Settings hub and major subpages use one consistent section hierarchy without dropping newer XTA options. It also includes the Profile actions/statistics placement correction that did not make the aimdi124 APK.
+
+All existing accounts, plugins, subscriptions, groups, saved posts, local likes and notes, media preferences, databases, and read-only behavior are preserved.
+
+### aimdi124
+
+**XTA, built directly on aimdi123. Not QuaX.**
+
+Install **`xta-aimdi124_arm64-v8a.apk`**. It uses the same app id (`com.aimdi.xta`) and signing lineage, so it updates over aimdi123 without clearing data.
+
+This release applies the production reader redesign to the actual aimdi123 XTA codebase. Posts, Home, Profile, Search, Groups, Saved, and Settings now share one Android-first visual system, including first-class media layouts, compact reader chrome, consistent light/dark/OLED themes, accessible touch targets, edge-to-edge system bars, clear loading/empty/error states, and reduced-motion behavior.
+
+All aimdi123 functionality remains present, including plugin networks, local notes and likes, saved folders, archive filters, group controls, browser selection, WebDAV sync, diagnostics, and the read-only interaction model. Existing databases and settings keep working; no reset is required.
+
+### aimdi123
+
+**XTA, built on aimdi122. Not QuaX.**
+
+Install **`xta-aimdi123_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 122.
+
+XTA's reader interface has been redesigned across posts, Home, Profile, Search, Groups, Saved, and Settings. The update keeps aimdi122's complete feature set—including plugin networks, local notes, archive filters, browser selection, WebDAV sync, and diagnostics—while making the app's hierarchy, themes, edge-to-edge system bars, touch targets, loading/empty/error states, and reduced-motion behavior consistent.
+
+Existing databases and settings keep working. No reset is required.
+
+### aimdi122
+
+**XTA, built on aimdi121. Not QuaX.**
+
+Install **`xta-aimdi122_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 121.
+
+A Substack newsletter that moved to Beehiiv (Garbage Day / garbageday.email) used to add the old Substack archive. Paste the new site and the plugin follows that one.
+
+### aimdi121
+
+**XTA, built on aimdi120. Not QuaX.**
+
+Install **`xta-aimdi121_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 120.
+
+Pixiv had a blank strip under the Start tabs. It now has Home / Rankings / Favorites / Search / More, like the Pixiv apps. More is account, history, preferences, mute, about, and logout.
+
+### aimdi120
+
+**XTA, built on aimdi119. Not QuaX.**
+
+Install **`xta-aimdi120_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 119.
+
+- Livestreams and Spaces play here. A browser is only offered if the stream cannot be fetched
+- Add a Reddit community to a group from the post sheet or the community header
+- Link preview images fill their frame instead of leaving a white bar
+- Reddit comments no longer sit in a blank strip on the left
+
+### aimdi119
+
+**XTA, built on aimdi118. Not QuaX.**
+
+Install **`xta-aimdi119_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 118.
+
+Bluesky profiles match the X header (banner, overlapping avatar, underline tabs). The following timeline only refreshes when you pull down, and no longer shows how many new posts are waiting.
+
+### aimdi118
+
+**XTA, built on aimdi117. Not QuaX.**
+
+Install **`xta-aimdi118_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 117.
+
+The Abos ⋮ menu was a wall of unlabeled rows. Tap the tune icon for a sheet: board/list, columns, sort with a check, then import / antennas / settings.
+
+### aimdi117
+
+**XTA, built on aimdi116. Not QuaX.**
+
+Install **`xta-aimdi117_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 116.
+
+Replies under an opened post sat in a blank strip down the left. They now line up with the post. A reply to a reply still steps in.
+
+### aimdi116
+
+**XTA, built on aimdi115. Not QuaX.**
+
+Install **`xta-aimdi116_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 115.
+
+- Tapping Medien → Livestreams or a Space opens it. VODs play here; live rooms and Spaces open in a browser instead of “Link kann nicht geöffnet werden”
+- Reddit communities show their real icon, not a generated face
+- Bookmark a Reddit post into an Archiv folder (tap saves, long-press picks the folder)
+- Local Reddit upvotes appear under Archiv → Gefällt mir
+- Bluesky profiles have a Saved tab of likes that stay on this device
+
+### aimdi115
+
+**XTA, built on aimdi114. Not QuaX.**
+
+Install **`xta-aimdi115_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 114.
+
+Medien → Livestreams was empty because it asked X for photos and clips. Broadcasts are posts with `x.com/i/broadcasts/…` (or Spaces). That filter now reads posts.
+
+### aimdi114
+
+**XTA, built on aimdi113. Not QuaX.**
+
+Install **`xta-aimdi114_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 113.
+
+- Long-press a paragraph in a Substack article to start Vorlesen from there
+- Retweets no longer stick on a spinner; lists across the app stop freezing on the first page
+- Reply to your own notes. They stay on this device
+- Medien has a Livestreams filter for broadcasts (`x.com/i/broadcasts/…`) and Spaces (`x.com/i/spaces/…`)
+- Profile Archive chevron: All / Likes / Bookmarks
+
+### aimdi113
+
+**XTA, built on aimdi111. Not QuaX.**
+
+Install **`xta-aimdi113_arm64-v8a.apk`**. Same app id (`com.aimdi.xta`), updates over 111.
+
+Vorlesen was silent because Android 11 hid Next-gen Kaldi from XTA, and the app
+forced German onto an English-only voice. This build declares TTS engines, binds
+the preferred module, and picks a language that engine can actually speak.
+
+### aimdi111
+
+**Install this build, not aimdi110.** Six open feature PRs landed on main.
+
+**Reddit.** Search follows a subreddit (the plus next to the lens is gone).
+Tap a picture for fullscreen; long-press or the viewer download saves it
+without Twitter's `:orig` suffix, which 404s on i.redd.it. Settings → Show
+spoilers. Drive / X / other links in comments and selftext are short, blue,
+and tappable on their own. The communities sheet lists icons and subscriber
+counts; tap a row to open it, delete stays on the row, Add subreddit is
+pinned at the bottom. Sign-in stays in Reddit settings.
+
+**Plugin logos.** The timelines sheet uses each plugin's real mark instead
+of a generic icon.
+
+**Quotes, retweets, local notes.** Quotes and retweets show on the tweet.
+Local notes under Saved look like tweets. They never leave this device
+unless you back up or sync to Nextcloud.
+
+**Profile.** The private note is smaller and actually saves. Profile posts
+can be filtered. Broadcast tiles no longer paint a white bar.
+
+**Links.** Settings picks the browser that opens a link. Tracking junk is
+stripped from those URLs.
+
+**Substack + Sherpa.** Unchanged from 110 and still in this build. Listen
+on an article uses the on-device engine under Settings → Read aloud.
+Install the Sherpa ONNX TTS Engine app, then choose Sherpa. Substack
+publication logos that fail to load fall back to a coloured initial.
+
+Existing databases keep working. No settings reset.
+
+### aimdi110
+
+**Install this build, not aimdi109.** Group feeds no longer go blank when X
+rate-limits SearchTimeline — they fall back to the other endpoints that still
+work.
+
+Notes live under Saved. They never leave this device unless you back up or
+sync to Nextcloud. X cannot see them.
+
+On Start, the people icon still filters logins. Turning one off now also
+drops that login's own posts from Für dich, so overlapping HomeTimelines
+do not make the toggle look broken. A new Groups section on the same sheet
+hides members of a group from Folgt; the group's own tab is unchanged.
+
+The globe next to Folgt / Für dich / Reddit is gone. Every pinned plugin
+stays on the strip (it scrolls). Plus adds a plugin timeline, removes it,
+or drags to reorder. Tapping plus and pinning a plugin switches to it.
+
+Existing databases keep working. No settings reset.
+
+### Videos not playing after aimdi108
+
+**Install this build, not aimdi108.** aimdi108 stopped extra libmpv players
+from being created past the pool cap, which was the right idea, but two
+bugs meant videos did not play:
+
+The tile stored `pool.acquire`'s inner future in the same field as
+`_acquire()`'s own future. Dart's `x ??= asyncFn()` overwrites that field
+at the first `await`, so the "is this still the in-flight acquire?" check
+failed on every first paint. The tile released the player, skipped the
+first-frame listener, and the poster never lifted — play button, then a
+spinner that never went away.
+
+The pool also refused a new player when it was already at capacity even
+if unused cached players could be dropped. After a few clips, every later
+video stayed a still with no play button.
+
+This build keeps the cap, evicts unused players to make a slot, attaches
+listeners on the first paint, and retries when a slot is busy.
+
+Existing databases keep working. No settings reset.
+
+### Still crashing after aimdi107
+
+**Install this build, not aimdi107.** aimdi107 stopped filled Pixiv and Booru
+from attaching every board to the home NestedScrollView *inner* controller.
+Following and For you on the X home tab were never wrapped in PluginEmbedded,
+so they still froze then crashed: first-page loading painted a PagedListView
+*and* a skeleton ListView (two inner attachments → `Too many elements`); a
+cold empty Following painted a `Center` (zero inner attachments → `No
+element`); Saved passed the outer home controller into the inner list; the
+Following restore loop retried forever while `positions.length != 1`;
+switching Für dich / Following remounted the whole NestedScrollView on the
+same outer controller; video players that could not evict still created past
+the pool cap and disposed while painted.
+
+This build makes the first-page skeleton / empty / error the *only* inner
+scrollable until items exist, keeps Saved on the inner controller, bounds the
+restore loop, keeps the NestedScrollView alive across tab-controller epochs,
+and refuses a video player when the pool is full.
+
+Plugin feeds now share one card row, paint a post-shaped skeleton instead of
+a blank spinner, write counts in the reader's language, say "content warning"
+where Mastodon does, and no longer overflow a Substack title.
+
+Existing databases keep working. No settings reset.
+
+### Still crashing after aimdi106
+
+**Install this build, not aimdi106.** aimdi106 stopped empty and one-item
+plugin lists from attaching the home strip's *outer* scroll controller.
+Filled Pixiv and Booru homes still mounted every board at once. Each
+masonry attached the NestedScrollView *inner* controller, and the first
+filled frame threw `Bad state: Too many elements` — freeze, then
+"XTA has stopped". Those boards now mount one at a time. A corrupt
+Following cache or an uncaught async error no longer aborts the isolate.
+
+Existing databases keep working. No settings reset.
+
+We could not reproduce a native SIGSEGV on this VM (no usable emulator).
+If a leftover kill remains after 107, it is not the Pixiv/Booru inner
+controller trap and not an uncaught Dart isolate error.
+
+### Still crashing after aimdi105
+
+**Install this build, not aimdi105.** aimdi105 only fixed empty Reddit.
+Empty RSS, Substack, Threads, and Stocks homes — and one-item RSS / EH /
+Booru lists — still attached the home strip's outer scroll controller, which
+freezes then crashes. Add-account, RSS tag, and Reddit client-id dialogs
+could dispose the text field while the sheet was still closing. The EH
+page-jump dialog had the same dispose-while-closing bug. This build
+routes every plugin list through the inner NestedScrollView controller, owns
+those fields in a State, and does not spin empty RSS / Substack on a remount
+from Für dich.
+
+Existing databases keep working. No settings reset.
+
+### Reddit home freeze
+
+aimdi105 stopped empty Reddit Following from freezing: the empty list was
+attached to the home strip's outer scroll controller, and tapping Add
+disposed the text field while the sheet was still closing. That pane stays
+on the inner scroller, the Add field is owned in a State, and a swipe back
+from Für dich does not refetch an empty following list.
+
+Existing databases keep working. No settings reset.
+
+### Crash on the first home frame
+
+aimdi104 stopped the first home frame from crashing: a missing
+`rss_subscription` table after a swallowed migrate, empty or restored
+`home.pages`, and string-list prefs stored as JSON. The table is created if
+it is still missing. Default Home / Subscriptions / Discover / Saved tabs
+stay when nothing usable is selected. IconLabel, Networks → Add timeline,
+RSS enable, and the feed strip stay hardened.
+
+### RSS, groups, and Substack leftovers
+
+**RSS** is in the Plugin store (search `rss`). Paste a site or feed URL; XTA
+finds the public RSS or Atom feed. Home merges items newest-first with an
+unread chip. Follows stay on this device and can be added to a group.
+
+**Group feeds** now show those plugin posts next to X. Add a Reddit community,
+Substack publication, or RSS feed to a group and they appear in that group's
+timeline instead of an X-only list.
+
+**Substack** custom-domain follows (garbageday and other leftover hosts) load
+again. Tap the publication name or logo on a card to open the profile, not
+only the article.
+
+**Sherpa** is an explicit on-device engine under Settings → Read aloud. Install
+the Sherpa ONNX TTS Engine app, then choose Sherpa when you listen to an
+article.
+
+### Bluesky lists and custom feeds
+
+Bluesky now has **Following**, **Discover**, **Lists**, and **Liked**. Discover
+opens custom feeds (algos); Lists opens list timelines. Paste a feed or list
+AT-URI or bsky.app link. Following no longer rebuilds from the first account
+when you swipe away and back.
+
+The group **image** tab reuses tweets already on the list instead of firing a
+second Search, which was 429ing larger groups.
+
+Reddit home can switch among the communities you follow without leaving the
+tab. Discover plugin chips own the search results for that plugin.
+
+### Home strip, not Groups
+
+Switching networks lives on the home strip. The globe opens **Networks** for
+plugins that are not pinned. Hiding a plugin tab pins it there; it is not a
+Groups-board chip. Plugin and section icons sit beside the labels.
+
+### Still in from aimdi102
+
+Hacker News is in the Plugin store — search `hn` or `hacker news`. A stale
+catalogue on `main` cannot hide a plugin this APK already contains. Available
+starts open. HN threads and user pages build rows on demand.
+
+---
+
+Everything from [aimdi110](https://github.com/Aimdi/XTA/releases/tag/aimdi110) is
+in here too.
+
+---
+
+First download? Install it with Obtainium 👇
+
+[Add to Obtainium](https://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/Aimdi/XTA)
+
+XTA has its own application id (`com.aimdi.xta`), so it installs alongside
+upstream QuaX and alongside earlier builds of this fork rather than over them.
+Nothing carries across from an older install — export a backup first if you want
+your subscriptions, groups and saved posts.
