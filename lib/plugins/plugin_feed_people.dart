@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:xta/plugins/plugin_home_chrome.dart';
 
 /// One unfollowed person surfaced from a plugin feed (often via a repost).
 class PluginFeedPerson {
@@ -15,7 +16,7 @@ class PluginFeedPerson {
   });
 }
 
-/// Horizontal chips of people the current feed just showed.
+/// People suggestions are secondary to reading, but never removed from Home.
 class PluginFeedPeopleStrip extends StatelessWidget {
   final String title;
   final String followLabel;
@@ -38,49 +39,56 @@ class PluginFeedPeopleStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     if (people.isEmpty) return const SizedBox.shrink();
     final theme = Theme.of(context);
+    if (PluginEmbedded.maybeOf(context)) {
+      return Material(
+        color: theme.scaffoldBackgroundColor,
+        child: ExpansionTile(
+          key: PageStorageKey('plugin-feed-people-$title'),
+          minTileHeight: 48,
+          visualDensity: VisualDensity.standard,
+          tilePadding: const EdgeInsetsDirectional.only(start: 12, end: 12),
+          childrenPadding: const EdgeInsets.only(bottom: 4),
+          shape: const Border(),
+          collapsedShape: const Border(),
+          leading: Badge.count(count: people.length, child: const Icon(Icons.people_outline, size: 20)),
+          title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.labelLarge),
+          children: [_peopleRow(context)],
+        ),
+      );
+    }
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 0, 8),
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 0, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          Text(title, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          SizedBox(
-            height: 48,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(right: 16),
-              itemCount: people.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final person = people[index];
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ActionChip(
-                      avatar: avatar(person),
-                      label: Text(
-                        '@${person.handle}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onPressed: () => onOpen(person),
-                    ),
-                    TextButton(
-                      onPressed: () => onFollow(person),
-                      child: Text(followLabel),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
+          _peopleRow(context),
         ],
       ),
     );
   }
+
+  Widget _peopleRow(BuildContext context) => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    padding: EdgeInsetsDirectional.only(start: PluginEmbedded.maybeOf(context) ? 12 : 0, end: 16),
+    child: Row(
+      children: [
+        for (var index = 0; index < people.length; index++) ...[
+          if (index > 0) const SizedBox(width: 8),
+          ActionChip(
+            avatar: avatar(people[index]),
+            label: Text('@${people[index].handle}'),
+            materialTapTargetSize: MaterialTapTargetSize.padded,
+            onPressed: () => onOpen(people[index]),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+            onPressed: () => onFollow(people[index]),
+            child: Text(followLabel),
+          ),
+        ],
+      ],
+    ),
+  );
 }

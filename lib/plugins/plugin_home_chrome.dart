@@ -30,7 +30,8 @@ class PluginHomeTab {
   const PluginHomeTab({required this.icon, required this.label, required this.selected, required this.onTap});
 }
 
-/// Named, scrollable sections. Full clients also expose their own identity.
+/// Home uses a named section picker when the complete section rail cannot fit.
+/// Standalone clients retain their identity and scrollable section rail.
 class PluginHomeChrome extends StatelessWidget {
   final String? title;
   final Widget? mark;
@@ -88,11 +89,20 @@ class PluginHomeChrome extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      primary: false,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      children: [for (final tab in tabs) _TabButton(tab: tab, accent: accent)],
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Only the top-level embedded toolbar is condensed.
+                        // Inner filters and standalone navigation keep their rails.
+                        if (embedded && title != null && tabs.length > 1 && !_tabsFit(context, constraints.maxWidth)) {
+                          return PluginSectionPicker(tabs: tabs, accent: accent);
+                        }
+                        return ListView(
+                          scrollDirection: Axis.horizontal,
+                          primary: false,
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          children: [for (final tab in tabs) _TabButton(tab: tab, accent: accent)],
+                        );
+                      },
                     ),
                   ),
                   if (!hasIdentity) ...actions,
@@ -109,6 +119,98 @@ class PluginHomeChrome extends StatelessWidget {
       child: bar,
     );
     return embedded ? controls : SafeArea(bottom: false, child: controls);
+  }
+
+  bool _tabsFit(BuildContext context, double width) {
+    var requiredWidth = 8.0;
+    for (final tab in tabs) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: tab.label,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            fontWeight: tab.selected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+        maxLines: 1,
+      )..layout();
+      requiredWidth += math.max(48, painter.width + 52);
+      painter.dispose();
+    }
+    return requiredWidth <= width;
+  }
+}
+
+/// A compact, fully labelled alternative to an overflowing horizontal rail.
+/// Selection remains owned by the caller's Store; opening this never loads a tab.
+class PluginSectionPicker extends StatelessWidget {
+  final List<PluginHomeTab> tabs;
+  final Color? accent;
+
+  const PluginSectionPicker({super.key, required this.tabs, this.accent}) : assert(tabs.length > 0);
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedIndex = tabs.indexWhere((tab) => tab.selected);
+    final selected = selectedIndex < 0 ? 0 : selectedIndex;
+    final current = tabs[selected];
+    final color = ensureContrast(
+      accent ?? tweetReadableAccentColor(context),
+      Theme.of(context).scaffoldBackgroundColor,
+    );
+    return PopupMenuButton<int>(
+      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+      initialValue: selected,
+      position: PopupMenuPosition.under,
+      onSelected: (index) => tabs[index].onTap(),
+      itemBuilder: (context) => [
+        for (var index = 0; index < tabs.length; index++)
+          PopupMenuItem<int>(
+            value: index,
+            height: 48,
+            child: Semantics(
+              selected: index == selected,
+              child: Row(
+                children: [
+                  Icon(tabs[index].icon, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(tabs[index].label)),
+                  if (index == selected) ...[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check, size: 18),
+                  ],
+                ],
+              ),
+            ),
+          ),
+      ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            children: [
+              Icon(current.icon, size: 20, color: color),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  current.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: tweetPrimaryColor(context),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.expand_more, size: 20, color: tweetSecondaryColor(context)),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
