@@ -1,0 +1,76 @@
+name: Apply reviewed Home patch
+
+# One-time source materialization on the development branch. This job removes
+# itself and its readable patches before committing. No default-branch writes,
+# merges, release tags, account permissions or repository secrets are changed.
+on:
+  push:
+    branches: ['ui/unified-home-controls']
+    paths: ['.github/workflows/apply-home-controls.yml']
+permissions:
+  contents: read
+jobs:
+  apply:
+    if: github.repository == 'Aimdi/XTA' && github.ref == 'refs/heads/ui/unified-home-controls'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Verify exact patches and apply only reviewed UI and test paths
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          hashes = ['08676dc9117243b8efb4e0980d13fa4615187f79', '47b23d60401c7082f39bc6e7e9be97f374729fc9', '2bc216c925756616be62fe3203b7647cecf97f4f', '587058dbbe1a2bb99e0874ac5b085033a623d71e', 'd8e7787e7b8cc7fdda436c1434f08366674580c5', 'c961e6728b763fc05c4bf037871f2ca2bb1f16d2', 'e2295e0d12433610704328d48452bc1a6c090a3a']
+          allowed = set('''lib/home/_feed.dart
+          lib/home/alt_microblogging_selector.dart
+          lib/home/home_screen.dart
+          lib/home/home_source_picker.dart
+          lib/home/home_timeline_picker.dart
+          lib/plugins/bluesky/bluesky_reader_view.dart
+          lib/plugins/bluesky/bluesky_screen.dart
+          lib/plugins/mastodon/mastodon_navigation.dart
+          lib/plugins/mastodon/mastodon_people.dart
+          lib/plugins/mastodon/mastodon_screen.dart
+          lib/plugins/mastodon/mastodon_timeline_controls.dart
+          lib/plugins/plugin_home_chrome.dart
+          lib/plugins/plugin_home_dock.dart
+          lib/plugins/plugin_reading_view.dart
+          lib/plugins/substack/substack_reading_toolbar.dart
+          lib/plugins/substack/substack_screen.dart
+          lib/plugins/threads/threads_screen.dart
+          test/alt_microblogging_journey_test.dart
+          test/plugin_home_dock_test.dart
+          test/unified_home_layout_test.dart
+          test/unified_home_picker_test.dart'''.splitlines())
+          patches = sorted(Path('scripts/_home_patch').glob('*.patch'))
+          if len(patches) != len(hashes): raise SystemExit('Wrong patch count')
+          paths = set()
+          for patch, expected in zip(patches, hashes):
+              actual = subprocess.check_output(['git', 'hash-object', str(patch)], text=True).strip()
+              if actual != expected: raise SystemExit(f'Patch changed: {patch}')
+              stat = subprocess.check_output(['git', 'apply', '--numstat', str(patch)], text=True)
+              paths.update(line.split('\t', 2)[2] for line in stat.splitlines())
+          if paths != allowed: raise SystemExit('Patch paths do not match reviewed scope')
+          subprocess.run(['git', 'apply', '--check', *map(str, patches)], check=True)
+          subprocess.run(['git', 'apply', '--index', *map(str, patches)], check=True)
+          test = Path('test/unified_home_layout_test.dart')
+          text = test.read_text()
+          for unused in ('mastodon/mastodon_screen', 'plugin_home_chrome'):
+              text = text.replace(f"import 'package:xta/plugins/{unused}.dart';\n", '')
+          test.write_text(text)
+          subprocess.run(['dart', 'format', *sorted(allowed)], check=True)
+          subprocess.run(['git', 'add', '--', *sorted(allowed)], check=True)
+          PY
+      - name: Remove bootstrap and commit the implementation
+        run: |
+          git rm -- scripts/_home_patch/*.patch .github/workflows/apply-home-controls.yml
+          git diff --cached --check
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'feat: unify Home plugin controls and compact source selection'
+          git push origin HEAD:refs/heads/ui/unified-home-controls

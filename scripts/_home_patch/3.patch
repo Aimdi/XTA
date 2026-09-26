@@ -1,0 +1,214 @@
+diff --git a/lib/plugins/bluesky/bluesky_screen.dart b/lib/plugins/bluesky/bluesky_screen.dart
+index 58749f7..efef830 100644
+--- a/lib/plugins/bluesky/bluesky_screen.dart
++++ b/lib/plugins/bluesky/bluesky_screen.dart
+@@ -1,3 +1,4 @@
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'package:flutter/material.dart';
+ import 'package:pref/pref.dart';
+ import 'package:xta/plugins/plugin_bookmarks.dart';
+@@ -226,7 +227,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
+                       tooltip: l10n.plugin_bluesky_add,
+                       onPressed: _addAccount,
+                     ),
+-                  PopupMenuButton<String>(
++                  PluginHomeMenu(
+                     onSelected: (value) {
+                       if (value == 'add') {
+                         _addAccount();
+diff --git a/lib/plugins/mastodon/mastodon_navigation.dart b/lib/plugins/mastodon/mastodon_navigation.dart
+index a01838f..bf5d87b 100644
+--- a/lib/plugins/mastodon/mastodon_navigation.dart
++++ b/lib/plugins/mastodon/mastodon_navigation.dart
+@@ -1,3 +1,4 @@
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'package:flutter/material.dart';
+ import 'package:xta/plugins/plugin_bookmarks.dart';
+ import 'package:xta/saved/saved_source_filter.dart';
+@@ -109,7 +110,7 @@ List<Widget> mastodonActions(
+     onPressed: onSearch,
+   ),
+   if (compact)
+-    PopupMenuButton<String>(
++    PluginHomeMenu(
+       key: const ValueKey('mastodon-more'),
+       style: pluginActionButtonStyle,
+       tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+@@ -157,7 +158,14 @@ class MastodonCompactBar extends StatelessWidget {
+   Widget build(BuildContext context) {
+     final labels = mastodonSectionLabels(context);
+     final embedded = PluginEmbedded.maybeOf(context);
+-    return SafeArea(
++    final tabs = [
++      for (var index = 0; index < labels.length; index++)
++        PluginHomeTab(
++          icon: mastodonSectionIcons[index], label: labels[index],
++          selected: selected == index, onTap: () => onSelected(index),
++        ),
++    ];
++    final fallback = SafeArea(
+       top: !embedded,
+       bottom: false,
+       child: Material(
+@@ -184,6 +192,15 @@ class MastodonCompactBar extends StatelessWidget {
+         ),
+       ),
+     );
++    return PluginDockContribution(
++      slot: 'navigation',
++      content: PluginDockContent(
++        section: PluginSectionPicker(key: const ValueKey('mastodon-section-picker'), tabs: tabs),
++        sectionWidth: pluginDockSectionWidth(context, labels[selected]),
++        actions: mastodonActions(context, onSearch: onSearch, onSettings: onSettings, compact: true),
++      ),
++      fallback: fallback,
++    );
+   }
+ }
+ 
+diff --git a/lib/plugins/mastodon/mastodon_people.dart b/lib/plugins/mastodon/mastodon_people.dart
+index 8c57090..c47e3e8 100644
+--- a/lib/plugins/mastodon/mastodon_people.dart
++++ b/lib/plugins/mastodon/mastodon_people.dart
+@@ -1,3 +1,4 @@
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'package:xta/plugins/social_account_groups.dart';
+ import 'package:extended_image/extended_image.dart';
+ import 'package:flutter/material.dart';
+@@ -19,7 +20,24 @@ class MastodonFollowingControls extends StatelessWidget {
+   const MastodonFollowingControls({super.key, required this.people, required this.onSelected, required this.onAdd});
+ 
+   @override
+-  Widget build(BuildContext context) => PluginHomeChrome(
++  Widget build(BuildContext context) => PluginDockContribution(
++    slot: 'following',
++    content: PluginDockContent(trailing: [
++      PopupMenuButton<String>(
++        tooltip: people ? L10n.of(context).plugin_mastodon_accounts : L10n.of(context).tweets,
++        icon: Icon(people ? Icons.people_outline : Icons.view_stream_outlined),
++        style: pluginActionButtonStyle,
++        onSelected: (value) {
++          if (value == 'add') { onAdd(); } else { onSelected(value == 'people'); }
++        },
++        itemBuilder: (context) => [
++          CheckedPopupMenuItem(value: 'posts', checked: !people, child: Text(L10n.of(context).tweets)),
++          CheckedPopupMenuItem(value: 'people', checked: people, child: Text(L10n.of(context).plugin_mastodon_accounts)),
++          PopupMenuItem(key: const ValueKey('mastodon-add-account'), value: 'add', child: Text(L10n.of(context).plugin_mastodon_add)),
++        ],
++      ),
++    ]),
++    fallback: PluginHomeChrome(
+     tabs: [
+       PluginHomeTab(
+         label: L10n.of(context).tweets,
+@@ -42,6 +60,7 @@ class MastodonFollowingControls extends StatelessWidget {
+         icon: const Icon(Icons.person_add_alt),
+       ),
+     ],
++    ),
+   );
+ }
+ 
+diff --git a/lib/plugins/mastodon/mastodon_screen.dart b/lib/plugins/mastodon/mastodon_screen.dart
+index 769362c..5a414aa 100644
+--- a/lib/plugins/mastodon/mastodon_screen.dart
++++ b/lib/plugins/mastodon/mastodon_screen.dart
+@@ -1,3 +1,4 @@
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'dart:async';
+ 
+ import 'package:flutter/material.dart';
+@@ -96,7 +97,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
+   }
+ 
+   void _updateChrome(ScrollMetrics metrics, int depth) {
+-    if (widget.fullClient || depth != 0 || metrics.axis != Axis.vertical) return;
++    if (widget.fullClient || PluginHomeDockScope.maybeOf(context) != null || depth != 0 || metrics.axis != Axis.vertical) return;
+     if (metrics.pixels <= metrics.minScrollExtent + 0.5) {
+       _chrome.select(true);
+     } else if (metrics.pixels > metrics.minScrollExtent + 24) {
+diff --git a/lib/plugins/mastodon/mastodon_timeline_controls.dart b/lib/plugins/mastodon/mastodon_timeline_controls.dart
+index 323beaf..d72137b 100644
+--- a/lib/plugins/mastodon/mastodon_timeline_controls.dart
++++ b/lib/plugins/mastodon/mastodon_timeline_controls.dart
+@@ -1,3 +1,4 @@
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'dart:async';
+ import 'dart:convert';
+ 
+@@ -165,7 +166,7 @@ class MastodonTimelineToolbar extends StatelessWidget {
+   @override
+   Widget build(BuildContext context) {
+     final l10n = L10n.of(context);
+-    return Padding(
++    final fallback = Padding(
+       padding: const EdgeInsets.symmetric(horizontal: 8),
+       child: Row(
+         children: [
+@@ -217,6 +218,19 @@ class MastodonTimelineToolbar extends StatelessWidget {
+         ],
+       ),
+     );
++    return PluginDockContribution(
++      slot: 'reading',
++      content: PluginDockContent(trailing: [
++        PluginDockFilterButton(
++          activeCount: options.activeFilters + (options.order == MastodonTimelineOrder.feed ? 0 : 1),
++          onPressed: () => showModalBottomSheet<void>(
++            context: context, isScrollControlled: true, useSafeArea: true,
++            builder: (_) => _TimelineSheet(store: store, slot: slot),
++          ),
++        ),
++      ]),
++      fallback: fallback,
++    );
+   }
+ }
+ 
+@@ -261,6 +275,17 @@ class _TimelineSheetState extends State<_TimelineSheet> {
+                 ],
+               ),
+               Text(l10n.plugin_mastodon_loaded_controls, style: Theme.of(context).textTheme.bodySmall),
++              const SizedBox(height: 12),
++              Text(l10n.plugin_mastodon_sort, style: Theme.of(context).textTheme.titleSmall),
++              Wrap(spacing: 8, children: [
++                for (final order in MastodonTimelineOrder.values)
++                  ChoiceChip(
++                    label: Text(mastodonOrderLabel(l10n, order)),
++                    selected: options.order == order,
++                    onSelected: (_) => select(options.copy(order: order)),
++                    materialTapTargetSize: MaterialTapTargetSize.padded,
++                  ),
++              ]),
+               const SizedBox(height: 16),
+               TextField(
+                 controller: _query,
+diff --git a/lib/plugins/plugin_home_chrome.dart b/lib/plugins/plugin_home_chrome.dart
+index 390ab09..6097a1b 100644
+--- a/lib/plugins/plugin_home_chrome.dart
++++ b/lib/plugins/plugin_home_chrome.dart
+@@ -1,3 +1,4 @@
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'dart:math' as math;
+ 
+ import 'package:flutter/material.dart';
+@@ -122,7 +123,18 @@ class PluginHomeChrome extends StatelessWidget {
+       ),
+       child: bar,
+     );
+-    return embedded ? controls : SafeArea(bottom: false, child: controls);
++    final fallback = embedded ? controls : SafeArea(bottom: false, child: controls);
++    if (!embedded || title == null) return fallback;
++    final selected = tabs.where((tab) => tab.selected).firstOrNull ?? tabs.firstOrNull;
++    return PluginDockContribution(
++      slot: 'navigation',
++      content: PluginDockContent(
++        section: tabs.isEmpty ? null : PluginSectionPicker(tabs: tabs, accent: accent),
++        sectionWidth: selected == null ? 0 : pluginDockSectionWidth(context, selected.label),
++        actions: actions,
++      ),
++      fallback: fallback,
++    );
+   }
+ 
+   bool _tabsFit(BuildContext context, double width) {

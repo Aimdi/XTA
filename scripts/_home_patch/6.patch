@@ -1,0 +1,233 @@
+diff --git a/test/alt_microblogging_journey_test.dart b/test/alt_microblogging_journey_test.dart
+index 26238a7..3b95680 100644
+--- a/test/alt_microblogging_journey_test.dart
++++ b/test/alt_microblogging_journey_test.dart
+@@ -23,6 +23,7 @@ import 'package:xta/plugins/bluesky/bluesky_screen.dart';
+ import 'package:xta/plugins/bluesky/bluesky_store.dart';
+ import 'package:xta/plugins/mastodon/mastodon_screen.dart';
+ import 'package:xta/plugins/plugin_home_chrome.dart';
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'package:xta/subscriptions/users_model.dart';
+ import 'support/bluesky_reading_harness.dart';
+ import 'support/mastodon_harness.dart';
+@@ -102,7 +103,7 @@ void main() {
+         matchesGoldenFile('../review-artifacts/renders/alt-microblogging-reader.png'),
+       );
+     }
+-    final actionsMenu = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(PopupMenuButton<String>));
++    final actionsMenu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
+     await tester.tap(actionsMenu);
+     await tester.pumpAndSettle();
+     expect(
+@@ -116,7 +117,7 @@ void main() {
+     await tester.tap(find.text(L10n.current.cancel));
+     await tester.pumpAndSettle();
+     expect(blue.client.calls, hasLength(1));
+-    final picker = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byType(PluginSectionPicker));
++    final picker = find.descendant(of: find.byType(PluginDockRow), matching: find.byType(PluginSectionPicker));
+     expect(picker, findsOneWidget);
+     await tester.tap(picker);
+     await tester.pumpAndSettle();
+diff --git a/test/plugin_home_dock_test.dart b/test/plugin_home_dock_test.dart
+new file mode 100644
+index 0000000..13fa94b
+--- /dev/null
++++ b/test/plugin_home_dock_test.dart
+@@ -0,0 +1,44 @@
++import 'package:flutter/material.dart';
++import 'package:flutter_test/flutter_test.dart';
++import 'package:xta/plugins/plugin_home_dock.dart';
++
++void main() {
++  test('late disposal cannot remove replacement or another source', () async {
++    final store = PluginHomeDockStore();
++    final first = Object();
++    final replacement = Object();
++    const one = PluginDockContent(section: Text('One'));
++    const two = PluginDockContent(section: Text('Two'));
++    store.publish('blue', 'navigation', first, one);
++    store.publish('masto', 'navigation', first, one);
++    store.publish('blue', 'navigation', replacement, two);
++    store.remove('blue', 'navigation', first);
++    expect(store.content('blue', 'navigation'), same(two));
++    expect(store.content('masto', 'navigation'), same(one));
++    store.remove('blue', 'navigation', replacement);
++    expect(store.content('blue', 'navigation'), isNull);
++    await store.destroy();
++    expect(() => store.publish('blue', 'navigation', first, one), returnsNormally);
++  });
++
++  testWidgets('hosted contributions disappear with owner; fallback stays standalone', (tester) async {
++    final store = PluginHomeDockStore();
++    Widget contribution() => const PluginDockContribution(slot: 'navigation',
++        content: PluginDockContent(section: Text('Section')), fallback: Text('Standalone'));
++    await tester.pumpWidget(MaterialApp(home: contribution()));
++    await tester.pumpAndSettle();
++    expect(find.text('Standalone'), findsOneWidget);
++    await tester.pumpWidget(MaterialApp(home: PluginHomeDockScope(
++      store: store, source: 'blue', enabled: true, openClientLabel: 'Full client', onOpenClient: () {},
++      child: Column(children: [PluginDockRow(store: store, source: 'blue'), contribution()]),
++    )));
++    await tester.pumpAndSettle();
++    expect(find.text('Section'), findsOneWidget);
++    expect(find.text('Standalone'), findsNothing);
++    await tester.pumpWidget(const SizedBox());
++    await tester.pumpAndSettle();
++    expect(store.state, isEmpty);
++    expect(tester.takeException(), isNull);
++    await store.destroy();
++  });
++}
+diff --git a/test/unified_home_layout_test.dart b/test/unified_home_layout_test.dart
+index 2ef9e4a..85b9700 100644
+--- a/test/unified_home_layout_test.dart
++++ b/test/unified_home_layout_test.dart
+@@ -1,5 +1,6 @@
+ import 'dart:io';
+ import 'package:flutter/material.dart';
++import 'package:flutter/services.dart';
+ import 'package:flutter_test/flutter_test.dart';
+ import 'package:provider/provider.dart';
+ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+@@ -17,12 +18,19 @@ import 'package:xta/home/home_group_filter.dart';
+ import 'package:xta/home/network_recents_store.dart';
+ import 'package:xta/plugins/bluesky/bluesky_client.dart';
+ import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
+-import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
++import 'package:xta/plugins/bluesky/bluesky_screen.dart';
+ import 'package:xta/plugins/bluesky/bluesky_store.dart';
++import 'package:xta/plugins/mastodon/mastodon_screen.dart';
++import 'package:xta/plugins/plugin_home_chrome.dart';
++import 'package:xta/plugins/plugin_home_dock.dart';
+ import 'package:xta/subscriptions/users_model.dart';
+ import 'support/bluesky_reading_harness.dart';
+ import 'support/mastodon_harness.dart';
+ 
++import 'package:xta/plugins/bluesky/bluesky_post_card.dart';
++import 'package:xta/plugins/bluesky/bluesky_reader_store.dart';
++import 'package:xta/plugins/bluesky/bluesky_reader_view.dart';
++
+ void main() {
+   setUpAll(() async {
+     sqfliteFfiInit();
+@@ -30,10 +38,20 @@ void main() {
+     final db = await Directory.systemTemp.createTemp('xta-unified-home');
+     await databaseFactory.setDatabasesPath(db.path);
+     await Repository().migrate();
++    if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
++      autoUpdateGoldenFiles = true;
++      await (FontLoader('Inter')..addFont(rootBundle.load('assets/fonts/Inter-Regular.ttf'))).load();
++      await (FontLoader('MaterialIcons')..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
++    }
+   });
+ 
+-  testWidgets('assembled Bluesky Home starts content within two control rows', (tester) async {
+-    tester.view.physicalSize = const Size(390, 844);
++
++  for (final (width, scale, rtl, dark) in <(double, double, bool, bool)>[
++    (390, 1, false, false), (390, 1, false, true),
++    (320, 2, true, true), (840, 2, false, false),
++  ]) {
++  testWidgets('assembled Home layout $width $scale rtl=$rtl dark=$dark', (tester) async {
++    tester.view.physicalSize = Size(width, 844);
+     tester.view.devicePixelRatio = 1;
+     addTearDown(tester.view.resetPhysicalSize);
+     addTearDown(tester.view.resetDevicePixelRatio);
+@@ -57,7 +75,7 @@ void main() {
+     final subscriptions = SubscriptionsModel(prefs, groups);
+     await tester.pumpWidget(
+       mastodon.app(
+-        dark: true,
++        dark: dark, scale: scale, rtl: rtl,
+         child: MultiProvider(
+           providers: [
+             Provider<AltMicrobloggingStore>.value(value: grouping),
+@@ -83,13 +101,45 @@ void main() {
+       ),
+     );
+     await tester.pumpAndSettle();
+-    expect(find.byType(BlueskyPostCard), findsWidgets);
+-    expect(tester.getTopLeft(find.byType(BlueskyPostCard).first).dy, lessThanOrEqualTo(112));
++    final first = find.byType(BlueskyPostCard).first;
++    expect(first, findsOneWidget);
++    if (width >= 390 && scale == 1) {
++      expect(tester.getTopLeft(first).dy, lessThanOrEqualTo(112));
++    }
+     final search = find.byTooltip(L10n.current.plugin_bluesky_search);
+     expect(search, findsOneWidget);
+     expect(tester.getTopLeft(search).dy, lessThan(56));
++    expect(tester.getSize(find.byKey(const ValueKey('alt-microblogging-service-bluesky'))).width, 48);
+     expect(blue.client.calls, hasLength(1));
+     expect(tester.takeException(), isNull);
++    if (const bool.fromEnvironment('RENDER_UNIFIED_HOME')) {
++      await expectLater(find.byKey(const ValueKey('mastodon-window')),
++        matchesGoldenFile('../review-artifacts/renders/home-$width-$scale-$rtl-$dark.png'));
++    }
++    // The relocated filter controls still steer this exact reader store.
++    final reader = tester.element(find.byType(BlueskyReaderView)).read<BlueskyReaderStore>();
++    final beforeState = tester.state(find.byType(BlueskyScreen));
++    await tester.tap(find.byTooltip(L10n.current.filters));
++    await tester.pumpAndSettle();
++    expect(find.text(L10n.current.plugin_mastodon_loaded_controls), findsOneWidget);
++    final oldest = find.widgetWithText(ChoiceChip, L10n.current.plugin_mastodon_order_oldest);
++    await tester.ensureVisible(oldest);
++    await tester.tap(oldest);
++    await tester.pumpAndSettle();
++    expect(reader.options('following').order, BlueskyReaderOrder.oldest);
++    await tester.tap(find.byTooltip(L10n.current.close));
++    await tester.pumpAndSettle();
++    expect(tester.state(find.byType(BlueskyScreen)), same(beforeState));
++    expect(blue.client.calls, hasLength(1), reason: 'Local controls must not refetch the feed.');
++    final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
++    await tester.tap(menu);
++    await tester.pumpAndSettle();
++    expect(find.byKey(const ValueKey('open-client-bluesky')), findsOneWidget);
++    expect(tester.widgetList<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).map((item) => item.value),
++        containsAll(['add', 'saved', 'following', 'list', 'starter', 'settings', 'xta:open-client']));
++    await tester.tapAt(const Offset(8, 730));
++    await tester.pumpAndSettle();
++    expect(tester.takeException(), isNull);
+     await mastodon.close(tester);
+     await blue.close(tester);
+     await feed.destroy();
+@@ -99,4 +149,5 @@ void main() {
+     await selection.destroy();
+     await grouping.destroy();
+   });
++  }
+ }
+diff --git a/test/unified_home_picker_test.dart b/test/unified_home_picker_test.dart
+index 62be717..8191a1c 100644
+--- a/test/unified_home_picker_test.dart
++++ b/test/unified_home_picker_test.dart
+@@ -50,4 +50,30 @@ void main() {
+     expect(find.byKey(const ValueKey('home-add-timeline')), findsOneWidget);
+     expect(tester.takeException(), isNull);
+   });
++
++  testWidgets('search matches grouped services and clearing restores category', (tester) async {
++    const sources = ['bluesky', 'mastodon', 'threads', 'rss', 'hn', 'substack', 'reddit', 'youtube', 'pixiv'];
++    await tester.pumpWidget(MaterialApp(
++      localizationsDelegates: const [L10n.delegate, GlobalMaterialLocalizations.delegate,
++        GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
++      supportedLocales: L10n.delegate.supportedLocales,
++      home: Scaffold(body: HomeTimelinePicker(selected: 'bluesky', groupMicroblogs: true,
++        options: [for (final id in sources) HomeTimelineOption(id: id, label: id,
++          mark: const Icon(Icons.rss_feed), plugin: true, unread: id == 'mastodon')],
++      )),
++    ));
++    await tester.pumpAndSettle();
++    expect(find.byKey(const ValueKey('home-source-alt-microblogging')), findsOneWidget);
++    await tester.enterText(find.byType(TextField), 'MASTO');
++    await tester.pumpAndSettle();
++    expect(find.byKey(const ValueKey('home-source-mastodon')), findsOneWidget);
++    expect(find.byKey(const ValueKey('home-source-bluesky')), findsNothing);
++    await tester.enterText(find.byType(TextField), 'unmatched-query');
++    await tester.pumpAndSettle();
++    expect(find.text(L10n.current.no_results), findsOneWidget);
++    await tester.tap(find.byTooltip(L10n.current.plugin_mastodon_clear_search));
++    await tester.pumpAndSettle();
++    expect(find.byKey(const ValueKey('home-source-alt-microblogging')), findsOneWidget);
++    expect(tester.takeException(), isNull);
++  });
+ }
