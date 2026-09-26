@@ -22,7 +22,6 @@ import 'package:xta/plugins/bluesky/bluesky_likes_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_screen.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_screen.dart';
-import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'support/bluesky_reading_harness.dart';
 import 'support/mastodon_harness.dart';
@@ -102,18 +101,22 @@ void main() {
         matchesGoldenFile('../review-artifacts/renders/alt-microblogging-reader.png'),
       );
     }
-    final actionsMenu = find.descendant(
-      of: find.byType(PluginDockActions),
-      matching: find.byType(PopupMenuButton<String>),
-    );
-    await tester.tap(actionsMenu);
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
     await tester.pumpAndSettle();
-    expect(
-      tester.widgetList<PopupMenuItem<String>>(find.byType(PopupMenuItem<String>)).map((item) => item.value),
-      containsAll(['add', 'saved', 'following', 'list', 'starter', 'settings']),
-    );
+    for (final label in [
+      L10n.current.plugin_bluesky_add,
+      L10n.current.saved,
+      L10n.current.plugin_bluesky_import_following,
+      L10n.current.plugin_bluesky_import_list,
+      L10n.current.plugin_bluesky_import_starter,
+      L10n.current.settings,
+    ]) {
+      expect(find.widgetWithText(ListTile, label), findsOneWidget);
+    }
     expect(blue.client.calls, hasLength(1), reason: 'Opening actions must not refresh the feed.');
-    await tester.tap(find.widgetWithText(PopupMenuItem<String>, L10n.current.plugin_bluesky_add));
+    final add = find.widgetWithText(ListTile, L10n.current.plugin_bluesky_add);
+    await tester.ensureVisible(add);
+    await tester.tap(add);
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsOneWidget);
     await tester.tap(find.text(L10n.current.cancel));
@@ -154,11 +157,11 @@ void main() {
     expect(selection.state.id, 'mastodon');
     expect(find.byType(MastodonScreen), findsOneWidget);
     expect(find.byType(BlueskyScreen), findsNothing);
-    await tester.tap(find.byKey(const ValueKey('mastodon-more')));
+    await tester.tap(picker);
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('mastodon-bookmarks')), findsOneWidget);
     expect(find.byKey(const ValueKey('mastodon-settings')), findsOneWidget);
-    await tester.tapAt(const Offset(8, 700));
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
     await tester.pumpAndSettle();
     await tester.tap(picker);
     await tester.pumpAndSettle();

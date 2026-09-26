@@ -1,3 +1,4 @@
+import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
@@ -167,118 +168,107 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = L10n.of(context);
-    final compact =
-        PluginEmbedded.maybeOf(context) ||
-        MediaQuery.sizeOf(context).width < 360 ||
-        MediaQuery.textScalerOf(context).scale(1) > 1.4;
     _shell.restore(context, 'bluesky');
 
-    return Provider<BlueskyReaderStore>.value(
-      value: _reader,
-      child: Scaffold(
-        primary: !PluginEmbedded.maybeOf(context),
-        body: ScopedBuilder<_BlueskyShellStore, int>(
-          store: _shell,
-          onState: (context, tab) => Column(
-            children: [
-              PluginHomeChrome(
-                title: l10n.plugin_bluesky_title,
-                mark: pluginMark(BlueskyPlugin(), size: 24),
-                accent: BlueskyPlugin().brandColor,
-                tabs: [
-                  PluginHomeTab(
-                    label: l10n.plugin_bluesky_following,
-                    icon: Icons.home_outlined,
-                    selected: tab == 0,
-                    onTap: () => _selectTab(0),
-                  ),
-                  PluginHomeTab(
-                    label: l10n.plugin_bluesky_discover,
-                    icon: Icons.auto_awesome_outlined,
-                    selected: tab == 1,
-                    onTap: () => _selectTab(1),
-                  ),
-                  PluginHomeTab(
-                    label: l10n.plugin_bluesky_lists,
-                    icon: Icons.list_alt_outlined,
-                    selected: tab == 2,
-                    onTap: () => _selectTab(2),
-                  ),
-                  PluginHomeTab(
-                    label: l10n.plugin_bluesky_liked,
-                    icon: Icons.favorite_border,
-                    selected: tab == 3,
-                    onTap: () => _selectTab(3),
-                  ),
-                ],
-                actions: [
-                  if (!compact)
-                    IconButton(
-                      icon: const Icon(Icons.bookmark_border),
-                      tooltip: l10n.saved,
-                      onPressed: () => openPluginBookmarks(context, SavedSource.bluesky),
+    return MicroblogReaderShell(
+      plugin: BlueskyPlugin(),
+      builder: (context) => Provider<BlueskyReaderStore>.value(
+        value: _reader,
+        child: Scaffold(
+          primary: !PluginEmbedded.maybeOf(context),
+          body: ScopedBuilder<_BlueskyShellStore, int>(
+            store: _shell,
+            onState: (context, tab) => Column(
+              children: [
+                PluginHomeChrome(
+                  title: l10n.plugin_bluesky_title,
+                  mark: pluginMark(BlueskyPlugin(), size: 24),
+                  accent: BlueskyPlugin().brandColor,
+                  tabs: [
+                    PluginHomeTab(
+                      label: l10n.plugin_bluesky_following,
+                      icon: Icons.home_outlined,
+                      selected: tab == 0,
+                      onTap: () => _selectTab(0),
                     ),
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    tooltip: l10n.plugin_bluesky_search,
-                    onPressed: _searchPeople,
-                  ),
-                  if (!compact)
-                    IconButton(
-                      icon: const Icon(Icons.person_add_alt),
-                      tooltip: l10n.plugin_bluesky_add,
-                      onPressed: _addAccount,
+                    PluginHomeTab(
+                      label: l10n.plugin_bluesky_discover,
+                      icon: Icons.auto_awesome_outlined,
+                      selected: tab == 1,
+                      onTap: () => _selectTab(1),
                     ),
-                  PluginHomeMenu(
-                    onSelected: (value) {
-                      if (value == 'add') {
-                        _addAccount();
-                        return;
-                      }
-                      if (value == 'saved') {
-                        openPluginBookmarks(context, SavedSource.bluesky);
-                        return;
-                      }
-                      if (value == 'settings') {
-                        _settings();
-                        return;
-                      }
-                      final page = switch (value) {
-                        'following' => const BlueskyImportFollowsScreen(),
-                        'list' => const BlueskyImportListScreen(),
-                        'starter' => const BlueskyImportStarterPackScreen(),
-                        _ => null,
-                      };
-                      if (page != null) {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      if (compact) PopupMenuItem(value: 'add', child: Text(l10n.plugin_bluesky_add)),
-                      if (compact) PopupMenuItem(value: 'saved', child: Text(l10n.saved)),
-                      PopupMenuItem(value: 'following', child: Text(l10n.plugin_bluesky_import_following)),
-                      PopupMenuItem(value: 'list', child: Text(l10n.plugin_bluesky_import_list)),
-                      PopupMenuItem(value: 'starter', child: Text(l10n.plugin_bluesky_import_starter)),
-                      PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
-                    ],
-                  ),
-                ],
-              ),
-              const Divider(height: 1),
-              Expanded(
-                child: PluginLazyTabs(
-                  index: tab,
-                  children: [
-                    (_) =>
-                        _HomePane(scrollController: widget.scrollController, onRefresh: () => _loadHome(force: true)),
-                    (_) => BlueskyAlgoPane(scrollController: _algoScrollController),
-                    (_) => BlueskyListsPane(scrollController: _listsScrollController),
-                    (_) =>
-                        _LikedPane(scrollController: _likedScrollController, likes: context.read<BlueskyLikesStore>()),
+                    PluginHomeTab(
+                      label: l10n.plugin_bluesky_lists,
+                      icon: Icons.list_alt_outlined,
+                      selected: tab == 2,
+                      onTap: () => _selectTab(2),
+                    ),
+                    PluginHomeTab(
+                      label: l10n.plugin_bluesky_liked,
+                      icon: Icons.favorite_border,
+                      selected: tab == 3,
+                      onTap: () => _selectTab(3),
+                    ),
+                  ],
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      tooltip: l10n.plugin_bluesky_search,
+                      onPressed: _searchPeople,
+                    ),
+                    PluginHomeMenu(
+                      onSelected: (value) {
+                        if (value == 'add') {
+                          _addAccount();
+                          return;
+                        }
+                        if (value == 'saved') {
+                          openPluginBookmarks(context, SavedSource.bluesky);
+                          return;
+                        }
+                        if (value == 'settings') {
+                          _settings();
+                          return;
+                        }
+                        final page = switch (value) {
+                          'following' => const BlueskyImportFollowsScreen(),
+                          'list' => const BlueskyImportListScreen(),
+                          'starter' => const BlueskyImportStarterPackScreen(),
+                          _ => null,
+                        };
+                        if (page != null) {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(value: 'add', child: Text(l10n.plugin_bluesky_add)),
+                        PopupMenuItem(value: 'saved', child: Text(l10n.saved)),
+                        PopupMenuItem(value: 'following', child: Text(l10n.plugin_bluesky_import_following)),
+                        PopupMenuItem(value: 'list', child: Text(l10n.plugin_bluesky_import_list)),
+                        PopupMenuItem(value: 'starter', child: Text(l10n.plugin_bluesky_import_starter)),
+                        PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
+                      ],
+                    ),
                   ],
                 ),
-              ),
-            ],
+                const Divider(height: 1),
+                Expanded(
+                  child: PluginLazyTabs(
+                    index: tab,
+                    children: [
+                      (_) =>
+                          _HomePane(scrollController: widget.scrollController, onRefresh: () => _loadHome(force: true)),
+                      (_) => BlueskyAlgoPane(scrollController: _algoScrollController),
+                      (_) => BlueskyListsPane(scrollController: _listsScrollController),
+                      (_) => _LikedPane(
+                        scrollController: _likedScrollController,
+                        likes: context.read<BlueskyLikesStore>(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

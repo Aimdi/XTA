@@ -1,3 +1,5 @@
+import 'package:xta/plugins/microblog_reader_shell.dart';
+import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'dart:async';
 
@@ -98,6 +100,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
 
   void _updateChrome(ScrollMetrics metrics, int depth) {
     if (widget.fullClient ||
+        !PluginEmbedded.maybeOf(context) ||
         PluginHomeDockScope.maybeOf(context) != null ||
         depth != 0 ||
         metrics.axis != Axis.vertical)
@@ -148,67 +151,61 @@ class _MastodonScreenState extends State<MastodonScreen> {
   @override
   Widget build(BuildContext context) {
     _tabs.restore(context, 'mastodon');
-    return MultiProvider(
-      providers: [
-        Provider<MastodonReadingStore>.value(value: _reading),
-        Provider<MastodonTimelineControlsStore>.value(value: _timelineControls),
-      ],
-      child: ScopedBuilder<_MastodonTabStore, int>(
-        store: _tabs,
-        onState: (context, tab) => Scaffold(
-          primary: !PluginEmbedded.maybeOf(context),
-          appBar: widget.fullClient
-              ? MastodonClientBar(
-                  selected: tab,
-                  height: (MediaQuery.textScalerOf(context).scale(40) + 16).clamp(64, double.infinity),
-                  onSearch: _lookUpProfile,
-                  onSettings: _settings,
-                )
-              : null,
-          bottomNavigationBar: widget.fullClient ? MastodonNavigation(selected: tab, onSelected: _onTab) : null,
-          body: NotificationListener<ScrollNotification>(
-            onNotification: (notification) {
-              _updateChrome(notification.metrics, notification.depth);
-              return false;
-            },
-            child: NotificationListener<ScrollMetricsNotification>(
+    return MicroblogReaderShell(
+      plugin: MastodonPlugin(),
+      builder: (context) => MultiProvider(
+        providers: [
+          Provider<MastodonReadingStore>.value(value: _reading),
+          Provider<MastodonTimelineControlsStore>.value(value: _timelineControls),
+        ],
+        child: ScopedBuilder<_MastodonTabStore, int>(
+          store: _tabs,
+          onState: (context, tab) => Scaffold(
+            primary: !PluginEmbedded.maybeOf(context),
+            body: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
                 _updateChrome(notification.metrics, notification.depth);
                 return false;
               },
-              child: Column(
-                children: [
-                  _controls(context, tab),
-                  Expanded(
-                    child: PageStorage(
-                      bucket: _pageStorage,
-                      child: PluginLazyTabs(
-                        index: tab,
-                        children: [
-                          (_) => _ExplorePane(slot: '$_surface:0', scrollController: widget.scrollController),
-                          (_) => _PublicPane(
-                            slot: '$_surface:1',
-                            store: context.read<MastodonLocalStore>(),
-                            emptyIcon: Icons.home_outlined,
-                            scrollController: widget.scrollController,
-                          ),
-                          (_) => _PublicPane(
-                            slot: '$_surface:2',
-                            store: context.read<MastodonFederatedStore>(),
-                            emptyIcon: Icons.public,
-                            scrollController: widget.scrollController,
-                          ),
-                          (_) => ScopedBuilder<PluginViewStore<bool>, bool>(
-                            store: _people,
-                            onState: (context, people) => people
-                                ? MastodonPeoplePane(onAdd: _addAccount, scrollController: widget.scrollController)
-                                : _FollowingPane(slot: '$_surface:3', scrollController: widget.scrollController),
-                          ),
-                        ],
+              child: NotificationListener<ScrollMetricsNotification>(
+                onNotification: (notification) {
+                  _updateChrome(notification.metrics, notification.depth);
+                  return false;
+                },
+                child: Column(
+                  children: [
+                    _controls(context, tab),
+                    Expanded(
+                      child: PageStorage(
+                        bucket: _pageStorage,
+                        child: PluginLazyTabs(
+                          index: tab,
+                          children: [
+                            (_) => _ExplorePane(slot: '$_surface:0', scrollController: widget.scrollController),
+                            (_) => _PublicPane(
+                              slot: '$_surface:1',
+                              store: context.read<MastodonLocalStore>(),
+                              emptyIcon: Icons.home_outlined,
+                              scrollController: widget.scrollController,
+                            ),
+                            (_) => _PublicPane(
+                              slot: '$_surface:2',
+                              store: context.read<MastodonFederatedStore>(),
+                              emptyIcon: Icons.public,
+                              scrollController: widget.scrollController,
+                            ),
+                            (_) => ScopedBuilder<PluginViewStore<bool>, bool>(
+                              store: _people,
+                              onState: (context, people) => people
+                                  ? MastodonPeoplePane(onAdd: _addAccount, scrollController: widget.scrollController)
+                                  : _FollowingPane(slot: '$_surface:3', scrollController: widget.scrollController),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -224,13 +221,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
           ? Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (!widget.fullClient)
-                  MastodonCompactBar(
-                    selected: tab,
-                    onSelected: _onTab,
-                    onSearch: _lookUpProfile,
-                    onSettings: _settings,
-                  ),
+                MastodonCompactBar(selected: tab, onSelected: _onTab, onSearch: _lookUpProfile, onSettings: _settings),
                 if (tab == 3)
                   ScopedBuilder<PluginViewStore<bool>, bool>(
                     store: _people,

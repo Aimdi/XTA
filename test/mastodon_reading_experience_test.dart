@@ -52,7 +52,9 @@ void main() {
     final first = MastodonHarness();
     await tester.pumpWidget(first.app());
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('mastodon-destination-1')));
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-section-1')));
     await tester.pumpAndSettle();
     first.scroll.jumpTo(900);
     await tester.pumpAndSettle();
@@ -142,10 +144,7 @@ void main() {
     expect(restored.imageIsVideo.single, isFalse);
     expect(restored.quote!.images.single, 'https://two.example/q.png');
     expect(restored.quote!.imageAlts.single, 'Quoted image');
-    expect(
-      restored.quote!.imageDownloadUrls.single,
-      'https://two.example/q-original.png',
-    );
+    expect(restored.quote!.imageDownloadUrls.single, 'https://two.example/q-original.png');
     expect(restored.editedAt, DateTime.utc(2026));
     expect(mastodonPostFromSnapshot({'version': 99}), isNull);
   });

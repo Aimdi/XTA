@@ -40,6 +40,28 @@ Future<void> _open(
   await tester.pumpAndSettle();
 }
 
+Future<void> _section(WidgetTester tester, int index) async {
+  await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+  await tester.pumpAndSettle();
+  await tester.tap(find.byKey(ValueKey('home-section-$index')));
+  await tester.pumpAndSettle();
+}
+
+Future<void> _followingAction(WidgetTester tester, String value) async {
+  await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
+  await tester.pumpAndSettle();
+  final menu = find.byType(PopupMenuButton<String>);
+  await tester.ensureVisible(menu);
+  await tester.tap(menu);
+  await tester.pumpAndSettle();
+  await tester.tap(find.byWidgetPredicate((widget) => widget is PopupMenuItem<String> && widget.value == value));
+  await tester.pumpAndSettle();
+  if (value != 'add') {
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
+    await tester.pumpAndSettle();
+  }
+}
+
 void main() {
   testWidgets('full client loads only chosen feeds and restores their positions', (tester) async {
     final h = MastodonHarness();
@@ -48,16 +70,16 @@ void main() {
     expect(h.client.followingReads, 0);
     h.scroll.jumpTo(650);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('mastodon-destination-1')));
+    await _section(tester, 1);
     await tester.pumpAndSettle();
     expect(h.client.publicReads, 1);
     expect(h.scroll.offset, 0);
     h.scroll.jumpTo(420);
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('mastodon-destination-0')));
+    await _section(tester, 0);
     await tester.pumpAndSettle();
     expect(h.scroll.offset, closeTo(650, 1));
-    await tester.tap(find.byKey(const ValueKey('mastodon-destination-1')));
+    await _section(tester, 1);
     await tester.pumpAndSettle();
     expect(h.scroll.offset, closeTo(420, 1));
     expect(h.client.publicReads, 1);
@@ -87,9 +109,9 @@ void main() {
   testWidgets('Following exposes people, profiles, and a working add action', (tester) async {
     final h = MastodonHarness();
     await _open(tester, h);
-    await tester.tap(find.byKey(const ValueKey('mastodon-destination-3')));
+    await _section(tester, 3);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Accounts'));
+    await _followingAction(tester, 'people');
     await tester.pumpAndSettle();
     expect(find.byType(MastodonPeoplePane), findsOneWidget);
     await tester.tap(find.text('Maya Chen'));
@@ -99,7 +121,7 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
     expect(find.byType(MastodonPeoplePane), findsOneWidget);
-    await tester.tap(find.byKey(const ValueKey('mastodon-add-account')));
+    await _followingAction(tester, 'add');
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextFormField), 'new@studio.example');
     await tester.tap(find.text('OK'));
