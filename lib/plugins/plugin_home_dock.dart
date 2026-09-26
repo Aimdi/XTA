@@ -12,6 +12,7 @@ class PluginDockContent {
   final List<Widget> actions;
   final Widget? search;
   final Widget? leading;
+  final double leadingWidth;
   final List<Widget> trailing;
   const PluginDockContent({
     this.section,
@@ -19,6 +20,7 @@ class PluginDockContent {
     this.actions = const [],
     this.search,
     this.leading,
+    this.leadingWidth = 112,
     this.trailing = const [],
   });
 }
@@ -166,7 +168,7 @@ class PluginDockActions extends StatelessWidget {
   );
 }
 
-/// One compact context row; wrap service controls instead of reducing touch targets.
+/// Reflow service and reading controls before reducing labels or touch targets.
 class PluginDockRow extends StatelessWidget {
   final PluginHomeDockStore store;
   final String source;
@@ -182,7 +184,8 @@ class PluginDockRow extends StatelessWidget {
       final reading = store.content(source, 'reading');
       final extras = store.content(source, 'following');
       final trailing = [...?extras?.trailing, ...?reading?.trailing];
-      final leading = reading?.leading ?? extras?.leading;
+      final leadingContent = reading?.leading != null ? reading : extras;
+      final leading = leadingContent?.leading;
       return KeyedSubtree(
         key: ValueKey('home-context-$source'),
         child: Material(
@@ -193,24 +196,33 @@ class PluginDockRow extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final sectionWidth = navigation?.sectionWidth ?? 112;
-                final split =
-                    services != null && servicesWidth + sectionWidth + trailing.length * 48 + 8 > constraints.maxWidth;
-                Widget controls({required bool includeServices}) => ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 48),
-                  child: Row(
-                    children: [
-                      if (includeServices && services != null) SizedBox(width: servicesWidth, child: services),
-                      Expanded(child: navigation?.section ?? const SizedBox.shrink()),
-                      if (leading != null) Flexible(child: leading),
-                      ...trailing,
-                    ],
-                  ),
-                );
+                final leadingWidth = leading == null ? 0.0 : leadingContent!.leadingWidth;
+                final controlsWidth = sectionWidth + leadingWidth + trailing.length * 48 + 8;
+                final splitServices = services != null && servicesWidth + controlsWidth > constraints.maxWidth;
+                final splitReading = leading != null && controlsWidth > constraints.maxWidth;
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (split) Align(alignment: AlignmentDirectional.centerStart, child: services!),
-                    controls(includeServices: !split),
+                    if (splitServices) Align(alignment: AlignmentDirectional.centerStart, child: services!),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 48),
+                      child: Row(
+                        children: [
+                          if (!splitServices && services != null) SizedBox(width: servicesWidth, child: services),
+                          if (leading != null && !splitReading) ...[
+                            SizedBox(width: sectionWidth, child: navigation?.section),
+                            Expanded(child: leading),
+                          ] else
+                            Expanded(child: navigation?.section ?? const SizedBox.shrink()),
+                          if (!splitReading) ...trailing,
+                        ],
+                      ),
+                    ),
+                    if (splitReading)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Row(children: [Expanded(child: leading), ...trailing]),
+                      ),
                   ],
                 );
               },
