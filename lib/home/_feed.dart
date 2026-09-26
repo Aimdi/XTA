@@ -1,4 +1,5 @@
 import 'package:xta/plugins/microblog_reader_shell.dart';
+import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_home_reading_controls.dart';
 import 'dart:async';
@@ -537,7 +538,29 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         flatAppBar: true,
         fixedHeader: true,
-        toolbarHeight: isAltMicrobloggingSource(tab.id) ? microblogToolbarHeight(context) : null,
+        toolbarHeight: tab.id == 'substack'
+            ? 52
+            : isAltMicrobloggingSource(tab.id)
+            ? microblogToolbarHeight(context)
+            : null,
+        toolbarBuilder: tab.id == 'substack'
+            ? (context) => GroupUnreadScope(
+                builder: (context, unreadIds) => SubstackCompactHeader(
+                  store: _dock,
+                  unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
+                  onPickSource: () => _pickSource(context),
+                  services: TextButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Scaffold.of(context).openDrawer();
+                    },
+                    onLongPress: () => showChromeAvatarSheet(context),
+                    icon: const Icon(Icons.menu),
+                    label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
+                  ),
+                ),
+              )
+            : null,
         leading: const DrawerAvatarButton(),
         titleBuilder: (context) {
           final source = available.firstWhere((option) => option.id == tab);

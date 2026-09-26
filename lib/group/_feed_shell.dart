@@ -40,6 +40,7 @@ class GroupFeedShell extends StatefulWidget {
   /// outer offset can otherwise move a newly selected plugin under that header.
   final bool fixedHeader;
   final double? toolbarHeight;
+  final WidgetBuilder? toolbarBuilder;
 
   /// The app bar's leading slot. The home feed puts the account avatar here (it
   /// opens the drawer, as X's does); a pushed group leaves it null for the
@@ -63,6 +64,7 @@ class GroupFeedShell extends StatefulWidget {
     this.flatAppBar = false,
     this.fixedHeader = false,
     this.toolbarHeight,
+    this.toolbarBuilder,
     this.leading,
     this.usesFeedCache = false,
   });
@@ -250,18 +252,23 @@ class _GroupFeedShellState extends State<GroupFeedShell> with AutomaticKeepAlive
       children: [
         SizedBox(
           height: toolbarHeight + bottom.preferredSize.height + MediaQuery.paddingOf(context).top,
-          child: AppBar(
-            toolbarHeight: toolbarHeight,
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            surfaceTintColor: Colors.transparent,
-            centerTitle: widget.centerTitle,
-            leading: widget.leading,
-            title: widget.titleBuilder(context),
-            actions: widget.actionsBuilder(context),
-            bottom: bottom,
-          ),
+          child: widget.toolbarBuilder != null
+              ? Material(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  child: SafeArea(bottom: false, child: Column(children: [widget.toolbarBuilder!(context), bottom])),
+                )
+              : AppBar(
+                  toolbarHeight: toolbarHeight,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  surfaceTintColor: Colors.transparent,
+                  centerTitle: widget.centerTitle,
+                  leading: widget.leading,
+                  title: widget.titleBuilder(context),
+                  actions: widget.actionsBuilder(context),
+                  bottom: bottom,
+                ),
         ),
         Expanded(
           child: PrimaryScrollController(

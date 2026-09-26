@@ -13,6 +13,7 @@ class PluginDockContent {
   final List<Widget> actions;
   final Widget? search;
   final Widget? leading;
+  final bool attention;
 
   /// Minimum reading-label space before applying the user's text scale.
   final double leadingWidth;
@@ -24,6 +25,7 @@ class PluginDockContent {
     this.actions = const [],
     this.search,
     this.leading,
+    this.attention = false,
     this.leadingWidth = 112,
     this.trailing = const [],
   });
@@ -346,12 +348,18 @@ class PluginDockOptionsButton extends StatelessWidget {
   final String source;
   final Widget? services;
   final bool includeActions;
+  final bool includeSearch;
+  final bool showSections;
+  final bool attention;
   const PluginDockOptionsButton({
     super.key,
     required this.store,
     required this.source,
     this.services,
     this.includeActions = false,
+    this.includeSearch = false,
+    this.showSections = true,
+    this.attention = false,
   });
 
   @override
@@ -359,7 +367,7 @@ class PluginDockOptionsButton extends StatelessWidget {
     key: const ValueKey('home-plugin-options'),
     style: pluginActionButtonStyle,
     tooltip: includeActions ? MaterialLocalizations.of(context).showMenuTooltip : L10n.of(context).filters,
-    icon: const Icon(Icons.tune),
+    icon: Badge(isLabelVisible: attention, child: const Icon(Icons.tune)),
     onPressed: () => _open(context),
   );
 
@@ -407,7 +415,7 @@ class PluginDockOptionsButton extends StatelessWidget {
                     ],
                   ),
                   if (services != null) services!,
-                  for (var index = 0; index < tabs.length; index++)
+                  for (var index = 0; showSections && index < tabs.length; index++)
                     ListTile(
                       key: ValueKey('home-section-$index'),
                       minTileHeight: 48,
@@ -422,10 +430,10 @@ class PluginDockOptionsButton extends StatelessWidget {
                         }
                       },
                     ),
-                  if (tabs.isEmpty && navigation?.section != null) navigation!.section!,
+                  if (showSections && tabs.isEmpty && navigation?.section != null) navigation!.section!,
                   if (includeActions && navigation?.leading != null)
                     Padding(padding: const EdgeInsets.all(16), child: navigation!.leading!),
-                  if (reading != null || following != null) ...[
+                  if (reading != null || following != null || (includeSearch && navigation?.search != null)) ...[
                     const Divider(),
                     IconButtonTheme(
                       data: const IconButtonThemeData(style: pluginActionButtonStyle),
@@ -433,6 +441,8 @@ class PluginDockOptionsButton extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 4,
                         children: [
+                          if (includeSearch && (reading?.search ?? navigation?.search) != null)
+                            (reading?.search ?? navigation?.search)!,
                           if (reading?.leading != null) reading!.leading!,
                           if (following?.leading != null) following!.leading!,
                           ...?following?.trailing,

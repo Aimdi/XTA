@@ -143,6 +143,7 @@ class SubstackReadingToolbar extends StatelessWidget {
     return PluginDockContribution(
       slot: 'reading',
       content: PluginDockContent(
+        attention: filtered || options.query.trim().isNotEmpty || feed.state.failedCount > 0,
         leading: TextButton.icon(
           style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
           onPressed: () => _openPublications(context),
@@ -151,7 +152,7 @@ class SubstackReadingToolbar extends StatelessWidget {
         ),
         search: IconButton(
           style: pluginActionButtonStyle,
-          tooltip: l10n.plugin_mastodon_loaded_search,
+          tooltip: l10n.search,
           onPressed: () => _openOptions(context, autofocus: true),
           icon: Badge(isLabelVisible: options.query.trim().isNotEmpty, child: const Icon(Icons.search)),
         ),
@@ -187,20 +188,20 @@ class SubstackHomeReadingDock extends StatelessWidget {
   Widget build(BuildContext context) {
     if (PluginHomeDockScope.maybeOf(context) == null) return const SizedBox.shrink();
     final feed = context.read<SubstackFeedStore>();
-    return TripleBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
+    return ScopedBuilder<SubstackPublicationsStore, List<SubstackPublication>>(
       store: context.read<SubstackPublicationsStore>(),
-      builder: (context, pubs) => pubs.state.isEmpty
+      onState: (context, pubs) => pubs.isEmpty
           ? const SizedBox.shrink()
-          : TripleBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
+          : ScopedBuilder<SubstackFeedStore, SubstackFeedSnapshot>(
               store: feed,
-              builder: (context, _) => TripleBuilder<SubstackReadStore, Set<String>>(
+              onState: (context, _) => ScopedBuilder<SubstackReadStore, Set<String>>(
                 store: context.read<SubstackReadStore>(),
-                builder: (context, read) => SubstackReadingToolbar(
+                onState: (context, read) => SubstackReadingToolbar(
                   key: ValueKey(slot),
                   slot: slot,
                   feed: feed,
-                  publications: pubs.state,
-                  readIds: read.state,
+                  publications: pubs,
+                  readIds: read,
                   onFilter: onFilter,
                   publishToHome: true,
                 ),
