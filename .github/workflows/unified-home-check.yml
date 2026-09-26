@@ -11,15 +11,18 @@ on:
       - '.github/workflows/unified-home-check.yml'
 permissions:
   contents: read
+concurrency:
+  group: unified-home-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   compact-home:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
           flutter-version-file: .fvmrc
           cache: true
@@ -28,5 +31,22 @@ jobs:
           flutter pub get
           dart run intl_utils:generate
           dart run flutter_iconpicker:generate_packs --packs material
-      - name: New Home behavior
-        run: flutter test --no-pub --reporter expanded test/unified_home_picker_test.dart test/unified_home_layout_test.dart
+      - name: New Home behavior and assembled previews
+        run: >-
+          flutter test --no-pub --reporter expanded --timeout 90s
+          --dart-define=RENDER_UNIFIED_HOME=true
+          test/unified_home_picker_test.dart
+          test/unified_home_layout_test.dart
+          test/plugin_home_dock_test.dart
+          test/home_timeline_picker_test.dart
+          test/alt_microblogging_journey_test.dart
+          test/plugin_reader_accessibility_test.dart
+          test/substack_home_controls_test.dart
+      - name: Layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unified-home-layouts-${{ github.run_id }}
+          path: review-artifacts/renders/*.png
+          if-no-files-found: warn
+          retention-days: 2
