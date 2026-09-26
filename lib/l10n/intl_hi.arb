@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "जब यह ऐप चल रहा हो तो अन्य ऐप्स बैकग्राउंड में ऑडियो चला सकते हैं",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "वैकल्पिक माइक्रोब्लॉगिंग",
+  "alt_microblogging": "माइक्रोब्लॉग",
   "@alt_microblogging": {},
   "alt_microblogging_group": "माइक्रोब्लॉगिंग सेवाओं को एक साथ दिखाएँ",
   "@alt_microblogging_group": {},

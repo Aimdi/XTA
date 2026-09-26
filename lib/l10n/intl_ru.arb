@@ -67,7 +67,7 @@
   "@allow_background_play_other_apps": {},
   "allow_background_play_other_apps_description": "Другие приложения могут воспроизводить аудио в фоне, когда это приложение работает",
   "@allow_background_play_other_apps_description": {},
-  "alt_microblogging": "Альтернативные микроблоги",
+  "alt_microblogging": "Микроблоги",
   "@alt_microblogging": {},
   "alt_microblogging_group": "Объединить сервисы микроблогов",
   "@alt_microblogging_group": {},
