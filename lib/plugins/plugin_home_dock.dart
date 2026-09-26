@@ -12,6 +12,7 @@ class PluginDockContent {
   final List<Widget> actions;
   final Widget? search;
   final Widget? leading;
+  /// Minimum reading-label space before applying the user's text scale.
   final double leadingWidth;
   final List<Widget> trailing;
   const PluginDockContent({
@@ -196,7 +197,9 @@ class PluginDockRow extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final sectionWidth = navigation?.sectionWidth ?? 112;
-                final leadingWidth = leading == null ? 0.0 : leadingContent!.leadingWidth;
+                final leadingWidth = leading == null
+                    ? 0.0
+                    : MediaQuery.textScalerOf(context).scale(leadingContent!.leadingWidth);
                 final controlsWidth = sectionWidth + leadingWidth + trailing.length * 48 + 8;
                 final splitServices = services != null && servicesWidth + controlsWidth > constraints.maxWidth;
                 final splitReading = leading != null && controlsWidth > constraints.maxWidth;
@@ -218,7 +221,7 @@ class PluginDockRow extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (splitReading)
+                    if (leading != null && splitReading)
                       ConstrainedBox(
                         constraints: const BoxConstraints(minHeight: 48),
                         child: Row(children: [Expanded(child: leading), ...trailing]),
