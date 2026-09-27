@@ -1,0 +1,1 @@
+Consistent swipes across Home, plugin sections, profiles, search and Subscriptions. Swipe the Saved source filter to change sources. Safer release-only selection, multi-touch cancellation, system-edge protection, RTL and reduced-motion support. Reading positions, zoom, media controls, long presses and visible navigation remain available. Includes aimdi148's slim plugin headers.
