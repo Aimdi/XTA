@@ -52,7 +52,7 @@ void main() {
           AccountDiagnostics(id: 'private-csrf-token', screenName: null, rateLimited: {}, notFoundUntil: null),
         ],
       ).toPlainText();
-      expect(text, contains('unnamed account: ok'));
+      expect(text, contains('account 1: ok'));
       expect(text, isNot(contains('private-csrf-token')));
     });
 
@@ -93,19 +93,27 @@ void main() {
       }
     });
 
-    test('names the endpoint and account behind a failure', () {
+    test('distinguishes accounts and endpoint health without identifying signed-in users', () {
       final text = _report(
         accounts: [
           AccountDiagnostics(
-            id: 'abc',
-            screenName: 'reader',
+            id: 'private-csrf-token',
+            screenName: 'private_reader',
             rateLimited: {'/i/api/graphql/x/SearchTimeline': DateTime.utc(2026, 7, 25, 10)},
             notFoundUntil: DateTime.utc(2026, 7, 25, 15),
+          ),
+          const AccountDiagnostics(
+            id: 'private-second-token',
+            screenName: 'private_second_reader',
+            rateLimited: {},
+            notFoundUntil: null,
           ),
         ],
       ).toPlainText();
 
-      expect(text, contains('@reader'));
+      expect(text, contains('account 1: auth broken'));
+      expect(text, contains('account 2: ok'));
+      expect(text, isNot(contains('private')));
       expect(text, contains('429 /i/api/graphql/x/SearchTimeline until 2026-07-25T10:00:00.000Z'));
       expect(text, contains('auth broken until 2026-07-25T15:00:00.000Z'));
     });
