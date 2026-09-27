@@ -95,7 +95,7 @@ const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
   FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
+  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, mark: pluginMark(XPlugin(), size: 16)),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -106,7 +106,7 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
 List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
     FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
+    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, mark: pluginMark(XPlugin(), size: 16)),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
     if (pluginId == pluginIdX) continue;

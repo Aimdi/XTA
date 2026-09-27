@@ -86,7 +86,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
             id: id,
             label: L10n.of(context).alt_microblogging,
             subtitle: members.map((option) => option.label).join(' · '),
-            mark: const Icon(Icons.forum_outlined, size: 22),
+            mark: const Icon(altMicrobloggingIcon, size: 22),
             plugin: true,
             unread: members.any((option) => option.unread),
           )
@@ -221,7 +221,11 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             leading: SizedBox(width: 24, height: 24, child: ExcludeSemantics(child: option.mark)),
             title: Text(option.label, style: TextStyle(fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500)),
-            subtitle: option.subtitle == null ? null : Text(option.subtitle!),
+            subtitle: microblogs
+                ? _microblogServices()
+                : option.subtitle == null
+                ? null
+                : Text(option.subtitle!),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -256,4 +260,20 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
       ),
     );
   }
+
+  Widget _microblogServices() => Wrap(
+    spacing: 8,
+    runSpacing: 4,
+    children: [
+      for (final option in widget.options.where((option) => isAltMicrobloggingSource(option.id)))
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(child: SizedBox.square(dimension: 16, child: option.mark)),
+            const SizedBox(width: 4),
+            Flexible(child: Text(option.label)),
+          ],
+        ),
+    ],
+  );
 }
