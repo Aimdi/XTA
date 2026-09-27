@@ -1,23 +1,24 @@
-## XTA — aimdi147
+## XTA — aimdi148
 
-### Compact Substack reader
+### Slim headers across plugins
 
-This release delivers the compact Substack layout that was missing from aimdi146.
+The compact Substack layout now extends to the other shared plugin headers,
+leaving more space for posts and articles.
 
-- A single 52dp bar holds the actual Substack logo, Home, Inbox, Notes and Library icons, plus Search and Options.
-- At narrow widths Search moves into Options, preserving full-size section buttons and Back.
-- Tap the logo in Home to switch sources. Unread indicators remain visible.
-- Following publications, search, sorting, filters, retry, discovery and other actions stay available in Options.
-- Filter badges and publication-error warnings now update correctly after changing controls or retrying.
-- Light, dark and true-black themes, enlarged text, right-to-left layouts, local state and reading positions are preserved.
+- A single 52dp bar combines the plugin mark, section navigation, search or the primary action, and options.
+- Section icons appear when there is room; narrow layouts use a compact section picker. Standalone readers no longer repeat the title above their navigation.
+- Tap the plugin mark in Home to switch sources. Unread indicators remain visible.
+- Search, secondary actions, settings and full-client access remain available. The app drawer and Microblogs service selector are in options for docked readers.
+- Section menus correctly show no selected entry when viewing content outside the listed sections, including Reddit subreddits.
+- Full-size touch targets, light/dark/true-black themes, enlarged text, right-to-left layouts, loaded feeds and reading positions are preserved.
 
-Includes PR #308 and all aimdi146 Microblogs changes.
+Includes PR #310 and all aimdi147 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi147_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001166**, above
-every aimdi146 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi148_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001170**, above
+every aimdi147 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -25,4 +26,4 @@ the full Flutter test suite on the tagged source before building. It verifies
 all four APK variants, versions and signing certificates before publication.
 **`release-build.json`** and **`SHA256SUMS`** accompany the APKs.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi146)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi147)
