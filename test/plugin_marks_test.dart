@@ -11,6 +11,8 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
+import 'package:xta/plugins/threads/threads_plugin.dart';
+import 'package:xta/plugins/x/x_plugin.dart';
 
 void main() {
   testWidgets('plugin marks are glyphs, not the old generic icons', (
@@ -25,6 +27,8 @@ void main() {
       InstagramPlugin(),
       BooruPlugin(),
       EhViewerPlugin(),
+      XPlugin(),
+      ThreadsPlugin(),
     ];
 
     await tester.pumpWidget(
@@ -38,7 +42,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(PluginBrandMark), findsNWidgets(8));
+    expect(find.byType(PluginBrandMark), findsNWidgets(10));
     expect(find.byType(BlueskyButterflyIcon), findsOneWidget);
     expect(find.byIcon(Icons.inventory_2), findsOneWidget);
     expect(find.byIcon(Icons.cloud), findsNothing);
@@ -49,5 +53,7 @@ void main() {
     expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
     expect(find.byIcon(Icons.photo_library_outlined), findsNothing);
     expect(find.byIcon(Icons.collections_bookmark_outlined), findsNothing);
+    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(Icons.alternate_email), findsNothing);
   });
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/x/x_plugin.dart';
 
 /// Service mark for a plugin — official glyphs where we have them, Material
 /// fallback otherwise.
@@ -22,8 +23,13 @@ class PluginBrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tint = color ?? plugin.brandColor;
+    final tint = color ?? switch (plugin.id) {
+      pluginIdX || pluginIdThreads => Theme.of(context).colorScheme.onSurface,
+      _ => plugin.brandColor,
+    };
     return switch (plugin.id) {
+      pluginIdX => _paint(_PathPainter(_x, tint)),
+      pluginIdThreads => _paint(_PathPainter(_threads, tint)),
       pluginIdBluesky => BlueskyButterflyIcon(size: size, color: tint),
       pluginIdSubstack => _paint(_SubstackPainter(tint)),
       pluginIdPixiv => _paint(_PathPainter(_pixiv, tint)),
@@ -297,4 +303,65 @@ final _pixiv = Path()
   ..cubicTo(17.437, 13.759, 17.971, 12.524, 17.977, 11.024)
   ..cubicTo(17.972, 9.484, 17.473, 8.16, 16.557, 7.164)
   ..cubicTo(15.639, 6.172, 14.283, 5.519, 12.555, 5.518)
+  ..close();
+
+// X and Threads geometry: Simple Icons (CC0), revision
+// d4e6ba93e48f178898707f0145ec285f28b64b38, icons/x.svg and icons/threads.svg.
+// https://github.com/simple-icons/simple-icons/tree/d4e6ba93e48f178898707f0145ec285f28b64b38/icons
+final _x = Path()
+  ..fillType = PathFillType.evenOdd
+  ..moveTo(14.234, 10.162)
+  ..lineTo(22.977, 0)
+  ..lineTo(20.905, 0)
+  ..lineTo(13.314, 8.824)
+  ..lineTo(7.251, 0)
+  ..lineTo(0.258, 0)
+  ..lineTo(9.426, 13.343)
+  ..lineTo(0.258, 24)
+  ..lineTo(2.33, 24)
+  ..lineTo(10.346, 14.682)
+  ..lineTo(16.749, 24)
+  ..lineTo(23.742, 24)
+  ..lineTo(14.234, 10.162)
+  ..close()
+  ..moveTo(11.397, 13.461)
+  ..lineTo(10.468, 12.132)
+  ..lineTo(3.076, 1.56)
+  ..lineTo(6.258, 1.56)
+  ..lineTo(12.223, 10.092)
+  ..lineTo(13.152, 11.421)
+  ..lineTo(20.906, 22.511)
+  ..lineTo(17.724, 22.511)
+  ..lineTo(11.397, 13.461)
+  ..close();
+
+final _threads = Path()
+  ..fillType = PathFillType.evenOdd
+  ..moveTo(18.263, 11.097)
+  ..cubicTo(18.233, 7.611, 16.343, 5.511, 13.152, 5.511)
+  ..cubicTo(11.022, 5.511, 9.23, 6.474, 8.289, 8.01)
+  ..lineTo(10.351, 9.448)
+  ..cubicTo(10.886, 8.605, 11.623, 7.905, 12.979, 7.905)
+  ..cubicTo(14.507, 7.905, 15.297, 8.755, 15.523, 10.336)
+  ..cubicTo(14.783028, 10.222618, 14.035606, 10.16479, 13.287, 10.163)
+  ..cubicTo(9.162, 10.163, 7.219, 12.03, 7.219, 14.499)
+  ..cubicTo(7.219, 16.968, 9.162, 18.489, 12.023, 18.489)
+  ..cubicTo(15.162, 18.489, 17.036, 16.374, 17.804, 13.754)
+  ..cubicTo(18.602, 14.115, 19.152, 14.958, 19.152, 16.224)
+  ..cubicTo(19.152, 19.611, 15.245, 21.456, 11.932, 21.456)
+  ..cubicTo(7.047, 21.456, 3.855, 18.249, 3.855, 13.032)
+  ..cubicTo(3.855, 6.64, 8.078, 2.545, 13.755, 2.545)
+  ..cubicTo(17.563, 2.545, 19.445, 4.216, 20.725, 6.459)
+  ..lineTo(22.833, 4.984)
+  ..cubicTo(21.44, 2.078, 18.331, 0, 13.663, 0)
+  ..cubicTo(6.227, 0, 1.168, 5.277, 1.168, 12.934)
+  ..cubicTo(1.168, 19.934, 6.121, 24, 12.024, 24)
+  ..cubicTo(16.902, 24, 21.833, 21.154, 21.833, 16.284)
+  ..cubicTo(21.833, 13.739, 20.373, 12.053, 18.264, 11.097)
+  ..moveTo(11.934, 15.952)
+  ..cubicTo(10.857, 15.952, 9.908, 15.44, 9.908, 14.499)
+  ..cubicTo(9.908, 13.016, 11.73, 12.565, 13.514, 12.565)
+  ..cubicTo(14.192, 12.565, 14.854, 12.61, 15.441, 12.738)
+  ..cubicTo(15.019, 14.665, 13.77, 15.953, 11.933, 15.952)
+  ..lineTo(11.934, 15.952)
   ..close();
