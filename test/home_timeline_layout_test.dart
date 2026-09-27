@@ -284,6 +284,19 @@ void main() {
         final feed = tester.getRect(find.byType(SubscriptionGroupScreenContent));
         final nav = tester.getRect(find.byType(HomeNavigationBar));
         expect(feed.bottom, closeTo(nav.top, 1));
+        final swipe = await tester.startGesture(tester.getCenter(find.byKey(const ValueKey('home-source-swipe'))));
+        await swipe.moveBy(Offset(large ? 110 : -110, 0));
+        await tester.pump();
+        expect(h.selected.state, FeedTab.following);
+        expect(tester.getRect(find.byType(SubscriptionGroupScreenContent)), feed);
+        expect(find.byKey(const ValueKey('home-swipe-preview')), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await expectLater(
+          find.byKey(const ValueKey('home-render')),
+          matchesGoldenFile('../review-artifacts/renders/home-source-swipe-$variant.png'),
+        );
+        await swipe.cancel();
+        await tester.pumpAndSettle();
         expect(tester.getSize(find.byKey(_media)).height, greaterThanOrEqualTo(48));
         expect(find.byKey(_order).hitTestable(), findsOneWidget);
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
@@ -429,6 +442,29 @@ void main() {
     expect(h.scroll.offset, closeTo(offset, 1));
     expect(tester.takeException(), isNull);
   }, skip: _before);
+
+  testWidgets('reading swipes switch source and return to cached posts and position', (tester) async {
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(() => h.seed(postCount: 20));
+    await tester.pumpWidget(h.app(xLookLightTheme(null)));
+    await _waitForFollowing(tester);
+    final following = find.byType(SubscriptionGroupScreenContent);
+    await tester.drag(following, const Offset(0, -260));
+    await tester.pumpAndSettle();
+    final position = h.scroll.offset;
+    final cached = h.cache.getOrCreateController('home--1').items!;
+    await tester.drag(following, const Offset(-220, 0));
+    await tester.pump();
+    expect(h.selected.state, FeedTab.x);
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.drag(find.byType(ForYouTweets), const Offset(220, 0));
+    await tester.pumpAndSettle();
+    expect(h.selected.state, FeedTab.following);
+    expect(h.cache.getOrCreateController('home--1').items, orderedEquals(cached));
+    expect(h.scroll.offset, closeTo(position, 1));
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('Home media reuses cached posts and survives switching sources', (tester) async {
     final h = _HomeHarness();

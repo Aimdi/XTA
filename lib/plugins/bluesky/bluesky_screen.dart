@@ -254,6 +254,7 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
                 const Divider(height: 1),
                 Expanded(
                   child: PluginLazyTabs(
+                    onSelected: _selectTab,
                     index: tab,
                     children: [
                       (_) =>

@@ -16,6 +16,7 @@ import 'package:xta/plugins/reddit/reddit_plugin.dart';
 import 'package:xta/plugins/reddit/reddit_saved_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 export 'package:xta/plugins/reddit/reddit_states.dart' show redditErrorMessage;
 
@@ -109,7 +110,18 @@ class _RedditScreenState extends State<RedditScreen> with AutomaticKeepAliveClie
               actions: [RedditFeedActions(onRefresh: _refreshCurrent, onOpenSaved: _openSaved)],
             ),
             RedditSubredditChips(home: store),
-            Expanded(child: _body(source)),
+            Expanded(
+              child: ReaderSwipeNavigation(
+                index: source.mode.index,
+                count: PluginEmbedded.maybeOf(context) || source.viewingSubreddit ? 0 : RedditFeedMode.values.length,
+                identity: source.subreddit ?? 'reddit',
+                onChanged: (index) {
+                  store.selectMode(RedditFeedMode.values[index]);
+                  return true;
+                },
+                child: _body(source),
+              ),
+            ),
           ],
         ),
       ),

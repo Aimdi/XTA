@@ -37,6 +37,11 @@ class _TikTokScreenState extends State<TikTokScreen> {
   late final _TikTokTabStore _tabs;
   late final TikTokFollowingStore _following;
 
+  void _selectTab(int tab) {
+    _tabs.select(tab);
+    if (tab == 1) context.read<TikTokFollowsStore>().load();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -85,16 +90,13 @@ class _TikTokScreenState extends State<TikTokScreen> {
                   label: l10n.plugin_tiktok_tab_following,
                   icon: Icons.music_video_outlined,
                   selected: tab == 0,
-                  onTap: () => _tabs.select(0),
+                  onTap: () => _selectTab(0),
                 ),
                 PluginHomeTab(
                   label: l10n.plugin_tiktok_tab_accounts,
                   icon: Icons.people_outline,
                   selected: tab == 1,
-                  onTap: () {
-                    _tabs.select(1);
-                    context.read<TikTokFollowsStore>().load();
-                  },
+                  onTap: () => _selectTab(1),
                 ),
               ],
               actions: [
@@ -110,6 +112,7 @@ class _TikTokScreenState extends State<TikTokScreen> {
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
+                onSelected: _selectTab,
                 index: tab,
                 children: [
                   (_) => _FollowingTab(

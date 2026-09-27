@@ -18,6 +18,7 @@ import 'package:xta/plugins/bluesky/bluesky_search_store.dart';
 import 'package:xta/plugins/bluesky/bluesky_store.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 export 'bluesky_search_store.dart' show BlueskySearchTab;
 
@@ -135,7 +136,18 @@ class _BlueskySearchScreenState extends State<BlueskySearchScreen> {
                 ),
               ),
               if (state.tab == BlueskySearchTab.posts) _postFilters(context, state),
-              Expanded(child: _body(context, state)),
+              Expanded(
+                child: ReaderSwipeNavigation(
+                  index: state.tab.index,
+                  count: BlueskySearchTab.values.length,
+                  identity: state.query,
+                  onChanged: (index) {
+                    _store.select(BlueskySearchTab.values[index]);
+                    return true;
+                  },
+                  child: _body(context, state),
+                ),
+              ),
             ],
           ),
         ),

@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/home/edge_swipe.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/_photo.dart';
 import 'package:xta/tweet/media_strip.dart';
@@ -377,30 +376,25 @@ class _TweetMediaState extends State<TweetMedia> {
 
             return SizedBox(
               height: layout.height,
-              // The row owns horizontal drags that start on it, so without
-              // this a swipe over a post's media could not reach the home
-              // page view.
-              child: edgeSwipeToChangeHomePage(
-                context,
-                ListView.separated(
-                  controller: _controller,
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsetsDirectional.only(
-                    end: kTweetHorizontalPadding,
-                  ),
-                  itemCount: widget.media.length,
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(width: kMediaCardGap),
-                  itemBuilder: (context, index) => SizedBox(
-                    width: layout.widths[index],
-                    child: TweetMediaFrame(
-                      margin: EdgeInsets.zero,
-                      child: _card(
-                        context,
-                        index,
-                        fit: BoxFit.cover,
-                        showCounter: false,
-                      ),
+              // Keep horizontal gestures in the media row, even at its ends.
+              child: ListView.separated(
+                controller: _controller,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsetsDirectional.only(
+                  end: kTweetHorizontalPadding,
+                ),
+                itemCount: widget.media.length,
+                separatorBuilder: (_, _) =>
+                    const SizedBox(width: kMediaCardGap),
+                itemBuilder: (context, index) => SizedBox(
+                  width: layout.widths[index],
+                  child: TweetMediaFrame(
+                    margin: EdgeInsets.zero,
+                    child: _card(
+                      context,
+                      index,
+                      fit: BoxFit.cover,
+                      showCounter: false,
                     ),
                   ),
                 ),

@@ -1,6 +1,7 @@
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:xta/ui/reader_tab_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -288,7 +289,9 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with Ticker
               ),
             ];
           },
-          body: state.selected == PluginProfileFeedTab.saved
+          body: ReaderTabNavigation(
+            controller: _tabController,
+            child: state.selected == PluginProfileFeedTab.saved
               ? ScopedBuilder<BlueskyLikesStore, List<BlueskyPost>>(
                   store: context.read<BlueskyLikesStore>(),
                   onState: (context, liked) => _feedBody(
@@ -298,6 +301,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with Ticker
                   ),
                 )
               : _feedBody(context, state),
+          ),
         ),
       ),
     );

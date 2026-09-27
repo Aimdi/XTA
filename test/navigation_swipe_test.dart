@@ -13,6 +13,7 @@ import 'package:xta/home/_feed.dart';
 import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/group_screen.dart';
+import 'package:xta/home/home_swipe_navigation.dart' show HomeSwipeNavigation;
 
 NavigationPage _page(String id, IconData icon) =>
     NavigationPage(id, (_) => id, Icon(icon), Icon(icon));
@@ -20,6 +21,7 @@ NavigationPage _page(String id, IconData icon) =>
 Widget _scaffold({
   int pages = 4,
   bool disableAnimations = false,
+  bool rtl = false,
   Widget Function(int index)? pageBuilder,
 }) {
   final prefs = PrefServiceCache(
@@ -42,6 +44,10 @@ Widget _scaffold({
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: L10n.delegate.supportedLocales,
+      builder: (context, child) => Directionality(
+        textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+        child: child!,
+      ),
       home: Provider<GroupsModel>(
         create: (_) => GroupsModel(prefs),
         child: ScaffoldWithBottomNavigation(
@@ -129,22 +135,22 @@ void main() {
   group('pageAfterNavigationSwipe', () {
     test('a leftward swipe advances, a rightward one goes back', () {
       expect(
-        pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: -800),
+        pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: -800, distance: -32),
         2,
       );
       expect(
-        pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: 800),
+        pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: 800, distance: 32),
         0,
       );
     });
 
     test('the ends clamp rather than wrapping around', () {
       expect(
-        pageAfterNavigationSwipe(current: 0, pageCount: 4, velocity: 800),
+        pageAfterNavigationSwipe(current: 0, pageCount: 4, velocity: 800, distance: 32),
         0,
       );
       expect(
-        pageAfterNavigationSwipe(current: 3, pageCount: 4, velocity: -800),
+        pageAfterNavigationSwipe(current: 3, pageCount: 4, velocity: -800, distance: -32),
         3,
       );
     });
@@ -214,21 +220,17 @@ void main() {
       );
     });
 
-    test(
-      'a flick decides the direction when it disagrees with where the finger stopped',
-      () {
-        // Dragged back to the right, then flicked left: the flick is the intent.
-        expect(
-          pageAfterNavigationSwipe(
-            current: 1,
-            pageCount: 4,
-            velocity: -800,
-            distance: 60,
-          ),
-          2,
-        );
-      },
-    );
+    test('an opposing release cancels rather than unexpectedly changing direction', () {
+      expect(pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: -800, distance: 60), 1);
+    });
+
+    test('a fast but tiny movement cannot change tab', () {
+      expect(pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: -1600, distance: -8), 1);
+    });
+
+    test('a moderate opposing release cancels a long drag', () {
+      expect(pageAfterNavigationSwipe(current: 1, pageCount: 4, velocity: 500, distance: -100), 1);
+    });
 
     test('a single tab has nowhere to go', () {
       expect(
@@ -248,6 +250,68 @@ void main() {
   });
 
   group('swiping the navigation bar', () {
+    testWidgets('touches across the feed and navigation bar cancel both gestures', (tester) async {
+      final sources = <int>[];
+      await tester.pumpWidget(
+        _scaffold(
+          pageBuilder: (page) => HomeSwipeNavigation(
+            index: 1,
+            count: 3,
+            identity: 'sources',
+            onChanged: (source) {
+              sources.add(source);
+              return true;
+            },
+            child: SizedBox.expand(key: const ValueKey('feed-surface'), child: Text('body$page')),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final feed = tester.getCenter(find.byKey(const ValueKey('feed-surface')));
+      final bar = tester.getCenter(find.byType(NavigationBar));
+      for (final startInFeed in [true, false]) {
+        final first = await tester.startGesture(startInFeed ? feed : bar, pointer: 41);
+        await first.moveBy(const Offset(-50, 0));
+        await first.moveBy(const Offset(-60, 0));
+        final second = await tester.startGesture(startInFeed ? bar : feed, pointer: 42);
+        await second.moveBy(const Offset(-110, 0));
+        await second.up();
+        await first.up();
+        await tester.pumpAndSettle();
+        expect(sources, isEmpty);
+        expect(find.text('body0'), findsOneWidget);
+      }
+      final held = await tester.startGesture(bar, pointer: 43);
+      final next = await tester.startGesture(feed, pointer: 44);
+      await next.moveBy(const Offset(-110, 0));
+      await next.up();
+      await held.cancel();
+      await tester.pumpAndSettle();
+      expect(sources, isEmpty);
+      expect(find.text('body0'), findsOneWidget);
+    });
+
+    testWidgets('a rightward swipe advances in RTL', (tester) async {
+      await tester.pumpWidget(_scaffold(rtl: true));
+      await tester.pumpAndSettle();
+      await _swipeBar(tester, const Offset(220, 0));
+      expect(find.text('body1'), findsOneWidget);
+    });
+
+    testWidgets('adding a second finger cancels a pending navigation', (tester) async {
+      await tester.pumpWidget(_scaffold());
+      await tester.pumpAndSettle();
+      final center = tester.getCenter(find.byType(NavigationBar));
+      final first = await tester.startGesture(center, pointer: 21);
+      await first.moveBy(const Offset(-40, 0));
+      await first.moveBy(const Offset(-100, 0));
+      final second = await tester.startGesture(center + const Offset(70, 0), pointer: 22);
+      await first.up();
+      await second.cancel();
+      await tester.pumpAndSettle();
+      expect(find.text('body0'), findsOneWidget);
+    });
+
     testWidgets('uses the shared non-overlaying Home navigation surface', (
       tester,
     ) async {

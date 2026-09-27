@@ -1,3 +1,4 @@
+import 'package:xta/ui/reader_tab_view.dart';
 import 'dart:ui' as ui;
 
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
@@ -355,7 +356,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
         body: TweetContextScope(
           child: SafeArea(
             top: false,
-            child: TabBarView(
+            child: ReaderTabView(
               controller: _tabController,
               children: [
                 ProfileTweets(

@@ -141,6 +141,7 @@ class _RssScreenState extends State<RssScreen> {
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
+                onSelected: _view.select,
                 index: _tab,
                 children: [
                   (_) => _HomePane(

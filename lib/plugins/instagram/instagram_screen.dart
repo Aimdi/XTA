@@ -101,10 +101,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
                   label: l10n.plugin_instagram_tab_accounts,
                   icon: Icons.people_outline,
                   selected: tab == 2,
-                  onTap: () {
-                    _tabs.select(2);
-                    context.read<InstagramFollowsStore>().load();
-                  },
+                  onTap: () => _selectTab(2),
                 ),
               ],
               actions: [
@@ -126,6 +123,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
+                onSelected: _selectTab,
                 index: tab,
                 children: [
                   (_) => _ForYouTab(
@@ -160,6 +158,7 @@ class _InstagramScreenState extends State<InstagramScreen> {
 
   Future<void> _selectTab(int tab) async {
     _tabs.select(tab);
+    if (tab == 2) await context.read<InstagramFollowsStore>().load();
     if (tab == 0 && _forYou.state.isEmpty) await _forYou.refresh();
     if (tab == 1 && _following.state.isEmpty) await _following.refresh();
   }

@@ -106,6 +106,7 @@ class _HnScreenState extends State<HnScreen> {
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
+                onSelected: _tabs.select,
                 index: tab,
                 children: [
                   (_) => _FeedTab(

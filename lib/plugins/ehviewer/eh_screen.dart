@@ -184,7 +184,11 @@ class _EhScreenState extends State<EhScreen> {
                 ],
               ),
             Expanded(
-              child: PluginLazyTabs(index: _tab, children: [for (var i = 0; i < 6; i++) (_) => _body(l10n)]),
+              child: PluginLazyTabs(
+                onSelected: _select,
+                index: _tab,
+                children: [for (var i = 0; i < 6; i++) (_) => _body(l10n)],
+              ),
             ),
           ],
         ),

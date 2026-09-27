@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/contrast.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 const pluginActionButtonStyle = ButtonStyle(
   minimumSize: WidgetStatePropertyAll(Size.square(48)),
@@ -199,30 +200,33 @@ class PluginCompactTabs extends StatelessWidget {
         accent ?? tweetReadableAccentColor(context),
         Theme.of(context).scaffoldBackgroundColor,
       );
-      return Row(
-        children: [
-          for (final tab in tabs)
-            Expanded(
-              child: Semantics(
-                selected: tab.selected,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(width: 2, color: tab.selected ? color : Colors.transparent)),
-                  ),
-                  child: IconButton(
-                    style: pluginActionButtonStyle,
-                    tooltip: tab.label,
-                    onPressed: tab.onTap,
-                    icon: Icon(
-                      tab.icon,
-                      size: 22,
-                      color: tab.selected ? color : Theme.of(context).colorScheme.onSurfaceVariant,
+      return _PluginSectionSwipe(
+        tabs: tabs,
+        child: Row(
+          children: [
+            for (final tab in tabs)
+              Expanded(
+                child: Semantics(
+                  selected: tab.selected,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(width: 2, color: tab.selected ? color : Colors.transparent)),
+                    ),
+                    child: IconButton(
+                      style: pluginActionButtonStyle,
+                      tooltip: tab.label,
+                      onPressed: tab.onTap,
+                      icon: Icon(
+                        tab.icon,
+                        size: 22,
+                        color: tab.selected ? color : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       );
     },
   );
@@ -253,55 +257,79 @@ class PluginSectionPicker extends StatelessWidget {
       accent ?? tweetReadableAccentColor(context),
       Theme.of(context).scaffoldBackgroundColor,
     );
-    return PopupMenuButton<int>(
-      tooltip: iconOnly ? label : MaterialLocalizations.of(context).showMenuTooltip,
-      initialValue: selected < 0 ? null : selected,
-      position: PopupMenuPosition.under,
-      onSelected: (index) => tabs[index].onTap(),
-      itemBuilder: (context) => [
-        for (var index = 0; index < tabs.length; index++)
-          PopupMenuItem<int>(
-            value: index,
-            height: 48,
-            child: Semantics(
-              selected: index == selected,
-              child: Row(
-                children: [
-                  Icon(tabs[index].icon, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(child: Text(tabs[index].label)),
-                  if (index == selected) ...[const SizedBox(width: 8), const Icon(Icons.check, size: 18)],
-                ],
+    return _PluginSectionSwipe(
+      tabs: tabs,
+      child: PopupMenuButton<int>(
+        tooltip: iconOnly ? label : MaterialLocalizations.of(context).showMenuTooltip,
+        initialValue: selected < 0 ? null : selected,
+        position: PopupMenuPosition.under,
+        onSelected: (index) => tabs[index].onTap(),
+        itemBuilder: (context) => [
+          for (var index = 0; index < tabs.length; index++)
+            PopupMenuItem<int>(
+              value: index,
+              height: 48,
+              child: Semantics(
+                selected: index == selected,
+                child: Row(
+                  children: [
+                    Icon(tabs[index].icon, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(tabs[index].label)),
+                    if (index == selected) ...[const SizedBox(width: 8), const Icon(Icons.check, size: 18)],
+                  ],
+                ),
               ),
             ),
-          ),
-      ],
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: iconOnly ? 4 : 12, vertical: verticalPadding),
-          child: Row(
-            children: [
-              Icon(current?.icon ?? Icons.menu, size: 20, color: color),
-              if (!iconOnly) ...[
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.labelLarge?.copyWith(color: tweetPrimaryColor(context), fontWeight: FontWeight.w700),
+        ],
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: iconOnly ? 4 : 12, vertical: verticalPadding),
+            child: Row(
+              children: [
+                Icon(current?.icon ?? Icons.menu, size: 20, color: color),
+                if (!iconOnly) ...[
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(color: tweetPrimaryColor(context), fontWeight: FontWeight.w700),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 4),
+                  const SizedBox(width: 4),
+                ],
+                Icon(Icons.expand_more, size: iconOnly ? 16 : 20, color: tweetSecondaryColor(context)),
               ],
-              Icon(Icons.expand_more, size: iconOnly ? 16 : 20, color: tweetSecondaryColor(context)),
-            ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PluginSectionSwipe extends StatelessWidget {
+  final List<PluginHomeTab> tabs;
+  final Widget child;
+  const _PluginSectionSwipe({required this.tabs, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = tabs.indexWhere((tab) => tab.selected);
+    return ReaderSwipeNavigation(
+      index: selected,
+      count: selected < 0 ? 0 : tabs.length,
+      identity: tabs.map((tab) => tab.label).join('|'),
+      onChanged: (index) {
+        tabs[index].onTap();
+        return true;
+      },
+      child: child,
     );
   }
 }

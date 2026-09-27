@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/saved/saved_content_index.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 enum SavedSource { all, x, reddit, mastodon, bluesky, other }
 
@@ -46,29 +47,38 @@ class SavedSourceButton extends StatelessWidget {
       SavedSource.bluesky => l10n.plugin_bluesky_title,
       SavedSource.mastodon => l10n.plugin_mastodon_title,
     };
-    return PopupMenuButton<SavedSource>(
-      key: const ValueKey('saved-source-filter'),
-      tooltip: l10n.home_networks,
-      initialValue: selected,
-      onSelected: onSelected,
-      itemBuilder: (context) => [
-        for (final source in SavedSource.values)
-          CheckedPopupMenuItem(value: source, checked: source == selected, child: Text(label(source))),
-      ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.public,
-              size: 18,
-              color: selected == SavedSource.all ? null : Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(width: 6),
-            Text(selected == SavedSource.all ? l10n.home_networks : label(selected)),
-            const Icon(Icons.expand_more, size: 16),
-          ],
+    return ReaderSwipeNavigation(
+      index: selected.index,
+      count: SavedSource.values.length,
+      identity: SavedSource,
+      onChanged: (index) {
+        onSelected(SavedSource.values[index]);
+        return true;
+      },
+      child: PopupMenuButton<SavedSource>(
+        key: const ValueKey('saved-source-filter'),
+        tooltip: l10n.home_networks,
+        initialValue: selected,
+        onSelected: onSelected,
+        itemBuilder: (context) => [
+          for (final source in SavedSource.values)
+            CheckedPopupMenuItem(value: source, checked: source == selected, child: Text(label(source))),
+        ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.public,
+                size: 18,
+                color: selected == SavedSource.all ? null : Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(width: 6),
+              Text(selected == SavedSource.all ? l10n.home_networks : label(selected)),
+              const Icon(Icons.expand_more, size: 16),
+            ],
+          ),
         ),
       ),
     );

@@ -232,6 +232,7 @@ class _SubstackScreenState extends State<SubstackScreen> {
                 const Divider(height: 1),
                 Expanded(
                   child: PluginLazyTabs(
+                    onSelected: _selectTab,
                     index: _tab,
                     children: [
                       (_) => _PostsPane(

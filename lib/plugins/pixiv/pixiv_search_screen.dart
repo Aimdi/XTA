@@ -1,3 +1,4 @@
+import 'package:xta/ui/reader_tab_view.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -291,7 +292,7 @@ class _PixivSearchScreenState extends State<PixivSearchScreen>
       ],
     );
     final body = _suggestions.isEmpty
-        ? TabBarView(
+        ? ReaderTabView(
             controller: _tabs,
             children: [_illustTab(l10n), _usersTab(l10n)],
           )

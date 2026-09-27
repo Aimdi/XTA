@@ -1,3 +1,4 @@
+import 'package:xta/ui/reader_tab_view.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/client/client.dart';
@@ -67,7 +68,7 @@ class _QuotesScreen extends StatelessWidget {
               dividerColor: Colors.transparent,
             ),
           ),
-          body: TabBarView(
+          body: ReaderTabView(
             children: [
               _QuotesList(id: id),
               RetweetersList(tweetId: id),
