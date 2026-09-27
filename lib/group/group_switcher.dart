@@ -17,8 +17,15 @@ class GroupSwitcherTitle extends StatelessWidget {
   final String name;
   final String currentGroupId;
   final ValueChanged<SubscriptionGroup> onSwitch;
+  final int? memberCount;
 
-  const GroupSwitcherTitle({super.key, required this.name, required this.currentGroupId, required this.onSwitch});
+  const GroupSwitcherTitle({
+    super.key,
+    required this.name,
+    required this.currentGroupId,
+    required this.onSwitch,
+    this.memberCount,
+  });
 
   /// Opens the short menu, and does whatever it came back with.
   ///
@@ -50,38 +57,93 @@ class GroupSwitcherTitle extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(9999),
         onTap: () => _open(context),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: Text(
-                  name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: GroupTitleLabel(name: name, memberCount: memberCount),
                 ),
-              ),
-              // Says the feed is more than the group it is named after, which
-              // nothing else on the screen would.
-              ScopedBuilder<CombinedGroupsStore, Set<String>>(
-                store: context.read<CombinedGroupsStore>(),
-                onState: (context, alsoRead) {
-                  final extra = alsoRead.where((e) => e != currentGroupId).length;
-                  if (extra == 0) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 6),
-                    child: Text('+$extra', style: TextStyle(color: theme.colorScheme.primary)),
-                  );
-                },
-              ),
-              const SizedBox(width: 2),
-              Icon(Icons.expand_more, size: 20, color: theme.appBarTheme.foregroundColor),
-            ],
+                // Says the feed is more than the group it is named after, which
+                // nothing else on the screen would.
+                ScopedBuilder<CombinedGroupsStore, Set<String>>(
+                  store: context.read<CombinedGroupsStore>(),
+                  onState: (context, alsoRead) {
+                    final extra = alsoRead.where((e) => e != currentGroupId).length;
+                    if (extra == 0) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: Text('+$extra', style: TextStyle(color: theme.colorScheme.primary)),
+                    );
+                  },
+                ),
+                const SizedBox(width: 2),
+                Icon(Icons.expand_more, size: 20, color: theme.appBarTheme.foregroundColor),
+              ],
+            ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Keeps the subscription summary in the existing toolbar, not a second row.
+class GroupTitleLabel extends StatelessWidget {
+  final String name;
+  final int? memberCount;
+
+  const GroupTitleLabel({super.key, required this.name, this.memberCount});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final count = memberCount;
+    final details = count == null ? name : '$name\n${L10n.of(context).subscription_group_member_count(count)}';
+    return Tooltip(
+      message: details,
+      excludeFromSemantics: true,
+      child: Semantics(
+        label: details,
+        excludeSemantics: true,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Preserve the title at very narrow widths or enlarged system text;
+            // the complete count remains in the tooltip and accessible label.
+            final showCount = count != null && constraints.maxWidth >= 80 * MediaQuery.textScalerOf(context).scale(1);
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.appBarTheme.titleTextStyle ?? theme.textTheme.titleLarge,
+                  ),
+                ),
+                if (showCount) ...[
+                  const SizedBox(width: 6),
+                  Icon(Icons.people_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 2),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: constraints.maxWidth / 4),
+                    child: Text(
+                      '$count',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );

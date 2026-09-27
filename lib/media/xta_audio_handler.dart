@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 
 /// What the current audio session can do. Read-aloud offers only stop; a
 /// podcast offers the lot.
@@ -90,7 +89,7 @@ Future<void> initXtaAudio() async {
         androidStopForegroundOnPause: true,
       ),
     );
-  } catch (e) {
-    log('Audio service unavailable, playback stays foreground-only: $e');
+  } catch (e, stack) {
+    Logger('AudioService').warning('Audio service unavailable, playback stays foreground-only', e, stack);
   }
 }

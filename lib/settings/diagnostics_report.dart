@@ -124,14 +124,13 @@ class DiagnosticsReport {
     if (accounts.isEmpty) {
       lines.add('  none');
     }
-    for (final account in accounts) {
+    for (final (index, account) in accounts.indexed) {
       final state = [
         if (account.notFoundUntil != null) 'auth broken until ${account.notFoundUntil!.toIso8601String()}',
         for (final entry in account.rateLimited.entries) '429 ${entry.key} until ${entry.value.toIso8601String()}',
       ];
-      // Account.id can be the stored CSRF token, not a public user identifier.
-      final label = account.screenName == null ? 'unnamed account' : '@${account.screenName}';
-      lines.add('  $label: ${state.isEmpty ? 'ok' : state.join('; ')}');
+      // Neither the session identifier nor the signed-in identity belongs in a shared report.
+      lines.add('  account ${index + 1}: ${state.isEmpty ? 'ok' : state.join('; ')}');
     }
 
     lines

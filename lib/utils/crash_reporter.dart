@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
@@ -9,6 +10,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/utils/diagnostic_privacy.dart';
 
 /// Opt-in crash reporter that opens GitHub Issues via a user-supplied token.
 ///
@@ -25,12 +27,9 @@ class CrashReporter {
   int _reportsInWindow = 0;
   bool _installed = false;
 
-  CrashReporter(
-    this.prefs, {
-    http.Client? httpClient,
-    Future<PackageInfo> Function()? packageInfoLoader,
-  }) : httpClient = httpClient ?? http.Client(),
-       packageInfoLoader = packageInfoLoader ?? PackageInfo.fromPlatform;
+  CrashReporter(this.prefs, {http.Client? httpClient, Future<PackageInfo> Function()? packageInfoLoader})
+    : httpClient = httpClient ?? http.Client(),
+      packageInfoLoader = packageInfoLoader ?? PackageInfo.fromPlatform;
 
   static CrashReporter install(BasePrefService prefs) {
     final reporter = CrashReporter(prefs);
@@ -41,13 +40,11 @@ class CrashReporter {
 
   bool get enabled => prefs.get(optionCrashReportsEnabled) == true;
 
-  String get repository =>
-      (prefs.get(optionCrashGithubRepo) as String?)?.trim().isNotEmpty == true
+  String get repository => (prefs.get(optionCrashGithubRepo) as String?)?.trim().isNotEmpty == true
       ? (prefs.get(optionCrashGithubRepo) as String).trim()
       : defaultCrashGithubRepo;
 
-  String get token =>
-      (prefs.get(optionCrashGithubToken) as String?)?.trim() ?? '';
+  String get token => (prefs.get(optionCrashGithubToken) as String?)?.trim() ?? '';
 
   void _attachHandlers() {
     if (_installed) return;
@@ -55,14 +52,8 @@ class CrashReporter {
 
     final previousFlutter = FlutterError.onError;
     FlutterError.onError = (details) {
-      unawaited(
-        report(
-          details.exception,
-          details.stack,
-          context: details.context?.toString(),
-        ),
-      );
-      previousFlutter?.call(details);
+      unawaited(report(details.exception, details.stack, context: details.context?.toString()));
+      handleFlutterDiagnostic(details, previousHandler: previousFlutter);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
@@ -73,12 +64,7 @@ class CrashReporter {
     };
   }
 
-  Future<CrashReportResult> report(
-    Object error,
-    StackTrace? stack, {
-    String? context,
-    bool force = false,
-  }) async {
+  Future<CrashReportResult> report(Object error, StackTrace? stack, {String? context, bool force = false}) async {
     if (!force && !enabled) return CrashReportResult.disabled;
     if (!force && !shouldReport(error)) return CrashReportResult.ignored;
     if (token.isEmpty) return CrashReportResult.missingToken;
@@ -116,13 +102,11 @@ class CrashReporter {
 
       if (response.statusCode == 201) {
         _recentFingerprints.add(fingerprint);
-        log.info('Crash report filed for $fingerprint');
+        log.info('Crash report filed');
         return CrashReportResult.sent;
       }
 
-      log.warning(
-        'GitHub issue create failed: ${response.statusCode} ${response.body}',
-      );
+      log.warning('GitHub issue create failed: ${response.statusCode}');
       if (response.statusCode == 401 || response.statusCode == 403) {
         return CrashReportResult.authFailed;
       }
@@ -179,19 +163,11 @@ bool shouldReport(Object error) {
 }
 
 String fingerprintOf(Object error, StackTrace? stack) {
-  final firstFrames = (stack?.toString() ?? '')
-      .split('\n')
-      .where((line) => line.trim().isNotEmpty)
-      .take(4)
-      .join('|');
-  return '${error.runtimeType}|${error.toString()}|$firstFrames';
+  final firstFrames = (stack?.toString() ?? '').split('\n').where((line) => line.trim().isNotEmpty).take(4).join('|');
+  return sha256.convert(utf8.encode('${error.runtimeType}|$error|$firstFrames')).toString();
 }
 
-String buildIssueTitle(Object error) {
-  final raw = error.toString().replaceAll('\n', ' ').trim();
-  final clipped = raw.length > 80 ? '${raw.substring(0, 77)}...' : raw;
-  return '[crash] ${error.runtimeType}: $clipped';
-}
+String buildIssueTitle(Object error) => '[crash] ${error.runtimeType}';
 
 String buildIssueBody({
   required Object error,
@@ -204,25 +180,20 @@ String buildIssueBody({
     ..writeln('## Crash report (auto)')
     ..writeln()
     ..writeln('- App: `$packageName` `$appVersion`')
-    ..writeln(
-      '- OS: `${Platform.operatingSystem} ${Platform.operatingSystemVersion}`',
-    )
-    ..writeln(
-      '- Mode: `${kReleaseMode ? 'release' : (kProfileMode ? 'profile' : 'debug')}`',
-    );
-  if (context != null && context.isNotEmpty) {
-    buffer.writeln('- Context: `$context`');
-  }
+    ..writeln('- OS: `${Platform.operatingSystem}`')
+    ..writeln('- Mode: `${kReleaseMode ? 'release' : (kProfileMode ? 'profile' : 'debug')}`');
+  // Exception messages and Flutter context can embed account data or content.
   buffer
     ..writeln()
     ..writeln('### Error')
     ..writeln('```')
-    ..writeln(error.toString())
+    ..writeln(error.runtimeType)
     ..writeln('```')
+    ..writeln('Error messages and context are omitted for privacy.')
     ..writeln()
     ..writeln('### Stack trace')
     ..writeln('```')
-    ..writeln(stack?.toString() ?? '(none)')
+    ..writeln(diagnosticStack(stack))
     ..writeln('```');
   return buffer.toString();
 }

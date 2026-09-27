@@ -18,7 +18,7 @@ class PluginPostArchive {
   const PluginPostArchive({required this.id, required this.userId, required this.content});
 }
 
-enum _PostAction { bookmark, folder, note, group, share, reposts, quotes, browser }
+enum _PostAction { bookmark, folder, note, group, share, reposts, quotes, browser, attribution }
 
 Future<void> savePluginPost(BuildContext context, PluginPostArchive post) => fileSavedTweet(
   context,
@@ -54,6 +54,7 @@ Future<void> showPluginPostActions(
   VoidCallback? onGroup,
   VoidCallback? onReposts,
   VoidCallback? onQuotes,
+  ({String label, VoidCallback onTap})? attributionAction,
 }) async {
   final l10n = L10n.of(context);
   final model = context.read<SavedTweetModel?>();
@@ -67,6 +68,13 @@ Future<void> showPluginPostActions(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (attributionAction != null)
+              ListTile(
+                leading: const Icon(Icons.person_outline),
+                title: Text(attributionAction.label),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.pop(context, _PostAction.attribution),
+              ),
             if (model != null) ...[
               ListTile(
                 leading: Icon(saved ? Icons.bookmark : Icons.bookmark_border),
@@ -120,6 +128,8 @@ Future<void> showPluginPostActions(
   );
   if (!context.mounted || action == null) return;
   switch (action) {
+    case _PostAction.attribution:
+      attributionAction?.onTap();
     case _PostAction.bookmark:
       if (saved) {
         await model?.deleteSavedTweet(post.id);

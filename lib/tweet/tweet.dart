@@ -476,29 +476,31 @@ class TweetTileState extends State<TweetTile> {
       );
     }
 
-    Widget retweetBanner = Container();
-    if (this.tweet.retweetedStatusWithCard != null) {
-      retweetBanner = _TweetTileLeading(
-        icon: Icons.repeat,
-        onTap: () => Navigator.pushNamed(
-          context,
-          routeProfile,
-          arguments: ProfileScreenArguments.fromScreenName(
-            this.tweet.user!.screenName!,
-            null,
-          ),
-        ),
-        children: [
-          TextSpan(
-            text: L10n.of(context).this_tweet_user_name_retweeted(
-              this.tweet.user!.name!,
-              _retweetRelativeDate ?? '',
-            ),
-            style: theme.textTheme.bodySmall,
-          ),
-        ],
-      );
-    }
+    final isRepost = this.tweet.retweetedStatusWithCard != null;
+    final reposter = isRepost ? this.tweet.user : null;
+    final reposterName =
+        reposter?.name ??
+        reposter?.screenName ??
+        L10n.of(context).unknown_username;
+    final repostLabel = isRepost
+        ? L10n.of(context).this_tweet_user_name_retweeted(
+            reposterName,
+            _retweetRelativeDate ?? '',
+          )
+        : null;
+    final reposterProfile = openableProfile(
+      reposter,
+      currentUsername: currentUsername,
+    );
+    final retweetBanner = repostLabel == null
+        ? const SizedBox.shrink()
+        : TweetRepostCredit(
+            name: reposterName,
+            details: repostLabel,
+            time: this.tweet.createdAt == null
+                ? null
+                : createCompactDate(this.tweet.createdAt!),
+          );
 
     // "Replying to @someone" belongs under the header and above the text, where
     // X puts it: above the header it announced a reply before saying whose post
@@ -691,6 +693,20 @@ class TweetTileState extends State<TweetTile> {
       isArticle: tweet.article != null,
       onOpenTweet: () => onClickOpenTweet(tweet),
       onCaptureImage: captureWidget,
+      attributionAction: repostLabel == null || reposterProfile == null
+          ? null
+          : (
+              label: repostLabel,
+              onTap: () => Navigator.pushNamed(
+                context,
+                routeProfile,
+                arguments: ProfileScreenArguments(
+                  reposterProfile.id,
+                  reposterProfile.screenName,
+                  null,
+                ),
+              ),
+            ),
     );
 
     Widget article = const SizedBox.shrink();
@@ -1108,12 +1124,10 @@ class _ReplyingToLine extends StatelessWidget {
 }
 
 class _TweetTileLeading extends StatelessWidget {
-  final Function()? onTap;
   final IconData icon;
   final Iterable<InlineSpan> children;
 
   const _TweetTileLeading({
-    this.onTap,
     required this.icon,
     required this.children,
   });
@@ -1122,7 +1136,6 @@ class _TweetTileLeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweetContextRow(
       icon: icon,
-      onTap: onTap,
       label: Text.rich(
         TextSpan(
           style: tweetMetadataStyle(
