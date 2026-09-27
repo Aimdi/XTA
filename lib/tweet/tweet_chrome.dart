@@ -396,6 +396,68 @@ class TweetContextRow extends StatelessWidget {
   }
 }
 
+/// Read-only repost context. Profile navigation lives in the post's action
+/// sheet so this label does not need a separate button-height banner.
+class TweetRepostCredit extends StatelessWidget {
+  final String name;
+  final String details;
+  final String? time;
+
+  const TweetRepostCredit({
+    super.key,
+    required this.name,
+    required this.details,
+    this.time,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final style = tweetMetadataStyle(context);
+    return Tooltip(
+      message: details,
+      excludeFromSemantics: true,
+      child: Semantics(
+        label: details,
+        excludeSemantics: true,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            kTweetHorizontalPadding,
+            kTweetSpace1,
+            kTweetHorizontalPadding,
+            0,
+          ),
+          child: LayoutBuilder(builder: (context, constraints) => Row(
+            children: [
+              Icon(Icons.repeat, size: 16, color: tweetSecondaryColor(context)),
+              const SizedBox(width: kTweetSpace1),
+              Expanded(
+                child: Text(
+                  name,
+                  style: style,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (time != null && time!.isNotEmpty) ...[
+                const SizedBox(width: kTweetSpace1),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: constraints.maxWidth / 3),
+                  child: Text(
+                    '· $time',
+                    style: style,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ],
+          )),
+        ),
+      ),
+    );
+  }
+}
+
 /// A subdued in-feed state for tombstones and recoverable embedded failures.
 class TweetStateTile extends StatelessWidget {
   final IconData icon;

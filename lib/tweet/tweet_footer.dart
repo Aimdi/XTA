@@ -301,6 +301,7 @@ class TweetFooterBar extends StatelessWidget {
   final bool isArticle;
   final VoidCallback onOpenTweet;
   final Future<Uint8List?> Function() onCaptureImage;
+  final ({String label, VoidCallback onTap})? attributionAction;
 
   const TweetFooterBar({
     super.key,
@@ -312,6 +313,7 @@ class TweetFooterBar extends StatelessWidget {
     required this.onOpenTweet,
     required this.onCaptureImage,
     this.isArticle = false,
+    this.attributionAction,
   });
 
   void _showShareSheet(BuildContext context) {
@@ -583,6 +585,7 @@ class TweetFooterBar extends StatelessWidget {
                       context,
                       post: PluginPostArchive(id: tweetId, userId: tweet.user?.idStr ?? '', content: tweet.toJson()),
                       url: tweetUrl,
+                      attributionAction: attributionAction,
                       onGroup: tweet.user?.idStr?.isNotEmpty != true || openableProfile(tweet.user) == null
                           ? null
                           : () async {
