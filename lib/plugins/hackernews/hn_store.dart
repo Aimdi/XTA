@@ -7,6 +7,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/plugin_search_history.dart';
+import 'package:xta/utils/read_retry.dart';
 
 const hnLikedPostsCap = 400;
 const hnSavedPostsCap = 200;
@@ -24,7 +25,7 @@ class HnFeedStore extends Store<List<HnStory>> {
 
   bool get hasMore => _hasMore;
 
-  Future<void> refresh() async {
+  Future<void> refresh() => withReadRetryBudget(() async {
     _page = 0;
     _hasMore = true;
     await execute(() async {
@@ -32,7 +33,7 @@ class HnFeedStore extends Store<List<HnStory>> {
       _hasMore = page.hasMore;
       return page.stories;
     });
-  }
+  });
 
   Future<void> loadMore() async {
     if (!_hasMore || _loadingMore || state.isEmpty) {
@@ -56,7 +57,7 @@ class HnFollowingStore extends Store<List<HnStory>> {
 
   HnFollowingStore(this.client, this.follows) : super(const []);
 
-  Future<void> refresh() async {
+  Future<void> refresh() => withReadRetryBudget(() async {
     await execute(() async {
       final authors = follows.state;
       if (authors.isEmpty) {
@@ -75,7 +76,7 @@ class HnFollowingStore extends Store<List<HnStory>> {
         ..sort((a, b) => _timeOf(b).compareTo(_timeOf(a)));
       return stories.take(hnPageSize * 2).toList(growable: false);
     });
-  }
+  });
 
   DateTime _timeOf(HnStory story) =>
       story.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0);

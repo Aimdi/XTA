@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/deepmarks/nostr_event.dart';
 
 /// Where Deepmarks runs unless the user points the plugin elsewhere.
@@ -126,10 +127,13 @@ class DeepmarksClient {
       throw const DeepmarksException(DeepmarksErrorKind.notConfigured, 'Missing API key');
     }
 
-    final response = await _send(() => httpClient.get(
-          _endpoint(baseUrl, 'bookmarks', query: {'limit': '1'}),
-          headers: _headers(apiKey),
-        ));
+    final response = await _send(
+      () => httpClient.getWithReadRetry(
+        _endpoint(baseUrl, 'bookmarks', query: {'limit': '1'}),
+        headers: _headers(apiKey),
+        timeout: _timeout,
+      ),
+    );
 
     if (response.statusCode == 200 && _looksLikeJson(response)) {
       final decoded = jsonDecode(response.body);

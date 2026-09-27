@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:xta/catcher/exceptions.dart' as errors;
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/utils/read_visibility.dart';
 
@@ -14,6 +16,22 @@ void main() {
   tearDown(() {
     VisibilityDetectorController.instance.updateInterval = const Duration(milliseconds: 500);
     ReadRecovery.online = false;
+  });
+  testWidgets('visible-screen recovery respects the server Retry-After delay', (tester) async {
+    ReadRecovery.online = true;
+    var retries = 0;
+    final failure = errors.HttpException(http.Response('busy', 503, headers: {'retry-after': '30'}));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ReadRecovery(recoverableFailure: () => failure, retry: () => retries++, child: const SizedBox.expand()),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 29));
+    expect(retries, 0);
+    await tester.pump(const Duration(seconds: 1));
+    expect(retries, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
   });
   testWidgets('automatic recovery has a finite budget across rebuilds and failed attempts', (tester) async {
     final signals = StreamController<bool>.broadcast();

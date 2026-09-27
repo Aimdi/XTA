@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/reddit/reddit_html.dart';
 import 'package:xta/plugins/reddit/reddit_comments.dart';
 import 'package:xta/plugins/reddit/reddit_comments_json.dart';
@@ -8,6 +9,7 @@ import 'package:xta/plugins/reddit/reddit_media_urls.dart';
 import 'package:xta/plugins/reddit/reddit_search_html.dart';
 import 'package:xta/plugins/reddit/reddit_search_json.dart';
 import 'package:xta/utils/json.dart';
+import 'package:xta/utils/read_retry.dart';
 
 /// How many posts one subreddit listing page asks Reddit for.
 ///
@@ -837,7 +839,7 @@ class RedditClient {
     String? after,
     String? userToken,
     bool preferPublic = false,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final name = normaliseSubreddit(subreddit);
     if (name == null) {
       throw RedditException(
@@ -873,7 +875,7 @@ class RedditClient {
     }
 
     return _fetchPublicListing(name, sort, query);
-  }
+  });
 
   /// A listing over whichever account-free route answers.
   ///
@@ -1147,7 +1149,7 @@ class RedditClient {
     required String clientId,
     String? userToken,
     bool preferPublic = false,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final name = normaliseSubreddit(subreddit);
     if (name == null) {
       throw RedditException(
@@ -1193,7 +1195,7 @@ class RedditClient {
       activeUsers: side.activeUsers,
       iconUrl: iconUrl,
     );
-  }
+  });
 
   /// [searchSort] is Reddit's search order — `relevance`, `new`, `top` or
   /// `comments` — its own axis, not the listing sort.
@@ -1208,7 +1210,7 @@ class RedditClient {
     String clientId = '',
     String? userToken,
     bool preferPublic = false,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final name = subreddit == null ? null : normaliseSubreddit(subreddit);
     final path = name == null ? '/search' : '/r/$name/search';
     final params = {
@@ -1228,14 +1230,14 @@ class RedditClient {
       fromJson: parseSearchPostsJson,
       fromHtml: parseSearchPosts,
     );
-  }
+  });
 
   Future<List<RedditSubredditResult>> searchSubreddits(
     String query, {
     String clientId = '',
     String? userToken,
     bool preferPublic = false,
-  }) {
+  }) => withReadRetryBudget(() {
     return _searchJsonThenHtml(
       path: '/subreddits/search',
       params: {'q': query, 'raw_json': '1'},
@@ -1245,14 +1247,14 @@ class RedditClient {
       fromJson: parseSubredditResultsJson,
       fromHtml: parseSubredditResults,
     );
-  }
+  });
 
   Future<List<RedditUserResult>> searchUsers(
     String query, {
     String clientId = '',
     String? userToken,
     bool preferPublic = false,
-  }) {
+  }) => withReadRetryBudget(() {
     return _searchJsonThenHtml(
       path: '/users/search',
       params: {'q': query, 'raw_json': '1'},
@@ -1264,7 +1266,7 @@ class RedditClient {
       htmlPath: '/search',
       htmlParams: {'q': query, 'type': 'user'},
     );
-  }
+  });
 
   Future<List<T>> _searchJsonThenHtml<T>({
     required String path,
@@ -1348,7 +1350,7 @@ class RedditClient {
     String user, {
     String? after,
     int limit = kRedditListingPageSize,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final name = user
         .replaceFirst(RegExp(r'^/?u(?:ser)?/', caseSensitive: false), '')
         .trim();
@@ -1371,7 +1373,7 @@ class RedditClient {
 
     final listing = parseListing(body);
     return RedditListing(posts: listing.posts, after: listing.after);
-  }
+  });
 
   /// A subreddit's own picture, or null when it has none to find.
   ///
@@ -1386,7 +1388,7 @@ class RedditClient {
     String clientId = '',
     String? userToken,
     bool preferPublic = false,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final name = normaliseSubreddit(subreddit);
     if (name == null) {
       return null;
@@ -1423,7 +1425,7 @@ class RedditClient {
     } catch (_) {
       return null;
     }
-  }
+  });
 
   RedditSubredditAbout _aboutFromJson(Json data, String fallbackName) {
     final publicDescription = data['public_description'].string?.trim();
@@ -1504,7 +1506,7 @@ class RedditClient {
     required String clientId,
     String? userToken,
     bool preferPublic = false,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final anonymous =
         preferPublic || (userToken == null && clientId.trim().isEmpty);
     if (anonymous) {
@@ -1518,7 +1520,7 @@ class RedditClient {
     } on RedditException {
       return _commentsFromScrape(permalink, sort: sort);
     }
-  }
+  });
 
   /// The pictures of a gallery post, read from the post's own public JSON.
   ///
@@ -1720,19 +1722,18 @@ class RedditClient {
     final jar = {..._cookies, ...?cookies};
 
     final response = await _send(
-      () => httpClient.get(
+      () => httpClient.getWithReadRetry(
         uri,
         headers: {
           if (token != null) 'Authorization': 'Bearer $token',
           'User-Agent': public ? publicUserAgent : userAgent,
           // The website weighs these too; their absence is another bot tell.
-          if (public)
-            'Accept':
-                'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
+          if (public) 'Accept': 'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
           if (public) 'Accept-Language': 'en-US,en;q=0.9',
           if (public && jar.isNotEmpty)
             'Cookie': jar.entries.map((e) => '${e.key}=${e.value}').join('; '),
         },
+        timeout: _timeout,
       ),
     );
 

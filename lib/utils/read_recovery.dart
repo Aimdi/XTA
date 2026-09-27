@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xta/utils/read_visibility.dart';
+import 'package:xta/utils/read_retry.dart';
 
 /// Suppresses duplicate resume/network signals and repeated retries of a failure.
 class RecoveryGate {
@@ -163,7 +164,7 @@ class _ReadRecoveryState extends State<ReadRecovery> with WidgetsBindingObserver
     if (_retryTimer != null && identical(failure, _scheduledFailure)) return;
     _cancelTimer();
     _scheduledFailure = failure;
-    _retryTimer = Timer(widget.retryDelays[_attempts], () {
+    _retryTimer = Timer(readRetryDelay(failure, widget.retryDelays[_attempts]), () {
       _retryTimer = null;
       _scheduledFailure = null;
       if (!mounted || !_visible || !_online || ModalRoute.of(context)?.isCurrent == false) return;

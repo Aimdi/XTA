@@ -134,7 +134,9 @@ void main() {
     feed.controller.fetchNextPage();
     await tester.pump();
     feed.loader = (_) async => throw TimeoutException('refresh failed');
-    await feed.softRefresh();
+    final refresh = feed.softRefresh();
+    await _finishQuietRetries(tester);
+    await refresh;
     final cursors = <String?>[];
     feed.loader = (cursor) async {
       cursors.add(cursor);
@@ -145,7 +147,7 @@ void main() {
     expect(feed.items!.single.id, 'fresh');
     feed.loader = (_) async => throw TimeoutException('next page failed');
     feed.controller.fetchNextPage();
-    await tester.pump();
+    await _finishQuietRetries(tester);
     feed.loader = (cursor) async {
       cursors.add(cursor);
       return (chains: [_chain('older')], nextCursor: null);
@@ -195,9 +197,17 @@ void main() {
     feed.controller.fetchNextPage();
     await tester.pump();
     feed.loader = (_) async => throw TimeoutException('offline');
-    await feed.repairFirstPage();
+    final repair = feed.repairFirstPage();
+    await _finishQuietRetries(tester);
+    await repair;
     expect(feed.items!.single.id, 'visible');
     expect(feed.nextCursor, 'next');
     expect(pagingErrorOf(feed.controller.value)?.error, isA<TimeoutException>());
   });
+}
+
+Future<void> _finishQuietRetries(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 400));
+  await tester.pump(const Duration(milliseconds: 1200));
 }

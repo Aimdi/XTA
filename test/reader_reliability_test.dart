@@ -41,7 +41,8 @@ void main() {
     await store.load(['good', 'bad'], fetch, onError: (_) => -1, failed: (value) => value < 0);
     failing = false;
     await store.load(['good', 'bad'], fetch, onError: (_) => -1, failed: (value) => value < 0, retryFailed: true);
-    expect(calls, ['good', 'bad', 'bad']);
+    // Only the failed batch consumes the two quiet retries and the manual retry.
+    expect(calls, ['good', 'bad', 'bad', 'bad', 'bad']);
     expect(store.state.failed, isEmpty);
     expect(store.state.results, {'good': 1, 'bad': 2});
   });

@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/plugin_activity.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/utils/json.dart';
+import 'package:xta/utils/read_retry.dart';
 
 /// Why a Mastodon read could not be served, in terms the screen explains it.
 enum MastodonErrorKind {
@@ -62,12 +64,11 @@ class MastodonClient {
   Future<Object?> _get(Uri uri, {Duration? timeout, void Function(http.Response)? onResponse}) async {
     final http.Response response;
     try {
-      response = await httpClient
-          .get(
-            uri,
-            headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
-          )
-          .timeout(timeout ?? _walkTimeout ?? this.timeout);
+      response = await httpClient.getWithReadRetry(
+        uri,
+        headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
+        timeout: timeout ?? _walkTimeout ?? this.timeout,
+      );
     } catch (e) {
       throw MastodonException(MastodonErrorKind.network, '$uri: $e');
     }
@@ -111,7 +112,7 @@ class MastodonClient {
   Future<T> firstInstanceThat<T>(
     List<String> instances,
     Future<T> Function(String instance) read,
-  ) async {
+  ) => withReadRetryBudget(() async {
     if (instances.isEmpty) {
       throw MastodonException(
         MastodonErrorKind.notConfigured,
@@ -134,7 +135,7 @@ class MastodonClient {
     }
 
     throw worst!;
-  }
+  });
 
   Duration? _walkTimeout;
 
@@ -303,7 +304,7 @@ class MastodonClient {
     String instance,
     String acct, {
     int limit = 20,
-  }) async {
+  }) => withReadRetryBudget(() async {
     final cachedId = _idByAcctInstance[_idKey(instance, acct)];
     if (cachedId != null) {
       return getStatuses(instance, cachedId, limit: limit);
@@ -311,7 +312,7 @@ class MastodonClient {
     final profile = await lookup(instance, acct);
     _idByAcctInstance[_idKey(instance, acct)] = profile.id;
     return getStatuses(instance, profile.id, limit: limit);
-  }
+  });
 
   /// One public status by local id on [instance].
   Future<MastodonPost> getStatus(String instance, String id) async {
@@ -396,7 +397,7 @@ class MastodonClient {
   /// the snowflake in the public URL; other hosts can rediscover a federated
   /// copy by looking up the author and matching [MastodonPost.url] in their
   /// recent statuses — then `/context` uses that host's local id.
-  Future<MastodonThread> fetchThread(String instance, MastodonPost seed) async {
+  Future<MastodonThread> fetchThread(String instance, MastodonPost seed) => withReadRetryBudget(() async {
     final home = _homeDomain(instance);
     final status = await _locateStatus(instance, seed);
     final context = await getContext(instance, status.id);
@@ -406,7 +407,7 @@ class MastodonClient {
       descendants: context.descendants,
       homeDomain: home,
     );
-  }
+  });
 
   /// [fetchThread] over [instances], same walk as profile lookups.
   Future<MastodonThread> fetchThreadAnywhere(

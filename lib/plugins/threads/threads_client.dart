@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:html/parser.dart' as html;
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/utils/json.dart';
 
@@ -66,7 +67,7 @@ class ThreadsClient {
   Future<Json> _get(Uri uri) async {
     final http.Response response;
     try {
-      response = await httpClient.get(uri).timeout(_timeout);
+      response = await httpClient.getWithReadRetry(uri, timeout: _timeout);
     } catch (e) {
       throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: $e');
     }

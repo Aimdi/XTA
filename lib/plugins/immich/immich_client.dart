@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 
 /// What the server did with an asset it was handed.
 enum ImmichUploadOutcome {
@@ -180,7 +181,13 @@ class ImmichClient {
 
   Future<String?> _findAlbum({required String baseUrl, required String apiKey, required String name}) async {
     final base = _requireBase(baseUrl, apiKey);
-    final response = await _send(() => httpClient.get(_endpoint(base, 'albums'), headers: _headers(apiKey)));
+    final response = await _send(
+      () => httpClient.getWithReadRetry(
+        _endpoint(base, 'albums'),
+        headers: _headers(apiKey),
+        timeout: _timeout,
+      ),
+    );
     if (response.statusCode != 200 || !_looksLikeJson(response)) {
       return null;
     }
@@ -236,9 +243,21 @@ class ImmichClient {
   Future<bool> verify({required String baseUrl, required String apiKey}) async {
     final base = _requireBase(baseUrl, apiKey);
 
-    var response = await _send(() => httpClient.get(_endpoint(base, 'users/me'), headers: _headers(apiKey)));
+    var response = await _send(
+      () => httpClient.getWithReadRetry(
+        _endpoint(base, 'users/me'),
+        headers: _headers(apiKey),
+        timeout: _timeout,
+      ),
+    );
     if (response.statusCode == 404) {
-      response = await _send(() => httpClient.get(_endpoint(base, 'user/me'), headers: _headers(apiKey)));
+      response = await _send(
+        () => httpClient.getWithReadRetry(
+          _endpoint(base, 'user/me'),
+          headers: _headers(apiKey),
+          timeout: _timeout,
+        ),
+      );
     }
 
     if (response.statusCode == 200 && _looksLikeJson(response)) {

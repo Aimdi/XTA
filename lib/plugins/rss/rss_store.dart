@@ -9,6 +9,7 @@ import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/source_tables.dart';
+import 'package:xta/utils/read_retry.dart';
 
 class RssFeedSnapshot {
   final List<RssItem> items;
@@ -277,7 +278,7 @@ class RssTimelineStore extends Store<RssFeedSnapshot> {
     update(_snapshot(failedCount: state.failedCount));
   }
 
-  Future<RssFeedSnapshot> _fetch() async {
+  Future<RssFeedSnapshot> _fetch() => withReadRetryBudget(() async {
     final followed = feeds.state;
     if (followed.isEmpty) {
       _allItems = const [];
@@ -297,7 +298,7 @@ class RssTimelineStore extends Store<RssFeedSnapshot> {
     _allItems = mergeRssItems(const [], results.expand((e) => e.items));
     _fetchedAt = DateTime.now();
     return _snapshot(failedCount: results.where((e) => e.failed).length);
-  }
+  });
 
   RssFeedSnapshot _snapshot({required int failedCount}) {
     return RssFeedSnapshot(
