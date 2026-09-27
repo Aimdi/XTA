@@ -1,4 +1,4 @@
-import 'package:xta/home/home_group_drawer.dart';
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -22,6 +22,8 @@ import 'package:xta/home/_saved.dart';
 import 'package:xta/home/edge_swipe.dart';
 import 'package:xta/home/home_model.dart';
 import 'package:xta/home/home_chrome.dart';
+import 'package:xta/home/home_group_drawer.dart';
+import 'package:xta/home/home_swipe_navigation.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/home/network_switcher.dart';
 import 'package:xta/plugins/plugin_registry.dart';
@@ -34,6 +36,8 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/scroll_to_top.dart';
+
+export 'package:xta/home/home_swipe_navigation.dart' show pageAfterNavigationSwipe;
 
 typedef NavigationTitleBuilder = String Function(BuildContext context);
 
@@ -222,54 +226,14 @@ class ScaffoldWithBottomNavigation extends StatefulWidget {
   State<ScaffoldWithBottomNavigation> createState() => _ScaffoldWithBottomNavigationState();
 }
 
-/// Which page a swipe on the navigation bar should land on.
-///
-/// Positive [velocity] and [distance] both mean a drag to the right, which goes
-/// back a tab. Ends are clamped rather than wrapping around, so a swipe never
-/// jumps across the whole bar. Returns [current] when nothing should move.
-///
-/// A flick *or* a long enough drag counts. Velocity alone is not enough: a
-/// deliberate, slow drag — and any drag that pauses before the finger lifts —
-/// ends at roughly zero velocity, so gating on speed made the bar ignore it no
-/// matter how far it travelled. A mis-tap is still ignored because it has
-/// neither speed nor distance, which is what the guard was for.
-int pageAfterNavigationSwipe({
-  required int current,
-  required int pageCount,
-  required double velocity,
-  double distance = 0,
-  double threshold = 120,
-  double distanceThreshold = 48,
-}) {
-  if (pageCount <= 1) {
-    return current;
-  }
-
-  final flicked = velocity.abs() >= threshold;
-  final dragged = distance.abs() >= distanceThreshold;
-  if (!flicked && !dragged) {
-    return current;
-  }
-
-  // A flick states the intent better than where the finger happened to stop,
-  // so its direction wins whenever there was one.
-  final forward = flicked ? velocity < 0 : distance < 0;
-
-  final next = forward ? current + 1 : current - 1;
-  if (next < 0 || next >= pageCount) {
-    return current;
-  }
-  return next;
-}
-
 class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigation> {
   late PageController _pageController;
   late final ValueNotifier<int> _pageIndex;
   final Map<int, ScrollController> _scrollControllers = {};
   final Map<int, FocusNode> _focusNodes = {};
 
-  /// How far the current drag across the navigation bar has travelled.
-  double _dragDistance = 0;
+  int? _pendingPage;
+  int _navigationEpoch = 0;
 
   List<NavigationPage> get _barPages => pagesForNavigationBar(widget.pages);
 
@@ -439,16 +403,17 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
           builder: (context) {
             final showLabels = PrefService.of(context).get(optionShowNavigationLabels) == true;
             final disableAnimations = PrefService.of(context, listen: false).get<bool>(optionDisableAnimations) == true;
-            return GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onHorizontalDragStart: (_) => _dragDistance = 0,
-              onHorizontalDragUpdate: (details) => _dragDistance += details.primaryDelta ?? 0,
-              onHorizontalDragEnd: (details) => _swipeNavigationBar(details.primaryVelocity ?? 0, _dragDistance),
-              child: ValueListenableBuilder<int>(
-                valueListenable: _pageIndex,
-                builder: (context, currentPage, _) {
-                  final slots = _bottomBarSlots(context);
-                  return HomeNavigationBar(
+            return ValueListenableBuilder<int>(
+              valueListenable: _pageIndex,
+              builder: (context, currentPage, _) {
+                final slots = _bottomBarSlots(context);
+                return HomeSwipeNavigation(
+                  key: const ValueKey('home-navigation-swipe'),
+                  index: currentPage,
+                  count: _barPages.length,
+                  identity: _barPages.map((page) => page.id).join('|'),
+                  onChanged: (target) => _goToPage(target, animate: true),
+                  child: HomeNavigationBar(
                     selectedIndex: destinationIndexForPage(slots, currentPage),
                     items: [for (final slot in slots) _navigationItemForSlot(context, slot)],
                     showLabels: showLabels,
@@ -461,9 +426,9 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
                       final page = slots[index].pageIndex;
                       if (page != null && _barPages[page].id == 'feed') _openHomePicker(context, page);
                     },
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             );
           },
         ),
@@ -527,8 +492,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
       }
       return;
     }
-    unfocusPages();
-    _pageController.jumpToPage(pageIndex);
+    _goToPage(pageIndex, animate: false);
   }
 
   Future<void> _openHomePicker(BuildContext context, int page) async {
@@ -572,18 +536,7 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     if (pageIndex < 0) return;
     await rememberNetwork(context, picked);
     if (!mounted) return;
-    unfocusPages();
-    _pageController.jumpToPage(pageIndex);
-  }
-
-  void _swipeNavigationBar(double velocity, double distance) {
-    final target = pageAfterNavigationSwipe(
-      current: _pageIndex.value,
-      pageCount: _barPages.length,
-      velocity: velocity,
-      distance: distance,
-    );
-    _goToPage(target, animate: true);
+    _goToPage(pageIndex, animate: false);
   }
 
   void _movePageBy(int direction) {
@@ -591,15 +544,24 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
     _goToPage(target, animate: true);
   }
 
-  void _goToPage(int target, {required bool animate}) {
-    if (target == _pageIndex.value) return;
+  bool _goToPage(int target, {required bool animate}) {
+    if (!_pageController.hasClients || target == _pendingPage) return false;
+    if (target == _pageIndex.value && _pendingPage == null) return false;
+    final epoch = ++_navigationEpoch;
     unfocusPages();
     final reduceMotion = xtaReduceMotion(context);
     if (!animate || reduceMotion) {
+      _pendingPage = null;
       _pageController.jumpToPage(target);
     } else {
-      _pageController.animateToPage(target, duration: kXtaMotionNavigation, curve: Curves.easeOut);
+      _pendingPage = target;
+      unawaited(
+        _pageController.animateToPage(target, duration: kXtaMotionNavigation, curve: Curves.easeOut).whenComplete(() {
+          if (mounted && epoch == _navigationEpoch) _pendingPage = null;
+        }),
+      );
     }
+    return true;
   }
 
   @override

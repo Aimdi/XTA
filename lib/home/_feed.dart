@@ -18,6 +18,7 @@ import 'package:xta/home/alt_microblogging_selector.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_timeline_controls.dart';
+import 'package:xta/home/home_swipe_navigation.dart';
 import 'package:xta/home/home_source_picker.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/group/_settings.dart';
@@ -687,11 +688,42 @@ class _FeedScreenState extends State<FeedScreen> {
               }
               return false;
             },
-            child: _timelineBody(tab, prefs),
+            child: HomeSwipeNavigation(
+              key: const ValueKey('home-source-swipe'),
+              index: available.indexWhere((source) => source.id == tab),
+              count: available.length,
+              identity: available.map((source) => source.id.id).join('|'),
+              onChanged: (index) => _swipeToSource(tab, available, index),
+              previewBuilder: (context, index) => Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    index > available.indexWhere((source) => source.id == tab) ? Icons.arrow_forward : Icons.arrow_back,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(available[index].titleBuilder(context), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
+              child: _timelineBody(tab, prefs),
+            ),
           ),
         ),
       ),
     );
+  }
+
+  bool _swipeToSource(FeedTab from, List<FeedTabOption> choices, int index) {
+    if (!mounted || _tab != from || index < 0 || index >= choices.length) return false;
+    final current = availableFeedTabsFromIds(_stripStore!.state, PrefService.of(context, listen: false));
+    final expectedIds = choices.map((source) => source.id.id).join('|');
+    if (current.map((source) => source.id.id).join('|') != expectedIds) return false;
+    final target = current[index].id;
+    if (target == from) return false;
+    _selectStripTab(target);
+    return true;
   }
 
   Widget _timelineBody(FeedTab tab, BasePrefService prefs) {
