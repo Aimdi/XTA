@@ -21,6 +21,32 @@ Widget _app(Widget child) {
 }
 
 void main() {
+  testWidgets('a narrow subreddit reader does not falsely select Following in its section menu', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: 240,
+            child: RedditHomeChrome(
+              source: const RedditHomeSource(mode: RedditFeedMode.following, subreddit: 'flutter'),
+              onMode: (_) {},
+              actions: [
+                for (final icon in [Icons.sort, Icons.search, Icons.more_vert])
+                  IconButton(icon: Icon(icon), onPressed: () {}),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.byType(PluginSectionPicker));
+    await tester.pumpAndSettle();
+    expect(find.byType(PopupMenuItem<int>), findsNWidgets(3));
+    expect(find.byIcon(Icons.check), findsNothing, reason: 'A subreddit is not any of the three top-level feeds.');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Reddit full client identifies itself and labels its feed sections', (tester) async {
     var mode = RedditFeedMode.following;
     await tester.pumpWidget(
@@ -34,9 +60,9 @@ void main() {
     );
 
     expect(find.byType(PluginHomeChrome), findsOneWidget);
-    expect(find.text('Reddit'), findsOneWidget);
-    expect(find.text('Following'), findsOneWidget);
-    expect(find.text('Popular'), findsOneWidget);
+    expect(find.byTooltip('Reddit'), findsOneWidget);
+    expect(find.byTooltip('Following'), findsOneWidget);
+    expect(find.byTooltip('Popular'), findsOneWidget);
     expect(find.byIcon(Icons.home_outlined), findsOneWidget);
     expect(find.byIcon(Icons.whatshot_outlined), findsOneWidget);
     expect(find.byIcon(Icons.public_outlined), findsOneWidget);

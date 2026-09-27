@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_marks.dart';
-import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/ui/contrast.dart';
 
-/// A single row for source, sections and actions, with full-size touch targets.
-class SubstackCompactHeader extends StatelessWidget {
+/// Substack's single-row presentation, backed by each reader's existing dock.
+class PluginCompactHeader extends StatelessWidget {
+  final XtaPlugin plugin;
   final PluginHomeDockStore store;
   final VoidCallback? onPickSource;
   final Widget? services;
   final bool showBack;
   final bool unread;
 
-  const SubstackCompactHeader({
+  const PluginCompactHeader({
     super.key,
+    required this.plugin,
     required this.store,
     this.onPickSource,
     this.services,
@@ -26,70 +28,63 @@ class SubstackCompactHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    key: const ValueKey('substack-compact-header'),
-    height: 52,
+    height: pluginToolbarHeight(context),
     child: ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
       store: store,
       onState: (context, _) => LayoutBuilder(
         builder: (context, constraints) {
-          final navigation = store.content('substack', 'navigation');
-          final reading = store.content('substack', 'reading');
+          final navigation = store.content(plugin.id, 'navigation');
+          final reading = store.content(plugin.id, 'reading');
           final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
-          final search = reading?.search ?? navigation?.search;
-          final available = constraints.maxWidth - 8 - (showBack ? 24 : 0);
-          final showSearch = available >= (tabs.length + 3) * 48;
-          final showTabs = available >= (tabs.length + 2) * 48;
-          final color = ensureContrast(SubstackPlugin().brandColor, Theme.of(context).scaffoldBackgroundColor);
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: IconButtonTheme(
-              data: const IconButtonThemeData(style: pluginActionButtonStyle),
+          final primary =
+              reading?.search ?? navigation?.search ?? navigation?.actions.whereType<IconButton>().firstOrNull;
+          final markWidth = onPickSource != null || !showBack ? 48.0 : 24.0;
+          final reserved = 8 + markWidth + (showBack ? 48 : 0) + 48 + (tabs.isEmpty ? 0 : 48);
+          final showPrimary = primary != null && constraints.maxWidth >= reserved + 48;
+          final color = ensureContrast(plugin.brandColor, Theme.of(context).scaffoldBackgroundColor);
+          return IconButtonTheme(
+            data: const IconButtonThemeData(style: pluginActionButtonStyle),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Row(
                 children: [
                   if (showBack) const SizedBox.square(dimension: 48, child: BackButton()),
                   if (onPickSource != null)
                     Semantics(
-                      label: [
-                        L10n.of(context).plugin_substack_title,
-                        if (unread) L10n.of(context).group_has_unread,
-                      ].join(', '),
+                      label: [plugin.title(context), if (unread) L10n.of(context).group_has_unread].join(', '),
                       child: IconButton(
-                        key: const ValueKey('substack-source-picker'),
+                        key: ValueKey('plugin-source-picker-${plugin.id}'),
                         tooltip: L10n.of(context).home_networks,
                         onPressed: onPickSource,
                         icon: Badge(
                           isLabelVisible: unread,
                           smallSize: 7,
-                          child: pluginMark(SubstackPlugin(), size: 24, color: color),
+                          child: pluginMark(plugin, size: 24, color: color),
                         ),
                       ),
                     )
                   else
                     SizedBox(
-                      width: showBack ? 24 : 48,
-                      child: Center(
+                      width: markWidth,
+                      child: Tooltip(
+                        message: plugin.title(context),
                         child: Semantics(
-                          label: L10n.of(context).plugin_substack_title,
+                          label: plugin.title(context),
                           image: true,
-                          child: pluginMark(SubstackPlugin(), size: 24, color: color),
+                          child: pluginMark(plugin, size: 24, color: color),
                         ),
                       ),
                     ),
                   Expanded(
-                    child: showTabs
-                        ? PluginCompactTabs(tabs: tabs, accent: color)
-                        : tabs.isEmpty
-                        ? const SizedBox.shrink()
-                        : PluginSectionPicker(tabs: tabs, accent: color, verticalPadding: 4),
+                    child: PluginCompactTabs(tabs: tabs, accent: color),
                   ),
-                  if (showSearch && search != null) search,
+                  if (showPrimary) primary,
                   PluginDockOptionsButton(
                     store: store,
-                    source: 'substack',
+                    source: plugin.id,
                     services: services,
                     includeActions: true,
                     includeSearch: true,
-                    showSections: false,
                     attention: reading?.attention ?? false,
                   ),
                 ],

@@ -138,7 +138,7 @@ void main() {
     expect(tester.state(find.byType(BlueskyScreen)), same(readerState));
     expect(find.text(bluePost('root').text), findsOneWidget);
     expect(selection.state.id, 'bluesky');
-    await tester.tap(find.byKey(const ValueKey('home-source-picker')));
+    await tester.tap(find.byKey(const ValueKey('plugin-source-picker-bluesky')));
     await tester.pumpAndSettle();
     expect(find.byKey(const ValueKey('home-source-bluesky')), findsOneWidget);
     expect(find.byKey(const ValueKey('home-source-threads')), findsOneWidget);
