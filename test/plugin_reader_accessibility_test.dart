@@ -69,7 +69,7 @@ void main() {
             }
             expect(settings, 1, reason: 'Section navigation must not intercept settings.');
             expect(selected, 1);
-            expect(find.text('A long localized plugin name'), embedded ? findsNothing : findsOneWidget);
+            expect(find.byTooltip('A long localized plugin name'), embedded ? findsNothing : findsOneWidget);
             expect(tester.takeException(), isNull);
           });
         }

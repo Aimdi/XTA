@@ -1,4 +1,4 @@
-import 'package:xta/plugins/microblog_reader_shell.dart';
+import 'package:xta/plugins/plugin_compact_header.dart';
 import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_home_reading_controls.dart';
@@ -538,27 +538,53 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         flatAppBar: true,
         fixedHeader: true,
-        toolbarHeight: tab.id == 'substack'
-            ? 52
-            : isAltMicrobloggingSource(tab.id)
-            ? microblogToolbarHeight(context)
-            : null,
-        toolbarBuilder: tab.id == 'substack'
+        toolbarHeight: tab.isPlugin ? pluginToolbarHeight(context) : null,
+        toolbarBuilder: docked
             ? (context) => GroupUnreadScope(
-                builder: (context, unreadIds) => SubstackCompactHeader(
-                  store: _dock,
-                  unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
-                  onPickSource: () => _pickSource(context),
-                  services: TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Scaffold.of(context).openDrawer();
-                    },
-                    onLongPress: () => showChromeAvatarSheet(context),
-                    icon: const Icon(Icons.menu),
-                    label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
-                  ),
-                ),
+                builder: (context, unreadIds) {
+                  final services = Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (grouped && isAltMicrobloggingSource(tab.id))
+                        AltMicrobloggingSelector(
+                          compact: true,
+                          sourceIds: available.map((option) => option.id.id).toList(),
+                          selected: tab.id,
+                          unread: unreadIds,
+                          onSelected: (id) {
+                            Navigator.pop(context);
+                            _selectStripTab(FeedTab(id));
+                          },
+                        ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Scaffold.of(context).openDrawer();
+                        },
+                        onLongPress: () => showChromeAvatarSheet(context),
+                        icon: const Icon(Icons.menu),
+                        label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
+                      ),
+                    ],
+                  );
+                  final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
+                  if (tab.id == 'substack') {
+                    return SubstackCompactHeader(
+                      store: _dock,
+                      unread: unread,
+                      onPickSource: () => _pickSource(context),
+                      services: services,
+                    );
+                  }
+                  return PluginCompactHeader(
+                    plugin: activePlugin!,
+                    store: _dock,
+                    unread: unread,
+                    onPickSource: () => _pickSource(context),
+                    services: services,
+                  );
+                },
               )
             : null,
         leading: const DrawerAvatarButton(),
@@ -582,29 +608,7 @@ class _FeedScreenState extends State<FeedScreen> {
           );
         },
         actionsBuilder: (context) {
-          if (docked) {
-            return [
-              GroupUnreadScope(
-                builder: (context, unread) => PluginDockActions(
-                  store: _dock,
-                  source: tab.id,
-                  unified: isAltMicrobloggingSource(tab.id),
-                  services: grouped && isAltMicrobloggingSource(tab.id)
-                      ? AltMicrobloggingSelector(
-                          compact: true,
-                          sourceIds: available.map((option) => option.id.id).toList(),
-                          selected: tab.id,
-                          unread: unread,
-                          onSelected: (id) {
-                            Navigator.pop(context);
-                            _selectStripTab(FeedTab(id));
-                          },
-                        )
-                      : null,
-                ),
-              ),
-            ];
-          }
+          if (docked) return const [];
           // Reddit brings its own bar: sorting, search and adding a subreddit
           // are what this feed is steered with, and the generic feed actions
           // steer nothing here. Its overflow carries the app settings so they

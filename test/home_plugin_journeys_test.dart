@@ -23,7 +23,6 @@ import 'package:xta/plugins/hackernews/hn_client.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_screen.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
-import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
@@ -179,9 +178,8 @@ void main() {
     await tester.pumpAndSettle();
     final scrollBefore = tester.state<ScrollableState>(hnList).position.pixels;
     expect(scrollBefore, greaterThan(0));
-    expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
-    final menu = find.descendant(of: find.byType(PluginDockActions), matching: find.byType(PopupMenuButton<String>));
-    await tester.tap(menu);
+    expect(find.byKey(const ValueKey('plugin-source-picker-hackernews')).hitTestable(), findsOneWidget);
+    await tester.tap(picker);
     await tester.pumpAndSettle();
     final open = find.byKey(const ValueKey('open-client-hackernews'));
     expect(tester.getSize(open).height, greaterThanOrEqualTo(48));
@@ -193,9 +191,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(selected.state.id, pluginIdHackerNews);
     expect(tester.state<ScrollableState>(hnList).position.pixels, closeTo(scrollBefore, 1));
-    expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
+    expect(find.byKey(const ValueKey('plugin-source-picker-hackernews')).hitTestable(), findsOneWidget);
     // Source selection remains reachable at the saved reading position.
-    await tester.tap(find.byKey(const ValueKey('home-source-picker')));
+    await tester.tap(find.byKey(const ValueKey('plugin-source-picker-hackernews')));
     await tester.pumpAndSettle();
     final hnOption = find.byKey(const ValueKey('home-source-hackernews'));
     final rssOption = find.byKey(const ValueKey('home-source-rss'));
@@ -208,6 +206,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(rss.calls, 1);
     expect(find.text('A quiet article'), findsOneWidget);
+    // The new source retains its own options, including the reactive RSS menu.
+    expect(picker.hitTestable(), findsOneWidget);
+    await tester.tap(picker);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('open-client-rss')), findsOneWidget);
+    await tester.tap(find.byType(PopupMenuButton<String>));
+    await tester.pumpAndSettle();
+    expect(find.text('Settings'), findsOneWidget);
+    await tester.tapAt(const Offset(4, 4));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
+    await tester.pumpAndSettle();
     await expectLater(find.byType(FeedScreen), matchesGoldenFile('../review-artifacts/renders/home-rss.png'));
     final rssContext = tester.element(find.text('A quiet article'));
     final markRead = rssContext.read<RssReadStore>().markRead('article');
@@ -226,7 +236,7 @@ void main() {
     await strip.reorder(1, 0);
     await tester.pumpAndSettle();
     expect(selected.state.id, pluginIdRss);
-    await tester.tap(find.byKey(const ValueKey('home-source-picker')));
+    await tester.tap(find.byKey(const ValueKey('plugin-source-picker-rss')));
     await tester.pumpAndSettle();
     final homeHn = find.byKey(const ValueKey('home-source-hackernews'));
     final homeRss = find.byKey(const ValueKey('home-source-rss'));
@@ -235,7 +245,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(hn.calls, [HnFeed.top, HnFeed.newest]);
     expect(tester.state<ScrollableState>(hnList).position.pixels, closeTo(scrollBefore, 1));
-    expect(find.byKey(const ValueKey('home-source-picker')).hitTestable(), findsOneWidget);
+    expect(find.byKey(const ValueKey('plugin-source-picker-hackernews')).hitTestable(), findsOneWidget);
     // Disabling through the same persisted setting + strip update as management.
     await prefs.set(optionPluginHnEnabled, false);
     await strip.remove(pluginIdHackerNews);

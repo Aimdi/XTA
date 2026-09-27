@@ -77,7 +77,7 @@ void main() {
     await tester.tap(find.text('Recommended'));
     await tester.pumpAndSettle();
     expect(client.calls, ['following', 'recommended']);
-    await tester.tap(find.descendant(of: find.byType(PluginHomeChrome), matching: find.text('Ranking')));
+    await tester.tap(find.descendant(of: find.byType(PluginHomeChrome), matching: find.byTooltip('Ranking')));
     await tester.pumpAndSettle();
     expect(client.calls.last, 'rank:day:null');
     await tester.tap(find.text('Daily'));
@@ -95,7 +95,7 @@ void main() {
     expect(find.byType(DatePickerDialog), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    final favorites = find.descendant(of: find.byType(PluginHomeChrome), matching: find.text('Favorites'));
+    final favorites = find.descendant(of: find.byType(PluginHomeChrome), matching: find.byTooltip('Favorites'));
     await tester.ensureVisible(favorites);
     await tester.tap(favorites);
     await tester.pumpAndSettle();

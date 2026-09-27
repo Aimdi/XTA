@@ -12,6 +12,12 @@ const pluginActionButtonStyle = ButtonStyle(
   tapTargetSize: MaterialTapTargetSize.padded,
 );
 
+double pluginToolbarHeight(BuildContext context) {
+  final style = Theme.of(context).textTheme.titleMedium;
+  final lineHeight = MediaQuery.textScalerOf(context).scale(style?.fontSize ?? 16) * (style?.height ?? 1.5);
+  return math.max(52, lineHeight + 4);
+}
+
 /// Home already provides identity and the top safe area.
 class PluginEmbedded extends InheritedWidget {
   const PluginEmbedded({super.key, required super.child});
@@ -31,8 +37,7 @@ class PluginHomeTab {
   const PluginHomeTab({required this.icon, required this.label, required this.selected, required this.onTap});
 }
 
-/// Home uses a named section picker when the complete section rail cannot fit.
-/// Standalone clients retain their identity and scrollable section rail.
+/// Home contributes controls to its host; standalone readers use one slim row.
 class PluginHomeChrome extends StatelessWidget {
   final String? title;
   final Widget? mark;
@@ -55,6 +60,7 @@ class PluginHomeChrome extends StatelessWidget {
   Widget build(BuildContext context) {
     final embedded = PluginEmbedded.maybeOf(context) || PluginHomeDockScope.maybeOf(context) != null;
     final hasIdentity = !embedded && title != null;
+    if (hasIdentity) return _standaloneBar(context);
     final labelStyle = Theme.of(context).textTheme.labelLarge;
     final rowHeight = math.max(
       48.0,
@@ -65,32 +71,7 @@ class PluginHomeChrome extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (hasIdentity)
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 56),
-              child: Row(
-                children: [
-                  if (Navigator.canPop(context)) const BackButton(),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 16, end: 10),
-                    child: mark ?? const SizedBox.shrink(),
-                  ),
-                  Expanded(
-                    child: Semantics(
-                      header: true,
-                      child: Text(
-                        title!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                    ),
-                  ),
-                  ...actions,
-                ],
-              ),
-            ),
-          if (tabs.isNotEmpty || (!hasIdentity && actions.isNotEmpty))
+          if (tabs.isNotEmpty || actions.isNotEmpty)
             SizedBox(
               height: rowHeight,
               child: Row(
@@ -98,8 +79,7 @@ class PluginHomeChrome extends StatelessWidget {
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        // Only the top-level embedded toolbar is condensed.
-                        // Inner filters and standalone navigation keep their rails.
+                        // Inner filters keep their labelled rails.
                         if (embedded && title != null && tabs.length > 1 && !_tabsFit(context, constraints.maxWidth)) {
                           return PluginSectionPicker(tabs: tabs, accent: accent);
                         }
@@ -112,7 +92,7 @@ class PluginHomeChrome extends StatelessWidget {
                       },
                     ),
                   ),
-                  if (!hasIdentity) ...actions,
+                  ...actions,
                 ],
               ),
             ),
@@ -141,6 +121,41 @@ class PluginHomeChrome extends StatelessWidget {
     );
   }
 
+  Widget _standaloneBar(BuildContext context) => SafeArea(
+    bottom: false,
+    child: Material(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: IconButtonTheme(
+        data: const IconButtonThemeData(style: pluginActionButtonStyle),
+        child: SizedBox(
+          height: pluginToolbarHeight(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              children: [
+                if (Navigator.canPop(context)) const SizedBox.square(dimension: 48, child: BackButton()),
+                if (mark != null)
+                  SizedBox(
+                    width: 40,
+                    child: Tooltip(
+                      message: title!,
+                      child: Semantics(label: title, image: true, child: mark),
+                    ),
+                  ),
+                Expanded(
+                  child: tabs.isEmpty
+                      ? Text(title!, maxLines: 1, overflow: TextOverflow.ellipsis)
+                      : PluginCompactTabs(tabs: tabs, accent: accent),
+                ),
+                ...actions,
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
   bool _tabsFit(BuildContext context, double width) {
     var requiredWidth = 8.0;
     for (final tab in tabs) {
@@ -162,28 +177,85 @@ class PluginHomeChrome extends StatelessWidget {
   }
 }
 
+/// Icon navigation uses the space left by real actions, never shrinks targets.
+class PluginCompactTabs extends StatelessWidget {
+  final List<PluginHomeTab> tabs;
+  final Color? accent;
+  const PluginCompactTabs({super.key, required this.tabs, this.accent});
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      if (tabs.isEmpty) return const SizedBox.shrink();
+      if (constraints.maxWidth < tabs.length * 48) {
+        return PluginSectionPicker(
+          tabs: tabs,
+          accent: accent,
+          verticalPadding: 4,
+          iconOnly: constraints.maxWidth < 104,
+        );
+      }
+      final color = ensureContrast(
+        accent ?? tweetReadableAccentColor(context),
+        Theme.of(context).scaffoldBackgroundColor,
+      );
+      return Row(
+        children: [
+          for (final tab in tabs)
+            Expanded(
+              child: Semantics(
+                selected: tab.selected,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(width: 2, color: tab.selected ? color : Colors.transparent)),
+                  ),
+                  child: IconButton(
+                    style: pluginActionButtonStyle,
+                    tooltip: tab.label,
+                    onPressed: tab.onTap,
+                    icon: Icon(
+                      tab.icon,
+                      size: 22,
+                      color: tab.selected ? color : Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    },
+  );
+}
+
 /// A compact, fully labelled alternative to an overflowing horizontal rail.
 /// Selection remains owned by the caller's Store; opening this never loads a tab.
 class PluginSectionPicker extends StatelessWidget {
   final List<PluginHomeTab> tabs;
   final Color? accent;
   final double verticalPadding;
+  final bool iconOnly;
 
-  const PluginSectionPicker({super.key, required this.tabs, this.accent, this.verticalPadding = 8})
-    : assert(tabs.length > 0);
+  const PluginSectionPicker({
+    super.key,
+    required this.tabs,
+    this.accent,
+    this.verticalPadding = 8,
+    this.iconOnly = false,
+  }) : assert(tabs.length > 0);
 
   @override
   Widget build(BuildContext context) {
-    final selectedIndex = tabs.indexWhere((tab) => tab.selected);
-    final selected = selectedIndex < 0 ? 0 : selectedIndex;
-    final current = tabs[selected];
+    final selected = tabs.indexWhere((tab) => tab.selected);
+    final current = selected < 0 ? null : tabs[selected];
+    final label = current?.label ?? MaterialLocalizations.of(context).showMenuTooltip;
     final color = ensureContrast(
       accent ?? tweetReadableAccentColor(context),
       Theme.of(context).scaffoldBackgroundColor,
     );
     return PopupMenuButton<int>(
-      tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-      initialValue: selected,
+      tooltip: iconOnly ? label : MaterialLocalizations.of(context).showMenuTooltip,
+      initialValue: selected < 0 ? null : selected,
       position: PopupMenuPosition.under,
       onSelected: (index) => tabs[index].onTap(),
       itemBuilder: (context) => [
@@ -207,23 +279,25 @@ class PluginSectionPicker extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: verticalPadding),
+          padding: EdgeInsets.symmetric(horizontal: iconOnly ? 4 : 12, vertical: verticalPadding),
           child: Row(
             children: [
-              Icon(current.icon, size: 20, color: color),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  current.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelLarge?.copyWith(color: tweetPrimaryColor(context), fontWeight: FontWeight.w700),
+              Icon(current?.icon ?? Icons.menu, size: 20, color: color),
+              if (!iconOnly) ...[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(color: tweetPrimaryColor(context), fontWeight: FontWeight.w700),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.expand_more, size: 20, color: tweetSecondaryColor(context)),
+                const SizedBox(width: 4),
+              ],
+              Icon(Icons.expand_more, size: iconOnly ? 16 : 20, color: tweetSecondaryColor(context)),
             ],
           ),
         ),

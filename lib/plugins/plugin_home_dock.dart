@@ -379,115 +379,153 @@ class PluginDockOptionsButton extends StatelessWidget {
       isScrollControlled: true,
       useSafeArea: true,
       constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(opener).height * .85),
-      builder: (context) => SafeArea(
-        top: false,
-        child: ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
-          store: store,
-          onState: (context, _) {
-            if (!opener.mounted || PluginHomeDockScope.maybeOf(opener)?.source != source) {
-              return const SizedBox.shrink();
-            }
-            final navigation = store.content(source, 'navigation');
-            final reading = store.content(source, 'reading');
-            final following = store.content(source, 'following');
-            final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.only(start: 8),
-                          child: Text(L10n.of(context).feed, style: Theme.of(context).textTheme.titleLarge),
+      builder: (context) => PluginHomeDockScope(
+        store: store,
+        source: source,
+        enabled: true,
+        compact: true,
+        openClientLabel: '',
+        onOpenClient: null,
+        child: SafeArea(
+          top: false,
+          child: ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
+            store: store,
+            onState: (context, _) {
+              if (!opener.mounted || PluginHomeDockScope.maybeOf(opener)?.source != source) {
+                return const SizedBox.shrink();
+              }
+              final navigation = store.content(source, 'navigation');
+              final reading = store.content(source, 'reading');
+              final following = store.content(source, 'following');
+              final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
+              return SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.only(start: 8),
+                            child: Text(L10n.of(context).feed, style: Theme.of(context).textTheme.titleLarge),
+                          ),
+                        ),
+                        IconButton(
+                          key: const ValueKey('home-plugin-options-close'),
+                          style: pluginActionButtonStyle,
+                          tooltip: L10n.of(context).close,
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                        ),
+                      ],
+                    ),
+                    if (services != null) services!,
+                    for (var index = 0; showSections && index < tabs.length; index++)
+                      ListTile(
+                        key: ValueKey('home-section-$index'),
+                        minTileHeight: 48,
+                        leading: Icon(tabs[index].icon, size: 22),
+                        title: Text(tabs[index].label),
+                        selected: tabs[index].selected,
+                        trailing: tabs[index].selected ? const Icon(Icons.check, size: 20) : null,
+                        onTap: () {
+                          Navigator.pop(context);
+                          if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) {
+                            tabs[index].onTap();
+                          }
+                        },
+                      ),
+                    if (showSections && tabs.isEmpty && navigation?.section != null) navigation!.section!,
+                    if (includeActions && navigation?.leading != null)
+                      Padding(padding: const EdgeInsets.all(16), child: navigation!.leading!),
+                    if (reading != null || following != null || (includeSearch && navigation?.search != null)) ...[
+                      const Divider(),
+                      IconButtonTheme(
+                        data: const IconButtonThemeData(style: pluginActionButtonStyle),
+                        child: Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 4,
+                          children: [
+                            if (includeSearch && (reading?.search ?? navigation?.search) != null)
+                              (reading?.search ?? navigation?.search)!,
+                            if (reading?.leading != null) reading!.leading!,
+                            if (following?.leading != null) following!.leading!,
+                            ...?following?.trailing,
+                            ...?reading?.trailing,
+                          ],
                         ),
                       ),
-                      IconButton(
-                        key: const ValueKey('home-plugin-options-close'),
-                        style: pluginActionButtonStyle,
-                        tooltip: L10n.of(context).close,
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                      ),
                     ],
-                  ),
-                  if (services != null) services!,
-                  for (var index = 0; showSections && index < tabs.length; index++)
-                    ListTile(
-                      key: ValueKey('home-section-$index'),
-                      minTileHeight: 48,
-                      leading: Icon(tabs[index].icon, size: 22),
-                      title: Text(tabs[index].label),
-                      selected: tabs[index].selected,
-                      trailing: tabs[index].selected ? const Icon(Icons.check, size: 20) : null,
-                      onTap: () {
-                        Navigator.pop(context);
-                        if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) {
-                          tabs[index].onTap();
-                        }
-                      },
-                    ),
-                  if (showSections && tabs.isEmpty && navigation?.section != null) navigation!.section!,
-                  if (includeActions && navigation?.leading != null)
-                    Padding(padding: const EdgeInsets.all(16), child: navigation!.leading!),
-                  if (reading != null || following != null || (includeSearch && navigation?.search != null)) ...[
-                    const Divider(),
-                    IconButtonTheme(
-                      data: const IconButtonThemeData(style: pluginActionButtonStyle),
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 4,
-                        children: [
-                          if (includeSearch && (reading?.search ?? navigation?.search) != null)
-                            (reading?.search ?? navigation?.search)!,
-                          if (reading?.leading != null) reading!.leading!,
-                          if (following?.leading != null) following!.leading!,
-                          ...?following?.trailing,
-                          ...?reading?.trailing,
-                        ],
+                    if (includeActions) ..._actionEntries(context, opener, navigation?.actions ?? const []),
+                    if ((includeActions || (navigation?.actions.isEmpty ?? true)) && scope.onOpenClient != null)
+                      ListTile(
+                        key: ValueKey('open-client-$source'),
+                        leading: const Icon(Icons.open_in_new),
+                        title: Text(scope.openClientLabel),
+                        onTap: () {
+                          Navigator.pop(context);
+                          if (opener.mounted) scope.onOpenClient?.call();
+                        },
                       ),
-                    ),
                   ],
-                  if (includeActions)
-                    for (final menu in navigation?.actions.whereType<PluginHomeMenu>() ?? <PluginHomeMenu>[]) ...[
-                      const Divider(),
-                      for (final entry in menu.entries(opener))
-                        if (entry is PopupMenuDivider)
-                          const Divider()
-                        else if (entry is PopupMenuItem<String>)
-                          ListTile(
-                            key: entry.key,
-                            minTileHeight: 48,
-                            title: entry.child,
-                            enabled: entry.enabled,
-                            onTap: () {
-                              Navigator.pop(context);
-                              if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) {
-                                entry.onTap?.call();
-                                if (entry.value != null) menu.select(opener, entry.value!);
-                              }
-                            },
-                          ),
-                    ],
-                  if ((navigation?.actions.isEmpty ?? true) && scope.onOpenClient != null)
-                    ListTile(
-                      leading: const Icon(Icons.open_in_new),
-                      title: Text(scope.openClientLabel),
-                      onTap: () {
-                        Navigator.pop(context);
-                        if (opener.mounted) scope.onOpenClient?.call();
-                      },
-                    ),
-                ],
-              ),
-            );
-          },
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
+  }
+
+  void _selectAction(BuildContext sheet, BuildContext opener, VoidCallback action) {
+    Navigator.pop(sheet);
+    if (opener.mounted && PluginHomeDockScope.maybeOf(opener)?.source == source) action();
+  }
+
+  Iterable<Widget> _actionEntries(BuildContext sheet, BuildContext opener, List<Widget> actions) sync* {
+    for (final action in actions) {
+      if (action is PluginHomeMenu) {
+        yield const Divider();
+        for (final entry in action.itemBuilder(opener)) {
+          if (entry is PopupMenuDivider) {
+            yield const Divider();
+          } else if (entry is PopupMenuItem<String>) {
+            yield ListTile(
+              key: entry.key,
+              minTileHeight: 48,
+              title: entry.child,
+              enabled: entry.enabled,
+              trailing: entry is CheckedPopupMenuItem<String> && entry.checked ? const Icon(Icons.check) : null,
+              onTap: () => _selectAction(sheet, opener, () {
+                entry.onTap?.call();
+                if (entry.value != null) action.select(opener, entry.value!);
+              }),
+            );
+          }
+        }
+      } else if (action is IconButton && action.tooltip != null) {
+        yield ListTile(
+          minTileHeight: 48,
+          leading: action.icon,
+          title: Text(action.tooltip!),
+          enabled: action.onPressed != null,
+          onTap: action.onPressed == null ? null : () => _selectAction(sheet, opener, action.onPressed!),
+        );
+      } else if (action is PluginHomeSecondaryAction) {
+        yield ListTile(
+          minTileHeight: 48,
+          leading: action.icon,
+          title: Text(action.label),
+          enabled: action.onPressed != null,
+          onTap: action.onPressed == null ? null : () => _selectAction(sheet, opener, action.onPressed!),
+        );
+      } else {
+        // Some readers publish reactive menus; keep their builders alive.
+        yield Align(alignment: AlignmentDirectional.centerStart, child: action);
+      }
+    }
   }
 }
 
