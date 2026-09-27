@@ -4,6 +4,7 @@ library;
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/ehviewer/eh_models.dart';
@@ -232,17 +233,15 @@ class EhClient {
 
   Future<http.Response> _get(Uri uri) async {
     try {
-      final response = await httpClient
-          .get(
-            uri,
-            headers: {
-              'User-Agent': userAgent,
-              'Accept':
-                  'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-              'Cookie': requestCookies,
-            },
-          )
-          .timeout(_timeout);
+      final response = await httpClient.getWithReadRetry(
+        uri,
+        headers: {
+          'User-Agent': userAgent,
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Cookie': requestCookies,
+        },
+        timeout: _timeout,
+      );
       _throwIfHttpError(response, uri);
       return response;
     } catch (e) {

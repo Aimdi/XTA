@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 
 class CryptoException implements Exception {
@@ -29,7 +30,7 @@ class CryptoClient {
 
   Future<Object?> _get(Uri uri) async {
     try {
-      final response = await httpClient.get(uri).timeout(const Duration(seconds: 15));
+      final response = await httpClient.getWithReadRetry(uri, timeout: const Duration(seconds: 15));
       if (response.statusCode != 200) throw const CryptoException();
       return jsonDecode(response.body);
     } catch (_) {

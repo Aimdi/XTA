@@ -85,7 +85,8 @@ void main() {
     expect(identical(store.state.items, items), isTrue);
     pending.completeError(TimeoutException('still unavailable'));
     await Future.wait([first, second]);
-    expect(fetches, 2);
+    // The coalesced refresh includes two quiet retries of its failed read.
+    expect(fetches, 4);
     expect(identical(store.state.items, items), isTrue);
     expect(store.state.items.single.id, 'old');
   });

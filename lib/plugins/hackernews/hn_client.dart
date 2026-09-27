@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/hackernews/hn_html.dart';
 import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/utils/json.dart';
+import 'package:xta/utils/read_retry.dart';
 
 const hnAlgoliaHost = 'hn.algolia.com';
 const hnFirebaseHost = 'hacker-news.firebaseio.com';
@@ -21,7 +23,7 @@ class HackerNewsClient {
     this.timeout = const Duration(seconds: 12),
   }) : httpClient = httpClient ?? http.Client();
 
-  Future<HnStoryPage> feed(HnFeed feed, {int page = 0}) {
+  Future<HnStoryPage> feed(HnFeed feed, {int page = 0}) => withReadRetryBudget(() {
     return switch (feed) {
       HnFeed.best => _bestPage(page: page),
       HnFeed.top => _algoliaPage(
@@ -50,7 +52,7 @@ class HackerNewsClient {
         page: page,
       ),
     };
-  }
+  });
 
   Future<HnStoryPage> search(String query, {int page = 0}) {
     return _algoliaPage(
@@ -247,12 +249,11 @@ class HackerNewsClient {
 
   Future<Json> _getJson(Uri uri) async {
     try {
-      final response = await httpClient
-          .get(
-            uri,
-            headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
-          )
-          .timeout(timeout);
+      final response = await httpClient.getWithReadRetry(
+        uri,
+        headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
+        timeout: timeout,
+      );
       if (response.statusCode == 404) {
         throw const HnException('Not found');
       }

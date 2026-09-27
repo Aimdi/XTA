@@ -5,10 +5,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/tiktok/tiktok_models.dart';
 import 'package:xta/plugins/tiktok/tiktok_parse.dart';
+import 'package:xta/utils/read_retry.dart';
 
 enum TikTokErrorKind {
   network,
@@ -111,7 +113,7 @@ class TikTokClient {
     required String secUid,
     String? cursor,
     int count = 15,
-  }) async {
+  }) => withReadRetryBudget(() async {
     var page = await _fetchCreatorItems(secUid, cursor, count);
     if (page.statusCode == 10201) {
       throw TikTokException(TikTokErrorKind.notFound, secUid);
@@ -122,7 +124,7 @@ class TikTokClient {
     }
     _validateCreatorPage(page, secUid);
     return page;
-  }
+  });
 
   Future<TikTokPost> video(String id, {String? handle}) async {
     final author = (handle == null || handle.isEmpty) ? '_' : handle;
@@ -170,7 +172,7 @@ class TikTokClient {
     return users;
   }
 
-  Future<TikTokSearchPage> search(String raw) async {
+  Future<TikTokSearchPage> search(String raw) => withReadRetryBudget(() async {
     final query = raw.trim();
     if (query.isEmpty) return const TikTokSearchPage();
     final suggestions = await _tryStrings(() => suggestQueries(query));
@@ -181,7 +183,7 @@ class TikTokClient {
       posts: posts,
       suggestions: suggestions,
     );
-  }
+  });
 
   Map<String, String> _webQuery({
     required String fromPage,
@@ -354,20 +356,19 @@ class TikTokClient {
     String? referer,
   }) async {
     try {
-      final response = await httpClient
-          .get(
-            uri,
-            headers: {
-              'User-Agent': tiktokUserAgent,
-              'Accept': acceptHtml
-                  ? 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-                  : 'application/json, text/plain, */*',
-              'Accept-Language': 'en-US,en;q=0.9',
-              'Referer': ?referer,
-              if (_cookies.isNotEmpty) 'Cookie': cookieHeader,
-            },
-          )
-          .timeout(_timeout);
+      final response = await httpClient.getWithReadRetry(
+        uri,
+        headers: {
+          'User-Agent': tiktokUserAgent,
+          'Accept': acceptHtml
+              ? 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+              : 'application/json, text/plain, */*',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Referer': ?referer,
+          if (_cookies.isNotEmpty) 'Cookie': cookieHeader,
+        },
+        timeout: _timeout,
+      );
       _rememberCookies(response);
       _throwIfHttpError(response, uri);
       return response;

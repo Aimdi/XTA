@@ -5,12 +5,14 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:xta/utils/http_read.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/instagram/instagram_discovery.dart';
 import 'package:xta/plugins/instagram/instagram_models.dart';
 import 'package:xta/plugins/instagram/instagram_parse.dart';
 import 'package:xta/plugins/threads/threads_direct_client.dart';
+import 'package:xta/utils/read_retry.dart';
 
 enum InstagramErrorKind {
   network,
@@ -89,7 +91,7 @@ class InstagramClient {
     await prefs.set(optionPluginInstagramCookies, '');
   }
 
-  Future<InstagramProfile> profile(String handle) async {
+  Future<InstagramProfile> profile(String handle) => withReadRetryBudget(() async {
     final key = normaliseInstagramHandle(handle);
     if (key == null) {
       throw InstagramException(InstagramErrorKind.notFound, handle);
@@ -101,16 +103,16 @@ class InstagramClient {
       throw InstagramException(InstagramErrorKind.notFound, '@$key');
     }
     return profile;
-  }
+  });
 
-  Future<InstagramItemPage> profileMedia(String handle) async {
+  Future<InstagramItemPage> profileMedia(String handle) => withReadRetryBudget(() async {
     final key = normaliseInstagramHandle(handle);
     if (key == null) {
       throw InstagramException(InstagramErrorKind.notFound, handle);
     }
     await warmGuest();
     return parseInstagramProfileMedia(await _webProfile(key));
-  }
+  });
 
   Future<InstagramItemPage> userFeed({
     required String pk,
@@ -129,7 +131,7 @@ class InstagramClient {
   }
 
   /// Instagram's own Explore mix when a session answers; else public seeds.
-  Future<InstagramItemPage> forYou({String? cursor}) async {
+  Future<InstagramItemPage> forYou({String? cursor}) => withReadRetryBudget(() async {
     if (hasSession) {
       try {
         final page = await exploreFeed(cursor: cursor);
@@ -146,10 +148,10 @@ class InstagramClient {
       return const InstagramItemPage(posts: [], hasMore: false);
     }
     return guestDiscover();
-  }
+  });
 
   /// Session Explore grid (`discover/web/explore_grid`, then topical_explore).
-  Future<InstagramItemPage> exploreFeed({String? cursor}) async {
+  Future<InstagramItemPage> exploreFeed({String? cursor}) => withReadRetryBudget(() async {
     await warmGuest();
     final query = {
       'is_prefetch': 'false',
@@ -175,10 +177,10 @@ class InstagramClient {
     ).replace(queryParameters: query);
     final response = await _get(uri, referer: '$instagramWebOrigin/explore/');
     return parseInstagramExplore(_decodeJson(response, uri));
-  }
+  });
 
   /// Guest For You: recent public posts from well-known accounts, interleaved.
-  Future<InstagramItemPage> guestDiscover({int perAccount = 4}) async {
+  Future<InstagramItemPage> guestDiscover({int perAccount = 4}) => withReadRetryBudget(() async {
     await warmGuest();
     final errors = <Object>[];
     final pages = await Future.wait([
@@ -190,7 +192,7 @@ class InstagramClient {
       throw _preferredDiscoverError(errors);
     }
     return InstagramItemPage(posts: posts, hasMore: false);
-  }
+  });
 
   Future<List<InstagramPost>> _profileMediaOrEmpty(
     String handle,
@@ -218,7 +220,7 @@ class InstagramClient {
     return InstagramException(InstagramErrorKind.network, '$error');
   }
 
-  Future<List<InstagramSearchUser>> searchUsers(String raw) async {
+  Future<List<InstagramSearchUser>> searchUsers(String raw) => withReadRetryBudget(() async {
     final query = raw.trim();
     if (query.isEmpty) return const [];
     await warmGuest();
@@ -227,7 +229,7 @@ class InstagramClient {
     ).replace(queryParameters: {'query': query, 'context': 'user'});
     final response = await _get(uri, referer: '$instagramWebOrigin/');
     return parseInstagramTopSearch(_decodeJson(response, uri));
-  }
+  });
 
   Future<void> warmGuest() async {
     if (_cookies.containsKey('csrftoken') && _cookies.containsKey('mid')) {
@@ -268,25 +270,23 @@ class InstagramClient {
     String? referer,
   }) async {
     try {
-      final response = await httpClient
-          .get(
-            uri,
-            headers: {
-              'User-Agent': instagramUserAgent,
-              'Accept': acceptHtml
-                  ? 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-                  : 'application/json, text/plain, */*',
-              'Accept-Language': 'en-US,en;q=0.9',
-              'X-IG-App-ID': instagramWebAppId,
-              'X-Requested-With': 'XMLHttpRequest',
-              'Origin': instagramWebOrigin,
-              'Referer': ?referer,
-              if (_cookies['csrftoken'] != null)
-                'X-CSRFToken': _cookies['csrftoken']!,
-              if (_cookies.isNotEmpty) 'Cookie': cookieHeader,
-            },
-          )
-          .timeout(_timeout);
+      final response = await httpClient.getWithReadRetry(
+        uri,
+        headers: {
+          'User-Agent': instagramUserAgent,
+          'Accept': acceptHtml
+              ? 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+              : 'application/json, text/plain, */*',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'X-IG-App-ID': instagramWebAppId,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Origin': instagramWebOrigin,
+          'Referer': ?referer,
+          if (_cookies['csrftoken'] != null) 'X-CSRFToken': _cookies['csrftoken']!,
+          if (_cookies.isNotEmpty) 'Cookie': cookieHeader,
+        },
+        timeout: _timeout,
+      );
       _rememberCookies(response);
       _throwIfHttpError(response, uri, acceptHtml: acceptHtml);
       return response;
