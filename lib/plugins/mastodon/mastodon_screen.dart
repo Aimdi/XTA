@@ -179,6 +179,7 @@ class _MastodonScreenState extends State<MastodonScreen> {
                       child: PageStorage(
                         bucket: _pageStorage,
                         child: PluginLazyTabs(
+                          onSelected: _onTab,
                           index: tab,
                           children: [
                             (_) => _ExplorePane(slot: '$_surface:0', scrollController: widget.scrollController),

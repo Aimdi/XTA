@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:xta/ui/reader_tab_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -203,7 +204,12 @@ class _TikTokSearchSheetState extends State<_TikTokSearchSheet>
                 Tab(text: l10n.plugin_tiktok_search_videos),
               ],
             ),
-            Expanded(child: _body(l10n)),
+            Expanded(
+              child: AnimatedBuilder(
+                animation: _tabs,
+                builder: (context, _) => ReaderTabNavigation(controller: _tabs, child: _body(l10n)),
+              ),
+            ),
           ],
         ),
       ),

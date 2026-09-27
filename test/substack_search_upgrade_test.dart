@@ -486,8 +486,9 @@ void main() {
     });
   });
 
-  for (final add in [false, true]) {
-    testWidgets('compact enlarged-text ${add ? 'preview' : 'search'} remains usable', (tester) async {
+  for (final mode in ['search', 'preview', 'direct']) {
+    final add = mode == 'preview';
+    testWidgets('compact enlarged-text $mode remains usable', (tester) async {
       tester.view.physicalSize = const Size(320, 720);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -495,10 +496,16 @@ void main() {
       final client = SearchClient();
       final prefs = PrefServiceCache(defaults: {substackSearchHistoryKey: '[]'});
       final pubs = (await tester.runAsync(() async => SubstackPublicationsStore(prefs)))!;
+      final reads = (await tester.runAsync(() async => SubstackReadStore(prefs)))!;
+      final saved = (await tester.runAsync(() async => SubstackSavedStore(prefs)))!;
+      final likes = (await tester.runAsync(() async => SubstackLikesStore(prefs)))!;
       addTearDown(() async {
         await tester.pumpWidget(const SizedBox());
         await tester.pump();
         await tester.runAsync(pubs.destroy);
+        await tester.runAsync(reads.destroy);
+        await tester.runAsync(saved.destroy);
+        await tester.runAsync(likes.destroy);
         client.httpClient.close();
       });
       await tester.pumpWidget(
@@ -508,6 +515,9 @@ void main() {
             providers: [
               Provider<SubstackClient>.value(value: client),
               Provider<SubstackPublicationsStore>.value(value: pubs),
+              Provider<SubstackReadStore>.value(value: reads),
+              Provider<SubstackSavedStore>.value(value: saved),
+              Provider<SubstackLikesStore>.value(value: likes),
             ],
             child: MaterialApp(
               localizationsDelegates: const [
@@ -521,7 +531,11 @@ void main() {
                 data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(2)),
                 child: child!,
               ),
-              home: add ? const SubstackAddScreen() : const SubstackSearchScreen(initialQuery: 'climate change'),
+              home: add
+                  ? const SubstackAddScreen()
+                  : SubstackSearchScreen(
+                      initialQuery: mode == 'direct' ? 'https://one.substack.com/p/essay' : 'climate change',
+                    ),
             ),
           ),
         ),
@@ -537,9 +551,15 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.text('Publication one'), findsOneWidget);
         expect(pubs.state, isEmpty);
+      } else if (mode == 'direct') {
+        expect(client.requestedArticles, ['essay']);
+        await tester.dragFrom(const Offset(100, 520), const Offset(120, 0));
+        await tester.pumpAndSettle();
+        expect(client.requestedArticles, ['essay']);
+        expect(tester.widget<ChoiceChip>(find.widgetWithText(ChoiceChip, 'Posts')).selected, isTrue);
       } else {
         expect(find.text('Publication one'), findsOneWidget);
-        await tester.tap(find.text('Posts').first);
+        await tester.dragFrom(const Offset(200, 520), const Offset(-120, 0));
         await tester.pumpAndSettle(
           const Duration(milliseconds: 100),
           EnginePhase.sendSemanticsUpdate,
@@ -547,6 +567,14 @@ void main() {
         );
         expect(find.text('Posts from followed publications'), findsOneWidget);
         expect(find.text('Follow a publication to search its articles'), findsOneWidget);
+        await tester.dragFrom(const Offset(100, 520), const Offset(120, 0));
+        await tester.pumpAndSettle();
+        expect(find.text('Publication one'), findsOneWidget);
+        // Selecting Publications reuses the existing refresh-on-select path.
+        expect(client.searches, hasLength(2));
+        await tester.tap(find.text('Posts').first);
+        await tester.pumpAndSettle();
+        expect(find.text('Posts from followed publications'), findsOneWidget);
       }
       expect(tester.takeException(), isNull);
     });

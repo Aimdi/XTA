@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/subscription_pack.dart';
-import 'package:xta/home/edge_swipe.dart';
+import 'package:xta/ui/reader_tab_view.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/subscriptions/_cleanup.dart';
 import 'package:xta/subscriptions/_groups.dart';
@@ -184,17 +184,12 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen>
           ),
         ],
       ),
-      // Without this the inner tab view keeps every horizontal swipe, so the
-      // home page view could never be reached from this tab.
-      body: edgeSwipeToChangeHomePage(
-        context,
-        TabBarView(
-          controller: _tabs,
-          children: [
-            SubscriptionGroupsPage(scrollController: _groupsScrollController),
-            SubscriptionUsersPage(scrollController: widget.scrollController),
-          ],
-        ),
+      body: ReaderTabView(
+        controller: _tabs,
+        children: [
+          SubscriptionGroupsPage(scrollController: _groupsScrollController),
+          SubscriptionUsersPage(scrollController: widget.scrollController),
+        ],
       ),
     );
   }

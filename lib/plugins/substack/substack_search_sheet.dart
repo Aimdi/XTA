@@ -17,6 +17,7 @@ import 'package:xta/plugins/substack/substack_search_store.dart';
 import 'package:xta/plugins/substack/substack_store.dart';
 import 'package:xta/subscriptions/users_model.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 /// Compatible entry point; the route now leaves room for articles and large text.
 Future<bool?> showSubstackSearchSheet(BuildContext context, {String? initialQuery}) async {
@@ -163,7 +164,18 @@ class _SubstackSearchScreenState extends State<SubstackSearchScreen> {
                   ],
                 ),
               ),
-              Expanded(child: _results(context, state)),
+              Expanded(
+                child: ReaderSwipeNavigation(
+                  index: state.tab.index,
+                  count: state.direct ? 0 : SubstackSearchTab.values.length,
+                  identity: state.query,
+                  onChanged: (index) {
+                    _store.select(SubstackSearchTab.values[index]);
+                    return true;
+                  },
+                  child: _results(context, state),
+                ),
+              ),
             ],
           ),
         ),

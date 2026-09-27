@@ -9,6 +9,7 @@ import 'package:xta/plugins/mastodon/mastodon_search_sheet.dart';
 import 'package:xta/plugins/mastodon/mastodon_search_store.dart';
 import 'package:xta/plugins/mastodon/mastodon_store.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 class MastodonSearchResults extends StatelessWidget {
   final MastodonSearchState state;
@@ -79,7 +80,18 @@ class MastodonSearchResults extends StatelessWidget {
         children: [
           _SearchTabs(selected: _tab, onSelected: onSelected),
           const Divider(height: 1),
-          Expanded(child: _resultsPane(context, l10n)),
+          Expanded(
+            child: ReaderSwipeNavigation(
+              index: _tab,
+              count: 3,
+              identity: state.query,
+              onChanged: (index) {
+                onSelected(index);
+                return true;
+              },
+              child: _resultsPane(context, l10n),
+            ),
+          ),
         ],
       );
     }

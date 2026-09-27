@@ -1,5 +1,6 @@
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -12,10 +13,12 @@ import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/plugins/threads/threads_post_card.dart';
 import 'package:xta/plugins/threads/threads_settings.dart';
 import 'package:xta/plugins/plugin_profile_tabs.dart';
+import 'package:xta/plugins/plugin_view_store.dart';
 import 'package:xta/plugins/threads/threads_store.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 
@@ -55,7 +58,8 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
   List<ThreadsPost> _posts = const [];
   Object? _error;
   var _loading = true;
-  var _tab = PluginProfileFeedTab.posts;
+  final _tabs = PluginViewStore(PluginProfileFeedTab.posts);
+  PluginProfileFeedTab get _tab => _tabs.state;
 
   String get _handle =>
       (normaliseThreadsHandle(widget.username) ?? widget.username)
@@ -70,6 +74,12 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
         _load();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _tabs.destroy();
+    super.dispose();
   }
 
   Future<void> _load({bool forceRefresh = false}) async {
@@ -216,7 +226,10 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text('@$_handle')),
-      body: _body(context, l10n),
+      body: ScopedBuilder<PluginViewStore<PluginProfileFeedTab>, PluginProfileFeedTab>(
+        store: _tabs,
+        onState: (_, _) => _body(context, l10n),
+      ),
     );
   }
 
@@ -258,47 +271,56 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
     );
     final posts = _postsForTab(_tab);
 
-    return RefreshIndicator(
-      onRefresh: () => _load(forceRefresh: true),
-      child: FeedListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
-        itemCount: 2 + (posts.isEmpty ? 1 : posts.length),
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.all(16),
-              child: ThreadsProfileCard(
-                profile: profile,
-                onFollow: alreadyFollows ? null : () => _follow(profile),
-                onAddToGroup: () => _addToGroup(profile),
-              ),
+    return ReaderSwipeNavigation(
+      index: _tab.index,
+      count: 3,
+      identity: _handle,
+      onChanged: (index) {
+        _tabs.select(PluginProfileFeedTab.values[index]);
+        return true;
+      },
+      child: RefreshIndicator(
+        onRefresh: () => _load(forceRefresh: true),
+        child: FeedListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 24),
+          itemCount: 2 + (posts.isEmpty ? 1 : posts.length),
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Padding(
+                padding: const EdgeInsets.all(16),
+                child: ThreadsProfileCard(
+                  profile: profile,
+                  onFollow: alreadyFollows ? null : () => _follow(profile),
+                  onAddToGroup: () => _addToGroup(profile),
+                ),
+              );
+            }
+            if (index == 1) {
+              return PluginProfileTabBar(
+                selected: _tab,
+                onSelected: _tabs.select,
+              );
+            }
+            if (posts.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                child: Text(
+                  _tab == PluginProfileFeedTab.replies
+                      ? l10n.plugin_threads_replies_empty
+                      : l10n.plugin_threads_no_posts,
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+            final post = posts[index - 2];
+            return ThreadsPostCard(
+              key: ValueKey(post.id),
+              post: post,
+              showSourceBadge: false,
             );
-          }
-          if (index == 1) {
-            return PluginProfileTabBar(
-              selected: _tab,
-              onSelected: (tab) => setState(() => _tab = tab),
-            );
-          }
-          if (posts.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Text(
-                _tab == PluginProfileFeedTab.replies
-                    ? l10n.plugin_threads_replies_empty
-                    : l10n.plugin_threads_no_posts,
-                textAlign: TextAlign.center,
-              ),
-            );
-          }
-          final post = posts[index - 2];
-          return ThreadsPostCard(
-            key: ValueKey(post.id),
-            post: post,
-            showSourceBadge: false,
-          );
-        },
+          },
+        ),
       ),
     );
   }

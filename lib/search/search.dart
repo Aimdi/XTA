@@ -1,3 +1,4 @@
+import 'package:xta/ui/reader_tab_view.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -270,7 +271,7 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
               : SearchFilterStrip(key: const ValueKey('search-filters-active'), chips: _filterChips(state.advanced)),
         ),
         Expanded(
-          child: TabBarView(
+          child: ReaderTabView(
             controller: _tabController,
             children: [
               _tweetResults(_topTweets),

@@ -1,3 +1,4 @@
+import 'package:xta/ui/reader_tab_view.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +46,7 @@ class RedditSearchBody extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: TabBarView(
+            child: ReaderTabView(
               children: [
                 Column(
                   children: [

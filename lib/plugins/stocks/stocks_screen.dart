@@ -25,6 +25,7 @@ import 'package:xta/tweet/ticker/ticker_quote_cache.dart';
 import 'package:xta/tweet/ticker/ticker_symbol.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_controls.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 /// Markets + watchlist + trending cashtag feed.
 ///
@@ -234,7 +235,18 @@ class _StocksScreenState extends State<StocksScreen> {
               ],
             ),
             const Divider(height: 1),
-            Expanded(child: _body(l10n)),
+            Expanded(
+              child: ReaderSwipeNavigation(
+                index: _tab,
+                count: PluginEmbedded.maybeOf(context) ? 0 : 3,
+                identity: 'stocks',
+                onChanged: (index) {
+                  _selectTab(index);
+                  return true;
+                },
+                child: _body(l10n),
+              ),
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/ui/reader_swipe_navigation.dart';
 
 /// Posts / Replies / Media, plus Saved on Bluesky (local likes by that author).
 enum PluginProfileFeedTab { posts, replies, media, saved }
@@ -32,30 +33,39 @@ class PluginProfileTabBar extends StatelessWidget {
       PluginProfileFeedTab.saved => l10n.saved,
     };
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minWidth: constraints.maxWidth),
-              child: SegmentedButton<PluginProfileFeedTab>(
-                showSelectedIcon: false,
-                segments: [
-                  for (final tab in tabs)
-                    ButtonSegment(value: tab, label: Text(label(tab))),
-                ],
-                selected: {selected},
-                onSelectionChanged: (next) {
-                  if (next.isNotEmpty) {
-                    onSelected(next.first);
-                  }
-                },
+    return ReaderSwipeNavigation(
+      index: tabs.indexOf(selected),
+      count: tabs.length,
+      identity: tabs.map((tab) => tab.name).join('|'),
+      onChanged: (index) {
+        onSelected(tabs[index]);
+        return true;
+      },
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                child: SegmentedButton<PluginProfileFeedTab>(
+                  showSelectedIcon: false,
+                  segments: [
+                    for (final tab in tabs)
+                      ButtonSegment(value: tab, label: Text(label(tab))),
+                  ],
+                  selected: {selected},
+                  onSelectionChanged: (next) {
+                    if (next.isNotEmpty) {
+                      onSelected(next.first);
+                    }
+                  },
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

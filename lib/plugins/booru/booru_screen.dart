@@ -162,6 +162,7 @@ class _BooruScreenState extends State<BooruScreen> {
             const Divider(height: 1),
             Expanded(
               child: PluginLazyTabs(
+                onSelected: _select,
                 index: tab,
                 children: [
                   (_) => _FeedTab(

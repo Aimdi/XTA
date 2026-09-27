@@ -354,10 +354,17 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Maya Chen'), findsOneWidget);
     expect(tester.takeException(), isNull);
-    await tester.tap(find.text('Posts').first);
+    await tester.dragFrom(const Offset(200, 430), const Offset(-120, 0));
     await tester.pumpAndSettle();
     expect(find.text('Latest'), findsOneWidget);
     expect(find.textContaining('A few sketches'), findsOneWidget);
+    await tester.dragFrom(const Offset(100, 430), const Offset(120, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Maya Chen'), findsOneWidget);
+    expect(client.peopleCalls, hasLength(1));
+    await tester.tap(find.text('Posts').first);
+    await tester.pumpAndSettle();
+    expect(client.postsCalls, hasLength(1));
     expect(tester.takeException(), isNull);
     await tester.tap(find.text('Filters'));
     await tester.pumpAndSettle();

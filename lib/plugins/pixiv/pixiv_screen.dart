@@ -229,6 +229,7 @@ class _PixivScreenState extends State<PixivScreen> {
               child: !hasToken && _view.state.section != 4
                   ? _signInBody(l10n)
                   : PluginLazyTabs(
+                    onSelected: _selectTab,
                       index: _view.state.section,
                       children: [
                         (_) => _homeTab(l10n),

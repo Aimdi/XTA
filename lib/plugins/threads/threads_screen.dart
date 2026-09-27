@@ -170,6 +170,7 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
               const Divider(height: 1),
               Expanded(
                 child: PluginLazyTabs(
+                  onSelected: _shell.select,
                   index: tab,
                   children: [
                     (_) => _HomePane(

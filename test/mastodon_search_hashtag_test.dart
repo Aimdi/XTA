@@ -48,6 +48,23 @@ class _Client extends MastodonFixtureClient {
 }
 
 void main() {
+  testWidgets('search body swipes change result sections without another request', (tester) async {
+    final client = _Client();
+    final harness = MastodonHarness(client: client);
+    await tester.pumpWidget(harness.app(child: const MastodonSearchScreen(initialQuery: 'photography')));
+    await tester.pumpAndSettle();
+    expect(find.text('Maya Chen'), findsOneWidget);
+    await tester.dragFrom(const Offset(500, 400), const Offset(-140, 0));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const PageStorageKey('mastodon-search-posts')), findsOneWidget);
+    await tester.dragFrom(const Offset(500, 400), const Offset(-140, 0));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const PageStorageKey('mastodon-search-tags')), findsOneWidget);
+    expect(client.searches, 1);
+    expect(tester.takeException(), isNull);
+    await harness.close(tester);
+  });
+
   test('post URL recognition accepts exact Mastodon paths and rejects ambiguous URLs', () {
     expect(mastodonSearchStatusTarget(' https://social.example:8443/@Ada/123/?source=reader#post '), (
       instance: 'https://social.example:8443',
