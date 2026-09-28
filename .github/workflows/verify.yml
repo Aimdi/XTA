@@ -87,6 +87,24 @@ jobs:
       - name: Analyze
         run: flutter analyze --no-fatal-infos
 
+      - name: Home source picker regressions
+        run: >-
+          flutter test --reporter expanded --timeout 90s
+          --dart-define=RENDER_HOME_SOURCES=true
+          test/plugin_marks_test.dart
+          test/unified_home_picker_test.dart
+          test/home_timeline_picker_test.dart
+          test/tab_icons_test.dart
+
+      - name: Home source picker previews
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-source-picker-layouts
+          path: review-artifacts/renders/home-sources-*.png
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Alt Microblogging navigation and undo
         run: >-
           flutter test --reporter expanded --timeout 90s

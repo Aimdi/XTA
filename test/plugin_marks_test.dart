@@ -15,6 +15,25 @@ import 'package:xta/plugins/threads/threads_plugin.dart';
 import 'package:xta/plugins/x/x_plugin.dart';
 
 void main() {
+  testWidgets('painted and font marks scale equally inside a larger icon slot', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Row(children: [
+        SizedBox.square(dimension: 40, child: pluginMark(XPlugin(), size: 16)),
+        SizedBox.square(dimension: 40, child: pluginMark(BooruPlugin(), size: 16)),
+      ]),
+    ));
+    final painted = find.descendant(
+      of: find.byType(PluginBrandMark).first,
+      matching: find.byType(CustomPaint),
+    );
+    final font = find.byIcon(Icons.inventory_2);
+    final paintBounds = tester.getRect(painted);
+    final iconBounds = tester.getRect(font);
+    expect((paintBounds.width - iconBounds.width).abs(), lessThanOrEqualTo(7));
+    expect(paintBounds.center.dy, iconBounds.center.dy);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('plugin marks are glyphs, not the old generic icons', (
     tester,
   ) async {
