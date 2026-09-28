@@ -26,7 +26,7 @@ void main() {
       of: find.byType(PluginBrandMark).first,
       matching: find.byType(CustomPaint),
     );
-    final font = find.byIcon(Icons.inventory_2);
+    final font = find.descendant(of: find.byIcon(Icons.inventory_2), matching: find.byType(RichText));
     final paintBounds = tester.getRect(painted);
     final iconBounds = tester.getRect(font);
     expect((paintBounds.width - iconBounds.width).abs(), lessThanOrEqualTo(7));

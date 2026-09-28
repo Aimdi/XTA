@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Нядаўнія",
   "@home_networks_recent": {},
+  "home_sources_reading": "Чытанне",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Якасць выяў",
   "@image_quality": {},
   "import": "Імпартаваць",

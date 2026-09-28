@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Niadaŭnija",
   "@home_networks_recent": {},
+  "home_sources_reading": "Čytannie",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Jakasć vyjaŭ",
   "@image_quality": {},
   "import": "Import",

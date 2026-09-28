@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Nedávné",
   "@home_networks_recent": {},
+  "home_sources_reading": "Čtení",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Kvalita obrázků",
   "@image_quality": {},
   "import": "Importovat",

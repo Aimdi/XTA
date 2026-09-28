@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "हालिया",
   "@home_networks_recent": {},
+  "home_sources_reading": "पढ़ना",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "छवि गुणवत्ता",
   "@image_quality": {},
   "import": "आयात",

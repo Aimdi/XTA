@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Nylige",
   "@home_networks_recent": {},
+  "home_sources_reading": "Lesing",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Bildekvalitet",
   "@image_quality": {},
   "import": "Importer",

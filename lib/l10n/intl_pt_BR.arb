@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Recentes",
   "@home_networks_recent": {},
+  "home_sources_reading": "Leitura",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Qualidade das imagens",
   "@image_quality": {},
   "import": "Importar",

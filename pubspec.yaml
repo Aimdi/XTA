@@ -150,6 +150,7 @@ flutter:
   assets:
     - assets/icon.png
     - assets/fonts/Inter-OFL.txt
+    - assets/brand-icons-LICENSE.txt
 
   fonts:
     - family: Inter
