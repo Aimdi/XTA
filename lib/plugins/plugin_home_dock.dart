@@ -458,7 +458,8 @@ class PluginDockOptionsButton extends StatelessWidget {
                         ),
                       ),
                     ],
-                    if (includeActions) ..._actionEntries(context, opener, navigation?.actions ?? const []),
+                    if (includeActions)
+                      ..._actionEntries(context, opener, [...?navigation?.actions, ...?reading?.actions]),
                     if ((includeActions || (navigation?.actions.isEmpty ?? true)) && scope.onOpenClient != null)
                       ListTile(
                         key: ValueKey('open-client-$source'),

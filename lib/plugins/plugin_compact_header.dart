@@ -10,6 +10,8 @@ import 'package:xta/ui/contrast.dart';
 /// Substack's single-row presentation, backed by each reader's existing dock.
 class PluginCompactHeader extends StatelessWidget {
   final XtaPlugin plugin;
+  final String? source;
+  final String? title;
   final PluginHomeDockStore store;
   final VoidCallback? onPickSource;
   final Widget? services;
@@ -20,6 +22,8 @@ class PluginCompactHeader extends StatelessWidget {
     super.key,
     required this.plugin,
     required this.store,
+    this.source,
+    this.title,
     this.onPickSource,
     this.services,
     this.showBack = false,
@@ -33,8 +37,10 @@ class PluginCompactHeader extends StatelessWidget {
       store: store,
       onState: (context, _) => LayoutBuilder(
         builder: (context, constraints) {
-          final navigation = store.content(plugin.id, 'navigation');
-          final reading = store.content(plugin.id, 'reading');
+          final sourceId = source ?? plugin.id;
+          final sourceTitle = title ?? plugin.title(context);
+          final navigation = store.content(sourceId, 'navigation');
+          final reading = store.content(sourceId, 'reading');
           final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
           final primary =
               reading?.search ?? navigation?.search ?? navigation?.actions.whereType<IconButton>().firstOrNull;
@@ -51,9 +57,9 @@ class PluginCompactHeader extends StatelessWidget {
                   if (showBack) const SizedBox.square(dimension: 48, child: BackButton()),
                   if (onPickSource != null)
                     Semantics(
-                      label: [plugin.title(context), if (unread) L10n.of(context).group_has_unread].join(', '),
+                      label: [sourceTitle, if (unread) L10n.of(context).group_has_unread].join(', '),
                       child: IconButton(
-                        key: ValueKey('plugin-source-picker-${plugin.id}'),
+                        key: ValueKey('plugin-source-picker-$sourceId'),
                         tooltip: L10n.of(context).home_networks,
                         onPressed: onPickSource,
                         icon: Badge(
@@ -67,9 +73,9 @@ class PluginCompactHeader extends StatelessWidget {
                     SizedBox(
                       width: markWidth,
                       child: Tooltip(
-                        message: plugin.title(context),
+                        message: sourceTitle,
                         child: Semantics(
-                          label: plugin.title(context),
+                          label: sourceTitle,
                           image: true,
                           child: pluginMark(plugin, size: 24, color: color),
                         ),
@@ -81,11 +87,11 @@ class PluginCompactHeader extends StatelessWidget {
                   if (showPrimary) primary,
                   PluginDockOptionsButton(
                     store: store,
-                    source: plugin.id,
+                    source: sourceId,
                     services: services,
                     includeActions: true,
                     includeSearch: true,
-                    attention: reading?.attention ?? false,
+                    attention: (reading?.attention ?? false) || (navigation?.attention ?? false),
                   ),
                 ],
               ),
