@@ -493,12 +493,15 @@ class PluginDockOptionsButton extends StatelessWidget {
           if (entry is PopupMenuDivider) {
             yield const Divider();
           } else if (entry is PopupMenuItem<String>) {
+            final tile = entry.child is ListTile ? entry.child as ListTile : null;
             yield ListTile(
               key: entry.key,
               minTileHeight: 48,
-              title: entry.child,
+              leading: tile?.leading,
+              title: tile?.title ?? entry.child,
+              subtitle: tile?.subtitle,
               enabled: entry.enabled,
-              trailing: entry is CheckedPopupMenuItem<String> && entry.checked ? const Icon(Icons.check) : null,
+              trailing: entry is CheckedPopupMenuItem<String> && entry.checked ? const Icon(Icons.check) : tile?.trailing,
               onTap: () => _selectAction(sheet, opener, () {
                 entry.onTap?.call();
                 if (entry.value != null) action.select(opener, entry.value!);

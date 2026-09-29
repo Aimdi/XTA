@@ -29,6 +29,7 @@ import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin_session.dart';
+import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_feed_list.dart';
 import 'package:xta/plugins/reddit/reddit_listing_body.dart';
@@ -124,6 +125,7 @@ class _HomeHarness {
   Future<void> seed({int postCount = 5}) async {
     final db = await Repository.writable();
     await db.delete(tableSubscription);
+    await db.delete(tableRedditSubscription);
     await db.update(tableSubscriptionGroup, {'popular': 0, 'custom': 0}, where: 'id = ?', whereArgs: ['-1']);
     await db.insert(
       tableSubscription,
@@ -161,6 +163,7 @@ class _HomeHarness {
         Provider(create: (_) => LikedTweetModel(), dispose: (_, store) => store.destroy()),
         Provider(create: (_) => SavedTweetModel(), dispose: (_, store) => store.destroy()),
         Provider<RedditClient>(create: (_) => _HeaderRedditClient()),
+        Provider(create: (_) => RedditAuth(), dispose: (_, auth) => auth.httpClient.close()),
         Provider(create: (_) => RedditSubredditsStore(prefs), dispose: (_, store) => store.destroy()),
         Provider(create: (_) => RedditSavedStore(prefs), dispose: (_, store) => store.destroy()),
         Provider(
@@ -247,7 +250,7 @@ Future<void> _waitForNativeWork(WidgetTester tester, bool Function() ready) asyn
 
 bool _hasAccessibleLabel(WidgetTester tester, String label) {
   bool containsLabel(SemanticsNode node) {
-    if (node.label.split('\n').contains(label)) return true;
+    if (node.label.split('\n').contains(label) || node.getSemanticsData().tooltip == label) return true;
     var found = false;
     node.visitChildren((child) {
       found = containsLabel(child);
@@ -299,6 +302,10 @@ void main() {
   });
 
   testWidgets('X keeps search and its library in the shared header', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
     final h = _HomeHarness();
     addTearDown(() => h.close(tester));
     await tester.runAsync(h.seed);
@@ -342,10 +349,10 @@ void main() {
         await h.prefs.set(optionHomeFeedStripPlugins, ['reddit']);
         await h.prefs.set(optionSeededStripPlugins, ['reddit']);
         final db = await Repository.writable();
-        await db.delete(tableRedditSubscription);
-        await db.insert(tableRedditSubscription, RedditSubscription(
-          id: 'flutter', name: 'flutter', createdAt: DateTime(2026, 9, 7), inFeed: true,
-        ).toMap());
+        await db.insert(
+          tableRedditSubscription,
+          RedditSubscription(id: 'flutter', name: 'flutter', createdAt: DateTime(2026, 9, 7), inFeed: true).toMap(),
+        );
       });
       h.selected.select(FeedTab.reddit);
       await tester.pumpWidget(h.app(xLookLightsOutTheme(null), scale: scale, locale: const Locale('de')));
@@ -424,7 +431,6 @@ void main() {
         expect(tester.getSize(find.byKey(_media)).height, greaterThanOrEqualTo(48));
         expect(find.byKey(_order).hitTestable(), findsOneWidget);
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
-        expect(find.byKey(_order).hitTestable(), findsOneWidget);
         final media = find.byKey(_media);
         await tester.ensureVisible(media);
         expect(media.hitTestable(), findsOneWidget);
@@ -480,7 +486,6 @@ void main() {
         expect(find.byKey(_media).hitTestable(), findsOneWidget);
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
         expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
-        expect(find.byKey(_media).hitTestable(), findsOneWidget);
         expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
         expect(find.byKey(_order).hitTestable(), findsOneWidget);
         expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
@@ -673,7 +678,9 @@ void main() {
       await _waitForFollowing(tester);
       await tester.tap(find.byKey(_order));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(L10n.current.filters));
+      final filters = find.widgetWithText(ListTile, L10n.current.filters);
+      await tester.ensureVisible(filters);
+      await tester.tap(filters);
       await tester.pumpAndSettle();
       expect(find.text(L10n.current.include_replies), findsOneWidget);
       Navigator.pop(tester.element(find.text(L10n.current.include_replies)));
@@ -683,7 +690,9 @@ void main() {
       for (final order in [1, 0, 2]) {
         await tester.tap(find.byKey(_order));
         await tester.pumpAndSettle();
-        await tester.tap(find.text(labels[order]));
+        final item = find.widgetWithText(ListTile, labels[order]);
+        await tester.ensureVisible(item);
+        await tester.tap(item);
         await _waitForNativeWork(
           tester,
           () => model.state.popular == (order == 1) && model.state.custom == (order == 2),

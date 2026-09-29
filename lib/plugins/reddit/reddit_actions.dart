@@ -183,23 +183,23 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
     final l10n = L10n.of(context);
 
     final actions = <Widget>[
-        IconButton(
-          tooltip: l10n.plugin_reddit_sort,
-          icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
-          onPressed: () async {
-            if (await openRedditSortSheet(context) != null && context.mounted) {
-              await _refreshActive();
-            }
-          },
-        ),
-        IconButton(
-          tooltip: l10n.plugin_reddit_search_hint,
-          icon: const Icon(Icons.search),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
-        ),
-        if (widget.onOpenSaved == null)
-          IconButton(tooltip: l10n.subscriptions, icon: const Icon(Icons.list), onPressed: _manageSubreddits),
-        _sourceMenu(context),
+      IconButton(
+        tooltip: l10n.plugin_reddit_sort,
+        icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
+        onPressed: () async {
+          if (await openRedditSortSheet(context) != null && context.mounted) {
+            await _refreshActive();
+          }
+        },
+      ),
+      IconButton(
+        tooltip: l10n.plugin_reddit_search_hint,
+        icon: const Icon(Icons.search),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
+      ),
+      if (widget.onOpenSaved == null)
+        IconButton(tooltip: l10n.subscriptions, icon: const Icon(Icons.list), onPressed: _manageSubreddits),
+      _sourceMenu(context),
     ];
     // Search is the visible primary action in the shared compact header.
     if (widget.builder != null) {

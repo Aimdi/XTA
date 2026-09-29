@@ -593,53 +593,53 @@ class _FeedScreenState extends State<FeedScreen> {
         fixedHeader: true,
         toolbarHeight: pluginToolbarHeight(context),
         toolbarBuilder: (context) => GroupUnreadScope(
-                builder: (context, unreadIds) {
-                  final services = Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (grouped && isAltMicrobloggingSource(tab.id))
-                        AltMicrobloggingSelector(
-                          compact: true,
-                          sourceIds: available.map((option) => option.id.id).toList(),
-                          selected: tab.id,
-                          unread: unreadIds,
-                          onSelected: (id) {
-                            Navigator.pop(context);
-                            _selectStripTab(FeedTab(id));
-                          },
-                        ),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Scaffold.of(context).openDrawer();
-                        },
-                        onLongPress: () => showChromeAvatarSheet(context),
-                        icon: const Icon(Icons.menu),
-                        label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
-                      ),
-                    ],
-                  );
-                  final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
-                  if (tab.id == 'substack') {
-                    return SubstackCompactHeader(
-                      store: _dock,
-                      unread: unread,
-                      onPickSource: () => _pickSource(context),
-                      services: services,
-                    );
-                  }
-                  return PluginCompactHeader(
-                    plugin: activePlugin ?? XPlugin(),
-                    source: tab.id,
-                    title: available.firstWhere((option) => option.id == tab).titleBuilder(context),
-                    store: _dock,
-                    unread: unread,
-                    onPickSource: () => _pickSource(context),
-                    services: services,
-                  );
-                },
-              ),
+          builder: (context, unreadIds) {
+            final services = Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (grouped && isAltMicrobloggingSource(tab.id))
+                  AltMicrobloggingSelector(
+                    compact: true,
+                    sourceIds: available.map((option) => option.id.id).toList(),
+                    selected: tab.id,
+                    unread: unreadIds,
+                    onSelected: (id) {
+                      Navigator.pop(context);
+                      _selectStripTab(FeedTab(id));
+                    },
+                  ),
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Scaffold.of(context).openDrawer();
+                  },
+                  onLongPress: () => showChromeAvatarSheet(context),
+                  icon: const Icon(Icons.menu),
+                  label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
+                ),
+              ],
+            );
+            final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
+            if (tab.id == 'substack') {
+              return SubstackCompactHeader(
+                store: _dock,
+                unread: unread,
+                onPickSource: () => _pickSource(context),
+                services: services,
+              );
+            }
+            return PluginCompactHeader(
+              plugin: activePlugin ?? XPlugin(),
+              source: tab.id,
+              title: available.firstWhere((option) => option.id == tab).titleBuilder(context),
+              store: _dock,
+              unread: unread,
+              onPickSource: () => _pickSource(context),
+              services: services,
+            );
+          },
+        ),
         titleBuilder: (_) => const SizedBox.shrink(),
         actionsBuilder: (_) => const [],
         bodyBuilder: (context) => HomeReadingViewport(
