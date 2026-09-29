@@ -256,6 +256,22 @@ void main() {
     await Repository.readOnly();
   });
 
+  testWidgets('Following starts below one compact toolbar', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final h = _HomeHarness();
+    addTearDown(() => h.close(tester));
+    await tester.runAsync(h.seed);
+    await tester.pumpWidget(h.app(xLookLightsOutTheme(null)));
+    await _waitForFollowing(tester);
+    expect(tester.getTopLeft(find.byType(SubscriptionGroupScreenContent)).dy, lessThanOrEqualTo(64));
+    expect(find.byTooltip('Media').hitTestable(), findsOneWidget);
+    expect(find.byIcon(Icons.manage_search).hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final variant in ['light', 'dark', 'black', 'large-rtl']) {
     testWidgets('populated Home layout $variant', (tester) async {
       final large = variant == 'large-rtl';
