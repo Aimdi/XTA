@@ -7,7 +7,8 @@ import 'package:xta/plugins/x/x_plugin.dart';
 /// Service mark for a plugin — official glyphs where we have them, Material
 /// fallback otherwise.
 ///
-/// Path glyphs are Simple Icons (CC0). Bluesky reuses the butterfly already
+/// Path glyphs are Simple Icons (CC0), except X (Bootstrap Icons, MIT).
+/// Bluesky reuses the butterfly already
 /// painted on cards so the strip and a mixed feed do not disagree.
 class PluginBrandMark extends StatelessWidget {
   final XtaPlugin plugin;
@@ -27,23 +28,30 @@ class PluginBrandMark extends StatelessWidget {
       pluginIdX || pluginIdThreads => Theme.of(context).colorScheme.onSurface,
       _ => plugin.brandColor,
     };
-    return switch (plugin.id) {
+    final glyph = switch (plugin.id) {
       pluginIdX => _paint(_PathPainter(_x, tint)),
       pluginIdThreads => _paint(_PathPainter(_threads, tint)),
-      pluginIdBluesky => BlueskyButterflyIcon(size: size, color: tint),
+      pluginIdBluesky => Padding(padding: const EdgeInsets.all(2), child: BlueskyButterflyIcon(size: 20, color: tint)),
       pluginIdSubstack => _paint(_SubstackPainter(tint)),
       pluginIdPixiv => _paint(_PathPainter(_pixiv, tint)),
       pluginIdMastodon => _paint(_PathPainter(_mastodon, tint)),
       pluginIdTiktok => _paint(_PathPainter(_tiktok, tint)),
-      pluginIdInstagram => _paint(_InstagramPainter(tint)),
-      pluginIdEhViewer => _paint(_EhHPainter(tint)),
-      pluginIdBooru => Icon(Icons.inventory_2, size: size, color: tint),
-      _ => Icon(plugin.icon, size: size, color: tint),
+      pluginIdInstagram => _paint(_InstagramPainter(tint), inset: 0),
+      pluginIdEhViewer => _paint(_EhHPainter(tint), inset: 0),
+      pluginIdBooru => Icon(Icons.inventory_2, size: 24, color: tint),
+      _ => Icon(plugin.icon, size: 24, color: tint),
     };
+    // A fixed glyph canvas makes font and painted marks respond identically
+    // when a parent supplies a different slot size. Full-bleed paths are inset
+    // to match the optical bounds of Material glyphs.
+    return SizedBox.square(
+      dimension: size,
+      child: FittedBox(child: SizedBox.square(dimension: 24, child: glyph)),
+    );
   }
 
-  Widget _paint(CustomPainter painter) =>
-      CustomPaint(size: Size.square(size), painter: painter);
+  Widget _paint(CustomPainter painter, {double inset = 2}) =>
+      Padding(padding: EdgeInsets.all(inset), child: CustomPaint(painter: painter));
 }
 
 /// The same mark the store, strip and plugin-timelines sheet should share.
@@ -305,36 +313,32 @@ final _pixiv = Path()
   ..cubicTo(15.639, 6.172, 14.283, 5.519, 12.555, 5.518)
   ..close();
 
-// X and Threads geometry: Simple Icons (CC0), revision
-// d4e6ba93e48f178898707f0145ec285f28b64b38, icons/x.svg and icons/threads.svg.
-// https://github.com/simple-icons/simple-icons/tree/d4e6ba93e48f178898707f0145ec285f28b64b38/icons
+// Bootstrap Icons twitter-x.svg (MIT), scaled from its 16x16 viewBox to 24.
+// https://github.com/twbs/icons/blob/main/icons/twitter-x.svg
+// License bundled in assets/brand-icons-LICENSE.txt.
 final _x = Path()
-  ..fillType = PathFillType.evenOdd
-  ..moveTo(14.234, 10.162)
-  ..lineTo(22.977, 0)
-  ..lineTo(20.905, 0)
-  ..lineTo(13.314, 8.824)
-  ..lineTo(7.251, 0)
-  ..lineTo(0.258, 0)
-  ..lineTo(9.426, 13.343)
-  ..lineTo(0.258, 24)
-  ..lineTo(2.33, 24)
-  ..lineTo(10.346, 14.682)
-  ..lineTo(16.749, 24)
-  ..lineTo(23.742, 24)
-  ..lineTo(14.234, 10.162)
+  ..moveTo(18.9, 1.125)
+  ..lineTo(22.581, 1.125)
+  ..lineTo(14.541, 10.338)
+  ..lineTo(24, 22.875)
+  ..lineTo(16.5945, 22.875)
+  ..lineTo(10.794, 15.27)
+  ..lineTo(4.1565, 22.875)
+  ..lineTo(0.474, 22.875)
+  ..lineTo(9.0735, 13.02)
+  ..lineTo(0, 1.125)
+  ..lineTo(7.5945, 1.125)
+  ..lineTo(12.837, 8.0745)
+  ..lineTo(18.9015, 1.125)
   ..close()
-  ..moveTo(11.397, 13.461)
-  ..lineTo(10.468, 12.132)
-  ..lineTo(3.076, 1.56)
-  ..lineTo(6.258, 1.56)
-  ..lineTo(12.223, 10.092)
-  ..lineTo(13.152, 11.421)
-  ..lineTo(20.906, 22.511)
-  ..lineTo(17.724, 22.511)
-  ..lineTo(11.397, 13.461)
+  ..moveTo(17.61, 20.667)
+  ..lineTo(19.65, 20.667)
+  ..lineTo(6.4845, 3.2175)
+  ..lineTo(4.2975, 3.2175)
   ..close();
 
+// Threads geometry: Simple Icons (CC0), revision
+// d4e6ba93e48f178898707f0145ec285f28b64b38, icons/threads.svg.
 final _threads = Path()
   ..fillType = PathFillType.evenOdd
   ..moveTo(18.263, 11.097)

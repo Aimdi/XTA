@@ -433,6 +433,8 @@ Future<void> main() async {
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/fonts/Inter-OFL.txt');
     yield LicenseEntryWithLineBreaks(const ['Inter'], license);
+    final iconsLicense = await rootBundle.loadString('assets/brand-icons-LICENSE.txt');
+    yield LicenseEntryWithLineBreaks(const ['Bootstrap Icons'], iconsLicense);
   });
 
   // Neither belongs in front of the first frame. MediaKit is dlopen'ing

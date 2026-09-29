@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Son kullanılanlar",
   "@home_networks_recent": {},
+  "home_sources_reading": "Okuma",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Görüntü kalitesi",
   "@image_quality": {},
   "import": "İçe aktar",

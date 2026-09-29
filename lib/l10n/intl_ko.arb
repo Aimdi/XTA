@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "최근",
   "@home_networks_recent": {},
+  "home_sources_reading": "읽기",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "이미지 화질",
   "@image_quality": {},
   "import": "가져오기",

@@ -731,6 +731,10 @@
   "@home_networks_more": {},
   "home_networks_recent": "Hiljutised",
   "@home_networks_recent": {},
+  "home_sources_reading": "Lugemine",
+  "@home_sources_reading": {
+    "description": "Home source picker category for Substack and RSS feeds."
+  },
   "image_quality": "Piltide kvaliteet",
   "@image_quality": {},
   "import": "Import",

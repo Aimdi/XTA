@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -11,6 +12,7 @@ class HomeTimelineOption {
   final bool plugin;
   final bool unread;
   final String? subtitle;
+  final List<HomeTimelineOption> members;
 
   const HomeTimelineOption({
     required this.id,
@@ -19,6 +21,7 @@ class HomeTimelineOption {
     required this.plugin,
     required this.unread,
     this.subtitle,
+    this.members = const [],
   });
 }
 
@@ -79,7 +82,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
   List<HomeTimelineOption> _displayOptions(BuildContext context) {
     final byId = {for (final option in widget.options) option.id: option};
     final members = widget.options.where((option) => isAltMicrobloggingSource(option.id)).toList();
-    return [
+    final options = [
       for (final id in groupedMicrobloggingIds(byId.keys, grouped: widget.groupMicroblogs))
         if (id == altMicrobloggingSectionId)
           HomeTimelineOption(
@@ -92,6 +95,44 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
           )
         else
           byId[id]!,
+    ];
+    return _groupSources(
+      _groupSources(
+        options,
+        id: 'art',
+        label: L10n.of(context).plugin_category_art,
+        icon: Icons.palette_outlined,
+        sourceIds: const {pluginIdPixiv, pluginIdBooru, pluginIdEhViewer},
+      ),
+      id: 'reading',
+      label: L10n.of(context).home_sources_reading,
+      icon: Icons.auto_stories_outlined,
+      sourceIds: const {pluginIdSubstack, pluginIdRss},
+    );
+  }
+
+  List<HomeTimelineOption> _groupSources(
+    List<HomeTimelineOption> options, {
+    required String id,
+    required String label,
+    required IconData icon,
+    required Set<String> sourceIds,
+  }) {
+    final members = options.where((option) => sourceIds.contains(option.id)).toList();
+    if (members.length < 2) return options;
+    return [
+      for (final option in options)
+        if (!sourceIds.contains(option.id))
+          option
+        else if (option.id == members.first.id)
+          HomeTimelineOption(
+            id: id,
+            label: label,
+            mark: Icon(icon),
+            plugin: true,
+            unread: members.any((member) => member.unread),
+            members: members,
+          ),
     ];
   }
 
@@ -201,6 +242,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
   }
 
   Widget _row(BuildContext context, HomeTimelineOption option, {bool group = false}) {
+    if (!group && option.members.isNotEmpty) return _sourceGroup(context, option);
     final microblogs = !group && option.id == altMicrobloggingSectionId;
     final isSelected =
         !group && (option.id == widget.selected || (microblogs && isAltMicrobloggingSource(widget.selected)));
@@ -219,25 +261,17 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
             horizontalTitleGap: 12,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            leading: SizedBox(width: 24, height: 24, child: ExcludeSemantics(child: option.mark)),
+            leading: _mark(option.mark),
             title: Text(option.label, style: TextStyle(fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500)),
             subtitle: microblogs
-                ? _microblogServices()
+                ? _services(context, widget.options.where((option) => isAltMicrobloggingSource(option.id)))
                 : option.subtitle == null
                 ? null
                 : Text(option.subtitle!),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (option.unread)
-                  Semantics(
-                    label: L10n.of(context).group_has_unread,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(color: accent, shape: BoxShape.circle),
-                    ),
-                  ),
+                if (option.unread) _unread(context),
                 if (isSelected) ...[const SizedBox(width: 12), Icon(Icons.check, color: accent)],
               ],
             ),
@@ -261,17 +295,71 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
     );
   }
 
-  Widget _microblogServices() => Wrap(
+  Widget _sourceGroup(BuildContext context, HomeTimelineOption option) {
+    final selected = option.members.any((member) => member.id == widget.selected);
+    final colors = Theme.of(context).colorScheme;
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(16));
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Semantics(
+        key: ValueKey('home-source-${option.id}'),
+        label: option.unread ? '${option.label}, ${L10n.of(context).group_has_unread}' : option.label,
+        selected: selected,
+        child: Material(
+          color: selected ? tweetAccentColor(context).withValues(alpha: 0.12) : Colors.transparent,
+          shape: shape,
+          clipBehavior: Clip.antiAlias,
+          child: ExpansionTile(
+            key: PageStorageKey('home-source-section-${option.id}'),
+            minTileHeight: 64,
+            tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+            childrenPadding: const EdgeInsetsDirectional.only(start: 16, bottom: 4),
+            shape: shape,
+            collapsedShape: shape,
+            textColor: colors.onSurface,
+            collapsedTextColor: colors.onSurface,
+            iconColor: colors.onSurfaceVariant,
+            collapsedIconColor: colors.onSurfaceVariant,
+            leading: _mark(option.mark),
+            title: Row(
+              children: [
+                Expanded(child: Text(option.label, style: TextStyle(fontWeight: selected ? FontWeight.w700 : FontWeight.w500))),
+                if (option.unread) ...[const SizedBox(width: 8), _unread(context)],
+                if (selected) ...[const SizedBox(width: 8), Icon(Icons.check, size: 18, color: tweetReadableAccentColor(context))],
+              ],
+            ),
+            subtitle: _services(context, option.members),
+            children: [for (final member in option.members) _row(context, member)],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _mark(Widget mark, {double size = 24}) => ExcludeSemantics(
+    child: SizedBox.square(dimension: size, child: FittedBox(child: mark)),
+  );
+
+  Widget _unread(BuildContext context) => Semantics(
+    label: L10n.of(context).group_has_unread,
+    child: Container(
+      width: 8,
+      height: 8,
+      decoration: BoxDecoration(color: tweetReadableAccentColor(context), shape: BoxShape.circle),
+    ),
+  );
+
+  Widget _services(BuildContext context, Iterable<HomeTimelineOption> options) => Wrap(
     spacing: 8,
     runSpacing: 4,
     children: [
-      for (final option in widget.options.where((option) => isAltMicrobloggingSource(option.id)))
+      for (final option in options)
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ExcludeSemantics(child: SizedBox.square(dimension: 16, child: option.mark)),
+            _mark(option.mark, size: 16),
             const SizedBox(width: 4),
-            Flexible(child: Text(option.label)),
+            Flexible(child: Text(option.label, style: Theme.of(context).textTheme.bodySmall)),
           ],
         ),
     ],
