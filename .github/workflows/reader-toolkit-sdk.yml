@@ -1,0 +1,207 @@
+name: Reader toolkit SDK
+on:
+  push:
+    branches: ['chore/reader-toolkit-validation']
+permissions:
+  contents: read
+jobs:
+  sdk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
+        with:
+          flutter-version-file: .fvmrc
+          cache: true
+      - name: Prepare pinned SDK
+        run: |
+          flutter --version
+          sdk="$(dirname "$(dirname "$(readlink -f "$(command -v flutter)")")")"
+          mkdir -p sdk-parts
+          tar -C "$sdk" --exclude='./.git' --exclude='./examples' --exclude='./dev' --exclude='./bin/cache/artifacts/engine/android*' --exclude='./bin/cache/artifacts/engine/linux-arm64*' --exclude='./bin/cache/artifacts/engine/linux-x64-profile' --exclude='./bin/cache/artifacts/engine/linux-x64-release' --exclude='./bin/cache/artifacts/engine/windows*' --exclude='./bin/cache/artifacts/engine/darwin*' -czf - . | split -b 28M - sdk-parts/flutter-sdk-
+          ls -lh sdk-parts
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-aa
+          path: sdk-parts/flutter-sdk-aa
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ab
+          path: sdk-parts/flutter-sdk-ab
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ac
+          path: sdk-parts/flutter-sdk-ac
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ad
+          path: sdk-parts/flutter-sdk-ad
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ae
+          path: sdk-parts/flutter-sdk-ae
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-af
+          path: sdk-parts/flutter-sdk-af
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ag
+          path: sdk-parts/flutter-sdk-ag
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ah
+          path: sdk-parts/flutter-sdk-ah
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ai
+          path: sdk-parts/flutter-sdk-ai
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-aj
+          path: sdk-parts/flutter-sdk-aj
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ak
+          path: sdk-parts/flutter-sdk-ak
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-al
+          path: sdk-parts/flutter-sdk-al
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-am
+          path: sdk-parts/flutter-sdk-am
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-an
+          path: sdk-parts/flutter-sdk-an
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ao
+          path: sdk-parts/flutter-sdk-ao
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ap
+          path: sdk-parts/flutter-sdk-ap
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-aq
+          path: sdk-parts/flutter-sdk-aq
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ar
+          path: sdk-parts/flutter-sdk-ar
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-as
+          path: sdk-parts/flutter-sdk-as
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-at
+          path: sdk-parts/flutter-sdk-at
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-au
+          path: sdk-parts/flutter-sdk-au
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-av
+          path: sdk-parts/flutter-sdk-av
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-aw
+          path: sdk-parts/flutter-sdk-aw
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ax
+          path: sdk-parts/flutter-sdk-ax
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-ay
+          path: sdk-parts/flutter-sdk-ay
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: reader-flutter-sdk-az
+          path: sdk-parts/flutter-sdk-az
+          compression-level: 0
+          if-no-files-found: ignore
+          retention-days: 1
