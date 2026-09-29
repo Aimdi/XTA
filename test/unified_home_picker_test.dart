@@ -105,6 +105,7 @@ void main() {
       await tester.pumpAndSettle();
       final member = find.byKey(ValueKey('home-source-$source'));
       await tester.ensureVisible(member);
+      await tester.pumpAndSettle();
       await tester.tap(member);
       await tester.pumpAndSettle();
       expect(picked?.id, source);
