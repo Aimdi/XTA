@@ -131,7 +131,6 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
       await tester.pumpWidget(groupedPickerFixture(selected: 'booru', scale: config.scale, locale: Locale(config.locale)));
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
@@ -151,6 +150,7 @@ void main() {
       expect(tester.getSize(booru).height, greaterThanOrEqualTo(48));
       expect(find.byKey(const ValueKey('home-add-timeline')).hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
+      semantics.dispose();
     });
   }
 
