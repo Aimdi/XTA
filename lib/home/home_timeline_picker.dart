@@ -303,6 +303,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Semantics(
         key: ValueKey('home-source-${option.id}'),
+        label: option.unread ? '${option.label}, ${L10n.of(context).group_has_unread}' : option.label,
         selected: selected,
         child: Material(
           color: selected ? tweetAccentColor(context).withValues(alpha: 0.12) : Colors.transparent,
