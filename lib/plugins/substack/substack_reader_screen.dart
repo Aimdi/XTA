@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/substack/substack_history.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_article.dart';
@@ -501,7 +503,16 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
           ),
         ],
       ),
-      body: Column(
+      body: ReadingHistoryHook(
+        entry: () => substackHistoryEntry(_post),
+        dwell: readingHistoryScreenDwell,
+        child: _readerBody(context),
+      ),
+    );
+  }
+
+  Widget _readerBody(BuildContext context) {
+    return Column(
         children: [
           if (_content.state.refreshing) const LinearProgressIndicator(),
           if (_content.state.refreshError != null)
@@ -533,7 +544,6 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
           ),
           Expanded(child: _articleBody(context)),
         ],
-      ),
     );
   }
 

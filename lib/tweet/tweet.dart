@@ -1,6 +1,8 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/reading/reader_translation_service.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/tweet/tweet_history.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
@@ -473,6 +475,16 @@ class TweetTileState extends State<TweetTile> {
 
   @override
   Widget build(BuildContext context) {
+    final tile = _buildTile(context);
+    if (isQuotedTweet || isBirdwatchQuote) return tile;
+    return ReadingHistoryHook(
+      entry: () => tweetHistoryEntry(tweet),
+      dwell: widget.tweetOpened ? readingHistoryScreenDwell : readingHistoryCardDwell,
+      child: tile,
+    );
+  }
+
+  Widget _buildTile(BuildContext context) {
     final prefs = PrefService.of(context, listen: false);
 
     var shareBaseUrlOption = prefs.get(optionShareBaseUrl);

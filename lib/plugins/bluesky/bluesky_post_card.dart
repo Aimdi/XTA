@@ -1,5 +1,7 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/bluesky/bluesky_history.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -159,7 +161,13 @@ class BlueskyPostCard extends StatelessWidget {
     );
   }
 
-  Widget _body(BuildContext context) => Column(
+  Widget _body(BuildContext context) => ReadingHistoryHook(
+    entry: () => blueskyHistoryEntry(post),
+    dwell: openOnTap ? readingHistoryCardDwell : readingHistoryScreenDwell,
+    child: _bodyContent(context),
+  );
+
+  Widget _bodyContent(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (post.text.isNotEmpty) ...[

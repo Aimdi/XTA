@@ -6,6 +6,7 @@ import 'package:xta/reading/feed_appearance_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/reading/reader_translation_settings.dart';
+import 'package:xta/reading/reading_history_screen.dart';
 import 'package:xta/settings/settings_chrome.dart';
 
 class ReaderToolEntry {
@@ -32,6 +33,11 @@ class ReaderToolsSettings extends StatelessWidget {
         icon: Icons.translate,
         title: (context) => L10n.of(context).translation_title,
         builder: (_) => const ReaderTranslationSettings(),
+      ),
+      ReaderToolEntry(
+        icon: Icons.history,
+        title: (context) => L10n.of(context).history_title,
+        builder: (_) => const ReadingHistoryScreen(),
       ),
       ...entries,
     ];

@@ -1,3 +1,5 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/substack/substack_history.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,10 @@ class SubstackPostCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ReadingHistoryHook(entry: () => substackHistoryEntry(post), dwell: readingHistoryCardDwell, child: _card(context));
+
+  Widget _card(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
       store: context.read<SubstackReadStore>(),
       distinct: (_) => !context.read<SubstackReadStore>().state.contains(post.id),

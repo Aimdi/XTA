@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/reddit/reddit_history.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
@@ -269,6 +271,14 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     final post = _post;
     final date = post.createdAt;
 
+    return ReadingHistoryHook(
+      entry: () => redditHistoryEntry(_post),
+      dwell: readingHistoryScreenDwell,
+      child: _headerContent(context, theme, post, date),
+    );
+  }
+
+  Widget _headerContent(BuildContext context, ThemeData theme, RedditPost post, DateTime? date) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Column(

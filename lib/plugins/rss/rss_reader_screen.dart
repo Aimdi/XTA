@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/rss/rss_history.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_links.dart';
@@ -182,17 +184,21 @@ class _RssReaderScreenState extends State<RssReaderScreen> with WidgetsBindingOb
             ),
         ],
       ),
-      body: Column(children: [
-        ArticleReaderControls(
-          store: _reading,
-          supportsAppearance: item.hasReadableBody,
-          onAppearanceChanged: _applyReadingAppearance,
-          onStartOver: () => _controller.runJavaScript('window.xtaArticle?.startOver();'),
-        ),
-        Expanded(child: !item.hasReadableBody
-          ? _fallback(context, l10n, theme)
-          : WebViewWidget(controller: _controller)),
-      ]),
+      body: ReadingHistoryHook(
+        entry: () => rssHistoryEntry(_item),
+        dwell: readingHistoryScreenDwell,
+        child: Column(children: [
+          ArticleReaderControls(
+            store: _reading,
+            supportsAppearance: item.hasReadableBody,
+            onAppearanceChanged: _applyReadingAppearance,
+            onStartOver: () => _controller.runJavaScript('window.xtaArticle?.startOver();'),
+          ),
+          Expanded(child: !item.hasReadableBody
+            ? _fallback(context, l10n, theme)
+            : WebViewWidget(controller: _controller)),
+        ]),
+      ),
     );
   }
 

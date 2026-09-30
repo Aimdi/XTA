@@ -1,5 +1,7 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/mastodon/mastodon_history.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -497,6 +499,14 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
   Widget _visible(BuildContext context, bool open) {
     final post = widget.post;
     final theme = Theme.of(context);
+    return ReadingHistoryHook(
+      entry: () => mastodonHistoryEntry(post),
+      dwell: widget.offerTranslation ? readingHistoryScreenDwell : readingHistoryCardDwell,
+      child: _content(context, post, theme, open),
+    );
+  }
+
+  Widget _content(BuildContext context, MastodonPost post, ThemeData theme, bool open) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

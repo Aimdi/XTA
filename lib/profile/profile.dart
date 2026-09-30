@@ -1,3 +1,5 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/tweet/tweet_history.dart';
 import 'package:xta/ui/reader_tab_view.dart';
 import 'dart:ui' as ui;
 
@@ -322,6 +324,14 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     return ScopedBuilder<ProfileViewStore, ProfileViewState>(
       store: _viewStore,
       onState: (context, view) => _buildProfile(context, user, view),
+    ).recordedAs(
+      () => xProfileHistoryEntry(
+        screenName: user.screenName ?? user.idStr!,
+        id: user.idStr,
+        name: user.name,
+        bio: user.description,
+      ),
+      dwell: readingHistoryScreenDwell,
     );
   }
 

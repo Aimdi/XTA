@@ -1,3 +1,6 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/reading/reading_history_entry.dart';
+import 'package:xta/plugins/rss/rss_history.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:extended_image/extended_image.dart';
@@ -19,7 +22,10 @@ class RssItemCard extends StatelessWidget {
   const RssItemCard({super.key, required this.item, this.showSourceBadge = true});
 
   @override
-  Widget build(BuildContext context) => ScopedBuilder<RssReadStore, Set<String>>(
+  Widget build(BuildContext context) =>
+      ReadingHistoryHook(entry: () => rssHistoryEntry(item, kind: ReadingHistoryKind.post), dwell: readingHistoryCardDwell, child: _card(context));
+
+  Widget _card(BuildContext context) => ScopedBuilder<RssReadStore, Set<String>>(
     store: context.read<RssReadStore>(),
     distinct: (_) => !context.read<RssReadStore>().state.contains(item.id),
     onState: (context, readIds) => _article(context, !readIds.contains(item.id)),

@@ -1,3 +1,5 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/reddit/reddit_history.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +52,10 @@ class RedditPostCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ReadingHistoryHook(entry: () => redditHistoryEntry(post), dwell: readingHistoryCardDwell, child: _card(context));
+
+  Widget _card(BuildContext context) {
     return RepaintBoundary(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,

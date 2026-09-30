@@ -1,3 +1,5 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/substack/substack_history.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:extended_image/extended_image.dart';
@@ -37,7 +39,10 @@ class SubstackNoteContent extends StatelessWidget {
   final bool detail;
   const SubstackNoteContent({super.key, required this.note, this.detail = false});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ReadingHistoryHook(entry: () => substackNoteHistoryEntry(note), dwell: detail ? readingHistoryScreenDwell : readingHistoryCardDwell, child: _card(context));
+
+  Widget _card(BuildContext context) {
     final theme = Theme.of(context);
     final image = substackDiscussionUrl(note.imageUrl);
     final pub = note.publication;

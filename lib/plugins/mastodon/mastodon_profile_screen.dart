@@ -1,3 +1,5 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/mastodon/mastodon_history.dart';
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -157,6 +159,14 @@ class _MastodonProfileScreenState extends State<MastodonProfileScreen> {
                     onAddToGroup: () => addMastodonAccountToGroup(context, profile.toAccount()),
                     onTagTap: (tag) =>
                         Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag))),
+                  ).recordedAs(
+                    () => mastodonProfileHistoryEntry(
+                      acct: profile.acct,
+                      name: profile.displayName,
+                      bio: profile.note,
+                      url: profile.url,
+                    ),
+                    dwell: readingHistoryScreenDwell,
                   ),
                 ),
               ),

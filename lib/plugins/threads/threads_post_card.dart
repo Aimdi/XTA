@@ -1,3 +1,5 @@
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/threads/threads_history.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/plugins/social_account_groups.dart';
@@ -103,7 +105,10 @@ class ThreadsPostCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ReadingHistoryHook(entry: () => threadsHistoryEntry(post), dwell: openOnTap ? readingHistoryCardDwell : readingHistoryScreenDwell, child: _card(context));
+
+  Widget _card(BuildContext context) {
     final theme = Theme.of(context);
 
     return RepaintBoundary(
