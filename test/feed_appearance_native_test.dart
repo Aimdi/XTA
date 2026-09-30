@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:xta/generated/l10n.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
@@ -97,6 +99,13 @@ void main() {
     const b = FeedIdentity('bluesky', 'at://two');
     store.update({a: const FeedAppearance(counts: false), b: const FeedAppearance(media: false)});
     Widget app(FeedIdentity feed) => MaterialApp(
+      localizationsDelegates: const [
+        L10n.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: L10n.delegate.supportedLocales,
       home: FeedAppearanceScope(
         feed: feed,
         store: store,
