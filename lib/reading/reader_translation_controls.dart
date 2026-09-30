@@ -129,13 +129,16 @@ class _ReaderTranslationState extends State<ReaderTranslation> {
   ReaderTranslationConfigStore? _config;
   ReaderTranslationStore? _store;
 
-  void _replaceStore() {
-    final previous = _store;
+  /// Created only once a service is enabled: timelines hold many cards and translation is off by default.
+  ReaderTranslationStore? _storeWhenEnabled() {
     final config = _config;
-    _store = config == null || widget.text.trim().isEmpty
-        ? null
-        : _storeFor(context, config, widget.text, shared: true);
-    _store?.attach();
+    if (config == null || !config.state.enabled || widget.text.trim().isEmpty) return null;
+    return _store ??= _storeFor(context, config, widget.text, shared: true)..attach();
+  }
+
+  void _dropStore() {
+    final previous = _store;
+    _store = null;
     previous?.detach();
     previous?.destroy();
   }
@@ -146,7 +149,7 @@ class _ReaderTranslationState extends State<ReaderTranslation> {
     final config = readerTranslationConfigOf(context);
     if (!identical(config, _config)) {
       _config = config;
-      _replaceStore();
+      _dropStore();
     } else {
       _store?.appLanguage = readerAppLanguage(context);
     }
@@ -155,25 +158,24 @@ class _ReaderTranslationState extends State<ReaderTranslation> {
   @override
   void didUpdateWidget(ReaderTranslation oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.text != widget.text) _replaceStore();
+    if (oldWidget.text != widget.text) _dropStore();
   }
 
   @override
   void dispose() {
-    _store?.detach();
-    _store?.destroy();
+    _dropStore();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final config = _config;
-    final store = _store;
-    if (config == null || store == null) return widget.builder(context, widget.text);
+    if (config == null) return widget.builder(context, widget.text);
     return ScopedBuilder<ReaderTranslationConfigStore, ReaderTranslationConfig>(
       store: config,
       onState: (context, settings) {
-        if (!settings.enabled) return widget.builder(context, widget.text);
+        final store = settings.enabled ? _storeWhenEnabled() : null;
+        if (store == null) return widget.builder(context, widget.text);
         return ScopedBuilder<ReaderTranslationStore, ReaderTranslationState>(
           store: store,
           onState: (context, state) {
