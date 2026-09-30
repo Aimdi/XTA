@@ -50,6 +50,9 @@ class ReadWork {
   }
 
   static void checkpoint() => current?.check();
+
+  /// Runs [work] outside the caller's cancellation, for a read that other callers may join later.
+  static Future<T> detached<T>(Future<T> Function() work) => runZoned(work, zoneValues: {_zoneKey: null});
   Future<T> start<T>(Future<T> Function() work) => runZoned(
     () => Future.sync(() {
       check();
