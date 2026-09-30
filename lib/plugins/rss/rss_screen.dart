@@ -20,6 +20,7 @@ import 'package:xta/plugins/rss/rss_feed_screen.dart';
 import 'package:xta/plugins/rss/rss_group.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/rss/rss_plugin.dart';
+import 'package:xta/plugins/rss/rss_opml_controls.dart';
 import 'package:xta/plugins/rss/rss_settings.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/ui/empty_pane.dart';
@@ -127,6 +128,8 @@ class _RssScreenState extends State<RssScreen> {
                   onState: (context, _) => PluginHomeMenu(
                     onSelected: (value) {
                       if (value == 'read') _markAllRead();
+                      if (value == 'opml-import') importRssOpmlFile(context);
+                      if (value == 'opml-export') exportRssOpmlFile(context, share: true);
                       if (value == 'settings') {
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const RssSettingsScreen()));
                       }
@@ -135,6 +138,9 @@ class _RssScreenState extends State<RssScreen> {
                       if (_tab == 0 &&
                           timeline.allItems.any((item) => !context.read<RssReadStore>().state.contains(item.id)))
                         PopupMenuItem(value: 'read', child: Text(l10n.plugin_rss_mark_all_read)),
+                      PopupMenuItem(value: 'opml-import', child: Text(l10n.plugin_rss_opml_import)),
+                      if (feeds.state.isNotEmpty)
+                        PopupMenuItem(value: 'opml-export', child: Text(l10n.plugin_rss_opml_export)),
                       PopupMenuItem(value: 'settings', child: Text(l10n.settings)),
                     ],
                   ),
@@ -371,7 +377,19 @@ class _FeedsPane extends StatelessWidget {
             icon: Icons.rss_feed,
             message: l10n.plugin_rss_following_empty,
             scrollController: scrollController,
-            action: FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: Text(l10n.plugin_rss_add)),
+            action: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                FilledButton.icon(onPressed: onAdd, icon: const Icon(Icons.add), label: Text(l10n.plugin_rss_add)),
+                OutlinedButton.icon(
+                  onPressed: () => importRssOpmlFile(context),
+                  icon: const Icon(Icons.upload_file_outlined),
+                  label: Text(l10n.plugin_rss_opml_import),
+                ),
+              ],
+            ),
           );
         }
         return ListView.builder(
@@ -402,7 +420,10 @@ class _FeedsPane extends StatelessWidget {
                   } else if (value == 'group') {
                     await addRssFeedToGroup(context, feed);
                   } else if (value == 'unfollow') {
-                    await feeds.remove(feed.id);
+                    final messenger = ScaffoldMessenger.of(context);
+                    if (!await feeds.remove(feed.id)) {
+                      messenger.showSnackBar(SnackBar(content: Text(l10n.plugin_rss_save_failed)));
+                    }
                   }
                 },
                 itemBuilder: (context) => [

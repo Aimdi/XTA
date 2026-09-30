@@ -3965,5 +3965,41 @@
   "filter_all_hidden": "Your filters hide everything loaded here so far.",
   "@filter_all_hidden": {},
   "filter_load_more": "Load more",
-  "@filter_load_more": {}
+  "@filter_load_more": {},
+  "plugin_rss_opml_section": "Import and export",
+  "@plugin_rss_opml_section": {},
+  "plugin_rss_opml_import": "Import feeds from OPML",
+  "@plugin_rss_opml_import": {},
+  "plugin_rss_opml_import_description": "Adds the feeds an OPML file lists. Folders become tags; feeds you already follow stay as they are.",
+  "@plugin_rss_opml_import_description": {},
+  "plugin_rss_opml_export": "Export feeds as OPML",
+  "@plugin_rss_opml_export": {},
+  "plugin_rss_opml_export_description": "Saves every followed feed to a file, with tags as folders.",
+  "@plugin_rss_opml_export_description": {},
+  "plugin_rss_opml_share": "Share OPML file",
+  "@plugin_rss_opml_share": {},
+  "plugin_rss_opml_imported": "Added {added} · Already followed {existing} · Skipped {skipped}",
+  "@plugin_rss_opml_imported": {
+    "placeholders": {
+      "added": {},
+      "existing": {},
+      "skipped": {}
+    }
+  },
+  "plugin_rss_opml_empty": "That file lists no feeds",
+  "@plugin_rss_opml_empty": {},
+  "plugin_rss_opml_too_large": "That file is too large. XTA imports OPML files up to 2 MB.",
+  "@plugin_rss_opml_too_large": {},
+  "plugin_rss_opml_invalid": "That file isn't an OPML feed list XTA can read",
+  "@plugin_rss_opml_invalid": {},
+  "plugin_rss_opml_read_failed": "Could not read that file",
+  "@plugin_rss_opml_read_failed": {},
+  "plugin_rss_opml_save_failed": "Could not save the imported feeds. Nothing was changed.",
+  "@plugin_rss_opml_save_failed": {},
+  "plugin_rss_opml_groups_pending": "Feeds imported, but groups can't list them yet",
+  "@plugin_rss_opml_groups_pending": {},
+  "plugin_rss_opml_export_failed": "Could not create the OPML file",
+  "@plugin_rss_opml_export_failed": {},
+  "plugin_rss_save_failed": "Could not save your feeds. Try again.",
+  "@plugin_rss_save_failed": {}
 }
