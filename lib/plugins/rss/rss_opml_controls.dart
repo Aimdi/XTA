@@ -159,7 +159,8 @@ Future<void> Function(RssImportResult) _afterImport(BuildContext context) {
       unawaited(timeline?.refresh(force: true));
       await subscriptions?.reloadSubscriptions();
     } catch (error) {
-      _log.warning('Imported feeds are saved, but other views could not refresh: $error');
+      // Only the kind of failure: a message could carry a private feed address.
+      _log.warning('Imported feeds are saved, but other views could not refresh: ${error.runtimeType}');
     }
   };
 }
