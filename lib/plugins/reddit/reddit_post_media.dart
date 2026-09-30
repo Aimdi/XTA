@@ -1,3 +1,4 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
@@ -95,7 +96,10 @@ class RedditPostMedia extends StatelessWidget {
 
     final link = post.url;
     if (link != null && !post.isSelf) {
-      final card = _RedditLinkCard(post: post, url: link);
+      final card = _RedditLinkCard(
+        post: post,
+        url: link,
+      ).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews);
       // A gallery scraped off old.reddit arrives as this link and nothing else:
       // its pictures are in the post's own JSON, not in that page. Fetch them
       // and show the album; keep the link until they arrive, or for good when
@@ -126,7 +130,7 @@ class RedditPostMedia extends StatelessWidget {
               ),
             );
           },
-        );
+        ).withFeedAppearancePart(kind: FeedAppearancePartKind.media, hiddenChild: card);
       }
       return card;
     }
@@ -146,7 +150,7 @@ class RedditPostMedia extends StatelessWidget {
       kind: redditMediaGateKind(post, prefs),
       aspectRatio: aspectRatio,
       child: child,
-    );
+    ).withFeedAppearancePart(kind: FeedAppearancePartKind.media);
   }
 
   Widget _video(BuildContext context, String dash, double ratio) {

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/plugins/rss/rss_history.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/plugins/rss/rss_group.dart';
@@ -122,6 +125,11 @@ class _RssReaderScreenState extends State<RssReaderScreen> with WidgetsBindingOb
     await openLink(context, link);
   }
 
+  String _translationText(RssItem item) {
+    final body = item.hasReadableBody ? readerArticlePlainText(item.bodyHtml!) : (item.excerpt ?? '');
+    return [item.title, body].where((part) => part.trim().isNotEmpty).join('\n\n');
+  }
+
   Future<void> _addToGroup() async {
     final feeds = context.read<RssFeedsStore>().state;
     RssFeed? feed;
@@ -156,6 +164,13 @@ class _RssReaderScreenState extends State<RssReaderScreen> with WidgetsBindingOb
         title: Text(item.feedTitle),
         actions: [
           if (item.hasReadableBody) OfflineArticleAction(article: OfflineArticle.rss(item)),
+          if (readerTranslationEnabled(context))
+            IconButton(
+              key: const ValueKey('rss-translate-article'),
+              tooltip: l10n.translation_article,
+              icon: const Icon(Icons.translate),
+              onPressed: () => openReaderArticleTranslation(context, title: item.title, text: _translationText(item)),
+            ),
           IconButton(
             tooltip: l10n.plugin_rss_add_to_group,
             icon: const Icon(Icons.group_add_outlined),
@@ -169,17 +184,21 @@ class _RssReaderScreenState extends State<RssReaderScreen> with WidgetsBindingOb
             ),
         ],
       ),
-      body: Column(children: [
-        ArticleReaderControls(
-          store: _reading,
-          supportsAppearance: item.hasReadableBody,
-          onAppearanceChanged: _applyReadingAppearance,
-          onStartOver: () => _controller.runJavaScript('window.xtaArticle?.startOver();'),
-        ),
-        Expanded(child: !item.hasReadableBody
-          ? _fallback(context, l10n, theme)
-          : WebViewWidget(controller: _controller)),
-      ]),
+      body: ReadingHistoryHook(
+        entry: () => rssHistoryEntry(_item),
+        dwell: readingHistoryScreenDwell,
+        child: Column(children: [
+          ArticleReaderControls(
+            store: _reading,
+            supportsAppearance: item.hasReadableBody,
+            onAppearanceChanged: _applyReadingAppearance,
+            onStartOver: () => _controller.runJavaScript('window.xtaArticle?.startOver();'),
+          ),
+          Expanded(child: !item.hasReadableBody
+            ? _fallback(context, l10n, theme)
+            : WebViewWidget(controller: _controller)),
+        ]),
+      ),
     );
   }
 

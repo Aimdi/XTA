@@ -1,3 +1,5 @@
+import 'package:xta/reading/shared_filter_engine.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/tweet/video_memory_observer.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
@@ -1270,7 +1272,9 @@ class _FritterAppState extends State<FritterApp> {
         disableAnimations:
             _disableAnimations || MediaQuery.disableAnimationsOf(context),
       ),
-      child: DynamicColorBuilder(
+      child: SharedFilterRoot(
+        engine: SharedFilterEngine.forPrefs(PrefService.of(context, listen: false)),
+        child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
           return Portal(
             child: SecureWidget(
@@ -1348,6 +1352,7 @@ class _FritterAppState extends State<FritterApp> {
             ),
           );
         },
+      ),
       ),
     );
   }

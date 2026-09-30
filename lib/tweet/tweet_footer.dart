@@ -1,3 +1,4 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:xta/user.dart';
 import 'package:xta/group/group_model.dart';
@@ -408,8 +409,7 @@ class TweetFooterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final tweetId = openablePost(tweet)?.id;
     final tweetUrl = shareableTweetUrl(tweet, shareBaseUrl);
-    final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts = !feedCountsVisible(context);
     final tint = tweetFooterButtonsColorOf(context);
     // Both stores are registered with a plain Provider, so a Consumer over them
     // would depend on a value whose identity never changes and never rebuild.

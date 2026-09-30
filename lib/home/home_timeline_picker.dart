@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/alt_microblogging.dart';
+import 'package:xta/reading/mixed_feed_definition.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 
 class HomeTimelineOption {
@@ -98,16 +99,25 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
     ];
     return _groupSources(
       _groupSources(
-        options,
-        id: 'art',
-        label: L10n.of(context).plugin_category_art,
-        icon: Icons.palette_outlined,
-        sourceIds: const {pluginIdPixiv, pluginIdBooru, pluginIdEhViewer},
+        _groupSources(
+          options,
+          id: 'art',
+          label: L10n.of(context).plugin_category_art,
+          icon: Icons.palette_outlined,
+          sourceIds: const {pluginIdPixiv, pluginIdBooru, pluginIdEhViewer},
+        ),
+        id: 'reading',
+        label: L10n.of(context).home_sources_reading,
+        icon: Icons.auto_stories_outlined,
+        sourceIds: const {pluginIdSubstack, pluginIdRss},
       ),
-      id: 'reading',
-      label: L10n.of(context).home_sources_reading,
-      icon: Icons.auto_stories_outlined,
-      sourceIds: const {pluginIdSubstack, pluginIdRss},
+      id: 'mixes',
+      label: L10n.of(context).mixed_feeds,
+      icon: Icons.dynamic_feed_outlined,
+      sourceIds: {
+        for (final option in options)
+          if (isMixedFeedTab(option.id)) option.id,
+      },
     );
   }
 

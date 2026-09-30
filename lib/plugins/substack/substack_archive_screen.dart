@@ -1,3 +1,6 @@
+import 'package:xta/reading/feed_appearance_controls.dart';
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -87,24 +90,42 @@ class _SubstackArchiveScreenState extends State<SubstackArchiveScreen> {
   @override
   Widget build(BuildContext context) => ScopedBuilder<SubstackPublicationStore, SubstackPublicationState>(
     store: _store,
-    onState: (context, state) => Scaffold(
-      appBar: AppBar(title: Text(state.publication.displayName)),
-      body: ScopedBuilder<SubstackReadStore, Set<String>>(
-        store: context.read<SubstackReadStore>(),
-        onState: (context, read) => RefreshIndicator(
-          onRefresh: _store.refresh,
-          child: CustomScrollView(
-            key: PageStorageKey('substack-publication-${widget.publication.baseUrl}'),
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverToBoxAdapter(child: _hero(context, state)),
-              SliverToBoxAdapter(child: _controls(context, state)),
-              ..._posts(context, state, read),
+    onState: (context, state) =>
+        Scaffold(
+          appBar: AppBar(
+            title: Text(state.publication.displayName),
+            actions: [
+              IconButton(
+                tooltip: L10n.of(context).feed_appearance,
+                icon: const Icon(Icons.palette_outlined),
+                onPressed: () => showFeedAppearance(
+                  context,
+                  FeedIdentity('substack', state.publication.id),
+                  label: state.publication.displayName,
+                ),
+              ),
             ],
           ),
+          body: ScopedBuilder<SubstackReadStore, Set<String>>(
+            store: context.read<SubstackReadStore>(),
+            onState: (context, read) => RefreshIndicator(
+              onRefresh: _store.refresh,
+              child: CustomScrollView(
+                key: PageStorageKey('substack-publication-${widget.publication.baseUrl}'),
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(child: _hero(context, state)),
+                  SliverToBoxAdapter(child: _controls(context, state)),
+                  ..._posts(context, state, read),
+                ],
+              ),
+            ),
+          ),
+        ).withFeedAppearance(
+          feed: FeedIdentity('substack', state.publication.id),
+          label: state.publication.displayName,
+          publishAction: false,
         ),
-      ),
-    ),
   );
 
   Widget _controls(BuildContext context, SubstackPublicationState state) {

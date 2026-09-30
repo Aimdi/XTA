@@ -36,9 +36,14 @@ class _RssAddScreenState extends State<RssAddScreen> {
 
   Future<void> _submit() async {
     final feeds = context.read<RssFeedsStore>();
+    final messenger = ScaffoldMessenger.of(context);
+    final failed = L10n.of(context).plugin_rss_save_failed;
     try {
-      final feed = await _addStore.lookup(_controller.text);
-      await feeds.add(feed);
+      final feed = await feeds.add(await _addStore.lookup(_controller.text));
+      if (feed == null) {
+        messenger.showSnackBar(SnackBar(content: Text(failed)));
+        return;
+      }
       if (!mounted) return;
       setState(() => _followed = feed);
     } catch (_) {}

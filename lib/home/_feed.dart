@@ -1,3 +1,8 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/mixed_feed_definition.dart';
+import 'package:xta/reading/mixed_feed_editor.dart';
+import 'package:xta/reading/mixed_feed_store.dart';
+import 'package:xta/reading/mixed_feed_view.dart';
 import 'package:xta/plugins/plugin_compact_header.dart';
 import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
@@ -68,6 +73,7 @@ class FeedTab {
   IconData get icon {
     if (this == following) return followingTabIcon;
     if (this == x) return Icons.close;
+    if (isMixedFeedTab(id)) return mixedFeedIcon;
     return pluginById(id)?.icon ?? Icons.extension_outlined;
   }
 
@@ -116,6 +122,9 @@ List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefSer
     options.add(
       FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c), icon: plugin.icon, mark: pluginMark(plugin, size: 16)),
     );
+  }
+  for (final mix in MixedFeedStore.forPrefs(prefs).state) {
+    options.add(FeedTabOption(FeedTab(mix.tabId), (_) => mix.name, icon: mixedFeedIcon));
   }
   return List.unmodifiable(options);
 }
@@ -205,6 +214,8 @@ class _FeedScreenState extends State<FeedScreen> {
 
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
+  MixedFeedStore? _mixes;
+  void Function()? _disposeMixesObserver;
   HomeAccountFilterStore? _accountFilter;
   HomeGroupFilterStore? _groupFilter;
   void Function()? _disposeTabObserver;
@@ -280,6 +291,14 @@ class _FeedScreenState extends State<FeedScreen> {
       // Hidden-tab plugins used to live as Groups chips. Pin them here so
       // switching sites stays on the home strip.
       strip.pinHiddenTabs();
+    }
+
+    final mixes = MixedFeedStore.forPrefs(PrefService.of(context, listen: false));
+    if (!identical(mixes, _mixes)) {
+      _disposeMixesObserver?.call();
+      _mixes = mixes;
+      // A mix added, renamed or removed changes the strip; the tab falls back to Following if it is gone.
+      _disposeMixesObserver = mixes.observer(onState: (_) => mounted ? _view.refreshStrip() : null);
     }
 
     final filter = context.read<HomeAccountFilterStore>();
@@ -386,6 +405,7 @@ class _FeedScreenState extends State<FeedScreen> {
   void dispose() {
     _disposeTabObserver?.call();
     _disposeStripObserver?.call();
+    _disposeMixesObserver?.call();
     _disposeAccountFilterObserver?.call();
     _disposeGroupFilterObserver?.call();
     widget.scrollController.removeListener(_queueControlsUpdate);
@@ -534,7 +554,23 @@ class _FeedScreenState extends State<FeedScreen> {
     return tab.id;
   }
 
+  Widget _mixBody(String id) {
+    final mix = _mixes?.byId(id);
+    if (mix == null) return Center(child: Text(L10n.of(context).feed_strip_unavailable));
+    return KeyedSubtree(
+      key: PageStorageKey('home-mix-$id'),
+      child: PluginEmbedded(
+        child: MixedFeedView(
+          definition: mix,
+          scrollController: widget.scrollController,
+          onEdit: () => openMixedFeedEditor(context, mix: mix),
+        ),
+      ),
+    );
+  }
+
   Widget _pluginBody(FeedTab tab) {
+    if (mixedFeedIdOfTab(tab.id) case final mix?) return _mixBody(mix);
     final plugin = pluginById(tab.id);
     final screen = plugin?.feedStripScreen(scrollController: widget.scrollController);
     if (screen != null) {
@@ -631,6 +667,9 @@ class _FeedScreenState extends State<FeedScreen> {
             }
             return PluginCompactHeader(
               plugin: activePlugin ?? XPlugin(),
+              mark: isMixedFeedTab(tab.id)
+                  ? Icon(mixedFeedIcon, size: 24, color: Theme.of(context).colorScheme.primary)
+                  : null,
               source: tab.id,
               title: available.firstWhere((option) => option.id == tab).titleBuilder(context),
               store: _dock,
@@ -680,6 +719,11 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
           ),
         ),
+      ).withFeedAppearance(
+        feed: homeFeedIdentity(tab.id),
+        label: available.firstWhere((option) => option.id == tab).titleBuilder(context),
+        publishAction: tab == FeedTab.following || tab == FeedTab.x || isMixedFeedTab(tab.id),
+        mixed: isMixedFeedTab(tab.id),
       ),
     );
   }

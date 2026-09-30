@@ -86,9 +86,8 @@ Future<String> _followRss(
   RssFeedsStore feeds,
   String input,
 ) async {
-  final feed = await client.lookup(input);
-  await feeds.add(feed);
-  return feed.id;
+  final feed = await feeds.add(await client.lookup(input));
+  return feed?.id ?? (throw StateError('Subscription was not saved'));
 }
 
 Future<String> _followSubstack(

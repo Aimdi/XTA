@@ -1,6 +1,6 @@
 import 'package:flutter_triple/flutter_triple.dart';
 
-enum ReaderSearchKind { saved, note, account, group, article }
+enum ReaderSearchKind { saved, note, account, group, article, history }
 
 class ReaderSearchDocument {
   final String id, title, text;

@@ -5,7 +5,6 @@ import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/home/_feed.dart';
-import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/subscriptions/group_identity.dart';
 
 /// What was picked out of the feed switcher.
@@ -41,7 +40,7 @@ const int kFeedSwitcherPinnedLimit = 5;
 IconData _feedIcon(FeedTab tab) {
   if (tab == FeedTab.following) return Icons.people_outline;
   if (tab == FeedTab.foryou) return Icons.auto_awesome_outlined;
-  return pluginById(tab.id)?.icon ?? Icons.extension_outlined;
+  return tab.icon;
 }
 
 /// The rect of [context]'s own box, in the overlay's coordinates — where the

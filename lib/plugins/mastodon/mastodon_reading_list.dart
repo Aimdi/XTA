@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_post_card.dart';
 import 'package:xta/plugins/mastodon/mastodon_reading_store.dart';
@@ -51,12 +53,20 @@ class _MastodonReadingListState extends State<MastodonReadingList> {
   }
 
   @override
-  Widget build(BuildContext context) => PluginReadingView<MastodonPost>(
-    posts: widget.posts,
-    snapshotPosts: widget.snapshotPosts,
+  Widget build(BuildContext context) {
+    final shared = sharedFilterProject(context, widget.posts, mastodonFilterText);
+    return _view(shared);
+  }
+
+  Widget _view(SharedFilterProjection<MastodonPost> shared) => PluginReadingView<MastodonPost>(
+    posts: shared.visible,
+    snapshotPosts: widget.snapshotPosts ?? widget.posts,
     controller: widget.controller,
     keyOf: (post) => post.url,
-    itemBuilder: (_, post) => MastodonPostCard(post: post, showSourceBadge: false),
+    itemBuilder: (_, post) => MastodonPostCard(
+      post: post,
+      showSourceBadge: false,
+    ).foldedBy(shared.foldReason(post), key: ValueKey(('fold', post.url))),
     heading: widget.heading,
     footer: widget.footer,
     loadingMore: widget.loadingMore,

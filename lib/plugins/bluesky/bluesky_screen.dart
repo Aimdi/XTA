@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
@@ -269,6 +271,14 @@ class _BlueskyScreenState extends State<BlueskyScreen> with AutomaticKeepAliveCl
                   ),
                 ),
               ],
+            ).withFeedAppearance(
+              feed: FeedIdentity('bluesky', ['following', 'feeds', 'lists', 'liked'][tab]),
+              label: [
+                l10n.plugin_bluesky_title,
+                [l10n.plugin_bluesky_following, l10n.plugin_bluesky_feeds, l10n.plugin_bluesky_lists,
+                  l10n.plugin_bluesky_liked][tab],
+              ].join(' · '),
+              publishAction: tab == 0 || tab == 3,
             ),
           ),
         ),

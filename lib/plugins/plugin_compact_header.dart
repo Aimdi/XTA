@@ -18,6 +18,10 @@ class PluginCompactHeader extends StatelessWidget {
   final bool showBack;
   final bool unread;
 
+  /// Shown instead of the plugin's mark, for a source that is not one plugin, such as a mix. Without tabs, the
+  /// header then names the source.
+  final Widget? mark;
+
   const PluginCompactHeader({
     super.key,
     required this.plugin,
@@ -28,6 +32,7 @@ class PluginCompactHeader extends StatelessWidget {
     this.services,
     this.showBack = false,
     this.unread = false,
+    this.mark,
   });
 
   @override
@@ -65,7 +70,7 @@ class PluginCompactHeader extends StatelessWidget {
                         icon: Badge(
                           isLabelVisible: unread,
                           smallSize: 7,
-                          child: pluginMark(plugin, size: 24, color: color),
+                          child: mark ?? pluginMark(plugin, size: 24, color: color),
                         ),
                       ),
                     )
@@ -77,12 +82,19 @@ class PluginCompactHeader extends StatelessWidget {
                         child: Semantics(
                           label: sourceTitle,
                           image: true,
-                          child: pluginMark(plugin, size: 24, color: color),
+                          child: mark ?? pluginMark(plugin, size: 24, color: color),
                         ),
                       ),
                     ),
                   Expanded(
-                    child: PluginCompactTabs(tabs: tabs, accent: color),
+                    child: tabs.isEmpty && mark != null
+                        ? Text(
+                            sourceTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          )
+                        : PluginCompactTabs(tabs: tabs, accent: color),
                   ),
                   if (showPrimary) primary,
                   PluginDockOptionsButton(

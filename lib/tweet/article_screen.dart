@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
+import 'package:xta/reading/reading_history_hook.dart';
+import 'package:xta/reading/reading_history_navigation.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/ui/reader_chrome.dart';
@@ -146,11 +148,15 @@ class _ArticleScreenState extends State<ArticleScreen> {
             ),
           ],
         ),
-        body: Stack(
-          children: [
-            WebViewWidget(controller: _controller),
-            if (_loading) const LinearProgressIndicator(minHeight: 2),
-          ],
+        body: ReadingHistoryHook(
+          entry: () => webHistoryEntry(url: widget.url, title: widget.title),
+          dwell: readingHistoryScreenDwell,
+          child: Stack(
+            children: [
+              WebViewWidget(controller: _controller),
+              if (_loading) const LinearProgressIndicator(minHeight: 2),
+            ],
+          ),
         ),
       ),
     );

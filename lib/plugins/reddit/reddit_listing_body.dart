@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_auth.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -247,12 +249,14 @@ class RedditListingBodyState extends State<RedditListingBody>
       );
     }
 
+    final shared = sharedFilterProject(context, posts, redditFilterText);
+    final visible = shared.visible;
     final list = FeedListView(
       controller: pluginInnerScrollController(context, widget.scrollController),
       padding: pluginFeedPadding(context),
-      itemCount: posts.length + 1,
+      itemCount: visible.length + 1,
       itemBuilder: (context, index) {
-        if (index >= posts.length) {
+        if (index >= visible.length) {
           if (!store.canLoadMore) {
             return const RedditEndOfList();
           }
@@ -265,10 +269,10 @@ class RedditListingBodyState extends State<RedditListingBody>
           );
         }
         return RedditPostCard(
-          key: ValueKey(posts[index].id),
-          post: posts[index],
+          key: ValueKey(visible[index].id),
+          post: visible[index],
           showSourceBadge: widget.showSourceBadge,
-        );
+        ).foldedBy(shared.foldReason(visible[index]), key: ValueKey(('fold', visible[index].id)));
       },
     );
 
