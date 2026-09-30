@@ -6,6 +6,8 @@ import 'package:xta/plugins/rss/rss_opml_controls.dart';
 import 'package:xta/reading/feed_appearance_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
+import 'package:xta/reading/mixed_feed_settings.dart';
+import 'package:xta/reading/mixed_feed_view.dart';
 import 'package:xta/reading/reader_translation_settings.dart';
 import 'package:xta/reading/reading_history_screen.dart';
 import 'package:xta/reading/shared_filter_settings.dart';
@@ -50,6 +52,11 @@ class ReaderToolsSettings extends StatelessWidget {
         icon: Icons.rss_feed,
         title: (context) => L10n.of(context).plugin_rss_opml_tool,
         builder: (_) => const RssOpmlScreen(),
+      ),
+      ReaderToolEntry(
+        icon: mixedFeedIcon,
+        title: (context) => L10n.of(context).mixed_feeds,
+        builder: (_) => const MixedFeedSettings(),
       ),
       ...entries,
     ];

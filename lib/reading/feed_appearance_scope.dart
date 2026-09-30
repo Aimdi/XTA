@@ -8,6 +8,7 @@ import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/reading/feed_appearance_controls.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
+import 'package:xta/reading/mixed_feed_definition.dart';
 
 bool feedAppearanceCapable(String source, {bool mixed = false}) =>
     {'x', 'reddit', 'mastodon', 'bluesky', 'threads', 'rss', 'substack'}.contains(source) || (source == 'mix' && mixed);
@@ -15,7 +16,10 @@ bool feedAppearanceCapable(String source, {bool mixed = false}) =>
 FeedIdentity homeFeedIdentity(String source) => switch (source) {
   'following' => const FeedIdentity('x', 'following'),
   'x' => const FeedIdentity('x', 'for-you'),
-  _ => FeedIdentity(source, 'home'),
+  _ => switch (mixedFeedIdOfTab(source)) {
+    final mix? => FeedIdentity('mix', mix),
+    null => FeedIdentity(source, 'home'),
+  },
 };
 
 String feedAppearanceLabel(BuildContext context, FeedIdentity feed, FeedAppearanceStore store) {

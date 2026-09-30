@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:math';
-
-import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
-import 'package:xta/reading/reader_preference_writes.dart';
+import 'package:xta/reading/reader_preference_list.dart';
 
 const sharedFilterPreferenceKey = 'reading.filters.v1';
 const sharedFilterMaxRules = 100;
@@ -108,71 +104,45 @@ class SharedFilterRule {
   }
 }
 
-String newSharedFilterId() =>
-    '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}${Random().nextInt(1 << 20).toRadixString(36)}';
-
-List<SharedFilterRule> _readRules(BasePrefService prefs) {
-  try {
-    final raw = prefs.get<String>(sharedFilterPreferenceKey);
-    if (raw == null || raw.length > 200000) return const [];
-    final json = jsonDecode(raw);
-    if (json is! Map || json['version'] != 1 || json['rules'] is! List) return const [];
-    final ids = <String>{};
-    return List.unmodifiable(
-      (json['rules'] as List)
-          .map(SharedFilterRule.fromJson)
-          .nonNulls
-          .where((rule) => ids.add(rule.id))
-          .take(sharedFilterMaxRules),
-    );
-  } catch (_) {
-    return const [];
-  }
-}
-
 /// The reader's filters, in order, shared by every source. Saves report failures honestly.
-class SharedFilterStore extends Store<List<SharedFilterRule>> {
+class SharedFilterStore extends ReaderPreferenceListStore<SharedFilterRule> {
   static final _instances = Expando<SharedFilterStore>();
-  final BasePrefService prefs;
-  bool _closed = false;
 
-  SharedFilterStore(this.prefs) : super(_readRules(prefs));
+  SharedFilterStore(BasePrefService prefs)
+    : super(
+        prefs,
+        sharedFilterPreferenceKey,
+        'rules',
+        readReaderPreferenceList(
+          prefs,
+          sharedFilterPreferenceKey,
+          'rules',
+          max: sharedFilterMaxRules,
+          decode: SharedFilterRule.fromJson,
+          idOf: (rule) => rule.id,
+        ),
+      );
 
   static SharedFilterStore forPrefs(BasePrefService prefs) => _instances[prefs] ??= SharedFilterStore(prefs);
 
-  Future<bool> save(SharedFilterRule rule) => _modify((rules) {
+  @override
+  Map<String, Object?> encodeItem(SharedFilterRule item) => item.toJson();
+
+  Future<bool> save(SharedFilterRule rule) => modify((rules) {
     if (rule.problem != null) return null;
     final index = rules.indexWhere((old) => old.id == rule.id);
     if (index < 0) return rules.length >= sharedFilterMaxRules ? null : [...rules, rule];
     return [...rules]..[index] = rule;
   });
 
-  Future<bool> remove(String id) => _modify((rules) => rules.where((rule) => rule.id != id).toList());
+  Future<bool> remove(String id) => modify((rules) => rules.where((rule) => rule.id != id).toList());
 
   Future<bool> setEnabled(String id, bool enabled) =>
-      _modify((rules) => [for (final rule in rules) rule.id == id ? rule.copyWith(enabled: enabled) : rule]);
-
-  Future<bool> _modify(List<SharedFilterRule>? Function(List<SharedFilterRule> rules) edit) {
-    if (_closed) return Future.value(false);
-    return ReaderPreferenceWrites.enqueue(prefs, () async {
-      if (_closed) return false;
-      final next = edit(state);
-      if (next == null) return false;
-      final payload = jsonEncode({
-        'version': 1,
-        'rules': [for (final rule in next) rule.toJson()],
-      });
-      if (!await ReaderPreferenceWrites.putString(prefs, sharedFilterPreferenceKey, payload) || _closed) return false;
-      update(List.unmodifiable(next));
-      return true;
-    });
-  }
+      modify((rules) => [for (final rule in rules) rule.id == id ? rule.copyWith(enabled: enabled) : rule]);
 
   @override
   Future<void> destroy() async {
-    _closed = true;
     if (identical(_instances[prefs], this)) _instances[prefs] = null;
-    await ReaderPreferenceWrites.drain(prefs);
     await super.destroy();
   }
 }

@@ -7,6 +7,8 @@ import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/reading/mixed_feed_editor.dart';
+import 'package:xta/reading/mixed_feed_view.dart';
 import 'package:xta/settings/_plugin_store.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 
@@ -82,7 +84,10 @@ class _FeedStripAddSheet extends StatelessWidget {
 
                   if (pinnedPlugins.isEmpty) {
                     return ListView(
-                      children: _availableSection(context, l10n, candidates),
+                      children: [
+                        ..._availableSection(context, l10n, candidates),
+                        _createMixTile(context, l10n),
+                      ],
                     );
                   }
 
@@ -94,15 +99,14 @@ class _FeedStripAddSheet extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                     ),
-                    footer: candidates.isEmpty
-                        ? null
-                        : Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Divider(height: 1),
-                              ..._availableSection(context, l10n, candidates),
-                            ],
-                          ),
+                    footer: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Divider(height: 1),
+                        if (candidates.isNotEmpty) ..._availableSection(context, l10n, candidates),
+                        _createMixTile(context, l10n),
+                      ],
+                    ),
                     itemCount: pinnedPlugins.length,
                     onReorderItem: (oldIndex, newIndex) async {
                       await strip.ensurePersisted();
@@ -145,6 +149,19 @@ Future<void> _pinAndClose(BuildContext context, String pluginId) async {
   await strip.add(pluginId);
   if (context.mounted) Navigator.pop(context, pluginId);
 }
+
+/// A mix is made in its editor and lands on the strip once saved.
+Widget _createMixTile(BuildContext context, L10n l10n) => ListTile(
+  key: const ValueKey('feed-strip-create-mix'),
+  leading: const Icon(mixedFeedIcon),
+  title: Text(l10n.mixed_feed_create),
+  subtitle: Text(l10n.mixed_feed_create_description),
+  onTap: () async {
+    final navigator = Navigator.of(context);
+    final mix = await openMixedFeedEditor(context);
+    if (mix != null) navigator.pop(mix.tabId);
+  },
+);
 
 List<Widget> _availableSection(
   BuildContext context,

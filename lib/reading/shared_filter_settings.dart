@@ -3,6 +3,7 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:intl/intl.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/reading/reader_preference_list.dart';
 import 'package:xta/reading/shared_filter_engine.dart';
 import 'package:xta/reading/shared_filter_rule.dart';
 import 'package:xta/settings/settings_chrome.dart';
@@ -200,7 +201,7 @@ class _SharedFilterEditorState extends State<_SharedFilterEditor> {
   }
 
   SharedFilterRule _rule(_Draft draft) => SharedFilterRule(
-    id: widget.rule?.id ?? newSharedFilterId(),
+    id: widget.rule?.id ?? newReaderItemId(),
     pattern: _pattern.text.trim(),
     regex: draft.regex,
     caseSensitive: draft.caseSensitive,
