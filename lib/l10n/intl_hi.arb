@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "OPML फ़ाइल नहीं बनाई जा सकी",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "आपकी फ़ीड सहेजी नहीं जा सकीं। फिर से कोशिश करें।",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS फ़ीड (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

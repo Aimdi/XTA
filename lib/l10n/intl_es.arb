@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "No se ha podido crear el archivo OPML",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "No se han podido guardar tus fuentes. Inténtalo de nuevo.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "Fuentes RSS (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

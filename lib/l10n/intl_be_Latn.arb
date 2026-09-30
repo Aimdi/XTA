@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "Nie ŭdałosia stvaryć fajl OPML",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Nie ŭdałosia zachavać vašy stužki. Pasprabujcie jašče raz.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "Stužki RSS (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

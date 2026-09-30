@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "OPML-faili ei õnnestunud luua",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Sinu vooge ei õnnestunud salvestada. Proovi uuesti.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS-vood (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

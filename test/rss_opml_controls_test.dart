@@ -128,6 +128,15 @@ void main() {
     await host.close(tester);
   });
 
+  testWidgets('a file that is not UTF-8 text is refused', (tester) async {
+    final host = _Host();
+    host.files.picked = RssOpmlFile(size: 3, open: () => Stream.value(const [0xC3, 0x28, 0x3C]));
+    await tester.pumpWidget(host.app());
+    await _tap(tester, const ValueKey('rss-opml-import'));
+    expect(find.text("That file isn't an OPML feed list XTA can read"), findsOneWidget);
+    await host.close(tester);
+  });
+
   testWidgets('feeds saved before groups could see them offer a retry', (tester) async {
     final host = _Host();
     host.files.picked = _file(_opml);

@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "無法建立 OPML 檔案",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "無法儲存你的訂閱源。請再試一次。",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS 訂閱源（OPML）",
+  "@plugin_rss_opml_tool": {}
 }

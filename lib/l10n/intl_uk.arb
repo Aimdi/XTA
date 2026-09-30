@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "Не вдалося створити файл OPML",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Не вдалося зберегти ваші стрічки. Спробуйте ще раз.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS-стрічки (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

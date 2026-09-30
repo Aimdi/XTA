@@ -50,7 +50,7 @@ dependencies:
   http: ^1.6.0
   dart_twitter_api: 0.6.0
   html: ^0.15.6
-  xml: ^6.6.1
+  xml: 6.6.1
 
   # UI & Media
   auto_direction: ^0.0.7

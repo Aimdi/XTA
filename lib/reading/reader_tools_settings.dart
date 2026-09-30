@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/rss/rss_opml_controls.dart';
 import 'package:xta/reading/feed_appearance_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
@@ -44,6 +45,11 @@ class ReaderToolsSettings extends StatelessWidget {
         icon: Icons.filter_alt_outlined,
         title: (context) => L10n.of(context).filters,
         builder: (_) => const SharedFilterSettings(),
+      ),
+      ReaderToolEntry(
+        icon: Icons.rss_feed,
+        title: (context) => L10n.of(context).plugin_rss_opml_tool,
+        builder: (_) => const RssOpmlScreen(),
       ),
       ...entries,
     ];

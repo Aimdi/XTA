@@ -74,7 +74,7 @@ Future<RssOpmlDocument> _parseAside(String source) => compute(parseRssOpml, sour
 
 String rssOpmlFileName(DateTime now) => 'xta-feeds-${DateFormat('yyyy-MM-dd').format(now)}.opml';
 
-/// The picked file as text. A file over [rssOpmlMaxBytes] is refused without reading the rest of it.
+/// The picked file as UTF-8 text. A file over [rssOpmlMaxBytes] is refused without reading the rest of it.
 Future<String> readRssOpmlFile(RssOpmlFile file) async {
   if (file.size > rssOpmlMaxBytes) throw const RssOpmlException(RssOpmlProblem.tooLarge);
   final bytes = BytesBuilder(copy: false);
@@ -82,7 +82,11 @@ Future<String> readRssOpmlFile(RssOpmlFile file) async {
     bytes.add(chunk);
     if (bytes.length > rssOpmlMaxBytes) throw const RssOpmlException(RssOpmlProblem.tooLarge);
   }
-  return utf8.decode(bytes.takeBytes(), allowMalformed: true);
+  try {
+    return utf8.decode(bytes.takeBytes());
+  } on FormatException {
+    throw const RssOpmlException(RssOpmlProblem.malformed);
+  }
 }
 
 /// One import or export at a time for a feeds store; the state says whether one is running.
@@ -247,4 +251,15 @@ class RssOpmlSection extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The import and export section on a page of its own, for Reader Tools.
+class RssOpmlScreen extends StatelessWidget {
+  const RssOpmlScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => SettingsPageScaffold(
+    title: L10n.of(context).plugin_rss_opml_tool,
+    body: const SettingsList(children: [RssOpmlSection()]),
+  );
 }

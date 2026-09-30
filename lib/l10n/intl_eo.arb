@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "Ne eblis krei la OPML-dosieron",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Ne eblis konservi viajn fluojn. Reprovu.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS-fluoj (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

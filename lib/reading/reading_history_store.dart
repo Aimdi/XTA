@@ -6,7 +6,7 @@ import 'package:xta/utils/local_json_store.dart';
 
 const readingHistoryStorageKey = 'reading-history';
 const readingHistoryEnabledKey = 'reading.history.enabled';
-const readingHistoryLimit = 1000;
+const readingHistoryLimit = 500;
 
 class ReadingHistoryState {
   final List<ReadingHistoryEntry> entries;

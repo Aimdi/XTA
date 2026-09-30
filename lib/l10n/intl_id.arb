@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "Tidak dapat membuat file OPML",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Tidak dapat menyimpan umpan Anda. Coba lagi.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "Umpan RSS (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

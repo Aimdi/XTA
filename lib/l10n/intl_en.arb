@@ -4001,5 +4001,7 @@
   "plugin_rss_opml_export_failed": "Could not create the OPML file",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Could not save your feeds. Try again.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS feeds (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "OPML dosyası oluşturulamadı",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Akışlarınız kaydedilemedi. Tekrar deneyin.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS akışları (OPML)",
+  "@plugin_rss_opml_tool": {}
 }

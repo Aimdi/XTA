@@ -82,7 +82,10 @@ class RssFeedsStore extends Store<List<RssFeed>> {
   bool _loaded = false;
   bool _tableSyncPending = false;
 
-  RssFeedsStore(this.prefs, {this.table = const RssFeedsTable()}) : super(const []);
+  /// Feed addresses can carry private tokens, so the saved follows are never logged.
+  RssFeedsStore(this.prefs, {this.table = const RssFeedsTable()}) : super(const []) {
+    prefs.makeSecret(optionPluginRssFeeds);
+  }
 
   /// The follows are saved but groups could not be updated with them yet.
   bool get tableSyncPending => _tableSyncPending;

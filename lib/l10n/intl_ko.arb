@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "OPML 파일을 만들 수 없습니다",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "피드를 저장할 수 없습니다. 다시 시도하세요.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "RSS 피드(OPML)",
+  "@plugin_rss_opml_tool": {}
 }

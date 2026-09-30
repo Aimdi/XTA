@@ -3794,5 +3794,7 @@
   "plugin_rss_opml_export_failed": "Impossible de créer le fichier OPML",
   "@plugin_rss_opml_export_failed": {},
   "plugin_rss_save_failed": "Impossible d'enregistrer vos flux. Réessayez.",
-  "@plugin_rss_save_failed": {}
+  "@plugin_rss_save_failed": {},
+  "plugin_rss_opml_tool": "Flux RSS (OPML)",
+  "@plugin_rss_opml_tool": {}
 }
