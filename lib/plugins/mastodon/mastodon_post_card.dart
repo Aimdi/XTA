@@ -1,4 +1,5 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -119,6 +120,7 @@ class MastodonPostCard extends StatelessWidget {
                       key: ValueKey((post.url, post.id, post.spoilerText, post.sensitive)),
                       post: post,
                       media: _media(context),
+                      offerTranslation: !openOnTap,
                     ),
                     _MastodonEngagementRow(
                       post: post,
@@ -463,8 +465,9 @@ class _MastodonRevealStore extends Store<bool> {
 class _SpoilerBody extends StatefulWidget {
   final MastodonPost post;
   final Widget media;
+  final bool offerTranslation;
 
-  const _SpoilerBody({super.key, required this.post, required this.media});
+  const _SpoilerBody({super.key, required this.post, required this.media, this.offerTranslation = false});
 
   @override
   State<_SpoilerBody> createState() => _SpoilerBodyState();
@@ -500,14 +503,19 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
         if (post.hasSpoiler) _MastodonContentWarning(text: post.spoilerText, open: true, onHide: _store.hide),
         if (post.text.isNotEmpty) ...[
           const SizedBox(height: 6),
-          MastodonRichText(
-            maxLines: feedTextLines(context),
+          ReaderTranslation(
             text: post.text,
-            mentionAccts: post.mentionAccts,
-            style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.35)),
-            onMentionTap: (acct) =>
-                Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: acct))),
-            onTagTap: (tag) => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag))),
+            offer: widget.offerTranslation,
+            builder: (context, text) => MastodonRichText(
+              maxLines: feedTextLines(context),
+              text: text,
+              mentionAccts: post.mentionAccts,
+              style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.35)),
+              onMentionTap: (acct) =>
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: acct))),
+              onTagTap: (tag) =>
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag))),
+            ),
           ),
         ],
         if (post.quote != null) ...[const SizedBox(height: 10), _QuoteEmbed(quote: post.quote!)],

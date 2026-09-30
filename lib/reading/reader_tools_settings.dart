@@ -5,6 +5,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/reading/feed_appearance_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
+import 'package:xta/reading/reader_translation_settings.dart';
 import 'package:xta/settings/settings_chrome.dart';
 
 class ReaderToolEntry {
@@ -26,6 +27,11 @@ class ReaderToolsSettings extends StatelessWidget {
         icon: Icons.palette_outlined,
         title: (context) => L10n.of(context).feed_appearance,
         builder: (_) => const FeedAppearanceSettings(),
+      ),
+      ReaderToolEntry(
+        icon: Icons.translate,
+        title: (context) => L10n.of(context).translation_title,
+        builder: (_) => const ReaderTranslationSettings(),
       ),
       ...entries,
     ];

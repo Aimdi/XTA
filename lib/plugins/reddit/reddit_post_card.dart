@@ -1,4 +1,5 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -75,12 +76,15 @@ class RedditPostCard extends StatelessWidget {
                   if (post.isSelf && post.showsSelfText)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-                      child: RedditRichText(
+                      child: ReaderTranslation(
                         text: post.displaySelfText!,
-                        maxLines: feedTextLines(context, normal: 4),
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        builder: (context, text) => RedditRichText(
+                          text: text,
+                          maxLines: feedTextLines(context, normal: 4),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        ),
                       ),
                     ),
                 ],
@@ -99,11 +103,14 @@ class RedditPostCard extends StatelessWidget {
   Widget _title(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: Text(
-        post.displayTitle,
-        maxLines: feedTextLines(context, normal: 6),
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+      child: ReaderTranslation(
+        text: post.displayTitle,
+        builder: (context, text) => Text(
+          text,
+          maxLines: feedTextLines(context, normal: 6),
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+        ),
       ),
     );
   }

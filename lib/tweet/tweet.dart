@@ -1,4 +1,6 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
+import 'package:xta/reading/reader_translation_service.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
@@ -290,6 +292,10 @@ class TweetTileState extends State<TweetTile> {
       _translationStatus = TranslationStatus.translating;
     });
 
+    if (readerTranslationEnabled(context)) {
+      return _translateWithReaderProvider(context);
+    }
+
     var originalText = _originalParts.map((e) => e.toString()).toList();
     var res = await TranslationAPI.translate(
       locale,
@@ -315,6 +321,33 @@ class TweetTileState extends State<TweetTile> {
       return showTranslationError(
         res.errorMessage ?? 'An unknown error occurred while translating',
       );
+    }
+  }
+
+  /// The post's words for a text-based provider: t.co links expanded, media links dropped.
+  String _readerTranslationText() {
+    final shown = _displayedTweet;
+    var text = unescapeHtml(shown.noteText ?? shown.fullText ?? shown.text ?? '');
+    for (final media in shown.extendedEntities?.media ?? shown.entities?.media ?? []) {
+      final short = media.url;
+      if (short != null) text = text.replaceAll(short, '');
+    }
+    return shareableTweetText(shown, text).trim();
+  }
+
+  /// The reader's own translation service, used for X too once one is set up.
+  Future<void> _translateWithReaderProvider(BuildContext context) async {
+    try {
+      final translated = await translateWithReaderProvider(context, _readerTranslationText());
+      if (!context.mounted || translated == null) return;
+      final parts = buildRichText(context, translated, null);
+      setState(() {
+        _showParts(parts);
+        _translatedParts = parts;
+        _translationStatus = TranslationStatus.translated;
+      });
+    } on ReaderTranslationException catch (error) {
+      if (context.mounted) showTranslationError(readerTranslationFailureText(L10n.of(context), error.reason));
     }
   }
 
@@ -669,7 +702,7 @@ class TweetTileState extends State<TweetTile> {
     // which is for engagement and was one control too wide on a phone. Only on
     // posts there is something to translate: X offers nothing on a post
     // already in your language, and a button on every card was chrome.
-    final translateButton = tweet.article != null || !_offerTranslation(locale)
+    final translateButton = tweet.article != null || !_offerTranslation(readerTranslationTargetLocale(context) ?? locale)
         ? null
         : TweetTranslateButton(
             status: _translationStatus,

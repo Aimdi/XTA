@@ -70,6 +70,8 @@ Future<void> showPluginLinkPostActions(
   post: PluginLinkPost(source: source, url: url, author: author, text: text, images: images).archive,
   url: url,
   onGroup: onGroup,
+  translateText: text,
+  translateInPlaceOnly: false,
 );
 
 class PluginLinkPostCard extends StatelessWidget {

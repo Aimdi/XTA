@@ -1,4 +1,5 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -163,12 +164,17 @@ class BlueskyPostCard extends StatelessWidget {
     children: [
       if (post.text.isNotEmpty) ...[
         const SizedBox(height: 6),
-        BlueskyRichText(
-          maxLines: feedTextLines(context),
+        ReaderTranslation(
           text: post.text,
-          facets: post.facets,
-          style: feedBodyStyle(context, Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35)),
-          onFacetTap: (facet) => _onFacet(context, facet),
+          offer: !openOnTap,
+          builder: (context, text) => BlueskyRichText(
+            maxLines: feedTextLines(context),
+            text: text,
+            // Facets are byte offsets into the original; a translation has none.
+            facets: identical(text, post.text) ? post.facets : const [],
+            style: feedBodyStyle(context, Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35)),
+            onFacetTap: (facet) => _onFacet(context, facet),
+          ),
         ),
       ],
       if (post.hasMedia || post.hasQuote || post.hasLinkCard)

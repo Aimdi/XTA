@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_archive.dart';
@@ -274,10 +275,14 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (post.showsTitle) ...[
-            Text(
-              post.displayTitle,
-              style: theme.textTheme.titleLarge!.copyWith(
-                fontWeight: FontWeight.w700,
+            ReaderTranslation(
+              text: post.displayTitle,
+              offer: _visibleSelfText(post) == null,
+              builder: (context, text) => Text(
+                text,
+                style: theme.textTheme.titleLarge!.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             const SizedBox(height: 6),
@@ -307,7 +312,11 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
           if (_visibleSelfText(post) case final selfText?) ...[
             const SizedBox(height: 10),
-            RedditRichText(text: selfText, style: theme.textTheme.bodyMedium),
+            ReaderTranslation(
+              text: selfText,
+              offer: true,
+              builder: (context, text) => RedditRichText(text: text, style: theme.textTheme.bodyMedium),
+            ),
           ],
           const Divider(height: 24),
         ],

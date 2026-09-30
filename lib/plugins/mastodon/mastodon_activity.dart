@@ -23,6 +23,7 @@ Future<void> showMastodonPostActions(BuildContext context, MastodonPost post) =>
   ),
   onReposts: () => openMastodonReposts(context, post),
   onQuotes: () => openMastodonQuotes(context, post),
+  translateText: post.text,
 );
 
 List<String> _instances(BuildContext context, MastodonPost post) => mastodonInstanceCandidates(

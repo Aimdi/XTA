@@ -1,4 +1,5 @@
 import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
@@ -149,10 +150,14 @@ class ThreadsPostCard extends StatelessWidget {
                               ),
                               if (post.text.isNotEmpty) ...[
                                 const SizedBox(height: 6),
-                                ThreadsCaption(
-                                  maxLines: feedTextLines(context),
+                                ReaderTranslation(
                                   text: post.text,
-                                  style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.35)),
+                                  offer: !openOnTap,
+                                  builder: (context, text) => ThreadsCaption(
+                                    maxLines: feedTextLines(context),
+                                    text: text,
+                                    style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.35)),
+                                  ),
                                 ),
                               ],
                               if (post.hasMedia) ...[

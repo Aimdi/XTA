@@ -1,3 +1,4 @@
+import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -45,11 +46,15 @@ class SubstackNoteContent extends StatelessWidget {
       children: [
         _NoteHeader(note: note, detail: detail),
         const SizedBox(height: 12),
-        SubstackDiscussionText(
+        ReaderTranslation(
           text: note.body,
-          selectable: detail,
-          maxLines: detail ? null : feedTextLines(context),
-          style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.45)),
+          offer: detail,
+          builder: (context, text) => SubstackDiscussionText(
+            text: text,
+            selectable: detail,
+            maxLines: detail ? null : feedTextLines(context),
+            style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.45)),
+          ),
         ),
         if (image != null) ...[
           const SizedBox(height: 12),
