@@ -60,6 +60,7 @@ class TweetFeedController {
   int _loadGeneration = 0;
   bool _disposed = false;
   Future<void>? _refreshing;
+  Future<void>? _repairing;
   _FailedRead? _failedRead;
 
   /// When set, pagination pauses after this many pages per session instead of
@@ -191,7 +192,11 @@ class TweetFeedController {
   /// Reloads the first page and replaces the items in place, *without* resetting
   /// to the first-page spinner the way [PagingController.refresh] does. Used by
   /// pull-to-refresh so the existing tweets stay visible under the indicator.
-  Future<void> softRefresh() => _refreshing ??= _softRefresh().whenComplete(() => _refreshing = null);
+  ///
+  /// A refresh and a repair both read the first page, so one joins the other instead of cancelling it: the
+  /// first load used to be started by the list, the refresh indicator and the visibility resume at once, and
+  /// each cancelled the read before it, leaving a cancelled read as the feed's error and nothing loading.
+  Future<void> softRefresh() => _repairing ?? (_refreshing ??= _softRefresh().whenComplete(() => _refreshing = null));
 
   Future<void> _softRefresh() async {
     _failedRead = null;
@@ -216,7 +221,10 @@ class TweetFeedController {
     }
   }
 
-  Future<void> repairFirstPage() async {
+  Future<void> repairFirstPage() =>
+      _refreshing ?? (_repairing ??= _repairFirstPage().whenComplete(() => _repairing = null));
+
+  Future<void> _repairFirstPage() async {
     _failedRead = null;
     final generation = ++_loadGeneration;
     _paging.beginReplacement();
@@ -407,6 +415,9 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
 
   void _onControllerChanged() {
     if (!mounted) return;
+    // refresh() empties the controller without fetching, so the next build must start the first page again.
+    final state = _controller.value;
+    if (state.pages == null && state.error == null && !state.isLoading) _firstLoadStarted = false;
     if (_hadPreview || _showingPreview) {
       _hadPreview = _showingPreview;
       _view.update(_view.state + 1);

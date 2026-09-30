@@ -665,7 +665,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Where a chunk's page starts: the stored chains to show under it (first
   /// page only) and the cursor the fresh search continues from.
   Future<TweetPageResult> _listTweets(String? cursorKey) async {
-    if (!_screenVisible) throw const ReadCancelled();
+    // Visibility is only reported after the first frame, so a feed counts as hidden while it is still empty;
+    // its first page loads anyway, and only later pages and refreshes wait for the reader to come back.
+    if (!_screenVisible && _feedController.hasItems) throw const ReadCancelled();
     var repository = await Repository.writable();
     final retry = cursorKey == null && _retryFailedBatches;
     _retryFailedBatches = false;
