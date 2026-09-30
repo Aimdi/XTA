@@ -1,3 +1,5 @@
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/reading/feed_appearance_controls.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
@@ -12,7 +14,6 @@ import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/feed_list.dart';
 
 class RssFeedScreen extends StatefulWidget {
   final RssFeed feed;
@@ -77,10 +78,11 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
           }
           return RefreshIndicator(
             onRefresh: _store.refresh,
-            child: FeedListView(
-              itemCount: items.length,
-              itemBuilder: (_, index) =>
-                  RssItemCard(item: items[index], showSourceBadge: false),
+            child: SharedFilterFeedList<RssItem>(
+              items: items,
+              textOf: rssFilterText,
+              keyOf: (item) => item.id,
+              itemBuilder: (_, item, _) => RssItemCard(item: item, showSourceBadge: false),
             ),
           );
         },

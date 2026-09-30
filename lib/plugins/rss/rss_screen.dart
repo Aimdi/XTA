@@ -1,3 +1,5 @@
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
@@ -22,7 +24,6 @@ import 'package:xta/plugins/rss/rss_settings.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
-import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 class RssScreen extends StatefulWidget {
@@ -265,11 +266,13 @@ class _HomePane extends StatelessWidget {
                                   label: Text(filtered ? l10n.plugin_reader_reset_filters : l10n.retry),
                                 ),
                               )
-                            : FeedListView(
+                            : SharedFilterFeedList<RssItem>(
                                 controller: pluginInnerScrollController(context, scrollController),
                                 padding: pluginFeedPadding(context),
-                                itemCount: snapshot.items.length,
-                                itemBuilder: (context, index) => RssItemCard(item: snapshot.items[index]),
+                                items: snapshot.items,
+                                textOf: rssFilterText,
+                                keyOf: (item) => item.id,
+                                itemBuilder: (context, item, _) => RssItemCard(item: item),
                               ),
                       ),
                     ],

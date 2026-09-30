@@ -7,6 +7,7 @@ import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/reading/reader_translation_settings.dart';
 import 'package:xta/reading/reading_history_screen.dart';
+import 'package:xta/reading/shared_filter_settings.dart';
 import 'package:xta/settings/settings_chrome.dart';
 
 class ReaderToolEntry {
@@ -38,6 +39,11 @@ class ReaderToolsSettings extends StatelessWidget {
         icon: Icons.history,
         title: (context) => L10n.of(context).history_title,
         builder: (_) => const ReadingHistoryScreen(),
+      ),
+      ReaderToolEntry(
+        icon: Icons.filter_alt_outlined,
+        title: (context) => L10n.of(context).filters,
+        builder: (_) => const SharedFilterSettings(),
       ),
       ...entries,
     ];

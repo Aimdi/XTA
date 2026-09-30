@@ -64,26 +64,40 @@ final RegExp _wordCharacter = RegExp(r'[\p{L}\p{N}]', unicode: true);
 /// A single word matches on word boundaries so muting "cat" does not also hide
 /// "category"; a phrase or anything with punctuation matches as a substring,
 /// which is what a user typing "black friday" or "$TSLA" expects.
-bool textMatchesMutedTerm(String text, String term) {
-  final needle = term.trim();
-  if (needle.isEmpty) {
-    return false;
+bool textMatchesMutedTerm(String text, String term) => MutedTermMatcher(term).matches(text);
+
+/// [textMatchesMutedTerm] prepared once, for checking many texts against one term.
+class MutedTermMatcher {
+  final String _needle;
+  final bool caseSensitive;
+  final RegExp? _word;
+
+  MutedTermMatcher._(this._needle, this.caseSensitive, this._word);
+
+  factory MutedTermMatcher(String term, {bool caseSensitive = false}) {
+    final trimmed = term.trim();
+    final needle = caseSensitive ? trimmed : trimmed.toLowerCase();
+    final isSingleWord = needle.isNotEmpty && !needle.contains(' ') && needle.split('').every(_wordCharacter.hasMatch);
+    RegExp? word;
+    if (isSingleWord) {
+      try {
+        word = RegExp('(?<![\\p{L}\\p{N}])${RegExp.escape(needle)}(?![\\p{L}\\p{N}])', unicode: true);
+      } catch (_) {
+        // Some runtimes choke on unicode lookbehind; fail open to substring match
+        // rather than blowing up the whole feed page.
+        word = null;
+      }
+    }
+    return MutedTermMatcher._(needle, caseSensitive, word);
   }
 
-  final haystack = text.toLowerCase();
-  final lowered = needle.toLowerCase();
-  final isSingleWord = !lowered.contains(' ') && lowered.split('').every(_wordCharacter.hasMatch);
-
-  if (!isSingleWord) {
-    return haystack.contains(lowered);
-  }
-
-  try {
-    return RegExp('(?<![\\p{L}\\p{N}])${RegExp.escape(lowered)}(?![\\p{L}\\p{N}])', unicode: true).hasMatch(haystack);
-  } catch (_) {
-    // Some runtimes choke on unicode lookbehind; fail open to substring match
-    // rather than blowing up the whole feed page.
-    return haystack.contains(lowered);
+  bool matches(String text) {
+    if (_needle.isEmpty) {
+      return false;
+    }
+    final haystack = caseSensitive ? text : text.toLowerCase();
+    final word = _word;
+    return word == null ? haystack.contains(_needle) : word.hasMatch(haystack);
   }
 }
 

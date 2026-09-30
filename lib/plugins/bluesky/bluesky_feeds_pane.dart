@@ -1,3 +1,5 @@
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:flutter/material.dart';
@@ -249,7 +251,12 @@ class _SourceTimeline extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => NotificationListener<ScrollNotification>(
+  Widget build(BuildContext context) {
+    final shared = sharedFilterProject(context, page.posts, blueskyFilterText);
+    return _timeline(context, shared);
+  }
+
+  Widget _timeline(BuildContext context, SharedFilterProjection<BlueskyPost> shared) => NotificationListener<ScrollNotification>(
     onNotification: (notification) {
       if (notification.depth == 0 &&
           notification.metrics.axis == Axis.vertical &&
@@ -266,7 +273,7 @@ class _SourceTimeline extends StatelessWidget {
       child: FeedListView(
         controller: pluginInnerScrollController(context, scrollController),
         padding: pluginFeedPadding(context),
-        itemCount: page.posts.length + 3,
+        itemCount: shared.visible.length + 3,
         itemBuilder: (context, index) {
           if (index == 0) return header;
           if (index == 1) {
@@ -282,9 +289,13 @@ class _SourceTimeline extends StatelessWidget {
               ],
             );
           }
-          if (index == page.posts.length + 2) return _SourceFooter(page: page, onMore: onMore);
-          final post = page.posts[index - 2];
-          return BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false);
+          if (index == shared.visible.length + 2) return _SourceFooter(page: page, onMore: onMore);
+          final post = shared.visible[index - 2];
+          return BlueskyPostCard(
+            key: ValueKey(post.uri),
+            post: post,
+            showSourceBadge: false,
+          ).foldedBy(shared.foldReason(post), key: ValueKey(('fold', post.uri)));
         },
       ),
     ),

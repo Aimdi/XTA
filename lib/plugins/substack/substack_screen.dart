@@ -1,3 +1,5 @@
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
@@ -366,16 +368,21 @@ class _PostsPane extends StatelessWidget {
                 onState: (context, readIds) {
                   final controls = context.read<SubstackHomeControlsStore>();
                   final options = controls.options('home');
-                  final visible = filterSubstackLoaded(
-                    feed.allPosts
-                        .where(
-                          (post) =>
-                              publications.any((pub) => pub.baseUrl == post.publicationBaseUrl) &&
-                              postMatchesSubstackFilter(post, feed.filter, readIds),
-                        )
-                        .toList(),
-                    options,
+                  final shared = sharedFilterProject(
+                    context,
+                    filterSubstackLoaded(
+                      feed.allPosts
+                          .where(
+                            (post) =>
+                                publications.any((pub) => pub.baseUrl == post.publicationBaseUrl) &&
+                                postMatchesSubstackFilter(post, feed.filter, readIds),
+                          )
+                          .toList(),
+                      options,
+                    ),
+                    substackFilterText,
                   );
+                  final visible = shared.visible;
                   final children = <Widget>[
                     SubstackReadingToolbar(
                       slot: 'home',
@@ -443,7 +450,7 @@ class _PostsPane extends StatelessWidget {
                           post: post,
                           showSourceBadge: false,
                           logoUrl: _logoFor(publications, post),
-                        );
+                        ).foldedBy(shared.foldReason(post), key: ValueKey(('fold', substackFeedPostKey(post))));
                       }
                       return _FeedStatus(feed: feed);
                     },
@@ -876,11 +883,13 @@ class _NotesPane extends StatelessWidget {
             );
           }
 
+          final shared = sharedFilterProject(context, page.notes, substackNoteFilterText);
+          final shown = shared.visible;
           return ListView.builder(
             controller: pluginInnerScrollController(context, scrollController),
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.only(bottom: 24, top: 8),
-            itemCount: page.notes.length + 2,
+            itemCount: shown.length + 2,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return Padding(
@@ -889,8 +898,9 @@ class _NotesPane extends StatelessWidget {
                 );
               }
               final noteIndex = index - 1;
-              if (noteIndex < page.notes.length) {
-                return SubstackNoteCard(note: page.notes[noteIndex]);
+              if (noteIndex < shown.length) {
+                final note = shown[noteIndex];
+                return SubstackNoteCard(note: note).foldedBy(shared.foldReason(note), key: ValueKey(('fold', note.id)));
               }
               return Padding(
                 padding: const EdgeInsets.all(16),

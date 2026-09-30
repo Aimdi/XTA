@@ -1,3 +1,5 @@
+import 'package:xta/reading/reader_source_text.dart';
+import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/microblog_reader_shell.dart';
@@ -215,7 +217,9 @@ class _HomePane extends StatelessWidget {
     required this.onRefresh,
   });
 
-  Widget _feed(BuildContext context, L10n l10n, List<ThreadsPost> posts) {
+  Widget _feed(BuildContext context, L10n l10n, List<ThreadsPost> loaded) {
+    final shared = sharedFilterProject(context, loaded, threadsFilterText);
+    final posts = shared.visible;
     final handles = context.read<ThreadsAccountsStore>().state.map((e) => e.handle).toList(growable: false);
     final pending = context.read<ThreadsFeedStore>().pending(handles);
 
@@ -262,7 +266,7 @@ class _HomePane extends StatelessWidget {
                 key: ValueKey(posts[postIndex].id),
                 post: posts[postIndex],
                 showSourceBadge: false,
-              );
+              ).foldedBy(shared.foldReason(posts[postIndex]), key: ValueKey(('fold', posts[postIndex].id)));
             },
           ),
         );
