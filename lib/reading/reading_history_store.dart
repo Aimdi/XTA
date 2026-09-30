@@ -38,13 +38,9 @@ class ReadingHistoryStore extends Store<ReadingHistoryState> {
   int _epoch = 0;
   bool _closed = false;
 
-  ReadingHistoryStore(
-    this.storage,
-    this.prefs, {
-    this.limit = readingHistoryLimit,
-    DateTime Function()? clock,
-  }) : clock = clock ?? DateTime.now,
-       super(ReadingHistoryState(enabled: prefs.get<bool>(readingHistoryEnabledKey) ?? true));
+  ReadingHistoryStore(this.storage, this.prefs, {this.limit = readingHistoryLimit, DateTime Function()? clock})
+    : clock = clock ?? DateTime.now,
+      super(ReadingHistoryState(enabled: prefs.get<bool>(readingHistoryEnabledKey) ?? true));
 
   static ReadingHistoryStore forPrefs(BasePrefService prefs, {JsonStore? storage}) {
     final store = storage ?? LocalJsonStore.shared;
