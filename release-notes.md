@@ -1,25 +1,25 @@
-## XTA — aimdi151
+## XTA — aimdi152
 
-### Cleaner Home source picker
+### Reader tools
 
-- Group Pixiv, Booru and E-Hentai into a compact **Art** row while keeping every source individually selectable and searchable.
-- Group Substack and RSS into a compact **Reading** row with the same direct source navigation.
-- Normalize source-icon sizing throughout the picker and replace the oversized X mark with a cleaner, properly scaled X glyph.
-- Preserve existing pins, reader IDs, source availability, selected/unread state and Add behavior.
+- **Per-feed appearance.** Give each feed its own Compact, Gallery or Reading look, with separate choices for counts, link previews and media.
+- **Translation.** Tap to translate X posts, plugin posts and articles with DeepL, LibreTranslate or the AI provider set up in Settings, then switch back to the original. Translation stays off until you choose a service, and nothing is sent until you tap Translate. Your API key is never included in settings exports.
+- **Reading history.** A searchable record, kept on this device, of up to 500 posts, articles and profiles you actually viewed. You can remove entries, clear it or pause it.
+- **Shared filters.** One list of keyword or regex rules for X and every plugin. A rule can hide or fold posts, in timelines, in search or both, and can expire on a date. A slow regex is paused instead of freezing the app, and a feed that filters everything out stops loading until you ask for more.
+- **RSS import and export.** Import an OPML file, or save and share your feeds as one, from the RSS settings, the RSS menu or Reader Tools. Folders become tags and duplicates are skipped. Feeds that differ only in their query, such as YouTube channels, no longer collapse into one.
+- **Mixed feeds.** Build a named timeline from X, Mastodon, Bluesky, Threads, Reddit, RSS, Substack and Hacker News sources, merged newest first or taking turns. Each post keeps its native card. A mix sits on the Home strip and can be created from the Home picker or Reader Tools.
 
-### Accessibility and layout
+### Consistent Home headers
 
-- Group rows now expose their unread state to accessibility services.
-- Keep grouped sources usable on narrow screens, large text and RTL layouts, with full 48dp touch targets.
-- Includes the CI fixes that caught lower-sheet source selection and semantics regressions before release.
+- Following, X and Reddit now use the same compact header as Bluesky: source picker, section tabs, search and options in one row, giving that space back to the feed.
 
-Includes PR #320 plus all aimdi150 changes.
+Includes PRs #322 and #323 plus all aimdi151 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi151_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001200**, above
-every aimdi150 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi152_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001210**, above
+every aimdi151 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -30,4 +30,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi150)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi151)
