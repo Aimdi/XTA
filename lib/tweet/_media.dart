@@ -1,3 +1,4 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -349,7 +350,7 @@ class _TweetMediaState extends State<TweetMedia> {
     if (widget.media.length == 1) {
       return TweetMediaFrame(
         child: AspectRatio(
-          aspectRatio: singleMediaAspect(_aspects().single),
+          aspectRatio: feedMediaAspect(context, singleMediaAspect(_aspects().single)),
           child: ColoredBox(
             color: Colors.black,
             child: _card(context, 0, fit: BoxFit.contain, showCounter: false),

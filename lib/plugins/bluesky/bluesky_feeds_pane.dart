@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -103,6 +105,10 @@ class _BlueskyAlgoPaneState extends State<BlueskyAlgoPane> {
             ],
           ),
           emptyMessage: l10n.plugin_bluesky_feed_empty,
+        ).withFeedAppearance(
+          feed: FeedIdentity('bluesky', state.selectedUri ?? kBlueskyDiscoverFeedUri),
+          label: selected.displayName,
+          publishAction: true,
         );
       },
     );
@@ -218,7 +224,7 @@ class _BlueskyListsPaneState extends State<BlueskyListsPane> {
             ],
           ),
           emptyMessage: state.selectedUri == null ? l10n.plugin_bluesky_lists_empty : l10n.plugin_bluesky_feed_empty,
-        );
+        ).withFeedAppearance(feed: FeedIdentity('bluesky', state.selectedUri ?? 'lists'), label: selected.name);
       },
     );
   }

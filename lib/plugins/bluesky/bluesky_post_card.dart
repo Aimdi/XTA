@@ -1,9 +1,8 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/bluesky/bluesky_archive.dart';
@@ -108,7 +107,7 @@ class BlueskyPostCard extends StatelessWidget {
               onTap: openOnTap ? () => _open(context) : null,
               onLongPress: () => showBlueskyPostActions(context, post),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                padding: feedCardPadding(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -165,9 +164,10 @@ class BlueskyPostCard extends StatelessWidget {
       if (post.text.isNotEmpty) ...[
         const SizedBox(height: 6),
         BlueskyRichText(
+          maxLines: feedTextLines(context),
           text: post.text,
           facets: post.facets,
-          style: Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35),
+          style: feedBodyStyle(context, Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35)),
           onFacetTap: (facet) => _onFacet(context, facet),
         ),
       ],
@@ -187,10 +187,16 @@ class BlueskyPostCard extends StatelessWidget {
     children: [
       if (post.hasMedia) ...[
         const SizedBox(height: 10),
-        PluginPostMedia(items: post.mediaItems, sourceName: 'bluesky'),
+        PluginPostMedia(
+          items: post.mediaItems,
+          sourceName: 'bluesky',
+        ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
       ],
       if (post.quotedPost != null) ...[const SizedBox(height: 10), _QuotedPost(quote: post.quotedPost!)],
-      if (post.linkCard != null) ...[const SizedBox(height: 10), _BlueskyLinkPreview(card: post.linkCard!)],
+      if (post.linkCard != null) ...[
+        const SizedBox(height: 10),
+        _BlueskyLinkPreview(card: post.linkCard!).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews),
+      ],
     ],
   );
 
@@ -368,16 +374,22 @@ class _QuotedPost extends StatelessWidget {
             ? BlueskyContentWarning(
                 key: ValueKey('warning-${quote.uri}'),
                 identity: blueskyWarningIdentity(quote),
-                child: PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
+                child: PluginPostMedia(
+                  items: quote.mediaItems,
+                  sourceName: 'bluesky',
+                ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
               )
-            : PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
+            : PluginPostMedia(
+                items: quote.mediaItems,
+                sourceName: 'bluesky',
+              ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
       ],
       if (quote.text.isNotEmpty) ...[
         const SizedBox(height: 6),
         BlueskyRichText(
           text: quote.text,
           facets: quote.facets,
-          maxLines: 6,
+          maxLines: feedTextLines(context, normal: 6),
           overflow: TextOverflow.ellipsis,
           onFacetTap: (facet) {
             switch (facet.kind) {
@@ -480,8 +492,7 @@ class _BlueskyEngagementRow extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final l10n = L10n.of(context);
-    final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts = !feedCountsVisible(context);
     final likes = context.read<BlueskyLikesStore>();
 
     String label(int count) => hideCounts ? '' : compactCount(count);

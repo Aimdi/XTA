@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -156,6 +158,10 @@ class _RssScreenState extends State<RssScreen> {
               ),
             ),
           ],
+        ).withFeedAppearance(
+          feed: FeedIdentity('rss', _tab == 0 ? 'all-followed' : 'feeds'),
+          label: l10n.plugin_rss_home,
+          publishAction: _tab == 0,
         ),
       ),
     );

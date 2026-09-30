@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/mastodon/mastodon_plugin.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
@@ -209,6 +212,20 @@ class _MastodonScreenState extends State<MastodonScreen> {
                 ),
               ),
             ),
+          ).withFeedAppearance(
+              feed: FeedIdentity('mastodon', jsonEncode([
+                ['explore', 'local', 'federated', 'following'][tab],
+                mastodonConfiguredInstances(PrefService.of(context, listen: false)),
+              ])),
+              label: [
+                L10n.of(context).plugin_mastodon_title,
+                [
+                  L10n.of(context).plugin_mastodon_tab_explore,
+                  L10n.of(context).plugin_mastodon_tab_local,
+                  L10n.of(context).plugin_mastodon_tab_federated,
+                  L10n.of(context).plugin_mastodon_tab_following,
+                ][tab],
+              ].join(' · '),
           ),
         ),
       ),

@@ -11,8 +11,9 @@ final _threadsUrl = RegExp(r'https?://[^\s<>]+', caseSensitive: false);
 class ThreadsCaption extends StatefulWidget {
   final String text;
   final TextStyle style;
+  final int? maxLines;
 
-  const ThreadsCaption({super.key, required this.text, required this.style});
+  const ThreadsCaption({super.key, required this.text, required this.style, this.maxLines});
 
   @override
   State<ThreadsCaption> createState() => _ThreadsCaptionState();
@@ -44,7 +45,11 @@ class _ThreadsCaptionState extends State<ThreadsCaption> {
   Widget build(BuildContext context) {
     _clearRecognizers();
     final linkStyle = widget.style.copyWith(color: Theme.of(context).colorScheme.primary);
-    return Text.rich(TextSpan(style: widget.style, children: _spans(context, linkStyle)));
+    return Text.rich(
+      TextSpan(style: widget.style, children: _spans(context, linkStyle)),
+      maxLines: widget.maxLines,
+      overflow: widget.maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
+    );
   }
 
   List<InlineSpan> _spans(BuildContext context, TextStyle linkStyle) {

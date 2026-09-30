@@ -397,6 +397,7 @@ class PluginDockOptionsButton extends StatelessWidget {
               final navigation = store.content(source, 'navigation');
               final reading = store.content(source, 'reading');
               final following = store.content(source, 'following');
+              final appearance = store.content(source, 'appearance');
               final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
               return SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
@@ -458,6 +459,7 @@ class PluginDockOptionsButton extends StatelessWidget {
                         ),
                       ),
                     ],
+                    ...?appearance?.actions,
                     if (includeActions)
                       ..._actionEntries(context, opener, [...?navigation?.actions, ...?reading?.actions]),
                     if ((includeActions || (navigation?.actions.isEmpty ?? true)) && scope.onOpenClient != null)

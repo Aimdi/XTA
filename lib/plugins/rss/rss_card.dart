@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -25,14 +27,15 @@ class RssItemCard extends StatelessWidget {
 
   Widget _article(BuildContext context, bool unread) {
     final theme = Theme.of(context);
-    final hasCover = item.imageUrl?.isNotEmpty ?? false;
-    final largeText = MediaQuery.textScalerOf(context).scale(14) > 20;
+    final hasCover = feedMediaVisible(context) && (item.imageUrl?.isNotEmpty ?? false);
+    final largeText =
+        MediaQuery.textScalerOf(context).scale(14) > 20 || FeedAppearanceScope.of(context).preset == FeedPreset.gallery;
     final copy = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           item.title,
-          maxLines: 4,
+          maxLines: feedTextLines(context, normal: 4),
           overflow: TextOverflow.ellipsis,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: unread ? FontWeight.w800 : FontWeight.w500,
@@ -43,7 +46,7 @@ class RssItemCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             item.excerpt!,
-            maxLines: 3,
+            maxLines: feedTextLines(context, normal: 3),
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(color: tweetSecondaryColor(context), height: 1.4),
           ),

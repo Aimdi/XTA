@@ -1,3 +1,4 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
@@ -882,14 +883,18 @@ class TweetTileState extends State<TweetTile> {
           url: articleLink,
           // Read in XTA rather than handed to a browser: the article is the
           // post's own content.
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => ArticleScreen(url: articleLink)),
-          ),
-        ),
-      media,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ArticleScreen(url: articleLink))),
+        ).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews),
+      media.withFeedAppearancePart(kind: FeedAppearancePartKind.media),
       quotedTweet,
-      if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
+      if (!skipBroadcastCard)
+        TweetCard(tweet: tweet, card: tweet.card).withFeedAppearancePart(
+          kind: isBroadcastCard(tweet.card) || isAudioSpaceCard(tweet.card)
+              ? FeedAppearancePartKind.media
+              : '${tweet.card?['name']}'.startsWith('poll')
+              ? null
+              : FeedAppearancePartKind.linkPreviews,
+        ),
       birdwatchQuoted,
       article,
       // A quoted tweet shows no action bar: its reply/repost/like counts belong

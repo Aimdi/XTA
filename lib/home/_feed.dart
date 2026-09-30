@@ -1,3 +1,4 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/plugins/plugin_compact_header.dart';
 import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
@@ -680,6 +681,10 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
           ),
         ),
+      ).withFeedAppearance(
+        feed: homeFeedIdentity(tab.id),
+        label: available.firstWhere((option) => option.id == tab).titleBuilder(context),
+        publishAction: tab == FeedTab.following || tab == FeedTab.x,
       ),
     );
   }

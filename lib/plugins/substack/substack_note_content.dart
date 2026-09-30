@@ -1,9 +1,8 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_counts.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
@@ -49,14 +48,15 @@ class SubstackNoteContent extends StatelessWidget {
         SubstackDiscussionText(
           text: note.body,
           selectable: detail,
-          style: theme.textTheme.bodyLarge?.copyWith(height: 1.45),
+          maxLines: detail ? null : feedTextLines(context),
+          style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.45)),
         ),
         if (image != null) ...[
           const SizedBox(height: 12),
           PluginPostMedia(
             items: [PluginMediaItem(url: image)],
             sourceName: 'substack',
-          ),
+          ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
         ],
         _NoteReactions(note: note),
         if (pub != null) ...[const SizedBox(height: 12), _NotePublication(publication: pub)],
@@ -160,8 +160,7 @@ class _NoteReactions extends StatelessWidget {
   Widget build(BuildContext context) {
     final count = note.reactionCount;
     if (count == null || count <= 0) return const SizedBox.shrink();
-    final prefs = context.dependOnInheritedWidgetOfExactType<PrefService>()?.service;
-    if (prefs?.get(optionCalmMode) == true || prefs?.get(optionZenMode) == true) return const SizedBox.shrink();
+    if (!feedCountsVisible(context)) return const SizedBox.shrink();
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
     return Padding(
       padding: const EdgeInsets.only(top: 12),

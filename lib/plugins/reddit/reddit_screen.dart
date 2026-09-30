@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -125,6 +127,13 @@ class _RedditScreenState extends State<RedditScreen> with AutomaticKeepAliveClie
               ),
             ),
           ],
+        ).withFeedAppearance(
+          feed: FeedIdentity('reddit', redditHomeFeedKey(source)),
+          label: source.viewingSubreddit ? 'r/${source.subreddit}' : [
+            L10n.of(context).plugin_reddit_feed_following,
+            L10n.of(context).plugin_reddit_feed_popular,
+            L10n.of(context).plugin_reddit_feed_all,
+          ][source.mode.index],
         ),
       ),
     );

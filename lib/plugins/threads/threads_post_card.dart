@@ -1,11 +1,10 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:xta/plugins/threads/threads_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_card_row.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
@@ -127,7 +126,7 @@ class ThreadsPostCard extends StatelessWidget {
                 images: post.images,
               ),
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                padding: feedCardPadding(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -151,17 +150,24 @@ class ThreadsPostCard extends StatelessWidget {
                               if (post.text.isNotEmpty) ...[
                                 const SizedBox(height: 6),
                                 ThreadsCaption(
+                                  maxLines: feedTextLines(context),
                                   text: post.text,
-                                  style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+                                  style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.35)),
                                 ),
                               ],
                               if (post.hasMedia) ...[
                                 const SizedBox(height: 10),
-                                PluginPostMedia(items: post.mediaItems, imageBuilder: _threadsMediaImage, sourceName: 'threads'),
+                                PluginPostMedia(
+                                  items: post.mediaItems,
+                                  imageBuilder: _threadsMediaImage,
+                                  sourceName: 'threads',
+                                ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
                               ],
                               if (post.linkCard != null) ...[
                                 const SizedBox(height: 10),
-                                _ThreadsLinkPreview(card: post.linkCard!),
+                                _ThreadsLinkPreview(
+                                  card: post.linkCard!,
+                                ).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews),
                               ],
                               _ThreadsEngagementRow(
                                 post: post,
@@ -377,8 +383,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
-    final prefs = PrefService.of(context, listen: false);
-    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
+    final hideCounts = !feedCountsVisible(context);
     final likes = context.read<ThreadsLikesStore>();
 
     String metaLabel(int? count) {
@@ -392,17 +397,23 @@ class _ThreadsEngagementRow extends StatelessWidget {
       padding: const EdgeInsets.only(top: 2),
       child: Row(
         children: [
-          TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: onOpen,
-            icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-            label: Text(metaLabel(post.replyCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+          Tooltip(
+            message: L10n.of(context).thread,
+            child: TextButton.icon(
+              style: footerButtonStyle,
+              onPressed: onOpen,
+              icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
+              label: Text(metaLabel(post.replyCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            ),
           ),
-          TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: onOpen,
-            icon: Icon(Icons.repeat, size: 18, color: muted),
-            label: Text(metaLabel(post.repostCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+          Tooltip(
+            message: L10n.of(context).thread,
+            child: TextButton.icon(
+              style: footerButtonStyle,
+              onPressed: onOpen,
+              icon: Icon(Icons.repeat, size: 18, color: muted),
+              label: Text(metaLabel(post.repostCount), style: theme.textTheme.bodySmall!.copyWith(color: muted)),
+            ),
           ),
           ScopedBuilder<ThreadsLikesStore, List<ThreadsPost>>(
             store: likes,
@@ -413,6 +424,7 @@ class _ThreadsEngagementRow extends StatelessWidget {
               final likeLabel = hideCounts || shown == null ? '' : compactCount(shown);
               return LikeButton(
                 isLiked: isLiked,
+                tooltip: isLiked ? L10n.of(context).unlike_on_this_device : L10n.of(context).like_on_this_device,
                 label: likeLabel,
                 color: isLiked ? theme.colorScheme.primary : muted,
                 onPressed: () async {

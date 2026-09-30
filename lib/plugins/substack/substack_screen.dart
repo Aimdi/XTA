@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -250,6 +252,13 @@ class _SubstackScreenState extends State<SubstackScreen> {
                   ),
                 ),
               ],
+            ).withFeedAppearance(
+              feed: FeedIdentity('substack', ['home', 'inbox', 'notes', 'library'][_tab]),
+              label: [
+                l10n.plugin_substack_title,
+                [l10n.plugin_substack_home, l10n.plugin_substack_inbox, l10n.plugin_substack_tab_notes,
+                  l10n.plugin_substack_library][_tab],
+              ].join(' · '),
             ),
           ),
         ),

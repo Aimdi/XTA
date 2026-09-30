@@ -1,3 +1,5 @@
+import 'package:xta/reading/feed_appearance_scope.dart';
+import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:xta/plugins/microblog_reader_shell.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
@@ -185,6 +187,10 @@ class _ThreadsScreenState extends State<ThreadsScreen> {
                 ),
               ),
             ],
+          ).withFeedAppearance(
+            feed: FeedIdentity('threads', tab == 0 ? 'home' : 'liked'),
+            label: [l10n.plugin_threads_title, tab == 0 ? l10n.plugin_threads_home : l10n.plugin_threads_liked]
+                .join(' · '),
           ),
         ),
       ),
