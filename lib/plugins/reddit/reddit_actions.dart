@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_counts.dart';
+import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/reddit/reddit_account.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
@@ -36,6 +37,7 @@ class RedditFeedActions extends StatefulWidget {
 
   /// Called after a setting changes what the active Reddit body should fetch.
   final Future<void> Function()? onRefresh;
+  final Widget Function(List<Widget> actions)? builder;
 
   const RedditFeedActions({
     super.key,
@@ -43,6 +45,7 @@ class RedditFeedActions extends StatefulWidget {
     this.onOpenClient,
     this.onOpenSaved,
     this.onRefresh,
+    this.builder,
   });
 
   @override
@@ -61,8 +64,7 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
 
     final public = redditPrefersPublic(prefs);
 
-    return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert),
+    return PluginHomeMenu(
       tooltip: '${l10n.plugin_reddit_title} · ${MaterialLocalizations.of(context).moreButtonTooltip}',
       onSelected: (value) => _onMenuSelected(value, prefs),
       itemBuilder: (context) => [
@@ -180,28 +182,30 @@ class _RedditFeedActionsState extends State<RedditFeedActions> {
   Widget build(BuildContext context) {
     final l10n = L10n.of(context);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          tooltip: l10n.plugin_reddit_sort,
-          icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
-          onPressed: () async {
-            if (await openRedditSortSheet(context) != null && context.mounted) {
-              await _refreshActive();
-            }
-          },
-        ),
-        IconButton(
-          tooltip: l10n.plugin_reddit_search_hint,
-          icon: const Icon(Icons.search),
-          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
-        ),
-        if (widget.onOpenSaved == null)
-          IconButton(tooltip: l10n.subscriptions, icon: const Icon(Icons.list), onPressed: _manageSubreddits),
-        _sourceMenu(context),
-      ],
-    );
+    final actions = <Widget>[
+      IconButton(
+        tooltip: l10n.plugin_reddit_sort,
+        icon: Icon(redditSortLabel(context, storedRedditSort(PrefService.of(context))).icon),
+        onPressed: () async {
+          if (await openRedditSortSheet(context) != null && context.mounted) {
+            await _refreshActive();
+          }
+        },
+      ),
+      IconButton(
+        tooltip: l10n.plugin_reddit_search_hint,
+        icon: const Icon(Icons.search),
+        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RedditSearchScreen())),
+      ),
+      if (widget.onOpenSaved == null)
+        IconButton(tooltip: l10n.subscriptions, icon: const Icon(Icons.list), onPressed: _manageSubreddits),
+      _sourceMenu(context),
+    ];
+    // Search is the visible primary action in the shared compact header.
+    if (widget.builder != null) {
+      return widget.builder!([actions[1], actions[0], ...actions.skip(2)]);
+    }
+    return Row(mainAxisSize: MainAxisSize.min, children: actions);
   }
 
   Future<void> _refreshActive() => widget.onRefresh?.call() ?? context.read<RedditFeedStore>().refresh();
