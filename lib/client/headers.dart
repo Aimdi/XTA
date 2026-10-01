@@ -44,6 +44,21 @@ class TwitterHeaders {
   static Object? _lastInitializationFailure;
   static Object? get lastInitializationFailure => _lastInitializationFailure;
 
+  /// The key's state for the diagnostics report: no secrets, only timing and the failure category.
+  static String describeKeyState() {
+    final context = _context;
+    final now = clock();
+    final derivedAt = context.derivedAt;
+    if (context.future != null && derivedAt == null) return 'deriving';
+    if (derivedAt != null) {
+      return transactionKeyUsable(derivedAt: derivedAt, now: now, lifetime: transactionKeyLifetime)
+          ? 'derived ${now.difference(derivedAt).inSeconds}s ago'
+          : 'expired, will be derived again';
+    }
+    final failure = context.lastFailure ?? _lastInitializationFailure;
+    return failure == null ? 'not derived yet' : 'none, last failure ${failure.runtimeType}';
+  }
+
   static void resetForTesting() {
     _context = _TransactionContext();
     _epoch = Object();

@@ -345,6 +345,22 @@ void main() {
       expect(attempts, 1);
     });
 
+    test('describes the key state without secrets', () async {
+      var now = DateTime.utc(2026, 10, 1, 12);
+      TwitterHeaders.clock = () => now;
+      expect(TwitterHeaders.describeKeyState(), 'not derived yet');
+      final pending = Completer<ClientTransaction>();
+      TwitterHeaders.initializer = () => pending.future;
+      final first = TwitterHeaders.getHeaders(uri, null);
+      expect(TwitterHeaders.describeKeyState(), 'deriving');
+      pending.complete(fakeTransaction());
+      await first;
+      now = now.add(const Duration(seconds: 30));
+      expect(TwitterHeaders.describeKeyState(), 'derived 30s ago');
+      now = now.add(transactionKeyLifetime);
+      expect(TwitterHeaders.describeKeyState(), 'expired, will be derived again');
+    });
+
     test('no header is asked for when there is no uri', () async {
       TwitterHeaders.initializer = () async => fail('should not derive a key');
 

@@ -30,6 +30,7 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
       await _probe(probes, 'database (writable connection)', () async {
         await (await Repository.writable()).rawQuery('SELECT 1');
       });
+      probes.add(DiagnosticsProbe('X signing key', failure: TwitterHeaders.describeKeyState()));
 
       return DiagnosticsReport(
         appVersion: packageInfo == null ? 'unknown' : 'v${packageInfo.version}+${packageInfo.buildNumber}',
