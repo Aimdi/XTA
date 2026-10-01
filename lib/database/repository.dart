@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:xta/constants.dart';
+import 'package:xta/group/feed_cache.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1079,10 +1080,7 @@ class Repository {
   Future<void> _cleanUpOldCaches() async {
     try {
       final repository = await writable();
-      await repository.delete(
-        tableFeedGroupChunk,
-        where: "created_at <= date('now', '-7 day')",
-      );
+      await deleteChunkRowsInBatches(repository, where: "created_at <= date('now', '-7 day')");
       await repository.delete(
         tableFeedGroupCursor,
         where: "created_at <= date('now', '-7 day')",

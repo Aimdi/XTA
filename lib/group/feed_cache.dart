@@ -191,3 +191,34 @@ Future<CachedChains> readAllCachedChains(Database repository) async {
     cachedAt: newestChunkTimestamp(storedChunks),
   );
 }
+
+/// Deletes the matching chunk rows a few at a time. One row holds a page of tweet JSON, so a week of pages for a
+/// large feed is hundreds of megabytes, and a single DELETE over it kept the one database worker busy for minutes
+/// while every other read in the app waited behind it.
+Future<int> deleteChunkRowsInBatches(
+  DatabaseExecutor database, {
+  required String where,
+  List<Object?> arguments = const [],
+  int batchSize = 20,
+}) async {
+  var total = 0;
+  while (true) {
+    final deleted = await database.rawDelete(
+      'DELETE FROM $tableFeedGroupChunk WHERE rowid IN '
+      '(SELECT rowid FROM $tableFeedGroupChunk WHERE $where LIMIT ?)',
+      [...arguments, batchSize],
+    );
+    total += deleted;
+    if (deleted < batchSize) return total;
+    await Future<void>.delayed(const Duration(milliseconds: 25));
+  }
+}
+
+/// Keeps only the newest [keep] rows of one chunk: that is all a read ever takes, and every load used to add
+/// rows that nothing read again until the weekly cleanup.
+Future<int> pruneChunkRows(DatabaseExecutor database, String hash, {int keep = maxCachedChunkRows}) =>
+    database.rawDelete(
+      'DELETE FROM $tableFeedGroupChunk WHERE hash = ? AND rowid NOT IN '
+      '(SELECT rowid FROM $tableFeedGroupChunk WHERE hash = ? ORDER BY created_at DESC, rowid DESC LIMIT ?)',
+      [hash, hash, keep],
+    );

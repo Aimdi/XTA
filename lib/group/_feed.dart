@@ -780,6 +780,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             'cursor_bottom': searchPage?.cursorBottom,
             'response': await encodeChunkBlob(fresh.map((e) => e.toJson()).toList()),
           });
+          await pruneChunkRows(repository, hash);
         }
 
         // A single fetch returns only the newest page, so a long absence
@@ -820,6 +821,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                   'cursor_bottom': page.cursorBottom,
                   'response': await encodeChunkBlob(page.chains.map((e) => e.toJson()).toList()),
                 });
+                await pruneChunkRows(repository, hash);
               }
             }
           } catch (_) {
@@ -1113,10 +1115,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                           }
 
                           var repository = await Repository.writable();
-                          await repository.delete(
-                            tableFeedGroupChunk,
+                          await deleteChunkRowsInBatches(
+                            repository,
                             where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
-                            whereArgs: hashes,
+                            arguments: hashes,
                           );
                         },
                         firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,
