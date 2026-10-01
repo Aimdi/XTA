@@ -428,7 +428,7 @@ void main() {
     });
     final result = expectLater(ClientTransaction.initialize(), throwsA(isA<TimeoutException>()));
 
-    await tester.pump(const Duration(seconds: 13));
+    await tester.pump(transactionKeyInitializationTimeout + const Duration(seconds: 1));
     await result;
 
     expect(requests.map((uri) => uri.path), ['/home']);

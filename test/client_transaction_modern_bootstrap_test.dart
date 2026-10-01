@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
@@ -436,7 +437,7 @@ void main() {
     );
     final initialized = expectLater(ClientTransaction.initialize(), throwsA(isA<TimeoutException>()));
     await tester.pump();
-    await tester.pump(const Duration(seconds: 13));
+    await tester.pump(transactionKeyInitializationTimeout + const Duration(seconds: 1));
     await initialized;
     expect(requests.length, 2);
     pending.complete(http.Response('import("./sign.o-a1b2c3.js")', 200));
