@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:xta/constants.dart';
 import 'package:xta/group/feed_cache.dart';
+import 'package:xta/utils/batched_delete.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1080,15 +1081,10 @@ class Repository {
   Future<void> _cleanUpOldCaches() async {
     try {
       final repository = await writable();
-      await deleteChunkRowsInBatches(repository, where: "created_at <= date('now', '-7 day')");
-      await repository.delete(
-        tableFeedGroupCursor,
-        where: "created_at <= date('now', '-7 day')",
-      );
-      await repository.delete(
-        tableTimelineCache,
-        where: "created_at <= date('now', '-7 day')",
-      );
+      const aged = "created_at <= date('now', '-7 day')";
+      await deleteChunkRowsInBatches(repository, where: aged);
+      await deleteRowsInBatches(repository, tableFeedGroupCursor, where: aged);
+      await deleteRowsInBatches(repository, tableTimelineCache, where: aged);
       await trimTimelineCache(repository);
     } catch (e) {
       log.warning('Could not clean up old cached feeds: $e');
@@ -1104,11 +1100,14 @@ class Repository {
   static Future<void> trimTimelineCache(
     Database database, {
     int keep = maxTimelineCacheRows,
+    int batchSize = 20,
   }) async {
-    await database.rawDelete(
-      'DELETE FROM $tableTimelineCache WHERE key NOT IN '
-      '(SELECT key FROM $tableTimelineCache ORDER BY created_at DESC LIMIT ?)',
-      [keep],
+    await deleteRowsInBatches(
+      database,
+      tableTimelineCache,
+      where: 'key NOT IN (SELECT key FROM $tableTimelineCache ORDER BY created_at DESC LIMIT ?)',
+      arguments: [keep],
+      batchSize: batchSize,
     );
   }
 
