@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:xta/utils/read_activity.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -8,6 +10,7 @@ import 'package:xta/client/headers.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
+import 'package:xta/database/repository.dart';
 import 'package:xta/settings/diagnostics_report.dart';
 
 class DiagnosticsModel extends Store<DiagnosticsReport> {
@@ -15,22 +18,46 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
 
   DiagnosticsModel(this.prefs) : super(DiagnosticsReport.empty);
 
+  /// Every local step is bounded: a report that says the database is stuck beats a spinner that never ends.
+  static const probeTimeout = Duration(seconds: 5);
+
   Future<void> load() async {
     await execute(() async {
       final now = DateTime.now();
-      final packageInfo = await PackageInfo.fromPlatform();
+      final probes = <DiagnosticsProbe>[];
+      final packageInfo = await _probe(probes, 'package info', PackageInfo.fromPlatform);
+      final accounts = await _probe(probes, 'database (read-only connection)', getAccounts);
+      await _probe(probes, 'database (writable connection)', () async {
+        await (await Repository.writable()).rawQuery('SELECT 1');
+      });
 
       return DiagnosticsReport(
-        appVersion: 'v${packageInfo.version}+${packageInfo.buildNumber}',
-        accounts: (await getAccounts()).map((account) => _diagnose(account, now)).toList(),
+        appVersion: packageInfo == null ? 'unknown' : 'v${packageInfo.version}+${packageInfo.buildNumber}',
+        accounts: (accounts ?? const []).map((account) => _diagnose(account, now)).toList(),
         endpoints: XEndpoints.all.map(EndpointDiagnostics.of).toList(),
         registryEnabled: prefs.get<bool>(optionEndpointRegistryEnabled) != false,
         registryFetchedAt: DateTime.tryParse(prefs.get<String>(optionEndpointRegistryFetchedAt) ?? ''),
         generatedAt: now,
         operations: ReadActivityLog.shared.snapshot(),
         xSetupFailure: TwitterHeaders.lastInitializationFailure,
+        probes: probes,
       );
     });
+  }
+
+  /// Runs [step] under [probeTimeout]; a timeout or failure is recorded by category only and yields null.
+  static Future<T?> _probe<T>(List<DiagnosticsProbe> probes, String name, Future<T> Function() step) async {
+    final watch = Stopwatch()..start();
+    try {
+      final value = await step().timeout(probeTimeout);
+      probes.add(DiagnosticsProbe(name, elapsed: watch.elapsed));
+      return value;
+    } on TimeoutException {
+      probes.add(DiagnosticsProbe(name, failure: 'still waiting after ${probeTimeout.inSeconds}s'));
+    } catch (error) {
+      probes.add(DiagnosticsProbe(name, failure: 'failed (${error.runtimeType})'));
+    }
+    return null;
   }
 
   AccountDiagnostics _diagnose(Account account, DateTime now) {

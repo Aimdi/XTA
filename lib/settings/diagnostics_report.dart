@@ -76,6 +76,19 @@ class EndpointDiagnostics {
   );
 }
 
+/// How one step of building the report went: its duration, or why it gave nothing.
+class DiagnosticsProbe {
+  final String name;
+  final Duration? elapsed;
+  final String? failure;
+
+  const DiagnosticsProbe(this.name, {this.elapsed, this.failure});
+
+  bool get ok => failure == null;
+
+  String describe() => '$name: ${failure ?? 'ok ${elapsed?.inMilliseconds ?? 0}ms'}';
+}
+
 class DiagnosticsReport {
   final String appVersion;
   final List<AccountDiagnostics> accounts;
@@ -86,6 +99,10 @@ class DiagnosticsReport {
   final List<String> operations;
   final Object? xSetupFailure;
 
+  /// Local steps the report depends on (the database, the package info), each bounded so a stuck one still
+  /// leaves a report that says it is stuck.
+  final List<DiagnosticsProbe> probes;
+
   const DiagnosticsReport({
     required this.appVersion,
     required this.accounts,
@@ -95,6 +112,7 @@ class DiagnosticsReport {
     required this.generatedAt,
     this.operations = const [],
     this.xSetupFailure,
+    this.probes = const [],
   });
 
   static final empty = DiagnosticsReport(
@@ -150,6 +168,7 @@ class DiagnosticsReport {
       );
     }
 
+    if (probes.isNotEmpty) lines.addAll(['', 'local checks:', ...probes.map((probe) => '  ${probe.describe()}')]);
     lines.addAll(['', 'recent reads (local timing, no request content):', ...operations]);
     return lines.join('\n');
   }
