@@ -232,12 +232,12 @@ void main() {
     expect(requests[1].url.toString(), '$_root/entry-client-a.js');
   });
 
-  test('a signed-in bootstrap uses only its cookie and preserves it on same-origin redirects', () async {
+  test('a signed-in bootstrap never sends its cookie, including on same-origin redirects', () async {
     respond((request) {
       expect(request.followRedirects, isFalse);
       expect(request.headers, isNot(contains('authorization')));
+      expect(request.headers, isNot(contains('cookie')));
       if (request.url.host == 'x.com') {
-        expect(request.headers['cookie'], _cookie);
         if (request.url.path == '/home') return http.Response('', 302, headers: {'location': '/signed-in'});
         return http.Response(_shell('<script src="$_signer"></script>'), 200);
       }
@@ -270,11 +270,11 @@ void main() {
     expect(requests.length, 4);
   });
 
-  test('legacy search fallback retains the account cookie only on x.com', () async {
+  test('legacy search fallback is reached without the account cookie', () async {
     const legacy = 'https://abs.twimg.com/responsive-web/client-web/ondemand.s.olda.js';
     respond((request) {
+      expect(request.headers, isNot(contains('cookie')));
       if (request.url.host == 'x.com') {
-        expect(request.headers['cookie'], _cookie);
         return http.Response(
           request.url.path == '/home' ? '<html>signed out shell</html>' : _shell('<script src="$legacy"></script>'),
           200,

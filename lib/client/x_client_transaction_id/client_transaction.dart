@@ -50,7 +50,10 @@ class ClientTransaction {
   }) async {
     final budget = RequestBudget(const Duration(seconds: 12));
     final assets = SigningAssets(budget);
-    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget, assets, cookie);
+    // The session is never sent: x.com answers a signed-in page request with a slow onboarding redirect that
+    // used up the whole budget, and the public page's key signs every account's requests. [cookie] only
+    // names the signing context the result is cached in.
+    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget, assets);
     final ondemandFileText = await assets.read(ondemandUrl);
 
     final (rowIndex, keyBytesIndices) = _getIndices(ondemandFileText);
@@ -108,11 +111,7 @@ class ClientTransaction {
     'X-Twitter-Client-Language': 'en',
   };
 
-  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(
-    RequestBudget budget,
-    SigningAssets assets,
-    String? cookie,
-  ) async {
+  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(RequestBudget budget, SigningAssets assets) async {
     // X's logged-out homepage can omit the signer; its public search shell
     // still includes it: iSarabjitDhiman/XClientTransaction#45.
     final pages = [
@@ -120,7 +119,7 @@ class ClientTransaction {
       Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}),
     ];
     for (final uri in pages) {
-      final response = await _fetchPage(uri, budget, cookie);
+      final response = await _fetchPage(uri, budget);
       if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw HttpException('X transaction bootstrap returned HTTP ${response.statusCode}', uri: uri);
@@ -133,13 +132,13 @@ class ClientTransaction {
     throw const FormatException('X pages did not contain transaction signing data');
   }
 
-  static Future<http.Response> _fetchPage(Uri uri, RequestBudget budget, String? cookie) async {
+  static Future<http.Response> _fetchPage(Uri uri, RequestBudget budget) async {
     for (var redirects = 0; ; redirects++) {
       final response = await getXResponse(
         uri,
         timeout: budget.remaining,
         followRedirects: false,
-        headers: {..._bootstrapHeaders, if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie},
+        headers: _bootstrapHeaders,
       );
       if (!const [301, 302, 303, 307, 308].contains(response.statusCode)) return response;
       final location = response.headers['location'];
