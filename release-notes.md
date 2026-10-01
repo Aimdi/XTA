@@ -1,16 +1,16 @@
-## XTA — aimdi157
+## XTA — aimdi158
 
-### Diagnostics that cannot get stuck
+### The feed cache no longer freezes the app
 
-- The Diagnose page waited on the local database before showing anything, so a stuck database left it spinning. Every local step is now limited to five seconds and the report lists each one: package info, the read-only and writable database connections, and the state of the X signing key. A stuck step reads as "still waiting after 5s" in the copied report, which says exactly which layer stops X and Notes from loading.
+- Every feed load saved a page of posts per block of followed accounts and never removed the old ones, although only the newest eight per block are ever read. On a large feed that grew to hundreds of megabytes, and the weekly cleanup and pull-to-refresh then deleted it all in one go, holding the single database worker for minutes: feeds, Notes and the Diagnose page all ended in "Timed out" while X itself answered fine. Each save now keeps only the rows a read uses, and both deletions run a few rows at a time so nothing else has to wait.
 
-Includes PR #333 plus all aimdi156 changes.
+Includes PR #335 plus all aimdi157 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi157_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001260**, above
-every aimdi156 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi158_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001270**, above
+every aimdi157 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -21,4 +21,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi156)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi157)
