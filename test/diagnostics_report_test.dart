@@ -7,6 +7,8 @@ import 'package:xta/catcher/exceptions.dart' show TransactionIdUnavailableExcept
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/settings/diagnostics_report.dart';
+import 'package:xta/settings/quick_diagnostics.dart';
+import 'package:pref/pref.dart';
 
 DiagnosticsReport _report({
   List<AccountDiagnostics> accounts = const [],
@@ -181,6 +183,26 @@ void main() {
 
     test('an account that has never been limited reports nothing', () {
       expect(RateLimitTracker.activeFor('unknown', DateTime.utc(2026, 7, 25)), isEmpty);
+    });
+  });
+
+  group('quick report', () {
+    test('needs no database and still carries the request log, key state and endpoints', () async {
+      final prefs = PrefServiceCache();
+      final text = quickDiagnosticsReport(
+        appVersion: 'v4.12.0+400001290',
+        prefs: prefs,
+        now: DateTime.utc(2026, 10, 2, 8),
+        keyState: 'derived 12s ago',
+        xSetupFailure: null,
+        operations: const ['2026-10-02T08:00:00.000 groupSearch completed 900ms'],
+      ).toPlainText();
+
+      expect(text, contains('app: v4.12.0+400001290'));
+      expect(text, contains('database: not probed (copied from the error screen)'));
+      expect(text, contains('X signing key: derived 12s ago'));
+      expect(text, contains('groupSearch completed 900ms'));
+      expect(text, contains('SearchTimeline'));
     });
   });
 }
