@@ -1,18 +1,16 @@
-## XTA — aimdi153
+## XTA — aimdi154
 
-### X feeds load again
+### X requests no longer time out
 
-- Following and For you no longer stay on their loading placeholders, or show a cancelled read as an error, without asking X for anything. The first page used to be started three ways at once and each start cancelled the one before it.
-- A feed that has just opened loads its first page before it knows it is on screen, so a cold start no longer cancels itself.
-- Following someone, or changing a group's filters, reloads the feed instead of leaving it empty.
+- X changed how its pages load the script that signs API requests. XTA crawled the wrong bundles looking for it and ran out of time, so every X request failed with "Timed out". The signer is now reached directly, in three requests, the way the X web app loads it.
 
-Includes PR #325 plus all aimdi152 changes.
+Includes PR #327 plus all aimdi153 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi153_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001220**, above
-every aimdi152 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi154_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001230**, above
+every aimdi153 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -23,4 +21,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi152)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi153)
