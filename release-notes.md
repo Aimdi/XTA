@@ -1,16 +1,16 @@
-## XTA — aimdi154
+## XTA — aimdi155
 
-### X requests no longer time out
+### Signed-in X feeds no longer time out
 
-- X changed how its pages load the script that signs API requests. XTA crawled the wrong bundles looking for it and ran out of time, so every X request failed with "Timed out". The signer is now reached directly, in three requests, the way the X web app loads it.
+- When you are logged in, XTA used to load X's signing page with your session, and X answered with a slow redirect that ran out the time allowed, so every X request failed with "Timed out". The page is now loaded without the session, as the X web app does; your account's requests still carry your login.
 
-Includes PR #327 plus all aimdi153 changes.
+Includes PR #329 plus all aimdi154 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi154_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001230**, above
-every aimdi153 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi155_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001240**, above
+every aimdi154 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -21,4 +21,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi153)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi154)
