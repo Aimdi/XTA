@@ -124,10 +124,8 @@ void main() {
         expect(decoded.skip(1).take(_keyBytes.length).map((byte) => byte ^ decoded.first), _keyBytes);
         return http.Response(responseBody, 200);
       }
-      expect(
-        request.headers['cookie'],
-        request.url.host == 'x.com' ? 'auth_token=test-session; ct0=test-csrf' : isNull,
-      );
+      // The signing page is fetched without the session: a signed-in request is redirected and slow.
+      expect(request.headers, isNot(contains('cookie')));
       expect(request.headers, isNot(contains('authorization')));
       expect(request.headers, isNot(contains('x-csrf-token')));
       if (request.url.path == '/home') return http.Response(_loggedOut, 200);
@@ -156,22 +154,20 @@ void main() {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     final account = XRegularAccount();
     addTearDown(account.dispose);
-    final bootstrapCookies = <String?>[];
+    var pageRequests = 0;
+    var pageReady = false;
     respond((request) {
       if (request.url == timeline) {
         expect(request.headers['cookie'], 'auth_token=account-b');
         expect(request.headers['x-client-transaction-id'], isNotEmpty);
         return http.Response('account B timeline', 200);
       }
+      expect(request.headers, isNot(contains('cookie')));
       expect(request.headers, isNot(contains('authorization')));
       expect(request.headers, isNot(contains('x-csrf-token')));
-      if (request.url.host == 'abs.twimg.com') {
-        expect(request.headers, isNot(contains('cookie')));
-        return http.Response(_indices, 200);
-      }
-      final cookie = request.headers['cookie'];
-      bootstrapCookies.add(cookie);
-      return http.Response(cookie == 'auth_token=account-b' ? _appShell() : _loggedOut, 200);
+      if (request.url.host == 'abs.twimg.com') return http.Response(_indices, 200);
+      pageRequests++;
+      return http.Response(pageReady ? _appShell() : _loggedOut, 200);
     });
 
     await expectLater(
@@ -182,6 +178,7 @@ void main() {
       account.fetch(timeline, log: Logger('context-test'), authHeader: {'Cookie': 'auth_token=account-a'}),
       throwsA(isA<TransactionIdUnavailableException>()),
     );
+    pageReady = true;
     for (var attempt = 0; attempt < 2; attempt++) {
       final result = await account.fetch(
         timeline,
@@ -190,30 +187,28 @@ void main() {
       );
       expect(result.body, 'account B timeline');
     }
-    expect(bootstrapCookies, [null, null, 'auth_token=account-a', 'auth_token=account-a', 'auth_token=account-b']);
+    // Two failed anonymous routes, two for account A, one page for account B: its context was never on cooldown.
+    expect(pageRequests, 5);
     expect(requests.where((uri) => uri == timeline), hasLength(2));
   });
 
-  test('each account timeline keeps its own derived key and reuses only its matching cookie context', () async {
+  test('each account keeps its own signing context without sending its cookie to the page', () async {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     final account = XRegularAccount();
     addTearDown(account.dispose);
-    final bootstrapCookies = <String?>[];
+    var pageRequests = 0;
     respond((request) {
       final cookie = request.headers['cookie'];
       if (request.url == timeline) {
+        expect(cookie, anyOf('auth_token=account-a', 'auth_token=account-b'));
         final encoded = base64.decode(base64.normalize(request.headers['x-client-transaction-id']!));
-        expect(encoded[1] ^ encoded.first, cookie == 'auth_token=account-a' ? 17 : 34);
+        expect(encoded[1] ^ encoded.first, _keyBytes[0]);
         return http.Response('loaded', 200);
       }
-      if (request.url.host == 'abs.twimg.com') {
-        expect(cookie, isNull);
-        return http.Response(_indices, 200);
-      }
-      bootstrapCookies.add(cookie);
-      final key = [..._keyBytes];
-      key[0] = cookie == 'auth_token=account-a' ? 17 : 34;
-      return http.Response(_appShell(keyBytes: key), 200);
+      expect(cookie, isNull);
+      if (request.url.host == 'abs.twimg.com') return http.Response(_indices, 200);
+      pageRequests++;
+      return http.Response(_appShell(), 200);
     });
 
     for (final accountId in ['a', 'b', 'a', 'b']) {
@@ -224,7 +219,7 @@ void main() {
       );
       expect(result.statusCode, 200);
     }
-    expect(bootstrapCookies, ['auth_token=account-a', 'auth_token=account-b']);
+    expect(pageRequests, 2);
     expect(requests.where((uri) => uri.host == 'abs.twimg.com'), hasLength(2));
     expect(requests.where((uri) => uri == timeline), hasLength(4));
   });
@@ -257,10 +252,7 @@ void main() {
         expect(request.headers['x-client-transaction-id'], isNotEmpty);
         return http.Response('timeline loaded', 200);
       }
-      expect(
-        request.headers['cookie'],
-        request.url.host == 'x.com' ? 'auth_token=test-session; ct0=test-csrf' : isNull,
-      );
+      expect(request.headers, isNot(contains('cookie')));
       return http.Response(request.url.path == '/home' ? _appShell() : _indices, 200);
     });
     Future<void> load() async {
