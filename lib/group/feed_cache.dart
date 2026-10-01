@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/utils/batched_delete.dart';
 import 'package:xta/utils/iterables.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -200,19 +201,7 @@ Future<int> deleteChunkRowsInBatches(
   required String where,
   List<Object?> arguments = const [],
   int batchSize = 20,
-}) async {
-  var total = 0;
-  while (true) {
-    final deleted = await database.rawDelete(
-      'DELETE FROM $tableFeedGroupChunk WHERE rowid IN '
-      '(SELECT rowid FROM $tableFeedGroupChunk WHERE $where LIMIT ?)',
-      [...arguments, batchSize],
-    );
-    total += deleted;
-    if (deleted < batchSize) return total;
-    await Future<void>.delayed(const Duration(milliseconds: 25));
-  }
-}
+}) => deleteRowsInBatches(database, tableFeedGroupChunk, where: where, arguments: arguments, batchSize: batchSize);
 
 /// Keeps only the newest [keep] rows of one chunk: that is all a read ever takes, and every load used to add
 /// rows that nothing read again until the weekly cleanup.
