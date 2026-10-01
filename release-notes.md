@@ -1,16 +1,16 @@
-## XTA — aimdi158
+## XTA — aimdi159
 
-### The feed cache no longer freezes the app
+### Nothing on the database blocks the first feed page any more
 
-- Every feed load saved a page of posts per block of followed accounts and never removed the old ones, although only the newest eight per block are ever read. On a large feed that grew to hundreds of megabytes, and the weekly cleanup and pull-to-refresh then deleted it all in one go, holding the single database worker for minutes: feeds, Notes and the Diagnose page all ended in "Timed out" while X itself answered fine. Each save now keeps only the rows a read uses, and both deletions run a few rows at a time so nothing else has to wait.
+- aimdi158 stopped the feed cache from being deleted in one go. The cleanup that runs at every start still removed the other caches in single statements: week-old pagination cursors, week-old thread and profile pages, and the trim of that page cache to its newest rows. On Android every database statement of the app runs on one worker, so any of these could still hold feeds, Notes and the Diagnose page until it finished. All four purges now proceed a few rows at a time and yield in between.
 
-Includes PR #335 plus all aimdi157 changes.
+Includes PR #337 plus all aimdi158 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi158_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001270**, above
-every aimdi157 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi159_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001280**, above
+every aimdi158 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -21,4 +21,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi157)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi158)
