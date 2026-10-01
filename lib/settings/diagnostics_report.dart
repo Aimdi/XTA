@@ -82,11 +82,17 @@ class DiagnosticsProbe {
   final Duration? elapsed;
   final String? failure;
 
-  const DiagnosticsProbe(this.name, {this.elapsed, this.failure});
+  /// A plain fact the step found, such as a row count; never content.
+  final String? detail;
+
+  const DiagnosticsProbe(this.name, {this.elapsed, this.failure, this.detail});
 
   bool get ok => failure == null;
 
-  String describe() => '$name: ${failure ?? 'ok ${elapsed?.inMilliseconds ?? 0}ms'}';
+  String describe() {
+    final outcome = failure ?? 'ok ${elapsed?.inMilliseconds ?? 0}ms';
+    return detail == null ? '$name: $outcome' : '$name: $outcome, $detail';
+  }
 }
 
 class DiagnosticsReport {
