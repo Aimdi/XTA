@@ -202,7 +202,6 @@ Future<int> deleteChunkRowsInBatches(
   List<Object?> arguments = const [],
   int batchSize = 20,
 }) => deleteRowsInBatches(database, tableFeedGroupChunk, where: where, arguments: arguments, batchSize: batchSize);
-}
 
 /// Keeps only the newest [keep] rows of one chunk: that is all a read ever takes, and every load used to add
 /// rows that nothing read again until the weekly cleanup.
