@@ -110,6 +110,42 @@ void main() {
     );
   });
 
+  test('entry-client names sentry-filter as a plain string in its dependency table', () async {
+    // Observed by Squawker on 2026-09-25: entry-client lists sentry-filter among dependencies without an import
+    // statement, and imports many unrelated modules first. The signer must be reached by name, not by crawling.
+    respond((request) {
+      if (request.url.host == 'x.com') {
+        return http.Response(
+          _shell(
+            '<link rel="modulepreload" href="$_root/vendor.js">'
+            '<script type="module" src="$_root/entry-client-logged-in.js"></script>',
+          ),
+          200,
+        );
+      }
+      if (request.url.path.endsWith('/entry-client-logged-in.js')) {
+        return http.Response(
+          '${List.generate(30, (i) => 'import "./assets/module-$i.js";').join()}'
+          'const deps = ["assets/vendor.js","assets/sentry-filter-9f8e7d.js","assets/other.js"];',
+          200,
+        );
+      }
+      if (request.url.path.endsWith('/sentry-filter-9f8e7d.js')) {
+        return http.Response('const o = {s: "../sign.o-a1b2c3.js"}; export const load = () => import(o.s);', 200);
+      }
+      if (request.url.toString() == _signer) return http.Response(_indices, 200);
+      return http.Response('export const nothing = 1;', 200);
+    });
+
+    _valid(await ClientTransaction.initialize());
+    expect(requests.map((request) => request.url.toString()), [
+      'https://x.com/home',
+      '$_root/entry-client-logged-in.js',
+      '$_root/assets/sentry-filter-9f8e7d.js',
+      _signer,
+    ]);
+  });
+
   test('a direct backtick signer import is accepted without evaluating JavaScript', () async {
     respond((request) {
       if (request.url.host == 'x.com') return http.Response(_shell('<script src="$_root/entry.js"></script>'), 200);

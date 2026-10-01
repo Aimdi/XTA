@@ -31,6 +31,12 @@ class SigningAssets {
   static bool signer(Uri uri) =>
       trusted(uri) && RegExp(r'^(?:sign\.o|ondemand\.s)[.-][a-zA-Z0-9_-]+\.js$').hasMatch(uri.pathSegments.last);
 
+  /// The entry bundle, and the module that loads the signer: x.com/home links entry-client, whose dependency
+  /// table names sentry-filter as a plain string, and sentry-filter imports sign.o. Following these two by name
+  /// reaches the signer in three requests; crawling every import of the entry bundle instead ran out of time.
+  static bool entry(Uri uri) => uri.pathSegments.last.startsWith('entry-client');
+  static bool importer(Uri uri) => uri.pathSegments.last.startsWith('sentry-filter');
+
   Future<String> read(Uri uri) async {
     if (!trusted(uri) || _requests >= maxAssets) {
       throw const FormatException('X transaction signing asset limit exceeded');
@@ -57,7 +63,14 @@ class SigningAssets {
     for (final uri in linked) {
       if (signer(uri)) return uri;
     }
-    return _SigningAssetSearch(this).run(linked);
+    // The entry bundle alone first: its dependency table names the signer's importer, and fetching the
+    // preload list beside it spent the asset budget and the bootstrap deadline on unrelated modules.
+    final entries = linked.where(entry);
+    if (entries.isNotEmpty) {
+      final found = await _SigningAssetSearch(this).run(entries);
+      if (found != null) return found;
+    }
+    return _SigningAssetSearch(this).run(linked.where((uri) => !entry(uri)));
   }
 }
 
@@ -67,6 +80,8 @@ class _SigningAssetSearch {
   final _result = Completer<Uri?>();
   int _active = 0;
   int _loaded = 0;
+  // The signer's importer is read on its own: fanning out beside it fetched modules the chain never needed.
+  bool _exclusive = false;
   Object? _firstError;
 
   _SigningAssetSearch(this.assets);
@@ -86,14 +101,17 @@ class _SigningAssetSearch {
 
   void _pump() {
     while (!_result.isCompleted &&
+        !_exclusive &&
         _active < SigningAssets.concurrency &&
         assets._requests < SigningAssets.maxAssets - 1 &&
         _queue.isNotEmpty) {
       final candidate = _queue.removeAt(0);
       _active++;
+      _exclusive = SigningAssets.importer(candidate.uri);
       unawaited(
         _visit(candidate).whenComplete(() {
           _active--;
+          _exclusive = false;
           _pump();
         }),
       );
@@ -115,7 +133,10 @@ class _SigningAssetSearch {
       if (signer != null) {
         _result.complete(signer);
       } else {
-        _enqueue(_references(candidate.uri, source, _moduleImport), candidate.depth + 1);
+        _enqueue([
+          ..._references(candidate.uri, source, _literal).where(SigningAssets.importer),
+          ..._references(candidate.uri, source, _moduleImport),
+        ], candidate.depth + 1);
       }
     } catch (error) {
       _firstError ??= error;
