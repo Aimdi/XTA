@@ -50,7 +50,7 @@ class ClientTransaction {
     Duration timeout = transactionKeyInitializationTimeout,
   }) async {
     final budget = RequestBudget(timeout);
-    final assets = SigningAssets(budget);
+    final assets = SigningAssets(budget, headers: _bootstrapHeaders);
     // No session is ever sent: x.com answers a signed-in page request with a slow onboarding redirect, and
     // the public page's key signs every account's requests.
     final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget, assets);
