@@ -681,6 +681,12 @@ const String guestBearerToken =
 // request 404 — indistinguishable from a rotated query id.
 const Duration transactionKeyLifetime = Duration(hours: 6);
 
+// How long one derivation of that key may take. It downloads x.com's page and
+// three script bundles, the largest over half a megabyte, so a slow mobile link
+// needs well over the twelve seconds a Wi-Fi link does. The feed that asked
+// first may give up sooner; the derivation carries on and its retry joins it.
+const Duration transactionKeyInitializationTimeout = Duration(seconds: 45);
+
 // How long to wait before re-deriving after a failure. Deriving costs two
 // requests to x.com, so a persistent failure (X reshaping its HTML) would
 // otherwise turn every single app request into two more.
