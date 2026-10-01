@@ -139,6 +139,24 @@ void main() {
       expect(report.overriddenCount, 1);
     });
 
+    test('names a local step that is still waiting, so a stuck database reads as such instead of a spinner', () {
+      final text = DiagnosticsReport(
+        appVersion: 'unknown',
+        accounts: const [],
+        endpoints: const [],
+        registryEnabled: true,
+        registryFetchedAt: null,
+        generatedAt: DateTime.utc(2026, 10, 1),
+        probes: const [
+          DiagnosticsProbe('package info', elapsed: Duration(milliseconds: 12)),
+          DiagnosticsProbe('database (read-only connection)', failure: 'still waiting after 5s'),
+        ],
+      ).toPlainText();
+      expect(text, contains('local checks:'));
+      expect(text, contains('  package info: ok 12ms'));
+      expect(text, contains('  database (read-only connection): still waiting after 5s'));
+    });
+
     test('records whether the registry was ever reached', () {
       expect(_report().toPlainText(), contains('last checked never'));
       expect(
