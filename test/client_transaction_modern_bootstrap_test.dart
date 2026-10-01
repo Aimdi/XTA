@@ -8,6 +8,7 @@ import 'package:http/testing.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
@@ -95,7 +96,7 @@ void main() {
       return http.Response(_indices, 200);
     });
 
-    _valid(await ClientTransaction.initialize(cookie: _cookie));
+    _valid(await ClientTransaction.initialize());
     expect(requests.map((request) => request.url.toString()), [
       'https://x.com/home',
       '$_root/entry-client.js',
@@ -245,7 +246,7 @@ void main() {
       return http.Response(_indices, 200);
     });
 
-    _valid(await ClientTransaction.initialize(cookie: _cookie));
+    _valid(await ClientTransaction.initialize());
     expect(requests.map((request) => request.url.path), ['/home', '/signed-in', '/x-web/client-web/sign.o-a1b2c3.js']);
   });
 
@@ -258,7 +259,7 @@ void main() {
     test('bootstrap refuses unsafe redirect $target without forwarding cookies', () async {
       respond((request) => http.Response('', 302, headers: {'location': target}));
 
-      await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<HttpException>()));
+      await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
       expect(requests.length, 1);
       expect(requests.single.followRedirects, isFalse);
     });
@@ -266,7 +267,7 @@ void main() {
 
   test('same-origin redirect loops stop after three redirects', () async {
     respond((request) => http.Response('', 302, headers: {'location': '/home'}));
-    await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<HttpException>()));
+    await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
     expect(requests.length, 4);
   });
 
@@ -283,7 +284,7 @@ void main() {
       expect(request.headers, isNot(contains('cookie')));
       return http.Response(_indices, 200);
     });
-    _valid(await ClientTransaction.initialize(cookie: _cookie));
+    _valid(await ClientTransaction.initialize());
     expect(requests.map((request) => request.url.path), [
       '/home',
       '/search',
@@ -313,7 +314,7 @@ void main() {
       ''', 200);
     });
 
-    await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<FormatException>()));
+    await expectLater(ClientTransaction.initialize(), throwsA(isA<FormatException>()));
     expect(requests.map((request) => request.url.toString()), [
       'https://x.com/home',
       '$_root/app-a.js',
@@ -377,7 +378,7 @@ void main() {
       return http.Response('', 302, headers: {'location': 'https://attacker.invalid/sign.o-bad.js'});
     });
 
-    await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<HttpException>()));
+    await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
     expect(requests.length, 2);
   });
 
@@ -436,7 +437,7 @@ void main() {
     );
     final initialized = expectLater(ClientTransaction.initialize(), throwsA(isA<TimeoutException>()));
     await tester.pump();
-    await tester.pump(const Duration(seconds: 13));
+    await tester.pump(transactionKeyInitializationTimeout + const Duration(seconds: 1));
     await initialized;
     expect(requests.length, 2);
     pending.complete(http.Response('import("./sign.o-a1b2c3.js")', 200));

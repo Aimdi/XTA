@@ -13,10 +13,12 @@ class SigningAssets {
   static const concurrency = 4;
   static const maxImportDepth = 3;
   final RequestBudget budget;
+  // The browser headers the page was asked for; the CDN sees the same client for its bundles.
+  final Map<String, String> headers;
   final _visited = <Uri>{};
   int _requests = 0;
 
-  SigningAssets(this.budget);
+  SigningAssets(this.budget, {this.headers = const {}});
 
   static bool trusted(Uri uri) =>
       uri.scheme == 'https' &&
@@ -42,7 +44,7 @@ class SigningAssets {
       throw const FormatException('X transaction signing asset limit exceeded');
     }
     _requests++;
-    final response = await getXResponse(uri, timeout: budget.remaining, followRedirects: false);
+    final response = await getXResponse(uri, headers: headers, timeout: budget.remaining, followRedirects: false);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw HttpException('X signing bundle returned HTTP ${response.statusCode}', uri: uri);
     }

@@ -11,6 +11,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/catcher/exceptions.dart' show TransactionIdUnavailableException;
 import 'package:xta/client/client_regular_account.dart';
 import 'package:xta/client/headers.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
 import 'package:xta/ui/read_failure_kind.dart';
@@ -150,10 +151,12 @@ void main() {
     ]);
   });
 
-  test('failed anonymous and account A bootstraps cannot block account B timeline reads', () async {
+  test('a failed bootstrap rests once for every account, and any account recovers after the cooldown', () async {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     final account = XRegularAccount();
     addTearDown(account.dispose);
+    var now = DateTime.utc(2026, 10, 1, 12);
+    TwitterHeaders.clock = () => now;
     var pageRequests = 0;
     var pageReady = false;
     respond((request) {
@@ -174,11 +177,14 @@ void main() {
       TwitterHeaders.getXClientTransactionIdHeader(timeline),
       throwsA(isA<TransactionIdUnavailableException>()),
     );
+    // The page is public, so one failure is every account's failure: no second download during the cooldown.
     await expectLater(
       account.fetch(timeline, log: Logger('context-test'), authHeader: {'Cookie': 'auth_token=account-a'}),
       throwsA(isA<TransactionIdUnavailableException>()),
     );
+    expect(pageRequests, 2);
     pageReady = true;
+    now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
     for (var attempt = 0; attempt < 2; attempt++) {
       final result = await account.fetch(
         timeline,
@@ -187,12 +193,11 @@ void main() {
       );
       expect(result.body, 'account B timeline');
     }
-    // Two failed anonymous routes, two for account A, one page for account B: its context was never on cooldown.
-    expect(pageRequests, 5);
+    expect(pageRequests, 3);
     expect(requests.where((uri) => uri == timeline), hasLength(2));
   });
 
-  test('each account keeps its own signing context without sending its cookie to the page', () async {
+  test('every account signs with the one shared key, which never sees a cookie', () async {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     final account = XRegularAccount();
     addTearDown(account.dispose);
@@ -211,6 +216,7 @@ void main() {
       return http.Response(_appShell(), 200);
     });
 
+    await TwitterHeaders.getXClientTransactionIdHeader(timeline);
     for (final accountId in ['a', 'b', 'a', 'b']) {
       final result = await account.fetch(
         timeline,
@@ -219,8 +225,8 @@ void main() {
       );
       expect(result.statusCode, 200);
     }
-    expect(pageRequests, 2);
-    expect(requests.where((uri) => uri.host == 'abs.twimg.com'), hasLength(2));
+    expect(pageRequests, 1);
+    expect(requests.where((uri) => uri.host == 'abs.twimg.com'), hasLength(1));
     expect(requests.where((uri) => uri == timeline), hasLength(4));
   });
 
@@ -422,7 +428,7 @@ void main() {
     });
     final result = expectLater(ClientTransaction.initialize(), throwsA(isA<TimeoutException>()));
 
-    await tester.pump(const Duration(seconds: 13));
+    await tester.pump(transactionKeyInitializationTimeout + const Duration(seconds: 1));
     await result;
 
     expect(requests.map((uri) => uri.path), ['/home']);
