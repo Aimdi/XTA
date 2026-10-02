@@ -22,8 +22,18 @@ void main() {
     directory = await Directory.systemTemp.createTemp('reader-test');
     storage = LocalJsonStore(directory: () async => directory);
   });
+  // The store renames and prunes files in the background after a write returns, so a recursive delete can race a
+  // file landing in the directory ("Directory not empty"). Retry briefly; only a persistent failure is a real one.
   tearDown(() async {
-    if (await directory.exists()) await directory.delete(recursive: true);
+    for (var attempt = 1; ; attempt++) {
+      try {
+        if (await directory.exists()) await directory.delete(recursive: true);
+        return;
+      } on FileSystemException {
+        if (attempt >= 10) rethrow;
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+    }
   });
   test('article identity removes tracking but preserves article parameters', () {
     expect(canonicalArticleLink('https://news.org/story?utm_source=x#section'), 'https://news.org/story');
