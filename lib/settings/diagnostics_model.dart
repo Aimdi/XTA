@@ -13,6 +13,7 @@ import 'package:xta/database/database_facts.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/settings/diagnostics_report.dart';
+import 'package:xta/settings/main_thread_stalls.dart';
 
 class DiagnosticsModel extends Store<DiagnosticsReport> {
   final BasePrefService prefs;
@@ -34,6 +35,7 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
       await _probe(probes, 'feed cache', _feedCacheSize, detail: (size) => size);
       probes.add(DiagnosticsProbe('database at launch', failure: DatabaseFacts.summary));
       probes.add(DiagnosticsProbe('X signing key', failure: TwitterHeaders.describeKeyState()));
+      probes.add(DiagnosticsProbe('Android main thread', failure: await mainThreadStallSummary()));
 
       return DiagnosticsReport(
         appVersion: packageInfo == null ? 'unknown' : 'v${packageInfo.version}+${packageInfo.buildNumber}',

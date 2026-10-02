@@ -196,9 +196,11 @@ void main() {
         keyState: 'derived 12s ago',
         xSetupFailure: null,
         operations: const ['2026-10-02T08:00:00.000 groupSearch completed 900ms'],
+        mainThread: '\n  2026-10-02T08:00:05.000 main thread blocked for 5 s',
       ).toPlainText();
 
       expect(text, contains('app: v4.12.0+400001290'));
+      expect(text, contains('Android main thread: \n  2026-10-02T08:00:05.000 main thread blocked for 5 s'));
       expect(text, contains('database: not probed (copied from the error screen)'));
       expect(text, contains('X signing key: derived 12s ago'));
       expect(text, contains('groupSearch completed 900ms'));

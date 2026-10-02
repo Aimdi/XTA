@@ -7,6 +7,7 @@ import 'package:xta/client/headers.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/database_facts.dart';
 import 'package:xta/settings/diagnostics_report.dart';
+import 'package:xta/settings/main_thread_stalls.dart';
 import 'package:xta/utils/read_activity.dart';
 
 /// A report built from memory alone, for the error screen: when the database or the Diagnose page itself does not
@@ -18,6 +19,7 @@ DiagnosticsReport quickDiagnosticsReport({
   required String keyState,
   required Object? xSetupFailure,
   required List<String> operations,
+  String mainThread = 'not watched',
 }) => DiagnosticsReport(
   appVersion: appVersion,
   accounts: const [],
@@ -31,6 +33,7 @@ DiagnosticsReport quickDiagnosticsReport({
     const DiagnosticsProbe('database', failure: 'not probed (copied from the error screen)'),
     DiagnosticsProbe('database at launch', failure: DatabaseFacts.summary),
     DiagnosticsProbe('X signing key', failure: keyState),
+    DiagnosticsProbe('Android main thread', failure: mainThread),
   ],
 );
 
@@ -50,5 +53,6 @@ Future<String> quickDiagnosticsText(BasePrefService prefs) async {
     keyState: TwitterHeaders.describeKeyState(),
     xSetupFailure: TwitterHeaders.lastInitializationFailure,
     operations: ReadActivityLog.shared.snapshot(),
+    mainThread: await mainThreadStallSummary(),
   ).toPlainText();
 }
