@@ -4,12 +4,13 @@ import 'package:xta/client/account_selector.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
+import 'package:xta/utils/read_activity.dart';
 
-Future<List<Account>> getAccounts() async {
+Future<List<Account>> getAccounts() => ReadActivityLog.shared.trace('accounts', () async {
   var database = await Repository.readOnly();
   var query = await database.query(tableAccounts);
   return List.from(query).map((e) => Account.fromMap(e)).toList();
-}
+});
 
 /// Decoded auth header for a single healthy account, or null if none is usable.
 /// Used by one-shot requests (e.g. translation) that don't drive the retry loop.

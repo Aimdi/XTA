@@ -172,4 +172,20 @@ void main() {
     );
     expect(ReadActivityLog.shared.snapshot().join(), isNot(contains('secret-token-and-content')));
   });
+
+  test('traced steps stay in the log only when slow or failed, under their label', () async {
+    final log = ReadActivityLog(capacity: 10);
+    expect(await log.trace('group:row', () async => 1), 1);
+    expect(log.snapshot(), isEmpty, reason: 'a quick step leaves no trace');
+
+    await log.trace('purge:chunks', () => Future<void>.delayed(ReadActivityLog.traceThreshold * 1.5));
+    expect(log.snapshot().single, allOf(contains('db completed'), contains('purge:chunks')));
+
+    await expectLater(log.trace('accounts', () async => throw StateError('x')), throwsStateError);
+    expect(log.snapshot().last, allOf(contains('db failed'), contains('accounts')));
+
+    final pending = log.trace('group:members', () => Completer<void>().future);
+    expect(log.snapshot().last, allOf(contains('db pending'), contains('group:members')));
+    expect(pending, isA<Future<void>>());
+  });
 }

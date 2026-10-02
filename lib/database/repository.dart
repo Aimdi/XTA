@@ -4,6 +4,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/utils/batched_delete.dart';
 import 'package:xta/database/database_facts.dart';
+import 'package:xta/utils/read_activity.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1105,10 +1106,11 @@ class Repository {
     try {
       final repository = await writable();
       const aged = "created_at <= date('now', '-7 day')";
-      await deleteChunkRowsInBatches(repository, where: aged);
-      await deleteRowsInBatches(repository, tableFeedGroupCursor, where: aged);
-      await deleteRowsInBatches(repository, tableTimelineCache, where: aged);
-      await trimTimelineCache(repository);
+      final log = ReadActivityLog.shared;
+      await log.trace('purge:chunks', () => deleteChunkRowsInBatches(repository, where: aged));
+      await log.trace('purge:cursors', () => deleteRowsInBatches(repository, tableFeedGroupCursor, where: aged));
+      await log.trace('purge:timelines', () => deleteRowsInBatches(repository, tableTimelineCache, where: aged));
+      await log.trace('purge:trim', () => trimTimelineCache(repository));
     } catch (e) {
       log.warning('Could not clean up old cached feeds: $e');
     }
@@ -1170,8 +1172,8 @@ class Repository {
       _bounded = true;
       try {
         final database = await writable();
-        final truncated = await boundFeedCache(database);
-        await DatabaseFacts.collect(database, feedCacheTruncated: truncated);
+        final truncated = await ReadActivityLog.shared.trace('bound', () => boundFeedCache(database));
+        await ReadActivityLog.shared.trace('facts', () => DatabaseFacts.collect(database, feedCacheTruncated: truncated));
       } catch (e) {
         log.warning('Could not bound the feed cache: $e');
       }
