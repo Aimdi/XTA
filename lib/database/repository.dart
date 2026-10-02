@@ -4,6 +4,7 @@ import 'package:xta/constants.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/utils/batched_delete.dart';
 import 'package:xta/database/database_facts.dart';
+import 'package:xta/database/traced_database.dart';
 import 'package:xta/utils/read_activity.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
@@ -1050,10 +1051,10 @@ class Repository {
       return cached;
     }
 
-    final opening = openDatabase(
-      databaseName,
-      readOnly: true,
-      singleInstance: false,
+    // Every statement on the shared connection waits behind the one before it, so one that never answers would
+    // hold every read in the app. A stalled connection is dropped: the next reader opens a fresh one.
+    final opening = openDatabase(databaseName, readOnly: true, singleInstance: false).then<Database>(
+      (database) => TracedDatabase(database, 'ro', onStall: _dropStalledReadOnly),
     );
     _readOnly = opening;
 
@@ -1075,7 +1076,16 @@ class Repository {
   }
 
   static Future<Database> writable() async {
-    return openDatabase(databaseName);
+    return TracedDatabase(await openDatabase(databaseName), 'rw');
+  }
+
+  static void _dropStalledReadOnly(TracedDatabase stalled) {
+    ReadActivityLog.shared.begin(ReadOperation.db, label: 'ro dropped after a stall').finish(ReadOutcome.completed);
+    final current = _readOnly;
+    if (current == null) return;
+    current.then((database) {
+      if (identical(database, stalled) && identical(_readOnly, current)) _readOnly = null;
+    }, onError: (Object _) {});
   }
 
   static bool _bounded = false;
