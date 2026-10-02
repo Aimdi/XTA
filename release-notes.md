@@ -1,17 +1,16 @@
-## XTA — aimdi162
+## XTA — aimdi163
 
-### The diagnostics log names what waits
+### Every database statement in the log, and a stalled connection is replaced
 
-- The aimdi161 report showed a small, healthy database and still a 15 second wait on the group lookup. Every entry in the "recent reads" log now carries a name: the group lookup, each store's snapshot, the account lookup, the cache previews, the unread queries, the launch-time cache bound and each purge. Database steps are timed as well: a step shows as pending while it runs and stays in the log when it took 100 ms or more or failed, so the next report says which statement the app waited for.
-- A test teardown that occasionally raced the JSON store's background writes no longer fails the release build.
+- The aimdi162 report finally named the wait: on the shared read-only database connection one statement stops answering and every later read queues behind it for the rest of the session, which is why feeds, Notes and Diagnose all stall together while X itself is reachable. Every statement on both connections is now timed into the "recent reads" log under its verb and table, so the next report shows the exact statement, including ones the earlier releases could not see. A statement on the shared read-only connection that outlives ten seconds marks that connection as stalled, and the next read opens a fresh connection instead of waiting behind it.
 
-Includes PRs #343 and #344 plus all aimdi161 changes.
+Includes PR #346 (with a fix that rounds a request budget's wait up to whole milliseconds, so a timed-out fan-out never starts one more request) plus all aimdi162 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi162_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001310**, above
-every aimdi161 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi163_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001320**, above
+every aimdi162 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -22,4 +21,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi161)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi162)
