@@ -15,6 +15,10 @@ class RequestBudget {
     if (left <= Duration.zero) {
       return Future.error(TimeoutException('Request budget exhausted', timeout));
     }
-    return Future.sync(operation).timeout(left);
+    return Future.sync(operation).timeout(ceilToMilliseconds(left));
   }
+
+  /// Timers tick in whole milliseconds; rounding down would let one fire while the budget still shows a remainder.
+  static Duration ceilToMilliseconds(Duration duration) =>
+      Duration(milliseconds: (duration.inMicroseconds / Duration.microsecondsPerMillisecond).ceil());
 }

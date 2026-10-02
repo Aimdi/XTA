@@ -114,6 +114,13 @@ void main() {
     await expectLater(RequestBudget(Duration.zero).run(() async => ++calls), throwsA(isA<TimeoutException>()));
     expect(calls, 0);
   });
+  test('a budget that timed out a request is expired for the next one', () async {
+    final budget = RequestBudget(const Duration(microseconds: 500));
+    await expectLater(budget.run(() => Completer<void>().future), throwsA(isA<TimeoutException>()));
+    expect(budget.expired, isTrue);
+    expect(RequestBudget.ceilToMilliseconds(const Duration(microseconds: 1500)), const Duration(milliseconds: 2));
+    expect(RequestBudget.ceilToMilliseconds(const Duration(milliseconds: 12)), const Duration(milliseconds: 12));
+  });
   test('pinned HomeTimeline times out and aborts its own request', () async {
     final client = _StallingClient();
     xHttpClient = client;
