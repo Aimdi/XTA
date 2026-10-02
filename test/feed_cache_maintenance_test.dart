@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/database/database_facts.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/group/feed_cache.dart';
 
@@ -72,5 +73,35 @@ void main() {
 
     expect(deleted, 5);
     expect(await cursorsOf('a'), [99]);
+  });
+
+  test('the launch bound leaves a small cache alone', () async {
+    await insertRows('a', 6);
+
+    expect(await Repository.boundFeedCache(db, maxRows: 10), isFalse);
+    expect(await cursorsOf('a'), hasLength(6));
+  });
+
+  test('the launch bound empties an oversized cache and restores its indexes', () async {
+    await insertRows('a', 12);
+    await db.execute('DROP INDEX IF EXISTS idx_feed_group_chunk_hash');
+
+    expect(await Repository.boundFeedCache(db, maxRows: 10), isTrue);
+
+    expect(await cursorsOf('a'), isEmpty);
+    final indexes = await db.rawQuery("SELECT name FROM sqlite_master WHERE type = 'index' AND tbl_name = ?", [
+      tableFeedGroupChunk,
+    ]);
+    expect(indexes.map((row) => row['name']), contains('idx_feed_group_chunk_hash'));
+  });
+
+  test('database facts name the size, the chunk rows and the chunk indexes', () async {
+    await insertRows('a', 3);
+
+    await DatabaseFacts.collect(db, feedCacheTruncated: true);
+
+    expect(DatabaseFacts.summary, contains('3 chunk rows'));
+    expect(DatabaseFacts.summary, contains('idx_feed_group_chunk_created'));
+    expect(DatabaseFacts.summary, contains('emptied at launch'));
   });
 }

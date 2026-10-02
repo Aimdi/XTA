@@ -641,6 +641,11 @@ const maxFeedGapFillPages = 4;
 // painted anything -- for posts far below where anyone scrolls.
 const maxCachedChunkRows = 8;
 
+/// The most chunk rows the cache may hold at launch. Reads take at most [maxCachedChunkRows] per chunk, so a
+/// table far beyond this is a pile nothing reads, and every scan of it (unread dots, previews, purges) holds the
+/// one database worker for as long as it takes. Past the bound the table is emptied in one statement.
+const maxFeedCacheRows = 400;
+
 /// How far a timeline [ListView.builder] builds off-screen.
 ///
 /// Matches the X feed. Video tiles are visibility-gated, so this window only

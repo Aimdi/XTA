@@ -9,6 +9,7 @@ import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/database/database_facts.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/settings/diagnostics_report.dart';
@@ -31,6 +32,7 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
         await (await Repository.writable()).rawQuery('SELECT 1');
       });
       await _probe(probes, 'feed cache', _feedCacheSize, detail: (size) => size);
+      probes.add(DiagnosticsProbe('database at launch', failure: DatabaseFacts.summary));
       probes.add(DiagnosticsProbe('X signing key', failure: TwitterHeaders.describeKeyState()));
 
       return DiagnosticsReport(

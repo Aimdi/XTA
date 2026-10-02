@@ -5,6 +5,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/constants.dart';
+import 'package:xta/database/database_facts.dart';
 import 'package:xta/settings/diagnostics_report.dart';
 import 'package:xta/utils/read_activity.dart';
 
@@ -28,6 +29,7 @@ DiagnosticsReport quickDiagnosticsReport({
   xSetupFailure: xSetupFailure,
   probes: [
     const DiagnosticsProbe('database', failure: 'not probed (copied from the error screen)'),
+    DiagnosticsProbe('database at launch', failure: DatabaseFacts.summary),
     DiagnosticsProbe('X signing key', failure: keyState),
   ],
 );

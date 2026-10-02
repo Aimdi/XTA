@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:xta/constants.dart';
 import 'package:xta/group/feed_cache.dart';
 import 'package:xta/utils/batched_delete.dart';
+import 'package:xta/database/database_facts.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1076,6 +1077,28 @@ class Repository {
     return openDatabase(databaseName);
   }
 
+  static bool _bounded = false;
+
+  /// Empties the chunk cache when it holds more than [maxRows] rows, then makes sure its indexes exist.
+  ///
+  /// A whole-table DELETE takes SQLite's truncate path, which frees pages without visiting rows, so this is the
+  /// one purge that stays quick on a table of hundreds of megabytes. Returns whether the table was emptied.
+  static Future<bool> boundFeedCache(Database database, {int maxRows = maxFeedCacheRows}) async {
+    final count = (await database.rawQuery('SELECT COUNT(*) FROM $tableFeedGroupChunk')).first.values.first as int? ?? 0;
+    final oversized = count > maxRows;
+    if (oversized) {
+      try {
+        await database.execute('PRAGMA secure_delete = OFF');
+      } catch (e) {
+        log.warning('Could not turn secure_delete off before emptying the feed cache: $e');
+      }
+      await database.delete(tableFeedGroupChunk);
+      await database.delete(tableFeedGroupCursor);
+    }
+    await _createIndexes(database);
+    return oversized;
+  }
+
   static bool _cleanedUp = false;
 
   Future<void> _cleanUpOldCaches() async {
@@ -1143,6 +1166,17 @@ class Repository {
     // so a week of feed JSON was scanned before the first frame. It gains
     // nothing from blocking startup: run it once per process, in the
     // background, after the schema work is done.
+    if (!_bounded) {
+      _bounded = true;
+      try {
+        final database = await writable();
+        final truncated = await boundFeedCache(database);
+        await DatabaseFacts.collect(database, feedCacheTruncated: truncated);
+      } catch (e) {
+        log.warning('Could not bound the feed cache: $e');
+      }
+    }
+
     if (!_cleanedUp) {
       _cleanedUp = true;
       unawaited(_cleanUpOldCaches());
