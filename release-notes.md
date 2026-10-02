@@ -1,16 +1,17 @@
-## XTA — aimdi160
+## XTA — aimdi161
 
-### A report you can copy from the error screen
+### An oversized feed cache is emptied at launch
 
-- The Diagnose page waits on the local database before it shows anything, so in the very state it is meant to explain it can stay blank. The "Timed out" screen now has its own "Copy report" button. The copy is built from memory alone: app version, X setup and signing key state, endpoint ids and the log of recent reads with their outcomes and timings, with the database marked as not probed. Paste it into an issue or a chat and it says which layer stalled.
+- The aimdi160 report showed the app never reaching X: every read of the local database waited behind scans of the feed cache table, which on a long-used install had grown to hundreds of megabytes that nothing reads back. Deleting it piece by piece, as aimdi158 and aimdi159 did, still scanned the whole table for every piece. At launch the table is now counted and, past 400 rows, emptied in one statement that SQLite runs without visiting rows, and its indexes are created again if they are missing. Cached pages are fetched fresh from X on the next load; read positions are kept.
+- Both diagnostics reports gain a "database at launch" line: file size, cached chunk rows and the indexes on that table.
 
-Includes PR #339 plus all aimdi159 changes.
+Includes PR #341 plus all aimdi160 changes.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi160_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001290**, above
-every aimdi159 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi161_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001300**, above
+every aimdi160 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
@@ -21,4 +22,4 @@ all four APK variants, versions and signing certificates before publication.
 Physical-device visual and accessibility testing is still separate from the
 automated widget, Android compile and release-integrity checks.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi159)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi160)
