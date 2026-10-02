@@ -69,6 +69,7 @@ class ReadRequestScope {
     Future<T> Function() source, {
     required Duration timeout,
     ReadOperation operation = ReadOperation.page,
+    String? label,
   }) {
     final work = ReadWork(parent: ReadWork.current);
     final elapsed = Stopwatch()..start();
@@ -82,14 +83,25 @@ class ReadRequestScope {
       timeout: timeout,
       work: work,
       operation: operation,
+      label: label,
     );
   }
 
-  Future<T> run<T>(Future<T> source, {required Duration timeout, ReadOperation operation = ReadOperation.page}) =>
-      _wait(source, timeout: timeout, operation: operation);
+  Future<T> run<T>(
+    Future<T> source, {
+    required Duration timeout,
+    ReadOperation operation = ReadOperation.page,
+    String? label,
+  }) => _wait(source, timeout: timeout, operation: operation, label: label);
 
-  Future<T> _wait<T>(Future<T> source, {required Duration timeout, ReadWork? work, required ReadOperation operation}) {
-    final activity = ReadActivityLog.shared.begin(operation);
+  Future<T> _wait<T>(
+    Future<T> source, {
+    required Duration timeout,
+    ReadWork? work,
+    required ReadOperation operation,
+    String? label,
+  }) {
+    final activity = ReadActivityLog.shared.begin(operation, label: label);
     final result = Completer<T>();
     late Timer timer;
     late void Function() cancel;

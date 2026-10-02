@@ -1,6 +1,7 @@
 import 'package:xta/utils/local_undo.dart';
 import 'dart:convert';
 
+import 'package:xta/utils/read_activity.dart';
 import 'package:xta/utils/read_request_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
@@ -93,7 +94,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
     // Membership reloads keep the existing feed and its scroll position.
     if (showLoading) setLoading(true);
     try {
-      final group = await _reads.start(reader ?? _readGroup, timeout: readTimeout);
+      final group = await _reads.start(reader ?? _readGroup, timeout: readTimeout, label: 'group');
       if (current()) update(group, force: true);
     } catch (error) {
       if (current() && (showLoading || state.id.isEmpty)) setError(error, force: true);
@@ -111,13 +112,18 @@ class GroupModel extends Store<SubscriptionGroupGet> {
   }
 
   Future<SubscriptionGroupGet> _readGroup() async {
-    var database = await Repository.readOnly();
+    final log = ReadActivityLog.shared;
+    var database = await log.trace('group:open', Repository.readOnly);
 
-    var group = (await database.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: [id])).first;
+    var group = (await log.trace(
+      'group:row',
+      () => database.query(tableSubscriptionGroup, where: 'id = ?', whereArgs: [id]),
+    )).first;
 
     if (id == '-1') {
-      var subscriptions = (await database.query(
-        tableSubscription,
+      var subscriptions = (await log.trace(
+        'group:subscriptions',
+        () => database.query(tableSubscription),
       )).map((e) => UserSubscription.fromMap(e)).toList(growable: false);
 
       return SubscriptionGroupGet(
@@ -141,7 +147,7 @@ class GroupModel extends Store<SubscriptionGroupGet> {
     // the membership queries ask for a set of group ids rather than one — and
     // reading several groups together is the same question asked of more
     // roots, which is why it costs nothing here.
-    final parents = await readGroupParents(database);
+    final parents = await log.trace('group:parents', () => readGroupParents(database));
     final ids = {
       ...groupAndDescendants(id, parents),
       for (final other in alsoRead) ...groupAndDescendants(other, parents),
@@ -157,19 +163,27 @@ class GroupModel extends Store<SubscriptionGroupGet> {
     // The X tables, then every plugin that says its followed accounts are
     // subscriptions — read from the registry rather than named here.
     final sources = subscriptionSources;
-    final rows = await Future.wait([
-      database.rawQuery(membership(tableSearchSubscription), ids),
-      database.rawQuery(membership(tableSubscription), ids),
-    ]);
+    final rows = await log.trace(
+      'group:members',
+      () => Future.wait([
+        database.rawQuery(membership(tableSearchSubscription), ids),
+        database.rawQuery(membership(tableSubscription), ids),
+      ]),
+    );
 
-    final memberIds = (await database.query(
-      tableSubscriptionGroupMember,
-      columns: ['profile_id'],
-      where: 'group_id IN ($placeholders)', whereArgs: ids,
+    final memberIds = (await log.trace(
+      'group:memberIds',
+      () => database.query(
+        tableSubscriptionGroupMember,
+        columns: ['profile_id'],
+        where: 'group_id IN ($placeholders)',
+        whereArgs: ids,
+      ),
     )).map((row) => row['profile_id']).toSet();
-    final sourceMembers = await Future.wait([
-      for (final source in sources) source.readSubscriptions(database, prefs: prefs),
-    ]);
+    final sourceMembers = await log.trace(
+      'group:plugins',
+      () => Future.wait([for (final source in sources) source.readSubscriptions(database, prefs: prefs)]),
+    );
     final members = <Subscription>[
       ...rows[1].map(UserSubscription.fromMap),
       ...rows[0].map(SearchSubscription.fromMap),
