@@ -6,6 +6,7 @@ void main() {
   BlueskyPost post({
     required String uri,
     required DateTime publishedAt,
+    bool isReply = false,
   }) =>
       BlueskyPost(
         uri: uri,
@@ -16,6 +17,7 @@ void main() {
         text: 'hi',
         url: 'https://bsky.app/profile/alice.bsky.social/post/x',
         publishedAt: publishedAt,
+        isReply: isReply,
       );
 
   test('blueskyInterleavedItems keeps dated posts up to the limit', () {
@@ -51,5 +53,15 @@ void main() {
 
     expect(items, hasLength(1));
     expect(items.single.date, DateTime.utc(2026, 8, 1));
+  });
+
+  test('a group with replies off leaves Bluesky replies out, and keeps them when on', () {
+    final posts = [
+      post(uri: 'at://own', publishedAt: DateTime.utc(2026, 8, 1)),
+      post(uri: 'at://reply', publishedAt: DateTime.utc(2026, 8, 2), isReply: true),
+    ];
+
+    expect(blueskyInterleavedItems(posts, includeReplies: false).map((e) => e.id), ['bluesky:at://own']);
+    expect(blueskyInterleavedItems(posts), hasLength(2));
   });
 }

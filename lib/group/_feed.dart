@@ -213,8 +213,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         homeFeedIds: includeHome ? source.homeFeedIds(context) : const [],
       );
       if (ids.isEmpty) continue;
-      keys[id] = _pluginFeed.cache.key(id, ids);
-      loaders[id] = () => source.interleavedPosts(context, ids);
+      // The replies choice is part of the key, so turning it off never shows a cached page full of replies.
+      keys[id] = _pluginFeed.cache.key(widget.includeReplies ? id : '$id:no-replies', ids);
+      loaders[id] = () => source.groupPosts(context, ids, includeReplies: widget.includeReplies);
     }
     await _pluginFeed.load(loaders, keys, refresh: refresh);
   }

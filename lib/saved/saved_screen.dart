@@ -1036,62 +1036,65 @@ class SavedClipTile extends StatelessWidget {
     final offlineContent = tweet == null && reddit == null && mastodon == null
         ? parseSavedContent(saved.content)
         : SavedContent(tweet: tweet, reddit: reddit, mastodon: mastodon, haystack: '');
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SavedTweetTile(
-          id: saved.id,
-          content: tweet == null && reddit == null && mastodon == null ? saved.content : null,
-          tweet: tweet,
-          reddit: reddit,
-          mastodon: mastodon,
-        ),
-        Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 12),
-          child: Material(
-            color: hasNote ? theme.colorScheme.surfaceContainerLow : Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: theme.colorScheme.outlineVariant),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () => openSavedNoteEditor(context, draftKey: 'saved:${saved.id}', note: note, onSave: onNoteChanged),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: 48),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Icon(hasNote ? Icons.edit_note_outlined : Icons.note_add_outlined,
-                        size: 20, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 10),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(hasNote ? l10n.local_note_thread_title : l10n.clip_note_hint,
-                        style: theme.textTheme.labelLarge),
-                      if (hasNote) ...[
-                        const SizedBox(height: 4),
-                        Text(note, maxLines: 3, overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(height: 1.4)),
-                      ],
-                    ])),
-                    const SizedBox(width: 8),
-                    Icon(Icons.edit_outlined, size: 18,
-                      semanticLabel: l10n.local_note_edit_title,
-                      color: theme.colorScheme.onSurfaceVariant),
-                  ]),
+    void editNote() => openSavedNoteEditor(context, draftKey: 'saved:${saved.id}', note: note, onSave: onNoteChanged);
+    final muted = theme.colorScheme.onSurfaceVariant;
+    // Lined up with the post's text and drawn above its divider, so the note reads as part of the post it is about.
+    final noteRow = Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        kTweetHorizontalPadding + kTweetAvatarSize + kTweetSpace3 - 8,
+        0,
+        kTweetHorizontalPadding - 8,
+        kTweetSpace2,
+      ),
+      child: Row(children: [
+        Expanded(
+          child: hasNote
+              ? InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: editNote,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: kTweetTouchTarget),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Icon(Icons.edit_note_outlined,
+                              size: 18, color: muted, semanticLabel: l10n.local_note_edit_title),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(note, maxLines: 3, overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(color: muted, height: 1.35))),
+                      ]),
+                    ),
+                  ),
+                )
+              : Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton.icon(
+                    onPressed: editNote,
+                    style: TextButton.styleFrom(foregroundColor: muted, minimumSize: const Size(0, kTweetTouchTarget)),
+                    icon: const Icon(Icons.note_add_outlined, size: 18),
+                    label: Text(l10n.clip_note_hint),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
         if (hasOfflineMedia(offlineContent))
-          Align(alignment: AlignmentDirectional.centerEnd, child: IconButton(
+          IconButton(
             icon: const Icon(Icons.offline_pin_outlined),
             tooltip: l10n.offline_library_title,
             onPressed: () => showModalBottomSheet<void>(context: context, useRootNavigator: true,
               builder: (_) => SafeArea(child: OfflineSavedAction(id: saved.id, content: offlineContent))),
-          )),
-      ],
+          ),
+      ]),
+    );
+    return SavedTweetTile(
+      id: saved.id,
+      content: tweet == null && reddit == null && mastodon == null ? saved.content : null,
+      tweet: tweet,
+      reddit: reddit,
+      mastodon: mastodon,
+      below: noteRow,
     );
   }
 }
@@ -1107,6 +1110,9 @@ class SavedTweetTile extends StatelessWidget {
   final RedditPost? reddit;
   final MastodonPost? mastodon;
 
+  /// Shown directly under the post and above its divider, so it reads as part of that post.
+  final Widget? below;
+
   const SavedTweetTile({
     super.key,
     required this.id,
@@ -1114,27 +1120,42 @@ class SavedTweetTile extends StatelessWidget {
     this.tweet,
     this.reddit,
     this.mastodon,
+    this.below,
   });
 
   @override
   Widget build(BuildContext context) {
     final stored = parseSavedContent(content);
-    if (stored.plugin case final pluginPost?) return PluginLinkPostCard(post: pluginPost);
-    if (stored.bluesky case final blueskyPost?) return BlueskyPostCard(post: blueskyPost);
+    if (stored.plugin case final pluginPost?) return _withBelow(PluginLinkPostCard(post: pluginPost));
+    if (stored.bluesky case final blueskyPost?) return _withBelow(BlueskyPostCard(post: blueskyPost));
     final mastodonPost = mastodon ?? stored.mastodon;
-    if (mastodonPost != null) return MastodonPostCard(post: mastodonPost);
+    if (mastodonPost != null) return _withBelow(MastodonPostCard(post: mastodonPost));
     final redditPost = reddit ?? stored.reddit;
     if (redditPost != null) {
-      return RedditPostCard(post: redditPost, showSourceBadge: true);
+      return _withBelow(RedditPostCard(post: redditPost, showSourceBadge: true));
     }
 
     var parsed = tweet ?? stored.tweet;
     if (parsed == null || parsed.idStr == null) {
       // The tweet is probably too big to fit inside the cursor and has been removed from the result set
-      return SavedTweetTooLarge(id: id);
+      return _withBelow(SavedTweetTooLarge(id: id));
     }
 
-    return TweetTile(key: Key(parsed.idStr!), tweet: parsed, clickable: true);
+    final extra = below;
+    if (extra == null) return TweetTile(key: Key(parsed.idStr!), tweet: parsed, clickable: true);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TweetTile(key: Key(parsed.idStr!), tweet: parsed, clickable: true, addSeparator: false),
+        extra,
+        tweetHairlineDivider(context),
+      ],
+    );
+  }
+
+  Widget _withBelow(Widget post) {
+    final extra = below;
+    return extra == null ? post : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [post, extra]);
   }
 }
 
