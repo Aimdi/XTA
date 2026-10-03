@@ -76,6 +76,17 @@ class EndpointDiagnostics {
   );
 }
 
+/// One bounded local check: how long it took, or why it gave no answer.
+class DiagnosticsProbe {
+  final String name;
+  final Duration? elapsed;
+  final String? failure;
+
+  const DiagnosticsProbe(this.name, {this.elapsed, this.failure});
+
+  String describe() => '$name: ${failure ?? 'ok ${elapsed?.inMilliseconds ?? 0}ms'}';
+}
+
 class DiagnosticsReport {
   final String appVersion;
   final List<AccountDiagnostics> accounts;
@@ -85,6 +96,7 @@ class DiagnosticsReport {
   final DateTime generatedAt;
   final List<String> operations;
   final Object? xSetupFailure;
+  final List<DiagnosticsProbe> probes;
 
   const DiagnosticsReport({
     required this.appVersion,
@@ -95,6 +107,7 @@ class DiagnosticsReport {
     required this.generatedAt,
     this.operations = const [],
     this.xSetupFailure,
+    this.probes = const [],
   });
 
   static final empty = DiagnosticsReport(
@@ -149,6 +162,13 @@ class DiagnosticsReport {
         '  ${endpoint.name.padRight(22)} ${endpoint.host.padRight(12)} ${endpoint.queryId}'
         '${endpoint.isOverridden ? ' (overridden)' : ''}',
       );
+    }
+
+    if (probes.isNotEmpty) {
+      lines
+        ..add('')
+        ..add('local checks:')
+        ..addAll(probes.map((probe) => '  ${probe.describe()}'));
     }
 
     lines.addAll(['', 'recent reads (local timing, no request content):', ...operations]);

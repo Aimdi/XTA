@@ -1,21 +1,25 @@
-## XTA — aimdi166
+## XTA — aimdi167
 
-Built on aimdi165, the unchanged aimdi149 code. Nothing from aimdi150 to aimdi164 is in it.
+aimdi166 plus a diagnostic for one bug. Nothing else changes.
 
-- **Reposts lead to the person who posted.** In the compact row of reposts, each card now shows whose post was reposted. Tap their avatar or name to open their profile; tap the rest of the card to open the post.
-- **Group reply setting covers Bluesky.** With replies turned off for a group, its Bluesky members' replies are left out too. Switching the setting reloads the group.
-- **Notes sit with their post again.** A saved post's note appears directly under the post, lined up with its text and above the divider, instead of in a separate box below it.
-- **Floating bottom bar.** The bottom navigation is a rounded bar floating above the page, with a soft highlight behind the selected item. Labels, long-press on Home and true black work as before.
+### Finding why saving stops after adding someone to a group
+
+Adding an X account to a group with the "+" on its avatar in the timeline can leave every later save waiting until the app restarts: likes, bookmarks and further group changes. The app's own code does not hang when the same steps run in tests, so the cause is on the phone, and this build records it.
+
+- **Settings → Diagnose** now runs a few local checks, each limited to five seconds so the page always finishes: an Android system call, a database read on each connection, and a save that changes nothing. A stuck step shows up as "still waiting after 5s".
+- A **watchdog** watches Android's main thread from launch. If it stops responding for five seconds, the exact place it is stuck is written down and shown under "android main thread".
+
+To help: add someone to a group with the "+" until likes stop working, then open Settings → Diagnose, wait for it to load, copy the report and send it.
 
 ### Installation
 
-For most Android phones, use **`xta-aimdi166_arm64-v8a.apk`**. Universal, ARMv7
-and x86_64 APKs are also supplied. The base version code is **400001350**, above
-every aimdi165 variant. The app ID (`com.aimdi.xta`) and release signing identity
+For most Android phones, use **`xta-aimdi167_arm64-v8a.apk`**. Universal, ARMv7
+and x86_64 APKs are also supplied. The base version code is **400001360**, above
+every aimdi166 variant. The app ID (`com.aimdi.xta`) and release signing identity
 are unchanged for in-place updates.
 
 The release workflow checks translations, skill synchronization, analysis and
 the full Flutter test suite on the tagged source before building.
 **`release-build.json`** and **`SHA256SUMS`** accompany the APKs.
 
-[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi165)
+[Previous release and notes](https://github.com/Aimdi/XTA/releases/tag/aimdi166)

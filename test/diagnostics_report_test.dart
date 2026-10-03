@@ -157,4 +157,23 @@ void main() {
       expect(RateLimitTracker.activeFor('unknown', DateTime.utc(2026, 7, 25)), isEmpty);
     });
   });
+
+  test('local checks name a stuck step instead of leaving the report empty', () {
+    final text = DiagnosticsReport(
+      appVersion: 'v4.12.0+400001360',
+      accounts: const [],
+      endpoints: const [],
+      registryEnabled: true,
+      registryFetchedAt: null,
+      generatedAt: DateTime.utc(2026, 10, 3),
+      probes: const [
+        DiagnosticsProbe('database read (read-only connection)', elapsed: Duration(milliseconds: 12)),
+        DiagnosticsProbe('database save (writable connection)', failure: 'still waiting after 5s'),
+      ],
+    ).toPlainText();
+
+    expect(text, contains('local checks:'));
+    expect(text, contains('  database read (read-only connection): ok 12ms'));
+    expect(text, contains('  database save (writable connection): still waiting after 5s'));
+  });
 }
