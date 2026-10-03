@@ -359,13 +359,16 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             child: ReaderTabView(
               controller: _tabController,
               children: [
-                ProfileTweets(
-                  user: user,
-                  type: 'profile',
-                  includeReplies: false,
-                  pinnedTweets: widget.profile.pinnedTweets,
-                  pref: prefs,
-                  filter: view.postsFilter,
+                _withFilter(
+                  _filterFor(context, ProfileTabs.posts, view),
+                  ProfileTweets(
+                    user: user,
+                    type: 'profile',
+                    includeReplies: false,
+                    pinnedTweets: widget.profile.pinnedTweets,
+                    pref: prefs,
+                    filter: view.postsFilter,
+                  ),
                 ),
                 ProfileTweets(
                   user: user,
@@ -374,8 +377,14 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
                   pinnedTweets: widget.profile.pinnedTweets,
                   pref: prefs,
                 ),
-                ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
-                ProfileSaved(user: user, filter: view.archiveFilter),
+                _withFilter(
+                  _filterFor(context, ProfileTabs.media, view),
+                  ProfileMediaGrid(user: user, pref: prefs, filter: view.mediaFilter),
+                ),
+                _withFilter(
+                  _filterFor(context, ProfileTabs.saved, view),
+                  ProfileSaved(user: user, filter: view.archiveFilter),
+                ),
               ],
             ),
           ),
@@ -421,10 +430,6 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
             )
           : null,
       actions: [
-        AnimatedBuilder(
-          animation: _tabController,
-          builder: (context, _) => _filterForCurrentTab(context, view) ?? const SizedBox.shrink(),
-        ),
         IconButton(
           icon: const Icon(Icons.search),
           tooltip: L10n.of(context).search,
@@ -570,12 +575,18 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
     return value == null || value.isEmpty ? 'https://x.com' : value;
   }
 
-  Widget? _filterForCurrentTab(BuildContext context, ProfileViewState view) {
-    final tab = profileTabs[_tabController.index].id;
+  /// The tab's filter sits right above its content, so what it narrows is never off screen from where it is set.
+  Widget _withFilter(Widget? filter, Widget content) => filter == null
+      ? content
+      : Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [filter, Expanded(child: content)],
+        );
+
+  Widget? _filterFor(BuildContext context, ProfileTabs tab, ProfileViewState view) {
     return switch (tab) {
-      ProfileTabs.posts => ProfileFilterMenu<PostsFilter>(
+      ProfileTabs.posts => ProfileFilterChips<PostsFilter>(
         selected: view.postsFilter,
-        defaultValue: PostsFilter.all,
         options: [
           ProfileFilterOption(value: PostsFilter.all, label: L10n.of(context).all, icon: Icons.article_outlined),
           ProfileFilterOption(value: PostsFilter.posts, label: L10n.of(context).tweets, icon: Icons.notes_outlined),
@@ -583,9 +594,8 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
         ],
         onSelected: _selectPostsFilter,
       ),
-      ProfileTabs.media => ProfileFilterMenu<MediaFilter>(
+      ProfileTabs.media => ProfileFilterChips<MediaFilter>(
         selected: view.mediaFilter,
-        defaultValue: MediaFilter.all,
         options: [
           ProfileFilterOption(value: MediaFilter.all, label: L10n.of(context).all, icon: Icons.perm_media_outlined),
           ProfileFilterOption(
@@ -606,9 +616,8 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> with TickerProvid
         ],
         onSelected: _selectMediaFilter,
       ),
-      ProfileTabs.saved => ProfileFilterMenu<ArchiveFilter>(
+      ProfileTabs.saved => ProfileFilterChips<ArchiveFilter>(
         selected: view.archiveFilter,
-        defaultValue: ArchiveFilter.all,
         options: [
           ProfileFilterOption(value: ArchiveFilter.all, label: L10n.of(context).all, icon: Icons.inventory_2_outlined),
           ProfileFilterOption(

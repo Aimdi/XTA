@@ -339,16 +339,16 @@ void main() {
     expect(find.textContaining('very long location'), findsOneWidget);
   });
 
-  testWidgets('profile filter exposes selected state without color alone', (
+  testWidgets('profile filter shows every choice and marks the selected one without color alone', (
     tester,
   ) async {
+    String? picked;
     await tester.pumpWidget(
       MaterialApp(
         theme: xLookLightTheme(null),
         home: Scaffold(
-          body: ProfileFilterMenu<String>(
+          body: ProfileFilterChips<String>(
             selected: 'photos',
-            defaultValue: 'all',
             options: const [
               ProfileFilterOption(
                 value: 'all',
@@ -361,17 +361,21 @@ void main() {
                 icon: Icons.photo_library_outlined,
               ),
             ],
-            onSelected: (_) {},
+            onSelected: (value) => picked = value,
           ),
         ),
       ),
     );
 
-    expect(find.byIcon(Icons.filter_alt), findsOneWidget);
-    expect(find.bySemanticsLabel('Photos'), findsWidgets);
+    expect(find.text('All'), findsOneWidget);
+    expect(find.text('Photos'), findsOneWidget);
+    expect(find.byIcon(Icons.check), findsOneWidget);
     expect(
-      tester.getSize(find.byType(PopupMenuButton<String>)).height,
+      tester.getSize(find.byType(ChoiceChip).first).height,
       greaterThanOrEqualTo(kTweetTouchTarget),
     );
+
+    await tester.tap(find.text('All'));
+    expect(picked, 'all');
   });
 }
