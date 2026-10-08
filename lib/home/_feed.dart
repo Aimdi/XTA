@@ -287,10 +287,6 @@ class _FeedScreenState extends State<FeedScreen> {
       _stripStore = strip;
       _lastStripPlugins = List<String>.from(strip.state);
       _disposeStripObserver = strip.observer(onState: _onStripChanged);
-      strip.seedEnabled();
-      // Hidden-tab plugins used to live as Groups chips. Pin them here so
-      // switching sites stays on the home strip.
-      strip.pinHiddenTabs();
     }
 
     final filter = context.read<HomeAccountFilterStore>();

@@ -120,7 +120,6 @@ class _FeedStripAddSheet extends StatelessWidget {
                         key: ValueKey(plugin.id),
                         plugin: plugin,
                         index: i,
-                        canRemove: plugin.showsHomeTab(prefs),
                         onSelect: () => Navigator.pop(context, plugin.id),
                         onRemove: () async {
                           await strip.ensurePersisted();
@@ -211,7 +210,6 @@ class _FeedStripEmpty extends StatelessWidget {
 class _PinnedPluginTile extends StatelessWidget {
   final XtaPlugin plugin;
   final int index;
-  final bool canRemove;
   final VoidCallback onSelect;
   final VoidCallback onRemove;
 
@@ -219,7 +217,6 @@ class _PinnedPluginTile extends StatelessWidget {
     super.key,
     required this.plugin,
     required this.index,
-    required this.canRemove,
     required this.onSelect,
     required this.onRemove,
   });
@@ -234,12 +231,11 @@ class _PinnedPluginTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (canRemove)
-            IconButton(
-              tooltip: l10n.feed_strip_remove,
-              icon: const Icon(Icons.remove_circle_outline),
-              onPressed: onRemove,
-            ),
+          IconButton(
+            tooltip: l10n.feed_strip_remove,
+            icon: const Icon(Icons.remove_circle_outline),
+            onPressed: onRemove,
+          ),
           ReorderableDragStartListener(
             index: index,
             child: Tooltip(

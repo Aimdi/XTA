@@ -42,6 +42,12 @@
 - Reddit and Hacker News comments each sit in their own rounded, tinted bubble. The colour follows the reply depth (blue, violet, green, amber, pink, orange, then again), so a reply is easy to tell from the comment it answers; the thin lines at the left are gone. Text keeps full contrast on every tint, in light, dim and true-black themes.
 - Tapping anywhere on a Reddit comment now folds it; the avatar opens the profile like the name does. Reddit's "more replies" and deleted comments are outlined instead of filled.
 
+### Home starts with only Following and X
+
+- A new install no longer fills Home with every plugin: the source list holds Following and X, and you add plugin timelines one at a time with "+ Timeline hinzufügen". Existing installs keep exactly the timelines they show today.
+- Plugins you install later are offered under "Timeline hinzufügen" instead of being added to Home by themselves, and every timeline on Home can now be removed.
+- Restoring a backup brings back its Home timelines again, and a plugin uninstalled and installed again gets its bottom tab back like a first install. On a new install Reddit gets a bottom tab like the other plugins.
+
 ### Same-size logos
 
 - Every service logo in the Home source list (and in the headers, the network switcher and the plugin store) now paints at the same size. Before, drawn logos like Pixiv, TikTok and Instagram filled their slot while icon logos like Hacker News, Booru, Aktien and RSS stayed small.

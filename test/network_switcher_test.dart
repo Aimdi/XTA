@@ -97,22 +97,17 @@ void main() {
     });
   });
 
-  group('seedFeedStripPlugins', () {
-    test('an enabled plugin is pinned on the home strip', () async {
+  group('hand-picked home strip', () {
+    test('an enabled plugin waits under Add timeline', () async {
       final prefs = PrefServiceCache(
         cache: {optionPluginMastodonEnabled: true},
       );
 
-      final pinned = await seedFeedStripPlugins(prefs);
+      await migrateFeedStripPins(prefs, firstLaunch: true);
 
-      expect(feedStripPluginIds(prefs), contains(pluginIdMastodon));
-      expect(pinned, contains(pluginIdMastodon));
+      expect(feedStripPluginIds(prefs), isEmpty);
       expect(
-        prefs.getStringList(optionHomeFeedStripPlugins),
-        contains(pluginIdMastodon),
-      );
-      expect(
-        prefs.getStringList(optionSeededStripPlugins),
+        feedStripCandidates(prefs, feedStripPluginIds(prefs)).map((p) => p.id),
         contains(pluginIdMastodon),
       );
     });
@@ -126,12 +121,14 @@ void main() {
         },
       );
 
-      expect(await seedFeedStripPlugins(prefs), isEmpty);
+      await migrateFeedStripPins(prefs, firstLaunch: false);
+
+      expect(feedStripPluginIds(prefs), isEmpty);
     });
   });
 
   group('HomeModel and the home strip', () {
-    test('enabling a plugin selects its home destination', () async {
+    test('enabling a plugin selects its bottom tab, not a Home timeline', () async {
       final prefs = PrefServiceCache(
         cache: {
           optionHomePages: ['feed', 'subscriptions', 'trending', 'saved'],
@@ -146,7 +143,7 @@ void main() {
         model.state.any((page) => page.id == pluginIdReddit && page.selected),
         isTrue,
       );
-      expect(feedStripPluginIds(prefs), contains(pluginIdReddit));
+      expect(feedStripPluginIds(prefs), isNot(contains(pluginIdReddit)));
     });
   });
 

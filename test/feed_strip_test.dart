@@ -7,7 +7,7 @@ import 'package:xta/home/feed_strip_store.dart';
 
 void main() {
   group('feedStripPluginIds', () {
-    test('an unset strip lists every enabled network, not only Reddit', () {
+    test('an unset strip lists no network until the reader adds one', () {
       final prefs = PrefServiceCache(
         cache: {
           optionPluginRedditEnabled: true,
@@ -15,8 +15,9 @@ void main() {
         },
       );
 
+      expect(feedStripPluginIds(prefs), isEmpty);
       expect(
-        feedStripPluginIds(prefs),
+        legacyFeedStripIds(prefs),
         containsAll([pluginIdReddit, pluginIdMastodon]),
       );
     });
@@ -37,7 +38,7 @@ void main() {
     );
 
     test(
-      'a hidden-tab plugin stays on the strip even if pins were cleared',
+      'a hidden-tab plugin off the strip stays one Add timeline away',
       () {
         final prefs = PrefServiceCache(
           cache: {
@@ -47,7 +48,11 @@ void main() {
           },
         );
 
-        expect(feedStripPluginIds(prefs), [pluginIdReddit]);
+        expect(feedStripPluginIds(prefs), isEmpty);
+        expect(
+          feedStripCandidates(prefs, const []).map((p) => p.id),
+          [pluginIdReddit],
+        );
       },
     );
 
@@ -61,7 +66,7 @@ void main() {
       expect(feedStripPluginIds(prefs), [pluginIdMastodon, pluginIdPixiv]);
     });
 
-    test('hidden-tab plugins are merged onto saved pins', () {
+    test('hidden-tab plugins Home used to add are kept by the migration', () {
       final prefs = PrefServiceCache(
         cache: {
           optionHomeFeedStripPlugins: [pluginIdMastodon],
@@ -70,12 +75,13 @@ void main() {
         },
       );
 
-      expect(feedStripPluginIds(prefs), [pluginIdMastodon, pluginIdSubstack]);
+      expect(feedStripPluginIds(prefs), [pluginIdMastodon]);
+      expect(legacyFeedStripIds(prefs), [pluginIdMastodon, pluginIdSubstack]);
     });
   });
 
   group('pinPluginOnFeedStrip', () {
-    test('installing a feed plugin writes it onto the strip', () async {
+    test('pinning a feed plugin writes it onto the strip', () async {
       final prefs = PrefServiceCache(cache: {});
       await pinPluginOnFeedStrip(prefs, pluginIdBluesky);
       expect(
@@ -115,7 +121,7 @@ void main() {
       expect(tabs.last.icon, isNotNull);
     });
 
-    test('empty pins still show a plugin that hid its bottom tab', () {
+    test('empty pins show no plugin, even one that hid its bottom tab', () {
       final prefs = PrefServiceCache(
         cache: {
           optionPluginSubstackEnabled: true,
@@ -127,7 +133,6 @@ void main() {
       expect(tabs.map((e) => e.id.id), [
         FeedTab.following.id,
         FeedTab.foryou.id,
-        pluginIdSubstack,
       ]);
     });
   });

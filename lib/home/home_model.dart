@@ -3,7 +3,6 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/home_screen.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
@@ -125,10 +124,6 @@ class HomeModel extends Store<List<HomePage>> {
           }
         }
       }
-
-      // Enabling a plugin also pins it on the home strip. The bottom bar is
-      // optional; the strip is where networks belong next to Following.
-      await seedFeedStripPlugins(prefs);
 
       final selectedIds = pages
           .where((e) => e.selected)

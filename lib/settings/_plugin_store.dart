@@ -110,11 +110,8 @@ class _SettingsPluginStoreFragmentState
     final prefs = PrefService.of(context, listen: false);
     await plugin.setEnabled(prefs, true);
     if (!mounted) return;
-    await pinPluginOnFeedStripIn(context, plugin.id);
-    if (!mounted) return;
+    // Home stays as the reader built it; the plugin waits under Add timeline.
     await context.read<HomeModel>().loadPages();
-    if (!mounted) return;
-    await context.read<FeedStripStore>().seedEnabled();
     if (mounted) setState(() {});
   }
 
