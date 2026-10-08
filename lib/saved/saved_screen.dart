@@ -43,7 +43,6 @@ import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/local_post_tile.dart';
 import 'package:xta/saved/local_note_thread.dart';
 import 'package:xta/saved/saved_note_editor.dart';
-import 'package:xta/plugins/plugin_feed_insets.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_post_card.dart';
 import 'package:pref/pref.dart';
@@ -237,7 +236,7 @@ class _SavedScreenState extends State<SavedScreen>
     return FeedListView(
       key: listKey,
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: padding ?? const EdgeInsets.only(top: 4),
+      padding: padding ?? EdgeInsets.only(top: 4, bottom: MediaQuery.paddingOf(context).bottom),
       itemCount: itemCount,
       itemBuilder: (context, index) => tileAt(index),
     );
@@ -654,9 +653,10 @@ class _SavedScreenState extends State<SavedScreen>
               : _buildList(
                   listKey: const PageStorageKey('archive-notes'),
                   itemCount: roots.length,
-                  padding: const EdgeInsets.only(
+                  // Room for the compose button above the list's end.
+                  padding: EdgeInsets.only(
                     top: 4,
-                    bottom: kPluginHomeNavClearance + 72,
+                    bottom: MediaQuery.paddingOf(context).bottom + 72,
                   ),
                   tileAt: (i) {
                     final post = roots[i];
@@ -865,16 +865,11 @@ class _SavedScreenState extends State<SavedScreen>
         backgroundColor: Colors.transparent,
         floatingActionButton: view.selecting
             ? null
-            : Padding(
-                padding: const EdgeInsets.only(
-                  bottom: kPluginHomeNavClearance,
-                ),
-                child: FloatingActionButton(
-                  heroTag: 'local-note-compose',
-                  tooltip: L10n.of(context).local_note_fab_tooltip,
-                  onPressed: () => _composeNote(),
-                  child: const Icon(Icons.edit_note),
-                ),
+            : FloatingActionButton(
+                heroTag: 'local-note-compose',
+                tooltip: L10n.of(context).local_note_fab_tooltip,
+                onPressed: () => _composeNote(),
+                child: const Icon(Icons.edit_note),
               ),
         body: NestedScrollView(
           controller: widget.scrollController,

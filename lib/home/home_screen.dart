@@ -375,27 +375,31 @@ class _ScaffoldWithBottomNavigationState extends State<ScaffoldWithBottomNavigat
   Widget _buildScaffold(BuildContext context, L10n l10n) {
     return XtaSystemBars(
       child: Scaffold(
+        // The pages scroll on behind the translucent floating bar.
+        extendBody: true,
         drawer: _buildDrawer(context, l10n),
-        body: HomePageSwiper(
-          movePage: _movePageBy,
-          child: PageView.builder(
-            controller: _pageController,
-            // Tabs change from the bar and nowhere else. A drag anywhere in a
-            // page used to make media, nested tabs and sliders compete with the
-            // pager. Edge-aware children explicitly hand off at their boundary.
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _barPages.length,
-            onPageChanged: (page) {
-              final previous = _pageIndex.value;
-              _pageIndex.value = page;
-              _adoptSearchScope(previous, page);
-            },
-            itemBuilder: (context, index) {
-              return KeyedSubtree(
-                key: PageStorageKey<String>(_barPages[index].id),
-                child: widget.builder(index, _scrollControllers, _focusNodes),
-              );
-            },
+        body: HomeNavigationClearance(
+          child: HomePageSwiper(
+            movePage: _movePageBy,
+            child: PageView.builder(
+              controller: _pageController,
+              // Tabs change from the bar and nowhere else. A drag anywhere in a
+              // page used to make media, nested tabs and sliders compete with the
+              // pager. Edge-aware children explicitly hand off at their boundary.
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _barPages.length,
+              onPageChanged: (page) {
+                final previous = _pageIndex.value;
+                _pageIndex.value = page;
+                _adoptSearchScope(previous, page);
+              },
+              itemBuilder: (context, index) {
+                return KeyedSubtree(
+                  key: PageStorageKey<String>(_barPages[index].id),
+                  child: widget.builder(index, _scrollControllers, _focusNodes),
+                );
+              },
+            ),
           ),
         ),
         // Labels pref is read here so a Settings toggle does not rebuild feeds.

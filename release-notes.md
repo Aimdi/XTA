@@ -17,6 +17,12 @@
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
 - "Changes saved – Undo" no longer stays until you tap it: it leaves after 5 seconds. With TalkBack on it still waits for you. Download progress still stays until the download ends.
 
+### Telegram-style bottom bar
+
+- The bottom bar is a frosted, slightly see-through pill floating above the page, like Telegram's: posts scroll on behind it and show through faintly. The selected tab sits on a soft tinted highlight that covers its icon and label and slides when you switch.
+- Labels under the icons are now on by default (Settings → Theme → Show navigation labels turns them off again).
+- The last post of every list, plugin feeds included, scrolls fully clear of the bar, and Trends' and Saved's floating buttons stay above it.
+
 ### Mastodon & Bluesky
 
 - The "Microblogs" section is now called "Mastodon & Bluesky", with a logo of the two marks stacked: Bluesky's butterfly at the top left, Mastodon's mark at the bottom right. Threads stays in the section, it just isn't named.

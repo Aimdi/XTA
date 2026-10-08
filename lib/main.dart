@@ -662,7 +662,7 @@ Future<void> main() async {
       optionXLookAccent: xLookAccentBlue,
       optionThemeTrueBlack: true,
       optionThemeTrueBlackTweetCards: true,
-      optionShowNavigationLabels: false,
+      optionShowNavigationLabels: true,
       optionTweetsHideSensitive: true,
       optionAlwaysShowSensitiveMedia: false,
       optionSavedShowAllTab: true,

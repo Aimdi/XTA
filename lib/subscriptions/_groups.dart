@@ -54,7 +54,12 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
   Widget _buildEmptyState(BuildContext context) {
     return ListView(
       controller: widget.scrollController,
-      padding: const EdgeInsets.fromLTRB(24, 48, 24, 24),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        48,
+        24,
+        24 + MediaQuery.paddingOf(context).bottom,
+      ),
       children: [
         Icon(
           Icons.workspaces_outlined,
@@ -178,14 +183,21 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
               12,
               10,
               12,
-              parts.nsfw.isEmpty ? 24 : 8,
+              parts.nsfw.isEmpty
+                  ? 24 + MediaQuery.paddingOf(context).bottom
+                  : 8,
             ),
             sliver: gridFor(parts.safe, staggerBase: 0),
           ),
         if (parts.nsfw.isNotEmpty) ...[
           SliverToBoxAdapter(child: _CensoredSectionHeader()),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 24),
+            padding: EdgeInsets.fromLTRB(
+              12,
+              4,
+              12,
+              24 + MediaQuery.paddingOf(context).bottom,
+            ),
             sliver: gridFor(parts.nsfw, staggerBase: parts.safe.length),
           ),
         ],
@@ -213,7 +225,12 @@ class _SubscriptionGroupsPageState extends State<SubscriptionGroupsPage> {
     return ReorderableListView.builder(
       scrollController: widget.scrollController,
       header: header.isEmpty ? null : Column(children: header),
-      padding: const EdgeInsets.fromLTRB(8, 4, 8, 24),
+      padding: EdgeInsets.fromLTRB(
+        8,
+        4,
+        8,
+        24 + MediaQuery.paddingOf(context).bottom,
+      ),
       buildDefaultDragHandles: false,
       itemCount: rows.length,
       itemBuilder: (context, index) {

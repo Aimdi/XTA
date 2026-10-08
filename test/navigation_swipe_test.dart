@@ -312,18 +312,73 @@ void main() {
       expect(find.text('body0'), findsOneWidget);
     });
 
-    testWidgets('uses the shared non-overlaying Home navigation surface', (
+    testWidgets('pages scroll on behind the floating bar and end above it', (
       tester,
     ) async {
-      await tester.pumpWidget(_scaffold());
+      late double bottomPadding;
+      await tester.pumpWidget(
+        _scaffold(
+          pageBuilder: (index) => Builder(
+            builder: (context) {
+              bottomPadding = MediaQuery.paddingOf(context).bottom;
+              return ListView.builder(
+                key: ValueKey('list-$index'),
+                itemCount: 40,
+                itemBuilder: (_, row) =>
+                    SizedBox(key: ValueKey('row-$index-$row'), height: 56),
+              );
+            },
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(HomeNavigationBar), findsOneWidget);
       final scaffold = tester
           .widgetList<Scaffold>(find.byType(Scaffold))
           .firstWhere((candidate) => candidate.bottomNavigationBar != null);
-      expect(scaffold.extendBody, isFalse);
+      expect(scaffold.extendBody, isTrue);
+      final bar = tester.getRect(find.byType(HomeNavigationBar));
+      expect(tester.getRect(find.byKey(const ValueKey('list-0'))).bottom, bar.bottom);
+      expect(bottomPadding, closeTo(bar.height, 0.01));
+
+      await tester.drag(find.byKey(const ValueKey('list-0')), const Offset(0, -4000));
+      await tester.pumpAndSettle();
+      final pill = tester.getRect(find.byType(NavigationBar));
+      expect(
+        tester.getRect(find.byKey(const ValueKey('row-0-39'))).bottom,
+        lessThanOrEqualTo(pill.top),
+      );
     });
+
+    for (final inset in [0.0, 24.0]) {
+      testWidgets('a page\'s floating button clears the bar (inset $inset)', (
+        tester,
+      ) async {
+        tester.view.padding = FakeViewPadding(bottom: inset * tester.view.devicePixelRatio);
+        tester.view.viewPadding = FakeViewPadding(bottom: inset * tester.view.devicePixelRatio);
+        addTearDown(tester.view.resetPadding);
+        addTearDown(tester.view.resetViewPadding);
+        await tester.pumpWidget(
+          _scaffold(
+            pageBuilder: (index) => Scaffold(
+              floatingActionButton: FloatingActionButton(
+                key: ValueKey('fab-$index'),
+                onPressed: () {},
+                child: const Icon(Icons.add),
+              ),
+              body: const SizedBox.expand(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final fab = find.byKey(const ValueKey('fab-0'));
+        final pill = tester.getRect(find.byType(NavigationBar));
+        expect(tester.getRect(fab).bottom, lessThanOrEqualTo(pill.top));
+        expect(fab.hitTestable(), findsOneWidget);
+      });
+    }
 
     testWidgets('publishes edge-swipe handoff to nested page content', (
       tester,
