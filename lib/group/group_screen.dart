@@ -16,9 +16,9 @@ import 'package:xta/group/group_custom_settings.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_discovery.dart';
 import 'package:xta/group/group_discovery_screen.dart';
+import 'package:xta/group/group_feed_title.dart';
 import 'package:xta/utils/ai_client.dart';
 import 'package:xta/home/home_group_filter.dart';
-import 'package:xta/group/group_switcher.dart';
 import 'package:xta/tweet/cached_tweet_list.dart';
 import 'package:xta/tweet/tweet_context_scope.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
@@ -407,17 +407,11 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
       scrollController: widget.scrollController,
       groupId: widget.id,
       usesFeedCache: widget.cacheKey != null,
-      titleBuilder: (context) {
-        final onSwitch = widget.onSwitchGroup;
-        if (onSwitch == null) {
-          return Text(widget.name);
-        }
-        return GroupSwitcherTitle(
-          name: widget.name,
-          currentGroupId: widget.id,
-          onSwitch: onSwitch,
-        );
-      },
+      titleBuilder: (context) => GroupFeedTitle(
+        name: widget.name,
+        groupId: widget.id,
+        onSwitch: widget.onSwitchGroup,
+      ),
       bodyBuilder: (context) => ScopedBuilder<GroupDiscoveryModeStore, int>(
         store: _discovery,
         onState: (_, _) => IndexedStack(
