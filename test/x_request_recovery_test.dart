@@ -117,8 +117,10 @@ void main() {
   test('pinned HomeTimeline times out and aborts its own request', () async {
     final client = _StallingClient();
     xHttpClient = client;
+    // Derive the signing key first: on a busy runner that alone outlasted a 30 ms budget, before any request.
+    await TwitterHeaders.getHeaders(uri, {});
     await expectLater(
-      QuackerTwitterClient.fetchAs(account, uri, timeout: const Duration(milliseconds: 30)),
+      QuackerTwitterClient.fetchAs(account, uri, timeout: const Duration(milliseconds: 250)),
       throwsA(isA<TimeoutException>()),
     );
     expect(client.requests, hasLength(1));

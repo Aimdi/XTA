@@ -1026,50 +1026,38 @@ Future<void> _dropIndexes(Database db) async {
 class Repository {
   static final log = Logger('Repository');
 
-  static Future<Database>? _readOnly;
-
-  /// A read-only handle on the database, shared by every reader.
+  /// The connection readers use: the same one writers use.
   ///
-  /// This used to be `openDatabase(..., singleInstance: false)`, which tells
-  /// sqflite *not* to reuse the connection: each of the 59 call sites opened a
-  /// fresh one and nothing ever closed it. `getAccounts()` runs on every single
-  /// request, so a scrolling session leaked a file descriptor per API call and
-  /// paid for a file open plus header parse on the hot path.
+  /// It used to be a second, read-only connection to the same file, and that
+  /// froze the app after adding someone to a group. On Android every statement
+  /// of every connection runs on sqflite's one worker thread, and a transaction's
+  /// BEGIN runs as BEGIN EXCLUSIVE in the rollback journal. A read on the second
+  /// connection that arrived between BEGIN and COMMIT found the file locked and
+  /// spun that thread in its busy timeout for about two minutes, while the
+  /// transaction's next statement waited behind it, and every later read and
+  /// write behind both. On one connection that read simply waits in Dart until
+  /// the transaction ends, a few milliseconds.
   ///
-  /// The connection cannot simply switch to `singleInstance: true`, because
-  /// sqflite caches by path: whichever of the read-only and writable opens
-  /// happened first would win and hand the other the wrong mode. So the reuse
-  /// is kept here instead.
+  /// The handle is kept, as the separate connection was, because every X
+  /// request reads its accounts first and should not queue on sqflite's
+  /// open lock to find a connection that is already open. A failed open is
+  /// not kept: the first read can land before the file exists.
   static Future<Database> readOnly() {
-    final cached = _readOnly;
-    if (cached != null) {
-      return cached;
-    }
-
-    final opening = openDatabase(
-      databaseName,
-      readOnly: true,
-      singleInstance: false,
-    );
-    _readOnly = opening;
-
-    // A failure must not latch: the first read can land before the file exists.
-    // Caching a rejected future would fail every later read for the life of the
-    // process, which is exactly the bug fixed in TwitterHeaders.
+    final cached = _shared;
+    if (cached != null) return cached;
+    final opening = writable();
+    _shared = opening;
     unawaited(
-      opening.then(
-        (_) {},
-        onError: (Object _) {
-          if (identical(_readOnly, opening)) {
-            _readOnly = null;
-          }
-        },
-      ),
+      opening.then((_) {}, onError: (Object _) {
+        if (identical(_shared, opening)) _shared = null;
+      }),
     );
-
     return opening;
   }
 
+  static Future<Database>? _shared;
+
+  /// The app's one connection; sqflite keeps a single open instance per path.
   static Future<Database> writable() async {
     return openDatabase(databaseName);
   }

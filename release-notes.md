@@ -1,5 +1,10 @@
 ## XTA — aimdi170
 
+### Adding someone to a group no longer freezes the app
+
+- Adding a timeline author to a group with the avatar's + could leave the whole app stuck: likes, saves and group changes stopped, and X stopped loading until the app was restarted. Saving the group locked the database, and a read arriving at that moment, such as X looking up its accounts before every request, spun the phone's only database thread for about two minutes while everything else queued behind it.
+- Reads and saves now share one database connection, so a read that arrives during a save waits a few milliseconds for it instead. The diagnostic from aimdi169 now reports one "database read" and one "database save".
+
 ### Compact group header
 
 - A group's member count no longer takes a row of its own under the title. The group's mark, its name and the count now share the top bar, so every group timeline starts higher up the screen.
