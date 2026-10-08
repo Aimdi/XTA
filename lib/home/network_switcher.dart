@@ -4,6 +4,7 @@ import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/alt_microblogging_mark.dart';
+import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -207,7 +208,15 @@ class _NetworkSwitcherSheet extends StatelessWidget {
     final members = plugins.where((plugin) => isAltMicrobloggingSource(plugin.id)).toList();
     return ExpansionTile(
       key: const PageStorageKey('network-switcher-alt-microblogging'),
-      leading: const AltMicrobloggingMark(size: 28),
+      // The pair's glyphs span the whole 28dp, like the brand tiles in the rows beside it.
+      leading: const SizedBox.square(
+        dimension: 28,
+        child: OverflowBox(
+          maxWidth: 28 / pluginMarkLiveShare,
+          maxHeight: 28 / pluginMarkLiveShare,
+          child: AltMicrobloggingMark(size: 28 / pluginMarkLiveShare),
+        ),
+      ),
       title: Text(L10n.of(context).alt_microblogging),
       initiallyExpanded: isAltMicrobloggingSource(currentId),
       children: [for (final plugin in members) _row(context, plugin)],

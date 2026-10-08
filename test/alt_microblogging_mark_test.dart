@@ -24,10 +24,13 @@ void main() {
     final marks = tester.widgetList<PluginBrandMark>(find.byType(PluginBrandMark)).toList();
     expect(marks.map((mark) => mark.plugin.id), [pluginIdBluesky, pluginIdMastodon]);
     final box = tester.getRect(find.byType(AltMicrobloggingMark));
-    final bluesky = tester.getRect(find.byWidget(marks.first));
-    final mastodon = tester.getRect(find.byWidget(marks.last));
-    expect(bluesky.topLeft, box.topLeft);
-    expect(mastodon.bottomRight, box.bottomRight);
+    final live = box.deflate(box.width * (1 - pluginMarkLiveShare) / 2);
+    Rect glyph(PluginBrandMark mark) =>
+        tester.getRect(find.descendant(of: find.byWidget(mark), matching: find.byType(CustomPaint)).first);
+    final bluesky = glyph(marks.first);
+    final mastodon = glyph(marks.last);
+    expect(bluesky.topLeft, offsetMoreOrLessEquals(live.topLeft));
+    expect(mastodon.bottomRight, offsetMoreOrLessEquals(live.bottomRight));
     expect(bluesky.overlaps(mastodon), isTrue);
   });
 

@@ -5,6 +5,9 @@ import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/alt_microblogging_mark.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 
+/// The box every row's mark is drawn in; marks are built at this size rather than shrunk or stretched into it.
+const double homeTimelineMarkSize = 24;
+
 class HomeTimelineOption {
   final String id;
   final String label;
@@ -86,7 +89,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
           HomeTimelineOption(
             id: id,
             label: L10n.of(context).alt_microblogging,
-            mark: const AltMicrobloggingMark(size: 22),
+            mark: const AltMicrobloggingMark(size: homeTimelineMarkSize),
             plugin: true,
             unread: members.any((option) => option.unread),
           )
@@ -215,11 +218,14 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
           child: ListTile(
             key: ValueKey('home-${group ? 'group' : 'source'}-${option.id}'),
             minTileHeight: 52,
-            minLeadingWidth: 24,
+            minLeadingWidth: homeTimelineMarkSize,
             horizontalTitleGap: 12,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            leading: SizedBox(width: 24, height: 24, child: ExcludeSemantics(child: option.mark)),
+            leading: SizedBox.square(
+              dimension: homeTimelineMarkSize,
+              child: Center(child: ExcludeSemantics(child: option.mark)),
+            ),
             title: Text(option.label, style: TextStyle(fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500)),
             subtitle: option.subtitle == null ? null : Text(option.subtitle!),
             trailing: Row(

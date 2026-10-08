@@ -42,6 +42,11 @@
 - Reddit and Hacker News comments each sit in their own rounded, tinted bubble. The colour follows the reply depth (blue, violet, green, amber, pink, orange, then again), so a reply is easy to tell from the comment it answers; the thin lines at the left are gone. Text keeps full contrast on every tint, in light, dim and true-black themes.
 - Tapping anywhere on a Reddit comment now folds it; the avatar opens the profile like the name does. Reddit's "more replies" and deleted comments are outlined instead of filled.
 
+### Same-size logos
+
+- Every service logo in the Home source list (and in the headers, the network switcher and the plugin store) now paints at the same size. Before, drawn logos like Pixiv, TikTok and Instagram filled their slot while icon logos like Hacker News, Booru, Aktien and RSS stayed small.
+- X shows its 𝕏 logo in the source list instead of a "×".
+
 ### Telegram-style bottom bar
 
 - The bottom bar is a frosted, slightly see-through pill floating above the page, like Telegram's: posts scroll on behind it and show through faintly. The selected tab sits on a soft tinted highlight that covers its icon and label and slides when you switch.

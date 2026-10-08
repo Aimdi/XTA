@@ -88,7 +88,7 @@ Widget pluginBrandIcon(
     ),
     child: pluginMark(
       plugin,
-      size: size * 0.55,
+      size: size * 0.6,
       color: brand == scheme.onSurface ? scheme.primary : brand,
     ),
   );

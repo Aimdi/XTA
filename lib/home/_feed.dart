@@ -42,6 +42,9 @@ import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
+typedef FeedTabMarkBuilder = Widget Function(double size);
+
+Widget _xMark(double size) => pluginMark(coreXPlugin, size: size);
 
 /// One entry on the home feed strip (Following, For you, or a pinned plugin).
 ///
@@ -82,9 +85,12 @@ class FeedTabOption {
   final FeedTab id;
   final FeedTabTitleBuilder titleBuilder;
   final IconData? icon;
-  final Widget? mark;
+  final FeedTabMarkBuilder? markBuilder;
 
-  FeedTabOption(this.id, this.titleBuilder, {this.icon, this.mark});
+  FeedTabOption(this.id, this.titleBuilder, {this.icon, this.markBuilder});
+
+  /// The mark drawn at [size], for rows that give it a bigger box than the strip.
+  Widget markAt(double size) => markBuilder?.call(size) ?? markIcon(icon ?? id.icon, size: size);
 }
 
 /// House for Following, spark for For you — matches the chip-style tab row.
@@ -94,7 +100,7 @@ const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
   FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
+  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close, markBuilder: _xMark),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -105,7 +111,7 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
 List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
     FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
+    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close, markBuilder: _xMark),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
     if (pluginId == pluginIdX) continue;
@@ -114,7 +120,12 @@ List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefSer
       continue;
     }
     options.add(
-      FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c), icon: plugin.icon, mark: pluginMark(plugin, size: 16)),
+      FeedTabOption(
+        FeedTab(pluginId),
+        (c) => plugin.title(c),
+        icon: plugin.icon,
+        markBuilder: (size) => pluginMark(plugin, size: size),
+      ),
     );
   }
   return List.unmodifiable(options);
@@ -625,7 +636,7 @@ class _FeedScreenState extends State<FeedScreen> {
           return GroupUnreadScope(
             builder: (context, unreadIds) => HomeTimelineTitle(
               label: source.titleBuilder(context),
-              mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+              mark: source.markAt(22),
               unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
               onPressed: () => _pickSource(context),
             ),

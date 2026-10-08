@@ -8,6 +8,8 @@ import 'package:xta/plugins/plugin_registry.dart';
 ///
 /// A gap is cut out of the butterfly around Mastodon's mark rather than painting a ring in a background colour, so the
 /// two stay apart on every surface this is drawn on.
+///
+/// Together the two glyphs span the same live area a single [PluginBrandMark] of [size] does.
 class AltMicrobloggingMark extends StatelessWidget {
   final double size;
 
@@ -19,6 +21,9 @@ class AltMicrobloggingMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final glyph = size * _glyphShare;
+    // Each mark pads its own glyph; this lines the glyphs' outer edges up with the live area.
+    final inset = (size - glyph) * (1 - pluginMarkLiveShare) / 2;
+    final mastodonCenter = size - 2 * inset - glyph / 2;
     final bluesky = pluginById(pluginIdBluesky);
     final mastodon = pluginById(pluginIdMastodon);
     return SizedBox.square(
@@ -27,17 +32,22 @@ class AltMicrobloggingMark extends StatelessWidget {
         children: [
           if (bluesky != null)
             Positioned(
-              left: 0,
-              top: 0,
+              left: inset,
+              top: inset,
               child: ClipPath(
                 clipper: _CutOut(
-                  center: Offset(size - glyph / 2, size - glyph / 2),
-                  radius: glyph / 2 + size * _gapShare,
+                  center: Offset(mastodonCenter, mastodonCenter),
+                  radius: glyph * pluginMarkLiveShare / 2 + size * _gapShare,
                 ),
                 child: pluginMark(bluesky, size: glyph),
               ),
             ),
-          if (mastodon != null) Positioned(right: 0, bottom: 0, child: pluginMark(mastodon, size: glyph)),
+          if (mastodon != null)
+            Positioned(
+              right: inset,
+              bottom: inset,
+              child: pluginMark(mastodon, size: glyph),
+            ),
         ],
       ),
     );
