@@ -103,4 +103,17 @@ void main() {
     store.observedPage(0);
     expect(store.state.pageIndex, 30);
   });
+
+  test('the slider shows the page under the thumb without moving the reader until released', () {
+    final store = PixivReaderStore(pageCount: 25, initialPage: 2, vertical: false);
+    addTearDown(store.destroy);
+    expect(store.state.vertical, isFalse);
+
+    store.scrub(30);
+    expect((store.state.pageIndex, store.state.shownIndex), (2, 24));
+    store.selectPage(3);
+    expect(store.state.shownIndex, 24);
+    store.scrub(null);
+    expect(store.state.shownIndex, 3);
+  });
 }

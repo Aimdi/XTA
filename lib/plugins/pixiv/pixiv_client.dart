@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
@@ -6,6 +7,7 @@ import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_ugoira.dart';
 import 'package:xta/utils/json.dart';
 
 enum PixivErrorKind {
@@ -69,6 +71,7 @@ class PixivClient {
   String get _refreshToken =>
       (prefs.get<String>(optionPluginPixivRefreshToken) ?? '').trim();
   bool get showR18 => prefs.get<bool>(optionPluginPixivShowR18) == true;
+  bool get hideAi => prefs.get<bool>(optionPluginPixivHideAi) == true;
 
   static String _pad(int value, [int width = 2]) =>
       '$value'.padLeft(width, '0');
@@ -433,10 +436,11 @@ class PixivClient {
     await _apiPost('/v1/illust/bookmark/delete', {'illust_id': '$illustId'});
   }
 
-  PixivIllustPage _illustPage(Object? json, {bool? includeR18}) {
+  /// [ownList] keeps everything the reader saved on purpose, AI works included.
+  PixivIllustPage _illustPage(Object? json, {bool? includeR18, bool ownList = false}) {
     final root = Json(json);
     return PixivIllustPage(
-      illusts: parsePixivIllustList(json, includeR18: includeR18 ?? showR18),
+      illusts: parsePixivIllustList(json, includeR18: includeR18 ?? showR18, includeAi: ownList || !hideAi),
       nextUrl: root['next_url'].string,
     );
   }
@@ -499,6 +503,7 @@ class PixivClient {
       'filter': 'for_android',
     });
     final r18 = showR18;
+    final ai = !hideAi;
     return [
       for (final entry in Json(json)['trend_tags'].list)
         if (entry['tag'].string case final String name when name.isNotEmpty)
@@ -506,7 +511,7 @@ class PixivClient {
             name: name,
             translatedName: entry['translated_name'].string,
             illust: switch (pixivIllustFromJson(entry['illust'].raw)) {
-              final illust? when r18 || !illust.isR18 => illust,
+              final illust? when (r18 || !illust.isR18) && (ai || !illust.isAi) => illust,
               _ => null,
             },
           ),
@@ -572,7 +577,7 @@ class PixivClient {
             'filter': 'for_android',
           })
         : await _apiGetUrl(nextUrl);
-    return _illustPage(json, includeR18: true);
+    return _illustPage(json, includeR18: true, ownList: true);
   }
 
   Future<PixivIllustPage> searchIllust(
@@ -624,6 +629,28 @@ class PixivClient {
       );
     }
     return illust;
+  }
+
+  Future<PixivUgoira> ugoiraMetadata(int illustId) async {
+    final json = await _apiGet('/v1/ugoira/metadata', {'illust_id': '$illustId'});
+    final ugoira = parsePixivUgoira(json);
+    if (ugoira == null) {
+      throw PixivException(PixivErrorKind.badResponse, 'empty ugoira $illustId');
+    }
+    return ugoira;
+  }
+
+  /// An ugoira's frame archive; the image CDN only answers with Pixiv's Referer.
+  Future<Uint8List> ugoiraArchive(String url) async {
+    final uri = Uri.parse(url);
+    final http.Response response;
+    try {
+      response = await httpClient.get(uri, headers: pixivImageHeaders).timeout(const Duration(seconds: 60));
+    } catch (e) {
+      throw PixivException(PixivErrorKind.network, '$e');
+    }
+    _throwForStatus(response, uri);
+    return response.bodyBytes;
   }
 
   Future<PixivIllustPage> related(

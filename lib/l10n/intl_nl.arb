@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Deze pagina downloaden",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Alle pagina’s downloaden",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Alle pagina’s",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Link kopiëren",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link gekopieerd",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Meer acties",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Pagina {current} van {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Pagina {current} van {total} downloaden…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Meer van {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Animatie afspelen",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Animatie pauzeren",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Met AI gegenereerde werken verbergen",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Verbergt werken die makers als met AI gegenereerd hebben gemarkeerd. Je eigen bladwijzers blijven altijd zichtbaar.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

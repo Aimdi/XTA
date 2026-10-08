@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Descarcă această pagină",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Descarcă toate paginile",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Toate paginile",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Copiază linkul",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link copiat",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Mai multe acțiuni",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Pagina {current} din {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Se descarcă pagina {current} din {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Mai multe de la {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Redă animația",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Întrerupe animația",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Ascunde lucrările generate cu IA",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Ascunde lucrările pe care autorii le-au marcat ca generate cu IA. Semnele tale de carte rămân mereu vizibile.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "IA",
+  "@plugin_pixiv_ai": {}
 }

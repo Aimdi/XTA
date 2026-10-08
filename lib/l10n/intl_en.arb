@@ -3851,5 +3851,57 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Download this page",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Download all pages",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "All pages",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Copy link",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link copied",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "More actions",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Page {current} of {total}",
+  "@plugin_pixiv_current_page": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_downloading_page": "Downloading page {current} of {total}…",
+  "@plugin_pixiv_downloading_page": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plugin_pixiv_more_by": "More by {name}",
+  "@plugin_pixiv_more_by": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "plugin_pixiv_ugoira_play": "Play animation",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Pause animation",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Hide AI-generated works",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Leaves out works their creators marked as AI-generated. Your own bookmarks always stay visible.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

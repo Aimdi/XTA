@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "تنزيل هذه الصفحة",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "تنزيل كل الصفحات",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "كل الصفحات",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "نسخ الرابط",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "تم نسخ الرابط",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "إجراءات أخرى",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "الصفحة {current} من {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "جارٍ تنزيل الصفحة {current} من {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "المزيد من {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "تشغيل الرسم المتحرك",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "إيقاف الرسم المتحرك مؤقتًا",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "إخفاء الأعمال المولّدة بالذكاء الاصطناعي",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "يُخفي الأعمال التي وسمها أصحابها بأنها مولّدة بالذكاء الاصطناعي. تبقى إشاراتك ظاهرة دائمًا.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "ذكاء اصطناعي",
+  "@plugin_pixiv_ai": {}
 }

@@ -365,6 +365,7 @@ const optionPluginPixivAccessToken = 'plugin.pixiv.access_token';
 const optionPluginPixivAccessExpiresAt = 'plugin.pixiv.access_expires_at';
 const optionPluginPixivUserId = 'plugin.pixiv.user_id';
 const optionPluginPixivShowR18 = 'plugin.pixiv.show_r18';
+const optionPluginPixivHideAi = 'plugin.pixiv.hide_ai';
 const optionPluginPixivMutedAuthors = 'plugin.pixiv.muted_authors';
 const optionPluginPixivMutedTags = 'plugin.pixiv.muted_tags';
 const optionPluginPixivMutedIllusts = 'plugin.pixiv.muted_illusts';

@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Stáhnout tuto stránku",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Stáhnout všechny stránky",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Všechny stránky",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Kopírovat odkaz",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Odkaz zkopírován",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Další akce",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Stránka {current} z {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Stahuje se stránka {current} z {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Další od {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Přehrát animaci",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Pozastavit animaci",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Skrýt díla vytvořená AI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Skryje díla, která autoři označili jako vytvořená AI. Vaše vlastní záložky zůstávají vždy viditelné.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

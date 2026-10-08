@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Scarica questa pagina",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Scarica tutte le pagine",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Tutte le pagine",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Copia link",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link copiato",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Altre azioni",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Pagina {current} di {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Download della pagina {current} di {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Altro di {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Riproduci animazione",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Metti in pausa l’animazione",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Nascondi le opere generate con l’IA",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Nasconde le opere che gli autori hanno segnalato come generate con l’IA. I tuoi segnalibri restano sempre visibili.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "IA",
+  "@plugin_pixiv_ai": {}
 }

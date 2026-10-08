@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Завантажити цю сторінку",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Завантажити всі сторінки",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Усі сторінки",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Копіювати посилання",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Посилання скопійовано",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Інші дії",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Сторінка {current} з {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Завантаження сторінки {current} з {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Більше від {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Відтворити анімацію",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Призупинити анімацію",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Приховувати роботи, створені ШІ",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Приховує роботи, які автори позначили як створені ШІ. Ваші закладки завжди залишаються видимими.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "ШІ",
+  "@plugin_pixiv_ai": {}
 }

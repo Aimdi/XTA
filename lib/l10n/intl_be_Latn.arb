@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Sćahnuć hetu staronku",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Sćahnuć usie staronki",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Usie staronki",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Skapijavać spasyłku",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Spasyłka skapijavana",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Inšyja dziejanni",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Staronka {current} z {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Spampoŭvajecca staronka {current} z {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Jašče ad {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Prajhrać animacyju",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Prypynić animacyju",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Chavać pracy, stvoranyja ŠI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Chavaje pracy, jakija aŭtary paznačyli jak stvoranyja ŠI. Ułasnyja zakladki zaŭsiody zastajucca bačnymi.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "ŠI",
+  "@plugin_pixiv_ai": {}
 }

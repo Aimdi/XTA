@@ -1,14 +1,10 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:http/http.dart' as http;
-import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/utils/download_directory.dart';
+import 'package:xta/plugins/pixiv/pixiv_author_works.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -16,11 +12,14 @@ import 'package:xta/plugins/pixiv/pixiv_grid.dart';
 import 'package:xta/plugins/pixiv/pixiv_image.dart';
 import 'package:xta/plugins/pixiv/pixiv_mute_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
+import 'package:xta/plugins/pixiv/pixiv_page_actions.dart';
+import 'package:xta/plugins/pixiv/pixiv_page_surface.dart';
 import 'package:xta/plugins/pixiv/pixiv_reader_screen.dart';
-import 'package:xta/plugins/pixiv/pixiv_post_actions.dart';
 import 'package:xta/plugins/pixiv/pixiv_search_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_ugoira_view.dart';
 import 'package:xta/plugins/pixiv/pixiv_settings.dart';
 import 'package:xta/plugins/pixiv/pixiv_user_screen.dart';
+import 'package:xta/plugins/pixiv/pixiv_zoomable.dart';
 import 'package:xta/subscriptions/widgets/fallback_avatar.dart';
 import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
@@ -37,8 +36,11 @@ class PixivIllustScreen extends StatefulWidget {
   State<PixivIllustScreen> createState() => _PixivIllustScreenState();
 }
 
-class _PixivIllustScreenState extends State<PixivIllustScreen> {
+enum _IllustMenu { downloadAll, folder, copyLink, open, mute, more }
+
+class _PixivIllustScreenState extends State<PixivIllustScreen> with PixivPageSurface {
   late PixivIllust _illust = widget.illust;
+  final _pager = PageController();
   List<PixivIllust> _related = const [];
   String? _relatedNext;
   Object? _error;
@@ -51,6 +53,53 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _pager.dispose();
+    super.dispose();
+  }
+
+  @override
+  PixivIllust get pageIllust => _illust;
+
+  @override
+  int get currentPage => _pageIndex;
+
+  @override
+  bool get offersVertical => true;
+
+  @override
+  void showPage(int page) {
+    if (_pager.hasClients) _pager.jumpToPage(page);
+  }
+
+  @override
+  void changeDirection() => _openReader(_pageIndex, vertical: true);
+
+  void _openReader(int page, {required bool vertical}) => Navigator.push(
+    context,
+    MaterialPageRoute<void>(
+      builder: (_) => PixivReaderScreen(illust: _illust, initialPage: page, vertical: vertical),
+    ),
+  );
+
+  void _onMenu(_IllustMenu item) {
+    switch (item) {
+      case _IllustMenu.downloadAll:
+        runPageAction(PixivPageAction.downloadAll, _pageIndex);
+      case _IllustMenu.folder:
+        _bookmarkIntoFolder();
+      case _IllustMenu.copyLink:
+        runPageAction(PixivPageAction.copyLink, _pageIndex);
+      case _IllustMenu.open:
+        openUri(context, _illust.url);
+      case _IllustMenu.mute:
+        _showMuteSheet();
+      case _IllustMenu.more:
+        runPageAction(PixivPageAction.more, _pageIndex);
+    }
   }
 
   Future<void> _load() async {
@@ -132,27 +181,12 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
         actions: [
           PixivBookmarkButton(illust: _illust),
           IconButton(
-            tooltip: l10n.plugin_pixiv_bookmark_folder,
-            onPressed: _bookmarkIntoFolder,
-            icon: const Icon(Icons.create_new_folder_outlined),
-          ),
-          IconButton(
-            tooltip: l10n.download,
-            onPressed: pages.isEmpty
-                ? null
-                : () => _downloadPage(pages[_pageIndex]),
+            key: const ValueKey('pixiv-illust-download'),
+            tooltip: l10n.plugin_pixiv_download_page,
+            onPressed: () => runPageAction(PixivPageAction.downloadPage, _pageIndex),
             icon: const Icon(Icons.download_outlined),
           ),
-          IconButton(
-            tooltip: l10n.plugin_pixiv_open_on_pixiv,
-            onPressed: () => openUri(context, _illust.url),
-            icon: const Icon(Icons.open_in_new),
-          ),
-          IconButton(
-            tooltip: l10n.plugin_pixiv_mute_illust,
-            onPressed: _showMuteSheet,
-            icon: const Icon(Icons.volume_off_outlined),
-          ),
+          _menu(l10n, pages.length),
         ],
       ),
       body: RefreshIndicator(
@@ -168,37 +202,9 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               SliverToBoxAdapter(child: _viewer(pages)),
-              if (pages.length > 1)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 16,
-                      children: [
-                        Text(
-                          l10n.plugin_pixiv_page_of(_pageIndex + 1, pages.length),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        FilledButton.tonalIcon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (_) => PixivReaderScreen(
-                                illust: _illust,
-                                initialPage: _pageIndex,
-                              ),
-                            ),
-                          ),
-                          icon: const Icon(Icons.arrow_downward),
-                          label: Text(l10n.plugin_pixiv_read_vertically),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              if (pages.length > 1) SliverToBoxAdapter(child: _pageBar(l10n, pages.length)),
               SliverToBoxAdapter(child: _meta(context)),
+              SliverToBoxAdapter(child: PixivAuthorWorks(key: ValueKey('pixiv-author-${_illust.userId}'), illust: _illust)),
               if (_loadingDetail)
                 const SliverToBoxAdapter(
                   child: Padding(
@@ -270,6 +276,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
     return SizedBox(
       height: height,
       child: PageView.builder(
+        controller: _pager,
         itemCount: pages.length,
         onPageChanged: (i) {
           setState(() => _pageIndex = i);
@@ -296,13 +303,12 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
             ],
           );
 
-          final body = GestureDetector(
-            onLongPress: () => showPixivPostActions(context, _illust),
-            child: InteractiveViewer(
-              minScale: 1,
-              maxScale: 4,
-              child: Center(child: image),
-            ),
+          final ugoira = index == 0 && _illust.isUgoira;
+          final body = PixivZoomable(
+            onTap: ugoira ? null : () => _openReader(index, vertical: false),
+            doubleTapZoom: !ugoira,
+            onLongPress: () => openPageActions(index),
+            child: Center(child: ugoira ? PixivUgoiraView(illust: _illust, poster: image) : image),
           );
 
           if (index == 0) {
@@ -323,7 +329,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
       headers: pixivImageHeaders,
       cache: true,
     );
-    precacheImage(provider, context).catchError((_) {});
+    precacheImage(provider, context, onError: (_, _) {});
   }
 
   Widget _meta(BuildContext context) {
@@ -435,6 +441,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
                     color: theme.colorScheme.error,
                   ),
                 ),
+              if (_illust.isAi) _stat(Icons.auto_awesome_outlined, l10n.plugin_pixiv_ai),
             ],
           ),
           if (_illust.caption.isNotEmpty) ...[
@@ -452,7 +459,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
               children: [
                 for (final tag in _illust.tags)
                   ActionChip(
-                    label: Text('#${tag.displayName}'),
+                    label: _tagLabel(tag),
                     visualDensity: VisualDensity.compact,
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     onPressed: () => Navigator.push(
@@ -466,6 +473,21 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
               ],
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  /// The tag as Pixiv spells it, with its translation beside it when there is one.
+  Widget _tagLabel(PixivTag tag) {
+    final translated = tag.translatedName?.trim() ?? '';
+    if (translated.isEmpty || translated == tag.name) return Text('#${tag.name}');
+    final muted = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: '#${tag.name}'),
+          TextSpan(text: '  $translated', style: TextStyle(color: muted)),
         ],
       ),
     );
@@ -486,44 +508,62 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
     );
   }
 
-  Future<void> _downloadPage(String url) async {
-    final l10n = L10n.of(context);
-    final messenger = ScaffoldMessenger.of(context);
-    final prefs = PrefService.of(context, listen: false);
-    try {
-      final response = await http.get(
-        Uri.parse(url),
-        headers: pixivImageHeaders,
-      );
-      if (response.statusCode != 200) {
-        throw Exception(response.statusCode);
-      }
-      const ext = 'jpg';
-      final name = 'pixiv_${_illust.id}_p$_pageIndex.$ext';
-      final treeUri = prefs.get<String>(optionDownloadTreeUri) ?? '';
-      final downloadType = prefs.get(optionDownloadType);
-      if (downloadType == optionDownloadTypeAsk || treeUri.isEmpty) {
-        await FlutterFileDialog.saveFile(
-          params: SaveFileDialogParams(
-            fileName: name,
-            data: response.bodyBytes,
+  Widget _menu(L10n l10n, int pages) => PopupMenuButton<_IllustMenu>(
+    key: const ValueKey('pixiv-illust-menu'),
+    onSelected: _onMenu,
+    itemBuilder: (_) => [
+      if (pages > 1) _menuItem(_IllustMenu.downloadAll, Icons.download_for_offline_outlined, l10n.plugin_pixiv_download_all),
+      _menuItem(_IllustMenu.folder, Icons.create_new_folder_outlined, l10n.plugin_pixiv_bookmark_folder),
+      _menuItem(_IllustMenu.copyLink, Icons.link, l10n.plugin_pixiv_copy_link),
+      _menuItem(_IllustMenu.open, Icons.open_in_new, l10n.plugin_pixiv_open_on_pixiv),
+      _menuItem(_IllustMenu.mute, Icons.volume_off_outlined, l10n.plugin_pixiv_mute_illust),
+      _menuItem(_IllustMenu.more, Icons.more_horiz, l10n.plugin_pixiv_more_actions),
+    ],
+  );
+
+  PopupMenuItem<_IllustMenu> _menuItem(_IllustMenu value, IconData icon, String label) => PopupMenuItem(
+    key: ValueKey('pixiv-illust-menu-${value.name}'),
+    value: value,
+    child: Row(
+      children: [
+        Icon(icon, size: 20),
+        const SizedBox(width: 12),
+        Flexible(child: Text(label)),
+      ],
+    ),
+  );
+
+  /// Page counter that opens every page, beside a quiet way into the reader.
+  Widget _pageBar(L10n l10n, int pages) {
+    final scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 8,
+        runSpacing: 4,
+        children: [
+          Tooltip(
+            message: l10n.plugin_pixiv_all_pages,
+            child: TextButton.icon(
+              key: const ValueKey('pixiv-illust-counter'),
+              style: TextButton.styleFrom(foregroundColor: scheme.onSurface, iconColor: scheme.onSurfaceVariant),
+              onPressed: openPageOverview,
+              icon: const Icon(Icons.grid_view_outlined, size: 18),
+              label: Text(l10n.plugin_pixiv_page_of(_pageIndex + 1, pages)),
+            ),
           ),
-        );
-      } else {
-        await DownloadDirectory.save(
-          treeUri: treeUri,
-          fileName: name,
-          bytes: response.bodyBytes,
-        );
-      }
-      if (mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(l10n.download)));
-      }
-    } catch (e) {
-      if (mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(e.toString())));
-      }
-    }
+          OutlinedButton.icon(
+            key: const ValueKey('pixiv-illust-read-vertically'),
+            style: OutlinedButton.styleFrom(iconColor: scheme.primary),
+            onPressed: changeDirection,
+            icon: const Icon(Icons.arrow_downward, size: 18),
+            label: Text(l10n.plugin_pixiv_read_vertically),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _bookmarkIntoFolder() async {
@@ -541,7 +581,7 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
       return;
     }
     if (!mounted) return;
-    final chosen = await showModalBottomSheet<String>(
+    final chosen = await showModalBottomSheet<({String restrict, String? folder})>(
       context: context,
       showDragHandle: true,
       builder: (sheetContext) {
@@ -553,13 +593,19 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
               ListTile(
                 leading: const Icon(Icons.bookmark_border),
                 title: Text(l10n.plugin_pixiv_bookmarks_public),
-                onTap: () => Navigator.pop(sheetContext, ''),
+                onTap: () => Navigator.pop(sheetContext, (restrict: 'public', folder: null)),
+              ),
+              ListTile(
+                key: const ValueKey('pixiv-bookmark-private'),
+                leading: const Icon(Icons.lock_outline),
+                title: Text(l10n.plugin_pixiv_bookmarks_private),
+                onTap: () => Navigator.pop(sheetContext, (restrict: 'private', folder: null)),
               ),
               for (final folder in folders)
                 ListTile(
                   leading: const Icon(Icons.folder_outlined),
                   title: Text(folder),
-                  onTap: () => Navigator.pop(sheetContext, folder),
+                  onTap: () => Navigator.pop(sheetContext, (restrict: 'public', folder: folder)),
                 ),
             ],
           ),
@@ -570,7 +616,8 @@ class _PixivIllustScreenState extends State<PixivIllustScreen> {
     try {
       await client.addBookmark(
         _illust.id,
-        folder: chosen.isEmpty ? null : chosen,
+        restrict: chosen.restrict,
+        folder: chosen.folder,
       );
       store.update({...store.state, _illust.id: true});
     } catch (e) {

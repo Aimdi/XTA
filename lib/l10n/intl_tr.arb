@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Bu sayfayı indir",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Tüm sayfaları indir",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Tüm sayfalar",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Bağlantıyı kopyala",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Bağlantı kopyalandı",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Diğer işlemler",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Sayfa {current}/{total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Sayfa {current}/{total} indiriliyor…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "{name} kullanıcısından daha fazlası",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Animasyonu oynat",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Animasyonu duraklat",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Yapay zekâ ile üretilmiş eserleri gizle",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Yaratıcılarının yapay zekâ ile üretildi olarak işaretlediği eserleri gizler. Kendi yer imlerin her zaman görünür kalır.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "YZ",
+  "@plugin_pixiv_ai": {}
 }

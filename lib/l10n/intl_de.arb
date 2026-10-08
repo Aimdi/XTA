@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Diese Seite herunterladen",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Alle Seiten herunterladen",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Alle Seiten",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Link kopieren",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link kopiert",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Weitere Aktionen",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Seite {current} von {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Seite {current} von {total} wird heruntergeladen…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Mehr von {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Animation abspielen",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Animation anhalten",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "KI-generierte Werke ausblenden",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Blendet Werke aus, die ihre Urheber als KI-generiert gekennzeichnet haben. Deine eigenen Lesezeichen bleiben immer sichtbar.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "KI",
+  "@plugin_pixiv_ai": {}
 }

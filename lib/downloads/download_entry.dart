@@ -1,4 +1,5 @@
 import 'package:path/path.dart' as p;
+import 'package:xta/plugins/pixiv/pixiv_models.dart' show pixivImageHeaders;
 
 enum DownloadStatus { queued, downloading, choosingLocation, saving, completed, failed, cancelled, interrupted }
 
@@ -108,6 +109,13 @@ Uri originalDownloadUri(Uri uri) {
   }
   final path = uri.path.replaceFirst(RegExp(r':(small|medium|large|thumb|orig)$'), '');
   return uri.replace(path: '$path:orig');
+}
+
+/// Headers a media host refuses to serve without; derived from the URL so a
+/// retried history entry sends them too.
+Map<String, String> downloadRequestHeaders(Uri uri) {
+  final host = uri.host.toLowerCase();
+  return host == 'pximg.net' || host.endsWith('.pximg.net') ? pixivImageHeaders : const {};
 }
 
 class DownloadRequest {

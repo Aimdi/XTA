@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Elŝuti ĉi tiun paĝon",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Elŝuti ĉiujn paĝojn",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Ĉiuj paĝoj",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Kopii ligilon",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Ligilo kopiita",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Pliaj agoj",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Paĝo {current} el {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Elŝutas paĝon {current} el {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Pli de {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Ludi la animacion",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Paŭzigi la animacion",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Kaŝi AI-generitajn verkojn",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Kaŝas verkojn, kiujn iliaj kreintoj markis kiel AI-generitajn. Viaj propraj legosignoj ĉiam restas videblaj.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

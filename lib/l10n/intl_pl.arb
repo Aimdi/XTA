@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Pobierz tę stronę",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Pobierz wszystkie strony",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Wszystkie strony",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Kopiuj link",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Skopiowano link",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Więcej działań",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Strona {current} z {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Pobieranie strony {current} z {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Więcej od {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Odtwórz animację",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Wstrzymaj animację",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Ukryj prace wygenerowane przez AI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Ukrywa prace, które autorzy oznaczyli jako wygenerowane przez AI. Twoje zakładki zawsze pozostają widoczne.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

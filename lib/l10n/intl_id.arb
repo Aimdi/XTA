@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Unduh halaman ini",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Unduh semua halaman",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Semua halaman",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Salin tautan",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Tautan disalin",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Tindakan lainnya",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Halaman {current} dari {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Mengunduh halaman {current} dari {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Lainnya dari {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Putar animasi",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Jeda animasi",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Sembunyikan karya buatan AI",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Menyembunyikan karya yang ditandai pembuatnya sebagai buatan AI. Penanda Anda sendiri selalu tetap terlihat.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

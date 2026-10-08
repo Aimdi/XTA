@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Скачать эту страницу",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Скачать все страницы",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Все страницы",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Копировать ссылку",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Ссылка скопирована",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Другие действия",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Страница {current} из {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Скачивание страницы {current} из {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Ещё от {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Воспроизвести анимацию",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Приостановить анимацию",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Скрывать работы, созданные ИИ",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Скрывает работы, которые авторы отметили как созданные ИИ. Ваши закладки всегда остаются видимыми.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "ИИ",
+  "@plugin_pixiv_ai": {}
 }

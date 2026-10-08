@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Last ned denne siden",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Last ned alle sidene",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Alle sider",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Kopier lenke",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Lenke kopiert",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Flere handlinger",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Side {current} av {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Laster ned side {current} av {total} …",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Mer fra {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Spill av animasjonen",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Sett animasjonen på pause",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Skjul KI-genererte verk",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Skjuler verk som skaperne har merket som KI-genererte. Dine egne bokmerker vises alltid.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "KI",
+  "@plugin_pixiv_ai": {}
 }

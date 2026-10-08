@@ -4,6 +4,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/settings/settings_view_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
 import 'package:xta/plugins/pixiv/pixiv_client.dart';
@@ -289,6 +290,7 @@ class _PixivSettingsScreenState extends State<PixivSettingsScreen> {
               setState(() => _showR18 = value);
             },
           ),
+          const PixivHideAiSwitch(),
           const SizedBox(height: 28),
           _mutedSection(l10n, theme),
         ],
@@ -514,6 +516,46 @@ class _PixivMorePaneState extends State<PixivMorePane> {
             },
           ),
       ],
+    );
+  }
+}
+
+/// Hides works their creators marked as AI-generated; off until switched on.
+class PixivHideAiSwitch extends StatefulWidget {
+  const PixivHideAiSwitch({super.key});
+
+  @override
+  State<PixivHideAiSwitch> createState() => _PixivHideAiSwitchState();
+}
+
+class _PixivHideAiSwitchState extends State<PixivHideAiSwitch> {
+  final _revision = SettingsRevisionStore();
+
+  @override
+  void dispose() {
+    _revision.destroy();
+    super.dispose();
+  }
+
+  Future<void> _set(BasePrefService prefs, bool value) async {
+    await prefs.set(optionPluginPixivHideAi, value);
+    _revision.refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final prefs = PrefService.of(context, listen: false);
+    return ScopedBuilder<SettingsRevisionStore, int>(
+      store: _revision,
+      onState: (context, _) => SwitchListTile(
+        key: const ValueKey('pixiv-hide-ai'),
+        contentPadding: EdgeInsets.zero,
+        title: Text(l10n.plugin_pixiv_hide_ai),
+        subtitle: Text(l10n.plugin_pixiv_hide_ai_description),
+        value: prefs.get<bool>(optionPluginPixivHideAi) == true,
+        onChanged: (value) => _set(prefs, value),
+      ),
     );
   }
 }

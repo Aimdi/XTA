@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "下载本页",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "下载全部页面",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "全部页面",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "复制链接",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "已复制链接",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "更多操作",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "第 {current} 页，共 {total} 页",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "正在下载第 {current} 页，共 {total} 页…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "{name} 的更多作品",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "播放动图",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "暂停动图",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "隐藏 AI 生成作品",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "隐藏作者标注为 AI 生成的作品。你自己的收藏始终可见。",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }

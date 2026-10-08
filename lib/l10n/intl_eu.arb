@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Deskargatu orrialde hau",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Deskargatu orrialde guztiak",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Orrialde guztiak",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Kopiatu esteka",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Esteka kopiatu da",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Ekintza gehiago",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "{current}. orrialdea, guztira {total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "{current}. orrialdea deskargatzen, guztira {total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "{name}(r)en lan gehiago",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Erreproduzitu animazioa",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Pausatu animazioa",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Ezkutatu AAk sortutako lanak",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Egileek AAk sortutzat markatutako lanak ezkutatzen ditu. Zure laster-markak beti ikusgai geratzen dira.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AA",
+  "@plugin_pixiv_ai": {}
 }

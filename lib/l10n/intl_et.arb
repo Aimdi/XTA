@@ -3654,5 +3654,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Laadi see leht alla",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Laadi kõik lehed alla",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Kõik lehed",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Kopeeri link",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Link kopeeritud",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Rohkem toiminguid",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Leht {current}/{total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Laadin alla lehte {current}/{total}…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Veel autorilt {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Esita animatsioon",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Peata animatsioon",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Peida tehisintellekti loodud teosed",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Peidab teosed, mille autorid on märkinud tehisintellekti loodud teosteks. Sinu järjehoidjad jäävad alati nähtavaks.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "TI",
+  "@plugin_pixiv_ai": {}
 }

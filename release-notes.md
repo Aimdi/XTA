@@ -22,6 +22,13 @@
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
 - "Changes saved – Undo" no longer stays until you tap it: it leaves after 5 seconds. With TalkBack on it still waits for you. Download progress still stays until the download ends.
 
+### Pixiv: all pages, downloads and more
+
+- Tapping the page counter ("1 / 25") opens every page as a grid of thumbnails with their numbers; the current page is ringed, and a tap jumps to a page. The old wall of orange number pills is gone, and "Vertikal lesen" is an outlined button instead of a solid one.
+- Download this page or all pages, in original quality, through the app's download queue. "Download all" shows "Seite 3 von 25 wird heruntergeladen…" with Abbrechen; a failed page doesn't stop the rest. Files are named pixiv-<id>_p<page>.
+- The reader has a page slider, double-tap zoom and a long-press menu per page; tapping an image on the work's page opens it full screen with zoom.
+- Animated works (ugoira) play in place, a "More by" strip shows the artist's other works, tags show their translation beside the original, Copy link is in the menu, AI-generated works can be hidden (Pixiv settings), and bookmarks can be private.
+
 ### Booru: tag search that keeps your searches
 
 - Searches are saved again, however you start them, and recent searches come back whenever you tap the search field, even over results. Each entry runs again with one tap and can be removed on its own (✕ or swipe).

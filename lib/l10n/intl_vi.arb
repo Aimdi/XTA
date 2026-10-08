@@ -3651,5 +3651,33 @@
         "type": "String"
       }
     }
-  }
+  },
+  "plugin_pixiv_download_page": "Tải trang này xuống",
+  "@plugin_pixiv_download_page": {},
+  "plugin_pixiv_download_all": "Tải tất cả các trang xuống",
+  "@plugin_pixiv_download_all": {},
+  "plugin_pixiv_all_pages": "Tất cả các trang",
+  "@plugin_pixiv_all_pages": {},
+  "plugin_pixiv_copy_link": "Sao chép liên kết",
+  "@plugin_pixiv_copy_link": {},
+  "plugin_pixiv_link_copied": "Đã sao chép liên kết",
+  "@plugin_pixiv_link_copied": {},
+  "plugin_pixiv_more_actions": "Thao tác khác",
+  "@plugin_pixiv_more_actions": {},
+  "plugin_pixiv_current_page": "Trang {current}/{total}",
+  "@plugin_pixiv_current_page": {},
+  "plugin_pixiv_downloading_page": "Đang tải trang {current}/{total} xuống…",
+  "@plugin_pixiv_downloading_page": {},
+  "plugin_pixiv_more_by": "Thêm từ {name}",
+  "@plugin_pixiv_more_by": {},
+  "plugin_pixiv_ugoira_play": "Phát hoạt ảnh",
+  "@plugin_pixiv_ugoira_play": {},
+  "plugin_pixiv_ugoira_pause": "Tạm dừng hoạt ảnh",
+  "@plugin_pixiv_ugoira_pause": {},
+  "plugin_pixiv_hide_ai": "Ẩn tác phẩm do AI tạo",
+  "@plugin_pixiv_hide_ai": {},
+  "plugin_pixiv_hide_ai_description": "Ẩn các tác phẩm được tác giả đánh dấu là do AI tạo. Dấu trang của bạn luôn hiển thị.",
+  "@plugin_pixiv_hide_ai_description": {},
+  "plugin_pixiv_ai": "AI",
+  "@plugin_pixiv_ai": {}
 }
