@@ -8,7 +8,7 @@ Implement the approved compact Home proposal on aimdi144 without replacing XTA's
 
 The user requested Reddit's minimal Home presentation across plugins, with options on the right. Embedded plugin feeds now use the existing 56px Home header as their only navigation toolbar. The source title can show the active section beneath it at normal text sizes; at larger sizes the section remains available in the options sheet and accessibility label.
 
-Search or the primary action stays direct. A right-side options button opens section selection, Alt Microblogging service switching and the existing reading controls. Secondary actions share an overflow menu, including Open full client. Closing the sheet must leave the reader and its loading/scroll state intact. Reddit and X retain their existing compact host controls. Other embedded feed plugins use the shared host without an allowlist. Standalone navigation stays independent.
+Search or the primary action stays direct. A right-side options button opens section selection, Alt Microblogging service switching and the existing reading controls. Secondary actions share an overflow menu, including Open full client. Closing the sheet must leave the reader and its loading/scroll state intact. Every pinned source, X and Reddit included, uses the shared compact host without an allowlist; X has no full-client entry because its options already list its library destinations. Only Following keeps the Home app bar and its reading controls. Standalone navigation stays independent.
 
 The earlier always-visible service/context row is superseded by this smaller layout. No automatic collapse is needed for the plugin navigation; the existing expanded host remains supported for standalone fixtures and consumers.
 

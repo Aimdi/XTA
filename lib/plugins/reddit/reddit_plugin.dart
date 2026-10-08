@@ -17,7 +17,6 @@ import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_category.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
-import 'package:xta/plugins/reddit/reddit_feed_list.dart';
 import 'package:xta/plugins/reddit/reddit_screen.dart';
 import 'package:xta/plugins/reddit/reddit_search_screen.dart';
 import 'package:xta/plugins/reddit/reddit_store.dart';
@@ -74,13 +73,6 @@ class RedditPlugin extends XtaPlugin with SubscriptionSource {
   @override
   Widget homeScreen({required ScrollController scrollController}) {
     return RedditScreen(scrollController: scrollController);
-  }
-
-  @override
-  Widget feedStripScreen({required ScrollController scrollController}) {
-    // Compact listing with Reddit-specific app-bar actions — not the full
-    // bottom-tab shell that would nest another nav strip under Home.
-    return RedditFeedList(scrollController: scrollController);
   }
 
   @override

@@ -458,7 +458,13 @@ class PluginDockOptionsButton extends StatelessWidget {
                         ),
                       ),
                     ],
-                    if (includeActions) ..._actionEntries(context, opener, navigation?.actions ?? const []),
+                    if (includeActions) ...[
+                      ..._actionEntries(context, opener, navigation?.actions ?? const []),
+                      // Host timeline actions follow the reader's own as a separate group.
+                      if ((navigation?.actions.isNotEmpty ?? false) && (reading?.actions.isNotEmpty ?? false))
+                        const Divider(),
+                      ..._actionEntries(context, opener, reading?.actions ?? const []),
+                    ],
                     if ((includeActions || (navigation?.actions.isEmpty ?? true)) && scope.onOpenClient != null)
                       ListTile(
                         key: ValueKey('open-client-$source'),
@@ -492,12 +498,18 @@ class PluginDockOptionsButton extends StatelessWidget {
           if (entry is PopupMenuDivider) {
             yield const Divider();
           } else if (entry is PopupMenuItem<String>) {
+            // A menu row drawn as a ListTile keeps its icon and description here.
+            final tile = entry.child is ListTile ? entry.child as ListTile : null;
             yield ListTile(
               key: entry.key,
               minTileHeight: 48,
-              title: entry.child,
+              leading: tile?.leading,
+              title: tile?.title ?? entry.child,
+              subtitle: tile?.subtitle,
               enabled: entry.enabled,
-              trailing: entry is CheckedPopupMenuItem<String> && entry.checked ? const Icon(Icons.check) : null,
+              trailing: entry is CheckedPopupMenuItem<String> && entry.checked
+                  ? const Icon(Icons.check)
+                  : tile?.trailing,
               onTap: () => _selectAction(sheet, opener, () {
                 entry.onTap?.call();
                 if (entry.value != null) action.select(opener, entry.value!);

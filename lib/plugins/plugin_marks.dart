@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/plugin.dart';
+import 'package:xta/plugins/x/x_plugin.dart' show pluginIdX;
 
 /// Service mark for a plugin — official glyphs where we have them, Material
 /// fallback otherwise.
@@ -22,8 +23,9 @@ class PluginBrandMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tint = color ?? plugin.brandColor;
+    final tint = color ?? pluginMarkTint(context, plugin);
     return switch (plugin.id) {
+      pluginIdX => _paint(_PathPainter(_x, tint)),
       pluginIdBluesky => BlueskyButterflyIcon(size: size, color: tint),
       pluginIdSubstack => _paint(_SubstackPainter(tint)),
       pluginIdPixiv => _paint(_PathPainter(_pixiv, tint)),
@@ -39,6 +41,13 @@ class PluginBrandMark extends StatelessWidget {
   Widget _paint(CustomPainter painter) =>
       CustomPaint(size: Size.square(size), painter: painter);
 }
+
+/// X's mark is monochrome and follows the text colour, as X draws it;
+/// every other mark uses its brand colour.
+Color pluginMarkTint(BuildContext context, XtaPlugin plugin) =>
+    plugin.id == pluginIdX
+    ? Theme.of(context).colorScheme.onSurface
+    : plugin.brandColor;
 
 /// The same mark the store, strip and plugin-timelines sheet should share.
 Widget pluginMark(XtaPlugin plugin, {double size = 24, Color? color}) {
@@ -297,4 +306,33 @@ final _pixiv = Path()
   ..cubicTo(17.437, 13.759, 17.971, 12.524, 17.977, 11.024)
   ..cubicTo(17.972, 9.484, 17.473, 8.16, 16.557, 7.164)
   ..cubicTo(15.639, 6.172, 14.283, 5.519, 12.555, 5.518)
+  ..close();
+
+// X geometry: Simple Icons (CC0), icons/x.svg at revision
+// d4e6ba93e48f178898707f0145ec285f28b64b38.
+final _x = Path()
+  ..fillType = PathFillType.evenOdd
+  ..moveTo(14.234, 10.162)
+  ..lineTo(22.977, 0)
+  ..lineTo(20.905, 0)
+  ..lineTo(13.314, 8.824)
+  ..lineTo(7.251, 0)
+  ..lineTo(0.258, 0)
+  ..lineTo(9.426, 13.343)
+  ..lineTo(0.258, 24)
+  ..lineTo(2.33, 24)
+  ..lineTo(10.346, 14.682)
+  ..lineTo(16.749, 24)
+  ..lineTo(23.742, 24)
+  ..lineTo(14.234, 10.162)
+  ..close()
+  ..moveTo(11.397, 13.461)
+  ..lineTo(10.468, 12.132)
+  ..lineTo(3.076, 1.56)
+  ..lineTo(6.258, 1.56)
+  ..lineTo(12.223, 10.092)
+  ..lineTo(13.152, 11.421)
+  ..lineTo(20.906, 22.511)
+  ..lineTo(17.724, 22.511)
+  ..lineTo(11.397, 13.461)
   ..close();

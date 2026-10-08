@@ -489,8 +489,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(find.byKey(_media), findsNothing);
     final original = tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed;
-    await tester.tap(find.byIcon(Icons.refresh));
+    // For you's refresh lives in the compact header's options sheet.
+    await tester.tap(find.byKey(const ValueKey('home-plugin-options')));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.tap(find.widgetWithText(ListTile, 'Refresh'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.widgetWithText(ListTile, 'Refresh'), findsNothing);
     expect(tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed, same(original));
     h.selected.select(FeedTab.following);
     await tester.pumpAndSettle();

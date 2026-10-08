@@ -6,6 +6,12 @@
 - The Recent / Popular / Custom / Discover / Media row is slimmer and loses its doubled divider line; every chip keeps a full-size touch target.
 - On a pushed group, the whole title (mark, name and count) opens the group switcher.
 
+### X and Reddit share the compact Home header
+
+- In Home, X and Reddit now open with the same single row as Pixiv, Substack and Hacker News: the service logo (tap it to switch source), Reddit's Following / Popular / All, search, and the options button. Everything else (X's refresh, loaded-post search, account filter, Subscriptions, Saved, Accounts; Reddit's sort, communities, saved, reading route and settings) is in the options sheet. Following is unchanged.
+- The options button shows a dot while an X account or group is filtered out of Home.
+- Home's Reddit tab now opens on the section you last chose (Following, Popular, All or a community) instead of always the merged Following list, and changing Reddit's sort or reading route in Home now refetches straight away instead of up to ten minutes later.
+
 ### Messages leave sooner
 
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
