@@ -671,14 +671,7 @@ class _PaginatedTweetListState extends State<PaginatedTweetList> {
   }
 
   Widget _wrapWithRefresh(Widget child) {
-    child = ReadRecovery(
-      changes: _controller,
-      isLoading: () => _controller.value.isLoading,
-      recoverableFailure: () =>
-          recoverableReadFailure(pagingErrorOf(_controller.value)?.error ?? _controller.value.error),
-      retry: widget.feed.retryFailedRead,
-      child: child,
-    );
+    child = PagingReadRecovery(controller: _controller, retry: widget.feed.retryFailedRead, child: child);
     if (widget.onRefresh == null) return child;
     return RefreshIndicator(key: _refreshKey, onRefresh: _onRefreshTriggered, child: child);
   }

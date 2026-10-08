@@ -12,6 +12,11 @@
 - The options button shows a dot while an X account or group is filtered out of Home.
 - Home's Reddit tab now opens on the section you last chose (Following, Popular, All or a community) instead of always the merged Following list, and changing Reddit's sort or reading route in Home now refetches straight away instead of up to ten minutes later.
 
+### X tries again by itself
+
+- When something on X can't be loaded (a profile's posts, a timeline, followers, retweeters), XTA now tries again on its own, waiting a little longer each time (2, 5, 15, 30, 60 seconds) and showing "Versuche es in 5 s erneut …" with the manual retry and ⓘ still beside it. After a rate limit it tries once the limit resets. Nothing retries while you are offline, in another app or on another screen, and a failing retry can't loop.
+- Before, only connection drops and timeouts were retried (three times); errors like the one on a profile's posts tab never were. Sign-in problems and private, suspended or missing accounts still wait for you.
+
 ### Messages leave sooner
 
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.

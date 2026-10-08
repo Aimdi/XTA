@@ -3636,5 +3636,23 @@
   "@sync_unsafe_server": {},
   "sync_history": "Cadangan sebelumnya",
   "@sync_history": {},
-  "home_keep_controls_visible": "Selalu tampilkan kontrol"
+  "home_keep_controls_visible": "Selalu tampilkan kontrol",
+  "reader_auto_retry_seconds": "Mencoba lagi dalam {seconds} dtk…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Mencoba lagi dalam {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

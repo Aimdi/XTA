@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/group/batch_read_store.dart';
 import 'package:xta/group/future_pool.dart';
 import 'package:xta/ui/reader_failure.dart';
@@ -145,11 +146,11 @@ void main() {
     expect(started, [1]);
   });
 
-  test('recovery excludes non-network failures and coalesces repeated signals', () {
+  test('recovery excludes failures that need the reader and coalesces repeated signals', () {
     final gate = RecoveryGate();
     final error = const SocketException('offline');
     final now = DateTime(2026);
-    expect(recoverableReadFailure(StateError('bad data')), isNull);
+    expect(recoverableReadFailure(NoAccountAvailableException()), isNull);
     expect(gate.take(recoverableReadFailure(error), now, event: 1), isTrue);
     expect(gate.take(error, now.add(const Duration(seconds: 1)), event: 1), isFalse);
     expect(gate.take(TimeoutException('slow'), now.add(const Duration(seconds: 2)), event: 2), isFalse);

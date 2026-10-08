@@ -160,14 +160,8 @@ class _MediaGridState extends State<MediaGrid>
           )
         : mediaGridConfigOf(context);
 
-    return ReadRecovery(
-      changes: widget.controller,
-      isLoading: () => widget.controller.value.isLoading,
-      recoverableFailure: () => recoverableReadFailure(
-        pagingErrorOf(widget.controller.value)?.error ??
-            widget.controller.value.error,
-      ),
-      retry: widget.controller.fetchNextPage,
+    return PagingReadRecovery(
+      controller: widget.controller,
       child: RefreshIndicator(
         onRefresh: () async => widget.controller.refresh(),
         child: PagingListener<int, MediaGridItem>(

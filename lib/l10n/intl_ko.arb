@@ -3636,5 +3636,23 @@
   "@sync_unsafe_server": {},
   "sync_history": "이전 백업",
   "@sync_history": {},
-  "home_keep_controls_visible": "컨트롤 항상 표시"
+  "home_keep_controls_visible": "컨트롤 항상 표시",
+  "reader_auto_retry_seconds": "{seconds}초 후 다시 시도합니다…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "{time} 후 다시 시도합니다…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -9,6 +9,7 @@ import 'package:xta/user.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/read_recovery.dart';
 
 class ProfileFollows extends StatefulWidget {
   final UserWithExtra user;
@@ -94,45 +95,49 @@ class _ProfileFollowsState extends State<ProfileFollows>
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
         ),
-        body: PagingListener<int, UserWithExtra>(
+        body: PagingReadRecovery(
           controller: _pagingController,
-          builder: (context, state, fetchNextPage) {
-            if (pagingAwaitingFirstPage(state)) {
-              return const ProfileUserListSkeleton();
-            }
-            if (state.items == null) {
-              return FullPageErrorWidget(
-                error: pagingErrorOf(state)?.error,
-                stackTrace: pagingErrorOf(state)?.stackTrace,
-                prefix: l10n.unable_to_load_the_list_of_follows,
-                onRetry: fetchNextPage,
-              );
-            }
-            if (state.items!.isEmpty) {
-              return ProfileEmptyState(
-                icon: Icons.people_outline,
-                message: emptyText,
-              );
-            }
-            return PagedListView<int, UserWithExtra>(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.paddingOf(context).bottom,
-              ),
-              state: state,
-              fetchNextPage: fetchNextPage,
-              addAutomaticKeepAlives: false,
-              builderDelegate: PagedChildBuilderDelegate(
-                itemBuilder: (context, user, index) =>
-                    UserTile(user: UserSubscription.fromUser(user)),
-                newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+          child: PagingListener<int, UserWithExtra>(
+            controller: _pagingController,
+            builder: (context, state, fetchNextPage) {
+              if (pagingAwaitingFirstPage(state)) {
+                return const ProfileUserListSkeleton();
+              }
+              if (state.items == null) {
+                return FullPageErrorWidget(
                   error: pagingErrorOf(state)?.error,
                   stackTrace: pagingErrorOf(state)?.stackTrace,
-                  prefix: l10n.unable_to_load_the_next_page_of_follows,
+                  prefix: l10n.unable_to_load_the_list_of_follows,
                   onRetry: fetchNextPage,
+                );
+              }
+              if (state.items!.isEmpty) {
+                return ProfileEmptyState(
+                  icon: Icons.people_outline,
+                  message: emptyText,
+                );
+              }
+              return PagedListView<int, UserWithExtra>(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.paddingOf(context).bottom,
                 ),
-              ),
-            );
-          },
+                state: state,
+                fetchNextPage: fetchNextPage,
+                addAutomaticKeepAlives: false,
+                builderDelegate: PagedChildBuilderDelegate(
+                  itemBuilder: (context, user, index) =>
+                      UserTile(user: UserSubscription.fromUser(user)),
+                  newPageErrorIndicatorBuilder: (context) =>
+                      FullPageErrorWidget(
+                        error: pagingErrorOf(state)?.error,
+                        stackTrace: pagingErrorOf(state)?.stackTrace,
+                        prefix: l10n.unable_to_load_the_next_page_of_follows,
+                        onRetry: fetchNextPage,
+                      ),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

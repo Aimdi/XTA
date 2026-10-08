@@ -1,5 +1,6 @@
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:xta/ui/read_failure_kind.dart';
+import 'package:xta/ui/reader_failure.dart' show ScheduledReadRetry;
 import 'dart:async';
 import 'dart:io' show Platform, SocketException;
 
@@ -88,7 +89,11 @@ class ErrorLayout extends StatelessWidget {
           constraints: BoxConstraints(minHeight: constraints.hasBoundedHeight ? constraints.maxHeight : 0),
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: children),
+            // A surface that retries on its own says so below its buttons.
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [...children, const ScheduledReadRetry()],
+            ),
           ),
         ),
       ),

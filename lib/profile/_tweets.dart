@@ -27,6 +27,8 @@ class ProfileTweets extends StatefulWidget {
   final List<String> pinnedTweets;
   final BasePrefService pref;
   final PostsFilter filter;
+  @visibleForTesting
+  final Future<TweetStatus> Function(String? cursor)? fetchTweets;
 
   const ProfileTweets({
     super.key,
@@ -36,6 +38,7 @@ class ProfileTweets extends StatefulWidget {
     required this.pinnedTweets,
     required this.pref,
     this.filter = PostsFilter.all,
+    this.fetchTweets,
   });
 
   @override
@@ -96,18 +99,20 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
     return loadTweetsCounter;
   }
 
-  Future<TweetStatus> _load(String? cursor) => withRateLimitOperations(
-    [widget.includeReplies ? 'UserTweetsAndReplies' : 'UserTweets'],
-    () => Twitter.getTweets(
-      widget.user.idStr!,
-      widget.type,
-      widget.pinnedTweets,
-      cursor: cursor,
-      count: pageSize,
-      includeReplies: widget.includeReplies,
-      getTweetsCounter: getLoadTweetsCounter,
-      incrementTweetsCounter: incrementLoadTweetsCounter,
-    ),
+  Future<TweetStatus> _load(String? cursor) {
+    final operation = widget.includeReplies ? 'UserTweetsAndReplies' : 'UserTweets';
+    return withRateLimitOperations([operation], () => widget.fetchTweets?.call(cursor) ?? _getTweets(cursor));
+  }
+
+  Future<TweetStatus> _getTweets(String? cursor) => Twitter.getTweets(
+    widget.user.idStr!,
+    widget.type,
+    widget.pinnedTweets,
+    cursor: cursor,
+    count: pageSize,
+    includeReplies: widget.includeReplies,
+    getTweetsCounter: getLoadTweetsCounter,
+    incrementTweetsCounter: incrementLoadTweetsCounter,
   );
 
   /// The first page of a profile, from cache when it is fresh enough, and from
@@ -153,12 +158,8 @@ class _ProfileTweetsState extends State<ProfileTweets> with AutomaticKeepAliveCl
       sensitive: widget.user.possiblySensitive ?? false,
       errorMessage: L10n.current.possibly_sensitive_profile,
       wrapInCard: false,
-      child: ReadRecovery(
-        changes: _pagingController,
-        isLoading: () => _pagingController.value.isLoading,
-        recoverableFailure: () =>
-            recoverableReadFailure(pagingErrorOf(_pagingController.value)?.error ?? _pagingController.value.error),
-        retry: _pagingController.fetchNextPage,
+      child: PagingReadRecovery(
+        controller: _pagingController,
         child: RefreshIndicator(
           onRefresh: () async {
             _bypassCache = true;

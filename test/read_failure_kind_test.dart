@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:xta/catcher/exceptions.dart';
+import 'package:xta/client/errors.dart';
 import 'package:xta/ui/read_failure_kind.dart';
 
 HttpException _http(int status) => HttpException(http.Response('', status));
@@ -41,10 +42,40 @@ void main() {
       }
     });
 
-    test('session and rate-limit failures never auto-retry', () {
+    test('session and endpoint failures never auto-retry; rate limits wait for their reset', () {
       expect(recoverableReadFailure(_http(401)), isNull);
-      expect(recoverableReadFailure(_http(429)), isNull);
+      expect(recoverableReadFailure(NoAccountAvailableException()), isNull);
       expect(recoverableReadFailure(EndpointRefusedException('SearchTimeline')), isNull);
+      expect(readRetryOf(_http(429)), ReadRetry.atReset);
+      expect(readRetryOf(RateLimitedException()), ReadRetry.atReset);
+      expect(recoverableReadFailure(_http(429)), isNotNull);
+    });
+
+    test('every other failure is transient and retried on a backoff', () {
+      for (final error in <Object>[
+        const SocketException('offline'),
+        TimeoutException('slow'),
+        _http(503),
+        _http(403),
+        _http(400),
+        TransactionIdUnavailableException(Exception('shape')),
+        const FormatException('html instead of json'),
+        TwitterError(uri: 'x', code: 131, message: 'Internal error'),
+      ]) {
+        expect(readRetryOf(error), ReadRetry.backoff, reason: '$error');
+        expect(recoverableReadFailure(error), same(error));
+      }
+      expect(recoverableReadFailure(null), isNull);
+    });
+
+    test("X's definitive answers about an account are not retried", () {
+      for (final code in [-1, 22, 34, 50, 63, 200]) {
+        expect(
+          readRetryOf(TwitterError(uri: 'x', code: code, message: '')),
+          ReadRetry.manual,
+          reason: '$code',
+        );
+      }
     });
   });
 }

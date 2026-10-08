@@ -1,12 +1,14 @@
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/rate_limit_retry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/ui/read_failure_kind.dart';
 export 'package:xta/ui/read_failure_kind.dart';
 import 'package:xta/client/login_webview.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
+import 'package:xta/utils/reader_value_store.dart';
 
 String readFailureMessage(L10n l10n, Object? error) => switch (readFailureKind(error)) {
   ReadFailureKind.connection => l10n.reader_connection_failed,
@@ -41,39 +43,42 @@ class ReaderFailureNotice extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final controls = Align(
-      alignment: Alignment.topCenter,
-      heightFactor: 1,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 16),
-        child: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            _ReadRetry(error: error, onRetry: onRetry),
-            IconButton(
-              tooltip: L10n.of(context).more_info,
-              icon: const Icon(Icons.info_outline, size: 18),
-              onPressed: () => showReaderFailureDetails(
-                context,
-                source: source,
-                error: error,
-                onRetry: onRetry,
-                contextMessage: contextMessage,
-              ),
-            ),
-            if (onDismiss != null)
-              IconButton(
-                tooltip: L10n.of(context).close,
-                icon: const Icon(Icons.close, size: 18),
-                onPressed: onDismiss,
-              ),
-          ],
-        ),
-      ),
-    );
+    // Built below the optional recovery so the controls see its countdown.
+    final controls = Builder(builder: _controls);
     if (!recoverAutomatically) return controls;
     return ReadRecovery(recoverableFailure: () => recoverableReadFailure(error), retry: onRetry, child: controls);
   }
+
+  Widget _controls(BuildContext context) => Align(
+    alignment: Alignment.topCenter,
+    heightFactor: 1,
+    child: Padding(
+      padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 16),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          _ReadRetry(error: error, onRetry: onRetry, automatic: true),
+          IconButton(
+            tooltip: L10n.of(context).more_info,
+            icon: const Icon(Icons.info_outline, size: 18),
+            onPressed: () => showReaderFailureDetails(
+              context,
+              source: source,
+              error: error,
+              onRetry: onRetry,
+              contextMessage: contextMessage,
+            ),
+          ),
+          if (onDismiss != null)
+            IconButton(
+              tooltip: L10n.of(context).close,
+              icon: const Icon(Icons.close, size: 18),
+              onPressed: onDismiss,
+            ),
+        ],
+      ),
+    ),
+  );
 }
 
 Future<void> showReaderFailureDetails(
@@ -103,12 +108,84 @@ Future<void> showReaderFailureDetails(
 class _ReadRetry extends StatelessWidget {
   final Object? error;
   final VoidCallback onRetry;
-  const _ReadRetry({required this.error, required this.onRetry});
+  final bool automatic;
+  const _ReadRetry({required this.error, required this.onRetry, this.automatic = false});
+
+  bool get _rateLimited => readFailureKind(error) == ReadFailureKind.rateLimited;
 
   @override
-  Widget build(BuildContext context) => readFailureKind(error) == ReadFailureKind.rateLimited
+  Widget build(BuildContext context) => automatic && recoverableReadFailure(error) != null
+      ? ScheduledReadRetry(idle: _manual(context), builder: _automatic)
+      : _manual(context);
+
+  Widget _manual(BuildContext context) => _rateLimited
       ? RateLimitRetryButton(error: error, onRetry: onRetry)
       : TextButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: Text(L10n.of(context).retry));
+
+  // Before a rate limit resets, a manual retry is disabled anyway.
+  Widget _automatic(BuildContext context, int seconds) => _rateLimited
+      ? ReadRetryCountdown(seconds: seconds)
+      : Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [ReadRetryCountdown(seconds: seconds), _manual(context)],
+        );
+}
+
+/// The enclosing [ReadRecovery]'s countdown while it has one, else [idle].
+class ScheduledReadRetry extends StatelessWidget {
+  final Widget idle;
+  final Widget Function(BuildContext context, int seconds) builder;
+  const ScheduledReadRetry({super.key, this.idle = const SizedBox.shrink(), this.builder = _countdown});
+
+  static Widget _countdown(BuildContext context, int seconds) => ReadRetryCountdown(seconds: seconds);
+
+  @override
+  Widget build(BuildContext context) {
+    final countdown = ReadRecovery.countdownOf(context);
+    if (countdown == null) return idle;
+    return ScopedBuilder<ReaderValueStore<int>, int>(
+      store: countdown,
+      onState: (context, seconds) => seconds > 0 ? builder(context, seconds) : idle,
+    );
+  }
+}
+
+/// The calm "trying again in 5 s …" line shown while a surface retries on its own.
+class ReadRetryCountdown extends StatelessWidget {
+  final int seconds;
+  const ReadRetryCountdown({super.key, required this.seconds});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
+    final theme = Theme.of(context);
+    final color = theme.hintColor;
+    // A long rate-limit wait or reduced motion gets a still icon, not a spinner.
+    final still = seconds > 60 || MediaQuery.disableAnimationsOf(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox.square(
+            dimension: 14,
+            child: still
+                ? Icon(Icons.schedule, size: 14, color: color)
+                : CircularProgressIndicator(strokeWidth: 2, color: color),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              seconds < 60
+                  ? l10n.reader_auto_retry_seconds(seconds)
+                  : l10n.reader_auto_retry_in(formatRetryCountdown(seconds)),
+              style: theme.textTheme.bodySmall?.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _ReaderFailureDetails extends StatelessWidget {

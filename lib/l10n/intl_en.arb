@@ -3833,5 +3833,23 @@
   "@recent_searches": {},
   "clear_recent_searches": "Clear recent searches",
   "@clear_recent_searches": {},
-  "home_keep_controls_visible": "Keep controls visible"
+  "home_keep_controls_visible": "Keep controls visible",
+  "reader_auto_retry_seconds": "Trying again in {seconds} s …",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Trying again in {time} …",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

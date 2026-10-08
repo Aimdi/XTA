@@ -10,6 +10,7 @@ import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/paging.dart';
+import 'package:xta/utils/read_recovery.dart';
 
 class QuotesScreenArguments {
   final String id;
@@ -211,48 +212,51 @@ class _RetweetersListState extends State<RetweetersList>
     super.build(context);
     _maybeStartFirstLoad();
     final l10n = L10n.of(context);
-    return PagingListener<int, UserWithExtra>(
+    return PagingReadRecovery(
       controller: _pagingController,
-      builder: (context, state, fetchNextPage) {
-        // Do not put a spinner, empty message, or error inside PagedListView's
-        // indicator slots: those are SliverFillRemaining and freeze this tab.
-        if (state.items == null && state.error == null) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (state.items == null) {
-          return FullPageErrorWidget(
-            error: pagingErrorOf(state)?.error,
-            stackTrace: pagingErrorOf(state)?.stackTrace,
-            prefix: l10n.unable_to_load_the_list_of_retweets,
-            onRetry: fetchNextPage,
-          );
-        }
-        if (state.items!.isEmpty) {
-          return Center(
-            child: Text(l10n.could_not_find_any_retweets_of_this_post),
-          );
-        }
-        return PagedListView<int, UserWithExtra>(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).padding.bottom,
-          ),
-          state: state,
-          fetchNextPage: fetchNextPage,
-          scrollController: _scrollController,
-          primary: false,
-          addAutomaticKeepAlives: false,
-          builderDelegate: PagedChildBuilderDelegate(
-            itemBuilder: (context, user, index) =>
-                UserTile(user: UserSubscription.fromUser(user)),
-            newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+      child: PagingListener<int, UserWithExtra>(
+        controller: _pagingController,
+        builder: (context, state, fetchNextPage) {
+          // Do not put a spinner, empty message, or error inside PagedListView's
+          // indicator slots: those are SliverFillRemaining and freeze this tab.
+          if (state.items == null && state.error == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state.items == null) {
+            return FullPageErrorWidget(
               error: pagingErrorOf(state)?.error,
               stackTrace: pagingErrorOf(state)?.stackTrace,
-              prefix: l10n.unable_to_load_the_next_page_of_retweets,
+              prefix: l10n.unable_to_load_the_list_of_retweets,
               onRetry: fetchNextPage,
+            );
+          }
+          if (state.items!.isEmpty) {
+            return Center(
+              child: Text(l10n.could_not_find_any_retweets_of_this_post),
+            );
+          }
+          return PagedListView<int, UserWithExtra>(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom,
             ),
-          ),
-        );
-      },
+            state: state,
+            fetchNextPage: fetchNextPage,
+            scrollController: _scrollController,
+            primary: false,
+            addAutomaticKeepAlives: false,
+            builderDelegate: PagedChildBuilderDelegate(
+              itemBuilder: (context, user, index) =>
+                  UserTile(user: UserSubscription.fromUser(user)),
+              newPageErrorIndicatorBuilder: (context) => FullPageErrorWidget(
+                error: pagingErrorOf(state)?.error,
+                stackTrace: pagingErrorOf(state)?.stackTrace,
+                prefix: l10n.unable_to_load_the_next_page_of_retweets,
+                onRetry: fetchNextPage,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

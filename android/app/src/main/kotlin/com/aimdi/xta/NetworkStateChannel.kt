@@ -51,7 +51,9 @@ class NetworkStateChannel(context: Context, messenger: BinaryMessenger) : EventC
             else manager.registerNetworkCallback(NetworkRequest.Builder().addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build(), listener)
             callback = listener
             report()
-        } catch (_: RuntimeException) { events.success(false) }
+        } catch (_: RuntimeException) {
+            // Unregistered is not offline: send nothing, so readers treat the network as unknown.
+        }
     }
 
     override fun onCancel(arguments: Any?) {

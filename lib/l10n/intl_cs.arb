@@ -3636,5 +3636,23 @@
   "@sync_unsafe_server": {},
   "sync_history": "Předchozí zálohy",
   "@sync_history": {},
-  "home_keep_controls_visible": "Vždy zobrazovat ovládací prvky"
+  "home_keep_controls_visible": "Vždy zobrazovat ovládací prvky",
+  "reader_auto_retry_seconds": "Další pokus za {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Další pokus za {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

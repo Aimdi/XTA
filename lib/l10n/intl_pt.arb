@@ -3636,5 +3636,23 @@
   "@sync_unsafe_server": {},
   "sync_history": "Cópias anteriores",
   "@sync_history": {},
-  "home_keep_controls_visible": "Manter os controlos visíveis"
+  "home_keep_controls_visible": "Manter os controlos visíveis",
+  "reader_auto_retry_seconds": "Nova tentativa dentro de {seconds} s…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Nova tentativa dentro de {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

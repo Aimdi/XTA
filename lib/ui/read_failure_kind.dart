@@ -53,11 +53,27 @@ ReadFailureKind readFailureKind(Object? error) {
   return ReadFailureKind.unknown;
 }
 
-/// Failures where retrying automatically is reasonable and does not risk
-/// hammering a rate-limited endpoint or repeatedly retrying a broken session.
-Object? recoverableReadFailure(Object? error) {
-  return switch (readFailureKind(error)) {
-    ReadFailureKind.connection || ReadFailureKind.timedOut || ReadFailureKind.serviceUnavailable => error,
-    _ => null,
-  };
+/// How a reading surface may retry a failure without being asked.
+enum ReadRetry {
+  /// Transient: retry on a growing, bounded backoff.
+  backoff,
+
+  /// Rate limited: retry once, after the known reset has passed.
+  atReset,
+
+  /// Needs the reader (sign in, or X refused the request shape): never automatic.
+  manual,
 }
+
+/// X's own answers that a retry cannot change: private, missing, suspended, forbidden.
+const _definitiveTwitterErrors = [-1, 22, 34, 50, 63, 200];
+
+ReadRetry readRetryOf(Object? error) => switch (readFailureKind(error)) {
+  ReadFailureKind.session || ReadFailureKind.endpointRefused => ReadRetry.manual,
+  ReadFailureKind.rateLimited => ReadRetry.atReset,
+  _ when error is TwitterError && _definitiveTwitterErrors.contains(error.code) => ReadRetry.manual,
+  _ => ReadRetry.backoff,
+};
+
+/// The failure when it may be retried automatically, else null.
+Object? recoverableReadFailure(Object? error) => error == null || readRetryOf(error) == ReadRetry.manual ? null : error;

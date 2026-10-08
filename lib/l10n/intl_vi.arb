@@ -3633,5 +3633,23 @@
   "@sync_unsafe_server": {},
   "sync_history": "Các bản sao lưu trước",
   "@sync_history": {},
-  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển"
+  "home_keep_controls_visible": "Luôn hiển thị các nút điều khiển",
+  "reader_auto_retry_seconds": "Sẽ thử lại sau {seconds} giây…",
+  "@reader_auto_retry_seconds": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; seconds left.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "reader_auto_retry_in": "Sẽ thử lại sau {time}…",
+  "@reader_auto_retry_in": {
+    "description": "Status beside a failed read while the app waits to retry it automatically; time left as m:ss.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }
