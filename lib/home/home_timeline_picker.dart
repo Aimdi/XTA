@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/alt_microblogging.dart';
+import 'package:xta/home/alt_microblogging_mark.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 
 class HomeTimelineOption {
@@ -85,8 +86,7 @@ class _HomeTimelinePickerState extends State<HomeTimelinePicker> {
           HomeTimelineOption(
             id: id,
             label: L10n.of(context).alt_microblogging,
-            subtitle: members.map((option) => option.label).join(' · '),
-            mark: const Icon(Icons.forum_outlined, size: 22),
+            mark: const AltMicrobloggingMark(size: 22),
             plugin: true,
             unread: members.any((option) => option.unread),
           )

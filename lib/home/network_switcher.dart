@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/home/feed_strip_add_sheet.dart';
 import 'package:xta/home/alt_microblogging.dart';
+import 'package:xta/home/alt_microblogging_mark.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_brand.dart';
@@ -206,9 +207,8 @@ class _NetworkSwitcherSheet extends StatelessWidget {
     final members = plugins.where((plugin) => isAltMicrobloggingSource(plugin.id)).toList();
     return ExpansionTile(
       key: const PageStorageKey('network-switcher-alt-microblogging'),
-      leading: const Icon(Icons.forum_outlined),
+      leading: const AltMicrobloggingMark(size: 28),
       title: Text(L10n.of(context).alt_microblogging),
-      subtitle: Text(members.map((plugin) => plugin.title(context)).join(' · ')),
       initiallyExpanded: isAltMicrobloggingSource(currentId),
       children: [for (final plugin in members) _row(context, plugin)],
     );

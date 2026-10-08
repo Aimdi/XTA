@@ -11,6 +11,10 @@
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
 - "Changes saved – Undo" no longer stays until you tap it: it leaves after 5 seconds. With TalkBack on it still waits for you. Download progress still stays until the download ends.
 
+### Mastodon & Bluesky
+
+- The "Microblogs" section is now called "Mastodon & Bluesky", with a logo of the two marks stacked: Bluesky's butterfly at the top left, Mastodon's mark at the bottom right. Threads stays in the section, it just isn't named.
+
 Everything from aimdi169 is included: the new icon, the profile filter chips and the diagnostic for saves that stop after adding someone to a group.
 
 ### Installation
