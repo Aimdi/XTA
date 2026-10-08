@@ -7,6 +7,7 @@ import 'package:xta/plugins/hackernews/hn_models.dart';
 import 'package:xta/plugins/hackernews/hn_plugin.dart';
 import 'package:xta/plugins/hackernews/hn_store.dart';
 import 'package:xta/plugins/hackernews/hn_story_card.dart';
+import 'package:xta/plugins/plugin_comment_bubble.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/plugins/plugin_links.dart';
 import 'package:xta/ui/dates.dart';
@@ -112,6 +113,7 @@ class _ThreadLead extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: Text(story.text!),
           ),
+        const SizedBox(height: 9),
       ],
     );
   }
@@ -179,70 +181,52 @@ class _CommentTile extends StatelessWidget {
     required this.onToggle,
   });
 
-  static const _maxIndentDepth = 8;
-  static const _indentPerLevel = 12.0;
-
   @override
   Widget build(BuildContext context) {
-    final l10n = L10n.of(context);
     final theme = Theme.of(context);
-    final steps = depth.clamp(0, _maxIndentDepth);
-    final railColor = hackerNewsBrand.withValues(
-      alpha: 0.28 + (depth % 5) * 0.1,
-    );
-    return InkWell(
+    final text = comment.text ?? '';
+    return CommentBubble(
+      depth: depth,
+      outlined: comment.deleted,
       onTap: () => onToggle(comment.id),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 0, 12, 0),
-        child: IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (var i = 0; i < steps; i++)
-                Container(
-                  width: _indentPerLevel,
-                  alignment: Alignment.center,
-                  child: Container(
-                    width: 2,
-                    color: i == steps - 1
-                        ? railColor
-                        : theme.dividerColor.withValues(alpha: 0.45),
-                  ),
-                ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 0, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        [
-                          comment.deleted
-                              ? l10n.plugin_hn_deleted
-                              : (comment.author ?? l10n.plugin_hn_deleted),
-                          if (comment.createdAt != null)
-                            createCompactDate(comment.createdAt!),
-                          if (collapsed && hiddenCount > 0)
-                            l10n.plugin_hn_comment_count(hiddenCount),
-                        ].join(' · '),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.hintColor,
-                        ),
-                      ),
-                      if (!collapsed &&
-                          !comment.deleted &&
-                          (comment.text ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(comment.text!),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ],
+      builder: (context, colors) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text.rich(
+            _header(L10n.of(context), colors),
+            style: theme.textTheme.labelMedium?.copyWith(color: colors.muted),
           ),
-        ),
+          if (!collapsed && !comment.deleted && text.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              text,
+              style: theme.textTheme.bodyMedium?.copyWith(color: colors.text),
+            ),
+          ],
+        ],
       ),
+    );
+  }
+
+  /// "author · when · N comments", the name set apart so a thread can be
+  /// followed by who is speaking.
+  TextSpan _header(L10n l10n, CommentBubbleColors colors) {
+    final author = comment.deleted ? null : comment.author;
+    final rest = [
+      if (comment.createdAt != null) createCompactDate(comment.createdAt!),
+      if (collapsed && hiddenCount > 0)
+        l10n.plugin_hn_comment_count(hiddenCount),
+    ];
+    return TextSpan(
+      children: [
+        TextSpan(
+          text: author ?? l10n.plugin_hn_deleted,
+          style: author == null
+              ? null
+              : TextStyle(fontWeight: FontWeight.w600, color: colors.text),
+        ),
+        for (final part in rest) TextSpan(text: ' · $part'),
+      ],
     );
   }
 }

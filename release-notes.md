@@ -17,6 +17,11 @@
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
 - "Changes saved – Undo" no longer stays until you tap it: it leaves after 5 seconds. With TalkBack on it still waits for you. Download progress still stays until the download ends.
 
+### Comments in coloured bubbles
+
+- Reddit and Hacker News comments each sit in their own rounded, tinted bubble. The colour follows the reply depth (blue, violet, green, amber, pink, orange, then again), so a reply is easy to tell from the comment it answers; the thin lines at the left are gone. Text keeps full contrast on every tint, in light, dim and true-black themes.
+- Tapping anywhere on a Reddit comment now folds it; the avatar opens the profile like the name does. Reddit's "more replies" and deleted comments are outlined instead of filled.
+
 ### Telegram-style bottom bar
 
 - The bottom bar is a frosted, slightly see-through pill floating above the page, like Telegram's: posts scroll on behind it and show through faintly. The selected tab sits on a soft tinted highlight that covers its icon and label and slides when you switch.

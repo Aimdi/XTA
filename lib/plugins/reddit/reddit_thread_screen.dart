@@ -4,6 +4,7 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/plugins/plugin_comment_bubble.dart';
 import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_avatar.dart';
 import 'package:xta/plugins/reddit/reddit_subreddit_avatar.dart';
@@ -24,14 +25,6 @@ import 'package:xta/ui/dates.dart';
 import 'package:xta/utils/urls.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/feed_list.dart';
-
-/// How far each level of replies is indented, and how deep that goes.
-///
-/// Reddit threads nest without limit; a phone cannot. Past this depth replies
-/// keep their thread line but stop moving right, so a deep argument stays
-/// readable instead of collapsing into a column one word wide.
-const double kRedditIndentPerLevel = 12;
-const int kRedditMaxIndentDepth = 8;
 
 /// A post and its comments.
 class RedditThreadScreen extends StatefulWidget {
@@ -290,12 +283,16 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
               children: [
                 RedditSubredditAvatar(subreddit: post.subreddit, size: 22),
                 const SizedBox(width: 6),
-                if (post.author != null) Text('u/${post.author}'),
-                if (date != null) ...[
-                  const SizedBox(width: 8),
-                  Text(createRelativeDate(date)),
-                ],
-                const Spacer(),
+                Expanded(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 2,
+                    children: [
+                      if (post.author != null) Text('u/${post.author}'),
+                      if (date != null) Text(createRelativeDate(date)),
+                    ],
+                  ),
+                ),
                 _ThreadUpvoteButton(post: post),
                 const SizedBox(width: 8),
                 Text('${post.commentCount}'),
@@ -329,26 +326,13 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     return text;
   }
 
-  /// A row that folds on tap. [hidden] is how many replies its fold is
-  /// holding, shown as a chip so a collapsed argument says how big it was.
-  /// One rail colour per depth, cycling — a deep argument stays traceable to
-  /// its level, the way Infinity and Sync colour theirs. Muted toward the
-  /// surface so the rails mark structure without shouting over the text.
-  static Color _railColor(ThemeData theme, int depth) {
-    final scheme = theme.colorScheme;
-    final cycle = [
-      scheme.primary,
-      scheme.tertiary,
-      scheme.secondary,
-      scheme.error,
-    ];
-    return Color.lerp(
-      cycle[(depth - 1) % cycle.length],
-      scheme.outlineVariant,
-      0.35,
-    )!;
-  }
+  void _toggleFold(String id) => setState(
+    () => _collapsed.contains(id) ? _collapsed.remove(id) : _collapsed.add(id),
+  );
 
+  /// A comment in its depth's bubble; tapping it folds the subtree. [hidden]
+  /// is how many replies the fold is holding, shown as a chip so a collapsed
+  /// argument says how big it was.
   Widget _commentRow(
     BuildContext context,
     FlatComment entry, {
@@ -356,161 +340,178 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
   }) {
     final theme = Theme.of(context);
     final comment = entry.comment;
-    final depth = entry.depth;
     final folded = _collapsed.contains(comment.id);
-    final indent =
-        kRedditIndentPerLevel *
-        (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(16 + indent, 6, 16, 6),
-      child: Container(
-        decoration: depth == 0
-            ? null
-            : BoxDecoration(
-                border: Border(
-                  left: BorderSide(color: _railColor(theme, depth), width: 2),
-                ),
-              ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InkWell(
-              onTap: () => setState(
-                () => folded
-                    ? _collapsed.remove(comment.id)
-                    : _collapsed.add(comment.id),
-              ),
-              child: DefaultTextStyle.merge(
-                style: theme.textTheme.bodySmall!.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                child: Row(
-                  children: [
-                    RedditAvatar(name: comment.author, size: 20),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: GestureDetector(
-                        // A name in a thread is a way to the rest of what they
-                        // posted, the same as it is on the card.
-                        onTap: comment.author == null
-                            ? null
-                            : () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      RedditListingScreen.user(comment.author!),
-                                ),
-                              ),
-                        child: Text(
-                          comment.author == null ? '' : 'u/${comment.author}',
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: comment.isSubmitter
-                                ? theme.colorScheme.primary
-                                : null,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (comment.score != null) ...[
-                      const SizedBox(width: 8),
-                      Text('${comment.score}'),
-                    ],
-                    if (comment.createdAt != null) ...[
-                      const SizedBox(width: 8),
-                      Text(createRelativeDate(comment.createdAt!)),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 2),
-            if (folded)
-              GestureDetector(
-                onTap: () => setState(() => _collapsed.remove(comment.id)),
-                child: Container(
-                  margin: const EdgeInsets.only(top: 2),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    '+${hidden + 1}',
-                    style: theme.textTheme.labelSmall,
-                  ),
-                ),
-              )
-            else ...[
-              if (comment.body.isNotEmpty)
-                RedditRichText(
+    return CommentBubble(
+      depth: entry.depth,
+      outlined: comment.isRemoved,
+      onTap: () => _toggleFold(comment.id),
+      builder: (context, colors) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _CommentHeader(
+            comment: comment,
+            colors: colors,
+            foldedCount: folded ? hidden + 1 : null,
+          ),
+          if (!folded) ...[
+            if (comment.body.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: RedditRichText(
                   text: comment.body,
-                  style: theme.textTheme.bodyMedium,
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    color: colors.text,
+                  ),
                 ),
-              RedditCommentImages(urls: comment.mediaUrls),
-            ],
+              ),
+            RedditCommentImages(urls: comment.mediaUrls),
           ],
-        ),
+        ],
       ),
     );
   }
 
   /// Replies Reddit held back. The row says how many and opens the subtree's
   /// own page, rather than the thread ending mid-air with no sign anything is
-  /// missing — which is what silently dropping these rows did.
+  /// missing — which is what silently dropping these rows did. Outlined, not
+  /// filled: it is a way onward, not a comment.
   Widget _stubRow(BuildContext context, FlatComment entry) {
     final theme = Theme.of(context);
     final comment = entry.comment;
-    final depth = entry.depth;
-    final indent =
-        kRedditIndentPerLevel *
-        (depth > kRedditMaxIndentDepth ? kRedditMaxIndentDepth : depth);
     final count = (comment.moreCount ?? -1) > 0
         ? ' · ${comment.moreCount}'
         : '';
 
-    // The subtree's page has the held-back replies; the post's own page is
-    // this one, so a root-level stub can only continue on Reddit itself.
-    final permalink = comment.permalink;
-    final opensSamePage =
-        permalink != null &&
-        _trimSlash(permalink) == _trimSlash(_post.permalink);
-    return InkWell(
-      onTap: permalink == null
-          ? null
-          : opensSamePage
-          ? () => openUri(context, redditPostUrl(_post))
-          : () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => RedditThreadScreen(
-                  post: _post.copyWith(permalink: permalink),
-                ),
-              ),
-            ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(12.0 + indent, 10, 12, 10),
-        child: Row(
-          children: [
-            Icon(
-              Icons.subdirectory_arrow_right,
-              size: 16,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 6),
-            Text(
+    return CommentBubble(
+      depth: entry.depth,
+      outlined: true,
+      shrinkWrap: true,
+      onTap: _stubTap(context, comment.permalink),
+      builder: (context, colors) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.subdirectory_arrow_right, size: 16, color: colors.accent),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
               '${L10n.of(context).plugin_reddit_more_replies}$count',
               style: theme.textTheme.bodySmall!.copyWith(
-                color: theme.colorScheme.primary,
+                color: colors.accent,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// The subtree's page has the held-back replies; the post's own page is
+  /// this one, so a root-level stub can only continue on Reddit itself.
+  VoidCallback? _stubTap(BuildContext context, String? permalink) {
+    if (permalink == null) {
+      return null;
+    }
+    if (_trimSlash(permalink) == _trimSlash(_post.permalink)) {
+      return () => openUri(context, redditPostUrl(_post));
+    }
+    return () => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            RedditThreadScreen(post: _post.copyWith(permalink: permalink)),
+      ),
+    );
+  }
+}
+
+/// Who wrote a comment, its score and age, and — when folded — how many
+/// comments the fold is holding. Wraps rather than overflowing when a long
+/// name meets large text deep in a thread.
+class _CommentHeader extends StatelessWidget {
+  final RedditComment comment;
+  final CommentBubbleColors colors;
+  final int? foldedCount;
+
+  const _CommentHeader({
+    required this.comment,
+    required this.colors,
+    this.foldedCount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final author = comment.author;
+    final count = foldedCount;
+
+    return DefaultTextStyle.merge(
+      style: theme.textTheme.bodySmall!.copyWith(color: colors.muted),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 2,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          GestureDetector(
+            // A name in a thread is a way to the rest of what they posted, the
+            // same as it is on the card.
+            onTap: author == null
+                ? null
+                : () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => RedditListingScreen.user(author),
+                    ),
+                  ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RedditAvatar(name: author, size: 20),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    author == null ? '' : 'u/$author',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: comment.isSubmitter ? colors.accent : colors.text,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (comment.score != null) Text('${comment.score}'),
+          if (comment.createdAt != null)
+            Text(createRelativeDate(comment.createdAt!)),
+          if (count != null) _FoldCount(count: count, colors: colors),
+        ],
+      ),
+    );
+  }
+}
+
+class _FoldCount extends StatelessWidget {
+  final int count;
+  final CommentBubbleColors colors;
+
+  const _FoldCount({required this.count, required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        border: Border.all(color: colors.border),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        '+$count',
+        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+          color: colors.text,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
