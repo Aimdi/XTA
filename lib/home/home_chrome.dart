@@ -8,7 +8,7 @@ import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
-const double kHomeNavigationHeight = 64;
+const double kHomeNavigationHeight = 54;
 
 /// Space between the floating bar and the screen's side edges.
 const double kHomeNavigationFloatInset = 16;
@@ -20,13 +20,14 @@ const double kHomeNavigationFloatGap = 8;
 const double kHomeNavigationLightGlass = 0.74;
 const double kHomeNavigationDarkGlass = 0.78;
 const double kHomeNavigationBlurSigma = 16;
-const double kHomeNavigationHighlightInset = 4;
-const double kHomeNavigationHighlightRadius = 24;
-const double kHomeNavigationLabelSize = 12;
+const double kHomeNavigationHighlightInset = 3;
+const double kHomeNavigationHighlightRadius = 20;
+const double kHomeNavigationLabelSize = 11;
+const double kHomeNavigationIconSize = 22;
 
 /// The extra bottom space balances the gap the icon slot leaves under its
 /// glyph, so icon and label sit centred in the highlight.
-const EdgeInsets kHomeNavigationLabelPadding = EdgeInsets.fromLTRB(6, 2, 6, 4);
+const EdgeInsets kHomeNavigationLabelPadding = EdgeInsets.fromLTRB(6, 1, 6, 3);
 
 const double kHomeFeedStripHeight = 64;
 const double kHomeFeedTabHorizontalPadding = 12;
@@ -524,7 +525,7 @@ class HomeNavigationBar extends StatelessWidget {
         final icon = inherited.iconTheme?.resolve(states);
         return (icon ?? const IconThemeData()).copyWith(
           color: colorOf(states),
-          size: 24,
+          size: kHomeNavigationIconSize,
         );
       }),
     );
