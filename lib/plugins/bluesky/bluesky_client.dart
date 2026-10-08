@@ -1,11 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/plugin_activity.dart';
 import 'package:xta/plugins/bluesky/bluesky_models.dart';
 import 'package:xta/utils/json.dart';
-import 'package:xta/utils/read_retry.dart';
 
 /// Why a Bluesky read could not be served, in terms the screen explains it.
 enum BlueskyErrorKind { network, notFound, rateLimited, badResponse }
@@ -61,11 +59,9 @@ class BlueskyClient {
   Future<Json> _get(Uri uri) async {
     final http.Response response;
     try {
-      response = await httpClient.getWithReadRetry(
-        uri,
-        headers: {'User-Agent': userAgent, 'Accept': 'application/json'},
-        timeout: _timeout,
-      );
+      response = await httpClient
+          .get(uri, headers: {'User-Agent': userAgent, 'Accept': 'application/json'})
+          .timeout(_timeout);
     } catch (e) {
       throw BlueskyException(BlueskyErrorKind.network, '$uri: $e');
     }
@@ -180,7 +176,7 @@ class BlueskyClient {
   }
 
   /// Public PostViews, in batches within the lexicon's 25-URI limit.
-  Future<List<BlueskyPost>> getPosts(List<String> uris) => withReadRetryBudget(() async {
+  Future<List<BlueskyPost>> getPosts(List<String> uris) async {
     final unique = uris.where((uri) => uri.startsWith('at://')).toSet().toList();
     final posts = <BlueskyPost>[];
     for (var offset = 0; offset < unique.length; offset += 25) {
@@ -188,7 +184,7 @@ class BlueskyClient {
       posts.addAll(parseBlueskySearchPosts(json.raw));
     }
     return posts;
-  });
+  }
 
   /// Suggested accounts from the public AppView (guest Discover).
   Future<List<BlueskyProfile>> getSuggestions({int limit = 20}) async {
@@ -278,7 +274,7 @@ class BlueskyClient {
   }
 
   /// Resolves a web list URL or AT-URI into an `at://…/app.bsky.graph.list/…`.
-  Future<String> resolveListUri(BlueskyListRef ref) => withReadRetryBudget(() async {
+  Future<String> resolveListUri(BlueskyListRef ref) async {
     final atUri = ref.atUri?.trim();
     if (atUri != null && atUri.isNotEmpty) {
       return atUri;
@@ -295,7 +291,7 @@ class BlueskyClient {
       throw BlueskyException(BlueskyErrorKind.notFound, 'list owner missing did: $actor');
     }
     return 'at://${profile.did}/app.bsky.graph.list/$rkey';
-  });
+  }
 
   /// One public starter pack (`app.bsky.graph.getStarterPack`).
   Future<Object?> getStarterPack(String starterPack) async {
@@ -354,7 +350,7 @@ class BlueskyClient {
 
   /// Resolves a web feed URL or AT-URI into
   /// `at://…/app.bsky.feed.generator/…`.
-  Future<String> resolveFeedUri(BlueskyFeedRef ref) => withReadRetryBudget(() async {
+  Future<String> resolveFeedUri(BlueskyFeedRef ref) async {
     final atUri = ref.atUri?.trim();
     if (atUri != null && atUri.isNotEmpty) {
       return atUri;
@@ -371,11 +367,11 @@ class BlueskyClient {
       throw BlueskyException(BlueskyErrorKind.notFound, 'feed owner missing did: $actor');
     }
     return 'at://${profile.did}/app.bsky.feed.generator/$rkey';
-  });
+  }
 
   /// Resolves a web starter-pack URL or AT-URI into
   /// `at://…/app.bsky.graph.starterpack/…`.
-  Future<String> resolveStarterPackUri(BlueskyStarterPackRef ref) => withReadRetryBudget(() async {
+  Future<String> resolveStarterPackUri(BlueskyStarterPackRef ref) async {
     final atUri = ref.atUri?.trim();
     if (atUri != null && atUri.isNotEmpty) {
       return atUri;
@@ -392,5 +388,5 @@ class BlueskyClient {
       throw BlueskyException(BlueskyErrorKind.notFound, 'starter pack owner missing did: $actor');
     }
     return 'at://${profile.did}/app.bsky.graph.starterpack/$rkey';
-  });
+  }
 }

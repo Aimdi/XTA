@@ -12,9 +12,6 @@ import 'package:xta/group/group_screen.dart';
 import 'package:xta/offline/offline_store.dart';
 import 'package:xta/plugins/plugin_registry.dart';
 import 'package:xta/profile/profile.dart';
-import 'package:xta/reading/reading_history_entry.dart';
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/reading/reading_history_navigation.dart';
 import 'package:xta/saved/local_note_thread.dart';
 import 'package:xta/saved/local_post_model.dart';
 import 'package:xta/saved/saved_screen.dart';
@@ -65,8 +62,7 @@ class _ReaderSearchScreenState extends State<ReaderSearchScreen> {
     final generation = ++_generation;
     final saved = context.read<SavedTweetModel>();
     final notes = context.read<LocalPostModel>();
-    final history = readingHistoryOf(context);
-    await Future.wait([saved.refreshSavedTweets(), notes.refreshLocalPosts(), ?history?.load()]);
+    await Future.wait([saved.refreshSavedTweets(), notes.refreshLocalPosts()]);
     if (!mounted || generation != _generation) return;
     final local = <ReaderSearchDocument>[
       for (final row in saved.state)
@@ -100,14 +96,6 @@ class _ReaderSearchScreenState extends State<ReaderSearchScreen> {
           text: row.name,
           kind: ReaderSearchKind.group,
           target: row,
-        ),
-      for (final entry in history?.state.entries ?? const <ReadingHistoryEntry>[])
-        ReaderSearchDocument(
-          id: 'history:${entry.key}',
-          title: entry.title.isNotEmpty ? entry.title : entry.author,
-          text: '${entry.author} ${entry.text} ${entry.url ?? ''}',
-          kind: ReaderSearchKind.history,
-          target: entry,
         ),
     ];
     await _store.load(local, () async {
@@ -174,8 +162,6 @@ class _ReaderSearchScreenState extends State<ReaderSearchScreen> {
       }
     } else if (target is OfflineEntry) {
       await openArchiveDocument(context, target);
-    } else if (target is ReadingHistoryEntry) {
-      await openReadingHistoryEntry(context, target);
     }
     if (mounted) await _load();
   }
@@ -186,7 +172,6 @@ class _ReaderSearchScreenState extends State<ReaderSearchScreen> {
     ReaderSearchKind.account => l10n.following,
     ReaderSearchKind.group => l10n.groups,
     ReaderSearchKind.article => l10n.offline_library_title,
-    ReaderSearchKind.history => l10n.history_title,
   };
   @override
   Widget build(BuildContext context) {

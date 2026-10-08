@@ -1,6 +1,3 @@
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/substack/substack_history.dart';
-import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/plugins/plugin_link_post.dart';
@@ -43,10 +40,7 @@ class SubstackPostCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      ReadingHistoryHook(entry: () => substackHistoryEntry(post), dwell: readingHistoryCardDwell, child: _card(context));
-
-  Widget _card(BuildContext context) {
+  Widget build(BuildContext context) {
     return ScopedBuilder<SubstackReadStore, Set<String>>(
       store: context.read<SubstackReadStore>(),
       distinct: (_) => !context.read<SubstackReadStore>().state.contains(post.id),
@@ -57,7 +51,7 @@ class SubstackPostCard extends StatelessWidget {
   Widget _build(BuildContext context, {required bool unread}) {
     final theme = Theme.of(context);
     final date = post.publishedAt;
-    final hasCover = feedMediaVisible(context) && post.coverImage != null && post.coverImage!.isNotEmpty;
+    final hasCover = post.coverImage != null && post.coverImage!.isNotEmpty;
 
     return GestureDetector(
       onLongPress: () => showPluginLinkPostActions(
@@ -95,7 +89,7 @@ class SubstackPostCard extends StatelessWidget {
                             children: [
                               Text(
                                 post.title,
-                                maxLines: feedTextLines(context, normal: hasCover ? 4 : 3),
+                                maxLines: hasCover ? 4 : 3,
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.titleMedium!.copyWith(
                                   fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
@@ -106,7 +100,7 @@ class SubstackPostCard extends StatelessWidget {
                                 const SizedBox(height: 6),
                                 Text(
                                   post.excerpt!,
-                                  maxLines: feedTextLines(context, normal: hasCover ? 2 : 3),
+                                  maxLines: hasCover ? 2 : 3,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodyMedium!.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
@@ -252,8 +246,7 @@ class SubstackPostCard extends StatelessWidget {
               children: [
                 LikeButton(
                   isLiked: isLiked,
-                  tooltip: isLiked ? L10n.of(context).unlike_on_this_device : L10n.of(context).like_on_this_device,
-                  label: feedCountsVisible(context, sourceDefault: true) && shown > 0 ? '$shown' : '',
+                  label: shown > 0 ? '$shown' : '',
                   color: isLiked ? theme.colorScheme.primary : muted,
                   onPressed: () async {
                     final wasLiked = isLiked;
@@ -278,10 +271,7 @@ class SubstackPostCard extends StatelessWidget {
                     onPressed: () =>
                         Navigator.push(context, MaterialPageRoute(builder: (_) => SubstackCommentsScreen(post: post))),
                     icon: Icon(Icons.mode_comment_outlined, size: 20, color: muted),
-                    label: Text(
-                      feedCountsVisible(context, sourceDefault: true) ? '$comments' : '',
-                      style: theme.textTheme.bodySmall!.copyWith(color: muted),
-                    ),
+                    label: Text('$comments', style: theme.textTheme.bodySmall!.copyWith(color: muted)),
                   ),
                 ),
                 IconButton(

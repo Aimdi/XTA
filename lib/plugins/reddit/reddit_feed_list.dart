@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
@@ -87,9 +85,7 @@ class _RedditFeedListState extends State<RedditFeedList>
     );
   }
 
-  Widget _list(List<RedditPost> loaded) {
-    final shared = sharedFilterProject(context, loaded, redditFilterText);
-    final posts = shared.visible;
+  Widget _list(List<RedditPost> posts) {
     return FeedListView(
       controller: pluginInnerScrollController(context, widget.scrollController),
       padding: pluginFeedPadding(context),
@@ -98,7 +94,7 @@ class _RedditFeedListState extends State<RedditFeedList>
         key: ValueKey(posts[index].id),
         post: posts[index],
         showSourceBadge: false,
-      ).foldedBy(shared.foldReason(posts[index]), key: ValueKey(('fold', posts[index].id))),
+      ),
     );
   }
 

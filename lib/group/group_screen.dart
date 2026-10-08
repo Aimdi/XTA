@@ -409,19 +409,13 @@ class _SubscriptionGroupScreenState extends State<SubscriptionGroupScreen> {
       usesFeedCache: widget.cacheKey != null,
       titleBuilder: (context) {
         final onSwitch = widget.onSwitchGroup;
-        return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-          store: context.read<GroupModel>(),
-          onState: (_, group) {
-            final count = group.id.isEmpty ? null : group.subscriptions.length;
-            return onSwitch == null
-                ? GroupTitleLabel(name: widget.name, memberCount: count)
-                : GroupSwitcherTitle(
-                    name: widget.name,
-                    currentGroupId: widget.id,
-                    memberCount: count,
-                    onSwitch: onSwitch,
-                  );
-          },
+        if (onSwitch == null) {
+          return Text(widget.name);
+        }
+        return GroupSwitcherTitle(
+          name: widget.name,
+          currentGroupId: widget.id,
+          onSwitch: onSwitch,
         );
       },
       bodyBuilder: (context) => ScopedBuilder<GroupDiscoveryModeStore, int>(

@@ -128,6 +128,10 @@ class BlueskyPlugin extends XtaPlugin with SubscriptionSource {
       loadBlueskyInterleaved(context, ids);
 
   @override
+  Future<List<InterleavedItem>> groupPosts(BuildContext context, List<String> ids, {required bool includeReplies}) =>
+      loadBlueskyInterleaved(context, ids, includeReplies: includeReplies);
+
+  @override
   List<PluginBackupSection> get backupSections => [
     PluginBackupSection(
       jsonKey: 'blueskySubscriptions',

@@ -1,9 +1,6 @@
 import 'package:http/http.dart' as http;
-import 'package:xta/catcher/exceptions.dart' as errors;
-import 'package:xta/utils/http_read.dart';
 import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/rss/rss_parser.dart';
-import 'package:xta/utils/read_retry.dart';
 
 /// Public RSS / Atom reads. No login, no write.
 class RssClient {
@@ -24,7 +21,7 @@ class RssClient {
   }
 
   /// Resolves a pasted site or feed URL into a followable channel.
-  Future<RssFeed> lookup(String input) => withReadRetryBudget(() async {
+  Future<RssFeed> lookup(String input) async {
     final feedUrl = await resolveFeedUrl(input);
     final channel = await fetchChannel(feedUrl);
     final title = channel.title?.trim();
@@ -38,7 +35,7 @@ class RssClient {
       iconUrl: channel.imageUrl,
       description: channel.description,
     );
-  });
+  }
 
   Future<List<RssItem>> fetchItems(RssFeed feed) async {
     final channel = await fetchChannel(feed.feedUrl);
@@ -61,7 +58,7 @@ class RssClient {
   }
 
   /// A pasted feed URL is used as-is; a site URL is probed for a feed.
-  Future<String> resolveFeedUrl(String input) => withReadRetryBudget(() async {
+  Future<String> resolveFeedUrl(String input) async {
     final trimmed = input.trim();
     final uri = Uri.tryParse(
       trimmed.contains('://') ? trimmed : 'https://$trimmed',
@@ -88,7 +85,7 @@ class RssClient {
       if (await _isFeed(candidate)) return candidate;
     }
     throw const FormatException('No RSS or Atom feed');
-  });
+  }
 
   Future<bool> _isFeed(String url) async {
     try {
@@ -111,17 +108,18 @@ class RssClient {
   }
 
   Future<String> _get(String url) async {
-    final response = await httpClient.getWithReadRetry(
-      Uri.parse(url),
-      headers: {
-        'User-Agent': userAgent,
-        'Accept':
-            'application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8, */*;q=0.5',
-      },
-      timeout: timeout,
-    );
+    final response = await httpClient
+        .get(
+          Uri.parse(url),
+          headers: {
+            'User-Agent': userAgent,
+            'Accept':
+                'application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8, */*;q=0.5',
+          },
+        )
+        .timeout(timeout);
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw errors.HttpException(response);
+      throw http.ClientException('HTTP ${response.statusCode}', Uri.parse(url));
     }
     return response.body;
   }

@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/substack/substack_history.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/offline/offline_article.dart';
 import 'package:xta/offline/offline_article_action.dart';
@@ -469,12 +466,6 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
                 ],
                 if (!_loading && !_content.state.refreshing)
                   _menu(Icons.refresh, l10n.article_reader_refresh, () => _load(force: true)),
-                if (readerTranslationEnabled(context) && (_speakText?.trim().isNotEmpty ?? false))
-                  _menu(
-                    Icons.translate,
-                    l10n.translation_article,
-                    () => openReaderArticleTranslation(context, title: _post.title, text: _speakText!),
-                  ),
                 _menu(
                   Icons.mode_comment_outlined,
                   l10n.plugin_substack_comments,
@@ -503,16 +494,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
           ),
         ],
       ),
-      body: ReadingHistoryHook(
-        entry: () => substackHistoryEntry(_post),
-        dwell: readingHistoryScreenDwell,
-        child: _readerBody(context),
-      ),
-    );
-  }
-
-  Widget _readerBody(BuildContext context) {
-    return Column(
+      body: Column(
         children: [
           if (_content.state.refreshing) const LinearProgressIndicator(),
           if (_content.state.refreshError != null)
@@ -544,6 +526,7 @@ class _SubstackReaderScreenState extends State<SubstackReaderScreen> with Widget
           ),
           Expanded(child: _articleBody(context)),
         ],
+      ),
     );
   }
 

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show SocketException;
 
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:xta/catcher/exceptions.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
@@ -22,7 +24,6 @@ class TwitterHeaders {
     'authorization': bearerToken,
     'cache-control': 'no-cache',
     'content-type': 'application/json',
-    'origin': 'https://x.com',
     'pragma': 'no-cache',
     'priority': 'u=1, i',
     'referer': 'https://x.com/',
@@ -31,44 +32,37 @@ class TwitterHeaders {
     'x-twitter-client-language': 'en',
   };
 
-  /// Override for tests; production derives the key from X's public page.
+  /// Override for tests; production derives the key with the selected session.
   static Future<ClientTransaction> Function()? initializer;
   static DateTime Function() clock = DateTime.now;
-  static const initializationTimeout = transactionKeyInitializationTimeout;
+  static const initializationTimeout = Duration(seconds: 12);
 
-  // One key for the whole process: the page it comes from is fetched without any session, so the startup
-  // warm-up and every account would derive the same bytes. Deriving once per account ran the whole download
-  // several times over, side by side, and a slow link timed every copy out.
-  static _TransactionContext _context = _TransactionContext();
+  static final _contexts = <String, _TransactionContext>{};
   static Object _epoch = Object();
   static Object? _lastInitializationFailure;
   static Object? get lastInitializationFailure => _lastInitializationFailure;
 
-  /// The key's state for the diagnostics report: no secrets, only timing and the failure category.
-  static String describeKeyState() {
-    final context = _context;
-    final now = clock();
-    final derivedAt = context.derivedAt;
-    if (context.future != null && derivedAt == null) return 'deriving';
-    if (derivedAt != null) {
-      return transactionKeyUsable(derivedAt: derivedAt, now: now, lifetime: transactionKeyLifetime)
-          ? 'derived ${now.difference(derivedAt).inSeconds}s ago'
-          : 'expired, will be derived again';
-    }
-    final failure = context.lastFailure ?? _lastInitializationFailure;
-    return failure == null ? 'not derived yet' : 'none, last failure ${failure.runtimeType}';
-  }
-
   static void resetForTesting() {
-    _context = _TransactionContext();
+    _contexts.clear();
     _epoch = Object();
     _lastInitializationFailure = null;
     initializer = null;
     clock = DateTime.now;
   }
 
-  static Future<ClientTransaction> _transaction() {
-    final context = _context;
+  static _TransactionContext _contextFor(String? cookie) {
+    // Retain only a digest as the cache key, never the session credentials.
+    final key = cookie == null ? 'anonymous' : sha256.convert(utf8.encode(cookie)).toString();
+    final context = _contexts.remove(key) ?? _TransactionContext();
+    _contexts[key] = context;
+    while (_contexts.length > 16) {
+      _contexts.remove(_contexts.keys.first);
+    }
+    return context;
+  }
+
+  static Future<ClientTransaction> _transaction(String? cookie) {
+    final context = _contextFor(cookie);
     final now = clock();
     final cached = context.future;
     if (cached != null &&
@@ -86,7 +80,7 @@ class TwitterHeaders {
       return Future.error(failure);
     }
 
-    final started = _deriveTransaction();
+    final started = _deriveTransaction(cookie);
     final epoch = _epoch;
     context.future = started;
     context.derivedAt = null;
@@ -123,9 +117,11 @@ class TwitterHeaders {
     return started;
   }
 
-  static Future<ClientTransaction> _deriveTransaction() async {
+  static Future<ClientTransaction> _deriveTransaction(String? cookie) async {
     try {
-      return await Future.sync(initializer ?? ClientTransaction.initialize).timeout(initializationTimeout);
+      return await Future.sync(
+        initializer ?? () => ClientTransaction.initialize(cookie: cookie),
+      ).timeout(initializationTimeout);
     } catch (error, stack) {
       if (_isTransientFailure(error)) rethrow;
       Error.throwWithStackTrace(TransactionIdUnavailableException(error), stack);
@@ -135,24 +131,33 @@ class TwitterHeaders {
   static bool _isTransientFailure(Object error) =>
       error is TimeoutException || error is SocketException || error is http.ClientException;
 
-  static Future<Map<String, String>?> getXClientTransactionIdHeader(Uri? uri) async {
+  static Future<Map<String, String>?> getXClientTransactionIdHeader(Uri? uri, {String? cookie}) async {
     if (uri == null) {
       return null;
     }
 
-    final ct = await _transaction();
+    final ct = await _transaction(cookie);
     return {'x-client-transaction-id': ct.generateTransactionId('GET', uri.path)};
   }
 
   static Future<Map<String, String>> getHeaders(Uri? uri, Map<dynamic, dynamic>? authHeader) async {
-    final xClientTransactionIdHeader = await getXClientTransactionIdHeader(uri);
-    // The web client marks a signed-in session this way; Squawker sends it on every account request.
+    final xClientTransactionIdHeader = await getXClientTransactionIdHeader(uri, cookie: _cookieOf(authHeader));
     return {
       ..._baseHeaders,
-      if (authHeader != null) 'x-twitter-auth-type': 'OAuth2Session',
       if (authHeader != null) ...Map<String, String>.from(authHeader),
       ...?xClientTransactionIdHeader,
     };
+  }
+
+  static String? _cookieOf(Map<dynamic, dynamic>? headers) {
+    if (headers == null) return null;
+    for (final entry in headers.entries) {
+      if (entry.key is String && (entry.key as String).toLowerCase() == 'cookie' && entry.value is String) {
+        final cookie = (entry.value as String).trim();
+        return cookie.isEmpty ? null : cookie;
+      }
+    }
+    return null;
   }
 }
 

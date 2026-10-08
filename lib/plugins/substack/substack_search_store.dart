@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
-import 'package:xta/utils/read_retry.dart';
 
 enum SubstackSearchTab { publications, posts }
 
@@ -223,7 +222,7 @@ class SubstackSearchStore extends Store<SubstackSearchState> {
 
   Future<void> retryFailedPosts() => _loadPosts(retryFailed: true);
 
-  Future<void> _loadPublications({bool more = false}) => withReadRetryBudget(() async {
+  Future<void> _loadPublications({bool more = false}) async {
     final request = ++_request;
     final before = state;
     final page = more ? before.nextPage : 0;
@@ -264,7 +263,7 @@ class SubstackSearchStore extends Store<SubstackSearchState> {
         );
       }
     }
-  });
+  }
 
   Future<({List<SubstackPublication> publications, bool pageable})> _findPublications(String query, int page) async {
     if (_directPublicationInput(query)) {
@@ -290,7 +289,7 @@ class SubstackSearchStore extends Store<SubstackSearchState> {
     return (publications: const <SubstackPublication>[], pageable: false);
   }
 
-  Future<void> _loadDirectPost() => withReadRetryBudget(() async {
+  Future<void> _loadDirectPost() async {
     final request = ++_request;
     final query = state.query;
     update(state.copyWith(loading: true, clearError: true, hasMore: false));
@@ -304,9 +303,9 @@ class SubstackSearchStore extends Store<SubstackSearchState> {
     } catch (error) {
       if (_current(request)) update(state.copyWith(loading: false, error: error));
     }
-  });
+  }
 
-  Future<void> _loadPosts({bool more = false, bool retryFailed = false}) => withReadRetryBudget(() async {
+  Future<void> _loadPosts({bool more = false, bool retryFailed = false}) async {
     if (_closed || (retryFailed && (state.loading || state.loadingMore))) return;
     final identity = _followedIdentity();
     if ((more || retryFailed) && identity != _postSources) {
@@ -357,7 +356,7 @@ class SubstackSearchStore extends Store<SubstackSearchState> {
         hasMore: loaded.any((slice) => slice.hasMore && slice.error == null),
       ),
     );
-  });
+  }
 
   String _followedIdentity() {
     final keys = _uniquePublications(followed()).map(substackSearchPublicationKey).toList()..sort();

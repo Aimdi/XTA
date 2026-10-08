@@ -1,5 +1,3 @@
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -20,6 +18,7 @@ import 'package:xta/plugins/plugin_session.dart';
 import 'package:xta/plugins/plugin_lazy_tabs.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 
 class HnScreen extends StatefulWidget {
@@ -331,15 +330,8 @@ class _StoryList extends StatelessWidget {
     required this.ranked,
   });
 
-  Map<HnStory, int> get _ranks => Map.identity()..addAll({for (var i = 0; i < stories.length; i++) stories[i]: i + 1});
-
   @override
   Widget build(BuildContext context) {
-    final ranks = ranked ? _ranks : const <HnStory, int>{};
-    return _list(context, ranks);
-  }
-
-  Widget _list(BuildContext context, Map<HnStory, int> ranks) {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: NotificationListener<ScrollNotification>(
@@ -349,15 +341,12 @@ class _StoryList extends StatelessWidget {
           }
           return false;
         },
-        child: SharedFilterFeedList<HnStory>(
+        child: FeedListView(
           controller: pluginInnerScrollController(context, scrollController),
           padding: pluginFeedPadding(context),
           physics: const AlwaysScrollableScrollPhysics(),
-          items: stories,
-          textOf: hnFilterText,
-          keyOf: (story) => story.id,
-          // A story keeps its rank on Hacker News when others around it are filtered out.
-          itemBuilder: (context, story, _) => HnStoryCard(story: story, rank: ranks[story]),
+          itemCount: stories.length,
+          itemBuilder: (context, index) => HnStoryCard(story: stories[index], rank: ranked ? index + 1 : null),
         ),
       ),
     );

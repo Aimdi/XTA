@@ -1,5 +1,3 @@
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/bluesky/bluesky_history.dart';
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -253,17 +251,7 @@ class _BlueskyProfileScreenState extends State<BlueskyProfileScreen> with Ticker
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: BlueskyProfileCard(profile: profile).recordedAs(
-                  () => blueskyProfileHistoryEntry(
-                    actor: profile.did,
-                    handle: profile.handle,
-                    name: profile.displayName,
-                    bio: profile.description,
-                  ),
-                  dwell: readingHistoryScreenDwell,
-                ),
-              ),
+              SliverToBoxAdapter(child: BlueskyProfileCard(profile: profile)),
               SliverPersistentHeader(
                 pinned: true,
                 delegate: _TabBarDelegate(

@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/reddit/reddit_history.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/reddit/reddit_archive.dart';
@@ -271,28 +268,16 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
     final post = _post;
     final date = post.createdAt;
 
-    return ReadingHistoryHook(
-      entry: () => redditHistoryEntry(_post),
-      dwell: readingHistoryScreenDwell,
-      child: _headerContent(context, theme, post, date),
-    );
-  }
-
-  Widget _headerContent(BuildContext context, ThemeData theme, RedditPost post, DateTime? date) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (post.showsTitle) ...[
-            ReaderTranslation(
-              text: post.displayTitle,
-              offer: _visibleSelfText(post) == null,
-              builder: (context, text) => Text(
-                text,
-                style: theme.textTheme.titleLarge!.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+            Text(
+              post.displayTitle,
+              style: theme.textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 6),
@@ -322,11 +307,7 @@ class _RedditThreadScreenState extends State<RedditThreadScreen> {
           RedditPostMedia(post: post, padding: const EdgeInsets.only(top: 10)),
           if (_visibleSelfText(post) case final selfText?) ...[
             const SizedBox(height: 10),
-            ReaderTranslation(
-              text: selfText,
-              offer: true,
-              builder: (context, text) => RedditRichText(text: text, style: theme.textTheme.bodyMedium),
-            ),
+            RedditRichText(text: selfText, style: theme.textTheme.bodyMedium),
           ],
           const Divider(height: 24),
         ],

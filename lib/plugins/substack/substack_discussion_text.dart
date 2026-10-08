@@ -32,16 +32,8 @@ class SubstackDiscussionText extends StatefulWidget {
   final String text;
   final TextStyle? style;
   final bool selectable;
-  final int? maxLines;
   final ValueChanged<String>? onOpenLink;
-  const SubstackDiscussionText({
-    super.key,
-    required this.text,
-    this.style,
-    this.selectable = false,
-    this.maxLines,
-    this.onOpenLink,
-  });
+  const SubstackDiscussionText({super.key, required this.text, this.style, this.selectable = false, this.onOpenLink});
   @override
   State<SubstackDiscussionText> createState() => _SubstackDiscussionTextState();
 }
@@ -106,8 +98,6 @@ class _SubstackDiscussionTextState extends State<SubstackDiscussionText> {
         ],
       ),
       style: widget.style,
-      maxLines: widget.maxLines,
-      overflow: widget.maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
     );
     return widget.selectable ? SelectionArea(child: text) : text;
   }

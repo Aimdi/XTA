@@ -1,5 +1,3 @@
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/threads/threads_history.dart';
 import 'package:xta/plugins/social_account_groups.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -295,13 +293,6 @@ class _ThreadsProfileScreenState extends State<ThreadsProfileScreen> {
                   profile: profile,
                   onFollow: alreadyFollows ? null : () => _follow(profile),
                   onAddToGroup: () => _addToGroup(profile),
-                ).recordedAs(
-                  () => threadsProfileHistoryEntry(
-                    username: profile.username,
-                    name: profile.displayName,
-                    bio: profile.biography,
-                  ),
-                  dwell: readingHistoryScreenDwell,
                 ),
               );
             }

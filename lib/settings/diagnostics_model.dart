@@ -9,7 +9,6 @@ import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/constants.dart';
-import 'package:xta/database/database_facts.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/database/repository.dart';
 import 'package:xta/settings/diagnostics_report.dart';
@@ -18,24 +17,26 @@ import 'package:xta/settings/main_thread_stalls.dart';
 class DiagnosticsModel extends Store<DiagnosticsReport> {
   final BasePrefService prefs;
 
-  DiagnosticsModel(this.prefs) : super(DiagnosticsReport.empty);
-
-  /// Every local step is bounded: a report that says the database is stuck beats a spinner that never ends.
+  /// Every local step is bounded, so a stuck database or platform thread shows up as a named line instead of a
+  /// Diagnose page that never finishes loading.
   static const probeTimeout = Duration(seconds: 5);
+
+  DiagnosticsModel(this.prefs) : super(DiagnosticsReport.empty);
 
   Future<void> load() async {
     await execute(() async {
       final now = DateTime.now();
       final probes = <DiagnosticsProbe>[];
-      final packageInfo = await _probe(probes, 'package info', PackageInfo.fromPlatform);
-      final accounts = await _probe(probes, 'database (read-only connection)', getAccounts);
-      await _probe(probes, 'database (writable connection)', () async {
+      final packageInfo = await _probe(probes, 'android platform call', PackageInfo.fromPlatform);
+      final accounts = await _probe(probes, 'database read (read-only connection)', getAccounts);
+      await _probe(probes, 'database read (writable connection)', () async {
         await (await Repository.writable()).rawQuery('SELECT 1');
       });
-      await _probe(probes, 'feed cache', _feedCacheSize, detail: (size) => size);
-      probes.add(DiagnosticsProbe('database at launch', failure: DatabaseFacts.summary));
-      probes.add(DiagnosticsProbe('X signing key', failure: TwitterHeaders.describeKeyState()));
-      probes.add(DiagnosticsProbe('Android main thread', failure: await mainThreadStallSummary()));
+      // A transaction that changes nothing: it needs the same write lock a like or a group change needs.
+      await _probe(probes, 'database save (writable connection)', () async {
+        await (await Repository.writable()).transaction((txn) => txn.rawQuery('SELECT 1'));
+      });
+      probes.add(DiagnosticsProbe('android main thread', failure: await mainThreadStallSummary()));
 
       return DiagnosticsReport(
         appVersion: packageInfo == null ? 'unknown' : 'v${packageInfo.version}+${packageInfo.buildNumber}',
@@ -51,30 +52,12 @@ class DiagnosticsModel extends Store<DiagnosticsReport> {
     });
   }
 
-  /// How much the Following fan-out has to do: subscriptions, groups and the cached chunk rows it reads and writes.
-  static Future<String> _feedCacheSize() async {
-    final database = await Repository.readOnly();
-    Future<int> count(String sql) async => (await database.rawQuery(sql)).first.values.first as int? ?? 0;
-    final subscriptions = await count('SELECT COUNT(*) FROM $tableSubscription');
-    final searches = await count('SELECT COUNT(*) FROM $tableSearchSubscription');
-    final groups = await count('SELECT COUNT(*) FROM $tableSubscriptionGroup');
-    final chunkRows = await count('SELECT COUNT(*) FROM $tableFeedGroupChunk');
-    final chunkBytes = await count('SELECT COALESCE(SUM(LENGTH(response)), 0) FROM $tableFeedGroupChunk');
-    return '$subscriptions subscriptions, $searches searches, $groups groups, '
-        '$chunkRows cached chunk rows (${chunkBytes ~/ 1024} KB)';
-  }
-
   /// Runs [step] under [probeTimeout]; a timeout or failure is recorded by category only and yields null.
-  static Future<T?> _probe<T>(
-    List<DiagnosticsProbe> probes,
-    String name,
-    Future<T> Function() step, {
-    String Function(T value)? detail,
-  }) async {
+  static Future<T?> _probe<T>(List<DiagnosticsProbe> probes, String name, Future<T> Function() step) async {
     final watch = Stopwatch()..start();
     try {
       final value = await step().timeout(probeTimeout);
-      probes.add(DiagnosticsProbe(name, elapsed: watch.elapsed, detail: detail?.call(value)));
+      probes.add(DiagnosticsProbe(name, elapsed: watch.elapsed));
       return value;
     } on TimeoutException {
       probes.add(DiagnosticsProbe(name, failure: 'still waiting after ${probeTimeout.inSeconds}s'));

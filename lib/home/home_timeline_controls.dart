@@ -2,43 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/group/group_chrome.dart';
-import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/ui/motion.dart';
 
 const double kHomeTimelineControlsHeight = 56;
-
-/// Ordering and filters use the same options sheet as the other readers.
-PluginHomeMenu homeTimelineMenu(
-  BuildContext context, {
-  required SubscriptionGroupGet group,
-  required ValueChanged<int> onOrderSelected,
-  required VoidCallback onFilters,
-}) {
-  final l10n = L10n.of(context);
-  final labels = [l10n.recent, l10n.popular, l10n.custom];
-  final order = group.custom ? 2 : (group.popular ? 1 : 0);
-  final filters = groupActiveFilterCount(group);
-  return PluginHomeMenu(
-    onSelected: (value) => value == 'filters' ? onFilters() : onOrderSelected(int.parse(value)),
-    itemBuilder: (_) => [
-      for (var index = 0; index < labels.length; index++)
-        CheckedPopupMenuItem<String>(value: '$index', checked: order == index, child: Text(labels[index])),
-      const PopupMenuDivider(),
-      PopupMenuItem(
-        value: 'filters',
-        child: Row(
-          children: [
-            const Icon(Icons.tune),
-            const SizedBox(width: 12),
-            Expanded(child: Text(l10n.filters)),
-            if (filters > 0) Badge.count(count: filters),
-          ],
-        ),
-      ),
-    ],
-  );
-}
 
 /// Reclaims space while retaining the controls' selection and scroll state.
 class HomeCollapsingControls extends StatelessWidget {

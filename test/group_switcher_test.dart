@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
@@ -76,33 +75,6 @@ void main() {
     _group('b', 'Anime', members: 3),
     _group('c', 'Demographics', members: 7),
   ];
-
-  testWidgets('an inline member count does not truncate a short group name', (tester) async {
-    await tester.pumpWidget(_wrap(
-      const SizedBox(width: 96, child: GroupTitleLabel(name: 'AI', memberCount: 3)),
-      groups,
-    ));
-    await tester.pumpAndSettle();
-    final title = find.descendant(of: find.text('AI'), matching: find.byType(RichText));
-    expect(tester.renderObject<RenderParagraph>(title).didExceedMaxLines, isFalse);
-    expect(find.text('3'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('a narrow large-text title keeps its count accessible without overflow', (tester) async {
-    final semantics = tester.ensureSemantics();
-    await tester.pumpWidget(_wrap(
-      const MediaQuery(
-        data: MediaQueryData(textScaler: TextScaler.linear(2)),
-        child: SizedBox(width: 80, child: GroupTitleLabel(name: 'Reading', memberCount: 12345)),
-      ),
-      groups,
-    ));
-    await tester.pumpAndSettle();
-    expect(find.bySemanticsLabel(RegExp(r'Reading.*12345', dotAll: true)), findsOneWidget);
-    expect(tester.takeException(), isNull);
-    semantics.dispose();
-  });
 
   testWidgets('the title shows the group and hints that it opens something', (tester) async {
     await tester.pumpWidget(_wrap(

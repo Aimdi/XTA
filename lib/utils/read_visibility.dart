@@ -3,23 +3,12 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 final readRouteObserver = RouteObserver<ModalRoute<dynamic>>();
 
-bool _anyPartVisible(VisibilityInfo info) => info.visibleFraction > 0;
-
 /// A kept-alive tab can be mounted while another tab, route or app is visible.
 class ReadVisibility extends StatefulWidget {
   final Widget child;
   final VoidCallback onHidden;
   final VoidCallback onVisible;
-
-  /// How much of [child] counts as seen; any visible part by default.
-  final bool Function(VisibilityInfo info) visibleWhen;
-  const ReadVisibility({
-    super.key,
-    required this.child,
-    required this.onHidden,
-    required this.onVisible,
-    this.visibleWhen = _anyPartVisible,
-  });
+  const ReadVisibility({super.key, required this.child, required this.onHidden, required this.onVisible});
   @override
   State<ReadVisibility> createState() => _ReadVisibilityState();
 }
@@ -60,8 +49,6 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
       if (!mounted || _visible != next) return;
       next ? widget.onVisible() : widget.onHidden();
     });
-    // Visibility is reported from a scheduler task; an idle screen would otherwise wait for an unrelated frame.
-    WidgetsBinding.instance.ensureVisualUpdate();
   }
 
   @override
@@ -100,7 +87,7 @@ class _ReadVisibilityState extends State<ReadVisibility> with RouteAware, Widget
   Widget build(BuildContext context) => VisibilityDetector(
     key: _key,
     onVisibilityChanged: (info) {
-      _inView = widget.visibleWhen(info);
+      _inView = info.visibleFraction > 0;
       _notify();
     },
     child: widget.child,

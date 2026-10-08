@@ -4,7 +4,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
 import 'package:xta/tweet/tweet_skeleton.dart';
-import 'package:xta/ui/motion.dart';
 import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/user.dart';
@@ -431,83 +430,58 @@ class ProfileFilterOption<T> {
   });
 }
 
-/// One filter convention for Posts, Media and the local Archive. The current
-/// value is repeated in the tooltip and checked in the menu, so colour is
+/// One filter convention for Posts, Media and the local Archive: every choice is a chip in a row directly above
+/// the content it filters, one tap away. The selected chip carries a check and a filled background, so colour is
 /// never the only active-state signal.
-class ProfileFilterMenu<T> extends StatelessWidget {
+class ProfileFilterChips<T> extends StatelessWidget {
   final T selected;
-  final T defaultValue;
   final List<ProfileFilterOption<T>> options;
   final ValueChanged<T> onSelected;
 
-  const ProfileFilterMenu({
+  const ProfileFilterChips({
     super.key,
     required this.selected,
-    required this.defaultValue,
     required this.options,
     required this.onSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    final selectedOption = options.firstWhere(
-      (option) => option.value == selected,
-    );
-    final active = selected != defaultValue;
+    final accent = tweetReadableAccentColor(context);
+    final muted = tweetSecondaryColor(context);
+    final theme = Theme.of(context);
 
-    return Semantics(
-      button: true,
-      selected: active,
-      label: selectedOption.label,
-      child: PopupMenuButton<T>(
-        initialValue: selected,
-        onSelected: onSelected,
-        tooltip: selectedOption.label,
-        position: PopupMenuPosition.under,
-        icon: XtaAnimatedSwitcher(
-          duration: kXtaMotionFast,
-          child: Icon(
-            active ? Icons.filter_alt : Icons.filter_alt_outlined,
-            key: ValueKey(active),
-            color: active
-                ? tweetReadableAccentColor(context)
-                : tweetSecondaryColor(context),
-          ),
-        ),
-        itemBuilder: (context) => [
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: kTweetHorizontalPadding - 4),
+      child: Row(
+        children: [
           for (final option in options)
-            PopupMenuItem<T>(
-              value: option.value,
-              height: kTweetTouchTarget,
-              child: Semantics(
-                selected: option.value == selected,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: kTweetSpace6,
-                      child: option.value == selected
-                          ? Icon(
-                              Icons.check,
-                              size: kTweetActionIconSize,
-                              color: tweetReadableAccentColor(context),
-                            )
-                          : Icon(
-                              option.icon,
-                              size: kTweetActionIconSize,
-                              color: tweetSecondaryColor(context),
-                            ),
-                    ),
-                    const SizedBox(width: kTweetSpace2),
-                    Expanded(
-                      child: Text(
-                        option.label,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            Padding(
+              padding: const EdgeInsetsDirectional.only(end: kTweetSpace2),
+              child: Builder(builder: (context) {
+                final isSelected = option.value == selected;
+                return ChoiceChip(
+                  selected: isSelected,
+                  showCheckmark: false,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
+                  avatar: Icon(
+                    isSelected ? Icons.check : option.icon,
+                    size: 18,
+                    color: isSelected ? accent : muted,
+                  ),
+                  label: Text(option.label, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  labelStyle: theme.textTheme.labelLarge?.copyWith(
+                    color: isSelected ? accent : muted,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                  selectedColor: accent.withValues(alpha: 0.14),
+                  backgroundColor: Colors.transparent,
+                  side: BorderSide(color: isSelected ? accent.withValues(alpha: 0.5) : tweetDividerColor(context)),
+                  shape: const StadiumBorder(),
+                  onSelected: (_) => onSelected(option.value),
+                );
+              }),
             ),
         ],
       ),

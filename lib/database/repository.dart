@@ -1,11 +1,6 @@
 import 'dart:convert';
 
 import 'package:xta/constants.dart';
-import 'package:xta/group/feed_cache.dart';
-import 'package:xta/utils/batched_delete.dart';
-import 'package:xta/database/database_facts.dart';
-import 'package:xta/database/traced_database.dart';
-import 'package:xta/utils/read_activity.dart';
 import 'package:xta/group/group_model.dart';
 import 'package:logging/logging.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1051,10 +1046,10 @@ class Repository {
       return cached;
     }
 
-    // Every statement on the shared connection waits behind the one before it, so one that never answers would
-    // hold every read in the app. A stalled connection is dropped: the next reader opens a fresh one.
-    final opening = openDatabase(databaseName, readOnly: true, singleInstance: false).then<Database>(
-      (database) => TracedDatabase(database, 'ro', onStall: _dropStalledReadOnly),
+    final opening = openDatabase(
+      databaseName,
+      readOnly: true,
+      singleInstance: false,
     );
     _readOnly = opening;
 
@@ -1076,38 +1071,7 @@ class Repository {
   }
 
   static Future<Database> writable() async {
-    return TracedDatabase(await openDatabase(databaseName), 'rw');
-  }
-
-  static void _dropStalledReadOnly(TracedDatabase stalled) {
-    ReadActivityLog.shared.begin(ReadOperation.db, label: 'ro dropped after a stall').finish(ReadOutcome.completed);
-    final current = _readOnly;
-    if (current == null) return;
-    current.then((database) {
-      if (identical(database, stalled) && identical(_readOnly, current)) _readOnly = null;
-    }, onError: (Object _) {});
-  }
-
-  static bool _bounded = false;
-
-  /// Empties the chunk cache when it holds more than [maxRows] rows, then makes sure its indexes exist.
-  ///
-  /// A whole-table DELETE takes SQLite's truncate path, which frees pages without visiting rows, so this is the
-  /// one purge that stays quick on a table of hundreds of megabytes. Returns whether the table was emptied.
-  static Future<bool> boundFeedCache(Database database, {int maxRows = maxFeedCacheRows}) async {
-    final count = (await database.rawQuery('SELECT COUNT(*) FROM $tableFeedGroupChunk')).first.values.first as int? ?? 0;
-    final oversized = count > maxRows;
-    if (oversized) {
-      try {
-        await database.execute('PRAGMA secure_delete = OFF');
-      } catch (e) {
-        log.warning('Could not turn secure_delete off before emptying the feed cache: $e');
-      }
-      await database.delete(tableFeedGroupChunk);
-      await database.delete(tableFeedGroupCursor);
-    }
-    await _createIndexes(database);
-    return oversized;
+    return openDatabase(databaseName);
   }
 
   static bool _cleanedUp = false;
@@ -1115,12 +1079,19 @@ class Repository {
   Future<void> _cleanUpOldCaches() async {
     try {
       final repository = await writable();
-      const aged = "created_at <= date('now', '-7 day')";
-      final log = ReadActivityLog.shared;
-      await log.trace('purge:chunks', () => deleteChunkRowsInBatches(repository, where: aged));
-      await log.trace('purge:cursors', () => deleteRowsInBatches(repository, tableFeedGroupCursor, where: aged));
-      await log.trace('purge:timelines', () => deleteRowsInBatches(repository, tableTimelineCache, where: aged));
-      await log.trace('purge:trim', () => trimTimelineCache(repository));
+      await repository.delete(
+        tableFeedGroupChunk,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await repository.delete(
+        tableFeedGroupCursor,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await repository.delete(
+        tableTimelineCache,
+        where: "created_at <= date('now', '-7 day')",
+      );
+      await trimTimelineCache(repository);
     } catch (e) {
       log.warning('Could not clean up old cached feeds: $e');
     }
@@ -1135,14 +1106,11 @@ class Repository {
   static Future<void> trimTimelineCache(
     Database database, {
     int keep = maxTimelineCacheRows,
-    int batchSize = 20,
   }) async {
-    await deleteRowsInBatches(
-      database,
-      tableTimelineCache,
-      where: 'key NOT IN (SELECT key FROM $tableTimelineCache ORDER BY created_at DESC LIMIT ?)',
-      arguments: [keep],
-      batchSize: batchSize,
+    await database.rawDelete(
+      'DELETE FROM $tableTimelineCache WHERE key NOT IN '
+      '(SELECT key FROM $tableTimelineCache ORDER BY created_at DESC LIMIT ?)',
+      [keep],
     );
   }
 
@@ -1178,17 +1146,6 @@ class Repository {
     // so a week of feed JSON was scanned before the first frame. It gains
     // nothing from blocking startup: run it once per process, in the
     // background, after the schema work is done.
-    if (!_bounded) {
-      _bounded = true;
-      try {
-        final database = await writable();
-        final truncated = await ReadActivityLog.shared.trace('bound', () => boundFeedCache(database));
-        await ReadActivityLog.shared.trace('facts', () => DatabaseFacts.collect(database, feedCacheTruncated: truncated));
-      } catch (e) {
-        log.warning('Could not bound the feed cache: $e');
-      }
-    }
-
     if (!_cleanedUp) {
       _cleanedUp = true;
       unawaited(_cleanUpOldCaches());

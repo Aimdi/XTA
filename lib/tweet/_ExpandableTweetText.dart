@@ -1,4 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -43,7 +42,6 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
   double? _memoWidth;
   TextScaler? _memoScaler;
   bool _memoTruncated = false;
-  int? _memoMaxLines;
 
   /// Whether the text needs more than [ExpandableTweetText.maxLines] at the
   /// width it is actually painted at, in the style it is actually painted in.
@@ -53,7 +51,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
   /// Measuring without the rendered style compounds it, because the spans
   /// inherit their size from [DefaultTextStyle] rather than carrying it.
   bool _isTruncated(BuildContext context, double maxWidth, TextStyle style) {
-    final maxLines = feedTextLines(context, normal: widget.maxLines);
+    final maxLines = widget.maxLines;
     if (maxLines == null || !maxWidth.isFinite || maxWidth <= 0) {
       return false;
     }
@@ -61,8 +59,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
     final scaler = MediaQuery.textScalerOf(context);
     if (identical(_memoSpans, widget.textSpans) &&
         _memoWidth == maxWidth &&
-        _memoScaler == scaler &&
-        _memoMaxLines == maxLines) {
+        _memoScaler == scaler) {
       return _memoTruncated;
     }
 
@@ -101,7 +98,6 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
     _memoSpans = widget.textSpans;
     _memoWidth = maxWidth;
     _memoScaler = scaler;
-    _memoMaxLines = maxLines;
     _memoTruncated = truncated;
     return truncated;
   }
@@ -155,7 +151,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
             ? SelectableText.rich(
                 TextSpan(children: widget.textSpans),
                 scrollPhysics: const NeverScrollableScrollPhysics(),
-                maxLines: clipped ? feedTextLines(context, normal: widget.maxLines) : null,
+                maxLines: clipped ? widget.maxLines : null,
                 style: style,
                 onTap: openOnTap,
               )
@@ -164,7 +160,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
                 onTap: openOnTap,
                 child: Text.rich(
                   TextSpan(children: widget.textSpans),
-                  maxLines: clipped ? feedTextLines(context, normal: widget.maxLines) : null,
+                  maxLines: clipped ? widget.maxLines : null,
                   overflow: clipped ? TextOverflow.clip : null,
                   style: style,
                 ),
@@ -236,7 +232,7 @@ class ExpandableTweetTextState extends State<ExpandableTweetText> {
 
         // Most timeline posts are short. Avoid giving every tile an implicit
         // animation controller for a transition it can never perform.
-        if (!expandable || xtaReduceMotion(context)) return content;
+        if (!expandable) return content;
         return AnimatedSize(
           duration: xtaMotionDuration(context, kXtaMotionFast),
           curve: Curves.easeOutCubic,

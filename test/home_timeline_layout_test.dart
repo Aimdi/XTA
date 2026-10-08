@@ -29,12 +29,6 @@ import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_group_filter.dart';
 import 'package:xta/home/network_recents_store.dart';
 import 'package:xta/plugins/plugin_session.dart';
-import 'package:xta/plugins/reddit/reddit_auth.dart';
-import 'package:xta/plugins/reddit/reddit_client.dart';
-import 'package:xta/plugins/reddit/reddit_feed_list.dart';
-import 'package:xta/plugins/reddit/reddit_listing_body.dart';
-import 'package:xta/plugins/reddit/reddit_screen.dart';
-import 'package:xta/plugins/reddit/reddit_store.dart';
 import 'package:xta/saved/liked_tweet_model.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
 import 'package:xta/subscriptions/users_model.dart';
@@ -43,23 +37,10 @@ import 'package:xta/utils/read_visibility.dart';
 
 const _before = bool.fromEnvironment('HOME_LAYOUT_BEFORE');
 const _media = ValueKey('home-media-toggle');
-const _order = ValueKey('home-plugin-options');
-const _picker = ValueKey('plugin-source-picker-following');
+const _order = ValueKey('home-order-menu');
+const _readingControls = ValueKey('home-reading-controls');
+const _picker = ValueKey('home-source-picker');
 const _postsTab = ValueKey('home-posts-tab');
-
-class _HeaderRedditClient extends RedditClient {
-  @override
-  Future<RedditListing> fetchSubreddit(
-    String subreddit, {
-    required String clientId,
-    RedditSort sort = RedditSort.hot,
-    RedditTimeFilter timeFilter = RedditTimeFilter.day,
-    int limit = kRedditListingPageSize,
-    String? after,
-    String? userToken,
-    bool preferPublic = false,
-  }) async => const RedditListing(posts: []);
-}
 
 List<TweetChain> _posts({int count = 5}) {
   const texts = [
@@ -125,7 +106,6 @@ class _HomeHarness {
   Future<void> seed({int postCount = 5}) async {
     final db = await Repository.writable();
     await db.delete(tableSubscription);
-    await db.delete(tableRedditSubscription);
     await db.update(tableSubscriptionGroup, {'popular': 0, 'custom': 0}, where: 'id = ?', whereArgs: ['-1']);
     await db.insert(
       tableSubscription,
@@ -145,7 +125,7 @@ class _HomeHarness {
     expect(controller.items, hasLength(postCount));
   }
 
-  Widget app(ThemeData theme, {double scale = 1, bool rtl = false, Locale? locale}) => PrefService(
+  Widget app(ThemeData theme, {double scale = 1, bool rtl = false}) => PrefService(
     service: prefs,
     child: MultiProvider(
       providers: [
@@ -162,14 +142,6 @@ class _HomeHarness {
         Provider<FeedSessionCache>.value(value: cache),
         Provider(create: (_) => LikedTweetModel(), dispose: (_, store) => store.destroy()),
         Provider(create: (_) => SavedTweetModel(), dispose: (_, store) => store.destroy()),
-        Provider<RedditClient>(create: (_) => _HeaderRedditClient()),
-        Provider(create: (_) => RedditAuth(), dispose: (_, auth) => auth.httpClient.close()),
-        Provider(create: (_) => RedditSubredditsStore(prefs), dispose: (_, store) => store.destroy()),
-        Provider(create: (_) => RedditSavedStore(prefs), dispose: (_, store) => store.destroy()),
-        Provider(
-          create: (context) => RedditFeedStore(context.read<RedditClient>(), context.read<RedditSubredditsStore>(), prefs),
-          dispose: (_, store) => store.destroy(),
-        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -182,7 +154,6 @@ class _HomeHarness {
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: L10n.delegate.supportedLocales,
-        locale: locale,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
           child: Directionality(textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, child: child!),
@@ -250,7 +221,7 @@ Future<void> _waitForNativeWork(WidgetTester tester, bool Function() ready) asyn
 
 bool _hasAccessibleLabel(WidgetTester tester, String label) {
   bool containsLabel(SemanticsNode node) {
-    if (node.label.split('\n').contains(label) || node.getSemanticsData().tooltip == label) return true;
+    if (node.label.split('\n').contains(label)) return true;
     var found = false;
     node.visitChildren((child) {
       found = containsLabel(child);
@@ -284,108 +255,6 @@ void main() {
     // otherwise later tests inherit the first test's stopped fake clock.
     await Repository.readOnly();
   });
-
-  testWidgets('Following starts below one compact toolbar', (tester) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final h = _HomeHarness();
-    addTearDown(() => h.close(tester));
-    await tester.runAsync(h.seed);
-    await tester.pumpWidget(h.app(xLookLightsOutTheme(null)));
-    await _waitForFollowing(tester);
-    expect(tester.getTopLeft(find.byType(SubscriptionGroupScreenContent)).dy, lessThanOrEqualTo(64));
-    expect(find.byTooltip('Media').hitTestable(), findsOneWidget);
-    expect(find.byIcon(Icons.manage_search).hitTestable(), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('X keeps search and its library in the shared header', (tester) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final h = _HomeHarness();
-    addTearDown(() => h.close(tester));
-    await tester.runAsync(h.seed);
-    await tester.pumpWidget(h.app(xLookLightsOutTheme(null)));
-    await _waitForFollowing(tester);
-    await tester.tap(find.byKey(const ValueKey('home-for-you-tab')));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(h.selected.state, FeedTab.x);
-    expect(tester.getTopLeft(find.byType(ForYouTweets)).dy, lessThanOrEqualTo(64));
-    expect(find.byKey(const ValueKey('x-reader-search')).hitTestable(), findsOneWidget);
-    await tester.tap(find.byKey(_order));
-    await tester.pumpAndSettle();
-    for (final destination in ['subscriptions', 'saved', 'accounts']) {
-      expect(find.byKey(ValueKey('x-reader-$destination')), findsOneWidget);
-    }
-    await expectLater(
-      find.byType(Overlay).first,
-      matchesGoldenFile('../review-artifacts/renders/home-x-options.png'),
-    );
-    await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
-    await tester.pumpAndSettle();
-    await expectLater(
-      find.byKey(const ValueKey('home-render')),
-      matchesGoldenFile('../review-artifacts/renders/home-x-black.png'),
-    );
-    expect(tester.takeException(), isNull);
-  });
-
-  for (final (width, scale) in <(double, double)>[(390, 1), (320, 2)]) {
-    testWidgets('Reddit has one header and retains communities and options at $width/$scale', (tester) async {
-      tester.view.physicalSize = Size(width, 844);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final h = _HomeHarness();
-      addTearDown(() => h.close(tester));
-      await tester.runAsync(() async {
-        await h.seed();
-        await h.prefs.set(optionPluginRedditEnabled, true);
-        await h.prefs.set(optionHomeFeedStripPlugins, ['reddit']);
-        await h.prefs.set(optionSeededStripPlugins, ['reddit']);
-        final db = await Repository.writable();
-        await db.insert(
-          tableRedditSubscription,
-          RedditSubscription(id: 'flutter', name: 'flutter', createdAt: DateTime(2026, 9, 7), inFeed: true).toMap(),
-        );
-      });
-      h.selected.select(FeedTab.reddit);
-      await tester.pumpWidget(h.app(xLookLightsOutTheme(null), scale: scale, locale: const Locale('de')));
-      await _waitForNativeWork(tester, () => find.byTooltip(L10n.current.plugin_reddit_search_hint).evaluate().isNotEmpty);
-      expect(tester.getTopLeft(find.byType(RedditFeedList)).dy, lessThanOrEqualTo(64));
-      final original = tester.state(find.byType(RedditScreen));
-      expect(find.byKey(const ValueKey('reddit-community-flutter')), findsNothing);
-      await expectLater(
-        find.byKey(const ValueKey('home-render')),
-        matchesGoldenFile('../review-artifacts/renders/home-reddit-$width-$scale.png'),
-      );
-      await tester.tap(find.byKey(_order));
-      await tester.pumpAndSettle();
-      expect(find.widgetWithText(ListTile, L10n.current.plugin_reddit_sort), findsOneWidget);
-      expect(find.widgetWithText(ListTile, L10n.current.saved), findsOneWidget);
-      expect(find.byKey(const ValueKey('open-client-reddit')), findsOneWidget);
-      final community = find.byKey(const ValueKey('reddit-community-flutter'));
-      await tester.ensureVisible(community);
-      await tester.tap(community);
-      await tester.pumpAndSettle();
-      expect(h.prefs.get<String>(optionPluginRedditSelectedSubreddit), 'flutter');
-      expect(find.byType(RedditListingBody), findsOneWidget);
-      expect(tester.state(find.byType(RedditScreen)), same(original));
-      await expectLater(
-        find.byType(Overlay).first,
-        matchesGoldenFile('../review-artifacts/renders/home-reddit-options-$width-$scale.png'),
-      );
-      await tester.ensureVisible(find.byKey(const ValueKey('home-plugin-options-close')));
-      await tester.tap(find.byKey(const ValueKey('home-plugin-options-close')));
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-    });
-  }
 
   for (final variant in ['light', 'dark', 'black', 'large-rtl']) {
     testWidgets('populated Home layout $variant', (tester) async {
@@ -431,6 +300,7 @@ void main() {
         expect(tester.getSize(find.byKey(_media)).height, greaterThanOrEqualTo(48));
         expect(find.byKey(_order).hitTestable(), findsOneWidget);
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
+        expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
         final media = find.byKey(_media);
         await tester.ensureVisible(media);
         expect(media.hitTestable(), findsOneWidget);
@@ -451,7 +321,7 @@ void main() {
   }
 
   for (final reduceMotion in [false, true]) {
-    testWidgets('Compact Home controls stay reachable while reading (reduced motion $reduceMotion)', (tester) async {
+    testWidgets('Home controls return only at the top (reduced motion $reduceMotion)', (tester) async {
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
@@ -470,7 +340,7 @@ void main() {
         final heightAtTop = tester.getSize(feed).height;
         final position = h.scroll.position;
         final items = h.cache.getOrCreateController('home--1').items!;
-        expect(find.byKey(_media).hitTestable(), findsOneWidget);
+        expect(tester.getSize(find.byKey(_readingControls)).height, 56);
         expect(find.byType(HomeFeedStrip), findsNothing);
         expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
         if (reduceMotion) {
@@ -483,11 +353,12 @@ void main() {
         await tester.pumpAndSettle();
         expect(position.pixels, greaterThan(100));
         expect(h.scroll.position, same(position));
-        expect(find.byKey(_media).hitTestable(), findsOneWidget);
+        expect(tester.getSize(find.byKey(_readingControls)).height, 0);
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
-        expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
-        expect(_hasAccessibleLabel(tester, 'Media'), isTrue);
-        expect(find.byKey(_order).hitTestable(), findsOneWidget);
+        expect(tester.getSize(feed).height, closeTo(heightAtTop + 56, 1));
+        expect(find.byKey(_media).hitTestable(), findsNothing);
+        expect(_hasAccessibleLabel(tester, 'Media'), isFalse);
+        expect(find.byTooltip('Home feed accounts').hitTestable(), findsOneWidget);
         expect(find.byType(HomeNavigationBar).hitTestable(), findsOneWidget);
         if (reduceMotion) {
           await expectLater(
@@ -501,11 +372,11 @@ void main() {
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
         position.jumpTo(1);
         await tester.pumpAndSettle();
-        expect(find.byKey(_media).hitTestable(), findsOneWidget);
+        expect(tester.getSize(find.byKey(_readingControls)).height, 0);
         expect(find.byKey(_picker).hitTestable(), findsOneWidget);
         position.jumpTo(0);
         await tester.pumpAndSettle();
-        expect(find.byKey(_media).hitTestable(), findsOneWidget);
+        expect(tester.getSize(find.byKey(_readingControls)).height, 56);
         expect(find.byType(HomeFeedStrip), findsNothing);
         expect(tester.getSize(feed).height, closeTo(heightAtTop, 1));
         expect(find.byKey(_media).hitTestable(), findsOneWidget);
@@ -536,7 +407,7 @@ void main() {
     position.jumpTo(30);
     await tester.pumpAndSettle();
     expect(position.pixels, closeTo(30, 1));
-    expect(find.byKey(_media).hitTestable(), findsOneWidget);
+    expect(tester.getSize(find.byKey(_readingControls)).height, 56);
     expect(find.byType(HomeFeedStrip), findsNothing);
     expect(tester.takeException(), isNull);
   }, skip: _before);
@@ -558,7 +429,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('home-source-following')));
     await tester.pumpAndSettle();
     expect(h.scroll.offset, closeTo(offset, 1));
-    expect(find.byKey(_media).hitTestable(), findsOneWidget);
+    expect(tester.getSize(find.byKey(_readingControls)).height, 0);
     expect(h.cache.getOrCreateController('home--1').items, orderedEquals(cached));
     await tester.tap(find.byKey(_picker));
     await tester.pumpAndSettle();
@@ -616,11 +487,9 @@ void main() {
     h.selected.select(FeedTab.foryou);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.byKey(_media).hitTestable(), findsOneWidget);
+    expect(find.byKey(_media), findsNothing);
     final original = tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed;
-    await tester.tap(find.byKey(_order));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(ListTile, MaterialLocalizations.of(tester.element(find.byType(ForYouTweets))).refreshIndicatorSemanticLabel));
+    await tester.tap(find.byIcon(Icons.refresh));
     await tester.pump();
     expect(tester.widget<ForYouTweets>(find.byType(ForYouTweets)).feed, same(original));
     h.selected.select(FeedTab.following);
@@ -678,9 +547,7 @@ void main() {
       await _waitForFollowing(tester);
       await tester.tap(find.byKey(_order));
       await tester.pumpAndSettle();
-      final filters = find.widgetWithText(ListTile, L10n.current.filters);
-      await tester.ensureVisible(filters);
-      await tester.tap(filters);
+      await tester.tap(find.text(L10n.current.filters));
       await tester.pumpAndSettle();
       expect(find.text(L10n.current.include_replies), findsOneWidget);
       Navigator.pop(tester.element(find.text(L10n.current.include_replies)));
@@ -690,9 +557,7 @@ void main() {
       for (final order in [1, 0, 2]) {
         await tester.tap(find.byKey(_order));
         await tester.pumpAndSettle();
-        final item = find.widgetWithText(ListTile, labels[order]);
-        await tester.ensureVisible(item);
-        await tester.tap(item);
+        await tester.tap(find.text(labels[order]));
         await _waitForNativeWork(
           tester,
           () => model.state.popular == (order == 1) && model.state.custom == (order == 2),

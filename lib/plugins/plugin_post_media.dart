@@ -1,4 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:async_button_builder/async_button_builder.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -181,7 +180,7 @@ class _PluginMediaPagerState extends State<_PluginMediaPager> {
   @override
   Widget build(BuildContext context) {
     final items = widget.items;
-    final ratio = feedMediaAspect(context, clampPluginMediaAspect(items[_index].aspectRatio));
+    final ratio = clampPluginMediaAspect(items[_index].aspectRatio);
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Column(
@@ -314,7 +313,10 @@ class _PluginMediaTile extends StatelessWidget {
 
     final child = fill
         ? framed
-        : AspectRatio(aspectRatio: feedMediaAspect(context, clampPluginMediaAspect(item.aspectRatio)), child: framed);
+        : AspectRatio(
+            aspectRatio: clampPluginMediaAspect(item.aspectRatio),
+            child: framed,
+          );
 
     return Material(
       color: Colors.transparent,

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:xta/database/repository.dart';
-import 'package:xta/utils/batched_delete.dart';
 
 /// The 7-day purge bounds how *old* a cached timeline gets, not how many there
 /// are. A row is written for every thread opened and every profile visited, and
@@ -68,31 +67,5 @@ void main() {
     await Repository.trimTimelineCache(database, keep: 10);
 
     expect(await _keys(database), isEmpty);
-  });
-
-  test('trims in several small statements and still keeps exactly the newest entries', () async {
-    await _seed(database, 25);
-
-    await Repository.trimTimelineCache(database, keep: 10, batchSize: 4);
-
-    final keys = await _keys(database);
-    expect(keys, hasLength(10));
-    expect(keys, contains('thread:24'));
-    expect(keys, isNot(contains('thread:14')));
-  });
-
-  test('the age purge deletes every stale row in batches and leaves fresh ones', () async {
-    await _seed(database, 7);
-    await database.insert(tableTimelineCache, {'key': 'thread:fresh', 'response': '{"chains":[]}'});
-
-    final deleted = await deleteRowsInBatches(
-      database,
-      tableTimelineCache,
-      where: "created_at <= date('now', '-7 day')",
-      batchSize: 3,
-    );
-
-    expect(deleted, 7);
-    expect(await _keys(database), ['thread:fresh']);
   });
 }

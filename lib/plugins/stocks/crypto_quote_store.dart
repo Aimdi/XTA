@@ -1,7 +1,6 @@
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:xta/plugins/stocks/crypto_asset.dart';
 import 'package:xta/plugins/stocks/crypto_client.dart';
-import 'package:xta/utils/read_retry.dart';
 
 class CryptoQuoteStore extends Store<Map<String, CryptoMarket>> {
   final CryptoClient client;
@@ -10,7 +9,7 @@ class CryptoQuoteStore extends Store<Map<String, CryptoMarket>> {
   bool _closed = false;
   CryptoQuoteStore({CryptoClient? client}) : client = client ?? CryptoClient(), super(const {});
 
-  Future<void> ensure(Iterable<CryptoAsset> assets, {bool force = false}) => withReadRetryBudget(() async {
+  Future<void> ensure(Iterable<CryptoAsset> assets, {bool force = false}) async {
     final needed = assets
         .where(
           (asset) =>
@@ -23,7 +22,7 @@ class CryptoQuoteStore extends Store<Map<String, CryptoMarket>> {
     for (var i = 0; i < needed.length && !_closed; i += 4) {
       await Future.wait(needed.skip(i).take(4).map(_fetch));
     }
-  });
+  }
 
   Future<void> _fetch(CryptoAsset asset) async {
     _inflight.add(asset.id);

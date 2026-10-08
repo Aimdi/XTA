@@ -4,7 +4,6 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
-import 'package:xta/group/future_pool.dart';
 import 'package:xta/plugins/rss/rss_card.dart';
 import 'package:xta/plugins/rss/rss_client.dart';
 import 'package:xta/plugins/rss/rss_store.dart';
@@ -35,16 +34,18 @@ Future<List<InterleavedItem>> loadRssInterleaved(BuildContext context, List<RssS
 
   final client = context.read<RssClient>();
   Object? failure;
-  final fetched = await mapWithConcurrency(feeds, rssFetchConcurrency, (feed) async {
-    try {
-      final items = await client.fetchItems(feedOf(feed));
-      return (feed, items.take(kRssInterleavedPageSize).toList(growable: false));
-    } catch (e) {
-      failure ??= e;
-      _log.warning('Unable to load RSS items for ${feed.id}: $e');
-      return null;
-    }
-  });
+  final fetched = await Future.wait(
+    feeds.map((feed) async {
+      try {
+        final items = await client.fetchItems(feedOf(feed));
+        return (feed, items.take(kRssInterleavedPageSize).toList(growable: false));
+      } catch (e) {
+        failure ??= e;
+        _log.warning('Unable to load RSS items for ${feed.id}: $e');
+        return null;
+      }
+    }),
+  );
 
   final result = <InterleavedItem>[
     for (final pair in fetched.nonNulls)

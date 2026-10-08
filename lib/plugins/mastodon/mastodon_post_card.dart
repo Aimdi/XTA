@@ -1,10 +1,8 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/mastodon/mastodon_history.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/mastodon/mastodon_models.dart';
 import 'package:xta/plugins/mastodon/mastodon_poll.dart';
@@ -97,7 +95,7 @@ class MastodonPostCard extends StatelessWidget {
               onTap: openOnTap ? () => _open(context) : null,
               onLongPress: () => showMastodonPostActions(context, post),
               child: Padding(
-                padding: feedCardPadding(context),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -122,7 +120,6 @@ class MastodonPostCard extends StatelessWidget {
                       key: ValueKey((post.url, post.id, post.spoilerText, post.sensitive)),
                       post: post,
                       media: _media(context),
-                      offerTranslation: !openOnTap,
                     ),
                     _MastodonEngagementRow(
                       post: post,
@@ -256,7 +253,7 @@ class MastodonPostCard extends StatelessWidget {
       items: post.mediaItems,
       sourceName: 'mastodon',
       onOpenPost: openOnTap ? () => _open(context) : null,
-    ).withFeedAppearancePart(kind: FeedAppearancePartKind.media);
+    );
   }
 }
 
@@ -383,7 +380,8 @@ class _MastodonEngagementRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
-    final hideCounts = !feedCountsVisible(context);
+    final prefs = PrefService.of(context, listen: false);
+    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
 
     String label(int count) => hideCounts ? '' : compactCount(count);
 
@@ -467,9 +465,8 @@ class _MastodonRevealStore extends Store<bool> {
 class _SpoilerBody extends StatefulWidget {
   final MastodonPost post;
   final Widget media;
-  final bool offerTranslation;
 
-  const _SpoilerBody({super.key, required this.post, required this.media, this.offerTranslation = false});
+  const _SpoilerBody({super.key, required this.post, required this.media});
 
   @override
   State<_SpoilerBody> createState() => _SpoilerBodyState();
@@ -499,33 +496,19 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
   Widget _visible(BuildContext context, bool open) {
     final post = widget.post;
     final theme = Theme.of(context);
-    return ReadingHistoryHook(
-      entry: () => mastodonHistoryEntry(post),
-      dwell: widget.offerTranslation ? readingHistoryScreenDwell : readingHistoryCardDwell,
-      child: _content(context, post, theme, open),
-    );
-  }
-
-  Widget _content(BuildContext context, MastodonPost post, ThemeData theme, bool open) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (post.hasSpoiler) _MastodonContentWarning(text: post.spoilerText, open: true, onHide: _store.hide),
         if (post.text.isNotEmpty) ...[
           const SizedBox(height: 6),
-          ReaderTranslation(
+          MastodonRichText(
             text: post.text,
-            offer: widget.offerTranslation,
-            builder: (context, text) => MastodonRichText(
-              maxLines: feedTextLines(context),
-              text: text,
-              mentionAccts: post.mentionAccts,
-              style: feedBodyStyle(context, theme.textTheme.bodyLarge!.copyWith(height: 1.35)),
-              onMentionTap: (acct) =>
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: acct))),
-              onTagTap: (tag) =>
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag))),
-            ),
+            mentionAccts: post.mentionAccts,
+            style: theme.textTheme.bodyLarge!.copyWith(height: 1.35),
+            onMentionTap: (acct) =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonProfileScreen(acct: acct))),
+            onTagTap: (tag) => Navigator.push(context, MaterialPageRoute(builder: (_) => MastodonTagScreen(tag: tag))),
           ),
         ],
         if (post.quote != null) ...[const SizedBox(height: 10), _QuoteEmbed(quote: post.quote!)],
@@ -541,10 +524,7 @@ class _SpoilerBodyState extends State<_SpoilerBody> {
           if (!post.sensitive || open) widget.media,
         ],
         if (post.poll != null) ...[const SizedBox(height: 10), MastodonPollResults(poll: post.poll!)],
-        if (post.linkCard != null) ...[
-          const SizedBox(height: 10),
-          _MastodonLinkPreview(card: post.linkCard!).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews),
-        ],
+        if (post.linkCard != null) ...[const SizedBox(height: 10), _MastodonLinkPreview(card: post.linkCard!)],
       ],
     );
   }

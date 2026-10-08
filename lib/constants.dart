@@ -641,11 +641,6 @@ const maxFeedGapFillPages = 4;
 // painted anything -- for posts far below where anyone scrolls.
 const maxCachedChunkRows = 8;
 
-/// The most chunk rows the cache may hold at launch. Reads take at most [maxCachedChunkRows] per chunk, so a
-/// table far beyond this is a pile nothing reads, and every scan of it (unread dots, previews, purges) holds the
-/// one database worker for as long as it takes. Past the bound the table is emptied in one statement.
-const maxFeedCacheRows = 400;
-
 /// How far a timeline [ListView.builder] builds off-screen.
 ///
 /// Matches the X feed. Video tiles are visibility-gated, so this window only
@@ -685,12 +680,6 @@ const String guestBearerToken =
 // page and on-demand bundle it is built from, and a stale key makes every
 // request 404 — indistinguishable from a rotated query id.
 const Duration transactionKeyLifetime = Duration(hours: 6);
-
-// How long one derivation of that key may take. It downloads x.com's page and
-// three script bundles, the largest over half a megabyte, so a slow mobile link
-// needs well over the twelve seconds a Wi-Fi link does. The feed that asked
-// first may give up sooner; the derivation carries on and its retry joins it.
-const Duration transactionKeyInitializationTimeout = Duration(seconds: 45);
 
 // How long to wait before re-deriving after a failure. Deriving costs two
 // requests to x.com, so a persistent failure (X reshaping its HTML) would

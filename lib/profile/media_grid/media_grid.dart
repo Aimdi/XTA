@@ -1,11 +1,8 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:pref/pref.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
-import 'package:xta/tweet/tweet_filtering.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/profile/media_grid/gif_playback_gate.dart';
@@ -111,7 +108,6 @@ class _MediaGridState extends State<MediaGrid>
 
   final GifPlaybackGate _gifGate = GifPlaybackGate();
   bool _firstLoadStarted = false;
-  final _pagingGuard = SharedFilterPagingGuard();
 
   @override
   void didUpdateWidget(covariant MediaGrid oldWidget) {
@@ -125,33 +121,6 @@ class _MediaGridState extends State<MediaGrid>
   void dispose() {
     _gifGate.dispose();
     super.dispose();
-  }
-
-  static String _filterText(MediaGridItem item) => item.tweet == null ? '' : sharedFilterTweetText(item.tweet!);
-
-  PagingState<int, MediaGridItem> _visibleState(PagingState<int, MediaGridItem> state, List<MediaGridItem> visible) {
-    final shown = Set<MediaGridItem>.identity()..addAll(visible);
-    return state.copyWith(
-      pages: [
-        for (final page in state.pages ?? const <List<MediaGridItem>>[])
-          [
-            for (final item in page)
-              if (shown.contains(item)) item,
-          ],
-      ],
-    );
-  }
-
-  void _guardedFetch(VoidCallback fetch, List<MediaGridItem>? loaded, List<MediaGridItem> visible) {
-    final items = loaded ?? const <MediaGridItem>[];
-    final shown = Set<MediaGridItem>.identity()..addAll(visible);
-    if (_pagingGuard.allowFetch(items.length, (from) => items.skip(from).every((item) => !shown.contains(item)))) {
-      fetch();
-    }
-  }
-
-  void _release(VoidCallback fetch) {
-    if (_pagingGuard.release()) fetch();
   }
 
   void _maybeStartFirstLoad() {
@@ -189,28 +158,11 @@ class _MediaGridState extends State<MediaGrid>
       retry: widget.controller.fetchNextPage,
       child: RefreshIndicator(
         onRefresh: () async => widget.controller.refresh(),
-        child: NotificationListener<UserScrollNotification>(
-          onNotification: (notification) {
-            if (notification.direction != ScrollDirection.idle && _pagingGuard.held) {
-              _release(widget.controller.fetchNextPage);
-            }
-            return false;
-          },
-          child: PagingListener<int, MediaGridItem>(
+        child: PagingListener<int, MediaGridItem>(
           controller: widget.controller,
-          builder: (context, loadedState, loadNextPage) {
-            final loaded = loadedState.items;
-            final shared = sharedFilterProject(context, loaded ?? const <MediaGridItem>[], _filterText);
-            final filtering = loaded != null && !identical(shared.visible, loaded);
-            final state = filtering ? _visibleState(loadedState, shared.visible) : loadedState;
-            void fetchNextPage() => _guardedFetch(loadNextPage, loaded, shared.visible);
+          builder: (context, state, fetchNextPage) {
             late final Widget child;
-            if (filtering && shared.visible.isEmpty && loaded.isNotEmpty) {
-              child = KeyedSubtree(
-                key: const ValueKey('media-grid-filtered'),
-                child: pagingFill(child: SharedFilterHeldPaging(onLoadMore: () => _release(loadNextPage))),
-              );
-            } else if (pagingAwaitingFirstPage(state)) {
+            if (pagingAwaitingFirstPage(state)) {
               child = KeyedSubtree(
                 key: const ValueKey('media-grid-loading'),
                 child: pagingFill(child: MediaGridSkeleton(config: config)),
@@ -260,15 +212,13 @@ class _MediaGridState extends State<MediaGrid>
                       ),
                       position: index + 1,
                       total: state.items!.length,
-                      // While filters hide media, the viewer swipes through what is shown only.
                       onTap: () => openMediaGridItem(
                         context,
                         item: item,
                         index: index,
-                        controller: filtering ? null : widget.controller,
-                        staticItems: filtering ? shared.visible : const [],
+                        controller: widget.controller,
                       ),
-                    ).foldedBy(shared.foldReason(item), key: ValueKey(('fold', item))),
+                    ),
                     newPageErrorIndicatorBuilder: (context) =>
                         ReaderFailureNotice(
                           recoverAutomatically: false,
@@ -281,7 +231,6 @@ class _MediaGridState extends State<MediaGrid>
             }
             return XtaAnimatedSwitcher(child: child);
           },
-        ),
         ),
       ),
     );

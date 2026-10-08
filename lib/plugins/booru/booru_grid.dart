@@ -2,8 +2,6 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/booru/booru_image.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
@@ -36,8 +34,6 @@ class BooruPostGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final shared = sharedFilterProject(context, posts, booruFilterText);
-        final visible = shared.visible;
         final grid = NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (onNearEnd == null) return false;
@@ -59,10 +55,8 @@ class BooruPostGrid extends StatelessWidget {
                   crossAxisCount: pluginGalleryColumns(constraints.maxWidth, MediaQuery.textScalerOf(context)),
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
-                  childCount: visible.length,
-                  itemBuilder: (context, index) => BooruPostTile(
-                    post: visible[index],
-                  ).foldedBy(shared.foldReason(visible[index]), key: ValueKey(('fold', visible[index].host, visible[index].id))),
+                  childCount: posts.length,
+                  itemBuilder: (context, index) => BooruPostTile(post: posts[index]),
                 ),
               ),
               if (loadingMore)

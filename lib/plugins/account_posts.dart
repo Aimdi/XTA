@@ -13,7 +13,6 @@ library;
 import 'dart:async';
 
 import 'package:xta/group/future_pool.dart';
-import 'package:xta/utils/read_retry.dart';
 
 /// How long [AccountPostCache.merge] waits before painting another partial.
 ///
@@ -88,7 +87,7 @@ class AccountPostCache<T> {
     bool forceRefresh = false,
     int? maxFetches,
     void Function(List<T> postsSoFar)? onPartial,
-  }) => withReadRetryBudget(() async {
+  }) async {
     if (keys.isEmpty) {
       return const [];
     }
@@ -145,7 +144,7 @@ class AccountPostCache<T> {
     } finally {
       partial.flush();
     }
-  });
+  }
 
   void _deliver(
     List<List<T>> done,

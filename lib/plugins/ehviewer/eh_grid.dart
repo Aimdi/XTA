@@ -1,8 +1,6 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/ehviewer/eh_client.dart';
 import 'package:xta/plugins/ehviewer/eh_gallery_screen.dart';
@@ -111,8 +109,6 @@ class EhGalleryGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final shared = sharedFilterProject(context, galleries, ehFilterText);
-        final visible = shared.visible;
         final scaler = MediaQuery.textScalerOf(context);
         final columns = pluginGalleryColumns(constraints.maxWidth, scaler);
         final tileWidth = (constraints.maxWidth - 16 - (columns - 1) * 8) / columns;
@@ -140,10 +136,8 @@ class EhGalleryGrid extends StatelessWidget {
                     mainAxisExtent: tileWidth * 1.25 + scaler.scale(72) + 28,
                   ),
                   delegate: SliverChildBuilderDelegate(
-                    (context, index) => EhGalleryTile(
-                      gallery: visible[index],
-                    ).foldedBy(shared.foldReason(visible[index]), key: ValueKey(('fold', visible[index].id))),
-                    childCount: visible.length,
+                    (context, index) => EhGalleryTile(gallery: galleries[index]),
+                    childCount: galleries.length,
                   ),
                 ),
               ),

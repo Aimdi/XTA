@@ -35,6 +35,7 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
   BuildContext context,
   List<String> actors, {
   int limit = kBlueskyInterleavedPageSize,
+  bool includeReplies = true,
 }) async {
   if (actors.isEmpty) {
     return const [];
@@ -43,7 +44,7 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
   final store = context.read<BlueskyFeedStore>();
   try {
     final posts = await store.postsFor(actors);
-    return blueskyInterleavedItems(posts, limit: limit);
+    return blueskyInterleavedItems(posts, limit: limit, includeReplies: includeReplies);
   } catch (_) {
     rethrow;
   }
@@ -52,9 +53,12 @@ Future<List<InterleavedItem>> loadBlueskyInterleaved(
 /// Posts as dated items. Each card keeps the Bluesky butterfly badge so a mixed
 /// group feed is unmistakable next to X — unlike Threads, which relies only on
 /// the provenance strip.
-List<InterleavedItem> blueskyInterleavedItems(Iterable<BlueskyPost> posts, {int limit = kBlueskyInterleavedPageSize}) =>
-    [
-      for (final post in posts.take(limit))
+List<InterleavedItem> blueskyInterleavedItems(
+  Iterable<BlueskyPost> posts, {
+  int limit = kBlueskyInterleavedPageSize,
+  bool includeReplies = true,
+}) => [
+      for (final post in posts.where((post) => includeReplies || !post.isReply).take(limit))
         if (post.publishedAt case final date?)
           provenanceInterleavedItem(
             date: date,

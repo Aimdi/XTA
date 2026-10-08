@@ -30,13 +30,12 @@ class PluginEmbedded extends InheritedWidget {
 }
 
 class PluginHomeTab {
-  final Key? key;
   final IconData icon;
   final String label;
   final bool selected;
   final VoidCallback onTap;
 
-  const PluginHomeTab({this.key, required this.icon, required this.label, required this.selected, required this.onTap});
+  const PluginHomeTab({required this.icon, required this.label, required this.selected, required this.onTap});
 }
 
 /// Home contributes controls to its host; standalone readers use one slim row.
@@ -214,7 +213,6 @@ class PluginCompactTabs extends StatelessWidget {
                       border: Border(bottom: BorderSide(width: 2, color: tab.selected ? color : Colors.transparent)),
                     ),
                     child: IconButton(
-                      key: tab.key,
                       style: pluginActionButtonStyle,
                       tooltip: tab.label,
                       onPressed: tab.onTap,

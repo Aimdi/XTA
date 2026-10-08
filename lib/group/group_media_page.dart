@@ -31,8 +31,7 @@ class SharedAsyncLoad<T> {
   Future<T> load(Future<T> Function() fetch) {
     final current = _inFlight;
     if (current != null) return current;
-    // Detached from whoever asked first: a joiner must not lose the read when that caller is cancelled.
-    final request = ReadWork.detached(() => _reads.start(fetch, timeout: timeout));
+    final request = _reads.start(fetch, timeout: timeout);
     _inFlight = request;
     // Only the bounded future owns the slot; a late source cannot clear a retry.
     unawaited(

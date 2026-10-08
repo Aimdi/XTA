@@ -1,8 +1,3 @@
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
-import 'package:xta/reading/feed_appearance_controls.dart';
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/feed_appearance_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +9,7 @@ import 'package:xta/plugins/rss/rss_models.dart';
 import 'package:xta/plugins/plugin_feed_skeleton.dart';
 import 'package:xta/ui/empty_pane.dart';
 import 'package:xta/ui/errors.dart';
+import 'package:xta/ui/feed_list.dart';
 
 class RssFeedScreen extends StatefulWidget {
   final RssFeed feed;
@@ -48,11 +44,6 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
         title: Text(widget.feed.name),
         actions: [
           IconButton(
-            tooltip: l10n.feed_appearance,
-            icon: const Icon(Icons.palette_outlined),
-            onPressed: () => showFeedAppearance(context, FeedIdentity('rss', widget.feed.id), label: widget.feed.name),
-          ),
-          IconButton(
             tooltip: l10n.plugin_rss_add_to_group,
             icon: const Icon(Icons.group_add_outlined),
             onPressed: () => addRssFeedToGroup(context, widget.feed),
@@ -78,16 +69,15 @@ class _RssFeedScreenState extends State<RssFeedScreen> {
           }
           return RefreshIndicator(
             onRefresh: _store.refresh,
-            child: SharedFilterFeedList<RssItem>(
-              items: items,
-              textOf: rssFilterText,
-              keyOf: (item) => item.id,
-              itemBuilder: (_, item, _) => RssItemCard(item: item, showSourceBadge: false),
+            child: FeedListView(
+              itemCount: items.length,
+              itemBuilder: (_, index) =>
+                  RssItemCard(item: items[index], showSourceBadge: false),
             ),
           );
         },
       ),
-    ).withFeedAppearance(feed: FeedIdentity('rss', widget.feed.id), label: widget.feed.name, publishAction: false);
+    );
   }
 }
 

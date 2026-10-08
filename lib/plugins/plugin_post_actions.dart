@@ -5,7 +5,6 @@ import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/saved/folder_picker.dart';
 import 'package:xta/saved/saved_note_editor.dart';
 import 'package:xta/saved/saved_tweet_model.dart';
@@ -19,7 +18,7 @@ class PluginPostArchive {
   const PluginPostArchive({required this.id, required this.userId, required this.content});
 }
 
-enum _PostAction { bookmark, folder, note, group, share, reposts, quotes, browser, attribution, translate }
+enum _PostAction { bookmark, folder, note, group, share, reposts, quotes, browser }
 
 Future<void> savePluginPost(BuildContext context, PluginPostArchive post) => fileSavedTweet(
   context,
@@ -55,15 +54,10 @@ Future<void> showPluginPostActions(
   VoidCallback? onGroup,
   VoidCallback? onReposts,
   VoidCallback? onQuotes,
-  ({String label, VoidCallback onTap})? attributionAction,
-  String? translateText,
-  bool translateInPlaceOnly = true,
 }) async {
   final l10n = L10n.of(context);
   final model = context.read<SavedTweetModel?>();
   final saved = model?.isSaved(post.id) == true;
-  final translatable = translateText != null && translateText.trim().isNotEmpty && readerTranslationEnabled(context);
-  final translated = translatable && readerTranslationRequested(context, translateText);
   final action = await showModalBottomSheet<_PostAction>(
     context: context,
     showDragHandle: true,
@@ -73,13 +67,6 @@ Future<void> showPluginPostActions(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (attributionAction != null)
-              ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: Text(attributionAction.label),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => Navigator.pop(context, _PostAction.attribution),
-              ),
             if (model != null) ...[
               ListTile(
                 leading: Icon(saved ? Icons.bookmark : Icons.bookmark_border),
@@ -92,13 +79,6 @@ Future<void> showPluginPostActions(
                 onTap: () => Navigator.pop(context, _PostAction.note),
               ),
             ],
-            if (translatable)
-              ListTile(
-                key: const ValueKey('post-action-translate'),
-                leading: const Icon(Icons.translate),
-                title: Text(translated ? l10n.action_show_original_post : l10n.action_translate_post),
-                onTap: () => Navigator.pop(context, _PostAction.translate),
-              ),
             if (onGroup != null)
               ListTile(
                 leading: const Icon(Icons.group_add_outlined),
@@ -140,8 +120,6 @@ Future<void> showPluginPostActions(
   );
   if (!context.mounted || action == null) return;
   switch (action) {
-    case _PostAction.attribution:
-      attributionAction?.onTap();
     case _PostAction.bookmark:
       if (saved) {
         await model?.deleteSavedTweet(post.id);
@@ -162,8 +140,6 @@ Future<void> showPluginPostActions(
       onQuotes?.call();
     case _PostAction.browser:
       openUri(context, url);
-    case _PostAction.translate:
-      await toggleReaderTranslation(context, translateText!, inPlaceOnly: translateInPlaceOnly);
   }
 }
 

@@ -10,12 +10,8 @@ mixin QueuedStore<State> on Store<State> {
 
   /// Bound the read after a write, not the write itself. Letting a timed-out
   /// mutation continue behind a newer mutation would break their ordering.
-  Future<State> readSnapshot(Future<State> Function() read) => ReadRequestScope().start(
-    read,
-    timeout: snapshotTimeout,
-    operation: ReadOperation.snapshot,
-    label: runtimeType.toString(),
-  );
+  Future<State> readSnapshot(Future<State> Function() read) =>
+      ReadRequestScope().start(read, timeout: snapshotTimeout, operation: ReadOperation.snapshot);
 
   // flutter_triple's error selector retains the old error after update().
   @override

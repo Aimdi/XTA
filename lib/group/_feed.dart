@@ -3,7 +3,6 @@ import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/utils/read_recovery.dart';
 import 'package:xta/ui/reader_failure.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:xta/group/group_search_query.dart';
 import 'package:xta/group/batch_read_store.dart';
 import 'package:xta/utils/read_request_scope.dart';
 import 'package:xta/utils/read_activity.dart';
@@ -214,8 +213,9 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         homeFeedIds: includeHome ? source.homeFeedIds(context) : const [],
       );
       if (ids.isEmpty) continue;
-      keys[id] = _pluginFeed.cache.key(id, ids);
-      loaders[id] = () => source.interleavedPosts(context, ids);
+      // The replies choice is part of the key, so turning it off never shows a cached page full of replies.
+      keys[id] = _pluginFeed.cache.key(widget.includeReplies ? id : '$id:no-replies', ids);
+      loaders[id] = () => source.groupPosts(context, ids, includeReplies: widget.includeReplies);
     }
     await _pluginFeed.load(loaders, keys, refresh: refresh);
   }
@@ -640,6 +640,46 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
     );
   }
 
+  String _buildSearchQuery(List<Subscription> users) {
+    var query = '';
+
+    var remainingLength = 512 - query.length;
+
+    for (var user in users) {
+      var queryToAdd = '';
+      if (user is UserSubscription) {
+        queryToAdd = 'from:${user.screenName}';
+      } else if (user is SearchSubscription) {
+        queryToAdd = '"${user.id}"';
+      }
+
+      // If we can add this user to the query and still be less than ~512 characters, do so
+      if (query.length + queryToAdd.length < remainingLength) {
+        if (query != '' && query.isNotEmpty) {
+          query += ' OR ';
+        }
+
+        query += queryToAdd;
+      } else {
+        // Otherwise, add the search future and start a new one
+        assert(false, 'should never reach here');
+        query = queryToAdd;
+      }
+    }
+
+    if (!widget.includeReplies) {
+      query += ' -filter:replies ';
+    }
+
+    if (!widget.includeRetweets) {
+      query += ' -filter:retweets ';
+    } else {
+      query += ' include:nativeretweets ';
+    }
+
+    return query;
+  }
+
   /// Profiles still load while SearchTimeline is exhausted. One page per
   /// member, capped, so a 39-abo group does not open 39 UserTweets at once.
   Future<List<TweetChain>> _fallbackUserTimelines(List<Subscription> users) {
@@ -665,9 +705,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
   /// Where a chunk's page starts: the stored chains to show under it (first
   /// page only) and the cursor the fresh search continues from.
   Future<TweetPageResult> _listTweets(String? cursorKey) async {
-    // Visibility is only reported after the first frame, so a feed counts as hidden while it is still empty;
-    // its first page loads anyway, and only later pages and refreshes wait for the reader to come back.
-    if (!_screenVisible && _feedController.hasItems) throw const ReadCancelled();
+    if (!_screenVisible) throw const ReadCancelled();
     var repository = await Repository.writable();
     final retry = cursorKey == null && _retryFailedBatches;
     _retryFailedBatches = false;
@@ -740,11 +778,7 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
         // SearchTimeline is a different rate-limit bucket from UserTweets. A
         // throw here used to abort every other chunk and replace the feed with
         // the hourglass, even when profiles still loaded.
-        var query = groupSearchQuery(
-          chunk.users,
-          includeReplies: widget.includeReplies,
-          includeRetweets: widget.includeRetweets,
-        );
+        var query = _buildSearchQuery(chunk.users);
         ReadWork.checkpoint();
         final network = await fetchChunkWithFallback(
           search: () => _networkReads.start(
@@ -780,7 +814,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
             'cursor_bottom': searchPage?.cursorBottom,
             'response': await encodeChunkBlob(fresh.map((e) => e.toJson()).toList()),
           });
-          await pruneChunkRows(repository, hash);
         }
 
         // A single fetch returns only the newest page, so a long absence
@@ -821,7 +854,6 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                   'cursor_bottom': page.cursorBottom,
                   'response': await encodeChunkBlob(page.chains.map((e) => e.toJson()).toList()),
                 });
-                await pruneChunkRows(repository, hash);
               }
             }
           } catch (_) {
@@ -1115,10 +1147,10 @@ class _SubscriptionGroupFeedState extends State<SubscriptionGroupFeed> {
                           }
 
                           var repository = await Repository.writable();
-                          await deleteChunkRowsInBatches(
-                            repository,
+                          await repository.delete(
+                            tableFeedGroupChunk,
                             where: 'hash IN (${List.filled(hashes.length, '?').join(', ')})',
-                            arguments: hashes,
+                            whereArgs: hashes,
                           );
                         },
                         firstPageErrorPrefix: L10n.of(context).unable_to_load_the_tweets_for_the_feed,

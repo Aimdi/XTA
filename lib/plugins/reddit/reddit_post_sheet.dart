@@ -5,7 +5,6 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:xta/plugins/reddit/reddit_archive.dart';
 import 'package:xta/plugins/reddit/reddit_client.dart';
 import 'package:xta/plugins/reddit/reddit_listing_screen.dart';
@@ -77,18 +76,6 @@ class _RedditPostSheet extends StatelessWidget {
           onTap: () => editPluginPostNote(context, PluginPostArchive(
             id: redditArchiveId(post.id), userId: post.subreddit, content: redditArchiveBlob(post))),
         ),
-        if (readerTranslationEnabled(context))
-          _RedditSheetAction(
-            icon: Icons.translate,
-            label: _translationTexts.any((text) => readerTranslationRequested(context, text))
-                ? l10n.action_show_original_post
-                : l10n.action_translate_post,
-            onTap: () {
-              final navigator = Navigator.of(context);
-              navigator.pop();
-              toggleReaderTranslations(navigator.context, _translationTexts, title: post.displayTitle);
-            },
-          ),
         _RedditAddToGroupAction(subreddit: post.subreddit),
         _RedditSheetAction(
           icon: Icons.open_in_new,
@@ -112,8 +99,6 @@ class _RedditPostSheet extends StatelessWidget {
       ],
     );
   }
-
-  List<String> get _translationTexts => [post.displayTitle, ?post.displaySelfText];
 
   /// The navigator is taken before the sheet closes: afterwards this context is
   /// no longer in the tree and cannot be used to push anything.

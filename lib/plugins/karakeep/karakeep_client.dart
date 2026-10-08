@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:xta/utils/http_read.dart';
 
 /// Where a save attempt ended up.
 enum KarakeepSaveOutcome {
@@ -143,11 +142,7 @@ class KarakeepClient {
     }
 
     final response = await _send(
-      () => httpClient.getWithReadRetry(
-        _endpoint(base, 'bookmarks', query: {'limit': '1'}),
-        headers: _headers(apiKey),
-        timeout: _timeout,
-      ),
+      () => httpClient.get(_endpoint(base, 'bookmarks', query: {'limit': '1'}), headers: _headers(apiKey)),
     );
     if (response.statusCode == 200 && _looksLikeJson(response)) {
       return true;

@@ -16,8 +16,6 @@ import 'package:xta/client/login_webview.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/settings/diagnostics_screen.dart';
-import 'package:xta/settings/quick_diagnostics.dart';
-import 'package:pref/pref.dart';
 
 /// Snackbar for work already under way, with a small spinner in place of an
 /// icon so a slow download does not look like a frozen one.
@@ -156,7 +154,6 @@ class EmojiErrorWidget extends FritterErrorWidget {
   final Function? onRetry;
   final String? retryText;
   final bool showBackButton;
-  final List<Widget> extraActions;
 
   const EmojiErrorWidget({
     super.key,
@@ -166,7 +163,6 @@ class EmojiErrorWidget extends FritterErrorWidget {
     this.onRetry,
     this.retryText,
     this.showBackButton = true,
-    this.extraActions = const [],
   });
 
   @override
@@ -226,7 +222,6 @@ class EmojiErrorWidget extends FritterErrorWidget {
                   child: Text(retryText ?? L10n.current.retry),
                   onPressed: () => onRetry(),
                 ),
-              ...extraActions,
             ],
           ),
         ),
@@ -234,20 +229,6 @@ class EmojiErrorWidget extends FritterErrorWidget {
     );
   }
 }
-
-/// Copies a report built from memory alone, so a stalled database or a Diagnose page that never renders still
-/// leaves the request log to read.
-Widget copyQuickReportButton(BuildContext context) => TextButton.icon(
-  icon: const Icon(Icons.copy),
-  label: Text(L10n.of(context).diagnostics_copy_report),
-  onPressed: () async {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    final copied = L10n.of(context).diagnostics_report_copied;
-    final text = await quickDiagnosticsText(PrefService.of(context, listen: false));
-    await Clipboard.setData(ClipboardData(text: text));
-    messenger?.showSnackBar(SnackBar(content: Text(copied)));
-  },
-);
 
 /// Shared layout for actionable error screens: emoji, title, details and a row
 /// of action buttons.
@@ -528,7 +509,6 @@ class FullPageErrorWidget extends FritterErrorWidget {
         message: L10n.of(context).timed_out,
         errorMessage: L10n.of(context).this_took_too_long_to_load_please_check_your_network_connection,
         onRetry: onRetry,
-        extraActions: [copyQuickReportButton(context)],
       );
     }
 

@@ -5,6 +5,12 @@ import 'package:xta/ui/reader_chrome.dart';
 import 'package:xta/ui/x_look_theme.dart';
 
 const double kHomeNavigationHeight = 64;
+
+/// Space between the floating bar and the screen's side edges.
+const double kHomeNavigationFloatInset = 16;
+
+/// Space above the floating bar, and below it when the system adds no inset.
+const double kHomeNavigationFloatGap = 8;
 const double kHomeFeedStripHeight = 64;
 const double kHomeFeedTabHorizontalPadding = 12;
 const double kHomeFeedIndicatorThickness = 2;
@@ -265,7 +271,7 @@ class HomeNavigationItem {
   });
 }
 
-/// Home's edge-to-edge navigation surface with quiet, explicit selection.
+/// Home's navigation, a rounded bar floating above the page with a soft highlight behind the selected item.
 class HomeNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final List<HomeNavigationItem> items;
@@ -298,7 +304,8 @@ class HomeNavigationBar extends StatelessWidget {
     final resolvedTheme = navigationTheme.copyWith(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      indicatorColor: Colors.transparent,
+      indicatorColor: selectedColor.withValues(alpha: 0.16),
+      indicatorShape: const StadiumBorder(),
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
         final inherited = navigationTheme.labelTextStyle?.resolve(states);
         final selected = states.contains(WidgetState.selected);
@@ -317,21 +324,41 @@ class HomeNavigationBar extends StatelessWidget {
       }),
     );
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color:
-            navigationTheme.backgroundColor ??
-            tokens?.background ??
-            theme.colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: tweetDividerColor(context),
-            width: kTweetDividerThickness,
-          ),
-        ),
-      ),
+    final page = navigationTheme.backgroundColor ?? tokens?.background ?? theme.colorScheme.surface;
+    final dark = theme.brightness == Brightness.dark;
+    final pill = Color.alphaBlend(
+      theme.colorScheme.onSurface.withValues(alpha: dark ? 0.09 : 0.04),
+      page,
+    );
+    final radius = BorderRadius.circular(kHomeNavigationHeight / 2);
+
+    return ColoredBox(
+      color: page,
       child: SafeArea(
         top: false,
+        minimum: const EdgeInsets.only(bottom: kHomeNavigationFloatGap),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            kHomeNavigationFloatInset,
+            kHomeNavigationFloatGap,
+            kHomeNavigationFloatInset,
+            0,
+          ),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: pill,
+              borderRadius: radius,
+              border: Border.all(color: tweetDividerColor(context), width: kTweetDividerThickness),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: dark ? 0.5 : 0.12),
+                  blurRadius: 18,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: radius,
         child: NavigationBarTheme(
           data: resolvedTheme,
           child: NavigationBar(
@@ -360,6 +387,9 @@ class HomeNavigationBar extends StatelessWidget {
                 )
                 .toList(growable: false),
             onDestinationSelected: onSelected,
+          ),
+        ),
+            ),
           ),
         ),
       ),

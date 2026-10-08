@@ -1,11 +1,9 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/bluesky/bluesky_history.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
+import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
+import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/bluesky/bluesky_butterfly_icon.dart';
 import 'package:xta/plugins/bluesky/bluesky_archive.dart';
@@ -110,7 +108,7 @@ class BlueskyPostCard extends StatelessWidget {
               onTap: openOnTap ? () => _open(context) : null,
               onLongPress: () => showBlueskyPostActions(context, post),
               child: Padding(
-                padding: feedCardPadding(context),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -161,28 +159,16 @@ class BlueskyPostCard extends StatelessWidget {
     );
   }
 
-  Widget _body(BuildContext context) => ReadingHistoryHook(
-    entry: () => blueskyHistoryEntry(post),
-    dwell: openOnTap ? readingHistoryCardDwell : readingHistoryScreenDwell,
-    child: _bodyContent(context),
-  );
-
-  Widget _bodyContent(BuildContext context) => Column(
+  Widget _body(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       if (post.text.isNotEmpty) ...[
         const SizedBox(height: 6),
-        ReaderTranslation(
+        BlueskyRichText(
           text: post.text,
-          offer: !openOnTap,
-          builder: (context, text) => BlueskyRichText(
-            maxLines: feedTextLines(context),
-            text: text,
-            // Facets are byte offsets into the original; a translation has none.
-            facets: identical(text, post.text) ? post.facets : const [],
-            style: feedBodyStyle(context, Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35)),
-            onFacetTap: (facet) => _onFacet(context, facet),
-          ),
+          facets: post.facets,
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(height: 1.35),
+          onFacetTap: (facet) => _onFacet(context, facet),
         ),
       ],
       if (post.hasMedia || post.hasQuote || post.hasLinkCard)
@@ -201,16 +187,10 @@ class BlueskyPostCard extends StatelessWidget {
     children: [
       if (post.hasMedia) ...[
         const SizedBox(height: 10),
-        PluginPostMedia(
-          items: post.mediaItems,
-          sourceName: 'bluesky',
-        ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
+        PluginPostMedia(items: post.mediaItems, sourceName: 'bluesky'),
       ],
       if (post.quotedPost != null) ...[const SizedBox(height: 10), _QuotedPost(quote: post.quotedPost!)],
-      if (post.linkCard != null) ...[
-        const SizedBox(height: 10),
-        _BlueskyLinkPreview(card: post.linkCard!).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews),
-      ],
+      if (post.linkCard != null) ...[const SizedBox(height: 10), _BlueskyLinkPreview(card: post.linkCard!)],
     ],
   );
 
@@ -388,22 +368,16 @@ class _QuotedPost extends StatelessWidget {
             ? BlueskyContentWarning(
                 key: ValueKey('warning-${quote.uri}'),
                 identity: blueskyWarningIdentity(quote),
-                child: PluginPostMedia(
-                  items: quote.mediaItems,
-                  sourceName: 'bluesky',
-                ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
+                child: PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
               )
-            : PluginPostMedia(
-                items: quote.mediaItems,
-                sourceName: 'bluesky',
-              ).withFeedAppearancePart(kind: FeedAppearancePartKind.media),
+            : PluginPostMedia(items: quote.mediaItems, sourceName: 'bluesky'),
       ],
       if (quote.text.isNotEmpty) ...[
         const SizedBox(height: 6),
         BlueskyRichText(
           text: quote.text,
           facets: quote.facets,
-          maxLines: feedTextLines(context, normal: 6),
+          maxLines: 6,
           overflow: TextOverflow.ellipsis,
           onFacetTap: (facet) {
             switch (facet.kind) {
@@ -506,7 +480,8 @@ class _BlueskyEngagementRow extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
     final l10n = L10n.of(context);
-    final hideCounts = !feedCountsVisible(context);
+    final prefs = PrefService.of(context, listen: false);
+    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final likes = context.read<BlueskyLikesStore>();
 
     String label(int count) => hideCounts ? '' : compactCount(count);

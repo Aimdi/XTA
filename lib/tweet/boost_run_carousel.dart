@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:xta/client/client.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
+import 'package:xta/profile/profile.dart';
 import 'package:xta/status.dart';
 import 'package:xta/tweet/conversation.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
+import 'package:xta/tweet/tweet_open.dart';
 import 'package:xta/user.dart';
 import 'package:xta/utils/rich_text.dart';
 
@@ -93,6 +95,9 @@ class _BoostCard extends StatelessWidget {
     }
     final boosted = boost.retweetedStatusWithCard;
     final booster = boost.user;
+    // On a profile every card in the row was reposted by that same profile, so the card names whose post it is.
+    final author = boosted?.user ?? booster;
+    final profile = openableProfile(author, currentUsername: username);
     final theme = Theme.of(context);
     final preview = boostPreviewText(boosted?.fullText ?? boosted?.text);
 
@@ -114,18 +119,23 @@ class _BoostCard extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: Row(
               children: [
-                if (booster != null) UserAvatar(uri: booster.profileImageUrlHttps, size: 32),
-                const SizedBox(width: 8),
+                if (author != null)
+                  _OpenProfile(profile: profile, child: UserAvatar(uri: author.profileImageUrlHttps, size: 32)),
+                const SizedBox(width: 4),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        booster?.name ?? booster?.screenName ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.labelLarge,
+                      _OpenProfile(
+                        profile: profile,
+                        fullTarget: false,
+                        child: Text(
+                          author?.name ?? author?.screenName ?? '',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelLarge,
+                        ),
                       ),
                       if (preview.isNotEmpty)
                         Text(
@@ -144,7 +154,37 @@ class _BoostCard extends StatelessWidget {
       ),
     );
   }
+}
 
+/// Opens [profile] on tap; a tap anywhere else on the card still opens the post.
+class _OpenProfile extends StatelessWidget {
+  final ({String? id, String screenName})? profile;
+  final Widget child;
+
+  /// The avatar carries the full 48 dp target; the name beside it is tappable at its own height to fit the card.
+  final bool fullTarget;
+
+  const _OpenProfile({required this.profile, required this.child, this.fullTarget = true});
+
+  @override
+  Widget build(BuildContext context) {
+    final target = profile;
+    if (target == null) return child;
+    return InkWell(
+      customBorder: const StadiumBorder(),
+      onTap: () => Navigator.pushNamed(
+        context,
+        routeProfile,
+        arguments: ProfileScreenArguments(target.id, target.screenName, null),
+      ),
+      child: fullTarget
+          ? ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: kTweetTouchTarget, minHeight: kTweetTouchTarget),
+              child: Center(widthFactor: 1, heightFactor: 1, child: child),
+            )
+          : child,
+    );
+  }
 }
 
 /// The first line or so of a post, as text rather than as X sent it.

@@ -1,5 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/feed_appearance_store.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,7 +5,6 @@ import 'package:flutter_triple/flutter_triple.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/plugin_home_chrome.dart';
-import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:xta/plugins/plugin_filter_row.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/reddit/reddit_actions.dart';
@@ -107,11 +104,10 @@ class _RedditScreenState extends State<RedditScreen> with AutomaticKeepAliveClie
         store: store,
         onState: (context, source) => Column(
           children: [
-            RedditFeedActions(
-              showAppSettings: PluginHomeDockScope.maybeOf(context) != null,
-              onRefresh: _refreshCurrent,
-              onOpenSaved: _openSaved,
-              builder: (actions) => RedditHomeChrome(source: source, onMode: store.selectMode, actions: actions),
+            RedditHomeChrome(
+              source: source,
+              onMode: store.selectMode,
+              actions: [RedditFeedActions(onRefresh: _refreshCurrent, onOpenSaved: _openSaved)],
             ),
             RedditSubredditChips(home: store),
             Expanded(
@@ -127,13 +123,6 @@ class _RedditScreenState extends State<RedditScreen> with AutomaticKeepAliveClie
               ),
             ),
           ],
-        ).withFeedAppearance(
-          feed: FeedIdentity('reddit', redditHomeFeedKey(source)),
-          label: source.viewingSubreddit ? 'r/${source.subreddit}' : [
-            L10n.of(context).plugin_reddit_feed_following,
-            L10n.of(context).plugin_reddit_feed_popular,
-            L10n.of(context).plugin_reddit_feed_all,
-          ][source.mode.index],
         ),
       ),
     );
@@ -224,11 +213,7 @@ class RedditSubredditChips extends StatelessWidget {
         }
         return ScopedBuilder<RedditHomeStore, RedditHomeSource>(
           store: home,
-          onState: (context, source) => PluginDockContribution(
-            slot: 'following',
-            content: PluginDockContent(leading: _chipRow(context, names, source)),
-            fallback: _chipRow(context, names, source),
-          ),
+          onState: (context, source) => _chipRow(context, names, source),
         );
       },
     );

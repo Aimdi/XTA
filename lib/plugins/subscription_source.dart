@@ -47,6 +47,10 @@ mixin SubscriptionSource {
   /// May throw on failure; the progressive feed store keeps other sources readable.
   Future<List<InterleavedItem>> interleavedPosts(BuildContext context, List<String> ids);
 
+  /// [interleavedPosts] for a group feed, honouring the group's replies choice where the source can tell replies apart.
+  Future<List<InterleavedItem>> groupPosts(BuildContext context, List<String> ids, {required bool includeReplies}) =>
+      interleavedPosts(context, ids);
+
   /// What one of this source's subscriptions is, under its name. A subreddit
   /// and a publication have no `@handle`, and labelling them with one made a
   /// subreddit read as an X account that had lost its avatar.

@@ -2,13 +2,11 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
-import 'package:xta/utils/http_read.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/pixiv/pixiv_auth.dart';
 import 'package:xta/plugins/pixiv/pixiv_models.dart';
 import 'package:xta/utils/json.dart';
-import 'package:xta/utils/read_retry.dart';
 
 enum PixivErrorKind {
   notConfigured,
@@ -309,14 +307,13 @@ class PixivClient {
     return id == 0 ? null : id;
   }
 
-  Future<Object?> _apiGet(String path, [Map<String, String>? query]) => withReadRetryBudget(() async {
+  Future<Object?> _apiGet(String path, [Map<String, String>? query]) async {
     final token = await _accessToken();
     final uri = Uri.parse('$_apiBase$path').replace(queryParameters: query);
     final response = await _send(
-      () => httpClient.getWithReadRetry(
+      () => httpClient.get(
         uri,
         headers: {..._baseHeaders, 'Authorization': 'Bearer $token'},
-        timeout: _timeout,
       ),
     );
 
@@ -325,10 +322,9 @@ class PixivClient {
       final retryToken = (prefs.get<String>(optionPluginPixivAccessToken) ?? '')
           .trim();
       final retry = await _send(
-        () => httpClient.getWithReadRetry(
+        () => httpClient.get(
           uri,
           headers: {..._baseHeaders, 'Authorization': 'Bearer $retryToken'},
-          timeout: _timeout,
         ),
       );
       _throwForStatus(retry, uri);
@@ -337,16 +333,15 @@ class PixivClient {
 
     _throwForStatus(response, uri);
     return _decode(response, uri);
-  });
+  }
 
-  Future<Object?> _apiGetUrl(String absoluteUrl) => withReadRetryBudget(() async {
+  Future<Object?> _apiGetUrl(String absoluteUrl) async {
     final token = await _accessToken();
     final uri = Uri.parse(absoluteUrl);
     final response = await _send(
-      () => httpClient.getWithReadRetry(
+      () => httpClient.get(
         uri,
         headers: {..._baseHeaders, 'Authorization': 'Bearer $token'},
-        timeout: _timeout,
       ),
     );
 
@@ -355,10 +350,9 @@ class PixivClient {
       final retryToken = (prefs.get<String>(optionPluginPixivAccessToken) ?? '')
           .trim();
       final retry = await _send(
-        () => httpClient.getWithReadRetry(
+        () => httpClient.get(
           uri,
           headers: {..._baseHeaders, 'Authorization': 'Bearer $retryToken'},
-          timeout: _timeout,
         ),
       );
       _throwForStatus(retry, uri);
@@ -367,7 +361,7 @@ class PixivClient {
 
     _throwForStatus(response, uri);
     return _decode(response, uri);
-  });
+  }
 
   Future<Object?> _apiPost(String path, Map<String, String> body) async {
     final token = await _accessToken();

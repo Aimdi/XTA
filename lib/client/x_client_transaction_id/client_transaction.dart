@@ -8,7 +8,6 @@ import 'package:html/dom.dart' as html_dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
 import 'package:xta/client/http_client.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/utils/request_budget.dart';
 
 import 'constants.dart';
@@ -38,22 +37,20 @@ class ClientTransaction {
     required String animationKey,
     String randomKeyword = defaultKeyword,
     int randomNumber = additionalRandomNumber,
-  }) : _keyBytes = keyBytes,
-       _animationKey = animationKey,
-       _randomKeyword = randomKeyword,
-       _randomNumber = randomNumber;
+  })  : _keyBytes = keyBytes,
+        _animationKey = animationKey,
+        _randomKeyword = randomKeyword,
+        _randomNumber = randomNumber;
 
   /// Fetches x.com and initializes the transaction ID generator.
   static Future<ClientTransaction> initialize({
+    String? cookie,
     String randomKeyword = defaultKeyword,
     int randomNumber = additionalRandomNumber,
-    Duration timeout = transactionKeyInitializationTimeout,
   }) async {
-    final budget = RequestBudget(timeout);
-    final assets = SigningAssets(budget, headers: _bootstrapHeaders);
-    // No session is ever sent: x.com answers a signed-in page request with a slow onboarding redirect, and
-    // the public page's key signs every account's requests.
-    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget, assets);
+    final budget = RequestBudget(const Duration(seconds: 12));
+    final assets = SigningAssets(budget);
+    final (homePageDoc, ondemandUrl) = await _fetchBootstrapPage(budget, assets, cookie);
     final ondemandFileText = await assets.read(ondemandUrl);
 
     final (rowIndex, keyBytesIndices) = _getIndices(ondemandFileText);
@@ -76,14 +73,20 @@ class ClientTransaction {
 
   /// Generates the x-client-transaction-id for the given HTTP method and path.
   String generateTransactionId(String method, String path) {
-    final timeNow = (DateTime.now().millisecondsSinceEpoch - 1682924400 * 1000) ~/ 1000;
+    final timeNow =
+        (DateTime.now().millisecondsSinceEpoch - 1682924400 * 1000) ~/ 1000;
     final timeNowBytes = List.generate(4, (i) => (timeNow >> (i * 8)) & 0xFF);
 
     final hashInput = '$method!$path!$timeNow$_randomKeyword$_animationKey';
     final hashBytes = sha256.convert(utf8.encode(hashInput)).bytes;
 
     final randomNum = Random().nextInt(256);
-    final bytesArr = [..._keyBytes, ...timeNowBytes, ...hashBytes.take(16), _randomNumber];
+    final bytesArr = [
+      ..._keyBytes,
+      ...timeNowBytes,
+      ...hashBytes.take(16),
+      _randomNumber,
+    ];
     final out = Uint8List(bytesArr.length + 1);
     out[0] = randomNum;
     for (int i = 0; i < bytesArr.length; i++) {
@@ -105,7 +108,11 @@ class ClientTransaction {
     'X-Twitter-Client-Language': 'en',
   };
 
-  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(RequestBudget budget, SigningAssets assets) async {
+  static Future<(html_dom.Document, Uri)> _fetchBootstrapPage(
+    RequestBudget budget,
+    SigningAssets assets,
+    String? cookie,
+  ) async {
     // X's logged-out homepage can omit the signer; its public search shell
     // still includes it: iSarabjitDhiman/XClientTransaction#45.
     final pages = [
@@ -113,7 +120,7 @@ class ClientTransaction {
       Uri.https('x.com', '/search', {'q': 'AI', 'f': 'live'}),
     ];
     for (final uri in pages) {
-      final response = await _fetchPage(uri, budget);
+      final response = await _fetchPage(uri, budget, cookie);
       if (uri == pages.first && const [403, 404].contains(response.statusCode)) continue;
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw HttpException('X transaction bootstrap returned HTTP ${response.statusCode}', uri: uri);
@@ -126,13 +133,13 @@ class ClientTransaction {
     throw const FormatException('X pages did not contain transaction signing data');
   }
 
-  static Future<http.Response> _fetchPage(Uri uri, RequestBudget budget) async {
+  static Future<http.Response> _fetchPage(Uri uri, RequestBudget budget, String? cookie) async {
     for (var redirects = 0; ; redirects++) {
       final response = await getXResponse(
         uri,
         timeout: budget.remaining,
         followRedirects: false,
-        headers: _bootstrapHeaders,
+        headers: {..._bootstrapHeaders, if (cookie != null && cookie.isNotEmpty) 'Cookie': cookie},
       );
       if (!const [301, 302, 303, 307, 308].contains(response.statusCode)) return response;
       final location = response.headers['location'];
@@ -168,15 +175,20 @@ class ClientTransaction {
   }
 
   static (int, List<int>) _getIndices(String ondemandFileText) {
-    final indices = indicesRegex.allMatches(ondemandFileText).map((m) => int.parse(m.group(2)!)).toList();
+    final indices = indicesRegex
+        .allMatches(ondemandFileText)
+        .map((m) => int.parse(m.group(2)!))
+        .toList();
     if (indices.isEmpty) throw Exception("Couldn't get KEY_BYTE indices");
     return (indices[0], indices.sublist(1));
   }
 
   static String _getKey(html_dom.Document doc) {
-    final element = doc.querySelector("meta[name='twitter-site-verification']");
+    final element =
+        doc.querySelector("meta[name='twitter-site-verification']");
     if (element == null) {
-      throw Exception("Couldn't get [twitter-site-verification] key from the page source");
+      throw Exception(
+          "Couldn't get [twitter-site-verification] key from the page source");
     }
     return element.attributes['content']!;
   }
@@ -211,7 +223,8 @@ class ClientTransaction {
         RegExp(r'^/responsive-web/client-web/ondemand\.s\.[a-zA-Z0-9_-]+\.js$').hasMatch(uri.path);
   }
 
-  static List<List<int>> _get2dArray(List<int> keyBytes, html_dom.Document doc) {
+  static List<List<int>> _get2dArray(
+      List<int> keyBytes, html_dom.Document doc) {
     final frames = doc.querySelectorAll('[id^="loading-x-anim"]');
     final frame = frames[keyBytes[5] % 4];
     final pathElement = frame.children[0].children[1];
@@ -221,25 +234,40 @@ class ClientTransaction {
         .map((segment) {
           final cleaned = segment.replaceAll(RegExp(r'[^\d]+'), ' ').trim();
           if (cleaned.isEmpty) return <int>[];
-          return cleaned.split(RegExp(r'\s+')).where((s) => s.isNotEmpty).map(int.parse).toList();
+          return cleaned
+              .split(RegExp(r'\s+'))
+              .where((s) => s.isNotEmpty)
+              .map(int.parse)
+              .toList();
         })
         .where((row) => row.isNotEmpty)
         .toList();
   }
 
-  static double _solve(double value, double minVal, double maxVal, bool rounding) {
+  static double _solve(
+      double value, double minVal, double maxVal, bool rounding) {
     final result = value * (maxVal - minVal) / 255.0 + minVal;
     return rounding ? result.floor().toDouble() : roundTo2(result);
   }
 
   static String _animate(List<int> frames, double targetTime) {
-    final fromColor = [frames[0].toDouble(), frames[1].toDouble(), frames[2].toDouble(), 1.0];
-    final toColor = [frames[3].toDouble(), frames[4].toDouble(), frames[5].toDouble(), 1.0];
+    final fromColor = [
+      frames[0].toDouble(), frames[1].toDouble(),
+      frames[2].toDouble(), 1.0,
+    ];
+    final toColor = [
+      frames[3].toDouble(), frames[4].toDouble(),
+      frames[5].toDouble(), 1.0,
+    ];
     final fromRotation = [0.0];
     final toRotation = [_solve(frames[6].toDouble(), 60.0, 360.0, true)];
 
     final framesTail = frames.sublist(7);
-    final curves = framesTail.asMap().entries.map((e) => _solve(e.value.toDouble(), isOdd(e.key), 1.0, false)).toList();
+    final curves = framesTail
+        .asMap()
+        .entries
+        .map((e) => _solve(e.value.toDouble(), isOdd(e.key), 1.0, false))
+        .toList();
 
     final cubic = Cubic(curves);
     final val = cubic.getValue(targetTime);
@@ -279,7 +307,8 @@ class ClientTransaction {
   }) {
     const totalTime = 4096;
     final frameRowIndex = keyBytes[rowIndex] % 16;
-    final frameTimeProduct = keyBytesIndices.fold<int>(1, (acc, idx) => acc * (keyBytes[idx] % 16));
+    final frameTimeProduct = keyBytesIndices
+        .fold<int>(1, (acc, idx) => acc * (keyBytes[idx] % 16));
     final frameTime = jsRound(frameTimeProduct / 10.0) * 10;
 
     final arr = _get2dArray(keyBytes, homePageDoc);

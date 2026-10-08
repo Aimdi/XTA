@@ -8,7 +8,6 @@ import 'package:http/testing.dart';
 import 'package:xta/client/headers.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/database/entities.dart';
 import 'package:xta/home/home_account_filter.dart';
 import 'package:xta/tweet/paginated_tweet_list.dart';
@@ -96,7 +95,7 @@ void main() {
       return http.Response(_indices, 200);
     });
 
-    _valid(await ClientTransaction.initialize());
+    _valid(await ClientTransaction.initialize(cookie: _cookie));
     expect(requests.map((request) => request.url.toString()), [
       'https://x.com/home',
       '$_root/entry-client.js',
@@ -109,42 +108,6 @@ void main() {
           .every((request) => !request.headers.containsKey('cookie')),
       isTrue,
     );
-  });
-
-  test('entry-client names sentry-filter as a plain string in its dependency table', () async {
-    // Observed by Squawker on 2026-09-25: entry-client lists sentry-filter among dependencies without an import
-    // statement, and imports many unrelated modules first. The signer must be reached by name, not by crawling.
-    respond((request) {
-      if (request.url.host == 'x.com') {
-        return http.Response(
-          _shell(
-            '<link rel="modulepreload" href="$_root/vendor.js">'
-            '<script type="module" src="$_root/entry-client-logged-in.js"></script>',
-          ),
-          200,
-        );
-      }
-      if (request.url.path.endsWith('/entry-client-logged-in.js')) {
-        return http.Response(
-          '${List.generate(30, (i) => 'import "./assets/module-$i.js";').join()}'
-          'const deps = ["assets/vendor.js","assets/sentry-filter-9f8e7d.js","assets/other.js"];',
-          200,
-        );
-      }
-      if (request.url.path.endsWith('/sentry-filter-9f8e7d.js')) {
-        return http.Response('const o = {s: "../sign.o-a1b2c3.js"}; export const load = () => import(o.s);', 200);
-      }
-      if (request.url.toString() == _signer) return http.Response(_indices, 200);
-      return http.Response('export const nothing = 1;', 200);
-    });
-
-    _valid(await ClientTransaction.initialize());
-    expect(requests.map((request) => request.url.toString()), [
-      'https://x.com/home',
-      '$_root/entry-client-logged-in.js',
-      '$_root/assets/sentry-filter-9f8e7d.js',
-      _signer,
-    ]);
   });
 
   test('a direct backtick signer import is accepted without evaluating JavaScript', () async {
@@ -233,12 +196,12 @@ void main() {
     expect(requests[1].url.toString(), '$_root/entry-client-a.js');
   });
 
-  test('a signed-in bootstrap never sends its cookie, including on same-origin redirects', () async {
+  test('a signed-in bootstrap uses only its cookie and preserves it on same-origin redirects', () async {
     respond((request) {
       expect(request.followRedirects, isFalse);
       expect(request.headers, isNot(contains('authorization')));
-      expect(request.headers, isNot(contains('cookie')));
       if (request.url.host == 'x.com') {
+        expect(request.headers['cookie'], _cookie);
         if (request.url.path == '/home') return http.Response('', 302, headers: {'location': '/signed-in'});
         return http.Response(_shell('<script src="$_signer"></script>'), 200);
       }
@@ -246,7 +209,7 @@ void main() {
       return http.Response(_indices, 200);
     });
 
-    _valid(await ClientTransaction.initialize());
+    _valid(await ClientTransaction.initialize(cookie: _cookie));
     expect(requests.map((request) => request.url.path), ['/home', '/signed-in', '/x-web/client-web/sign.o-a1b2c3.js']);
   });
 
@@ -259,7 +222,7 @@ void main() {
     test('bootstrap refuses unsafe redirect $target without forwarding cookies', () async {
       respond((request) => http.Response('', 302, headers: {'location': target}));
 
-      await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
+      await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<HttpException>()));
       expect(requests.length, 1);
       expect(requests.single.followRedirects, isFalse);
     });
@@ -267,15 +230,15 @@ void main() {
 
   test('same-origin redirect loops stop after three redirects', () async {
     respond((request) => http.Response('', 302, headers: {'location': '/home'}));
-    await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
+    await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<HttpException>()));
     expect(requests.length, 4);
   });
 
-  test('legacy search fallback is reached without the account cookie', () async {
+  test('legacy search fallback retains the account cookie only on x.com', () async {
     const legacy = 'https://abs.twimg.com/responsive-web/client-web/ondemand.s.olda.js';
     respond((request) {
-      expect(request.headers, isNot(contains('cookie')));
       if (request.url.host == 'x.com') {
+        expect(request.headers['cookie'], _cookie);
         return http.Response(
           request.url.path == '/home' ? '<html>signed out shell</html>' : _shell('<script src="$legacy"></script>'),
           200,
@@ -284,7 +247,7 @@ void main() {
       expect(request.headers, isNot(contains('cookie')));
       return http.Response(_indices, 200);
     });
-    _valid(await ClientTransaction.initialize());
+    _valid(await ClientTransaction.initialize(cookie: _cookie));
     expect(requests.map((request) => request.url.path), [
       '/home',
       '/search',
@@ -314,7 +277,7 @@ void main() {
       ''', 200);
     });
 
-    await expectLater(ClientTransaction.initialize(), throwsA(isA<FormatException>()));
+    await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<FormatException>()));
     expect(requests.map((request) => request.url.toString()), [
       'https://x.com/home',
       '$_root/app-a.js',
@@ -378,7 +341,7 @@ void main() {
       return http.Response('', 302, headers: {'location': 'https://attacker.invalid/sign.o-bad.js'});
     });
 
-    await expectLater(ClientTransaction.initialize(), throwsA(isA<HttpException>()));
+    await expectLater(ClientTransaction.initialize(cookie: _cookie), throwsA(isA<HttpException>()));
     expect(requests.length, 2);
   });
 
@@ -437,7 +400,7 @@ void main() {
     );
     final initialized = expectLater(ClientTransaction.initialize(), throwsA(isA<TimeoutException>()));
     await tester.pump();
-    await tester.pump(transactionKeyInitializationTimeout + const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 13));
     await initialized;
     expect(requests.length, 2);
     pending.complete(http.Response('import("./sign.o-a1b2c3.js")', 200));

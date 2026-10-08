@@ -4,13 +4,11 @@ library;
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:xta/utils/http_read.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
-import 'package:xta/utils/read_retry.dart';
 
 enum BooruErrorKind {
   notConfigured,
@@ -157,7 +155,7 @@ class BooruClient {
   Future<List<BooruPost>> postsForTags(
     Iterable<String> tags, {
     int limitPerTag = 10,
-  }) => withReadRetryBudget(() async {
+  }) async {
     final unique = <String>{for (final tag in tags) ?normaliseBooruTag(tag)};
     if (unique.isEmpty) return const [];
 
@@ -182,7 +180,7 @@ class BooruClient {
       return bd.compareTo(ad);
     });
     return merged;
-  });
+  }
 
   List<String> _withRatingTag(List<String> tags) {
     final hasRating = tags.any((t) => t.toLowerCase().startsWith('rating:'));
@@ -332,11 +330,12 @@ class BooruClient {
 
   Future<http.Response> _get(Uri uri) async {
     try {
-      return await httpClient.getWithReadRetry(
-        uri,
-        headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
-        timeout: _timeout,
-      );
+      return await httpClient
+          .get(
+            uri,
+            headers: {'User-Agent': _userAgent, 'Accept': 'application/json'},
+          )
+          .timeout(_timeout);
     } catch (e) {
       throw BooruException(BooruErrorKind.network, '$e');
     }

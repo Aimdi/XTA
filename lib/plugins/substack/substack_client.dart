@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:xta/utils/http_read.dart';
 import 'package:logging/logging.dart';
 import 'package:xta/utils/json.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
 import 'package:xta/plugins/substack/substack_rss.dart';
-import 'package:xta/utils/read_retry.dart';
 
 /// Read-only Substack client using public per-publication JSON endpoints,
 /// with RSS `/feed` as a fallback when JSON is empty or fails.
@@ -34,7 +32,7 @@ class SubstackClient {
 
   static const _rssPaths = ['/feed', '/rss', '/feed.xml'];
 
-  Future<SubstackPublication> fetchPublication(Uri base) => withReadRetryBudget(() async {
+  Future<SubstackPublication> fetchPublication(Uri base) async {
     final requested = requestedPublicationHosts(base);
     final leftover = leftoverSubstackHosts(base);
 
@@ -64,11 +62,11 @@ class SubstackClient {
       if (fromHtml != null) return _bindFollowedHost(fromHtml, base);
     }
     throw SubstackNotPublicationException();
-  });
+  }
 
   /// Handle, share URL, @profile, custom domain, leftover Substack twin, or a
   /// living Beehiiv site that used to be on Substack.
-  Future<SubstackPublication> resolvePublication(String input) => withReadRetryBudget(() async {
+  Future<SubstackPublication> resolvePublication(String input) async {
     final trimmed = input.trim();
     final tried = <String>{};
 
@@ -102,9 +100,9 @@ class SubstackClient {
     if (redirected != null) return redirected;
 
     throw SubstackNotPublicationException();
-  });
+  }
 
-  Future<List<SubstackPost>> fetchPosts(SubstackPublication publication, {int limit = 12, int offset = 0}) => withReadRetryBudget(() async {
+  Future<List<SubstackPost>> fetchPosts(SubstackPublication publication, {int limit = 12, int offset = 0}) async {
     final cachedRss = _rssPages[_sourceKey(publication)];
     if (offset > 0 && cachedRss != null) return cachedRss.skip(offset).take(limit).toList();
     final split = _splitBases(publication);
@@ -170,9 +168,9 @@ class SubstackClient {
     if (!reachable) throw SubstackNotPublicationException();
     _rssPages.remove(_sourceKey(publication));
     return const [];
-  });
+  }
 
-  Future<SubstackPost> fetchPost(SubstackPublication publication, String slug) => withReadRetryBudget(() async {
+  Future<SubstackPost> fetchPost(SubstackPublication publication, String slug) async {
     final split = _splitBases(publication);
 
     for (final base in split.requested) {
@@ -210,7 +208,7 @@ class SubstackClient {
       if (match != null) return match;
     }
     throw SubstackClientException('Post not found: $slug');
-  });
+  }
 
   Future<List<SubstackPost>> _postsFromJson(
     Uri base,
@@ -302,11 +300,9 @@ class SubstackClient {
     final uri = Uri.tryParse(raw);
     if (uri == null || !isSubstackServiceHost(uri.host)) return null;
     try {
-      final response = await httpClient.getWithReadRetry(
-        uri,
-        headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
-        timeout: _requestTimeout,
-      );
+      final response = await httpClient
+          .get(uri, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
+          .timeout(_requestTimeout);
       final landed = response.request?.url;
       if (landed == null || landed.host.isEmpty) return null;
       if (sameSubstackHost(landed.host, uri.host)) return null;
@@ -382,11 +378,9 @@ class SubstackClient {
 
   Future<SubstackPublication?> _publicationFromHomepage(Uri base) async {
     try {
-      final response = await httpClient.getWithReadRetry(
-        base,
-        headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
-        timeout: _requestTimeout,
-      );
+      final response = await httpClient
+          .get(base, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
+          .timeout(_requestTimeout);
       if (response.statusCode != 200) return null;
       final html = utf8.decode(response.bodyBytes);
       return publicationFromBeehiivHomepageHtml(html, base) ?? publicationFromHomepageHtml(html, base);
@@ -444,11 +438,9 @@ class SubstackClient {
   Future<SubstackPost?> _postFromBeehiivPage(Uri base, SubstackPublication publication, String slug) async {
     final uri = base.replace(path: '/p/$slug', queryParameters: {});
     try {
-      final response = await httpClient.getWithReadRetry(
-        uri,
-        headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
-        timeout: _requestTimeout,
-      );
+      final response = await httpClient
+          .get(uri, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
+          .timeout(_requestTimeout);
       if (response.statusCode != 200) return null;
       return postFromBeehiivHtml(
         utf8.decode(response.bodyBytes),
@@ -465,11 +457,9 @@ class SubstackClient {
   Future<_BeehiivListing?> _fetchBeehiivListingMaps(Uri base, {required int page}) async {
     final uri = base.replace(path: '/posts', queryParameters: {'page': '$page'});
     try {
-      final response = await httpClient.getWithReadRetry(
-        uri,
-        headers: {'Accept': 'application/json, text/javascript, */*;q=0.1', 'User-Agent': _ua},
-        timeout: _requestTimeout,
-      );
+      final response = await httpClient
+          .get(uri, headers: {'Accept': 'application/json, text/javascript, */*;q=0.1', 'User-Agent': _ua})
+          .timeout(_requestTimeout);
       if (response.statusCode != 200) return null;
       final body = utf8.decode(response.bodyBytes);
       if (!body.trimLeft().startsWith('{')) return null;
@@ -533,11 +523,9 @@ class SubstackClient {
     for (final path in _rssPaths) {
       final uri = base.replace(path: path, queryParameters: {});
       try {
-        final response = await httpClient.getWithReadRetry(
-          uri,
-          headers: {'Accept': 'application/rss+xml, application/xml, text/xml, */*', 'User-Agent': _ua},
-          timeout: _requestTimeout,
-        );
+        final response = await httpClient
+            .get(uri, headers: {'Accept': 'application/rss+xml, application/xml, text/xml, */*', 'User-Agent': _ua})
+            .timeout(_requestTimeout);
         if (response.statusCode != 200) continue;
         final body = utf8.decode(response.bodyBytes);
         if (!body.contains('<rss') && !body.contains('<feed')) continue;
@@ -555,7 +543,7 @@ class SubstackClient {
 
   /// The discussion under a post, in reading order. An unreadable payload is
   /// an empty discussion rather than an error — the article is already shown.
-  Future<List<SubstackComment>> fetchComments(SubstackPublication publication, String postId) => withReadRetryBudget(() async {
+  Future<List<SubstackComment>> fetchComments(SubstackPublication publication, String postId) async {
     Object? lastError;
     for (final base in publicationFetchBases(publication)) {
       final uri = base.replace(
@@ -571,7 +559,7 @@ class SubstackClient {
     }
     if (lastError != null) throw lastError;
     throw SubstackClientException('Comments unavailable');
-  });
+  }
 
   /// Posts matching [query] in the publication's archive, newest first.
   Future<List<SubstackPost>> searchPosts(
@@ -579,7 +567,7 @@ class SubstackClient {
     String query, {
     int limit = 25,
     int offset = 0,
-  }) => withReadRetryBudget(() async {
+  }) async {
     Object? lastError;
     for (final base in publicationFetchBases(publication)) {
       try {
@@ -590,7 +578,7 @@ class SubstackClient {
       }
     }
     throw lastError ?? SubstackClientException('Archive search unavailable');
-  });
+  }
 
   Future<List<SubstackPost>> _searchPostsOn(
     Uri base,
@@ -672,16 +660,14 @@ class SubstackClient {
   }
 
   /// Publications this author recommends on their public `/recommendations` page.
-  Future<List<SubstackRecommendation>> fetchRecommendedPublications(SubstackPublication publication) => withReadRetryBudget(() async {
+  Future<List<SubstackRecommendation>> fetchRecommendedPublications(SubstackPublication publication) async {
     Object? lastError;
     for (final base in publicationFetchBases(publication)) {
       final uri = Uri(scheme: 'https', host: base.host, path: '/recommendations');
       try {
-        final response = await httpClient.getWithReadRetry(
-          uri,
-          headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua},
-          timeout: _requestTimeout,
-        );
+        final response = await httpClient
+            .get(uri, headers: {'Accept': 'text/html,application/xhtml+xml', 'User-Agent': _ua})
+            .timeout(_requestTimeout);
         if (response.statusCode != 200) {
           lastError = SubstackClientException('HTTP ${response.statusCode} loading $uri');
           continue;
@@ -692,10 +678,10 @@ class SubstackClient {
       }
     }
     throw lastError ?? SubstackClientException('Recommendations unavailable');
-  });
+  }
 
   /// Author recommendations, padded with name-search hits for discovery.
-  Future<List<SubstackRecommendation>> fetchSimilarPublications(SubstackPublication publication) => withReadRetryBudget(() async {
+  Future<List<SubstackRecommendation>> fetchSimilarPublications(SubstackPublication publication) async {
     Object? recError;
     var recommended = const <SubstackRecommendation>[];
     try {
@@ -720,10 +706,10 @@ class SubstackClient {
       throw recError;
     }
     return merged;
-  });
+  }
 
   /// Search plus handle/URL probe — what the Discover sheet actually calls.
-  Future<List<SubstackPublication>> discoverPublications(String query) => withReadRetryBudget(() async {
+  Future<List<SubstackPublication>> discoverPublications(String query) async {
     final trimmed = query.trim();
     if (trimmed.isEmpty) return const [];
 
@@ -751,7 +737,7 @@ class SubstackClient {
       if (trimmed.contains('://') || trimmed.contains('.')) rethrow;
       return const [];
     }
-  });
+  }
 
   Future<List<SubstackCategory>> fetchCategories() async {
     final uri = Uri.https('substack.com', '/api/v1/categories');
@@ -788,11 +774,9 @@ class SubstackClient {
   }
 
   Future<http.Response> _get(Uri uri) async {
-    final response = await httpClient.getWithReadRetry(
-      uri,
-      headers: {'Accept': 'application/json', 'User-Agent': _ua},
-      timeout: _requestTimeout,
-    );
+    final response = await httpClient
+        .get(uri, headers: {'Accept': 'application/json', 'User-Agent': _ua})
+        .timeout(_requestTimeout);
     if (response.statusCode != 200) {
       throw SubstackClientException('HTTP ${response.statusCode} loading $uri');
     }

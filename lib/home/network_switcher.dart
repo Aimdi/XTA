@@ -206,7 +206,7 @@ class _NetworkSwitcherSheet extends StatelessWidget {
     final members = plugins.where((plugin) => isAltMicrobloggingSource(plugin.id)).toList();
     return ExpansionTile(
       key: const PageStorageKey('network-switcher-alt-microblogging'),
-      leading: const Icon(altMicrobloggingIcon),
+      leading: const Icon(Icons.forum_outlined),
       title: Text(L10n.of(context).alt_microblogging),
       subtitle: Text(members.map((plugin) => plugin.title(context)).join(' · ')),
       initiallyExpanded: isAltMicrobloggingSource(currentId),

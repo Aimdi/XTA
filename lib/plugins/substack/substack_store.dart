@@ -12,7 +12,6 @@ import 'package:xta/plugins/account_posts.dart';
 import 'package:xta/plugins/plugin_feed_fresh.dart';
 import 'package:xta/plugins/substack/substack_client.dart';
 import 'package:xta/plugins/substack/substack_models.dart';
-import 'package:xta/utils/read_retry.dart';
 
 /// The publications the reader follows, kept in the database.
 ///
@@ -378,7 +377,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
     _publish();
   }
 
-  Future<void> _load({required bool more}) => withReadRetryBudget(() async {
+  Future<void> _load({required bool more}) async {
     final identity = _identity;
     final request = ++_generation;
     final done = Completer<void>();
@@ -436,7 +435,7 @@ class SubstackFeedStore extends Store<SubstackFeedSnapshot> {
       }
       done.complete();
     }
-  });
+  }
 
   void _retainSources() {
     final active = _sources.map(_publicationKey).toSet();
@@ -563,7 +562,7 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
 
   Future<void> retryLoadMore() => loadMore();
 
-  Future<void> _load({required bool more}) => withReadRetryBudget(() async {
+  Future<void> _load({required bool more}) async {
     final request = ++_generation;
     final identity = _identity;
     _activeIdentity = identity;
@@ -622,7 +621,7 @@ class SubstackNotesStore extends Store<SubstackNotesPage> {
         }
       }
     }
-  });
+  }
 
   bool _current(int request, String identity) => !_closed && request == _generation && identity == _identity;
 

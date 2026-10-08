@@ -10,29 +10,20 @@ import 'package:xta/ui/contrast.dart';
 /// Substack's single-row presentation, backed by each reader's existing dock.
 class PluginCompactHeader extends StatelessWidget {
   final XtaPlugin plugin;
-  final String? source;
-  final String? title;
   final PluginHomeDockStore store;
   final VoidCallback? onPickSource;
   final Widget? services;
   final bool showBack;
   final bool unread;
 
-  /// Shown instead of the plugin's mark, for a source that is not one plugin, such as a mix. Without tabs, the
-  /// header then names the source.
-  final Widget? mark;
-
   const PluginCompactHeader({
     super.key,
     required this.plugin,
     required this.store,
-    this.source,
-    this.title,
     this.onPickSource,
     this.services,
     this.showBack = false,
     this.unread = false,
-    this.mark,
   });
 
   @override
@@ -42,10 +33,8 @@ class PluginCompactHeader extends StatelessWidget {
       store: store,
       onState: (context, _) => LayoutBuilder(
         builder: (context, constraints) {
-          final sourceId = source ?? plugin.id;
-          final sourceTitle = title ?? plugin.title(context);
-          final navigation = store.content(sourceId, 'navigation');
-          final reading = store.content(sourceId, 'reading');
+          final navigation = store.content(plugin.id, 'navigation');
+          final reading = store.content(plugin.id, 'reading');
           final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
           final primary =
               reading?.search ?? navigation?.search ?? navigation?.actions.whereType<IconButton>().firstOrNull;
@@ -62,15 +51,15 @@ class PluginCompactHeader extends StatelessWidget {
                   if (showBack) const SizedBox.square(dimension: 48, child: BackButton()),
                   if (onPickSource != null)
                     Semantics(
-                      label: [sourceTitle, if (unread) L10n.of(context).group_has_unread].join(', '),
+                      label: [plugin.title(context), if (unread) L10n.of(context).group_has_unread].join(', '),
                       child: IconButton(
-                        key: ValueKey('plugin-source-picker-$sourceId'),
+                        key: ValueKey('plugin-source-picker-${plugin.id}'),
                         tooltip: L10n.of(context).home_networks,
                         onPressed: onPickSource,
                         icon: Badge(
                           isLabelVisible: unread,
                           smallSize: 7,
-                          child: mark ?? pluginMark(plugin, size: 24, color: color),
+                          child: pluginMark(plugin, size: 24, color: color),
                         ),
                       ),
                     )
@@ -78,32 +67,25 @@ class PluginCompactHeader extends StatelessWidget {
                     SizedBox(
                       width: markWidth,
                       child: Tooltip(
-                        message: sourceTitle,
+                        message: plugin.title(context),
                         child: Semantics(
-                          label: sourceTitle,
+                          label: plugin.title(context),
                           image: true,
-                          child: mark ?? pluginMark(plugin, size: 24, color: color),
+                          child: pluginMark(plugin, size: 24, color: color),
                         ),
                       ),
                     ),
                   Expanded(
-                    child: tabs.isEmpty && mark != null
-                        ? Text(
-                            sourceTitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          )
-                        : PluginCompactTabs(tabs: tabs, accent: color),
+                    child: PluginCompactTabs(tabs: tabs, accent: color),
                   ),
                   if (showPrimary) primary,
                   PluginDockOptionsButton(
                     store: store,
-                    source: sourceId,
+                    source: plugin.id,
                     services: services,
                     includeActions: true,
                     includeSearch: true,
-                    attention: (reading?.attention ?? false) || (navigation?.attention ?? false),
+                    attention: reading?.attention ?? false,
                   ),
                 ],
               ),

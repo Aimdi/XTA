@@ -15,7 +15,6 @@ import 'package:xta/group/group_model.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/group_unread.dart';
 import 'package:xta/home/home_feed_unread.dart';
-import 'package:xta/utils/read_activity.dart';
 
 /// Ids of groups whose cached X chunks are newer than the last-read mark.
 class GroupUnreadStore extends Store<Set<String>> {
@@ -36,8 +35,8 @@ class GroupUnreadStore extends Store<Set<String>> {
   Future<Set<String>> _computeUnread() async {
     final database = await Repository.readOnly();
     final flags = await _groupFlags(database);
-    final lastRead = await ReadActivityLog.shared.trace('unread:positions', () => _lastReadByGroup(database));
-    final newestByHash = await ReadActivityLog.shared.trace('unread:newest', () => _newestByHash(database));
+    final lastRead = await _lastReadByGroup(database);
+    final newestByHash = await _newestByHash(database);
     final tracking = prefs.get(optionFeedReadingPosition) == true;
     final replies = prefs.get(optionGlobalIncludeReplies) ?? true;
     final retweets = prefs.get(optionGlobalIncludeRetweets) ?? true;

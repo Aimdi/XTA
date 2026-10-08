@@ -397,7 +397,6 @@ class PluginDockOptionsButton extends StatelessWidget {
               final navigation = store.content(source, 'navigation');
               final reading = store.content(source, 'reading');
               final following = store.content(source, 'following');
-              final appearance = store.content(source, 'appearance');
               final tabs = navigation?.tabs ?? const <PluginHomeTab>[];
               return SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
@@ -459,9 +458,7 @@ class PluginDockOptionsButton extends StatelessWidget {
                         ),
                       ),
                     ],
-                    ...?appearance?.actions,
-                    if (includeActions)
-                      ..._actionEntries(context, opener, [...?navigation?.actions, ...?reading?.actions]),
+                    if (includeActions) ..._actionEntries(context, opener, navigation?.actions ?? const []),
                     if ((includeActions || (navigation?.actions.isEmpty ?? true)) && scope.onOpenClient != null)
                       ListTile(
                         key: ValueKey('open-client-$source'),
@@ -495,15 +492,12 @@ class PluginDockOptionsButton extends StatelessWidget {
           if (entry is PopupMenuDivider) {
             yield const Divider();
           } else if (entry is PopupMenuItem<String>) {
-            final tile = entry.child is ListTile ? entry.child as ListTile : null;
             yield ListTile(
               key: entry.key,
               minTileHeight: 48,
-              leading: tile?.leading,
-              title: tile?.title ?? entry.child,
-              subtitle: tile?.subtitle,
+              title: entry.child,
               enabled: entry.enabled,
-              trailing: entry is CheckedPopupMenuItem<String> && entry.checked ? const Icon(Icons.check) : tile?.trailing,
+              trailing: entry is CheckedPopupMenuItem<String> && entry.checked ? const Icon(Icons.check) : null,
               onTap: () => _selectAction(sheet, opener, () {
                 entry.onTap?.call();
                 if (entry.value != null) action.select(opener, entry.value!);

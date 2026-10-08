@@ -1,7 +1,3 @@
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/plugins/reddit/reddit_history.dart';
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:provider/provider.dart';
@@ -52,10 +48,7 @@ class RedditPostCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) =>
-      ReadingHistoryHook(entry: () => redditHistoryEntry(post), dwell: readingHistoryCardDwell, child: _card(context));
-
-  Widget _card(BuildContext context) {
+  Widget build(BuildContext context) {
     return RepaintBoundary(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -81,14 +74,11 @@ class RedditPostCard extends StatelessWidget {
                   if (post.isSelf && post.showsSelfText)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-                      child: ReaderTranslation(
+                      child: RedditRichText(
                         text: post.displaySelfText!,
-                        builder: (context, text) => RedditRichText(
-                          text: text,
-                          maxLines: feedTextLines(context, normal: 4),
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        maxLines: 4,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -108,13 +98,13 @@ class RedditPostCard extends StatelessWidget {
   Widget _title(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-      child: ReaderTranslation(
-        text: post.displayTitle,
-        builder: (context, text) => Text(
-          text,
-          maxLines: feedTextLines(context, normal: 6),
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w700, height: 1.25),
+      child: Text(
+        post.displayTitle,
+        maxLines: 6,
+        overflow: TextOverflow.ellipsis,
+        style: Theme.of(context).textTheme.titleMedium!.copyWith(
+          fontWeight: FontWeight.w700,
+          height: 1.25,
         ),
       ),
     );
@@ -240,16 +230,13 @@ class _RedditPostFooter extends StatelessWidget {
       child: Row(
         children: [
           _UpvoteButton(post: post),
-          Tooltip(
-            message: L10n.of(context).open_post,
-            child: TextButton.icon(
-              style: footerButtonStyle,
-              onPressed: onComments,
-              icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
-              label: Text(
-                feedCountsVisible(context, sourceDefault: true) ? '${post.commentCount}' : '',
-                style: theme.textTheme.bodySmall!.copyWith(color: muted),
-              ),
+          TextButton.icon(
+            style: footerButtonStyle,
+            onPressed: onComments,
+            icon: Icon(Icons.mode_comment_outlined, size: 18, color: muted),
+            label: Text(
+              '${post.commentCount}',
+              style: theme.textTheme.bodySmall!.copyWith(color: muted),
             ),
           ),
           const Spacer(),
@@ -289,21 +276,29 @@ class _UpvoteButton extends StatelessWidget {
         final upvoted = state.contains(post.id);
         final color = upvoted ? theme.colorScheme.primary : muted;
 
-        return Tooltip(
-          message: upvoted ? L10n.of(context).unlike_on_this_device : L10n.of(context).like_on_this_device,
-          child: TextButton.icon(
-            style: footerButtonStyle,
-            onPressed: () async {
-              await votes.toggle(post.id);
-              if (!context.mounted) {
-                return;
-              }
-              await syncRedditLikeToArchive(context, post, upvoted: votes.isUpvoted(post.id));
-            },
-            icon: Icon(upvoted ? Icons.arrow_circle_up : Icons.arrow_upward, size: 18, color: color),
-            label: Text(
-              feedCountsVisible(context, sourceDefault: true) ? '${post.score + (upvoted ? 1 : 0)}' : '',
-              style: theme.textTheme.bodySmall!.copyWith(color: color, fontWeight: upvoted ? FontWeight.w700 : null),
+        return TextButton.icon(
+          style: footerButtonStyle,
+          onPressed: () async {
+            await votes.toggle(post.id);
+            if (!context.mounted) {
+              return;
+            }
+            await syncRedditLikeToArchive(
+              context,
+              post,
+              upvoted: votes.isUpvoted(post.id),
+            );
+          },
+          icon: Icon(
+            upvoted ? Icons.arrow_circle_up : Icons.arrow_upward,
+            size: 18,
+            color: color,
+          ),
+          label: Text(
+            '${post.score + (upvoted ? 1 : 0)}',
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: color,
+              fontWeight: upvoted ? FontWeight.w700 : null,
             ),
           ),
         );

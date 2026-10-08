@@ -1,4 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:xta/plugins/plugin_post_actions.dart';
 import 'package:xta/user.dart';
 import 'package:xta/group/group_model.dart';
@@ -302,7 +301,6 @@ class TweetFooterBar extends StatelessWidget {
   final bool isArticle;
   final VoidCallback onOpenTweet;
   final Future<Uint8List?> Function() onCaptureImage;
-  final ({String label, VoidCallback onTap})? attributionAction;
 
   const TweetFooterBar({
     super.key,
@@ -314,7 +312,6 @@ class TweetFooterBar extends StatelessWidget {
     required this.onOpenTweet,
     required this.onCaptureImage,
     this.isArticle = false,
-    this.attributionAction,
   });
 
   void _showShareSheet(BuildContext context) {
@@ -409,7 +406,8 @@ class TweetFooterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final tweetId = openablePost(tweet)?.id;
     final tweetUrl = shareableTweetUrl(tweet, shareBaseUrl);
-    final hideCounts = !feedCountsVisible(context);
+    final prefs = PrefService.of(context, listen: false);
+    final hideCounts = prefs.get(optionZenMode) == true || prefs.get(optionCalmMode) == true;
     final tint = tweetFooterButtonsColorOf(context);
     // Both stores are registered with a plain Provider, so a Consumer over them
     // would depend on a value whose identity never changes and never rebuild.
@@ -585,7 +583,6 @@ class TweetFooterBar extends StatelessWidget {
                       context,
                       post: PluginPostArchive(id: tweetId, userId: tweet.user?.idStr ?? '', content: tweet.toJson()),
                       url: tweetUrl,
-                      attributionAction: attributionAction,
                       onGroup: tweet.user?.idStr?.isNotEmpty != true || openableProfile(tweet.user) == null
                           ? null
                           : () async {

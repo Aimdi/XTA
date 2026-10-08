@@ -1,8 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/reader_translation_controls.dart';
-import 'package:xta/reading/reader_translation_service.dart';
-import 'package:xta/reading/reading_history_hook.dart';
-import 'package:xta/tweet/tweet_history.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
@@ -294,10 +289,6 @@ class TweetTileState extends State<TweetTile> {
       _translationStatus = TranslationStatus.translating;
     });
 
-    if (readerTranslationEnabled(context)) {
-      return _translateWithReaderProvider(context);
-    }
-
     var originalText = _originalParts.map((e) => e.toString()).toList();
     var res = await TranslationAPI.translate(
       locale,
@@ -323,33 +314,6 @@ class TweetTileState extends State<TweetTile> {
       return showTranslationError(
         res.errorMessage ?? 'An unknown error occurred while translating',
       );
-    }
-  }
-
-  /// The post's words for a text-based provider: t.co links expanded, media links dropped.
-  String _readerTranslationText() {
-    final shown = _displayedTweet;
-    var text = unescapeHtml(shown.noteText ?? shown.fullText ?? shown.text ?? '');
-    for (final media in shown.extendedEntities?.media ?? shown.entities?.media ?? []) {
-      final short = media.url;
-      if (short != null) text = text.replaceAll(short, '');
-    }
-    return shareableTweetText(shown, text).trim();
-  }
-
-  /// The reader's own translation service, used for X too once one is set up.
-  Future<void> _translateWithReaderProvider(BuildContext context) async {
-    try {
-      final translated = await translateWithReaderProvider(context, _readerTranslationText());
-      if (!context.mounted || translated == null) return;
-      final parts = buildRichText(context, translated, null);
-      setState(() {
-        _showParts(parts);
-        _translatedParts = parts;
-        _translationStatus = TranslationStatus.translated;
-      });
-    } on ReaderTranslationException catch (error) {
-      if (context.mounted) showTranslationError(readerTranslationFailureText(L10n.of(context), error.reason));
     }
   }
 
@@ -475,16 +439,6 @@ class TweetTileState extends State<TweetTile> {
 
   @override
   Widget build(BuildContext context) {
-    final tile = _buildTile(context);
-    if (isQuotedTweet || isBirdwatchQuote) return tile;
-    return ReadingHistoryHook(
-      entry: () => tweetHistoryEntry(tweet),
-      dwell: widget.tweetOpened ? readingHistoryScreenDwell : readingHistoryCardDwell,
-      child: tile,
-    );
-  }
-
-  Widget _buildTile(BuildContext context) {
     final prefs = PrefService.of(context, listen: false);
 
     var shareBaseUrlOption = prefs.get(optionShareBaseUrl);
@@ -522,31 +476,29 @@ class TweetTileState extends State<TweetTile> {
       );
     }
 
-    final isRepost = this.tweet.retweetedStatusWithCard != null;
-    final reposter = isRepost ? this.tweet.user : null;
-    final reposterName =
-        reposter?.name ??
-        reposter?.screenName ??
-        L10n.of(context).unknown_username;
-    final repostLabel = isRepost
-        ? L10n.of(context).this_tweet_user_name_retweeted(
-            reposterName,
-            _retweetRelativeDate ?? '',
-          )
-        : null;
-    final reposterProfile = openableProfile(
-      reposter,
-      currentUsername: currentUsername,
-    );
-    final retweetBanner = repostLabel == null
-        ? const SizedBox.shrink()
-        : TweetRepostCredit(
-            name: reposterName,
-            details: repostLabel,
-            time: this.tweet.createdAt == null
-                ? null
-                : createCompactDate(this.tweet.createdAt!),
-          );
+    Widget retweetBanner = Container();
+    if (this.tweet.retweetedStatusWithCard != null) {
+      retweetBanner = _TweetTileLeading(
+        icon: Icons.repeat,
+        onTap: () => Navigator.pushNamed(
+          context,
+          routeProfile,
+          arguments: ProfileScreenArguments.fromScreenName(
+            this.tweet.user!.screenName!,
+            null,
+          ),
+        ),
+        children: [
+          TextSpan(
+            text: L10n.of(context).this_tweet_user_name_retweeted(
+              this.tweet.user!.name!,
+              _retweetRelativeDate ?? '',
+            ),
+            style: theme.textTheme.bodySmall,
+          ),
+        ],
+      );
+    }
 
     // "Replying to @someone" belongs under the header and above the text, where
     // X puts it: above the header it announced a reply before saying whose post
@@ -714,7 +666,7 @@ class TweetTileState extends State<TweetTile> {
     // which is for engagement and was one control too wide on a phone. Only on
     // posts there is something to translate: X offers nothing on a post
     // already in your language, and a button on every card was chrome.
-    final translateButton = tweet.article != null || !_offerTranslation(readerTranslationTargetLocale(context) ?? locale)
+    final translateButton = tweet.article != null || !_offerTranslation(locale)
         ? null
         : TweetTranslateButton(
             status: _translationStatus,
@@ -739,20 +691,6 @@ class TweetTileState extends State<TweetTile> {
       isArticle: tweet.article != null,
       onOpenTweet: () => onClickOpenTweet(tweet),
       onCaptureImage: captureWidget,
-      attributionAction: repostLabel == null || reposterProfile == null
-          ? null
-          : (
-              label: repostLabel,
-              onTap: () => Navigator.pushNamed(
-                context,
-                routeProfile,
-                arguments: ProfileScreenArguments(
-                  reposterProfile.id,
-                  reposterProfile.screenName,
-                  null,
-                ),
-              ),
-            ),
     );
 
     Widget article = const SizedBox.shrink();
@@ -928,18 +866,14 @@ class TweetTileState extends State<TweetTile> {
           url: articleLink,
           // Read in XTA rather than handed to a browser: the article is the
           // post's own content.
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ArticleScreen(url: articleLink))),
-        ).withFeedAppearancePart(kind: FeedAppearancePartKind.linkPreviews),
-      media.withFeedAppearancePart(kind: FeedAppearancePartKind.media),
-      quotedTweet,
-      if (!skipBroadcastCard)
-        TweetCard(tweet: tweet, card: tweet.card).withFeedAppearancePart(
-          kind: isBroadcastCard(tweet.card) || isAudioSpaceCard(tweet.card)
-              ? FeedAppearancePartKind.media
-              : '${tweet.card?['name']}'.startsWith('poll')
-              ? null
-              : FeedAppearancePartKind.linkPreviews,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ArticleScreen(url: articleLink)),
+          ),
         ),
+      media,
+      quotedTweet,
+      if (!skipBroadcastCard) TweetCard(tweet: tweet, card: tweet.card),
       birdwatchQuoted,
       article,
       // A quoted tweet shows no action bar: its reply/repost/like counts belong
@@ -1174,10 +1108,12 @@ class _ReplyingToLine extends StatelessWidget {
 }
 
 class _TweetTileLeading extends StatelessWidget {
+  final Function()? onTap;
   final IconData icon;
   final Iterable<InlineSpan> children;
 
   const _TweetTileLeading({
+    this.onTap,
     required this.icon,
     required this.children,
   });
@@ -1186,6 +1122,7 @@ class _TweetTileLeading extends StatelessWidget {
   Widget build(BuildContext context) {
     return TweetContextRow(
       icon: icon,
+      onTap: onTap,
       label: Text.rich(
         TextSpan(
           style: tweetMetadataStyle(

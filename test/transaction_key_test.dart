@@ -296,45 +296,46 @@ void main() {
       expect(derivations, 1);
     });
 
-    test('a failed anonymous warm-up rests every account on the same cooldown', () async {
+    test('anonymous failure cooldown does not block an authenticated context', () async {
       var attempts = 0;
-      var now = DateTime.utc(2026, 10, 1, 12);
-      TwitterHeaders.clock = () => now;
       TwitterHeaders.initializer = () async {
         attempts++;
-        if (attempts == 1) throw const FormatException('public page has no signer');
+        if (attempts == 1) throw const FormatException('anonymous page has no signer');
         return fakeTransaction();
       };
 
       await expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(isA<TransactionIdUnavailableException>()));
+      final headers = await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-a'});
+      expect(headers['x-client-transaction-id'], isNotEmpty);
+      await expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(isA<TransactionIdUnavailableException>()));
+      expect(attempts, 2);
+    });
+
+    test('cookie contexts isolate failures and reuse keys with any Cookie header casing', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () async {
+        attempts++;
+        if (attempts == 1) throw const FormatException('account A page has no signer');
+        return fakeTransaction();
+      };
+
       await expectLater(
         TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-a'}),
         throwsA(isA<TransactionIdUnavailableException>()),
       );
-      expect(attempts, 1);
-      now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
-      final headers = await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-a'});
-      expect(headers['x-client-transaction-id'], isNotEmpty);
+      await Future.wait([
+        TwitterHeaders.getHeaders(uri, {'cookie': 'auth_token=account-b'}),
+        TwitterHeaders.getHeaders(uri, {'COOKIE': 'auth_token=account-b'}),
+      ]);
+      await expectLater(
+        TwitterHeaders.getHeaders(uri, {'cookie': 'auth_token=account-a'}),
+        throwsA(isA<TransactionIdUnavailableException>()),
+      );
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-b'});
       expect(attempts, 2);
     });
 
-    test('the warm-up and every account share one key, whatever the Cookie header casing', () async {
-      var attempts = 0;
-      TwitterHeaders.initializer = () async {
-        attempts++;
-        return fakeTransaction();
-      };
-
-      await TwitterHeaders.getHeaders(uri, null);
-      await Future.wait([
-        TwitterHeaders.getHeaders(uri, {'cookie': 'auth_token=account-a'}),
-        TwitterHeaders.getHeaders(uri, {'COOKIE': 'auth_token=account-b'}),
-        TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=account-c'}),
-      ]);
-      expect(attempts, 1);
-    });
-
-    test('changing the session cookie keeps the key', () async {
+    test('changing the session cookie derives a fresh key', () async {
       var attempts = 0;
       TwitterHeaders.initializer = () async {
         attempts++;
@@ -342,23 +343,24 @@ void main() {
       };
       await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=old'});
       await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=new'});
-      expect(attempts, 1);
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=new'});
+      expect(attempts, 2);
     });
 
-    test('describes the key state without secrets', () async {
-      var now = DateTime.utc(2026, 10, 1, 12);
-      TwitterHeaders.clock = () => now;
-      expect(TwitterHeaders.describeKeyState(), 'not derived yet');
-      final pending = Completer<ClientTransaction>();
-      TwitterHeaders.initializer = () => pending.future;
-      final first = TwitterHeaders.getHeaders(uri, null);
-      expect(TwitterHeaders.describeKeyState(), 'deriving');
-      pending.complete(fakeTransaction());
-      await first;
-      now = now.add(const Duration(seconds: 30));
-      expect(TwitterHeaders.describeKeyState(), 'derived 30s ago');
-      now = now.add(transactionKeyLifetime);
-      expect(TwitterHeaders.describeKeyState(), 'expired, will be derived again');
+    test('many session contexts evict old keys without evicting the most recently used one', () async {
+      var attempts = 0;
+      TwitterHeaders.initializer = () async {
+        attempts++;
+        return fakeTransaction();
+      };
+      for (var index = 0; index < 17; index++) {
+        await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=session-$index'});
+      }
+      expect(attempts, 17);
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=session-16'});
+      expect(attempts, 17);
+      await TwitterHeaders.getHeaders(uri, {'Cookie': 'auth_token=session-0'});
+      expect(attempts, 18);
     });
 
     test('no header is asked for when there is no uri', () async {
@@ -370,10 +372,7 @@ void main() {
     test('reset clears diagnostics and a late previous initialization cannot restore its error', () async {
       final pending = Completer<ClientTransaction>();
       TwitterHeaders.initializer = () => pending.future;
-      final first = expectLater(
-        TwitterHeaders.getHeaders(uri, null),
-        throwsA(isA<TransactionIdUnavailableException>()),
-      );
+      final first = expectLater(TwitterHeaders.getHeaders(uri, null), throwsA(isA<TransactionIdUnavailableException>()));
       TwitterHeaders.resetForTesting();
       pending.completeError(const FormatException('old page'));
       await first;

@@ -1,5 +1,3 @@
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
@@ -51,8 +49,7 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
       store: _store,
       onState: (context, _) {
         final options = _store.options(widget.slot);
-        final shared = sharedFilterProject(context, filterBlueskyReader(widget.posts, options), blueskyFilterText);
-        final visible = shared.visible;
+        final visible = filterBlueskyReader(widget.posts, options);
         return Column(
           children: [
             PluginDockContribution(
@@ -150,7 +147,7 @@ class _BlueskyReaderViewState extends State<BlueskyReaderView> {
                         ],
                       )
                     : widget.footer,
-                itemBuilder: (_, post) => BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false).foldedBy(shared.foldReason(post), key: ValueKey(('fold', post.uri))),
+                itemBuilder: (_, post) => BlueskyPostCard(key: ValueKey(post.uri), post: post, showSourceBadge: false),
               ),
             ),
           ],

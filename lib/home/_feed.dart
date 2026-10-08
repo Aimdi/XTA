@@ -1,8 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
-import 'package:xta/reading/mixed_feed_definition.dart';
-import 'package:xta/reading/mixed_feed_editor.dart';
-import 'package:xta/reading/mixed_feed_store.dart';
-import 'package:xta/reading/mixed_feed_view.dart';
 import 'package:xta/plugins/plugin_compact_header.dart';
 import 'package:xta/plugins/substack/substack_compact_header.dart';
 import 'package:xta/plugins/plugin_home_dock.dart';
@@ -21,6 +16,7 @@ import 'package:xta/home/feed_strip_store.dart';
 import 'package:xta/home/alt_microblogging.dart';
 import 'package:xta/home/alt_microblogging_selector.dart';
 import 'package:xta/home/home_account_filter.dart';
+import 'package:xta/home/home_chrome.dart';
 import 'package:xta/home/home_timeline_controls.dart';
 import 'package:xta/home/home_swipe_navigation.dart';
 import 'package:xta/home/home_source_picker.dart';
@@ -35,7 +31,6 @@ import 'package:xta/group/_feed_shell.dart';
 import 'package:xta/group/feed_refresh_controller.dart';
 import 'package:xta/group/feed_session_cache.dart';
 import 'package:xta/group/group_model.dart';
-import 'package:xta/group/group_chrome.dart';
 import 'package:xta/group/group_screen.dart';
 import 'package:xta/group/feed_read_position.dart';
 import 'package:xta/group/group_unread_store.dart';
@@ -44,6 +39,7 @@ import 'package:xta/plugins/plugin_home_chrome.dart';
 import 'package:xta/plugins/plugin_client_route.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/plugin_registry.dart';
+import 'package:xta/plugins/reddit/reddit_actions.dart';
 import 'package:xta/ui/scroll_to_top.dart';
 
 typedef FeedTabTitleBuilder = String Function(BuildContext context);
@@ -73,7 +69,6 @@ class FeedTab {
   IconData get icon {
     if (this == following) return followingTabIcon;
     if (this == x) return Icons.close;
-    if (isMixedFeedTab(id)) return mixedFeedIcon;
     return pluginById(id)?.icon ?? Icons.extension_outlined;
   }
 
@@ -100,7 +95,7 @@ const IconData forYouTabIcon = Icons.auto_awesome_outlined;
 /// Built-in strip entries — plugin pins are appended by [availableFeedTabs].
 final List<FeedTabOption> feedTabs = [
   FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, mark: pluginMark(XPlugin(), size: 16)),
+  FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
 ];
 
 /// The feeds the switcher and home strip currently offer.
@@ -111,7 +106,7 @@ List<FeedTabOption> availableFeedTabs(BasePrefService prefs) =>
 List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefService prefs) {
   final options = <FeedTabOption>[
     FeedTabOption(FeedTab.following, (c) => L10n.of(c).following, icon: Icons.home_outlined),
-    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, mark: pluginMark(XPlugin(), size: 16)),
+    FeedTabOption(FeedTab.x, (c) => L10n.of(c).source_x, icon: Icons.close),
   ];
   for (final pluginId in feedStripVisibleIds(prefs, pluginIds)) {
     if (pluginId == pluginIdX) continue;
@@ -122,9 +117,6 @@ List<FeedTabOption> availableFeedTabsFromIds(List<String> pluginIds, BasePrefSer
     options.add(
       FeedTabOption(FeedTab(pluginId), (c) => plugin.title(c), icon: plugin.icon, mark: pluginMark(plugin, size: 16)),
     );
-  }
-  for (final mix in MixedFeedStore.forPrefs(prefs).state) {
-    options.add(FeedTabOption(FeedTab(mix.tabId), (_) => mix.name, icon: mixedFeedIcon));
   }
   return List.unmodifiable(options);
 }
@@ -214,8 +206,6 @@ class _FeedScreenState extends State<FeedScreen> {
 
   FeedTabStore? _tabStore;
   FeedStripStore? _stripStore;
-  MixedFeedStore? _mixes;
-  void Function()? _disposeMixesObserver;
   HomeAccountFilterStore? _accountFilter;
   HomeGroupFilterStore? _groupFilter;
   void Function()? _disposeTabObserver;
@@ -256,7 +246,7 @@ class _FeedScreenState extends State<FeedScreen> {
       _view.observeScroll(
         extentBefore: position.extentBefore,
         scrollExtent: position.maxScrollExtent - position.minScrollExtent,
-        controlsHeight: 0,
+        controlsHeight: _tab == FeedTab.following ? kHomeTimelineControlsHeight : 0,
       );
     });
     WidgetsBinding.instance.ensureVisualUpdate();
@@ -291,14 +281,6 @@ class _FeedScreenState extends State<FeedScreen> {
       // Hidden-tab plugins used to live as Groups chips. Pin them here so
       // switching sites stays on the home strip.
       strip.pinHiddenTabs();
-    }
-
-    final mixes = MixedFeedStore.forPrefs(PrefService.of(context, listen: false));
-    if (!identical(mixes, _mixes)) {
-      _disposeMixesObserver?.call();
-      _mixes = mixes;
-      // A mix added, renamed or removed changes the strip; the tab falls back to Following if it is gone.
-      _disposeMixesObserver = mixes.observer(onState: (_) => mounted ? _view.refreshStrip() : null);
     }
 
     final filter = context.read<HomeAccountFilterStore>();
@@ -405,7 +387,6 @@ class _FeedScreenState extends State<FeedScreen> {
   void dispose() {
     _disposeTabObserver?.call();
     _disposeStripObserver?.call();
-    _disposeMixesObserver?.call();
     _disposeAccountFilterObserver?.call();
     _disposeGroupFilterObserver?.call();
     widget.scrollController.removeListener(_queueControlsUpdate);
@@ -471,75 +452,21 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
-  Widget _timelineChrome(BuildContext context, FeedTab tab) {
+  PreferredSizeWidget _readingControls(BuildContext context) {
     final model = context.read<GroupModel>();
-    final l10n = L10n.of(context);
-    final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
-    return ScopedBuilder<GroupModel, SubscriptionGroupGet>(
-      store: model,
-      onState: (context, group) => PluginDockContribution(
-        slot: 'navigation',
-        content: PluginDockContent(
-          attention: disabledCount > 0 || groupActiveFilterCount(group) > 0,
-          tabs: [
-            PluginHomeTab(
-              key: const ValueKey('home-posts-tab'),
-              icon: Icons.home_outlined,
-              label: l10n.following,
-              selected: tab == FeedTab.following && !_view.state.followingMediaOnly,
-              onTap: () {
-                if (_view.state.followingMediaOnly) _toggleMediaOnly();
-                _selectStripTab(FeedTab.following);
-              },
-            ),
-            PluginHomeTab(
-              key: const ValueKey('home-for-you-tab'),
-              icon: Icons.auto_awesome_outlined,
-              label: l10n.foryou,
-              selected: tab == FeedTab.x,
-              onTap: () => _selectStripTab(FeedTab.x),
-            ),
-            PluginHomeTab(
-              key: const ValueKey('home-media-toggle'),
-              icon: Icons.photo_library_outlined,
-              label: l10n.media,
-              selected: tab == FeedTab.following && _view.state.followingMediaOnly,
-              onTap: () {
-                if (!_view.state.followingMediaOnly) _toggleMediaOnly();
-                _selectStripTab(FeedTab.following);
-              },
-            ),
-          ],
-          actions: [
-            ...defaultGroupActions(
-              context,
-              model: model,
-              showMore: false,
-              showRefresh: tab == FeedTab.x,
-              onRefresh: () => context.read<FeedRefreshController>().refresh(),
-              showSettings: false,
-              extra: [
-                IconButton(
-                  tooltip: l10n.home_feed_accounts,
-                  icon: Badge.count(
-                    count: disabledCount,
-                    isLabelVisible: disabledCount > 0,
-                    child: const Icon(Icons.manage_accounts_outlined),
-                  ),
-                  onPressed: () => showHomeAccountFilterSheet(context),
-                ),
-              ],
-            ),
-            if (tab == FeedTab.following && group.id.isNotEmpty)
-              homeTimelineMenu(
-                context,
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(kHomeTimelineControlsHeight),
+      child: ScopedBuilder<GroupModel, SubscriptionGroupGet>(
+        store: model,
+        onState: (context, group) => group.id.isEmpty
+            ? const SizedBox(height: kHomeTimelineControlsHeight)
+            : HomeTimelineControls(
                 group: group,
+                mediaOnly: _view.state.followingMediaOnly,
                 onOrderSelected: (order) => _selectOrder(context, model, order),
+                onMediaToggle: _toggleMediaOnly,
                 onFilters: () => showFeedSettings(context, model),
               ),
-          ],
-        ),
-        fallback: const SizedBox.shrink(),
       ),
     );
   }
@@ -554,23 +481,7 @@ class _FeedScreenState extends State<FeedScreen> {
     return tab.id;
   }
 
-  Widget _mixBody(String id) {
-    final mix = _mixes?.byId(id);
-    if (mix == null) return Center(child: Text(L10n.of(context).feed_strip_unavailable));
-    return KeyedSubtree(
-      key: PageStorageKey('home-mix-$id'),
-      child: PluginEmbedded(
-        child: MixedFeedView(
-          definition: mix,
-          scrollController: widget.scrollController,
-          onEdit: () => openMixedFeedEditor(context, mix: mix),
-        ),
-      ),
-    );
-  }
-
   Widget _pluginBody(FeedTab tab) {
-    if (mixedFeedIdOfTab(tab.id) case final mix?) return _mixBody(mix);
     final plugin = pluginById(tab.id);
     final screen = plugin?.feedStripScreen(scrollController: widget.scrollController);
     if (screen != null) {
@@ -610,15 +521,16 @@ class _FeedScreenState extends State<FeedScreen> {
       });
     }
 
+    final docked = tab.isPlugin && tab != FeedTab.x && tab != FeedTab.reddit;
     final activePlugin = pluginById(tab.id);
     return PluginHomeDockScope(
       store: _dock,
       source: tab.id,
-      enabled: true,
+      enabled: docked,
       compact: true,
       openClientLabel: activePlugin == null ? '' : L10n.of(context).plugin_open_client(activePlugin.title(context)),
-      onOpenClient: activePlugin == null ? null : () {
-        if (mounted) openPluginClient(context, activePlugin);
+      onOpenClient: () {
+        if (mounted && activePlugin != null) openPluginClient(context, activePlugin);
       },
       child: GroupFeedShell(
         key: ValueKey('home-shell-${widget.id}'),
@@ -627,68 +539,148 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         flatAppBar: true,
         fixedHeader: true,
-        toolbarHeight: pluginToolbarHeight(context),
-        toolbarBuilder: (context) => GroupUnreadScope(
-          builder: (context, unreadIds) {
-            final services = Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (grouped && isAltMicrobloggingSource(tab.id))
-                  AltMicrobloggingSelector(
-                    compact: true,
-                    sourceIds: available.map((option) => option.id.id).toList(),
-                    selected: tab.id,
-                    unread: unreadIds,
-                    onSelected: (id) {
-                      Navigator.pop(context);
-                      _selectStripTab(FeedTab(id));
-                    },
-                  ),
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Scaffold.of(context).openDrawer();
-                  },
-                  onLongPress: () => showChromeAvatarSheet(context),
-                  icon: const Icon(Icons.menu),
-                  label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
+        toolbarHeight: tab.isPlugin ? pluginToolbarHeight(context) : null,
+        toolbarBuilder: docked
+            ? (context) => GroupUnreadScope(
+                builder: (context, unreadIds) {
+                  final services = Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (grouped && isAltMicrobloggingSource(tab.id))
+                        AltMicrobloggingSelector(
+                          compact: true,
+                          sourceIds: available.map((option) => option.id.id).toList(),
+                          selected: tab.id,
+                          unread: unreadIds,
+                          onSelected: (id) {
+                            Navigator.pop(context);
+                            _selectStripTab(FeedTab(id));
+                          },
+                        ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Scaffold.of(context).openDrawer();
+                        },
+                        onLongPress: () => showChromeAvatarSheet(context),
+                        icon: const Icon(Icons.menu),
+                        label: Text(MaterialLocalizations.of(context).openAppDrawerTooltip),
+                      ),
+                    ],
+                  );
+                  final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
+                  if (tab.id == 'substack') {
+                    return SubstackCompactHeader(
+                      store: _dock,
+                      unread: unread,
+                      onPickSource: () => _pickSource(context),
+                      services: services,
+                    );
+                  }
+                  return PluginCompactHeader(
+                    plugin: activePlugin!,
+                    store: _dock,
+                    unread: unread,
+                    onPickSource: () => _pickSource(context),
+                    services: services,
+                  );
+                },
+              )
+            : null,
+        leading: const DrawerAvatarButton(),
+        titleBuilder: (context) {
+          final source = available.firstWhere((option) => option.id == tab);
+          return ScopedBuilder<PluginHomeDockStore, Map<String, PluginDockEntry>>(
+            store: _dock,
+            onState: (context, _) {
+              final sections = _dock.content(tab.id, 'navigation')?.tabs;
+              final section = sections?.where((section) => section.selected).firstOrNull;
+              return GroupUnreadScope(
+                builder: (context, unreadIds) => HomeTimelineTitle(
+                  label: source.titleBuilder(context),
+                  sectionLabel: docked ? section?.label : null,
+                  mark: source.mark ?? Icon(source.icon ?? tab.icon, size: 22),
+                  unread: available.any((option) => unreadIds.contains(_unreadKeyFor(option.id))),
+                  onPressed: () => _pickSource(context),
                 ),
-              ],
-            );
-            final unread = available.any((option) => unreadIds.contains(_unreadKeyFor(option.id)));
-            if (tab.id == 'substack') {
-              return SubstackCompactHeader(
-                store: _dock,
-                unread: unread,
-                onPickSource: () => _pickSource(context),
-                services: services,
               );
-            }
-            return PluginCompactHeader(
-              plugin: activePlugin ?? XPlugin(),
-              mark: isMixedFeedTab(tab.id)
-                  ? Icon(mixedFeedIcon, size: 24, color: Theme.of(context).colorScheme.primary)
-                  : null,
-              source: tab.id,
-              title: available.firstWhere((option) => option.id == tab).titleBuilder(context),
-              store: _dock,
-              unread: unread,
-              onPickSource: () => _pickSource(context),
-              services: services,
-            );
-          },
-        ),
-        titleBuilder: (_) => const SizedBox.shrink(),
-        actionsBuilder: (_) => const [],
+            },
+          );
+        },
+        actionsBuilder: (context) {
+          if (docked) return const [];
+          // Reddit brings its own bar: sorting, search and adding a subreddit
+          // are what this feed is steered with, and the generic feed actions
+          // steer nothing here. Its overflow carries the app settings so they
+          // stay reachable from this tab too.
+          if (tab == FeedTab.reddit) {
+            return [
+              Padding(
+                padding: const EdgeInsetsDirectional.only(end: kHomeAppBarEndInset),
+                child: RedditFeedActions(
+                  showAppSettings: true,
+                  onOpenClient: () => openPluginClient(context, pluginById(tab.id)!),
+                ),
+              ),
+            ];
+          }
+
+          if (tab.isPlugin && tab != FeedTab.x) {
+            final plugin = pluginById(tab.id)!;
+            return [
+              HomeAppBarActions(
+                children: [
+                  IconButton(
+                    key: ValueKey('open-client-${plugin.id}'),
+                    tooltip: L10n.of(context).plugin_open_client(plugin.title(context)),
+                    icon: const Icon(Icons.open_in_new),
+                    onPressed: () => openPluginClient(context, plugin),
+                  ),
+                ],
+              ),
+            ];
+          }
+
+          // Toolbar and pull-to-refresh share the registered feed operation.
+          final model = context.read<GroupModel>();
+          final disabledCount = _lastDisabledAccountIds.length + _lastDisabledGroupIds.length;
+          final actions = defaultGroupActions(
+            context,
+            model: model,
+            showMore: false,
+            showRefresh: tab == FeedTab.foryou,
+            onRefresh: () => context.read<FeedRefreshController>().refresh(),
+            showSettings: false,
+            extra: [
+              IconButton(
+                tooltip: L10n.of(context).home_feed_accounts,
+                icon: Badge.count(
+                  count: disabledCount,
+                  isLabelVisible: disabledCount > 0,
+                  child: Icon(disabledCount > 0 ? Icons.manage_accounts : Icons.manage_accounts_outlined),
+                ),
+                onPressed: () => showHomeAccountFilterSheet(context),
+              ),
+            ],
+          );
+          return [HomeAppBarActions(children: actions)];
+        },
         bodyBuilder: (context) => HomeReadingViewport(
           store: _dock.controls,
           source: tab.id,
-          enabled: true,
+          enabled: docked,
           prefs: prefs,
-          controls: tab == FeedTab.following || tab == FeedTab.x
-              ? _timelineChrome(context, tab)
-              : const SizedBox.shrink(),
+          controls: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HomeCollapsingControls(
+                key: const ValueKey('home-reading-controls'),
+                visible: _view.state.controlsVisible && tab == FeedTab.following,
+                child: tab == FeedTab.following ? _readingControls(context) : const SizedBox.shrink(),
+              ),
+            ],
+          ),
           child: NotificationListener<ScrollMetricsNotification>(
             onNotification: (notification) {
               if (notification.depth == 0 && notification.metrics.axis == Axis.vertical) {
@@ -719,11 +711,6 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
           ),
         ),
-      ).withFeedAppearance(
-        feed: homeFeedIdentity(tab.id),
-        label: available.firstWhere((option) => option.id == tab).titleBuilder(context),
-        publishAction: tab == FeedTab.following || tab == FeedTab.x || isMixedFeedTab(tab.id),
-        mixed: isMixedFeedTab(tab.id),
       ),
     );
   }

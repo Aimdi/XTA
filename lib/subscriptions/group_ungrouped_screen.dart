@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_triple/flutter_triple.dart';
-import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
 import 'package:provider/provider.dart';
 import 'package:xta/generated/l10n.dart';
@@ -71,7 +70,7 @@ class _SortUngroupedScreenState extends State<SortUngroupedScreen> {
       messenger.showSnackBar(
         SnackBar(content: Text(l10n.sort_ungrouped_failed)),
       );
-      Logger('SortUngrouped').warning('Unable to apply subscription groups', error, stack);
+      debugPrint('$error\n$stack');
     }
   }
 

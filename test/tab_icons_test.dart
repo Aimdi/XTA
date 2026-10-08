@@ -88,9 +88,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byIcon(followingTabIcon), findsOneWidget);
-    expect(find.byIcon(Icons.close), findsNothing);
+    expect(find.byIcon(FeedTab.x.icon), findsOneWidget);
     expect(find.byIcon(forYouTabIcon), findsNothing);
-    expect(find.byType(PluginBrandMark), findsNWidgets(4));
+    expect(find.byType(PluginBrandMark), findsNWidgets(3));
     expect(find.byIcon(Icons.inventory_2), findsOneWidget);
     expect(find.text('Substack'), findsOneWidget);
     expect(find.text('Pixiv'), findsOneWidget);

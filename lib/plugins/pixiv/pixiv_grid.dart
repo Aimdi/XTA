@@ -4,8 +4,6 @@ import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_triple/flutter_triple.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:provider/provider.dart';
-import 'package:xta/reading/reader_source_text.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_button.dart';
 import 'package:xta/plugins/pixiv/pixiv_bookmark_store.dart';
@@ -55,9 +53,7 @@ class PixivIllustGrid extends StatelessWidget {
     );
   }
 
-  Widget _grid(BuildContext context, List<PixivIllust> unmuted, int columns) {
-    final shared = sharedFilterProject(context, unmuted, pixivFilterText);
-    final visibleIllusts = shared.visible;
+  Widget _grid(BuildContext context, List<PixivIllust> visibleIllusts, int columns) {
     final grid = CustomScrollView(
       controller: pluginInnerScrollController(context, scrollController),
       primary: PluginEmbedded.maybeOf(context) ? false : null,
@@ -71,9 +67,7 @@ class PixivIllustGrid extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childCount: visibleIllusts.length,
-            itemBuilder: (context, index) => PixivIllustTile(
-              illust: visibleIllusts[index],
-            ).foldedBy(shared.foldReason(visibleIllusts[index]), key: ValueKey(('fold', visibleIllusts[index].id))),
+            itemBuilder: (context, index) => PixivIllustTile(illust: visibleIllusts[index]),
           ),
         ),
         if (loadingMore)

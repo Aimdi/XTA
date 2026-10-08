@@ -7,8 +7,6 @@ import 'package:xta/catcher/exceptions.dart' show TransactionIdUnavailableExcept
 import 'package:xta/client/endpoints.dart';
 import 'package:xta/client/rate_limit_tracker.dart';
 import 'package:xta/settings/diagnostics_report.dart';
-import 'package:xta/settings/quick_diagnostics.dart';
-import 'package:pref/pref.dart';
 
 DiagnosticsReport _report({
   List<AccountDiagnostics> accounts = const [],
@@ -54,7 +52,7 @@ void main() {
           AccountDiagnostics(id: 'private-csrf-token', screenName: null, rateLimited: {}, notFoundUntil: null),
         ],
       ).toPlainText();
-      expect(text, contains('account 1: ok'));
+      expect(text, contains('unnamed account: ok'));
       expect(text, isNot(contains('private-csrf-token')));
     });
 
@@ -95,27 +93,19 @@ void main() {
       }
     });
 
-    test('distinguishes accounts and endpoint health without identifying signed-in users', () {
+    test('names the endpoint and account behind a failure', () {
       final text = _report(
         accounts: [
           AccountDiagnostics(
-            id: 'private-csrf-token',
-            screenName: 'private_reader',
+            id: 'abc',
+            screenName: 'reader',
             rateLimited: {'/i/api/graphql/x/SearchTimeline': DateTime.utc(2026, 7, 25, 10)},
             notFoundUntil: DateTime.utc(2026, 7, 25, 15),
-          ),
-          const AccountDiagnostics(
-            id: 'private-second-token',
-            screenName: 'private_second_reader',
-            rateLimited: {},
-            notFoundUntil: null,
           ),
         ],
       ).toPlainText();
 
-      expect(text, contains('account 1: auth broken'));
-      expect(text, contains('account 2: ok'));
-      expect(text, isNot(contains('private')));
+      expect(text, contains('@reader'));
       expect(text, contains('429 /i/api/graphql/x/SearchTimeline until 2026-07-25T10:00:00.000Z'));
       expect(text, contains('auth broken until 2026-07-25T15:00:00.000Z'));
     });
@@ -139,24 +129,6 @@ void main() {
       expect(text, contains('ZZZZZZZZZZZZZZZZZZZZZZ'));
       expect(text, contains('(overridden)'));
       expect(report.overriddenCount, 1);
-    });
-
-    test('names a local step that is still waiting, so a stuck database reads as such instead of a spinner', () {
-      final text = DiagnosticsReport(
-        appVersion: 'unknown',
-        accounts: const [],
-        endpoints: const [],
-        registryEnabled: true,
-        registryFetchedAt: null,
-        generatedAt: DateTime.utc(2026, 10, 1),
-        probes: const [
-          DiagnosticsProbe('package info', elapsed: Duration(milliseconds: 12)),
-          DiagnosticsProbe('database (read-only connection)', failure: 'still waiting after 5s'),
-        ],
-      ).toPlainText();
-      expect(text, contains('local checks:'));
-      expect(text, contains('  package info: ok 12ms'));
-      expect(text, contains('  database (read-only connection): still waiting after 5s'));
     });
 
     test('records whether the registry was ever reached', () {
@@ -186,25 +158,22 @@ void main() {
     });
   });
 
-  group('quick report', () {
-    test('needs no database and still carries the request log, key state and endpoints', () async {
-      final prefs = PrefServiceCache();
-      final text = quickDiagnosticsReport(
-        appVersion: 'v4.12.0+400001290',
-        prefs: prefs,
-        now: DateTime.utc(2026, 10, 2, 8),
-        keyState: 'derived 12s ago',
-        xSetupFailure: null,
-        operations: const ['2026-10-02T08:00:00.000 groupSearch completed 900ms'],
-        mainThread: '\n  2026-10-02T08:00:05.000 main thread blocked for 5 s',
-      ).toPlainText();
+  test('local checks name a stuck step instead of leaving the report empty', () {
+    final text = DiagnosticsReport(
+      appVersion: 'v4.12.0+400001360',
+      accounts: const [],
+      endpoints: const [],
+      registryEnabled: true,
+      registryFetchedAt: null,
+      generatedAt: DateTime.utc(2026, 10, 3),
+      probes: const [
+        DiagnosticsProbe('database read (read-only connection)', elapsed: Duration(milliseconds: 12)),
+        DiagnosticsProbe('database save (writable connection)', failure: 'still waiting after 5s'),
+      ],
+    ).toPlainText();
 
-      expect(text, contains('app: v4.12.0+400001290'));
-      expect(text, contains('Android main thread: \n  2026-10-02T08:00:05.000 main thread blocked for 5 s'));
-      expect(text, contains('database: not probed (copied from the error screen)'));
-      expect(text, contains('X signing key: derived 12s ago'));
-      expect(text, contains('groupSearch completed 900ms'));
-      expect(text, contains('SearchTimeline'));
-    });
+    expect(text, contains('local checks:'));
+    expect(text, contains('  database read (read-only connection): ok 12ms'));
+    expect(text, contains('  database save (writable connection): still waiting after 5s'));
   });
 }

@@ -1,5 +1,3 @@
-import 'package:xta/reading/shared_filter_rule.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/ui/reader_tab_view.dart';
 import 'dart:async';
 
@@ -292,16 +290,13 @@ class _ResultsScreenState extends State<_ResultsScreen> with SingleTickerProvide
 
   Widget _tweetResults(SearchTweetsPagination pagination) {
     final l10n = L10n.of(context);
-    return SharedFilterSurface(
-      scope: SharedFilterScope.search,
-      child: PaginatedTweetList(
-        feed: pagination.feed,
-        loadPage: pagination.loadPage,
-        username: null,
-        firstPageErrorPrefix: l10n.unable_to_load_the_search_results,
-        newPageErrorPrefix: l10n.unable_to_load_the_next_page_of_tweets,
-        emptyMessage: l10n.no_results,
-      ),
+    return PaginatedTweetList(
+      feed: pagination.feed,
+      loadPage: pagination.loadPage,
+      username: null,
+      firstPageErrorPrefix: l10n.unable_to_load_the_search_results,
+      newPageErrorPrefix: l10n.unable_to_load_the_next_page_of_tweets,
+      emptyMessage: l10n.no_results,
     );
   }
 

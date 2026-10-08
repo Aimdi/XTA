@@ -204,66 +204,20 @@ class RepositoryTest(unittest.TestCase):
                 release.check_source(report)
         self.assertFalse(report.exists())
 
-    def prepare_artifacts(self, source_name=None, tag="aimdi128"):
+    def prepare_artifacts(self):
         directory = Path("artifacts")
         directory.mkdir()
         for apk in manifest_fixture()["apks"]:
-            name = source_name(apk) if source_name else apk["name"]
-            (directory / name).write_bytes(apk["name"].encode())
+            (directory / apk["name"]).write_bytes(apk["name"].encode())
         checks = release.source()
         checks["checks"] = [name for name, _ in release.CHECKS]
         release.write_json("checks.json", checks)
         details = {apk["name"]: {key: value for key, value in apk.items() if key != "name"} for apk in manifest_fixture()["apks"]}
         self.addCleanup(patch.stopall)
-        patch.object(release, "inspect_apk", side_effect=lambda path: copy.deepcopy(details[path.read_text()])).start()
+        patch.object(release, "inspect_apk", side_effect=lambda path: copy.deepcopy(details[path.name])).start()
         patch.dict(os.environ, {"GITHUB_REPOSITORY": "Aimdi/XTA", "GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "2"}).start()
-        release.record(directory, tag, "checks.json")
+        release.record(directory, "aimdi128", "checks.json")
         return directory
-
-    def test_stale_gradle_names_are_normalized_without_changing_apk_bytes(self):
-        directory = self.prepare_artifacts(lambda apk: apk["name"].replace("aimdi128", "aimdi127"))
-        release.verify(directory, "aimdi128")
-        for apk in manifest_fixture()["apks"]:
-            self.assertEqual((directory / apk["name"]).read_bytes(), apk["name"].encode())
-        self.assertFalse(list(directory.glob("*aimdi127*")))
-
-    def test_default_flutter_names_are_normalized_from_actual_abis(self):
-        directory = self.prepare_artifacts(
-            lambda apk: "app-release.apk" if len(apk["abis"]) == 3 else f"app-{apk['abis'][0]}-release.apk"
-        )
-        release.verify(directory, "aimdi128")
-        self.assertFalse(list(directory.glob("app-*.apk")))
-
-    def test_untagged_artifacts_keep_their_original_names(self):
-        directory = self.prepare_artifacts(lambda apk: apk["name"].replace("aimdi128", "review"), tag="")
-        self.assertEqual(len(list(directory.glob("xta-review*.apk"))), 4)
-
-    def test_duplicate_variant_is_rejected_before_any_file_changes(self):
-        directory = self.prepare_artifacts()
-        (directory / "duplicate.apk").write_bytes((directory / "xta-aimdi128.apk").read_bytes())
-        before = {path.name: path.read_bytes() for path in directory.iterdir()}
-        with self.assertRaisesRegex(ValueError, "variant"):
-            release.record(directory, "aimdi128", "checks.json")
-        self.assertEqual({path.name: path.read_bytes() for path in directory.iterdir()}, before)
-
-    def test_unsupported_abis_are_rejected_before_any_file_changes(self):
-        directory = self.prepare_artifacts()
-        before = {path.name: path.read_bytes() for path in directory.iterdir()}
-        with patch.object(release, "inspect_apk", return_value={"abis": ["arm64-v8a", "x86_64"]}):
-            with self.assertRaisesRegex(ValueError, "architecture"):
-                release.record(directory, "aimdi128", "checks.json")
-        self.assertEqual({path.name: path.read_bytes() for path in directory.iterdir()}, before)
-
-    def test_destination_collision_is_rejected_before_any_file_changes(self):
-        directory = self.prepare_artifacts()
-        canonical = directory / "xta-aimdi128.apk"
-        canonical.rename(directory / "old.apk")
-        canonical.mkdir()
-        before = {path.name: path.read_bytes() for path in directory.iterdir() if path.is_file()}
-        with self.assertRaisesRegex(ValueError, "overwrite|regular files"):
-            release.record(directory, "aimdi128", "checks.json")
-        self.assertTrue(canonical.is_dir())
-        self.assertEqual({path.name: path.read_bytes() for path in directory.iterdir() if path.is_file()}, before)
 
     def test_record_and_verify_round_trip(self):
         directory = self.prepare_artifacts()

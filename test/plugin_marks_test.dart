@@ -11,29 +11,8 @@ import 'package:xta/plugins/plugin.dart';
 import 'package:xta/plugins/plugin_marks.dart';
 import 'package:xta/plugins/substack/substack_plugin.dart';
 import 'package:xta/plugins/tiktok/tiktok_plugin.dart';
-import 'package:xta/plugins/threads/threads_plugin.dart';
-import 'package:xta/plugins/x/x_plugin.dart';
 
 void main() {
-  testWidgets('painted and font marks scale equally inside a larger icon slot', (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Row(children: [
-        SizedBox.square(dimension: 40, child: pluginMark(XPlugin(), size: 16)),
-        SizedBox.square(dimension: 40, child: pluginMark(BooruPlugin(), size: 16)),
-      ]),
-    ));
-    final painted = find.descendant(
-      of: find.byType(PluginBrandMark).first,
-      matching: find.byType(CustomPaint),
-    );
-    final font = find.descendant(of: find.byIcon(Icons.inventory_2), matching: find.byType(RichText));
-    final paintBounds = tester.getRect(painted);
-    final iconBounds = tester.getRect(font);
-    expect((paintBounds.width - iconBounds.width).abs(), lessThanOrEqualTo(7));
-    expect(paintBounds.center.dy, iconBounds.center.dy);
-    expect(tester.takeException(), isNull);
-  });
-
   testWidgets('plugin marks are glyphs, not the old generic icons', (
     tester,
   ) async {
@@ -46,8 +25,6 @@ void main() {
       InstagramPlugin(),
       BooruPlugin(),
       EhViewerPlugin(),
-      XPlugin(),
-      ThreadsPlugin(),
     ];
 
     await tester.pumpWidget(
@@ -61,7 +38,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(PluginBrandMark), findsNWidgets(10));
+    expect(find.byType(PluginBrandMark), findsNWidgets(8));
     expect(find.byType(BlueskyButterflyIcon), findsOneWidget);
     expect(find.byIcon(Icons.inventory_2), findsOneWidget);
     expect(find.byIcon(Icons.cloud), findsNothing);
@@ -72,7 +49,5 @@ void main() {
     expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
     expect(find.byIcon(Icons.photo_library_outlined), findsNothing);
     expect(find.byIcon(Icons.collections_bookmark_outlined), findsNothing);
-    expect(find.byIcon(Icons.close), findsNothing);
-    expect(find.byIcon(Icons.alternate_email), findsNothing);
   });
 }

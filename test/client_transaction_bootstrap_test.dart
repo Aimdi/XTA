@@ -11,7 +11,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 import 'package:xta/catcher/exceptions.dart' show TransactionIdUnavailableException;
 import 'package:xta/client/client_regular_account.dart';
 import 'package:xta/client/headers.dart';
-import 'package:xta/constants.dart';
 import 'package:xta/client/http_client.dart';
 import 'package:xta/client/x_client_transaction_id/client_transaction.dart';
 import 'package:xta/ui/read_failure_kind.dart';
@@ -125,8 +124,10 @@ void main() {
         expect(decoded.skip(1).take(_keyBytes.length).map((byte) => byte ^ decoded.first), _keyBytes);
         return http.Response(responseBody, 200);
       }
-      // The signing page is fetched without the session: a signed-in request is redirected and slow.
-      expect(request.headers, isNot(contains('cookie')));
+      expect(
+        request.headers['cookie'],
+        request.url.host == 'x.com' ? 'auth_token=test-session; ct0=test-csrf' : isNull,
+      );
       expect(request.headers, isNot(contains('authorization')));
       expect(request.headers, isNot(contains('x-csrf-token')));
       if (request.url.path == '/home') return http.Response(_loggedOut, 200);
@@ -151,40 +152,36 @@ void main() {
     ]);
   });
 
-  test('a failed bootstrap rests once for every account, and any account recovers after the cooldown', () async {
+  test('failed anonymous and account A bootstraps cannot block account B timeline reads', () async {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     final account = XRegularAccount();
     addTearDown(account.dispose);
-    var now = DateTime.utc(2026, 10, 1, 12);
-    TwitterHeaders.clock = () => now;
-    var pageRequests = 0;
-    var pageReady = false;
+    final bootstrapCookies = <String?>[];
     respond((request) {
       if (request.url == timeline) {
         expect(request.headers['cookie'], 'auth_token=account-b');
         expect(request.headers['x-client-transaction-id'], isNotEmpty);
         return http.Response('account B timeline', 200);
       }
-      expect(request.headers, isNot(contains('cookie')));
       expect(request.headers, isNot(contains('authorization')));
       expect(request.headers, isNot(contains('x-csrf-token')));
-      if (request.url.host == 'abs.twimg.com') return http.Response(_indices, 200);
-      pageRequests++;
-      return http.Response(pageReady ? _appShell() : _loggedOut, 200);
+      if (request.url.host == 'abs.twimg.com') {
+        expect(request.headers, isNot(contains('cookie')));
+        return http.Response(_indices, 200);
+      }
+      final cookie = request.headers['cookie'];
+      bootstrapCookies.add(cookie);
+      return http.Response(cookie == 'auth_token=account-b' ? _appShell() : _loggedOut, 200);
     });
 
     await expectLater(
       TwitterHeaders.getXClientTransactionIdHeader(timeline),
       throwsA(isA<TransactionIdUnavailableException>()),
     );
-    // The page is public, so one failure is every account's failure: no second download during the cooldown.
     await expectLater(
       account.fetch(timeline, log: Logger('context-test'), authHeader: {'Cookie': 'auth_token=account-a'}),
       throwsA(isA<TransactionIdUnavailableException>()),
     );
-    expect(pageRequests, 2);
-    pageReady = true;
-    now = now.add(transactionKeyRetryCooldown + const Duration(seconds: 1));
     for (var attempt = 0; attempt < 2; attempt++) {
       final result = await account.fetch(
         timeline,
@@ -193,30 +190,32 @@ void main() {
       );
       expect(result.body, 'account B timeline');
     }
-    expect(pageRequests, 3);
+    expect(bootstrapCookies, [null, null, 'auth_token=account-a', 'auth_token=account-a', 'auth_token=account-b']);
     expect(requests.where((uri) => uri == timeline), hasLength(2));
   });
 
-  test('every account signs with the one shared key, which never sees a cookie', () async {
+  test('each account timeline keeps its own derived key and reuses only its matching cookie context', () async {
     final timeline = Uri.https('x.com', '/i/api/graphql/test/HomeLatestTimeline');
     final account = XRegularAccount();
     addTearDown(account.dispose);
-    var pageRequests = 0;
+    final bootstrapCookies = <String?>[];
     respond((request) {
       final cookie = request.headers['cookie'];
       if (request.url == timeline) {
-        expect(cookie, anyOf('auth_token=account-a', 'auth_token=account-b'));
         final encoded = base64.decode(base64.normalize(request.headers['x-client-transaction-id']!));
-        expect(encoded[1] ^ encoded.first, _keyBytes[0]);
+        expect(encoded[1] ^ encoded.first, cookie == 'auth_token=account-a' ? 17 : 34);
         return http.Response('loaded', 200);
       }
-      expect(cookie, isNull);
-      if (request.url.host == 'abs.twimg.com') return http.Response(_indices, 200);
-      pageRequests++;
-      return http.Response(_appShell(), 200);
+      if (request.url.host == 'abs.twimg.com') {
+        expect(cookie, isNull);
+        return http.Response(_indices, 200);
+      }
+      bootstrapCookies.add(cookie);
+      final key = [..._keyBytes];
+      key[0] = cookie == 'auth_token=account-a' ? 17 : 34;
+      return http.Response(_appShell(keyBytes: key), 200);
     });
 
-    await TwitterHeaders.getXClientTransactionIdHeader(timeline);
     for (final accountId in ['a', 'b', 'a', 'b']) {
       final result = await account.fetch(
         timeline,
@@ -225,8 +224,8 @@ void main() {
       );
       expect(result.statusCode, 200);
     }
-    expect(pageRequests, 1);
-    expect(requests.where((uri) => uri.host == 'abs.twimg.com'), hasLength(1));
+    expect(bootstrapCookies, ['auth_token=account-a', 'auth_token=account-b']);
+    expect(requests.where((uri) => uri.host == 'abs.twimg.com'), hasLength(2));
     expect(requests.where((uri) => uri == timeline), hasLength(4));
   });
 
@@ -258,7 +257,10 @@ void main() {
         expect(request.headers['x-client-transaction-id'], isNotEmpty);
         return http.Response('timeline loaded', 200);
       }
-      expect(request.headers, isNot(contains('cookie')));
+      expect(
+        request.headers['cookie'],
+        request.url.host == 'x.com' ? 'auth_token=test-session; ct0=test-csrf' : isNull,
+      );
       return http.Response(request.url.path == '/home' ? _appShell() : _indices, 200);
     });
     Future<void> load() async {
@@ -428,7 +430,7 @@ void main() {
     });
     final result = expectLater(ClientTransaction.initialize(), throwsA(isA<TimeoutException>()));
 
-    await tester.pump(transactionKeyInitializationTimeout + const Duration(seconds: 1));
+    await tester.pump(const Duration(seconds: 13));
     await result;
 
     expect(requests.map((uri) => uri.path), ['/home']);

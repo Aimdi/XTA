@@ -21,7 +21,6 @@ Future<void> showBlueskyPostActions(BuildContext context, BlueskyPost post) => s
   ),
   onReposts: () => openBlueskyReposts(context, post),
   onQuotes: () => openBlueskyQuotes(context, post),
-  translateText: post.text,
 );
 
 Future<void> openBlueskyReposts(BuildContext context, BlueskyPost post) {

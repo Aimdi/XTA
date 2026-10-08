@@ -4,15 +4,12 @@ import 'dart:math';
 
 import 'package:html/parser.dart' as html_parser;
 import 'package:http/http.dart' as http;
-import 'package:xta/utils/http_read.dart';
-import 'package:xta/utils/read_request_scope.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/plugins/plugin_post_media.dart';
 import 'package:xta/plugins/threads/threads_client.dart';
 import 'package:xta/plugins/threads/threads_models.dart';
 import 'package:xta/utils/json.dart';
-import 'package:xta/utils/read_retry.dart';
 
 const _threadsWeb = 'https://www.threads.com';
 const _instagramApi = 'https://i.instagram.com';
@@ -688,7 +685,6 @@ class ThreadsDirectClient {
   }
 
   Future<void> _pace({bool respectCooldown = true}) async {
-    ReadWork.checkpoint();
     if (respectCooldown) {
       if (await _coolingDown() case final until?) {
         throw ThreadsException(
@@ -708,10 +704,9 @@ class ThreadsDirectClient {
       final gap = floor + Duration(milliseconds: _jitter.nextInt(jitterMs));
       final wait = gap - DateTime.now().difference(last);
       if (wait > Duration.zero) {
-        await (ReadWork.current?.pause(wait) ?? Future<void>.delayed(wait));
+        await Future<void>.delayed(wait);
       }
     }
-    ReadWork.checkpoint();
     _lastRequestAt = DateTime.now();
   }
 
@@ -762,14 +757,7 @@ class ThreadsDirectClient {
   }) {
     return _enqueue(() async {
       try {
-        return await httpClient.getWithReadRetry(
-          uri,
-          headers: headers,
-          timeout: _timeout,
-          beforeRetry: () => _enqueue(() async {}, respectCooldown: respectCooldown),
-        );
-      } on ThreadsException {
-        rethrow;
+        return await httpClient.get(uri, headers: headers).timeout(_timeout);
       } catch (e) {
         throw ThreadsException(ThreadsErrorKind.unreachable, '$uri: $e');
       }
@@ -909,7 +897,7 @@ class ThreadsDirectClient {
   /// question about the same followed accounts on every refresh both doubles
   /// what a read costs and looks precisely like a script. An account's id does
   /// not change, so it is worth keeping.
-  Future<String> resolveUserId(String handle) => withReadRetryBudget(() async {
+  Future<String> resolveUserId(String handle) async {
     final key = handle.toLowerCase();
     final known = _storedUserIds();
     if (known[key] case final id? when id.isNotEmpty) {
@@ -920,7 +908,7 @@ class ThreadsDirectClient {
     final id = await _searchUserId(key);
     await _rememberUserId(key, id);
     return id;
-  });
+  }
 
   Map<String, String> _storedUserIds() {
     try {
@@ -990,7 +978,7 @@ class ThreadsDirectClient {
     return users;
   }
 
-  Future<ThreadsProfile> fetchProfile(String handle) => withReadRetryBudget(() async {
+  Future<ThreadsProfile> fetchProfile(String handle) async {
     try {
       return await fetchGuestProfile(handle);
     } on ThreadsException {
@@ -1011,7 +999,7 @@ class ThreadsDirectClient {
       ThreadsErrorKind.noSuchFeed,
       'profile missing: @$handle',
     );
-  });
+  }
 
   /// Profile card from the public `threads.com/@handle` page — no login.
   Future<ThreadsProfile> fetchGuestProfile(String handle) async {
@@ -1036,7 +1024,7 @@ class ThreadsDirectClient {
   Future<List<ThreadsPost>> fetchUserThreads(
     String handle, {
     int count = threadsPostsPerAccount,
-  }) => withReadRetryBudget(() async {
+  }) async {
     if (useSessionApis && hasCookies) {
       try {
         final id = await resolveUserId(handle);
@@ -1054,7 +1042,7 @@ class ThreadsDirectClient {
       }
     }
     return fetchGuestAccount(handle);
-  });
+  }
 
   Future<List<ThreadsPost>> fetchFollowingTimeline({int limit = 40}) async {
     if (!hasBearer) {
@@ -1084,7 +1072,7 @@ class ThreadsDirectClient {
   /// Prefers guest GraphQL (`BarcelonaProfileThreadsTabQuery`) — SSR often
   /// embeds zero `thread_items` for many profiles. HTML is still fetched once
   /// for the LSD token + user id, and used as a fallback scrape.
-  Future<List<ThreadsPost>> fetchGuestAccount(String handle) => withReadRetryBudget(() async {
+  Future<List<ThreadsPost>> fetchGuestAccount(String handle) async {
     final key = handle.trim().toLowerCase();
 
     // A known id plus a fresh LSD skips the profile page — one paced request
@@ -1139,13 +1127,13 @@ class ThreadsDirectClient {
       );
     }
     return posts;
-  });
+  }
 
   /// Public conversation for a Threads post URL (guest HTML scrape).
   ///
   /// Returns root + replies when the page embeds them. Empty when Meta sent
   /// nothing parseable — the caller still has the seed card from the feed.
-  Future<List<ThreadsPost>> fetchGuestPostThread(String postUrl) => withReadRetryBudget(() async {
+  Future<List<ThreadsPost>> fetchGuestPostThread(String postUrl) async {
     final uri = Uri.tryParse(postUrl.trim());
     if (uri == null || !uri.host.contains('threads.')) {
       throw ThreadsException(
@@ -1174,7 +1162,7 @@ class ThreadsDirectClient {
     }
 
     return parseThreadsSsrThread(utf8.decode(response.bodyBytes));
-  });
+  }
 
   Future<String> _fetchProfileHtml(String handle) {
     final key = handle.trim().toLowerCase();

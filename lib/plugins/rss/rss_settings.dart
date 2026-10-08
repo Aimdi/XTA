@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pref/pref.dart';
 import 'package:xta/constants.dart';
 import 'package:xta/generated/l10n.dart';
-import 'package:xta/plugins/rss/rss_opml_controls.dart';
 
 class RssSettingsScreen extends StatefulWidget {
   const RssSettingsScreen({super.key});
@@ -38,7 +37,6 @@ class _RssSettingsScreenState extends State<RssSettingsScreen> {
               if (mounted) setState(() {});
             },
           ),
-          const RssOpmlSection(),
         ],
       ),
     );

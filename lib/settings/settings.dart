@@ -1,4 +1,3 @@
-import 'package:xta/reading/reader_tools_settings.dart';
 import 'package:xta/downloads/downloads_screen.dart';
 import 'package:xta/offline/offline_library_screen.dart';
 import 'dart:async';
@@ -87,12 +86,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<_SettingsEntry> _everydayEntries(BuildContext context) {
     final l10n = L10n.of(context);
     return [
-      _SettingsEntry(
-        icon: Icons.menu_book_outlined,
-        title: l10n.reader_tools,
-        description: l10n.feed_appearance,
-        builder: (_) => const ReaderToolsSettings(),
-      ),
       _SettingsEntry(
         icon: Icons.miscellaneous_services,
         title: l10n.general,

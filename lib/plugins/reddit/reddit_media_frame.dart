@@ -1,4 +1,3 @@
-import 'package:xta/reading/feed_appearance_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:xta/generated/l10n.dart';
 import 'package:xta/tweet/tweet_chrome.dart';
@@ -82,10 +81,7 @@ class RedditMediaFrame extends StatelessWidget {
       ],
     );
 
-    final preset = FeedAppearanceScope.of(context).preset;
-    final ratio = aspectRatio == null
-        ? (preset == null ? null : feedMediaAspect(context, 16 / 9))
-        : feedMediaAspect(context, aspectRatio!);
+    final ratio = aspectRatio;
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(tweetMediaRadiusOf(context)),

@@ -1,10 +1,9 @@
-import 'package:xta/reading/shared_filter_engine.dart';
-import 'package:xta/reading/shared_filter_scope.dart';
 import 'package:xta/tweet/video_memory_observer.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dynamic_color/dynamic_color.dart';
@@ -105,7 +104,6 @@ import 'package:xta/ui/dates.dart';
 import 'package:xta/ui/errors.dart';
 import 'package:xta/ui/x_look_theme.dart';
 import 'package:xta/utils/crash_reporter.dart';
-import 'package:xta/utils/diagnostic_privacy.dart';
 import 'package:xta/utils/updates.dart';
 import 'package:logging/logging.dart';
 import 'package:pref/pref.dart';
@@ -413,9 +411,15 @@ class _EnglishCupertinoFallback
 }
 
 Future<void> main() async {
-  // Release diagnostics retain code locations without messages or account data.
+  // The listener below hands every record to dart:developer, and the client logs
+  // one line per request, so a release build paid for the whole session's
+  // traffic in log records. Warnings and errors still come through, and the
+  // crash reporter hooks FlutterError rather than this, so it is unaffected.
   Logger.root.level = kReleaseMode ? Level.WARNING : Level.INFO;
-  Logger.root.onRecord.listen(writeDiagnosticLog);
+
+  Logger.root.onRecord.listen((event) async {
+    log(event.message, error: event.error, stackTrace: event.stackTrace);
+  });
 
   if (Platform.isLinux) {
     sqfliteFfiInit();
@@ -435,8 +439,6 @@ Future<void> main() async {
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/fonts/Inter-OFL.txt');
     yield LicenseEntryWithLineBreaks(const ['Inter'], license);
-    final iconsLicense = await rootBundle.loadString('assets/brand-icons-LICENSE.txt');
-    yield LicenseEntryWithLineBreaks(const ['Bootstrap Icons'], iconsLicense);
   });
 
   // Neither belongs in front of the first frame. MediaKit is dlopen'ing
@@ -1087,7 +1089,7 @@ Future<void> main() async {
       unawaited(initXtaAudio());
     });
   } catch (e, stackTrace) {
-    Logger('Startup').severe('Unable to start Fritter', e, stackTrace);
+    log('Unable to start Fritter', error: e, stackTrace: stackTrace);
   }
 }
 
@@ -1272,9 +1274,7 @@ class _FritterAppState extends State<FritterApp> {
         disableAnimations:
             _disableAnimations || MediaQuery.disableAnimationsOf(context),
       ),
-      child: SharedFilterRoot(
-        engine: SharedFilterEngine.forPrefs(PrefService.of(context, listen: false)),
-        child: DynamicColorBuilder(
+      child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
           return Portal(
             child: SecureWidget(
@@ -1352,7 +1352,6 @@ class _FritterAppState extends State<FritterApp> {
             ),
           );
         },
-      ),
       ),
     );
   }

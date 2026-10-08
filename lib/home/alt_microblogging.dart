@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:xta/constants.dart';
 
 const altMicrobloggingSectionId = 'alt-microblogging';
-const altMicrobloggingIcon = Icons.hub_outlined;
 const altMicrobloggingSourceIds = {pluginIdMastodon, pluginIdBluesky, pluginIdThreads};
 
 bool isAltMicrobloggingSource(String? id) => altMicrobloggingSourceIds.contains(id);
