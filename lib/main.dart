@@ -1,6 +1,7 @@
 import 'package:xta/tweet/video_memory_observer.dart';
 import 'package:xta/utils/read_visibility.dart';
 import 'package:xta/ui/undo_host.dart';
+import 'package:xta/ui/snack_bar_policy.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
@@ -1346,7 +1347,10 @@ class _FritterAppState extends State<FritterApp> {
                   // Reading aloud outlives the article it started in, so the
                   // way to stop it has to be reachable from wherever the reader
                   // has gone. Nothing is added while nothing is being read.
-                  return UndoHost(child: SpeechBarScaffold(child: child ?? Container()));
+                  // Every route shares XtaScaffoldMessenger's timing rules.
+                  return XtaScaffoldMessenger(
+                    child: UndoHost(child: SpeechBarScaffold(child: child ?? Container())),
+                  );
                 },
               ),
             ),

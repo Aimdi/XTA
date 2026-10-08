@@ -6,6 +6,11 @@
 - The Recent / Popular / Custom / Discover / Media row is slimmer and loses its doubled divider line; every chip keeps a full-size touch target.
 - On a pushed group, the whole title (mark, name and count) opens the group switcher.
 
+### Messages leave sooner
+
+- Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
+- "Changes saved – Undo" no longer stays until you tap it: it leaves after 5 seconds. With TalkBack on it still waits for you. Download progress still stays until the download ends.
+
 Everything from aimdi169 is included: the new icon, the profile filter chips and the diagnostic for saves that stop after adding someone to a group.
 
 ### Installation
