@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:xta/plugins/booru/booru_engines.dart';
 import 'package:xta/plugins/booru/booru_models.dart';
 import 'package:xta/plugins/booru/booru_parse.dart';
+import 'package:xta/plugins/booru/booru_query.dart';
 
 void main() {
   group('BooruRating', () {
@@ -241,8 +242,8 @@ void main() {
       );
       expect(normaliseBooruTag('  Blue Sky '), 'blue_sky');
       expect(normaliseBooruTag('   '), isNull);
-      expect(lastBooruTagToken('1girl blue_sky'), 'blue_sky');
-      expect(lastBooruTagToken('1girl rating:g'), isNull);
+      expect(normaliseBooruQuery('1girl  Blue_Sky'), '1girl blue_sky');
+      expect(normaliseBooruQuery('1girl rating:g'), '1girl rating:g');
     });
 
     test('guesses the engine and Rule34 API host', () {

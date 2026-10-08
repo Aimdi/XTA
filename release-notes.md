@@ -17,6 +17,14 @@
 - Error and info messages at the bottom now leave after 3 seconds instead of 4, and a new one replaces the one on screen instead of waiting its turn, so a burst of errors no longer holds the bottom of the screen.
 - "Changes saved – Undo" no longer stays until you tap it: it leaves after 5 seconds. With TalkBack on it still waits for you. Download progress still stays until the download ends.
 
+### Booru: tag search that keeps your searches
+
+- Searches are saved again, however you start them, and recent searches come back whenever you tap the search field, even over results. Each entry runs again with one tap and can be removed on its own (✕ or swipe).
+- Several tags at once: each tag becomes a chip. Space finishes a tag, a suggestion is added instead of replacing what you typed, backspace removes the last chip and tapping a chip edits it. Quick buttons add Exclude (-), Or (~), rating and sort-by-score; "Edit as text" shows the whole query.
+- Suggestions show the tag's category colour and post count.
+- The star saves the whole search (not just its last tag); saved searches sit above the history and feed the Following tab.
+- Related tags from the loaded posts appear above the results (tap to add, hold to exclude), and a post opened from search can add its tags to that search.
+
 ### Comments in coloured bubbles
 
 - Reddit and Hacker News comments each sit in their own rounded, tinted bubble. The colour follows the reply depth (blue, violet, green, amber, pink, orange, then again), so a reply is easy to tell from the comment it answers; the thin lines at the left are gone. Text keeps full contrast on every tint, in light, dim and true-black themes.

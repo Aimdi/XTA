@@ -21,6 +21,7 @@ the well-known public JSON shapes (Danbooru, Moebooru, Gelbooru v2, e621).
 | Presets | Danbooru, Yande.re, Konachan, Safebooru, Gelbooru, Rule34, Xbooru, e926, e621 |
 | Settings | Engine, host, **Add site** for any Gelbooru/Danbooru/Moebooru/e621 host, credentials, max rating, muted tags, home-feed, tab |
 | Home tabs | Latest · Following (followed tags) · Search (+ autocomplete) |
+| Search | Tags as chips (space/Enter finish a tag, backspace removes the last, tap a chip to edit it, "Edit as text" for the raw query); suggestions append and keep a typed `-`/`~`, coloured by tag category with post counts; quick operators and engine-correct `rating:` / score order; every executed search saved to a de-duplicated history (per tag set, swipe or ✕ to delete, clear all); a starred search is saved as one followed entry and feeds Following; related tags from the loaded results; a post's tag can be added to the search it was opened from |
 | Grid / viewer | Staggered catalog uses sample/large (~850px), not the ~150px preview; post screen opens host / source / video |
 | Subscriptions | `booru_subscription` table; tags join groups via `SubscriptionSource` |
 | Interleave | Recent posts per followed tag, provenance strip, fail soft |

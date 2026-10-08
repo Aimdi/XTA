@@ -1284,6 +1284,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "Ajouter un site booru",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "Ajouter un tag",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "Ajouter à la recherche actuelle",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "Clé API",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Facultatif — certains hôtes (Gelbooru, Danbooru) exigent une clé pour un accès fiable.",
@@ -1300,8 +1304,16 @@
   },
   "plugin_booru_clear_history": "Effacer l’historique de recherche",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "Effacer les tags",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Parcourir les sites type Danbooru et Gelbooru — suivez des tags dans les groupes",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "Modifier en texte",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "Toucher pour modifier",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "Ou",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Suivez des tags depuis la recherche ou une publication pour remplir cet onglet",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "Aucune publication récente pour vos tags suivis",
@@ -1332,16 +1344,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "Requête refusée — vérifiez l’identifiant et la clé API",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Suivre le tag",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "Suivi de {tag}",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "Exclure",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Tags Booru",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "URL de l’hôte",
@@ -1378,6 +1382,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Ouvrir la vidéo",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "Meilleur score",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Hash du mot de passe",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru attend le hash SHA1 du site, pas le mot de passe en clair.",
@@ -1398,8 +1404,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensible",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "Toucher pour ajouter à la recherche · appui long pour exclure",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "Tags associés",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "Retirer le site",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "Enregistrer la recherche",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "Recherches enregistrées",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1414,6 +1428,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "Aucune recherche récente",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "Recherche enregistrée — les nouvelles publications apparaissent dans « {tab} »",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Contenu",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Identifiants",
@@ -1432,8 +1454,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Suggestions",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Suivis",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Récents",
@@ -1476,6 +1496,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "Retirer des recherches enregistrées",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Vidéo",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "La dernière liste reçue est affichée",

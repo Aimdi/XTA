@@ -37,17 +37,29 @@ List<BooruTagSuggestion> parseBooruTagSuggestions(
   };
   if (list.raw is! List) return const [];
 
-  return [for (final item in list.raw as List) ?_suggestionOf(Json(item))];
+  return [
+    for (final item in list.raw as List) ?_suggestionOf(Json(item), engine),
+  ];
 }
 
-BooruTagSuggestion? _suggestionOf(Json json) {
+BooruTagSuggestion? _suggestionOf(Json json, BooruEngine engine) {
   final name = json['name'].string ?? json['tag'].string;
   if (name == null || name.isEmpty) return null;
   final count =
       json['post_count'].integer ??
       json['count'].integer ??
       json['posts'].integer;
-  return BooruTagSuggestion(name: name, postCount: count);
+  return BooruTagSuggestion(
+    name: name,
+    postCount: count,
+    category: _categoryOf(json, engine),
+  );
+}
+
+BooruTagCategory? _categoryOf(Json json, BooruEngine engine) {
+  final code = json['category'].integer ?? json['type'].integer;
+  if (code != null) return BooruTagCategory.fromWire(code, engine);
+  return BooruTagCategory.named(json['type'].string);
 }
 
 BooruPost? _parseOne(

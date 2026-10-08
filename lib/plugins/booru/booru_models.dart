@@ -190,9 +190,47 @@ class BooruPostPage {
   });
 }
 
+/// Tag kinds the hosts colour differently. Each engine numbers them its own
+/// way; [BooruTagCategory.fromWire] maps the numbers.
+enum BooruTagCategory {
+  general,
+  artist,
+  copyright,
+  character,
+  species,
+  meta;
+
+  static BooruTagCategory? fromWire(int code, BooruEngine engine) =>
+      switch ((engine, code)) {
+        (_, 0) => general,
+        (_, 1) => artist,
+        (_, 3) => copyright,
+        (_, 4) => character,
+        (BooruEngine.e621, 5) => species,
+        (BooruEngine.e621, 7) => meta,
+        (BooruEngine.moebooru, 5) => artist,
+        (BooruEngine.moebooru, 6) => meta,
+        (_, 5) => meta,
+        _ => null,
+      };
+
+  /// Gelbooru forks that send the kind as a word.
+  static BooruTagCategory? named(String? name) =>
+      switch ((name ?? '').toLowerCase()) {
+        'general' || 'tag' => general,
+        'artist' => artist,
+        'copyright' => copyright,
+        'character' => character,
+        'species' => species,
+        'metadata' || 'meta' => meta,
+        _ => null,
+      };
+}
+
 class BooruTagSuggestion {
   final String name;
   final int? postCount;
+  final BooruTagCategory? category;
 
-  const BooruTagSuggestion({required this.name, this.postCount});
+  const BooruTagSuggestion({required this.name, this.postCount, this.category});
 }

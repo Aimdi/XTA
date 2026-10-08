@@ -1284,6 +1284,10 @@
   "@plugin_booru_add_site": {},
   "plugin_booru_add_site_title": "Tambah situs booru",
   "@plugin_booru_add_site_title": {},
+  "plugin_booru_add_tag_hint": "Tambah tag",
+  "@plugin_booru_add_tag_hint": {},
+  "plugin_booru_add_to_search": "Tambahkan ke pencarian saat ini",
+  "@plugin_booru_add_to_search": {},
   "plugin_booru_api_key": "API key",
   "@plugin_booru_api_key": {},
   "plugin_booru_api_key_help": "Optional — some hosts (Gelbooru, Danbooru) require a key for reliable access.",
@@ -1300,8 +1304,16 @@
   },
   "plugin_booru_clear_history": "Clear search history",
   "@plugin_booru_clear_history": {},
+  "plugin_booru_clear_tags": "Hapus tag",
+  "@plugin_booru_clear_tags": {},
   "plugin_booru_description": "Browse Danbooru-family and Gelbooru hosts — follow tags into groups",
   "@plugin_booru_description": {},
+  "plugin_booru_edit_as_text": "Edit sebagai teks",
+  "@plugin_booru_edit_as_text": {},
+  "plugin_booru_edit_tag": "Ketuk untuk mengedit",
+  "@plugin_booru_edit_tag": {},
+  "plugin_booru_either_tag": "Atau",
+  "@plugin_booru_either_tag": {},
   "plugin_booru_empty_following": "Follow tags from search or a post to fill this tab",
   "@plugin_booru_empty_following": {},
   "plugin_booru_empty_following_posts": "No recent posts for your followed tags",
@@ -1332,16 +1344,8 @@
   "@plugin_booru_error_response": {},
   "plugin_booru_error_unauthorized": "The host refused the request — check login and API key",
   "@plugin_booru_error_unauthorized": {},
-  "plugin_booru_follow_tag": "Follow tag",
-  "@plugin_booru_follow_tag": {},
-  "plugin_booru_followed": "Following {tag}",
-  "@plugin_booru_followed": {
-    "placeholders": {
-      "tag": {
-        "type": "String"
-      }
-    }
-  },
+  "plugin_booru_exclude_tag": "Kecualikan",
+  "@plugin_booru_exclude_tag": {},
   "plugin_booru_followed_tags": "Booru tags",
   "@plugin_booru_followed_tags": {},
   "plugin_booru_host": "Host URL",
@@ -1378,6 +1382,8 @@
   "@plugin_booru_open_source": {},
   "plugin_booru_open_video": "Open video",
   "@plugin_booru_open_video": {},
+  "plugin_booru_order_score": "Skor tertinggi",
+  "@plugin_booru_order_score": {},
   "plugin_booru_password_hash": "Password hash",
   "@plugin_booru_password_hash": {},
   "plugin_booru_password_hash_help": "Moebooru expects the SHA1 password hash from the site, not the plain password.",
@@ -1398,8 +1404,16 @@
   "@plugin_booru_rating_questionable": {},
   "plugin_booru_rating_sensitive": "Sensitive",
   "@plugin_booru_rating_sensitive": {},
+  "plugin_booru_related_hint": "Ketuk untuk menambahkan ke pencarian · tekan lama untuk mengecualikan",
+  "@plugin_booru_related_hint": {},
+  "plugin_booru_related_tags": "Tag terkait",
+  "@plugin_booru_related_tags": {},
   "plugin_booru_remove_site": "Hapus situs",
   "@plugin_booru_remove_site": {},
+  "plugin_booru_save_search": "Simpan pencarian",
+  "@plugin_booru_save_search": {},
+  "plugin_booru_saved_searches": "Pencarian tersimpan",
+  "@plugin_booru_saved_searches": {},
   "plugin_booru_score": "Score {score}",
   "@plugin_booru_score": {
     "placeholders": {
@@ -1414,6 +1428,14 @@
   "@plugin_booru_search_history": {},
   "plugin_booru_search_history_empty": "No recent searches yet",
   "@plugin_booru_search_history_empty": {},
+  "plugin_booru_search_saved": "Pencarian disimpan — postingan baru muncul di “{tab}”",
+  "@plugin_booru_search_saved": {
+    "placeholders": {
+      "tab": {
+        "type": "String"
+      }
+    }
+  },
   "plugin_booru_section_content": "Content",
   "@plugin_booru_section_content": {},
   "plugin_booru_section_credentials": "Credentials",
@@ -1432,8 +1454,6 @@
   "@plugin_booru_site_name": {},
   "plugin_booru_source": "Source",
   "@plugin_booru_source": {},
-  "plugin_booru_suggestions": "Suggestions",
-  "@plugin_booru_suggestions": {},
   "plugin_booru_tab_following": "Following",
   "@plugin_booru_tab_following": {},
   "plugin_booru_tab_latest": "Latest",
@@ -1476,6 +1496,8 @@
   },
   "plugin_booru_title": "Booru",
   "@plugin_booru_title": {},
+  "plugin_booru_unsave_search": "Hapus dari pencarian tersimpan",
+  "@plugin_booru_unsave_search": {},
   "plugin_booru_video": "Video",
   "@plugin_booru_video": {},
   "plugin_catalogue_cached": "Menampilkan daftar terakhir yang diterima",

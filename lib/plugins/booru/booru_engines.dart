@@ -252,16 +252,3 @@ String? normaliseBooruTag(String raw) {
   if (tag.isEmpty) return null;
   return tag;
 }
-
-/// Last space-separated token in a search query, for "follow this tag".
-String? lastBooruTagToken(String query) {
-  final parts = query
-      .trim()
-      .split(RegExp(r'\s+'))
-      .where((t) => t.isNotEmpty)
-      .toList(growable: false);
-  if (parts.isEmpty) return null;
-  final last = parts.last;
-  if (last.contains(':')) return null; // metatag, not a followable tag
-  return normaliseBooruTag(last);
-}
