@@ -25,7 +25,7 @@
 ### Telegram-style bottom bar
 
 - The bottom bar is a frosted, slightly see-through pill floating above the page, like Telegram's: posts scroll on behind it and show through faintly. The selected tab sits on a soft tinted highlight that covers its icon and label and slides when you switch.
-- Labels under the icons are now on by default (Settings → Theme → Show navigation labels turns them off again).
+- The bar shows icons only and is 48dp tall, a single touch target's height. With Settings → Theme → Show navigation labels it grows to 54dp to fit them.
 - The last post of every list, plugin feeds included, scrolls fully clear of the bar, and Trends' and Saved's floating buttons stay above it.
 
 ### Mastodon & Bluesky

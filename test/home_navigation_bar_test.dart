@@ -182,6 +182,18 @@ void main() {
     expect(tester.getRect(find.byIcon(Icons.home)).center.dy, closeTo(highlight.center.dy, 0.5));
   });
 
+  testWidgets('icons alone make the slimmest bar that still fits a finger', (tester) async {
+    _phone(tester);
+    await tester.pumpWidget(_app(xLookLightTheme(null), showLabels: false));
+
+    expect(tester.getSize(find.byType(NavigationBar)).height, kHomeNavigationIconOnlyHeight);
+    expect(kHomeNavigationIconOnlyHeight, lessThan(kHomeNavigationHeight));
+    for (var index = 0; index < 4; index++) {
+      expect(_destination(tester, index).height, greaterThanOrEqualTo(kTweetTouchTarget));
+    }
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('the highlight slides to a new selection', (tester) async {
     _phone(tester);
     await tester.pumpWidget(_app(xLookLightTheme(null), disableAnimations: false));

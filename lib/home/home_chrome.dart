@@ -10,6 +10,12 @@ import 'package:xta/ui/x_look_theme.dart';
 
 const double kHomeNavigationHeight = 54;
 
+/// Icons alone need only one touch target's height.
+const double kHomeNavigationIconOnlyHeight = kTweetTouchTarget;
+
+double homeNavigationHeight({required bool showLabels}) =>
+    showLabels ? kHomeNavigationHeight : kHomeNavigationIconOnlyHeight;
+
 /// Space between the floating bar and the screen's side edges.
 const double kHomeNavigationFloatInset = 16;
 
@@ -392,6 +398,7 @@ class HomeNavigationBar extends StatelessWidget {
         ),
         child: _FrostedPill(
           palette: palette,
+          height: homeNavigationHeight(showLabels: showLabels),
           child: Stack(
             children: [
               Positioned.fill(
@@ -411,7 +418,7 @@ class HomeNavigationBar extends StatelessWidget {
   NavigationBar _navigationBar(BuildContext context, bool reduceMotion) {
     return NavigationBar(
       selectedIndex: selectedIndex,
-      height: kHomeNavigationHeight,
+      height: homeNavigationHeight(showLabels: showLabels),
       animationDuration: reduceMotion ? Duration.zero : null,
       labelBehavior: showLabels
           ? NavigationDestinationLabelBehavior.alwaysShow
@@ -569,11 +576,15 @@ class _FrostedPill extends StatelessWidget {
   final HomeNavigationPalette palette;
   final Widget child;
 
-  const _FrostedPill({required this.palette, required this.child});
+  final double height;
 
-  static const _radius = BorderRadius.all(
-    Radius.circular(kHomeNavigationHeight / 2),
-  );
+  const _FrostedPill({
+    required this.palette,
+    required this.height,
+    required this.child,
+  });
+
+  BorderRadius get _radius => BorderRadius.circular(height / 2);
 
   @override
   Widget build(BuildContext context) {
